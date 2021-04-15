@@ -24,5 +24,5 @@ jobs:
           DOCKER_REGISTRY_PASSWORD: ${{secrets.DOCKER_REGISTRY_PASSWORD}}
         run: |
           docker login https://ghcr.io -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD
-          docker build . --tag ghcr.io/circlesland/api-server-dev:${{fromJson(steps.readPackageJson.outputs.packageJson).version}} --tag api-server-dev --tag dev
+          docker build . --tag ghcr.io/circlesland/api-server-dev:latest --tag ghcr.io/circlesland/api-server-dev:${{fromJson(steps.readPackageJson.outputs.packageJson).version}} --tag api-server-dev --tag dev
           docker push ghcr.io/circlesland/api-server-dev:${{fromJson(steps.readPackageJson.outputs.packageJson).version}}
