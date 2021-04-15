@@ -140,7 +140,7 @@ type Query
 
 type Mutation
 {
-    exchangeToken(jwt:String!) : ExchangeTokenResponse!
+    exchangeToken : ExchangeTokenResponse!
     upsertProfile(data:UpdateProfileInput!):Profile!
     addCirclesWallet(data:AddCirclesWalletInput!) : CirclesWallet!
     addCirclesToken(data:AddCirclesTokenInput!) : CirclesToken!

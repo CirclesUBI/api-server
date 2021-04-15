@@ -11,7 +11,7 @@ type Query
 
 type Mutation
 {
-    exchangeToken(jwt:String!) : ExchangeTokenResponse!
+    exchangeToken : ExchangeTokenResponse!
     upsertProfile(data:UpdateProfileInput!):Profile!
     addCirclesWallet(data:AddCirclesWalletInput!) : CirclesWallet!
     addCirclesToken(data:AddCirclesTokenInput!) : CirclesToken!
@@ -26,7 +26,7 @@ mkdir omo-central-server-db
 cd omo-central-server-db
 
 # Get the schema
-wget https://raw.githubusercontent.com/circlesland/api-server/main/schema_template.prisma
+wget https://raw.githubusercontent.com/circlesland/api-server/master/schema_template.prisma
 
 # Insert your connection string
 yourConnectionString="[your connection string goes here]"

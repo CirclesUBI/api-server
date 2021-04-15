@@ -1,10 +1,9 @@
 import {Session} from "../../session";
 import { PrismaClient } from "@prisma/client";
-import {MutationExchangeTokenArgs} from "../../types";
 import {Context} from "../../context";
 
 export function exchangeTokenResolver(prisma:PrismaClient) {
-    return async (parent: any, args: MutationExchangeTokenArgs, context: Context) => {
+    return async (parent: any, args: any, context: Context) => {
         if (!context.jwt) {
             throw new Error("No authorization header");
         }

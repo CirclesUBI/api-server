@@ -9,3 +9,4 @@ export const prisma: PrismaClient = new PrismaClient({
         }
     }
 });
+

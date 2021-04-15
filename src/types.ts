@@ -117,11 +117,6 @@ export type Mutation = {
 };
 
 
-export type MutationExchangeTokenArgs = {
-  jwt: Scalars['String'];
-};
-
-
 export type MutationUpsertProfileArgs = {
   data: UpdateProfileInput;
 };
@@ -383,7 +378,7 @@ export type ExchangeTokenResponseResolvers<ContextType = any, ParentType extends
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  exchangeToken?: Resolver<ResolversTypes['ExchangeTokenResponse'], ParentType, ContextType, RequireFields<MutationExchangeTokenArgs, 'jwt'>>;
+  exchangeToken?: Resolver<ResolversTypes['ExchangeTokenResponse'], ParentType, ContextType>;
   upsertProfile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType, RequireFields<MutationUpsertProfileArgs, 'data'>>;
   addCirclesWallet?: Resolver<ResolversTypes['CirclesWallet'], ParentType, ContextType, RequireFields<MutationAddCirclesWalletArgs, 'data'>>;
   addCirclesToken?: Resolver<ResolversTypes['CirclesToken'], ParentType, ContextType, RequireFields<MutationAddCirclesTokenArgs, 'data'>>;
