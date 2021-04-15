@@ -8,30 +8,11 @@ import {resolvers} from "./resolvers/resolvers";
 import {Resolvers} from "./types";
 const httpHeadersPlugin = require("apollo-server-plugin-http-headers");
 
-const corsOrigins = [
-    "http://localhost:5000",
-    "https://localhost:5000",
-    "http://omo.local:5000",
-    "https://omo.local:5000",
-    "https://omo.li",
-    "https://circles.land"
-];
-
-/*
-class BasicLogging {
-    requestDidStart(args:{queryString:any, parsedQuery:any, variables:any}) {
-        const {queryString, parsedQuery, variables} = args;
-        const query = queryString || print(parsedQuery);
-        console.log(query);
-        console.log(variables);
-    }
-
-    willSendResponse(args:{graphqlResponse:any}) {
-        console.log(JSON.stringify(args, null, 2));
-    }
+if (!process.env.CORS_ORIGNS) {
+    throw new Error("No CORS_ORIGNS env variable");
 }
- */
 
+const corsOrigins = process.env.CORS_ORIGNS.split(";").map(o => o.trim());
 
 export class Main
 {

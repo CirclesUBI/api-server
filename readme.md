@@ -45,6 +45,7 @@ EXTERNAL_DOMAIN='my-domain.com' # Is used for the 'domain' attribute of the sess
 DEBUG=''                        # Optional: If set to any value, the cookie will be sent via non-https connections
 DB_CONNECTION_STRING=''         # A prisma compatible db connection string
 APP_ID=''                       # The app id of this service as registered at the "o-platform/auth-server"
-ACCEPTED_ISSUER                 # The accepted issuer for jwt tokens (usually the url of o-platform/auth-server)
-SESSION_LIIFETIME               # Optional: The lifetime of the session (default: 30 days)
+ACCEPTED_ISSUER=''=''           # The accepted issuer for jwt tokens (usually the url of o-platform/auth-server)
+SESSION_LIIFETIME=''            # Optional: The lifetime of the session (default: 30 days)
+CORS_ORIGNS=''                  # A semicolon separated list of allowed cors origin urls
 ```
