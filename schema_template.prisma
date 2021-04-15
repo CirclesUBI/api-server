@@ -1,0 +1,130 @@
+datasource db {
+    provider = "postgresql"
+    url = "REPLACE_ME_WITH_THE_CONNECTION_STRING"
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+
+model Session {
+  sessionId String @unique
+  // Who is identified by the session?
+  emailAddress String
+  profile Profile? @relation(name: "Session_Profile", fields: [profileId], references: [id])
+  profileId Int?
+  // Which Authoritity issued the JWT that lead to this session?
+  issuedBy String
+  // When the session was created.
+  createdAt DateTime
+  // Usually the session ends when the user closes the browser window/tab (session-cookie)
+  // but there is also a fixed max. session length.
+  // This fields specifies the max. session lifetime in seconds.
+  maxLifetime Int
+}
+
+model Profile {
+    id Int @id @default(autoincrement())
+    emailAddress String
+    @@unique([emailAddress], name:"UX_Profile_EmailAddress")
+
+    circlesAddress String?
+    firstName String?
+    lastName String?
+    avatarCid String?
+    avatarMimeType String?
+
+    sessions Session[]  @relation(name: "Session_Profile")
+    wallets CirclesWallet[]  @relation(name: "CirclesWallet_AddedBy")
+}
+
+model CirclesWallet {
+    address String @id
+
+    addedAt DateTime
+    addedBy Profile @relation(name: "CirclesWallet_AddedBy", fields: [addedById], references: [id])
+    addedById Int
+
+    ownToken CirclesToken? @relation(name: "CirclesToken_Owner")
+
+    knwonTokens CirclesWalletKnownTokens[] @relation(name: "CirclesWalletKnownTokens_Wallet")
+    trustSubject CirclesTrustRelation[] @relation(name: "CirclesTrustRelation_Subject")
+    trustObject CirclesTrustRelation[] @relation(name: "CirclesTrustRelation_Object")
+    transferSubject CirclesTokenTransfer[] @relation(name: "CirclesTokenTransfer_Subject")
+    transferObject CirclesTokenTransfer[] @relation(name: "CirclesTokenTransfer_Object")
+}
+
+model CirclesWalletKnownTokens {
+    id Int @id @default(autoincrement())
+
+    createdAt DateTime
+
+    wallet CirclesWallet @relation(name: "CirclesWalletKnownTokens_Wallet", fields: [walletAddress], references: [address])
+    walletAddress String
+
+    token CirclesToken @relation(name: "CirclesWalletKnownTokens_Token", fields: [tokenAddress], references: [address])
+    tokenAddress String
+}
+
+enum CirclesTrustRelationPredicate {
+    GIVING_TO
+    RECEIVING_FROM
+}
+
+model CirclesTrustRelation {
+    id Int @id @default(autoincrement())
+
+    createdAt DateTime
+    createdInBlockNo Int
+    createdInBlockHash String
+
+    subject CirclesWallet @relation(name: "CirclesTrustRelation_Subject", fields: [subjectAddress], references: [address])
+    subjectAddress String
+
+    predicate CirclesTrustRelationPredicate
+
+    object CirclesWallet @relation(name: "CirclesTrustRelation_Object", fields: [objectAddress], references: [address])
+    objectAddress String
+
+    weight Int // 0-100
+}
+
+model CirclesToken {
+    address String @id
+
+    createdAt DateTime
+    createdInBlockNo Int
+    createdInBlockHash String
+
+    owner CirclesWallet @relation(name: "CirclesToken_Owner", fields: [ownerAddress], references: [address])
+    ownerAddress String
+
+    knownBy CirclesWalletKnownTokens[] @relation(name: "CirclesWalletKnownTokens_Token")
+    transfers CirclesTokenTransfer[] @relation(name: "CirclesTokenTransfer_Token")
+}
+
+enum CirclesTokenTransferPredicate {
+    GIVING_TO
+    RECEIVING_FROM
+}
+
+model CirclesTokenTransfer {
+    id Int @id @default(autoincrement())
+    createdAt DateTime
+    createdInBlockNo Int
+    createdInBlockHash String
+
+    token CirclesToken @relation(name: "CirclesTokenTransfer_Token", fields: [tokenAddress], references: [address])
+    tokenAddress String
+
+    subject CirclesWallet @relation(name: "CirclesTokenTransfer_Subject", fields: [subjectAddress], references: [address])
+    subjectAddress String
+
+    predicate CirclesTokenTransferPredicate
+
+    object CirclesWallet @relation(name: "CirclesTokenTransfer_Object", fields: [objectAddress], references: [address])
+    objectAddress String
+
+    value String
+}

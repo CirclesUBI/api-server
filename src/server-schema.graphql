@@ -1,0 +1,149 @@
+type Server {
+    version:String!
+}
+
+type Profile {
+    id: Int!
+    circlesAddress:String
+    firstName:String
+    lastName:String
+    avatarCid:String
+    avatarMimeType:String
+}
+
+input QueryUniqueProfileInput
+{
+    id: Int!
+}
+
+input QueryProfileInput
+{
+    id: Int!
+    firstName:String
+    lastName:String
+    circlesAddress:String
+}
+
+input UpdateProfileInput
+{
+    id: Int!
+    emailAddress:String
+    circlesAddress:String
+    firstName:String
+    lastName:String
+    avatarCid:String
+    avatarMimeType:String
+}
+
+type CirclesTokenTransfer {
+    id: Int!
+    createdAt: String!
+    createdInBlockNo: Int!
+    createdInBlockHash: String!
+
+    subject: CirclesWallet!
+    predicate: CirclesTokenTransferPredicate!
+    object: CirclesWallet!
+    value: String!
+}
+input AddCirclesTokenTransferInput {
+    createdAt: String!
+    createdInBlockNo: Int!
+    createdInBlockHash: String!
+    subjectAddress: String!
+    predicate: CirclesTokenTransferPredicate!
+    objectAddress: String!
+    transferredToken: String!
+    value: String!
+}
+enum CirclesTokenTransferPredicate {
+    GIVING_TO
+    RECEIVING_FROM
+}
+
+type CirclesTrustRelation {
+    id: Int!
+    createdAt: String
+    createdInBlockNo: Int!
+    createdInBlockHash: String!
+
+    subject: CirclesWallet!
+    predicate: CirclesTrustRelationPredicate!
+    object: CirclesWallet!
+    weight: Int!
+}
+input AddCirclesTrustRelationInput {
+    createdAt: String!
+    createdInBlockNo: Int!
+    createdInBlockHash: String!
+    subjectAddress: String!
+    predicate: CirclesTrustRelationPredicate!
+    objectAddress: String!
+    weight: Int!
+}
+enum CirclesTrustRelationPredicate {
+    GIVING_TO
+    RECEIVING_FROM
+}
+
+type CirclesToken {
+    address: String!
+
+    createdAt: String!
+    createdInBlockNo: Int!
+    createdInBlockHash: String!
+
+    owner: CirclesWallet
+    transfers: [CirclesTokenTransfer!]
+}
+input AddCirclesTokenInput {
+    address: String!
+    ownerAddress: String!
+    createdAt: String!
+    createdInBlockNo: Int!
+    createdInBlockHash: String!
+}
+
+type CirclesWallet {
+    address: String!
+
+    ownToken: CirclesToken
+
+    tokens: [CirclesToken!]
+    transfers: [CirclesTokenTransfer!]
+    trustRelations: [CirclesTrustRelation!]
+}
+
+input AddCirclesWalletInput {
+    address: String!
+    ownToken: AddCirclesTokenInput
+}
+
+input QueryCirclesWalletInput {
+    address: String
+    ownTokenAddress: String
+    trusts: String
+    isTrustedBy: String
+}
+
+type ExchangeTokenResponse {
+    success: Boolean!
+    errorMessage: String
+}
+
+type Query
+{
+    server : Server
+    profiles(query:QueryProfileInput!) : [Profile!]!
+    circlesWallets(query:QueryCirclesWalletInput!):[CirclesWallet!]!
+}
+
+type Mutation
+{
+    exchangeToken(jwt:String!) : ExchangeTokenResponse!
+    upsertProfile(data:UpdateProfileInput!):Profile!
+    addCirclesWallet(data:AddCirclesWalletInput!) : CirclesWallet!
+    addCirclesToken(data:AddCirclesTokenInput!) : CirclesToken!
+    addCirclesTrustRelation(data:AddCirclesTrustRelationInput!) : CirclesTrustRelation!
+    addCirclesTokenTransfer(data:AddCirclesTokenTransferInput!) : CirclesTokenTransfer!
+}
