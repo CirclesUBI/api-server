@@ -15,7 +15,7 @@ jobs:
       - name: Build
         run: ./deploy_prisma.sh
         env:
-          DO_PGSQL_CONNECTIONSTRING: ${{ secrets.DEV_DO_PGSQL_CONNECTIONSTRING }}
+          DO_PGSQL_CONNECTIONSTRING: ${{ secrets.DEV_API_CONNECTION_STRING }}
 
   build-docker-imagee:
     needs: migrate-db
