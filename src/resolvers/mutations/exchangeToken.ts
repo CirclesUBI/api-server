@@ -20,7 +20,8 @@ export function exchangeTokenResolver(prisma:PrismaClient) {
                     httpOnly: true,
                     path: "/",
                     sameSite: true,
-                    secure: !process.env.DEBUG
+                    secure: !process.env.DEBUG,
+                    expires: new Date(Date.now() + session.maxLifetime * 1000).toUTCString()
                 }
             });
 

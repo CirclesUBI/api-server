@@ -47,6 +47,6 @@ CONNECTION_STRING_RW=''         # A prisma compatible db connection string (read
 CONNECTION_STRING_RO=''         # A prisma compatible db connection string (readonly)
 APP_ID=''                       # The app id of this service as registered at the "o-platform/auth-server"
 ACCEPTED_ISSUER=''=''           # The accepted issuer for jwt tokens (usually the url of o-platform/auth-server)
-SESSION_LIIFETIME=''            # Optional: The lifetime of the session (default: 30 days)
+SESSION_LIIFETIME=''            # Optional: The lifetime of the session (in seconds, default: 30 days)
 CORS_ORIGNS=''                  # A semicolon separated list of allowed cors origin urls
 ```
