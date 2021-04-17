@@ -1,11 +1,20 @@
 import {PrismaClient} from "@prisma/client";
 
-const connectionString = process.env.DB_CONNECTION_STRING;
-//console.log(connectionString);
-export const prisma: PrismaClient = new PrismaClient({
+const connectionStringRw = process.env.CONNECTION_STRING_RW;
+export const prisma_rw: PrismaClient = new PrismaClient({
     datasources: {
         db: {
-            url: connectionString
+            url: connectionStringRw
+        }
+    }
+});
+
+
+const connectionStringRo = process.env.CONNECTION_STRING_RO;
+export const prisma_ro: PrismaClient = new PrismaClient({
+    datasources: {
+        db: {
+            url: connectionStringRo
         }
     }
 });

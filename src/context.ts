@@ -2,7 +2,7 @@ import {ExecutionParams} from "subscriptions-transport-ws";
 import {Request} from "express";
 import {Session as PrismaSession} from "@prisma/client";
 import {Session} from "./session";
-import {prisma} from "./prismaClient";
+import {prisma_rw} from "./prismaClient";
 
 export class Context {
     readonly isSubscription: boolean;
@@ -55,7 +55,7 @@ export class Context {
         if (!this.sessionId)
             throw new Error("No session id on context.");
 
-        const validSession = await Session.findSessionBySessionId(prisma, this.sessionId)
+        const validSession = await Session.findSessionBySessionId(prisma_rw, this.sessionId)
         if (!validSession)
             throw new Error("No session could be found for the supplied sessionId");
 
