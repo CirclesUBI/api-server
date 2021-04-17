@@ -145,8 +145,10 @@ export type Profile = {
   __typename?: 'Profile';
   id: Scalars['Int'];
   circlesAddress?: Maybe<Scalars['String']>;
-  firstName?: Maybe<Scalars['String']>;
+  firstName: Scalars['String'];
   lastName?: Maybe<Scalars['String']>;
+  dream: Scalars['String'];
+  country?: Maybe<Scalars['String']>;
   avatarCid?: Maybe<Scalars['String']>;
   avatarMimeType?: Maybe<Scalars['String']>;
 };
@@ -176,9 +178,10 @@ export type QueryCirclesWalletInput = {
 };
 
 export type QueryProfileInput = {
-  id: Scalars['Int'];
+  id?: Maybe<Scalars['Int']>;
   firstName?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
   circlesAddress?: Maybe<Scalars['String']>;
 };
 
@@ -193,10 +196,11 @@ export type Server = {
 
 export type UpdateProfileInput = {
   id: Scalars['Int'];
+  firstName: Scalars['String'];
+  dream: Scalars['String'];
+  lastName?: Maybe<Scalars['String']>;
   emailAddress?: Maybe<Scalars['String']>;
   circlesAddress?: Maybe<Scalars['String']>;
-  firstName?: Maybe<Scalars['String']>;
-  lastName?: Maybe<Scalars['String']>;
   avatarCid?: Maybe<Scalars['String']>;
   avatarMimeType?: Maybe<Scalars['String']>;
 };
@@ -389,8 +393,10 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 export type ProfileResolvers<ContextType = any, ParentType extends ResolversParentTypes['Profile'] = ResolversParentTypes['Profile']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   circlesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  dream?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  country?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarCid?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarMimeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

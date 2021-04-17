@@ -5,8 +5,10 @@ type Server {
 type Profile {
     id: Int!
     circlesAddress:String
-    firstName:String
+    firstName:String!
     lastName:String
+    dream:String!
+    country:String
     avatarCid:String
     avatarMimeType:String
 }
@@ -18,19 +20,21 @@ input QueryUniqueProfileInput
 
 input QueryProfileInput
 {
-    id: Int!
+    id: Int
     firstName:String
     lastName:String
+    country:String
     circlesAddress:String
 }
 
 input UpdateProfileInput
 {
     id: Int!
+    firstName:String!
+    dream: String!
+    lastName:String
     emailAddress:String
     circlesAddress:String
-    firstName:String
-    lastName:String
     avatarCid:String
     avatarMimeType:String
 }

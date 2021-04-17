@@ -47,6 +47,38 @@ var Client = (function () {
         this._issuer = issuer;
         this._appId = appId;
     }
+    Client.getKey = function (kid) {
+        return __awaiter(this, void 0, void 0, function () {
+            var downloadedKey, minLastUsed_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        Client._cacheLookupCounter++;
+                        if (Client._keyCache[kid]) {
+                            Client._keyCache[kid].lastUsed = new Date();
+                            return [2, Client._keyCache[kid].key];
+                        }
+                        return [4, cross_fetch_1.default(kid).then(function (data) { return data.json(); })];
+                    case 1:
+                        downloadedKey = _a.sent();
+                        if (Client._cacheLookupCounter % Client._cacheCleanupAfterXLookups == 0) {
+                            Client._cacheLookupCounter = 0;
+                            minLastUsed_1 = Date.now() - Client._maxCacheAgeInMs;
+                            Object.keys(Client._keyCache).forEach(function (kid) {
+                                if (Client._keyCache[kid].lastUsed.getTime() < minLastUsed_1) {
+                                    delete Client._keyCache[kid];
+                                }
+                            });
+                        }
+                        Client._keyCache[kid] = {
+                            lastUsed: new Date(),
+                            key: downloadedKey
+                        };
+                        return [2, downloadedKey];
+                }
+            });
+        });
+    };
     Client.prototype.verify = function (jwt) {
         return __awaiter(this, void 0, void 0, function () {
             var tokenPayload, kid, key, pubKey, verifiedPayload, iss, aud, audAppId, sub;
@@ -59,7 +91,7 @@ var Client = (function () {
                         kid = tokenPayload.kid;
                         if (!kid)
                             throw new Error("No key id (kid) claim.");
-                        return [4, cross_fetch_1.default(kid).then(function (data) { return data.json(); })];
+                        return [4, Client.getKey(kid)];
                     case 1:
                         key = _a.sent();
                         pubKey = key.data.keys.publicKey;
@@ -87,6 +119,10 @@ var Client = (function () {
             });
         });
     };
+    Client._cacheLookupCounter = 0;
+    Client._maxCacheAgeInMs = 1000 * 60 * 60 * 24;
+    Client._cacheCleanupAfterXLookups = 1000;
+    Client._keyCache = {};
     return Client;
 }());
 exports.Client = Client;

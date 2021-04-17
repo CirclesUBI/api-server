@@ -30,10 +30,12 @@ model Profile {
     @@unique([emailAddress], name:"UX_Profile_EmailAddress")
 
     circlesAddress String?
-    firstName String?
+    firstName String
     lastName String?
     avatarCid String?
     avatarMimeType String?
+    dream String
+    country String?
 
     sessions Session[]  @relation(name: "Session_Profile")
     wallets CirclesWallet[]  @relation(name: "CirclesWallet_AddedBy")
