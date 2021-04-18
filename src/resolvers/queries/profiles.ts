@@ -1,7 +1,8 @@
 import {QueryProfilesArgs, RequireFields} from "../../types";
 import {PrismaClient} from "@prisma/client";
+import {Context} from "../../context";
 
-export function whereProfile(args: RequireFields<QueryProfilesArgs, never>) {
+export async function whereProfile(args: RequireFields<QueryProfilesArgs, never>, context:Context) {
     const q: { [key: string]: any } = {};
     if (!args.query) {
         throw new Error(`No query fields have been specified`);
@@ -20,14 +21,18 @@ export function whereProfile(args: RequireFields<QueryProfilesArgs, never>) {
         });
 
     if (Object.keys(q).length === 0) {
-        throw new Error(`At least one query field must be specified.`);
+        const session = await context.verifySession();
+        q["id"] = session.profileId;
+        if (!q["id"]) {
+            throw new Error(`At least one query field must be specified.`);
+        }
     }
     return q;
 }
 
 export function profilesResolver(prisma:PrismaClient) {
-    return async (parent:any, args:QueryProfilesArgs) => {
-        const q = whereProfile(args);
+    return async (parent:any, args:QueryProfilesArgs, context:Context) => {
+        const q = await whereProfile(args, context);
         return await prisma.profile.findMany({
             where: {
                 ...q
