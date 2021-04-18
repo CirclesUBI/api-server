@@ -210,8 +210,9 @@ export type Server = {
 export type UpsertProfileInput = {
   id?: Maybe<Scalars['Int']>;
   firstName: Scalars['String'];
-  dream: Scalars['String'];
   lastName?: Maybe<Scalars['String']>;
+  dream: Scalars['String'];
+  coundtry?: Maybe<Scalars['String']>;
   emailAddress?: Maybe<Scalars['String']>;
   circlesAddress?: Maybe<Scalars['String']>;
   avatarCid?: Maybe<Scalars['String']>;

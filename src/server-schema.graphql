@@ -31,8 +31,9 @@ input UpsertProfileInput
 {
     id: Int
     firstName:String!
-    dream: String!
     lastName:String
+    dream: String!
+    coundtry: String
     emailAddress:String
     circlesAddress:String
     avatarCid:String
