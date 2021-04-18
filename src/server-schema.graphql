@@ -145,10 +145,15 @@ type HasValidSessionResponse {
     success: Boolean!
 }
 
+type HasProfileResponse {
+    success: Boolean!
+}
+
 type Query
 {
     server : Server
     hasValidSession: HasValidSessionResponse!
+    hasProfile: HasProfileResponse!
     profiles(query:QueryProfileInput!) : [Profile!]!
     circlesWallets(query:QueryCirclesWalletInput!):[CirclesWallet!]!
 }
