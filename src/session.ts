@@ -30,7 +30,7 @@ export class Session
             }
         });
 
-        if (!session)
+        if (!session || session.endedAt)
         {
             return null;
         }

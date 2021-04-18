@@ -106,6 +106,11 @@ export type ExchangeTokenResponse = {
   errorMessage?: Maybe<Scalars['String']>;
 };
 
+export type HasValidSessionResponse = {
+  __typename?: 'HasValidSessionResponse';
+  success: Scalars['Boolean'];
+};
+
 export type LogoutResponse = {
   __typename?: 'LogoutResponse';
   success: Scalars['Boolean'];
@@ -163,6 +168,7 @@ export type Profile = {
 export type Query = {
   __typename?: 'Query';
   server?: Maybe<Server>;
+  hasValidSession: HasValidSessionResponse;
   profiles: Array<Profile>;
   circlesWallets: Array<CirclesWallet>;
 };
@@ -305,6 +311,7 @@ export type ResolversTypes = ResolversObject<{
   CirclesWallet: ResolverTypeWrapper<CirclesWallet>;
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  HasValidSessionResponse: ResolverTypeWrapper<HasValidSessionResponse>;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
   Mutation: ResolverTypeWrapper<{}>;
   Profile: ResolverTypeWrapper<Profile>;
@@ -330,6 +337,7 @@ export type ResolversParentTypes = ResolversObject<{
   CirclesWallet: CirclesWallet;
   ExchangeTokenResponse: ExchangeTokenResponse;
   Boolean: Scalars['Boolean'];
+  HasValidSessionResponse: HasValidSessionResponse;
   LogoutResponse: LogoutResponse;
   Mutation: {};
   Profile: Profile;
@@ -390,6 +398,11 @@ export type ExchangeTokenResponseResolvers<ContextType = any, ParentType extends
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type HasValidSessionResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['HasValidSessionResponse'] = ResolversParentTypes['HasValidSessionResponse']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type LogoutResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['LogoutResponse'] = ResolversParentTypes['LogoutResponse']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -420,6 +433,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   server?: Resolver<Maybe<ResolversTypes['Server']>, ParentType, ContextType>;
+  hasValidSession?: Resolver<ResolversTypes['HasValidSessionResponse'], ParentType, ContextType>;
   profiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesArgs, 'query'>>;
   circlesWallets?: Resolver<Array<ResolversTypes['CirclesWallet']>, ParentType, ContextType, RequireFields<QueryCirclesWalletsArgs, 'query'>>;
 }>;
@@ -435,6 +449,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   CirclesTrustRelation?: CirclesTrustRelationResolvers<ContextType>;
   CirclesWallet?: CirclesWalletResolvers<ContextType>;
   ExchangeTokenResponse?: ExchangeTokenResponseResolvers<ContextType>;
+  HasValidSessionResponse?: HasValidSessionResponseResolvers<ContextType>;
   LogoutResponse?: LogoutResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Profile?: ProfileResolvers<ContextType>;

@@ -140,9 +140,14 @@ type LogoutResponse {
     errorMessage: String
 }
 
+type HasValidSessionResponse {
+    success: Boolean!
+}
+
 type Query
 {
     server : Server
+    hasValidSession: HasValidSessionResponse!
     profiles(query:QueryProfileInput!) : [Profile!]!
     circlesWallets(query:QueryCirclesWalletInput!):[CirclesWallet!]!
 }
