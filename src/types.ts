@@ -212,7 +212,7 @@ export type UpsertProfileInput = {
   firstName: Scalars['String'];
   lastName?: Maybe<Scalars['String']>;
   dream: Scalars['String'];
-  coundtry?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
   emailAddress?: Maybe<Scalars['String']>;
   circlesAddress?: Maybe<Scalars['String']>;
   avatarCid?: Maybe<Scalars['String']>;

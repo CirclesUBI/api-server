@@ -33,7 +33,7 @@ input UpsertProfileInput
     firstName:String!
     lastName:String
     dream: String!
-    coundtry: String
+    country: String
     emailAddress:String
     circlesAddress:String
     avatarCid:String
