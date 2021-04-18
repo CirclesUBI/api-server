@@ -6,16 +6,14 @@ import {Resolvers} from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {circlesWalletsResolver} from "./queries/circlesWallets";
 import {logout} from "./mutations/logout";
-import {hasValidSessionResolver} from "./queries/hasValidSession";
-import {hasProfileResolver} from "./queries/hasProfilen";
+import {sessionInfo} from "./queries/sessionInfo";
 
 export const resolvers: Resolvers = {
     Query: {
         server: serverResolver,
         profiles: profilesResolver(prisma_ro),
         circlesWallets: circlesWalletsResolver(prisma_ro),
-        hasProfile: hasProfileResolver,
-        hasValidSession: hasValidSessionResolver
+        sessionInfo: sessionInfo
     },
     Mutation: {
         exchangeToken: exchangeTokenResolver(prisma_rw),
