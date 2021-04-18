@@ -5,6 +5,7 @@ import {prisma_ro, prisma_rw} from "../prismaClient";
 import {Resolvers} from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {circlesWalletsResolver} from "./queries/circlesWallets";
+import {logout} from "./mutations/logout";
 
 export const resolvers: Resolvers = {
     Query: {
@@ -14,6 +15,7 @@ export const resolvers: Resolvers = {
     },
     Mutation: {
         exchangeToken: exchangeTokenResolver(prisma_rw),
+        logout: logout(prisma_rw),
         upsertProfile: upsertProfileResolver(prisma_rw)
     }
 };

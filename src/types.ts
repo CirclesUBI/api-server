@@ -106,9 +106,16 @@ export type ExchangeTokenResponse = {
   errorMessage?: Maybe<Scalars['String']>;
 };
 
+export type LogoutResponse = {
+  __typename?: 'LogoutResponse';
+  success: Scalars['Boolean'];
+  errorMessage?: Maybe<Scalars['String']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   exchangeToken: ExchangeTokenResponse;
+  logout: LogoutResponse;
   upsertProfile: Profile;
   addCirclesWallet: CirclesWallet;
   addCirclesToken: CirclesToken;
@@ -298,6 +305,7 @@ export type ResolversTypes = ResolversObject<{
   CirclesWallet: ResolverTypeWrapper<CirclesWallet>;
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
   Mutation: ResolverTypeWrapper<{}>;
   Profile: ResolverTypeWrapper<Profile>;
   Query: ResolverTypeWrapper<{}>;
@@ -322,6 +330,7 @@ export type ResolversParentTypes = ResolversObject<{
   CirclesWallet: CirclesWallet;
   ExchangeTokenResponse: ExchangeTokenResponse;
   Boolean: Scalars['Boolean'];
+  LogoutResponse: LogoutResponse;
   Mutation: {};
   Profile: Profile;
   Query: {};
@@ -381,8 +390,15 @@ export type ExchangeTokenResponseResolvers<ContextType = any, ParentType extends
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type LogoutResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['LogoutResponse'] = ResolversParentTypes['LogoutResponse']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   exchangeToken?: Resolver<ResolversTypes['ExchangeTokenResponse'], ParentType, ContextType>;
+  logout?: Resolver<ResolversTypes['LogoutResponse'], ParentType, ContextType>;
   upsertProfile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType, RequireFields<MutationUpsertProfileArgs, 'data'>>;
   addCirclesWallet?: Resolver<ResolversTypes['CirclesWallet'], ParentType, ContextType, RequireFields<MutationAddCirclesWalletArgs, 'data'>>;
   addCirclesToken?: Resolver<ResolversTypes['CirclesToken'], ParentType, ContextType, RequireFields<MutationAddCirclesTokenArgs, 'data'>>;
@@ -419,6 +435,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   CirclesTrustRelation?: CirclesTrustRelationResolvers<ContextType>;
   CirclesWallet?: CirclesWalletResolvers<ContextType>;
   ExchangeTokenResponse?: ExchangeTokenResponseResolvers<ContextType>;
+  LogoutResponse?: LogoutResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Profile?: ProfileResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;

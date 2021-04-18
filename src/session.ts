@@ -9,6 +9,19 @@ export class Session
         return crypto.randomBytes(length).toString('base64').substr(0, length);
     }
 
+    static async logoout(prisma:PrismaClient, sessionIs:string)
+    {
+        return await prisma.session.update({
+            where: {
+                sessionId: sessionIs
+            },
+            data: {
+                endedAt: new Date(),
+                endReason: "logout"
+            }
+        });
+    }
+
     static async findSessionBySessionId(prisma:PrismaClient, sessionId: string)
     {
         const session = await prisma.session.findUnique({

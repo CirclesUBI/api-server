@@ -135,6 +135,11 @@ type ExchangeTokenResponse {
     errorMessage: String
 }
 
+type LogoutResponse {
+    success: Boolean!
+    errorMessage: String
+}
+
 type Query
 {
     server : Server
@@ -145,6 +150,7 @@ type Query
 type Mutation
 {
     exchangeToken : ExchangeTokenResponse!
+    logout: LogoutResponse!
     upsertProfile(data:UpdateProfileInput!):Profile!
     addCirclesWallet(data:AddCirclesWalletInput!) : CirclesWallet!
     addCirclesToken(data:AddCirclesTokenInput!) : CirclesToken!

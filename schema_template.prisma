@@ -18,6 +18,8 @@ model Session {
   issuedBy String
   // When the session was created.
   createdAt DateTime
+  endedAt DateTime?
+  endReason String?
   // Usually the session ends when the user closes the browser window/tab (session-cookie)
   // but there is also a fixed max. session length.
   // This fields specifies the max. session lifetime in seconds.
