@@ -27,9 +27,9 @@ input QueryProfileInput
     circlesAddress:String
 }
 
-input UpdateProfileInput
+input UpsertProfileInput
 {
-    id: Int!
+    id: Int
     firstName:String!
     dream: String!
     lastName:String
@@ -156,7 +156,7 @@ type Mutation
 {
     exchangeToken : ExchangeTokenResponse!
     logout: LogoutResponse!
-    upsertProfile(data:UpdateProfileInput!):Profile!
+    upsertProfile(data:UpsertProfileInput!):Profile!
     addCirclesWallet(data:AddCirclesWalletInput!) : CirclesWallet!
     addCirclesToken(data:AddCirclesTokenInput!) : CirclesToken!
     addCirclesTrustRelation(data:AddCirclesTrustRelationInput!) : CirclesTrustRelation!

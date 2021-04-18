@@ -1,6 +1,7 @@
 # o-platform/api-server
 
 ## Api-Schema:
+
 ```graphql
 type Query
 {
@@ -12,7 +13,7 @@ type Query
 type Mutation
 {
     exchangeToken : ExchangeTokenResponse!
-    upsertProfile(data:UpdateProfileInput!):Profile!
+    upsertProfile(data:UpsertProfileInput!):Profile!
     addCirclesWallet(data:AddCirclesWalletInput!) : CirclesWallet!
     addCirclesToken(data:AddCirclesTokenInput!) : CirclesToken!
     addCirclesTrustRelation(data:AddCirclesTrustRelationInput!) : CirclesTrustRelation!

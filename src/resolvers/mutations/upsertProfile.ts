@@ -12,6 +12,7 @@ export function upsertProfileResolver(prisma:PrismaClient) {
                 },
                 data: {
                     ...args.data,
+                    id: args.data.id,
                     emailAddress: session.emailAddress
                 }
             });
@@ -19,6 +20,7 @@ export function upsertProfileResolver(prisma:PrismaClient) {
             return await prisma.profile.create({
                 data: {
                     ...args.data,
+                    id: undefined,
                     emailAddress: session.emailAddress
                 }
             });

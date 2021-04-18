@@ -130,7 +130,7 @@ export type Mutation = {
 
 
 export type MutationUpsertProfileArgs = {
-  data: UpdateProfileInput;
+  data: UpsertProfileInput;
 };
 
 
@@ -207,8 +207,8 @@ export type Server = {
   version: Scalars['String'];
 };
 
-export type UpdateProfileInput = {
-  id: Scalars['Int'];
+export type UpsertProfileInput = {
+  id?: Maybe<Scalars['Int']>;
   firstName: Scalars['String'];
   dream: Scalars['String'];
   lastName?: Maybe<Scalars['String']>;
@@ -320,7 +320,7 @@ export type ResolversTypes = ResolversObject<{
   QueryProfileInput: QueryProfileInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   Server: ResolverTypeWrapper<Server>;
-  UpdateProfileInput: UpdateProfileInput;
+  UpsertProfileInput: UpsertProfileInput;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -346,7 +346,7 @@ export type ResolversParentTypes = ResolversObject<{
   QueryProfileInput: QueryProfileInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   Server: Server;
-  UpdateProfileInput: UpdateProfileInput;
+  UpsertProfileInput: UpsertProfileInput;
 }>;
 
 export type CirclesTokenResolvers<ContextType = any, ParentType extends ResolversParentTypes['CirclesToken'] = ResolversParentTypes['CirclesToken']> = ResolversObject<{
