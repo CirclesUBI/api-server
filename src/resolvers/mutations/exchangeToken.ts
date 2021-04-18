@@ -14,14 +14,13 @@ export function exchangeTokenResolver(prisma:PrismaClient) {
             context.setCookies.push({
                 name: "session",
                 value: session.sessionId,
-                // Use a session cookie that should only last for the one browser session
                 options: {
                     domain: process.env.EXTERNAL_DOMAIN,
                     httpOnly: true,
                     path: "/",
                     sameSite: true,
                     secure: !process.env.DEBUG,
-                    expires: new Date(Date.now() + session.maxLifetime * 1000).toUTCString()
+                    expires: new Date(Date.now() + session.maxLifetime * 1000)
                 }
             });
 
