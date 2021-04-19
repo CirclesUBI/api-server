@@ -86,8 +86,12 @@ var Client = (function () {
                 switch (_a.label) {
                     case 0:
                         tokenPayload = jsonwebtoken_1.default.decode(jwt);
-                        if (typeof tokenPayload !== "object")
+                        if (!tokenPayload
+                            || !tokenPayload.iss
+                            || !tokenPayload.sub
+                            || !tokenPayload.aud) {
                             throw new Error("Couldn't decode the jwt");
+                        }
                         kid = tokenPayload.kid;
                         if (!kid)
                             throw new Error("No key id (kid) claim.");

@@ -1,12 +1,14 @@
 import {PrismaClient} from "@prisma/client";
-import {MutationUpsertProfileArgs} from "../../types";
+import {MutationUpsertProfileArgs, Profile} from "../../types";
 import {Context} from "../../context";
+import {Session} from "../../session";
 
-export function upsertProfileResolver(prisma:PrismaClient) {
+export function upsertProfileResolver(prisma_rw:PrismaClient) {
     return async (parent:any, args:MutationUpsertProfileArgs, context:Context) => {
         const session = await context.verifySession();
+        let profile:Profile;
         if (args.data.id) {
-            return await prisma.profile.update({
+            profile = await prisma_rw.profile.update({
                 where: {
                     id: args.data.id
                 },
@@ -17,7 +19,7 @@ export function upsertProfileResolver(prisma:PrismaClient) {
                 }
             });
         } else {
-            return await prisma.profile.create({
+            profile = await prisma_rw.profile.create({
                 data: {
                     ...args.data,
                     id: undefined,
@@ -25,5 +27,7 @@ export function upsertProfileResolver(prisma:PrismaClient) {
                 }
             });
         }
+        await Session.assignProfile(prisma_rw, session.sessionId, profile.id);
+        return profile;
     };
 }

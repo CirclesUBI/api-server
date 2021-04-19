@@ -42,10 +42,11 @@ export class Context {
         }
 
         let sessionId:string|undefined = undefined;
-        const cookieValueStartIndex = cookieValue?.indexOf("=");
-        if(cookieValueStartIndex && cookieValue && cookieValue.substr(0, cookieValueStartIndex) == "session") {
-            sessionId = decodeURIComponent(cookieValue.substring(cookieValueStartIndex + 1));
-            console.log("sessionId: " + sessionId);
+        if (cookieValue) {
+            const cookies = cookieValue.split(";").map(o => o.trim().split("=")).reduce((p:{[key:string]:any},c) => { p[c[0]] = c[1]; return p}, {});
+            if (cookies["session"]) {
+                sessionId = decodeURIComponent(cookies["session"]);
+            }
         }
 
         return new Context(isSubscription, authorizationHeaderValue, originHeaderValue, sessionId);

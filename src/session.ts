@@ -87,4 +87,11 @@ export class Session
 
         return session;
     }
+
+    static async assignProfile(prisma_rw:PrismaClient, sessionId: string, profileId: number) {
+        await prisma_rw.session.update({
+            where: {sessionId: sessionId},
+            data: {profileId: profileId}
+        });
+    }
 }

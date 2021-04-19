@@ -18,7 +18,7 @@ export function exchangeTokenResolver(prisma:PrismaClient) {
                     domain: process.env.EXTERNAL_DOMAIN,
                     httpOnly: true,
                     path: "/",
-                    sameSite: "None",
+                    sameSite: process.env.DEBUG ? "Strict" : "None",
                     secure: !process.env.DEBUG,
                     expires: new Date(Date.now() + session.maxLifetime * 1000)
                 }
