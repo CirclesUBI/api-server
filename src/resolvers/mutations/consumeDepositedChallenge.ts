@@ -17,7 +17,7 @@ export function consumeDepositedChallengeResolver(prisma:PrismaClient) {
         if (!depositedChallenge) {
             throw new Error(`Couldn't find a deposited challenge with delegateAuthCode '${args.delegateAuthCode}'.`);
         }
-        if (!depositedChallenge.challengeValidTo || depositedChallenge.challengeValidTo >= now || depositedChallenge.challengedReadAt) {
+        if (!depositedChallenge.challengeValidTo || depositedChallenge.challengeValidTo <= now || depositedChallenge.challengedReadAt) {
             throw new Error(`The deposited challenge for delegateAuthCode '${args.delegateAuthCode}' isn't valid anymore.`);
         }
         if (depositedChallenge.sessionId != session.sessionId) {
