@@ -100,6 +100,32 @@ export type CirclesWallet = {
   trustRelations?: Maybe<Array<CirclesTrustRelation>>;
 };
 
+export type ConsumeDepositedChallengeResponse = {
+  __typename?: 'ConsumeDepositedChallengeResponse';
+  success: Scalars['Boolean'];
+  challenge?: Maybe<Scalars['String']>;
+};
+
+export type DelegateAuthInit = {
+  __typename?: 'DelegateAuthInit';
+  appId: Scalars['String'];
+  success: Scalars['Boolean'];
+  errorMessage?: Maybe<Scalars['String']>;
+  challengeType?: Maybe<Scalars['String']>;
+  delegateAuthCode?: Maybe<Scalars['String']>;
+  validTo?: Maybe<Scalars['String']>;
+};
+
+export type DepositChallenge = {
+  jwt: Scalars['String'];
+};
+
+export type DepositChallengeResponse = {
+  __typename?: 'DepositChallengeResponse';
+  success: Scalars['Boolean'];
+  errorMessage?: Maybe<Scalars['String']>;
+};
+
 export type ExchangeTokenResponse = {
   __typename?: 'ExchangeTokenResponse';
   success: Scalars['Boolean'];
@@ -115,12 +141,30 @@ export type LogoutResponse = {
 export type Mutation = {
   __typename?: 'Mutation';
   exchangeToken: ExchangeTokenResponse;
+  authenticateAt: DelegateAuthInit;
+  depositChallenge: DepositChallengeResponse;
+  consumeDepositedChallenge: ConsumeDepositedChallengeResponse;
   logout: LogoutResponse;
   upsertProfile: Profile;
   addCirclesWallet: CirclesWallet;
   addCirclesToken: CirclesToken;
   addCirclesTrustRelation: CirclesTrustRelation;
   addCirclesTokenTransfer: CirclesTokenTransfer;
+};
+
+
+export type MutationAuthenticateAtArgs = {
+  appId: Scalars['String'];
+};
+
+
+export type MutationDepositChallengeArgs = {
+  jwt: Scalars['String'];
+};
+
+
+export type MutationConsumeDepositedChallengeArgs = {
+  delegateAuthCode: Scalars['String'];
 };
 
 
@@ -162,7 +206,7 @@ export type Profile = {
 
 export type Query = {
   __typename?: 'Query';
-  server: Server;
+  version: Version;
   sessionInfo: SessionInfo;
   profiles: Array<Profile>;
   circlesWallets: Array<CirclesWallet>;
@@ -219,6 +263,13 @@ export type UpsertProfileInput = {
   circlesAddress?: Maybe<Scalars['String']>;
   avatarCid?: Maybe<Scalars['String']>;
   avatarMimeType?: Maybe<Scalars['String']>;
+};
+
+export type Version = {
+  __typename?: 'Version';
+  major: Scalars['Int'];
+  minor: Scalars['Int'];
+  revision: Scalars['Int'];
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -312,8 +363,12 @@ export type ResolversTypes = ResolversObject<{
   CirclesTrustRelation: ResolverTypeWrapper<CirclesTrustRelation>;
   CirclesTrustRelationPredicate: CirclesTrustRelationPredicate;
   CirclesWallet: ResolverTypeWrapper<CirclesWallet>;
-  ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
+  ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  DelegateAuthInit: ResolverTypeWrapper<DelegateAuthInit>;
+  DepositChallenge: DepositChallenge;
+  DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
+  ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
   Mutation: ResolverTypeWrapper<{}>;
   Profile: ResolverTypeWrapper<Profile>;
@@ -324,6 +379,7 @@ export type ResolversTypes = ResolversObject<{
   Server: ResolverTypeWrapper<Server>;
   SessionInfo: ResolverTypeWrapper<SessionInfo>;
   UpsertProfileInput: UpsertProfileInput;
+  Version: ResolverTypeWrapper<Version>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -338,8 +394,12 @@ export type ResolversParentTypes = ResolversObject<{
   CirclesTokenTransfer: CirclesTokenTransfer;
   CirclesTrustRelation: CirclesTrustRelation;
   CirclesWallet: CirclesWallet;
-  ExchangeTokenResponse: ExchangeTokenResponse;
+  ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
   Boolean: Scalars['Boolean'];
+  DelegateAuthInit: DelegateAuthInit;
+  DepositChallenge: DepositChallenge;
+  DepositChallengeResponse: DepositChallengeResponse;
+  ExchangeTokenResponse: ExchangeTokenResponse;
   LogoutResponse: LogoutResponse;
   Mutation: {};
   Profile: Profile;
@@ -350,6 +410,7 @@ export type ResolversParentTypes = ResolversObject<{
   Server: Server;
   SessionInfo: SessionInfo;
   UpsertProfileInput: UpsertProfileInput;
+  Version: Version;
 }>;
 
 export type CirclesTokenResolvers<ContextType = any, ParentType extends ResolversParentTypes['CirclesToken'] = ResolversParentTypes['CirclesToken']> = ResolversObject<{
@@ -395,6 +456,28 @@ export type CirclesWalletResolvers<ContextType = any, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ConsumeDepositedChallengeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['ConsumeDepositedChallengeResponse'] = ResolversParentTypes['ConsumeDepositedChallengeResponse']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  challenge?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type DelegateAuthInitResolvers<ContextType = any, ParentType extends ResolversParentTypes['DelegateAuthInit'] = ResolversParentTypes['DelegateAuthInit']> = ResolversObject<{
+  appId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  challengeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  delegateAuthCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  validTo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type DepositChallengeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DepositChallengeResponse'] = ResolversParentTypes['DepositChallengeResponse']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type ExchangeTokenResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['ExchangeTokenResponse'] = ResolversParentTypes['ExchangeTokenResponse']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -409,6 +492,9 @@ export type LogoutResponseResolvers<ContextType = any, ParentType extends Resolv
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   exchangeToken?: Resolver<ResolversTypes['ExchangeTokenResponse'], ParentType, ContextType>;
+  authenticateAt?: Resolver<ResolversTypes['DelegateAuthInit'], ParentType, ContextType, RequireFields<MutationAuthenticateAtArgs, 'appId'>>;
+  depositChallenge?: Resolver<ResolversTypes['DepositChallengeResponse'], ParentType, ContextType, RequireFields<MutationDepositChallengeArgs, 'jwt'>>;
+  consumeDepositedChallenge?: Resolver<ResolversTypes['ConsumeDepositedChallengeResponse'], ParentType, ContextType, RequireFields<MutationConsumeDepositedChallengeArgs, 'delegateAuthCode'>>;
   logout?: Resolver<ResolversTypes['LogoutResponse'], ParentType, ContextType>;
   upsertProfile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType, RequireFields<MutationUpsertProfileArgs, 'data'>>;
   addCirclesWallet?: Resolver<ResolversTypes['CirclesWallet'], ParentType, ContextType, RequireFields<MutationAddCirclesWalletArgs, 'data'>>;
@@ -430,7 +516,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  server?: Resolver<ResolversTypes['Server'], ParentType, ContextType>;
+  version?: Resolver<ResolversTypes['Version'], ParentType, ContextType>;
   sessionInfo?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
   profiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesArgs, 'query'>>;
   circlesWallets?: Resolver<Array<ResolversTypes['CirclesWallet']>, ParentType, ContextType, RequireFields<QueryCirclesWalletsArgs, 'query'>>;
@@ -448,11 +534,21 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type VersionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Version'] = ResolversParentTypes['Version']> = ResolversObject<{
+  major?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  minor?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  revision?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type Resolvers<ContextType = any> = ResolversObject<{
   CirclesToken?: CirclesTokenResolvers<ContextType>;
   CirclesTokenTransfer?: CirclesTokenTransferResolvers<ContextType>;
   CirclesTrustRelation?: CirclesTrustRelationResolvers<ContextType>;
   CirclesWallet?: CirclesWalletResolvers<ContextType>;
+  ConsumeDepositedChallengeResponse?: ConsumeDepositedChallengeResponseResolvers<ContextType>;
+  DelegateAuthInit?: DelegateAuthInitResolvers<ContextType>;
+  DepositChallengeResponse?: DepositChallengeResponseResolvers<ContextType>;
   ExchangeTokenResponse?: ExchangeTokenResponseResolvers<ContextType>;
   LogoutResponse?: LogoutResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
@@ -460,6 +556,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Query?: QueryResolvers<ContextType>;
   Server?: ServerResolvers<ContextType>;
   SessionInfo?: SessionInfoResolvers<ContextType>;
+  Version?: VersionResolvers<ContextType>;
 }>;
 
 

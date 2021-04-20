@@ -6,7 +6,7 @@ export function logout(prisma_rw:PrismaClient) {
     return async (parent: any, args: any, context: Context) => {
         try {
             const session = await context.verifySession();
-            const loggedOutSession = await Session.logoout(prisma_rw, session.sessionId);
+            const loggedOutSession = await Session.logout(prisma_rw, session.sessionId);
             /// See https://www.npmjs.com/package/apollo-server-plugin-http-headers for the magic that happens below ;)
             context.setCookies.push({
                 name: "session",
@@ -15,8 +15,9 @@ export function logout(prisma_rw:PrismaClient) {
                     domain: process.env.EXTERNAL_DOMAIN,
                     httpOnly: true,
                     path: "/",
-                    sameSite: false,
+                    sameSite: process.env.DEBUG ? "Strict" : "None",
                     secure: !process.env.DEBUG,
+                    maxAge: 0,
                     expires: loggedOutSession.endedAt
                 }
             });

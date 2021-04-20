@@ -4,16 +4,16 @@ import crypto from "crypto";
 
 export class Session
 {
-    static generateRandomBase64String(length:number)
+    public static generateRandomBase64String(length:number)
     {
         return crypto.randomBytes(length).toString('base64').substr(0, length);
     }
 
-    static async logoout(prisma:PrismaClient, sessionIs:string)
+    static async logout(prisma:PrismaClient, sessionId:string)
     {
         return await prisma.session.update({
             where: {
-                sessionId: sessionIs
+                sessionId: sessionId
             },
             data: {
                 endedAt: new Date(),
@@ -55,16 +55,11 @@ export class Session
         if (!process.env.APP_ID) {
             throw new Error('process.env.APP_ID is not set')
         }
-
         if (!process.env.ACCEPTED_ISSUER) {
             throw new Error('process.env.ACCEPTED_ISSUER is not set')
         }
-        const authority = {
-            appId: process.env.APP_ID,
-            issuer:  process.env.ACCEPTED_ISSUER,
-        };
 
-        const authClient = new Client(authority.appId, authority.issuer);
+        const authClient = new Client(process.env.APP_ID, process.env.ACCEPTED_ISSUER);
         const tokenPayload = await authClient.verify(jwt);
         if (!tokenPayload)
         {

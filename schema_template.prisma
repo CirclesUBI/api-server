@@ -132,3 +132,17 @@ model CirclesTokenTransfer {
 
     value String
 }
+
+model DelegatedChallenges {
+    id Int @id @default(autoincrement())
+    createdAt DateTime
+    appId String
+    sessionId String
+    requestValidTo DateTime
+    delegateAuthCode String
+    @@unique([delegateAuthCode], name:"UX_DelegatedChallenges_delegateAuthCode")
+    challenge String?
+    challengeDepositedAt DateTime?
+    challengeValidTo DateTime?
+    challengedReadAt DateTime?
+}

@@ -6,6 +6,7 @@ import {importSchema} from "graphql-import";
 import {Context} from "./context";
 import {resolvers} from "./resolvers/resolvers";
 import {Resolvers} from "./types";
+import {Session} from "./session";
 const httpHeadersPlugin = require("apollo-server-plugin-http-headers");
 
 if (!process.env.CORS_ORIGNS) {
@@ -35,6 +36,21 @@ export class Main
             cors: {
                 origin: corsOrigins,
                 credentials: true
+            },
+            formatError: (err) => {
+                const errorId = Session.generateRandomBase64String(8);
+                console.error({
+                    timestamp: new Date().toJSON(),
+                    errorId: errorId,
+                    error: JSON.stringify(err)
+                });
+                return {
+                    path: err.path,
+                    message: `An error occurred while processing your request. `
+                        + `If the error persists contact the admins at '${process.env.ADMIN_EMAIL}' `
+                        + `and include the following error id in your request: `
+                        + `'${errorId}'`
+                }
             }
         });
     }

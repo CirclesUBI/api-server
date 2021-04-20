@@ -136,6 +136,14 @@ type ExchangeTokenResponse {
     errorMessage: String
 }
 
+type DepositChallengeResponse {
+    success: Boolean!
+    errorMessage: String
+}
+input DepositChallenge {
+    jwt: String!
+}
+
 type LogoutResponse {
     success: Boolean!
     errorMessage: String
@@ -147,9 +155,29 @@ type SessionInfo {
     profileId: Int
 }
 
+type DelegateAuthInit {
+    appId: String!
+    success: Boolean!
+    errorMessage: String
+    challengeType: String
+    delegateAuthCode: String
+    validTo: String
+}
+
+type ConsumeDepositedChallengeResponse {
+    success: Boolean!
+    challenge: String
+}
+
+type Version {
+    major: Int!
+    minor: Int!
+    revision: Int!
+}
+
 type Query
 {
-    server : Server!
+    version : Version!
     sessionInfo: SessionInfo!
     profiles(query:QueryProfileInput!) : [Profile!]!
     circlesWallets(query:QueryCirclesWalletInput!):[CirclesWallet!]!
@@ -158,6 +186,9 @@ type Query
 type Mutation
 {
     exchangeToken : ExchangeTokenResponse!
+    authenticateAt(appId:String!) : DelegateAuthInit!
+    depositChallenge(jwt:String!) : DepositChallengeResponse!
+    consumeDepositedChallenge(delegateAuthCode:String!):ConsumeDepositedChallengeResponse!
     logout: LogoutResponse!
     upsertProfile(data:UpsertProfileInput!):Profile!
     addCirclesWallet(data:AddCirclesWalletInput!) : CirclesWallet!
