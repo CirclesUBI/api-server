@@ -2,26 +2,28 @@ import {QueryProfilesArgs, QuerySearchArgs, RequireFields, SearchInput} from "..
 import {PrismaClient} from "@prisma/client";
 import {Context} from "../../context";
 
-export function searchResolver(prisma:PrismaClient) {
-    return async (parent:any, args:QuerySearchArgs, context:Context) => {
+export function searchResolver(prisma: PrismaClient) {
+    return async (parent: any, args: QuerySearchArgs, context: Context) => {
 
-        const result:{
-            id:number
-            , "circlesAddress"?:string
-            , "firstName":string
-            , "lastName"?:string
-            , "avatarCid"?:string
-            , "avatarMimeType"?:string
-            , dream:string
-            , country?:string
+        const searchCirclesAddress: string = args.query.searchString + "%";
+        const searchFirstName = args.query.searchString + "%";
+        const searchLastName = args.query.searchString + "%";
+        const result: {
+            id: number, "circlesAddress"?: string, "firstName": string, "lastName"?: string, "avatarCid"?: string, "avatarMimeType"?: string, dream: string, country?: string
         }[] =
-            await prisma.$queryRaw`SELECT id, "circlesAddress", "firstName", "lastName", "avatarCid", "avatarMimeType", dream, country
+            await prisma.$queryRaw`SELECT id,
+                                          "circlesAddress",
+                                          "firstName",
+                                          "lastName",
+                                          "avatarCid",
+                                          "avatarMimeType",
+                                          dream,
+                                          country
                                    FROM "Profile"
-                                   WHERE "circlesAddress" LIKE '${args.query.searchString}%'
-                                      OR "firstName" LIKE '${args.query.searchString}%'
-                                      OR "lastName" LIKE '${args.query.searchString}%'
-                                   ORDER BY "firstName", "lastName"
-                                   LIMIT 100`;
+                                   WHERE "circlesAddress" LIKE ${searchCirclesAddress}
+                                      OR "firstName" LIKE ${searchFirstName}
+                                      OR "lastName" LIKE ${searchLastName}
+                                   ORDER BY "firstName", "lastName" LIMIT 100`;
         return result;
     };
 }
