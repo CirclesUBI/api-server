@@ -12,7 +12,7 @@ export function authenticateAtResolver(prisma_rw:PrismaClient) {
                 sessionId: session.sessionId,
                 appId: args.appId,
                 delegateAuthCode: Session.generateRandomBase64String(16),
-                requestValidTo: new Date(now.getTime() + 1000 * 30)
+                requestValidTo: new Date(now.getTime() + 1000 * 10)
             }
         });
 
