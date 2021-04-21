@@ -20,9 +20,9 @@ export function searchResolver(prisma: PrismaClient) {
                                           dream,
                                           country
                                    FROM "Profile"
-                                   WHERE "circlesAddress" LIKE ${searchCirclesAddress}
-                                      OR "firstName" LIKE ${searchFirstName}
-                                      OR "lastName" LIKE ${searchLastName}
+                                   WHERE "circlesAddress" ILIKE ${searchCirclesAddress}
+                                      OR "firstName" ILIKE ${searchFirstName}
+                                      OR "lastName" ILIKE ${searchLastName}
                                    ORDER BY "firstName", "lastName" LIMIT 100`;
         return result;
     };
