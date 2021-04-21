@@ -81,10 +81,11 @@ var Client = (function () {
     };
     Client.prototype.verify = function (jwt) {
         return __awaiter(this, void 0, void 0, function () {
-            var tokenPayload, kid, key, pubKey, verifiedPayload, iss, aud, audAppId, sub;
+            var now, tokenPayload, kid, key, pubKey, verifiedPayload, iss, aud, audAppId, sub;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        now = new Date();
                         tokenPayload = jsonwebtoken_1.default.decode(jwt);
                         if (!tokenPayload
                             || !tokenPayload.iss
@@ -101,6 +102,9 @@ var Client = (function () {
                         pubKey = key.data.keys.publicKey;
                         if (!pubKey)
                             throw new Error("Couldn't fetch the public key to verify the jwt");
+                        if (new Date(key.data.keys.validTo) < new Date(now.getTime() - 500)) {
+                            throw new Error("The signing key is invalid since more than 500 ms.");
+                        }
                         verifiedPayload = jsonwebtoken_1.default.verify(jwt, pubKey);
                         if (!verifiedPayload)
                             throw new Error("The received jwt couldn't be verified.");

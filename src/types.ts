@@ -209,12 +209,18 @@ export type Query = {
   version: Version;
   sessionInfo: SessionInfo;
   profiles: Array<Profile>;
+  search: Array<Profile>;
   circlesWallets: Array<CirclesWallet>;
 };
 
 
 export type QueryProfilesArgs = {
   query: QueryProfileInput;
+};
+
+
+export type QuerySearchArgs = {
+  query: SearchInput;
 };
 
 
@@ -239,6 +245,10 @@ export type QueryProfileInput = {
 
 export type QueryUniqueProfileInput = {
   id: Scalars['Int'];
+};
+
+export type SearchInput = {
+  searchString: Scalars['String'];
 };
 
 export type Server = {
@@ -376,6 +386,7 @@ export type ResolversTypes = ResolversObject<{
   QueryCirclesWalletInput: QueryCirclesWalletInput;
   QueryProfileInput: QueryProfileInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
+  SearchInput: SearchInput;
   Server: ResolverTypeWrapper<Server>;
   SessionInfo: ResolverTypeWrapper<SessionInfo>;
   UpsertProfileInput: UpsertProfileInput;
@@ -407,6 +418,7 @@ export type ResolversParentTypes = ResolversObject<{
   QueryCirclesWalletInput: QueryCirclesWalletInput;
   QueryProfileInput: QueryProfileInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
+  SearchInput: SearchInput;
   Server: Server;
   SessionInfo: SessionInfo;
   UpsertProfileInput: UpsertProfileInput;
@@ -519,6 +531,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   version?: Resolver<ResolversTypes['Version'], ParentType, ContextType>;
   sessionInfo?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
   profiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesArgs, 'query'>>;
+  search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
   circlesWallets?: Resolver<Array<ResolversTypes['CirclesWallet']>, ParentType, ContextType, RequireFields<QueryCirclesWalletsArgs, 'query'>>;
 }>;
 

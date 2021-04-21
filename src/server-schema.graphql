@@ -26,6 +26,10 @@ input QueryProfileInput
     country:String
     circlesAddress:String
 }
+input SearchInput
+{
+    searchString:String!
+}
 
 input UpsertProfileInput
 {
@@ -180,6 +184,7 @@ type Query
     version : Version!
     sessionInfo: SessionInfo!
     profiles(query:QueryProfileInput!) : [Profile!]!
+    search(query:SearchInput!) : [Profile!]!
     circlesWallets(query:QueryCirclesWalletInput!):[CirclesWallet!]!
 }
 

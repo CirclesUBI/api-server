@@ -9,11 +9,13 @@ import {sessionInfo} from "./queries/sessionInfo";
 import {depositChallengeResolver} from "./mutations/depositChallenge";
 import {authenticateAtResolver} from "./mutations/authenticateAt";
 import {consumeDepositedChallengeResolver} from "./mutations/consumeDepositedChallenge";
+import {searchResolver} from "./queries/search";
 const packageJson = require("../../package.json");
 
 export const resolvers: Resolvers = {
     Query: {
         profiles: profilesResolver(prisma_ro),
+        search: searchResolver(prisma_ro),
         circlesWallets: circlesWalletsResolver(prisma_ro),
         sessionInfo: sessionInfo,
         version: () => {
