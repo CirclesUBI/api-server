@@ -1,6 +1,9 @@
 import {Client} from "./auth-client/client";
 import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
+import {newLogger} from "./logger";
+
+const logger = newLogger("/session.ts");
 
 export class Session
 {
@@ -11,7 +14,7 @@ export class Session
 
     static async logout(prisma:PrismaClient, sessionId:string)
     {
-        return await prisma.session.update({
+        const result = await prisma.session.update({
             where: {
                 sessionId: sessionId
             },
@@ -20,6 +23,8 @@ export class Session
                 endReason: "logout"
             }
         });
+        logger.log(`Session '${sessionId}' logged out.`)
+        return result;
     }
 
     static async findSessionBySessionId(prisma:PrismaClient, sessionId: string)

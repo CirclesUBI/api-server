@@ -10,15 +10,17 @@ export class Context {
     readonly jwt?: string;
     readonly originHeaderValue?: string;
     readonly sessionId?: string;
+    readonly ipAddress?:string;
 
     readonly setCookies:Array<any> = [];
     readonly setHeaders:Array<any> = [];
 
-    private constructor(isSubscription: boolean, jwt?: string, originHeaderValue?: string, sessionId?: string) {
+    private constructor(isSubscription: boolean, jwt?: string, originHeaderValue?: string, sessionId?: string, ipAddress?:string) {
         this.isSubscription = isSubscription;
         this.jwt = jwt;
         this.originHeaderValue = originHeaderValue;
         this.sessionId = sessionId;
+        this.ipAddress = ipAddress;
     }
 
     public static create(arg: { req?: Request, connection?: ExecutionParams }): Context {
@@ -48,8 +50,8 @@ export class Context {
                 sessionId = decodeURIComponent(cookies["session"]);
             }
         }
-
-        return new Context(isSubscription, authorizationHeaderValue, originHeaderValue, sessionId);
+        const remoteIp = (arg.req?.header('x-forwarded-for') || arg.req?.connection.remoteAddress) ?? "<unknown ip>";
+        return new Context(isSubscription, authorizationHeaderValue, originHeaderValue, sessionId, remoteIp);
     }
 
     async verifySession() : Promise<PrismaSession> {
