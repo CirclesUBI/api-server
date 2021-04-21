@@ -60,7 +60,7 @@ export class Context {
 
         const validSession = await Session.findSessionBySessionId(prisma_ro, this.sessionId)
         if (!validSession)
-            throw new Error("No session could be found for the supplied sessionId");
+            throw new Error(`No session could be found for the supplied sessionId ('${this.sessionId ?? "<undefined or null>"}')`);
 
         return validSession;
     }
