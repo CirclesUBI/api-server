@@ -4,7 +4,6 @@ import {Context} from "../../context";
 
 export function searchResolver(prisma: PrismaClient) {
     return async (parent: any, args: QuerySearchArgs, context: Context) => {
-
         const searchCirclesAddress: string = args.query.searchString + "%";
         const searchFirstName = args.query.searchString + "%";
         const searchLastName = args.query.searchString + "%";

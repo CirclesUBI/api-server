@@ -200,6 +200,7 @@ export type Profile = {
   lastName?: Maybe<Scalars['String']>;
   dream: Scalars['String'];
   country?: Maybe<Scalars['String']>;
+  avatarUrl?: Maybe<Scalars['String']>;
   avatarCid?: Maybe<Scalars['String']>;
   avatarMimeType?: Maybe<Scalars['String']>;
 };
@@ -271,6 +272,7 @@ export type UpsertProfileInput = {
   country?: Maybe<Scalars['String']>;
   emailAddress?: Maybe<Scalars['String']>;
   circlesAddress?: Maybe<Scalars['String']>;
+  avatarUrl?: Maybe<Scalars['String']>;
   avatarCid?: Maybe<Scalars['String']>;
   avatarMimeType?: Maybe<Scalars['String']>;
 };
@@ -522,6 +524,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   dream?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   country?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  avatarUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarCid?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarMimeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
