@@ -4,12 +4,13 @@ import {Context} from "../../../context";
 
 export function walletTransfersResolver(prisma:PrismaClient) {
     return async (parent: CirclesWallet, args: any, context: Context) => {
+        /*
         const wallet = await prisma.circlesWallet.findUnique({
             where: {
-                address: parent.address
+                id: parent.id
             },
             include: {
-                knwonTokens: {
+                knownTokens: {
                     include: {
                         token: {
                             include: {
@@ -24,7 +25,7 @@ export function walletTransfersResolver(prisma:PrismaClient) {
             throw new Error(`Couldn't find a token with the address ${parent.address}`);
         }
 
-        const walletTransfers = wallet.knwonTokens.map(knownToken => knownToken.token.transfers).reduce((p,c) => p.concat(c), []);
+        const walletTransfers = wallet.knownTokens.map(knownToken => knownToken.token.transfers).reduce((p,c) => p.concat(c), []);
 
         return walletTransfers.map(transfer => {
             let predicate: CirclesTokenTransferPredicate;
@@ -48,5 +49,7 @@ export function walletTransfersResolver(prisma:PrismaClient) {
                 }
             }
         });
+                 */
+        return {}
     };
 }

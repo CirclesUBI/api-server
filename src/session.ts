@@ -81,7 +81,8 @@ export class Session
                 createdAt: new Date(),
                 maxLifetime: process.env.SESSION_LIIFETIME ? parseInt(process.env.SESSION_LIIFETIME) : 60 * 60 * 24 * 30,
                 sessionId: Session.generateRandomBase64String(64),
-                emailAddress: tokenPayload.sub
+                emailAddress: tokenPayload.sub,
+                jti: tokenPayload.jti
             }
         });
 

@@ -8,6 +8,7 @@ export function addCirclesTrustRelationResolver(prisma:PrismaClient) {
         if (!session.profileId)  {
             throw new Error("You must have a profile to perform this action");
         }
+        /*
         const trustRelation = await prisma.circlesTrustRelation.create({
             data: {
                 createdAt: new Date(args.data.createdAt),
@@ -61,5 +62,8 @@ export function addCirclesTrustRelationResolver(prisma:PrismaClient) {
             predicate: predicate,
             createdAt: trustRelation.createdAt.toJSON()
         };
+         */
+        return {
+        }
     };
 }

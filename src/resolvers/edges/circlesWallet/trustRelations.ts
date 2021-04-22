@@ -6,7 +6,7 @@ export function trustRelationsResolver(prisma:PrismaClient) {
     return async (parent: CirclesWallet, args:any, context: Context) => {
         const subjectWallet = await prisma.circlesWallet.findUnique({
             where: {
-                address: parent.address
+                id: parent.id
             },
             include: {
                 trustSubject: {

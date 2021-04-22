@@ -49,6 +49,7 @@ export type AddCirclesWalletInput = {
 
 export type CirclesToken = {
   __typename?: 'CirclesToken';
+  id: Scalars['Int'];
   address: Scalars['String'];
   createdAt: Scalars['String'];
   createdInBlockNo: Scalars['Int'];
@@ -93,6 +94,7 @@ export enum CirclesTrustRelationPredicate {
 
 export type CirclesWallet = {
   __typename?: 'CirclesWallet';
+  id: Scalars['Int'];
   address: Scalars['String'];
   ownToken?: Maybe<CirclesToken>;
   tokens?: Maybe<Array<CirclesToken>>;
@@ -428,6 +430,7 @@ export type ResolversParentTypes = ResolversObject<{
 }>;
 
 export type CirclesTokenResolvers<ContextType = any, ParentType extends ResolversParentTypes['CirclesToken'] = ResolversParentTypes['CirclesToken']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdInBlockNo?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -462,6 +465,7 @@ export type CirclesTrustRelationResolvers<ContextType = any, ParentType extends 
 }>;
 
 export type CirclesWalletResolvers<ContextType = any, ParentType extends ResolversParentTypes['CirclesWallet'] = ResolversParentTypes['CirclesWallet']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   ownToken?: Resolver<Maybe<ResolversTypes['CirclesToken']>, ParentType, ContextType>;
   tokens?: Resolver<Maybe<Array<ResolversTypes['CirclesToken']>>, ParentType, ContextType>;

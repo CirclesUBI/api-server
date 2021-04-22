@@ -6,7 +6,7 @@ export function tokenTransfersResolver(prisma:PrismaClient) {
     return async (parent: CirclesToken, args: any, context: Context) => {
         const token = await prisma.circlesToken.findUnique({
             where: {
-                address: parent.address
+                id: parent.id
             },
             include: {
                 transfers: true
@@ -31,11 +31,11 @@ export function tokenTransfersResolver(prisma:PrismaClient) {
                 ...transfer,
                 createdAt: transfer.createdAt?.toJSON(),
                 subject: {
-                    address: transfer.subjectAddress
+                    id: transfer.subjectWalletId
                 },
                 predicate: predicate,
                 object: {
-                    address: transfer.objectAddress
+                    id: transfer.objectWalletId
                 }
             }
         });

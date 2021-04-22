@@ -98,6 +98,7 @@ enum CirclesTrustRelationPredicate {
 }
 
 type CirclesToken {
+    id: Int!
     address: String!
 
     createdAt: String!
@@ -116,6 +117,7 @@ input AddCirclesTokenInput {
 }
 
 type CirclesWallet {
+    id: Int!
     address: String!
 
     ownToken: CirclesToken

@@ -7,7 +7,7 @@ export function ownerResolver(prisma:PrismaClient) {
     return async (parent: CirclesToken, args: any, context: Context) => {
         const token = await prisma.circlesToken.findUnique({
             where: {
-                address: parent.address
+                id: parent.id
             },
             select: {
                 owner: true

@@ -20,9 +20,23 @@ export function addCirclesTokenTransferResolver(prisma: PrismaClient) {
                 dbPredicate = DBCirclesTokenTransferPredicate.GIVING_TO;
                 break;
             default:
-                throw new Error(`Uknown circles token transfer predicate: ${args.data.predicate}`);
+                throw new Error(`Unknown circles token transfer predicate: ${args.data.predicate}`);
         }
-        const transfer = await prisma.circlesTokenTransfer.create({
+
+        const wallets = await prisma.circlesWallet.findMany({
+            where: {
+                addedById: session.profileId,
+                address: {
+                    in: [args.data.subjectAddress, args.data.objectAddress]
+                }
+            }
+        });
+
+        if (wallets.length < 2) {
+            throw new Error(`At least one of the involved wallets doesn't exist. Required: ${[args.data.subjectAddress, args.data.objectAddress].join(", ")}. Found: ${wallets.map(o => o.address).join(", ")}.`)
+        }
+
+        /*const transfer = await prisma.circlesTokenTransfer.create({
             data: {
                 createdAt: new Date(args.data.createdAt),
                 createdInBlockNo: args.data.createdInBlockNo,
@@ -63,12 +77,12 @@ export function addCirclesTokenTransferResolver(prisma: PrismaClient) {
                 subject: true,
                 object: true
             }
-        });
+        });*/
 
         return {
-            ...transfer,
-            createdAt: transfer.createdAt.toJSON(),
-            predicate: args.data.predicate
+            //...transfer,
+            //createdAt: transfer.createdAt.toJSON(),
+            //predicate: args.data.predicate
         };
     };
 }
