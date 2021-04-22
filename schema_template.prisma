@@ -34,6 +34,7 @@ model Profile {
     circlesAddress String?
     firstName String
     lastName String?
+    avatarUrl String?
     avatarCid String?
     avatarMimeType String?
     dream String

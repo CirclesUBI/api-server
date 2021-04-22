@@ -9,6 +9,7 @@ type Profile {
     lastName:String
     dream:String!
     country:String
+    avatarUrl:String
     avatarCid:String
     avatarMimeType:String
 }
@@ -40,6 +41,7 @@ input UpsertProfileInput
     country: String
     emailAddress:String
     circlesAddress:String
+    avatarUrl:String
     avatarCid:String
     avatarMimeType:String
 }
