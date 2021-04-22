@@ -7,7 +7,6 @@ generator client {
     provider = "prisma-client-js"
 }
 
-
 model Session {
   sessionId String @unique
   // Who is identified by the session?
@@ -16,12 +15,12 @@ model Session {
   profileId Int?
   // Which Authoritity issued the JWT that lead to this session?
   issuedBy String
+  // The id of the jwt that was exchanged for this session
+  jti String?
   // When the session was created.
   createdAt DateTime
   endedAt DateTime?
   endReason String?
-  // Usually the session ends when the user closes the browser window/tab (session-cookie)
-  // but there is also a fixed max. session length.
   // This fields specifies the max. session lifetime in seconds.
   maxLifetime Int
 }
@@ -45,7 +44,8 @@ model Profile {
 }
 
 model CirclesWallet {
-    address String @id
+    id Int @id @default(autoincrement())
+    address String
 
     addedAt DateTime
     addedBy Profile @relation(name: "CirclesWallet_AddedBy", fields: [addedById], references: [id])
@@ -53,7 +53,7 @@ model CirclesWallet {
 
     ownToken CirclesToken? @relation(name: "CirclesToken_Owner")
 
-    knwonTokens CirclesWalletKnownTokens[] @relation(name: "CirclesWalletKnownTokens_Wallet")
+    knownTokens CirclesWalletKnownTokens[] @relation(name: "CirclesWalletKnownTokens_Wallet")
     trustSubject CirclesTrustRelation[] @relation(name: "CirclesTrustRelation_Subject")
     trustObject CirclesTrustRelation[] @relation(name: "CirclesTrustRelation_Object")
     transferSubject CirclesTokenTransfer[] @relation(name: "CirclesTokenTransfer_Subject")
@@ -65,11 +65,11 @@ model CirclesWalletKnownTokens {
 
     createdAt DateTime
 
-    wallet CirclesWallet @relation(name: "CirclesWalletKnownTokens_Wallet", fields: [walletAddress], references: [address])
-    walletAddress String
+    wallet CirclesWallet @relation(name: "CirclesWalletKnownTokens_Wallet", fields: [walletId], references: [id])
+    walletId Int
 
-    token CirclesToken @relation(name: "CirclesWalletKnownTokens_Token", fields: [tokenAddress], references: [address])
-    tokenAddress String
+    token CirclesToken @relation(name: "CirclesWalletKnownTokens_Token", fields: [tokenId], references: [id])
+    tokenId Int
 }
 
 enum CirclesTrustRelationPredicate {
@@ -84,26 +84,27 @@ model CirclesTrustRelation {
     createdInBlockNo Int
     createdInBlockHash String
 
-    subject CirclesWallet @relation(name: "CirclesTrustRelation_Subject", fields: [subjectAddress], references: [address])
-    subjectAddress String
+    subject CirclesWallet @relation(name: "CirclesTrustRelation_Subject", fields: [subjectWalletId], references: [id])
+    subjectWalletId Int
 
     predicate CirclesTrustRelationPredicate
 
-    object CirclesWallet @relation(name: "CirclesTrustRelation_Object", fields: [objectAddress], references: [address])
-    objectAddress String
+    object CirclesWallet @relation(name: "CirclesTrustRelation_Object", fields: [objectWalletId], references: [id])
+    objectWalletId Int
 
     weight Int // 0-100
 }
 
 model CirclesToken {
-    address String @id
+    id Int @id @default(autoincrement())
+    address String
 
     createdAt DateTime
     createdInBlockNo Int
     createdInBlockHash String
 
-    owner CirclesWallet @relation(name: "CirclesToken_Owner", fields: [ownerAddress], references: [address])
-    ownerAddress String
+    owner CirclesWallet @relation(name: "CirclesToken_Owner", fields: [ownerId], references: [id])
+    ownerId Int
 
     knownBy CirclesWalletKnownTokens[] @relation(name: "CirclesWalletKnownTokens_Token")
     transfers CirclesTokenTransfer[] @relation(name: "CirclesTokenTransfer_Token")
@@ -120,16 +121,16 @@ model CirclesTokenTransfer {
     createdInBlockNo Int
     createdInBlockHash String
 
-    token CirclesToken @relation(name: "CirclesTokenTransfer_Token", fields: [tokenAddress], references: [address])
-    tokenAddress String
+    token CirclesToken @relation(name: "CirclesTokenTransfer_Token", fields: [tokenId], references: [id])
+    tokenId Int
 
-    subject CirclesWallet @relation(name: "CirclesTokenTransfer_Subject", fields: [subjectAddress], references: [address])
-    subjectAddress String
+    subject CirclesWallet @relation(name: "CirclesTokenTransfer_Subject", fields: [subjectWalletId], references: [id])
+    subjectWalletId Int
 
     predicate CirclesTokenTransferPredicate
 
-    object CirclesWallet @relation(name: "CirclesTokenTransfer_Object", fields: [objectAddress], references: [address])
-    objectAddress String
+    object CirclesWallet @relation(name: "CirclesTokenTransfer_Object", fields: [objectWalletId], references: [id])
+    objectWalletId Int
 
     value String
 }
