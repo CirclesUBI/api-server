@@ -241,7 +241,7 @@ export type QueryProfileInput = {
   firstName?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
   country?: Maybe<Scalars['String']>;
-  circlesAddress?: Maybe<Scalars['String']>;
+  circlesAddress?: Maybe<Array<Scalars['String']>>;
 };
 
 export type QueryUniqueProfileInput = {

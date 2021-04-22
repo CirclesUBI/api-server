@@ -4,7 +4,7 @@ import {Context} from "../../context";
 
 export function searchResolver(prisma: PrismaClient) {
     return async (parent: any, args: QuerySearchArgs, context: Context) => {
-        const searchCirclesAddress: string = args.query.searchString + "%";
+        const searchCirclesAddress: string = args.query.searchString.toLowerCase() + "%";
         const searchFirstName = args.query.searchString + "%";
         const searchLastName = args.query.searchString + "%";
         const result: {
@@ -19,7 +19,7 @@ export function searchResolver(prisma: PrismaClient) {
                                           dream,
                                           country
                                    FROM "Profile"
-                                   WHERE "circlesAddress" ILIKE ${searchCirclesAddress}
+                                   WHERE "circlesAddress" LIKE ${searchCirclesAddress}
                                       OR "firstName" ILIKE ${searchFirstName}
                                       OR "lastName" ILIKE ${searchLastName}
                                    ORDER BY "firstName", "lastName" LIMIT 100`;

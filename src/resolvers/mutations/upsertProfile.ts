@@ -7,6 +7,9 @@ export function upsertProfileResolver(prisma_rw:PrismaClient) {
     return async (parent:any, args:MutationUpsertProfileArgs, context:Context) => {
         const session = await context.verifySession();
         let profile:Profile;
+        if(args.data.circlesAddress) {
+            args.data.circlesAddress = args.data.circlesAddress.toLowerCase();
+        }
         if (args.data.id) {
             profile = await prisma_rw.profile.update({
                 where: {

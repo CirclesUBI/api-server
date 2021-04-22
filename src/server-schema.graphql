@@ -25,7 +25,7 @@ input QueryProfileInput
     firstName:String
     lastName:String
     country:String
-    circlesAddress:String
+    circlesAddress:[String!]
 }
 input SearchInput
 {

@@ -33,9 +33,15 @@ export async function whereProfile(args: RequireFields<QueryProfilesArgs, never>
 export function profilesResolver(prisma:PrismaClient) {
     return async (parent:any, args:QueryProfilesArgs, context:Context) => {
         const q = await whereProfile(args, context);
+        if (q.circlesAddress) {
+            delete q.circlesAddress;
+        }
         return await prisma.profile.findMany({
             where: {
-                ...q
+                ...q,
+                circlesAddress: args.query.circlesAddress && args.query.circlesAddress.length > 0 ? {
+                    in: args.query.circlesAddress.map(o => o.toLowerCase())
+                } : undefined
             }
         });
     };
