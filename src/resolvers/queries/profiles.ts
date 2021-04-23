@@ -39,10 +39,11 @@ export function profilesResolver(prisma:PrismaClient) {
         return await prisma.profile.findMany({
             where: {
                 ...q,
-                circlesAddress: args.query.circlesAddress && args.query.circlesAddress.length > 0 ? {
+                circlesAddress: args.query.circlesAddress ? {
                     in: args.query.circlesAddress.map(o => o.toLowerCase())
                 } : undefined
-            }
+            },
+            take: 100
         });
     };
 }
