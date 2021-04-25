@@ -47,6 +47,23 @@ export type AddCirclesWalletInput = {
   ownToken?: Maybe<AddCirclesTokenInput>;
 };
 
+export type BlockTime = {
+  __typename?: 'BlockTime';
+  blockNo: Scalars['Int'];
+  timestamp: Scalars['String'];
+};
+
+export type BlockTimes = {
+  __typename?: 'BlockTimes';
+  resolution: Scalars['Int'];
+  times: Array<BlockTime>;
+};
+
+export type BlockTimesInput = {
+  from: Scalars['Int'];
+  to: Scalars['Int'];
+};
+
 export type CirclesToken = {
   __typename?: 'CirclesToken';
   id: Scalars['Int'];
@@ -214,6 +231,7 @@ export type Query = {
   profiles: Array<Profile>;
   search: Array<Profile>;
   circlesWallets: Array<CirclesWallet>;
+  blockTimes: BlockTime;
 };
 
 
@@ -229,6 +247,11 @@ export type QuerySearchArgs = {
 
 export type QueryCirclesWalletsArgs = {
   query: QueryCirclesWalletInput;
+};
+
+
+export type QueryBlockTimesArgs = {
+  query: BlockTimesInput;
 };
 
 export type QueryCirclesWalletInput = {
@@ -371,6 +394,9 @@ export type ResolversTypes = ResolversObject<{
   AddCirclesTokenTransferInput: AddCirclesTokenTransferInput;
   AddCirclesTrustRelationInput: AddCirclesTrustRelationInput;
   AddCirclesWalletInput: AddCirclesWalletInput;
+  BlockTime: ResolverTypeWrapper<BlockTime>;
+  BlockTimes: ResolverTypeWrapper<BlockTimes>;
+  BlockTimesInput: BlockTimesInput;
   CirclesToken: ResolverTypeWrapper<CirclesToken>;
   CirclesTokenTransfer: ResolverTypeWrapper<CirclesTokenTransfer>;
   CirclesTokenTransferPredicate: CirclesTokenTransferPredicate;
@@ -405,6 +431,9 @@ export type ResolversParentTypes = ResolversObject<{
   AddCirclesTokenTransferInput: AddCirclesTokenTransferInput;
   AddCirclesTrustRelationInput: AddCirclesTrustRelationInput;
   AddCirclesWalletInput: AddCirclesWalletInput;
+  BlockTime: BlockTime;
+  BlockTimes: BlockTimes;
+  BlockTimesInput: BlockTimesInput;
   CirclesToken: CirclesToken;
   CirclesTokenTransfer: CirclesTokenTransfer;
   CirclesTrustRelation: CirclesTrustRelation;
@@ -427,6 +456,18 @@ export type ResolversParentTypes = ResolversObject<{
   SessionInfo: SessionInfo;
   UpsertProfileInput: UpsertProfileInput;
   Version: Version;
+}>;
+
+export type BlockTimeResolvers<ContextType = any, ParentType extends ResolversParentTypes['BlockTime'] = ResolversParentTypes['BlockTime']> = ResolversObject<{
+  blockNo?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type BlockTimesResolvers<ContextType = any, ParentType extends ResolversParentTypes['BlockTimes'] = ResolversParentTypes['BlockTimes']> = ResolversObject<{
+  resolution?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  times?: Resolver<Array<ResolversTypes['BlockTime']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type CirclesTokenResolvers<ContextType = any, ParentType extends ResolversParentTypes['CirclesToken'] = ResolversParentTypes['CirclesToken']> = ResolversObject<{
@@ -540,6 +581,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   profiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesArgs, 'query'>>;
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
   circlesWallets?: Resolver<Array<ResolversTypes['CirclesWallet']>, ParentType, ContextType, RequireFields<QueryCirclesWalletsArgs, 'query'>>;
+  blockTimes?: Resolver<ResolversTypes['BlockTime'], ParentType, ContextType, RequireFields<QueryBlockTimesArgs, 'query'>>;
 }>;
 
 export type ServerResolvers<ContextType = any, ParentType extends ResolversParentTypes['Server'] = ResolversParentTypes['Server']> = ResolversObject<{
@@ -562,6 +604,8 @@ export type VersionResolvers<ContextType = any, ParentType extends ResolversPare
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  BlockTime?: BlockTimeResolvers<ContextType>;
+  BlockTimes?: BlockTimesResolvers<ContextType>;
   CirclesToken?: CirclesTokenResolvers<ContextType>;
   CirclesTokenTransfer?: CirclesTokenTransferResolvers<ContextType>;
   CirclesTrustRelation?: CirclesTrustRelationResolvers<ContextType>;

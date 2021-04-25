@@ -25,6 +25,32 @@ model Session {
   maxLifetime Int
 }
 
+model BlockTime {
+    blockNo Int @unique
+    timestamp DateTime
+}
+
+model BlockTimeDownloaderSettings {
+    id Int @default(autoincrement()) @id
+    startFrom Int
+    resolution Int
+    validFrom DateTime
+    validTo DateTime?
+}
+
+enum BlockTimeDownloaderState {
+    Requested
+    Active
+}
+
+model BlockTimeDownloader {
+  id Int @default(autoincrement()) @id
+  instanceId String
+  state BlockTimeDownloaderState
+  validTo DateTime
+  @@unique([instanceId, state, validTo], name: "UX_BlockTimeDownloaders")
+}
+
 model Profile {
     id Int @id @default(autoincrement())
     emailAddress String
@@ -53,7 +79,7 @@ model CirclesWallet {
 
     ownToken CirclesToken? @relation(name: "CirclesToken_Owner")
 
-    knownTokens CirclesWalletKnownTokens[] @relation(name: "CirclesWalletKnownTokens_Wallet")
+    knwonTokens CirclesWalletKnownTokens[] @relation(name: "CirclesWalletKnownTokens_Wallet")
     trustSubject CirclesTrustRelation[] @relation(name: "CirclesTrustRelation_Subject")
     trustObject CirclesTrustRelation[] @relation(name: "CirclesTrustRelation_Object")
     transferSubject CirclesTokenTransfer[] @relation(name: "CirclesTokenTransfer_Subject")

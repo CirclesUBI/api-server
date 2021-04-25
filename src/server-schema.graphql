@@ -183,6 +183,21 @@ type Version {
     revision: Int!
 }
 
+input BlockTimesInput {
+    from: Int!
+    to: Int!
+}
+
+type BlockTime {
+    blockNo: Int!
+    timestamp: String!
+}
+
+type BlockTimes {
+    resolution:Int!
+    times:[BlockTime!]!
+}
+
 type Query
 {
     version : Version!
@@ -190,6 +205,7 @@ type Query
     profiles(query:QueryProfileInput!) : [Profile!]!
     search(query:SearchInput!) : [Profile!]!
     circlesWallets(query:QueryCirclesWalletInput!):[CirclesWallet!]!
+    blockTimes(query:BlockTimesInput!):BlockTime!
 }
 
 type Mutation
