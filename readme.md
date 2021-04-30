@@ -17,7 +17,7 @@ type Mutation
     addCirclesWallet(data:AddCirclesWalletInput!) : CirclesWallet!
     addCirclesToken(data:AddCirclesTokenInput!) : CirclesToken!
     addCirclesTrustRelation(data:AddCirclesTrustRelationInput!) : CirclesTrustRelation!
-    addCirclesTokenTransfer(data:AddCirclesTokenTransferInput!) : CirclesTokenTransfer!
+    addCirclesTokenTransfer(data:IndexTransferInput!) : CirclesTokenTransfer!
 }
 ```
 ## Database:

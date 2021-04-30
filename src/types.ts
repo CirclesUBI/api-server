@@ -13,112 +13,6 @@ export type Scalars = {
   Float: number;
 };
 
-export type AddCirclesTokenInput = {
-  address: Scalars['String'];
-  ownerAddress: Scalars['String'];
-  createdAt: Scalars['String'];
-  createdInBlockNo: Scalars['Int'];
-  createdInBlockHash: Scalars['String'];
-};
-
-export type AddCirclesTokenTransferInput = {
-  createdAt: Scalars['String'];
-  createdInBlockNo: Scalars['Int'];
-  createdInBlockHash: Scalars['String'];
-  subjectAddress: Scalars['String'];
-  predicate: CirclesTokenTransferPredicate;
-  objectAddress: Scalars['String'];
-  transferredToken: Scalars['String'];
-  value: Scalars['String'];
-};
-
-export type AddCirclesTrustRelationInput = {
-  createdAt: Scalars['String'];
-  createdInBlockNo: Scalars['Int'];
-  createdInBlockHash: Scalars['String'];
-  subjectAddress: Scalars['String'];
-  predicate: CirclesTrustRelationPredicate;
-  objectAddress: Scalars['String'];
-  weight: Scalars['Int'];
-};
-
-export type AddCirclesWalletInput = {
-  address: Scalars['String'];
-  ownToken?: Maybe<AddCirclesTokenInput>;
-};
-
-export type BlockTime = {
-  __typename?: 'BlockTime';
-  blockNo: Scalars['Int'];
-  timestamp: Scalars['String'];
-};
-
-export type BlockTimes = {
-  __typename?: 'BlockTimes';
-  resolution: Scalars['Int'];
-  times: Array<BlockTime>;
-};
-
-export type BlockTimesInput = {
-  from: Scalars['Int'];
-  to: Scalars['Int'];
-};
-
-export type CirclesToken = {
-  __typename?: 'CirclesToken';
-  id: Scalars['Int'];
-  address: Scalars['String'];
-  createdAt: Scalars['String'];
-  createdInBlockNo: Scalars['Int'];
-  createdInBlockHash: Scalars['String'];
-  owner?: Maybe<CirclesWallet>;
-  transfers?: Maybe<Array<CirclesTokenTransfer>>;
-};
-
-export type CirclesTokenTransfer = {
-  __typename?: 'CirclesTokenTransfer';
-  id: Scalars['Int'];
-  createdAt: Scalars['String'];
-  createdInBlockNo: Scalars['Int'];
-  createdInBlockHash: Scalars['String'];
-  subject: CirclesWallet;
-  predicate: CirclesTokenTransferPredicate;
-  object: CirclesWallet;
-  value: Scalars['String'];
-};
-
-export enum CirclesTokenTransferPredicate {
-  GivingTo = 'GIVING_TO',
-  ReceivingFrom = 'RECEIVING_FROM'
-}
-
-export type CirclesTrustRelation = {
-  __typename?: 'CirclesTrustRelation';
-  id: Scalars['Int'];
-  createdAt?: Maybe<Scalars['String']>;
-  createdInBlockNo: Scalars['Int'];
-  createdInBlockHash: Scalars['String'];
-  subject: CirclesWallet;
-  predicate: CirclesTrustRelationPredicate;
-  object: CirclesWallet;
-  weight: Scalars['Int'];
-};
-
-export enum CirclesTrustRelationPredicate {
-  GivingTo = 'GIVING_TO',
-  ReceivingFrom = 'RECEIVING_FROM'
-}
-
-export type CirclesWallet = {
-  __typename?: 'CirclesWallet';
-  id: Scalars['Int'];
-  address: Scalars['String'];
-  ownToken?: Maybe<CirclesToken>;
-  tokens?: Maybe<Array<CirclesToken>>;
-  transfers?: Maybe<Array<CirclesTokenTransfer>>;
-  trustRelations?: Maybe<Array<CirclesTrustRelation>>;
-};
-
 export type ConsumeDepositedChallengeResponse = {
   __typename?: 'ConsumeDepositedChallengeResponse';
   success: Scalars['Boolean'];
@@ -151,6 +45,20 @@ export type ExchangeTokenResponse = {
   errorMessage?: Maybe<Scalars['String']>;
 };
 
+export type IndexTransferInput = {
+  blockNo: Scalars['Int'];
+  from: Scalars['String'];
+  to: Scalars['String'];
+  amount: Scalars['String'];
+  message: Scalars['String'];
+};
+
+export type IndexTransferResponse = {
+  __typename?: 'IndexTransferResponse';
+  success: Scalars['Boolean'];
+  errorMessage?: Maybe<Scalars['String']>;
+};
+
 export type LogoutResponse = {
   __typename?: 'LogoutResponse';
   success: Scalars['Boolean'];
@@ -165,10 +73,7 @@ export type Mutation = {
   consumeDepositedChallenge: ConsumeDepositedChallengeResponse;
   logout: LogoutResponse;
   upsertProfile: Profile;
-  addCirclesWallet: CirclesWallet;
-  addCirclesToken: CirclesToken;
-  addCirclesTrustRelation: CirclesTrustRelation;
-  addCirclesTokenTransfer: CirclesTokenTransfer;
+  indexTransfer: IndexTransferResponse;
 };
 
 
@@ -192,29 +97,15 @@ export type MutationUpsertProfileArgs = {
 };
 
 
-export type MutationAddCirclesWalletArgs = {
-  data: AddCirclesWalletInput;
-};
-
-
-export type MutationAddCirclesTokenArgs = {
-  data: AddCirclesTokenInput;
-};
-
-
-export type MutationAddCirclesTrustRelationArgs = {
-  data: AddCirclesTrustRelationInput;
-};
-
-
-export type MutationAddCirclesTokenTransferArgs = {
-  data: AddCirclesTokenTransferInput;
+export type MutationIndexTransferArgs = {
+  data: IndexTransferInput;
 };
 
 export type Profile = {
   __typename?: 'Profile';
   id: Scalars['Int'];
   circlesAddress?: Maybe<Scalars['String']>;
+  circlesSafeOwner?: Maybe<Scalars['String']>;
   firstName: Scalars['String'];
   lastName?: Maybe<Scalars['String']>;
   dream: Scalars['String'];
@@ -230,8 +121,6 @@ export type Query = {
   sessionInfo: SessionInfo;
   profiles: Array<Profile>;
   search: Array<Profile>;
-  circlesWallets: Array<CirclesWallet>;
-  blockTimes: BlockTime;
 };
 
 
@@ -244,28 +133,12 @@ export type QuerySearchArgs = {
   query: SearchInput;
 };
 
-
-export type QueryCirclesWalletsArgs = {
-  query: QueryCirclesWalletInput;
-};
-
-
-export type QueryBlockTimesArgs = {
-  query: BlockTimesInput;
-};
-
-export type QueryCirclesWalletInput = {
-  address?: Maybe<Scalars['String']>;
-  ownTokenAddress?: Maybe<Scalars['String']>;
-  trusts?: Maybe<Scalars['String']>;
-  isTrustedBy?: Maybe<Scalars['String']>;
-};
-
 export type QueryProfileInput = {
   id?: Maybe<Scalars['Int']>;
   firstName?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
   country?: Maybe<Scalars['String']>;
+  circlesSafeOwner?: Maybe<Scalars['String']>;
   circlesAddress?: Maybe<Array<Scalars['String']>>;
 };
 
@@ -297,6 +170,7 @@ export type UpsertProfileInput = {
   country?: Maybe<Scalars['String']>;
   emailAddress?: Maybe<Scalars['String']>;
   circlesAddress?: Maybe<Scalars['String']>;
+  circlesSafeOwner?: Maybe<Scalars['String']>;
   avatarUrl?: Maybe<Scalars['String']>;
   avatarCid?: Maybe<Scalars['String']>;
   avatarMimeType?: Maybe<Scalars['String']>;
@@ -388,32 +262,20 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
-  AddCirclesTokenInput: AddCirclesTokenInput;
-  String: ResolverTypeWrapper<Scalars['String']>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
-  AddCirclesTokenTransferInput: AddCirclesTokenTransferInput;
-  AddCirclesTrustRelationInput: AddCirclesTrustRelationInput;
-  AddCirclesWalletInput: AddCirclesWalletInput;
-  BlockTime: ResolverTypeWrapper<BlockTime>;
-  BlockTimes: ResolverTypeWrapper<BlockTimes>;
-  BlockTimesInput: BlockTimesInput;
-  CirclesToken: ResolverTypeWrapper<CirclesToken>;
-  CirclesTokenTransfer: ResolverTypeWrapper<CirclesTokenTransfer>;
-  CirclesTokenTransferPredicate: CirclesTokenTransferPredicate;
-  CirclesTrustRelation: ResolverTypeWrapper<CirclesTrustRelation>;
-  CirclesTrustRelationPredicate: CirclesTrustRelationPredicate;
-  CirclesWallet: ResolverTypeWrapper<CirclesWallet>;
   ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  String: ResolverTypeWrapper<Scalars['String']>;
   DelegateAuthInit: ResolverTypeWrapper<DelegateAuthInit>;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
+  IndexTransferInput: IndexTransferInput;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
+  IndexTransferResponse: ResolverTypeWrapper<IndexTransferResponse>;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
   Mutation: ResolverTypeWrapper<{}>;
   Profile: ResolverTypeWrapper<Profile>;
   Query: ResolverTypeWrapper<{}>;
-  QueryCirclesWalletInput: QueryCirclesWalletInput;
   QueryProfileInput: QueryProfileInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   SearchInput: SearchInput;
@@ -425,30 +287,20 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
-  AddCirclesTokenInput: AddCirclesTokenInput;
-  String: Scalars['String'];
-  Int: Scalars['Int'];
-  AddCirclesTokenTransferInput: AddCirclesTokenTransferInput;
-  AddCirclesTrustRelationInput: AddCirclesTrustRelationInput;
-  AddCirclesWalletInput: AddCirclesWalletInput;
-  BlockTime: BlockTime;
-  BlockTimes: BlockTimes;
-  BlockTimesInput: BlockTimesInput;
-  CirclesToken: CirclesToken;
-  CirclesTokenTransfer: CirclesTokenTransfer;
-  CirclesTrustRelation: CirclesTrustRelation;
-  CirclesWallet: CirclesWallet;
   ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
   Boolean: Scalars['Boolean'];
+  String: Scalars['String'];
   DelegateAuthInit: DelegateAuthInit;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: DepositChallengeResponse;
   ExchangeTokenResponse: ExchangeTokenResponse;
+  IndexTransferInput: IndexTransferInput;
+  Int: Scalars['Int'];
+  IndexTransferResponse: IndexTransferResponse;
   LogoutResponse: LogoutResponse;
   Mutation: {};
   Profile: Profile;
   Query: {};
-  QueryCirclesWalletInput: QueryCirclesWalletInput;
   QueryProfileInput: QueryProfileInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   SearchInput: SearchInput;
@@ -456,63 +308,6 @@ export type ResolversParentTypes = ResolversObject<{
   SessionInfo: SessionInfo;
   UpsertProfileInput: UpsertProfileInput;
   Version: Version;
-}>;
-
-export type BlockTimeResolvers<ContextType = any, ParentType extends ResolversParentTypes['BlockTime'] = ResolversParentTypes['BlockTime']> = ResolversObject<{
-  blockNo?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type BlockTimesResolvers<ContextType = any, ParentType extends ResolversParentTypes['BlockTimes'] = ResolversParentTypes['BlockTimes']> = ResolversObject<{
-  resolution?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  times?: Resolver<Array<ResolversTypes['BlockTime']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type CirclesTokenResolvers<ContextType = any, ParentType extends ResolversParentTypes['CirclesToken'] = ResolversParentTypes['CirclesToken']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  createdInBlockNo?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  createdInBlockHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  owner?: Resolver<Maybe<ResolversTypes['CirclesWallet']>, ParentType, ContextType>;
-  transfers?: Resolver<Maybe<Array<ResolversTypes['CirclesTokenTransfer']>>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type CirclesTokenTransferResolvers<ContextType = any, ParentType extends ResolversParentTypes['CirclesTokenTransfer'] = ResolversParentTypes['CirclesTokenTransfer']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  createdInBlockNo?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  createdInBlockHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  subject?: Resolver<ResolversTypes['CirclesWallet'], ParentType, ContextType>;
-  predicate?: Resolver<ResolversTypes['CirclesTokenTransferPredicate'], ParentType, ContextType>;
-  object?: Resolver<ResolversTypes['CirclesWallet'], ParentType, ContextType>;
-  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type CirclesTrustRelationResolvers<ContextType = any, ParentType extends ResolversParentTypes['CirclesTrustRelation'] = ResolversParentTypes['CirclesTrustRelation']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdInBlockNo?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  createdInBlockHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  subject?: Resolver<ResolversTypes['CirclesWallet'], ParentType, ContextType>;
-  predicate?: Resolver<ResolversTypes['CirclesTrustRelationPredicate'], ParentType, ContextType>;
-  object?: Resolver<ResolversTypes['CirclesWallet'], ParentType, ContextType>;
-  weight?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type CirclesWalletResolvers<ContextType = any, ParentType extends ResolversParentTypes['CirclesWallet'] = ResolversParentTypes['CirclesWallet']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  ownToken?: Resolver<Maybe<ResolversTypes['CirclesToken']>, ParentType, ContextType>;
-  tokens?: Resolver<Maybe<Array<ResolversTypes['CirclesToken']>>, ParentType, ContextType>;
-  transfers?: Resolver<Maybe<Array<ResolversTypes['CirclesTokenTransfer']>>, ParentType, ContextType>;
-  trustRelations?: Resolver<Maybe<Array<ResolversTypes['CirclesTrustRelation']>>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type ConsumeDepositedChallengeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['ConsumeDepositedChallengeResponse'] = ResolversParentTypes['ConsumeDepositedChallengeResponse']> = ResolversObject<{
@@ -543,6 +338,12 @@ export type ExchangeTokenResponseResolvers<ContextType = any, ParentType extends
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type IndexTransferResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndexTransferResponse'] = ResolversParentTypes['IndexTransferResponse']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type LogoutResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['LogoutResponse'] = ResolversParentTypes['LogoutResponse']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -556,15 +357,13 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   consumeDepositedChallenge?: Resolver<ResolversTypes['ConsumeDepositedChallengeResponse'], ParentType, ContextType, RequireFields<MutationConsumeDepositedChallengeArgs, 'delegateAuthCode'>>;
   logout?: Resolver<ResolversTypes['LogoutResponse'], ParentType, ContextType>;
   upsertProfile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType, RequireFields<MutationUpsertProfileArgs, 'data'>>;
-  addCirclesWallet?: Resolver<ResolversTypes['CirclesWallet'], ParentType, ContextType, RequireFields<MutationAddCirclesWalletArgs, 'data'>>;
-  addCirclesToken?: Resolver<ResolversTypes['CirclesToken'], ParentType, ContextType, RequireFields<MutationAddCirclesTokenArgs, 'data'>>;
-  addCirclesTrustRelation?: Resolver<ResolversTypes['CirclesTrustRelation'], ParentType, ContextType, RequireFields<MutationAddCirclesTrustRelationArgs, 'data'>>;
-  addCirclesTokenTransfer?: Resolver<ResolversTypes['CirclesTokenTransfer'], ParentType, ContextType, RequireFields<MutationAddCirclesTokenTransferArgs, 'data'>>;
+  indexTransfer?: Resolver<ResolversTypes['IndexTransferResponse'], ParentType, ContextType, RequireFields<MutationIndexTransferArgs, 'data'>>;
 }>;
 
 export type ProfileResolvers<ContextType = any, ParentType extends ResolversParentTypes['Profile'] = ResolversParentTypes['Profile']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   circlesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  circlesSafeOwner?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   dream?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -580,8 +379,6 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   sessionInfo?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
   profiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesArgs, 'query'>>;
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
-  circlesWallets?: Resolver<Array<ResolversTypes['CirclesWallet']>, ParentType, ContextType, RequireFields<QueryCirclesWalletsArgs, 'query'>>;
-  blockTimes?: Resolver<ResolversTypes['BlockTime'], ParentType, ContextType, RequireFields<QueryBlockTimesArgs, 'query'>>;
 }>;
 
 export type ServerResolvers<ContextType = any, ParentType extends ResolversParentTypes['Server'] = ResolversParentTypes['Server']> = ResolversObject<{
@@ -604,16 +401,11 @@ export type VersionResolvers<ContextType = any, ParentType extends ResolversPare
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
-  BlockTime?: BlockTimeResolvers<ContextType>;
-  BlockTimes?: BlockTimesResolvers<ContextType>;
-  CirclesToken?: CirclesTokenResolvers<ContextType>;
-  CirclesTokenTransfer?: CirclesTokenTransferResolvers<ContextType>;
-  CirclesTrustRelation?: CirclesTrustRelationResolvers<ContextType>;
-  CirclesWallet?: CirclesWalletResolvers<ContextType>;
   ConsumeDepositedChallengeResponse?: ConsumeDepositedChallengeResponseResolvers<ContextType>;
   DelegateAuthInit?: DelegateAuthInitResolvers<ContextType>;
   DepositChallengeResponse?: DepositChallengeResponseResolvers<ContextType>;
   ExchangeTokenResponse?: ExchangeTokenResponseResolvers<ContextType>;
+  IndexTransferResponse?: IndexTransferResponseResolvers<ContextType>;
   LogoutResponse?: LogoutResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Profile?: ProfileResolvers<ContextType>;

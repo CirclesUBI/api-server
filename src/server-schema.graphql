@@ -5,6 +5,7 @@ type Server {
 type Profile {
     id: Int!
     circlesAddress:String
+    circlesSafeOwner:String
     firstName:String!
     lastName:String
     dream:String!
@@ -41,102 +42,23 @@ input UpsertProfileInput
     country: String
     emailAddress:String
     circlesAddress:String
+    circlesSafeOwner:String
     avatarUrl:String
     avatarCid:String
     avatarMimeType:String
 }
 
-type CirclesTokenTransfer {
-    id: Int!
-    createdAt: String!
-    createdInBlockNo: Int!
-    createdInBlockHash: String!
-
-    subject: CirclesWallet!
-    predicate: CirclesTokenTransferPredicate!
-    object: CirclesWallet!
-    value: String!
-}
-input AddCirclesTokenTransferInput {
-    createdAt: String!
-    createdInBlockNo: Int!
-    createdInBlockHash: String!
-    subjectAddress: String!
-    predicate: CirclesTokenTransferPredicate!
-    objectAddress: String!
-    transferredToken: String!
-    value: String!
-}
-enum CirclesTokenTransferPredicate {
-    GIVING_TO
-    RECEIVING_FROM
+input IndexTransferInput {
+    blockNo: Int!
+    from: String!
+    to: String!
+    amount: String!
+    message: String!
 }
 
-type CirclesTrustRelation {
-    id: Int!
-    createdAt: String
-    createdInBlockNo: Int!
-    createdInBlockHash: String!
-
-    subject: CirclesWallet!
-    predicate: CirclesTrustRelationPredicate!
-    object: CirclesWallet!
-    weight: Int!
-}
-input AddCirclesTrustRelationInput {
-    createdAt: String!
-    createdInBlockNo: Int!
-    createdInBlockHash: String!
-    subjectAddress: String!
-    predicate: CirclesTrustRelationPredicate!
-    objectAddress: String!
-    weight: Int!
-}
-enum CirclesTrustRelationPredicate {
-    GIVING_TO
-    RECEIVING_FROM
-}
-
-type CirclesToken {
-    id: Int!
-    address: String!
-
-    createdAt: String!
-    createdInBlockNo: Int!
-    createdInBlockHash: String!
-
-    owner: CirclesWallet
-    transfers: [CirclesTokenTransfer!]
-}
-input AddCirclesTokenInput {
-    address: String!
-    ownerAddress: String!
-    createdAt: String!
-    createdInBlockNo: Int!
-    createdInBlockHash: String!
-}
-
-type CirclesWallet {
-    id: Int!
-    address: String!
-
-    ownToken: CirclesToken
-
-    tokens: [CirclesToken!]
-    transfers: [CirclesTokenTransfer!]
-    trustRelations: [CirclesTrustRelation!]
-}
-
-input AddCirclesWalletInput {
-    address: String!
-    ownToken: AddCirclesTokenInput
-}
-
-input QueryCirclesWalletInput {
-    address: String
-    ownTokenAddress: String
-    trusts: String
-    isTrustedBy: String
+type IndexTransferResponse {
+    success: Boolean!
+    errorMessage: String
 }
 
 type ExchangeTokenResponse {
@@ -183,29 +105,12 @@ type Version {
     revision: Int!
 }
 
-input BlockTimesInput {
-    from: Int!
-    to: Int!
-}
-
-type BlockTime {
-    blockNo: Int!
-    timestamp: String!
-}
-
-type BlockTimes {
-    resolution:Int!
-    times:[BlockTime!]!
-}
-
 type Query
 {
     version : Version!
     sessionInfo: SessionInfo!
     profiles(query:QueryProfileInput!) : [Profile!]!
     search(query:SearchInput!) : [Profile!]!
-    circlesWallets(query:QueryCirclesWalletInput!):[CirclesWallet!]!
-    blockTimes(query:BlockTimesInput!):BlockTime!
 }
 
 type Mutation
@@ -216,8 +121,5 @@ type Mutation
     consumeDepositedChallenge(delegateAuthCode:String!):ConsumeDepositedChallengeResponse!
     logout: LogoutResponse!
     upsertProfile(data:UpsertProfileInput!):Profile!
-    addCirclesWallet(data:AddCirclesWalletInput!) : CirclesWallet!
-    addCirclesToken(data:AddCirclesTokenInput!) : CirclesToken!
-    addCirclesTrustRelation(data:AddCirclesTrustRelationInput!) : CirclesTrustRelation!
-    addCirclesTokenTransfer(data:AddCirclesTokenTransferInput!) : CirclesTokenTransfer!
+    indexTransfer(data:IndexTransferInput!) : IndexTransferResponse!
 }

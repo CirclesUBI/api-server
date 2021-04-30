@@ -25,38 +25,13 @@ model Session {
   maxLifetime Int
 }
 
-model BlockTime {
-    blockNo Int @unique
-    timestamp DateTime
-}
-
-model BlockTimeDownloaderSettings {
-    id Int @default(autoincrement()) @id
-    startFrom Int
-    resolution Int
-    validFrom DateTime
-    validTo DateTime?
-}
-
-enum BlockTimeDownloaderState {
-    Requested
-    Active
-}
-
-model BlockTimeDownloader {
-  id Int @default(autoincrement()) @id
-  instanceId String
-  state BlockTimeDownloaderState
-  validTo DateTime
-  @@unique([instanceId, state, validTo], name: "UX_BlockTimeDownloaders")
-}
-
 model Profile {
     id Int @id @default(autoincrement())
     emailAddress String
     @@unique([emailAddress], name:"UX_Profile_EmailAddress")
 
     circlesAddress String?
+    circlesSafeOwner String?
     firstName String
     lastName String?
     avatarUrl String?
@@ -66,99 +41,17 @@ model Profile {
     country String?
 
     sessions Session[]  @relation(name: "Session_Profile")
-    wallets CirclesWallet[]  @relation(name: "CirclesWallet_AddedBy")
 }
 
-model CirclesWallet {
+model IndexedTransfer {
     id Int @id @default(autoincrement())
-    address String
-
-    addedAt DateTime
-    addedBy Profile @relation(name: "CirclesWallet_AddedBy", fields: [addedById], references: [id])
-    addedById Int
-
-    ownToken CirclesToken? @relation(name: "CirclesToken_Owner")
-
-    knwonTokens CirclesWalletKnownTokens[] @relation(name: "CirclesWalletKnownTokens_Wallet")
-    trustSubject CirclesTrustRelation[] @relation(name: "CirclesTrustRelation_Subject")
-    trustObject CirclesTrustRelation[] @relation(name: "CirclesTrustRelation_Object")
-    transferSubject CirclesTokenTransfer[] @relation(name: "CirclesTokenTransfer_Subject")
-    transferObject CirclesTokenTransfer[] @relation(name: "CirclesTokenTransfer_Object")
-}
-
-model CirclesWalletKnownTokens {
-    id Int @id @default(autoincrement())
-
-    createdAt DateTime
-
-    wallet CirclesWallet @relation(name: "CirclesWalletKnownTokens_Wallet", fields: [walletId], references: [id])
-    walletId Int
-
-    token CirclesToken @relation(name: "CirclesWalletKnownTokens_Token", fields: [tokenId], references: [id])
-    tokenId Int
-}
-
-enum CirclesTrustRelationPredicate {
-    GIVING_TO
-    RECEIVING_FROM
-}
-
-model CirclesTrustRelation {
-    id Int @id @default(autoincrement())
-
-    createdAt DateTime
-    createdInBlockNo Int
-    createdInBlockHash String
-
-    subject CirclesWallet @relation(name: "CirclesTrustRelation_Subject", fields: [subjectWalletId], references: [id])
-    subjectWalletId Int
-
-    predicate CirclesTrustRelationPredicate
-
-    object CirclesWallet @relation(name: "CirclesTrustRelation_Object", fields: [objectWalletId], references: [id])
-    objectWalletId Int
-
-    weight Int // 0-100
-}
-
-model CirclesToken {
-    id Int @id @default(autoincrement())
-    address String
-
-    createdAt DateTime
-    createdInBlockNo Int
-    createdInBlockHash String
-
-    owner CirclesWallet @relation(name: "CirclesToken_Owner", fields: [ownerId], references: [id])
-    ownerId Int
-
-    knownBy CirclesWalletKnownTokens[] @relation(name: "CirclesWalletKnownTokens_Token")
-    transfers CirclesTokenTransfer[] @relation(name: "CirclesTokenTransfer_Token")
-}
-
-enum CirclesTokenTransferPredicate {
-    GIVING_TO
-    RECEIVING_FROM
-}
-
-model CirclesTokenTransfer {
-    id Int @id @default(autoincrement())
-    createdAt DateTime
-    createdInBlockNo Int
-    createdInBlockHash String
-
-    token CirclesToken @relation(name: "CirclesTokenTransfer_Token", fields: [tokenId], references: [id])
-    tokenId Int
-
-    subject CirclesWallet @relation(name: "CirclesTokenTransfer_Subject", fields: [subjectWalletId], references: [id])
-    subjectWalletId Int
-
-    predicate CirclesTokenTransferPredicate
-
-    object CirclesWallet @relation(name: "CirclesTokenTransfer_Object", fields: [objectWalletId], references: [id])
-    objectWalletId Int
-
-    value String
+    timstamp DateTime
+    transactionHash Int
+    blockNo Int
+    from String
+    to String
+    amount String
+    message String
 }
 
 model DelegatedChallenges {
