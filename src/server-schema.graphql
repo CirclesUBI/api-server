@@ -8,7 +8,7 @@ type Profile {
     circlesSafeOwner:String
     firstName:String!
     lastName:String
-    dream:String!
+    dream:String
     country:String
     avatarUrl:String
     avatarCid:String
@@ -38,7 +38,7 @@ input UpsertProfileInput
     id: Int
     firstName:String!
     lastName:String
-    dream: String!
+    dream: String
     country: String
     emailAddress:String
     circlesAddress:String

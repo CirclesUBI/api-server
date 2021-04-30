@@ -37,7 +37,7 @@ model Profile {
     avatarUrl String?
     avatarCid String?
     avatarMimeType String?
-    dream String
+    dream String?
     country String?
 
     sessions Session[]  @relation(name: "Session_Profile")
