@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:15
 LABEL org.opencontainers.image.source=https://github.com/circlesland/api-server
 
 WORKDIR /usr/o-platform/api-server
