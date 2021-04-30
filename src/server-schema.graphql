@@ -6,6 +6,7 @@ type Profile {
     id: Int!
     circlesAddress:String
     circlesSafeOwner:String
+    circlesTokenAddress:String
     firstName:String!
     lastName:String
     dream:String
@@ -43,6 +44,7 @@ input UpsertProfileInput
     emailAddress:String
     circlesAddress:String
     circlesSafeOwner:String
+    circlesTokenAddress:String
     avatarUrl:String
     avatarCid:String
     avatarMimeType:String

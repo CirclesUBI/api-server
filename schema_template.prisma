@@ -32,6 +32,7 @@ model Profile {
 
     circlesAddress String?
     circlesSafeOwner String?
+    circlesTokenAddress String?
     firstName String
     lastName String?
     avatarUrl String?
