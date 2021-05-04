@@ -106,6 +106,7 @@ export type Profile = {
   id: Scalars['Int'];
   circlesAddress?: Maybe<Scalars['String']>;
   circlesSafeOwner?: Maybe<Scalars['String']>;
+  circlesTokenAddress?: Maybe<Scalars['String']>;
   firstName: Scalars['String'];
   lastName?: Maybe<Scalars['String']>;
   dream?: Maybe<Scalars['String']>;
@@ -170,6 +171,7 @@ export type UpsertProfileInput = {
   emailAddress?: Maybe<Scalars['String']>;
   circlesAddress?: Maybe<Scalars['String']>;
   circlesSafeOwner?: Maybe<Scalars['String']>;
+  circlesTokenAddress?: Maybe<Scalars['String']>;
   avatarUrl?: Maybe<Scalars['String']>;
   avatarCid?: Maybe<Scalars['String']>;
   avatarMimeType?: Maybe<Scalars['String']>;
@@ -363,6 +365,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   circlesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesSafeOwner?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  circlesTokenAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   dream?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
