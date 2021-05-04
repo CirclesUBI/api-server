@@ -8,12 +8,22 @@ export function searchResolver(prisma: PrismaClient) {
         const searchFirstName = args.query.searchString + "%";
         const searchLastName = args.query.searchString + "%";
         const result: {
-            id: number, "circlesAddress"?: string, "circlesSafeOwner"?: string, "circlesTokenAddress"?: string, "firstName": string, "lastName"?: string, "avatarCid"?: string, "avatarUrl"?: string, "avatarMimeType"?: string, dream: string, country?: string
+            id: number,
+            "circlesAddress"?: string,
+            "circlesSafeOwner"?: string,
+            "circlesTokenAddress"?: string,
+            "firstName": string,
+            "lastName"?: string,
+            "avatarCid"?: string,
+            "avatarUrl"?: string,
+            "avatarMimeType"?: string,
+            dream: string,
+            country?: string
         }[] =
             await prisma.$queryRaw`SELECT id,
                                           "circlesAddress",
                                           "circlesSafeOwner",
-                                          "circlesTokenAddress"
+                                          "circlesTokenAddress",
                                           "firstName",
                                           "lastName",
                                           "avatarCid",
