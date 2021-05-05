@@ -23,7 +23,7 @@ export const resolvers: Resolvers = {
                 minor: version[1],
                 revision: version[2]
             }
-        },
+        }
     },
     Mutation: {
         exchangeToken: exchangeTokenResolver(prisma_rw),
