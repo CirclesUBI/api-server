@@ -40,6 +40,7 @@ model Profile {
     avatarMimeType String?
     dream String?
     country String?
+    newsletter Boolean?
 
     sessions Session[]  @relation(name: "Session_Profile")
 }

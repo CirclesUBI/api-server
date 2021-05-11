@@ -114,6 +114,7 @@ export type Profile = {
   avatarUrl?: Maybe<Scalars['String']>;
   avatarCid?: Maybe<Scalars['String']>;
   avatarMimeType?: Maybe<Scalars['String']>;
+  newsletter?: Maybe<Scalars['Boolean']>;
 };
 
 export type Query = {
@@ -175,6 +176,7 @@ export type UpsertProfileInput = {
   avatarUrl?: Maybe<Scalars['String']>;
   avatarCid?: Maybe<Scalars['String']>;
   avatarMimeType?: Maybe<Scalars['String']>;
+  newsletter?: Maybe<Scalars['Boolean']>;
 };
 
 export type Version = {
@@ -373,6 +375,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   avatarUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarCid?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarMimeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  newsletter?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
