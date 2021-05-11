@@ -1,8 +1,8 @@
-import {QueryProfilesArgs, RequireFields} from "../../types";
+import {Profile, QueryProfilesArgs, RequireFields} from "../../types";
 import {PrismaClient} from "@prisma/client";
 import {Context} from "../../context";
 
-export async function whereProfile(args: RequireFields<QueryProfilesArgs, never>, context:Context) {
+export async function whereProfile(args: RequireFields<QueryProfilesArgs, never>, ownProfileId:number|null) {
     const q: { [key: string]: any } = {};
     if (!args.query) {
         throw new Error(`No query fields have been specified`);
@@ -21,8 +21,7 @@ export async function whereProfile(args: RequireFields<QueryProfilesArgs, never>
         });
 
     if (Object.keys(q).length === 0) {
-        const session = await context.verifySession();
-        q["id"] = session.profileId;
+        q["id"] = ownProfileId;
         if (!q["id"]) {
             throw new Error(`At least one query field must be specified.`);
         }
@@ -32,11 +31,16 @@ export async function whereProfile(args: RequireFields<QueryProfilesArgs, never>
 
 export function profilesResolver(prisma:PrismaClient) {
     return async (parent:any, args:QueryProfilesArgs, context:Context) => {
-        const q = await whereProfile(args, context);
+        let ownProfileId:number|null = null;
+        if (context.sessionId) {
+            const session = await context.verifySession();
+            ownProfileId = session.profileId;
+        }
+        const q = await whereProfile(args, ownProfileId);
         if (q.circlesAddress) {
             delete q.circlesAddress;
         }
-        return await prisma.profile.findMany({
+        const rows = await prisma.profile.findMany({
             where: {
                 ...q,
                 circlesAddress: args.query.circlesAddress ? {
@@ -44,6 +48,23 @@ export function profilesResolver(prisma:PrismaClient) {
                 } : undefined
             },
             take: 100
+        });
+
+        return rows.map(o => {
+            return <Profile>{
+                id: o.id,
+                circlesAddress: o.circlesAddress,
+                circlesSafeOwner: o.circlesSafeOwner,
+                avatarUrl: o.avatarUrl,
+                avatarMimeType: o.avatarMimeType,
+                dream: o.dream,
+                country: o.country,
+                firstName: o.firstName,
+                lastName: o.lastName,
+                avatarCid: o.avatarCid,
+                circlesTokenAddress: o.circlesTokenAddress,
+                newsletter: ownProfileId == o.id ? o.newsletter : undefined
+            }
         });
     };
 }
