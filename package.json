@@ -1,6 +1,6 @@
 {
   "name": "@o-platform/api-server",
-  "version": "0.1.39",
+  "version": "0.1.40",
   "description": "",
   "main": "dist/index.js",
   "prepublish": "tsc",
@@ -14,7 +14,7 @@
   "author": "Daniel Janz & Samuel Andert (Basic Income Lab GmbH)",
   "license": "AGPL-3",
   "dependencies": {
-    "@prisma/client": "^2.21.2",
+    "@prisma/client": "^2.22.1",
     "apollo-server": "^2.24.0",
     "apollo-server-plugin-http-headers": "^0.1.4",
     "ethereumjs-util": "^7.0.10",
@@ -32,7 +32,7 @@
     "@types/mustache": "^4.1.1",
     "@types/node": "^15.0.1",
     "@types/nodemailer": "^6.4.1",
-    "prisma": "^2.21.2",
+    "prisma": "^2.22.1",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4"
   }

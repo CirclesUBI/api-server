@@ -18,6 +18,10 @@ const packageJson = require("../../package.json");
 
 export const resolvers: Resolvers = {
     Query: {
+        whoami: async (parent:any, args:any, context:Context) => {
+            const i = await context.verifySession();
+            return i?.emailAddress;
+        },
         profiles: profilesResolver(prisma_ro),
         search: searchResolver(prisma_ro),
         sessionInfo: sessionInfo,

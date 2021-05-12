@@ -111,6 +111,7 @@ type Version {
 
 type Query
 {
+    whoami: String
     version : Version!
     sessionInfo: SessionInfo!
     profiles(query:QueryProfileInput!) : [Profile!]!

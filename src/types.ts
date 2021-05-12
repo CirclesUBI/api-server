@@ -131,6 +131,7 @@ export type Profile = {
 
 export type Query = {
   __typename?: 'Query';
+  whoami?: Maybe<Scalars['String']>;
   version: Version;
   sessionInfo: SessionInfo;
   profiles: Array<Profile>;
@@ -424,6 +425,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  whoami?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   version?: Resolver<ResolversTypes['Version'], ParentType, ContextType>;
   sessionInfo?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
   profiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesArgs, 'query'>>;
