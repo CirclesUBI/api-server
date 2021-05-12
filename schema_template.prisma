@@ -42,6 +42,9 @@ model Profile {
     country String?
     newsletter Boolean?
 
+    verifySafeChallenge String?
+    newSafeAddress String?
+
     sessions Session[]  @relation(name: "Session_Profile")
 }
 

@@ -117,6 +117,26 @@ type Query
     search(query:SearchInput!) : [Profile!]!
 }
 
+input RequestUpdateSafeInput {
+    newSafeAddress: String!
+}
+
+type RequestUpdateSafeResponse {
+    success: Boolean!
+    errorMessage: String
+    challenge: String
+}
+
+input UpdateSafeInput {
+    signature: String!
+}
+
+type UpdateSafeResponse {
+    success: Boolean!
+    errorMessage: String
+    newSafeAddress: String
+}
+
 type Mutation
 {
     exchangeToken : ExchangeTokenResponse!
@@ -125,5 +145,7 @@ type Mutation
     consumeDepositedChallenge(delegateAuthCode:String!):ConsumeDepositedChallengeResponse!
     logout: LogoutResponse!
     upsertProfile(data:UpsertProfileInput!):Profile!
+    requestUpdateSafe(data:RequestUpdateSafeInput!) : RequestUpdateSafeResponse!
+    updateSafe(data:UpdateSafeInput!) : UpdateSafeResponse!
     indexTransfer(data:IndexTransferInput!) : IndexTransferResponse!
 }

@@ -73,6 +73,8 @@ export type Mutation = {
   consumeDepositedChallenge: ConsumeDepositedChallengeResponse;
   logout: LogoutResponse;
   upsertProfile: Profile;
+  requestUpdateSafe: RequestUpdateSafeResponse;
+  updateSafe: UpdateSafeResponse;
   indexTransfer: IndexTransferResponse;
 };
 
@@ -94,6 +96,16 @@ export type MutationConsumeDepositedChallengeArgs = {
 
 export type MutationUpsertProfileArgs = {
   data: UpsertProfileInput;
+};
+
+
+export type MutationRequestUpdateSafeArgs = {
+  data: RequestUpdateSafeInput;
+};
+
+
+export type MutationUpdateSafeArgs = {
+  data: UpdateSafeInput;
 };
 
 
@@ -147,6 +159,17 @@ export type QueryUniqueProfileInput = {
   id: Scalars['Int'];
 };
 
+export type RequestUpdateSafeInput = {
+  newSafeAddress: Scalars['String'];
+};
+
+export type RequestUpdateSafeResponse = {
+  __typename?: 'RequestUpdateSafeResponse';
+  success: Scalars['Boolean'];
+  errorMessage?: Maybe<Scalars['String']>;
+  challenge?: Maybe<Scalars['String']>;
+};
+
 export type SearchInput = {
   searchString: Scalars['String'];
 };
@@ -161,6 +184,17 @@ export type SessionInfo = {
   isLoggedOn: Scalars['Boolean'];
   hasProfile?: Maybe<Scalars['Boolean']>;
   profileId?: Maybe<Scalars['Int']>;
+};
+
+export type UpdateSafeInput = {
+  signature: Scalars['String'];
+};
+
+export type UpdateSafeResponse = {
+  __typename?: 'UpdateSafeResponse';
+  success: Scalars['Boolean'];
+  errorMessage?: Maybe<Scalars['String']>;
+  newSafeAddress?: Maybe<Scalars['String']>;
 };
 
 export type UpsertProfileInput = {
@@ -281,9 +315,13 @@ export type ResolversTypes = ResolversObject<{
   Query: ResolverTypeWrapper<{}>;
   QueryProfileInput: QueryProfileInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
+  RequestUpdateSafeInput: RequestUpdateSafeInput;
+  RequestUpdateSafeResponse: ResolverTypeWrapper<RequestUpdateSafeResponse>;
   SearchInput: SearchInput;
   Server: ResolverTypeWrapper<Server>;
   SessionInfo: ResolverTypeWrapper<SessionInfo>;
+  UpdateSafeInput: UpdateSafeInput;
+  UpdateSafeResponse: ResolverTypeWrapper<UpdateSafeResponse>;
   UpsertProfileInput: UpsertProfileInput;
   Version: ResolverTypeWrapper<Version>;
 }>;
@@ -306,9 +344,13 @@ export type ResolversParentTypes = ResolversObject<{
   Query: {};
   QueryProfileInput: QueryProfileInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
+  RequestUpdateSafeInput: RequestUpdateSafeInput;
+  RequestUpdateSafeResponse: RequestUpdateSafeResponse;
   SearchInput: SearchInput;
   Server: Server;
   SessionInfo: SessionInfo;
+  UpdateSafeInput: UpdateSafeInput;
+  UpdateSafeResponse: UpdateSafeResponse;
   UpsertProfileInput: UpsertProfileInput;
   Version: Version;
 }>;
@@ -360,6 +402,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   consumeDepositedChallenge?: Resolver<ResolversTypes['ConsumeDepositedChallengeResponse'], ParentType, ContextType, RequireFields<MutationConsumeDepositedChallengeArgs, 'delegateAuthCode'>>;
   logout?: Resolver<ResolversTypes['LogoutResponse'], ParentType, ContextType>;
   upsertProfile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType, RequireFields<MutationUpsertProfileArgs, 'data'>>;
+  requestUpdateSafe?: Resolver<ResolversTypes['RequestUpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationRequestUpdateSafeArgs, 'data'>>;
+  updateSafe?: Resolver<ResolversTypes['UpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationUpdateSafeArgs, 'data'>>;
   indexTransfer?: Resolver<ResolversTypes['IndexTransferResponse'], ParentType, ContextType, RequireFields<MutationIndexTransferArgs, 'data'>>;
 }>;
 
@@ -386,6 +430,13 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
 }>;
 
+export type RequestUpdateSafeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['RequestUpdateSafeResponse'] = ResolversParentTypes['RequestUpdateSafeResponse']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  challenge?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type ServerResolvers<ContextType = any, ParentType extends ResolversParentTypes['Server'] = ResolversParentTypes['Server']> = ResolversObject<{
   version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -395,6 +446,13 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
   isLoggedOn?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   hasProfile?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   profileId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type UpdateSafeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpdateSafeResponse'] = ResolversParentTypes['UpdateSafeResponse']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  newSafeAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -415,8 +473,10 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   Profile?: ProfileResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  RequestUpdateSafeResponse?: RequestUpdateSafeResponseResolvers<ContextType>;
   Server?: ServerResolvers<ContextType>;
   SessionInfo?: SessionInfoResolvers<ContextType>;
+  UpdateSafeResponse?: UpdateSafeResponseResolvers<ContextType>;
   Version?: VersionResolvers<ContextType>;
 }>;
 

@@ -1,6 +1,6 @@
 {
   "name": "@o-platform/api-server",
-  "version": "0.1.38",
+  "version": "0.1.39",
   "description": "",
   "main": "dist/index.js",
   "prepublish": "tsc",
@@ -17,6 +17,7 @@
     "@prisma/client": "^2.21.2",
     "apollo-server": "^2.24.0",
     "apollo-server-plugin-http-headers": "^0.1.4",
+    "ethereumjs-util": "^7.0.10",
     "graphql": "^15.5.0",
     "graphql-import": "^1.0.2",
     "mustache": "^4.0.1",
