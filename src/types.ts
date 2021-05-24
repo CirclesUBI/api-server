@@ -149,7 +149,7 @@ export type QuerySearchArgs = {
 };
 
 export type QueryProfileInput = {
-  id?: Maybe<Scalars['Int']>;
+  id?: Maybe<Array<Scalars['Int']>>;
   firstName?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
   country?: Maybe<Scalars['String']>;

@@ -24,7 +24,7 @@ input QueryUniqueProfileInput
 
 input QueryProfileInput
 {
-    id: Int
+    id:[Int!]
     firstName:String
     lastName:String
     country:String
