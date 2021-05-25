@@ -20,11 +20,8 @@ export async function whereProfile(args: RequireFields<QueryProfilesArgs, never>
             q[kv.key] = kv.value;
         });
 
-    if (Object.keys(q).length === 0) {
+    if (Object.keys(q).length === 0 && !Array.isArray(args.query.id)) {
         q["id"] = ownProfileId;
-        if (!q["id"]) {
-            throw new Error(`At least one query field must be specified.`);
-        }
     }
     return q;
 }
