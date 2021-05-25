@@ -15,7 +15,7 @@ export async function whereProfile(args: RequireFields<QueryProfilesArgs, never>
                 value: args.query[key]
             }
         })
-        .filter(kv => kv.value)
+        .filter(kv => kv.key !== "id" && kv.value)
         .forEach(kv => {
             q[kv.key] = kv.value;
         });
@@ -40,17 +40,16 @@ export function profilesResolver(prisma:PrismaClient) {
         if (q.circlesAddress) {
             delete q.circlesAddress;
         }
-        if (q.circlesAddress) {
-            delete q.id;
+        if (!q.id && args.query.id) {
+            q.id = args.query.id ? {
+                in: args.query.id
+            } : undefined;
         }
         const rows = await prisma.profile.findMany({
             where: {
                 ...q,
                 circlesAddress: args.query.circlesAddress ? {
                     in: args.query.circlesAddress.map(o => o.toLowerCase())
-                } : undefined,
-                id: args.query.id ? {
-                    in: args.query.id
                 } : undefined
             },
             take: 100
