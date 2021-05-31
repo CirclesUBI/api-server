@@ -109,15 +109,6 @@ type Version {
     revision: Int!
 }
 
-type Query
-{
-    whoami: String
-    version : Version!
-    sessionInfo: SessionInfo!
-    profiles(query:QueryProfileInput!) : [Profile!]!
-    search(query:SearchInput!) : [Profile!]!
-}
-
 input RequestUpdateSafeInput {
     newSafeAddress: String!
 }
@@ -138,6 +129,22 @@ type UpdateSafeResponse {
     newSafeAddress: String
 }
 
+input QueryCitiesInput {
+    name: String!
+    languageCode: String
+}
+
+type City {
+    geonameid: Int!
+    name: String!
+    country: String!
+    population: Int!
+    latitude: Float!
+    longitude: Float!
+    feature_code: String!
+    source: String!
+}
+
 type Mutation
 {
     exchangeToken : ExchangeTokenResponse!
@@ -149,4 +156,14 @@ type Mutation
     requestUpdateSafe(data:RequestUpdateSafeInput!) : RequestUpdateSafeResponse!
     updateSafe(data:UpdateSafeInput!) : UpdateSafeResponse!
     indexTransfer(data:IndexTransferInput!) : IndexTransferResponse!
+}
+
+type Query
+{
+    whoami: String
+    version : Version!
+    sessionInfo: SessionInfo!
+    profiles(query:QueryProfileInput!) : [Profile!]!
+    search(query:SearchInput!) : [Profile!]!
+    cities(query:QueryCitiesInput!) : [City!]!
 }

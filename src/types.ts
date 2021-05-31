@@ -13,6 +13,18 @@ export type Scalars = {
   Float: number;
 };
 
+export type City = {
+  __typename?: 'City';
+  geonameid: Scalars['Int'];
+  name: Scalars['String'];
+  country: Scalars['String'];
+  population: Scalars['Int'];
+  latitude: Scalars['Float'];
+  longitude: Scalars['Float'];
+  feature_code: Scalars['String'];
+  source: Scalars['String'];
+};
+
 export type ConsumeDepositedChallengeResponse = {
   __typename?: 'ConsumeDepositedChallengeResponse';
   success: Scalars['Boolean'];
@@ -136,6 +148,7 @@ export type Query = {
   sessionInfo: SessionInfo;
   profiles: Array<Profile>;
   search: Array<Profile>;
+  cities: Array<City>;
 };
 
 
@@ -146,6 +159,16 @@ export type QueryProfilesArgs = {
 
 export type QuerySearchArgs = {
   query: SearchInput;
+};
+
+
+export type QueryCitiesArgs = {
+  query: QueryCitiesInput;
+};
+
+export type QueryCitiesInput = {
+  name: Scalars['String'];
+  languageCode?: Maybe<Scalars['String']>;
 };
 
 export type QueryProfileInput = {
@@ -300,20 +323,23 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  City: ResolverTypeWrapper<City>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
+  String: ResolverTypeWrapper<Scalars['String']>;
+  Float: ResolverTypeWrapper<Scalars['Float']>;
   ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-  String: ResolverTypeWrapper<Scalars['String']>;
   DelegateAuthInit: ResolverTypeWrapper<DelegateAuthInit>;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
   IndexTransferInput: IndexTransferInput;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
   IndexTransferResponse: ResolverTypeWrapper<IndexTransferResponse>;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
   Mutation: ResolverTypeWrapper<{}>;
   Profile: ResolverTypeWrapper<Profile>;
   Query: ResolverTypeWrapper<{}>;
+  QueryCitiesInput: QueryCitiesInput;
   QueryProfileInput: QueryProfileInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
@@ -329,20 +355,23 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
+  City: City;
+  Int: Scalars['Int'];
+  String: Scalars['String'];
+  Float: Scalars['Float'];
   ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
   Boolean: Scalars['Boolean'];
-  String: Scalars['String'];
   DelegateAuthInit: DelegateAuthInit;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: DepositChallengeResponse;
   ExchangeTokenResponse: ExchangeTokenResponse;
   IndexTransferInput: IndexTransferInput;
-  Int: Scalars['Int'];
   IndexTransferResponse: IndexTransferResponse;
   LogoutResponse: LogoutResponse;
   Mutation: {};
   Profile: Profile;
   Query: {};
+  QueryCitiesInput: QueryCitiesInput;
   QueryProfileInput: QueryProfileInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
@@ -354,6 +383,18 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateSafeResponse: UpdateSafeResponse;
   UpsertProfileInput: UpsertProfileInput;
   Version: Version;
+}>;
+
+export type CityResolvers<ContextType = any, ParentType extends ResolversParentTypes['City'] = ResolversParentTypes['City']> = ResolversObject<{
+  geonameid?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  country?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  population?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  latitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  longitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  feature_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  source?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type ConsumeDepositedChallengeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['ConsumeDepositedChallengeResponse'] = ResolversParentTypes['ConsumeDepositedChallengeResponse']> = ResolversObject<{
@@ -430,6 +471,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   sessionInfo?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
   profiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesArgs, 'query'>>;
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
+  cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, 'query'>>;
 }>;
 
 export type RequestUpdateSafeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['RequestUpdateSafeResponse'] = ResolversParentTypes['RequestUpdateSafeResponse']> = ResolversObject<{
@@ -466,6 +508,7 @@ export type VersionResolvers<ContextType = any, ParentType extends ResolversPare
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  City?: CityResolvers<ContextType>;
   ConsumeDepositedChallengeResponse?: ConsumeDepositedChallengeResponseResolvers<ContextType>;
   DelegateAuthInit?: DelegateAuthInitResolvers<ContextType>;
   DepositChallengeResponse?: DepositChallengeResponseResolvers<ContextType>;

@@ -14,6 +14,7 @@ import {Session} from "../session";
 import Web3 from "web3";
 import {RpcGateway} from "../rpcGateway";
 import {GnosisSafeProxy} from "../web3Contract";
+import {Query} from "../utility_db/query";
 const packageJson = require("../../package.json");
 
 export const resolvers: Resolvers = {
@@ -21,6 +22,10 @@ export const resolvers: Resolvers = {
         whoami: async (parent:any, args:any, context:Context) => {
             const i = await context.verifySession();
             return i?.emailAddress;
+        },
+        cities: async (parent:any, args, context:Context) => {
+            const result = await Query.placesByName(args.query.name, args.query.languageCode ?? "en")
+            return result;
         },
         profiles: profilesResolver(prisma_ro),
         search: searchResolver(prisma_ro),
