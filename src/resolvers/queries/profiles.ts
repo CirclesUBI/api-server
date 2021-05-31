@@ -65,7 +65,8 @@ export function profilesResolver(prisma:PrismaClient) {
                 lastName: o.lastName,
                 avatarCid: o.avatarCid,
                 circlesTokenAddress: o.circlesTokenAddress,
-                newsletter: ownProfileId == o.id ? o.newsletter : undefined
+                newsletter: ownProfileId == o.id ? o.newsletter : undefined,
+                cityGeonameid: o.cityGeonameid
             }
         });
     };

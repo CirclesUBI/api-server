@@ -41,6 +41,7 @@ model Profile {
     dream String?
     country String?
     newsletter Boolean?
+    cityGeonameid Int?
 
     verifySafeChallenge String?
     newSafeAddress String?
