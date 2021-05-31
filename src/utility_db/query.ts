@@ -39,7 +39,7 @@ export class Query {
                                   and feature_code != 'PPLX'
                                   and population > 0
                 where lower(alternate_name) like $1
-                    and isolanguage = $2
+                  and (isolanguage = $2 or isolanguage is null)
             union all
                 select 'B'            source
                      , p.geonameid
@@ -55,7 +55,7 @@ export class Query {
                 where lower(name) like $1
                   and feature_code like 'PPL%'
                   and feature_code != 'PPLX'
-                      and population > 0
+                  and population > 0
                 order by population desc
             )
             select geonameid
