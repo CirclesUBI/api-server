@@ -26,7 +26,7 @@ export async function whereProfile(args: RequireFields<QueryProfilesArgs, never>
     return q;
 }
 
-export function profilesResolver(prisma:PrismaClient) {
+export function profiles(prisma:PrismaClient) {
     return async (parent:any, args:QueryProfilesArgs, context:Context) => {
         let ownProfileId:number|null = null;
         if (context.sessionId) {

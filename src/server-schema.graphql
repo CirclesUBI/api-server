@@ -16,6 +16,8 @@ type Profile {
     avatarMimeType:String
     newsletter:Boolean
     cityGeonameid:Int
+    city: City
+    offers: [Offer!]
 }
 
 input QueryUniqueProfileInput
@@ -190,7 +192,7 @@ type City {
 type Offer {
     id: Int!
 
-    createdBy: Profile!
+    createdBy: Profile
     createdByProfileId: Int!
 
     publishedAt: String!
@@ -201,50 +203,38 @@ type Offer {
     pictureUrl: String!
     description: String
     category: String!
-    city: City!
+    city: City
     geonameid: Int!
 
     pricePerUnit: String!
     unit: String!
-    maxUnits: Int!
+    maxUnits: Int
 
     deliveryTerms: String!
 }
 
 input CreateOfferInput
 {
-    id: Int
-    title:String!
-    price:String!
-    deliveryTerms:String!
-    description:String
-    category:String
-    geonameid: Int!
+    createdByProfileId: Int!
+
+    title: String!
     pictureUrl: String!
+    description: String
+    category: String!
+    geonameid: Int!
+
+    pricePerUnit: String!
+    unit: String!
+    maxUnits: Int
+
+    deliveryTerms: String!
 }
 
 input QueryOfferInput {
     id:Int
     createdByProfileId:Int
-
-    title_like:String
-
-    deliveryTerms_in:[String!]
-
-    category_in:[String!]
-    category_like:String
-
-    city_like:String
-    city_in:[Int!]
-
-    price_lt:String
-    price_gt:String
-
     publishedAt_lt:String
     publishedAt_gt:String
-
-    unlistedAt_lt:String
-    unlistedAt_gt:String
 }
 
 input LockOfferInput
@@ -322,4 +312,5 @@ type Query
     profiles(query:QueryProfileInput!) : [Profile!]!
     search(query:SearchInput!) : [Profile!]!
     cities(query:QueryCitiesInput!) : [City!]!
+    offers(query:QueryOfferInput!): [Offer!]!
 }

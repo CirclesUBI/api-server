@@ -90,15 +90,16 @@ model Offer {
     purchase Purchase? @relation(name: "Purchase_PurchasedItem")
 
     title String
-    price String            // price in wei
-    priceInCircles Int // price in circles rounded to two digits after comma and stored as integer (to read: divide by 100)
-
-    description String?
-    category String?
-    geonameid Int? // city
-    deliveryTerms String    // pickup, delivery etc.
-
     pictureUrl String
+    description String?
+    category String
+    geonameid Int // city
+
+    pricePerUnit String
+    unit String
+    maxUnits Int?
+
+    deliveryTerms String    // pickup, delivery etc.
 }
 
 enum PurchaseStatus {

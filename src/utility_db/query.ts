@@ -1,4 +1,5 @@
 import {Pool, PoolClient} from "pg";
+import {City} from "../types";
 
 const pool = new Pool({
     connectionString: process.env.UTILITY_DB_CONNECTION_STRING
@@ -10,16 +11,7 @@ pool.on('error', (err:Error, client:PoolClient) => {
 })
 
 export class Query {
-    static async placesById(ids:number[]) : Promise<{
-        geonameid: number,
-        name: string,
-        country: string,
-        population: number,
-        latitude: number,
-        longitude: number,
-        feature_code: string,
-        source: string
-    }[]> {
+    static async placesById(ids:number[]) : Promise<City[]> {
         if (ids.length > 50) {
             throw new Error(`You can query max. 50 cities at once.`)
         }
@@ -34,7 +26,6 @@ export class Query {
              , p.latitude
              , p.longitude
              , p.feature_code
-             , 'B' source
         from places p
         join countries c on c.iso = p.country_code
         where p.geonameid in (${queryParams})
@@ -51,16 +42,7 @@ export class Query {
         });
     }
 
-    static async placesByName(searchPattern:string, isoAlpha2Language:string = "en") : Promise<{
-        geonameid: number,
-        name: string,
-        country: string,
-        population: number,
-        latitude: number,
-        longitude: number,
-        feature_code: string,
-        source: string
-    }[]> {
+    static async placesByName(searchPattern:string, isoAlpha2Language:string = "en") : Promise<City[]> {
 
         const query = `
             -- Find places by international name (english)
@@ -74,9 +56,6 @@ export class Query {
                      , p.feature_code
                      , '' isolanguage
                      , -1 "isPreferredName"
-                     , '' "isColloquial"
-                     , '' "isHistoric"
-                     , -1 "isShortName"
                 from places p
                          join countries c on p.country_code = c.iso
                 where lower(name) like $1
@@ -95,9 +74,6 @@ export class Query {
                      , p.feature_code
                      , pn.isolanguage
                      , coalesce(pn."isPreferredName", 0) "isPreferredName"
-                     , pn."isColloquial"
-                     , pn."isHistoric"
-                     , pn."isShortName"
                 from place_names pn
                          join places p on p.geonameid = pn.geonameid
                          join countries c on p.country_code = c.iso

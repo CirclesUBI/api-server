@@ -31,14 +31,16 @@ export type ConsumeDepositedChallengeResponse = {
 };
 
 export type CreateOfferInput = {
-  id?: Maybe<Scalars['Int']>;
+  createdByProfileId: Scalars['Int'];
   title: Scalars['String'];
-  price: Scalars['String'];
-  deliveryTerms: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
-  category?: Maybe<Scalars['String']>;
-  geonameid: Scalars['Int'];
   pictureUrl: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  category: Scalars['String'];
+  geonameid: Scalars['Int'];
+  pricePerUnit: Scalars['String'];
+  unit: Scalars['String'];
+  maxUnits?: Maybe<Scalars['Int']>;
+  deliveryTerms: Scalars['String'];
 };
 
 export type DelegateAuthInit = {
@@ -183,7 +185,7 @@ export type MutationProvePaymentArgs = {
 export type Offer = {
   __typename?: 'Offer';
   id: Scalars['Int'];
-  createdBy: Profile;
+  createdBy?: Maybe<Profile>;
   createdByProfileId: Scalars['Int'];
   publishedAt: Scalars['String'];
   unlistedAt?: Maybe<Scalars['String']>;
@@ -192,11 +194,11 @@ export type Offer = {
   pictureUrl: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   category: Scalars['String'];
-  city: City;
+  city?: Maybe<City>;
   geonameid: Scalars['Int'];
   pricePerUnit: Scalars['String'];
   unit: Scalars['String'];
-  maxUnits: Scalars['Int'];
+  maxUnits?: Maybe<Scalars['Int']>;
   deliveryTerms: Scalars['String'];
 };
 
@@ -223,6 +225,8 @@ export type Profile = {
   avatarMimeType?: Maybe<Scalars['String']>;
   newsletter?: Maybe<Scalars['Boolean']>;
   cityGeonameid?: Maybe<Scalars['Int']>;
+  city?: Maybe<City>;
+  offers?: Maybe<Array<Offer>>;
 };
 
 export type ProvePaymentResult = {
@@ -257,6 +261,7 @@ export type Query = {
   profiles: Array<Profile>;
   search: Array<Profile>;
   cities: Array<City>;
+  offers: Array<Offer>;
 };
 
 
@@ -272,6 +277,11 @@ export type QuerySearchArgs = {
 
 export type QueryCitiesArgs = {
   query: QueryCitiesInput;
+};
+
+
+export type QueryOffersArgs = {
+  query: QueryOfferInput;
 };
 
 export type QueryCitiesByGeonameIdInput = {
@@ -302,18 +312,8 @@ export type QueryIndexedTransferTagsInput = {
 export type QueryOfferInput = {
   id?: Maybe<Scalars['Int']>;
   createdByProfileId?: Maybe<Scalars['Int']>;
-  title_like?: Maybe<Scalars['String']>;
-  deliveryTerms_in?: Maybe<Array<Scalars['String']>>;
-  category_in?: Maybe<Array<Scalars['String']>>;
-  category_like?: Maybe<Scalars['String']>;
-  city_like?: Maybe<Scalars['String']>;
-  city_in?: Maybe<Array<Scalars['Int']>>;
-  price_lt?: Maybe<Scalars['String']>;
-  price_gt?: Maybe<Scalars['String']>;
   publishedAt_lt?: Maybe<Scalars['String']>;
   publishedAt_gt?: Maybe<Scalars['String']>;
-  unlistedAt_lt?: Maybe<Scalars['String']>;
-  unlistedAt_gt?: Maybe<Scalars['String']>;
 };
 
 export type QueryProfileInput = {
@@ -665,7 +665,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type OfferResolvers<ContextType = any, ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  createdBy?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
+  createdBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   createdByProfileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   publishedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   unlistedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -674,11 +674,11 @@ export type OfferResolvers<ContextType = any, ParentType extends ResolversParent
   pictureUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   category?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  city?: Resolver<ResolversTypes['City'], ParentType, ContextType>;
+  city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
   geonameid?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   pricePerUnit?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   unit?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  maxUnits?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  maxUnits?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   deliveryTerms?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -697,6 +697,8 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   avatarMimeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   newsletter?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   cityGeonameid?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
+  offers?: Resolver<Maybe<Array<ResolversTypes['Offer']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -725,6 +727,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   profiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesArgs, 'query'>>;
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, 'query'>>;
+  offers?: Resolver<Array<ResolversTypes['Offer']>, ParentType, ContextType, RequireFields<QueryOffersArgs, 'query'>>;
 }>;
 
 export type RequestUpdateSafeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['RequestUpdateSafeResponse'] = ResolversParentTypes['RequestUpdateSafeResponse']> = ResolversObject<{

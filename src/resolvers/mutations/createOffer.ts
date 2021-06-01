@@ -1,9 +1,9 @@
 import {MutationCreateOfferArgs} from "../../types";
 import {Context} from "../../context";
 import {prisma_rw} from "../../prismaClient";
-import {RpcGateway} from "../../rpcGateway";
+import {PrismaClient} from "@prisma/client";
 
-export function createOfferResolver() {
+export function createOfferResolver(prisma:PrismaClient) {
     return async (parent:any, args:MutationCreateOfferArgs, context:Context) => {
         const session = await context.verifySession();
         const offer = await prisma_rw.offer.create({
@@ -14,21 +14,24 @@ export function createOfferResolver() {
                     }
                 },
                 publishedAt: new Date(),
-                category: args.data?.category,
-                geonameid: args.data?.geonameid,
-                deliveryTerms: args.data?.deliveryTerms,
-                description: args.data?.description,
-                price: args.data?.price,
+                category: args.data.category,
+                geonameid: args.data.geonameid,
+                deliveryTerms: args.data.deliveryTerms,
+                description: args.data.description,
+                unit: args.data.unit,
+                maxUnits: args.data.maxUnits,
+                pricePerUnit: args.data.pricePerUnit,
                 title: args.data?.title,
                 pictureUrl:  args.data.pictureUrl,
-                priceInCircles: parseFloat(RpcGateway.get().utils.fromWei(args.data?.price, "ether")),
                 purchasedAt: null,
                 unlistedAt: null
-            },
-            include: {
-                createdBy: true
             }
         });
-        return offer;
+        return {
+            ...offer,
+            publishedAt: offer.publishedAt.toJSON(),
+            unlistedAt: offer.unlistedAt ? offer.unlistedAt?.toJSON() : null,
+            purchasedAt: offer.purchasedAt ? offer.purchasedAt?.toJSON() : null
+        };
     };
 }

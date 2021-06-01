@@ -2,7 +2,7 @@ import {QueryProfilesArgs, QuerySearchArgs, RequireFields, SearchInput} from "..
 import {PrismaClient} from "@prisma/client";
 import {Context} from "../../context";
 
-export function searchResolver(prisma: PrismaClient) {
+export function search(prisma: PrismaClient) {
     return async (parent: any, args: QuerySearchArgs, context: Context) => {
         const searchCirclesAddress: string = args.query.searchString.toLowerCase() + "%";
         const searchFirstName = args.query.searchString + "%";
