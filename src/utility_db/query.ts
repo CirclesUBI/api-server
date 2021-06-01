@@ -10,6 +10,46 @@ pool.on('error', (err:Error, client:PoolClient) => {
 })
 
 export class Query {
+    static async placesById(ids:number[]) : Promise<{
+        geonameid: number,
+        name: string,
+        country: string,
+        population: number,
+        latitude: number,
+        longitude: number,
+        feature_code: string,
+        source: string
+    }[]> {
+        if (ids.length > 50) {
+            throw new Error(`You can query max. 50 cities at once.`)
+        }
+
+        const queryParams = ids.map((_, i) => "$" + (i + 1).toString()).join(", ");
+
+        const query = `
+        select p.geonameid
+             , p.name
+             , p.country_code country
+             , p.population
+             , p.latitude
+             , p.longitude
+             , p.feature_code
+             , 'B' source
+        from places p
+        where p.geonameid in (${queryParams})
+        limit 50`;
+
+        return new Promise((resolve, reject) => {
+            pool.query(query, ids, (err, res) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve(res.rows);
+            });
+        });
+    }
+
     static async placesByName(searchPattern:string, isoAlpha2Language:string = "en") : Promise<{
         geonameid: number,
         name: string,

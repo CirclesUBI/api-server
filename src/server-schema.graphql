@@ -54,12 +54,44 @@ input UpsertProfileInput
     cityGeonameid:Int
 }
 
+type Tag {
+    id: Int!
+    type: String!
+    value: String
+}
+
+input TagInput {
+    type: String!
+    value: String
+}
+
 input IndexTransferInput {
+    transactionHash: String!
     blockNo: Int!
     from: String!
     to: String!
-    amount: String!
-    message: String!
+    value: String!
+    tags: [TagInput!]
+}
+
+type IndexedTransfer {
+    transactionHash: String!
+    blockNo: Int!
+    from: String!
+    to: String!
+    value: String!
+    tags: [Tag!]!
+}
+
+input QueryIndexedTransferTagsInput {
+    type: String
+    value: String
+}
+
+input QueryIndexedTransferInput {
+    from: String
+    to: String
+    tags:[QueryIndexedTransferTagsInput!]
 }
 
 type IndexTransferResponse {
@@ -131,9 +163,18 @@ type UpdateSafeResponse {
     newSafeAddress: String
 }
 
-input QueryCitiesInput {
-    name: String!
+input QueryCitiesByNameInput {
+    name_like: String!
     languageCode: String
+}
+
+input QueryCitiesByGeonameIdInput {
+    geonameid: [Int!]!
+}
+
+input QueryCitiesInput {
+    byName: QueryCitiesByNameInput
+    byId: QueryCitiesByGeonameIdInput
 }
 
 type City {

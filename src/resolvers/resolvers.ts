@@ -24,8 +24,15 @@ export const resolvers: Resolvers = {
             return i?.emailAddress;
         },
         cities: async (parent:any, args, context:Context) => {
-            const result = await Query.placesByName(args.query.name, args.query.languageCode ?? "en")
-            return result;
+            if (args.query.byName) {
+                const result = await Query.placesByName(args.query.byName.name_like, args.query.byName.languageCode ?? "en")
+                return result;
+            } else if (args.query.byId) {
+                const result = await Query.placesById(args.query.byId.geonameid)
+                return result;
+            } else {
+                throw new Error(`One of the query arguments must be set: 'byName', 'byId'`);
+            }
         },
         profiles: profilesResolver(prisma_ro),
         search: searchResolver(prisma_ro),

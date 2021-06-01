@@ -69,17 +69,28 @@ export type ExchangeTokenResponse = {
 };
 
 export type IndexTransferInput = {
+  transactionHash: Scalars['String'];
   blockNo: Scalars['Int'];
   from: Scalars['String'];
   to: Scalars['String'];
-  amount: Scalars['String'];
-  message: Scalars['String'];
+  value: Scalars['String'];
+  tags?: Maybe<Array<TagInput>>;
 };
 
 export type IndexTransferResponse = {
   __typename?: 'IndexTransferResponse';
   success: Scalars['Boolean'];
   errorMessage?: Maybe<Scalars['String']>;
+};
+
+export type IndexedTransfer = {
+  __typename?: 'IndexedTransfer';
+  transactionHash: Scalars['String'];
+  blockNo: Scalars['Int'];
+  from: Scalars['String'];
+  to: Scalars['String'];
+  value: Scalars['String'];
+  tags: Array<Tag>;
 };
 
 export type LockOfferInput = {
@@ -262,9 +273,29 @@ export type QueryCitiesArgs = {
   query: QueryCitiesInput;
 };
 
-export type QueryCitiesInput = {
-  name: Scalars['String'];
+export type QueryCitiesByGeonameIdInput = {
+  geonameid: Array<Scalars['Int']>;
+};
+
+export type QueryCitiesByNameInput = {
+  name_like: Scalars['String'];
   languageCode?: Maybe<Scalars['String']>;
+};
+
+export type QueryCitiesInput = {
+  byName?: Maybe<QueryCitiesByNameInput>;
+  byId?: Maybe<QueryCitiesByGeonameIdInput>;
+};
+
+export type QueryIndexedTransferInput = {
+  from?: Maybe<Scalars['String']>;
+  to?: Maybe<Scalars['String']>;
+  tags?: Maybe<Array<QueryIndexedTransferTagsInput>>;
+};
+
+export type QueryIndexedTransferTagsInput = {
+  type?: Maybe<Scalars['String']>;
+  value?: Maybe<Scalars['String']>;
 };
 
 export type QueryOfferInput = {
@@ -325,6 +356,18 @@ export type SessionInfo = {
   isLoggedOn: Scalars['Boolean'];
   hasProfile?: Maybe<Scalars['Boolean']>;
   profileId?: Maybe<Scalars['Int']>;
+};
+
+export type Tag = {
+  __typename?: 'Tag';
+  id: Scalars['Int'];
+  type: Scalars['String'];
+  value?: Maybe<Scalars['String']>;
+};
+
+export type TagInput = {
+  type: Scalars['String'];
+  value?: Maybe<Scalars['String']>;
 };
 
 export type UpdateSafeInput = {
@@ -454,6 +497,7 @@ export type ResolversTypes = ResolversObject<{
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
   IndexTransferInput: IndexTransferInput;
   IndexTransferResponse: ResolverTypeWrapper<IndexTransferResponse>;
+  IndexedTransfer: ResolverTypeWrapper<IndexedTransfer>;
   LockOfferInput: LockOfferInput;
   LockOfferResult: ResolverTypeWrapper<LockOfferResult>;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
@@ -465,7 +509,11 @@ export type ResolversTypes = ResolversObject<{
   Purchase: ResolverTypeWrapper<Purchase>;
   PurchaseStatus: PurchaseStatus;
   Query: ResolverTypeWrapper<{}>;
+  QueryCitiesByGeonameIdInput: QueryCitiesByGeonameIdInput;
+  QueryCitiesByNameInput: QueryCitiesByNameInput;
   QueryCitiesInput: QueryCitiesInput;
+  QueryIndexedTransferInput: QueryIndexedTransferInput;
+  QueryIndexedTransferTagsInput: QueryIndexedTransferTagsInput;
   QueryOfferInput: QueryOfferInput;
   QueryProfileInput: QueryProfileInput;
   QueryPurchaseInput: QueryPurchaseInput;
@@ -475,6 +523,8 @@ export type ResolversTypes = ResolversObject<{
   SearchInput: SearchInput;
   Server: ResolverTypeWrapper<Server>;
   SessionInfo: ResolverTypeWrapper<SessionInfo>;
+  Tag: ResolverTypeWrapper<Tag>;
+  TagInput: TagInput;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: ResolverTypeWrapper<UpdateSafeResponse>;
   UpsertProfileInput: UpsertProfileInput;
@@ -496,6 +546,7 @@ export type ResolversParentTypes = ResolversObject<{
   ExchangeTokenResponse: ExchangeTokenResponse;
   IndexTransferInput: IndexTransferInput;
   IndexTransferResponse: IndexTransferResponse;
+  IndexedTransfer: IndexedTransfer;
   LockOfferInput: LockOfferInput;
   LockOfferResult: LockOfferResult;
   LogoutResponse: LogoutResponse;
@@ -506,7 +557,11 @@ export type ResolversParentTypes = ResolversObject<{
   ProvePaymentResult: ProvePaymentResult;
   Purchase: Purchase;
   Query: {};
+  QueryCitiesByGeonameIdInput: QueryCitiesByGeonameIdInput;
+  QueryCitiesByNameInput: QueryCitiesByNameInput;
   QueryCitiesInput: QueryCitiesInput;
+  QueryIndexedTransferInput: QueryIndexedTransferInput;
+  QueryIndexedTransferTagsInput: QueryIndexedTransferTagsInput;
   QueryOfferInput: QueryOfferInput;
   QueryProfileInput: QueryProfileInput;
   QueryPurchaseInput: QueryPurchaseInput;
@@ -516,6 +571,8 @@ export type ResolversParentTypes = ResolversObject<{
   SearchInput: SearchInput;
   Server: Server;
   SessionInfo: SessionInfo;
+  Tag: Tag;
+  TagInput: TagInput;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: UpdateSafeResponse;
   UpsertProfileInput: UpsertProfileInput;
@@ -565,6 +622,16 @@ export type ExchangeTokenResponseResolvers<ContextType = any, ParentType extends
 export type IndexTransferResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndexTransferResponse'] = ResolversParentTypes['IndexTransferResponse']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type IndexedTransferResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndexedTransfer'] = ResolversParentTypes['IndexedTransfer']> = ResolversObject<{
+  transactionHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  blockNo?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -677,6 +744,13 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type TagResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type UpdateSafeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpdateSafeResponse'] = ResolversParentTypes['UpdateSafeResponse']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -698,6 +772,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   DepositChallengeResponse?: DepositChallengeResponseResolvers<ContextType>;
   ExchangeTokenResponse?: ExchangeTokenResponseResolvers<ContextType>;
   IndexTransferResponse?: IndexTransferResponseResolvers<ContextType>;
+  IndexedTransfer?: IndexedTransferResolvers<ContextType>;
   LockOfferResult?: LockOfferResultResolvers<ContextType>;
   LogoutResponse?: LogoutResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
@@ -709,6 +784,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   RequestUpdateSafeResponse?: RequestUpdateSafeResponseResolvers<ContextType>;
   Server?: ServerResolvers<ContextType>;
   SessionInfo?: SessionInfoResolvers<ContextType>;
+  Tag?: TagResolvers<ContextType>;
   UpdateSafeResponse?: UpdateSafeResponseResolvers<ContextType>;
   Version?: VersionResolvers<ContextType>;
 }>;
