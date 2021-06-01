@@ -46,6 +46,7 @@ export const resolvers: Resolvers = {
         authenticateAt: authenticateAtResolver(prisma_rw),
         depositChallenge: depositChallengeResolver(prisma_rw),
         consumeDepositedChallenge: consumeDepositedChallengeResolver(prisma_rw),
+
         requestUpdateSafe: async (parent: any, {data}, context: Context) => {
              const session = await context.verifySession();
              if (!session.profileId) {
