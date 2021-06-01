@@ -22,7 +22,6 @@ export type City = {
   latitude: Scalars['Float'];
   longitude: Scalars['Float'];
   feature_code: Scalars['String'];
-  source: Scalars['String'];
 };
 
 export type ConsumeDepositedChallengeResponse = {
@@ -191,11 +190,13 @@ export type Offer = {
   purchasedAt?: Maybe<Scalars['String']>;
   title: Scalars['String'];
   pictureUrl: Scalars['String'];
-  price: Scalars['String'];
   description?: Maybe<Scalars['String']>;
-  category?: Maybe<Scalars['String']>;
+  category: Scalars['String'];
   city: City;
   geonameid: Scalars['Int'];
+  pricePerUnit: Scalars['String'];
+  unit: Scalars['String'];
+  maxUnits: Scalars['Int'];
   deliveryTerms: Scalars['String'];
 };
 
@@ -587,7 +588,6 @@ export type CityResolvers<ContextType = any, ParentType extends ResolversParentT
   latitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   longitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   feature_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  source?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -672,11 +672,13 @@ export type OfferResolvers<ContextType = any, ParentType extends ResolversParent
   purchasedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   pictureUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  price?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  category?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  category?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   city?: Resolver<ResolversTypes['City'], ParentType, ContextType>;
   geonameid?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  pricePerUnit?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  unit?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  maxUnits?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   deliveryTerms?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

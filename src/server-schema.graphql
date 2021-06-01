@@ -185,7 +185,6 @@ type City {
     latitude: Float!
     longitude: Float!
     feature_code: String!
-    source: String!
 }
 
 type Offer {
@@ -200,11 +199,14 @@ type Offer {
 
     title: String!
     pictureUrl: String!
-    price: String!
     description: String
-    category: String
+    category: String!
     city: City!
     geonameid: Int!
+
+    pricePerUnit: String!
+    unit: String!
+    maxUnits: Int!
 
     deliveryTerms: String!
 }

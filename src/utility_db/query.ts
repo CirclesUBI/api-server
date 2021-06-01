@@ -29,13 +29,14 @@ export class Query {
         const query = `
         select p.geonameid
              , p.name
-             , p.country_code country
+             , c.country_name country
              , p.population
              , p.latitude
              , p.longitude
              , p.feature_code
              , 'B' source
         from places p
+        join countries c on c.iso = p.country_code
         where p.geonameid in (${queryParams})
         limit 50`;
 
@@ -62,58 +63,75 @@ export class Query {
     }[]> {
 
         const query = `
-            with result as (
-                select 'A'                  source
-                     , p.geonameid
-                     , pn.alternate_name as name
-                     , pn.isolanguage       name_language
-                     , p.country_code       country
-                     , p.population
-                     , p.latitude
-                     , p.longitude
-                     , p.feature_code
-                     , p.elevation
-                from place_names pn
-                    join places p on pn.geonameid = p.geonameid
-                                  and feature_code like 'PPL%'
-                                  and feature_code != 'PPLX'
-                                  and population > 0
-                where lower(alternate_name) like $1
-                  and (isolanguage = $2 or isolanguage is null)
-            union all
-                select 'B'            source
-                     , p.geonameid
+            -- Find places by international name (english)
+            with common as (
+                select p.geonameid
                      , p.name
-                     , null           name_language
-                     , p.country_code country
+                     , c.country_name
                      , p.population
                      , p.latitude
                      , p.longitude
                      , p.feature_code
-                     , p.elevation
+                     , '' isolanguage
+                     , -1 "isPreferredName"
+                     , '' "isColloquial"
+                     , '' "isHistoric"
+                     , -1 "isShortName"
                 from places p
+                         join countries c on p.country_code = c.iso
                 where lower(name) like $1
-                  and feature_code like 'PPL%'
-                  and feature_code != 'PPLX'
-                  and population > 0
-                order by population desc
+                  and p.feature_code like 'PPL%'
+                  and p.feature_code not in ('PPLX', 'PPLQ', 'PPLH', 'PPLCH')
+                  and p.population > 0
+            ),
+            intl as (
+            -- Find places by local name
+                select p.geonameid
+                     , pn.alternate_name
+                     , c.country_name
+                     , p.population
+                     , p.latitude
+                     , p.longitude
+                     , p.feature_code
+                     , pn.isolanguage
+                     , coalesce(pn."isPreferredName", 0) "isPreferredName"
+                     , pn."isColloquial"
+                     , pn."isHistoric"
+                     , pn."isShortName"
+                from place_names pn
+                         join places p on p.geonameid = pn.geonameid
+                         join countries c on p.country_code = c.iso
+                where lower(pn.alternate_name) like $1
+                  and p.feature_code like 'PPL%'
+                  and p.feature_code not in ('PPLX', 'PPLQ', 'PPLH', 'PPLCH')
+                  and p.population > 0
+                  and (pn.isolanguage = $2 or pn.isolanguage is null)
+            ), "both" as (
+                select *
+                from common
+                union all
+                select *
+                from intl
             )
-            select geonameid
-                 , name
-                 , country
+            select distinct geonameid
+                 , first_value(name) over (
+                     partition by geonameid
+                     order by "isPreferredName" desc
+                  ) as name
+                 , country_name country
                  , population
                  , latitude
                  , longitude
                  , feature_code
-                 , min(source) as source
-            from result
+            from "both"
             group by geonameid
                    , name
-                   , country
+                   , country_name
                    , population
                    , latitude
                    , longitude
                    , feature_code
+                   , "isPreferredName"
             order by population desc
             limit 50`;
 
