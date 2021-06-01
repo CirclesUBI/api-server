@@ -31,6 +31,17 @@ export type ConsumeDepositedChallengeResponse = {
   challenge?: Maybe<Scalars['String']>;
 };
 
+export type CreateOfferInput = {
+  id?: Maybe<Scalars['Int']>;
+  title: Scalars['String'];
+  price: Scalars['String'];
+  deliveryTerms: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  category?: Maybe<Scalars['String']>;
+  geonameid: Scalars['Int'];
+  pictureUrl: Scalars['String'];
+};
+
 export type DelegateAuthInit = {
   __typename?: 'DelegateAuthInit';
   appId: Scalars['String'];
@@ -71,6 +82,16 @@ export type IndexTransferResponse = {
   errorMessage?: Maybe<Scalars['String']>;
 };
 
+export type LockOfferInput = {
+  offerId: Scalars['Int'];
+};
+
+export type LockOfferResult = {
+  __typename?: 'LockOfferResult';
+  success: Scalars['Boolean'];
+  lockedUntil?: Maybe<Scalars['String']>;
+};
+
 export type LogoutResponse = {
   __typename?: 'LogoutResponse';
   success: Scalars['Boolean'];
@@ -88,6 +109,10 @@ export type Mutation = {
   requestUpdateSafe: RequestUpdateSafeResponse;
   updateSafe: UpdateSafeResponse;
   indexTransfer: IndexTransferResponse;
+  createOffer: Offer;
+  unlistOffer: Scalars['Boolean'];
+  lockOffer: LockOfferResult;
+  provePayment: ProvePaymentResult;
 };
 
 
@@ -125,6 +150,52 @@ export type MutationIndexTransferArgs = {
   data: IndexTransferInput;
 };
 
+
+export type MutationCreateOfferArgs = {
+  data: CreateOfferInput;
+};
+
+
+export type MutationUnlistOfferArgs = {
+  offerId: Scalars['Int'];
+};
+
+
+export type MutationLockOfferArgs = {
+  data: LockOfferInput;
+};
+
+
+export type MutationProvePaymentArgs = {
+  data: PaymentProof;
+};
+
+export type Offer = {
+  __typename?: 'Offer';
+  id: Scalars['Int'];
+  createdBy: Profile;
+  createdByProfileId: Scalars['Int'];
+  publishedAt: Scalars['String'];
+  unlistedAt?: Maybe<Scalars['String']>;
+  purchasedAt?: Maybe<Scalars['String']>;
+  title: Scalars['String'];
+  pictureUrl: Scalars['String'];
+  price: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  category?: Maybe<Scalars['String']>;
+  city: City;
+  geonameid: Scalars['Int'];
+  deliveryTerms: Scalars['String'];
+};
+
+export type PaymentProof = {
+  forOfferId: Scalars['Int'];
+  tokenOwners: Array<Scalars['String']>;
+  sources: Array<Scalars['String']>;
+  destinations: Array<Scalars['String']>;
+  values: Array<Scalars['String']>;
+};
+
 export type Profile = {
   __typename?: 'Profile';
   id: Scalars['Int'];
@@ -141,6 +212,30 @@ export type Profile = {
   newsletter?: Maybe<Scalars['Boolean']>;
   cityGeonameid?: Maybe<Scalars['Int']>;
 };
+
+export type ProvePaymentResult = {
+  __typename?: 'ProvePaymentResult';
+  success: Scalars['Boolean'];
+};
+
+export type Purchase = {
+  __typename?: 'Purchase';
+  id: Scalars['Int'];
+  purchasedAt: Scalars['String'];
+  status: PurchaseStatus;
+  purchasedFrom: Profile;
+  purchasedFromProfileId: Scalars['Int'];
+  purchasedBy: Profile;
+  purchasedByProfileId: Scalars['Int'];
+  purchasedItem: Offer;
+  purchasedOfferId: Scalars['Int'];
+};
+
+export enum PurchaseStatus {
+  Invalid = 'INVALID',
+  ItemLocked = 'ITEM_LOCKED',
+  PaymentProven = 'PAYMENT_PROVEN'
+}
 
 export type Query = {
   __typename?: 'Query';
@@ -172,12 +267,33 @@ export type QueryCitiesInput = {
   languageCode?: Maybe<Scalars['String']>;
 };
 
+export type QueryOfferInput = {
+  id?: Maybe<Scalars['Int']>;
+  createdByProfileId?: Maybe<Scalars['Int']>;
+  title_like?: Maybe<Scalars['String']>;
+  deliveryTerms_in?: Maybe<Array<Scalars['String']>>;
+  category_in?: Maybe<Array<Scalars['String']>>;
+  category_like?: Maybe<Scalars['String']>;
+  city_like?: Maybe<Scalars['String']>;
+  city_in?: Maybe<Array<Scalars['Int']>>;
+  price_lt?: Maybe<Scalars['String']>;
+  price_gt?: Maybe<Scalars['String']>;
+  publishedAt_lt?: Maybe<Scalars['String']>;
+  publishedAt_gt?: Maybe<Scalars['String']>;
+  unlistedAt_lt?: Maybe<Scalars['String']>;
+  unlistedAt_gt?: Maybe<Scalars['String']>;
+};
+
 export type QueryProfileInput = {
   id?: Maybe<Array<Scalars['Int']>>;
   firstName?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
   country?: Maybe<Scalars['String']>;
   circlesAddress?: Maybe<Array<Scalars['String']>>;
+};
+
+export type QueryPurchaseInput = {
+  purchasedByProfileId: Scalars['String'];
 };
 
 export type QueryUniqueProfileInput = {
@@ -331,18 +447,28 @@ export type ResolversTypes = ResolversObject<{
   Float: ResolverTypeWrapper<Scalars['Float']>;
   ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  CreateOfferInput: CreateOfferInput;
   DelegateAuthInit: ResolverTypeWrapper<DelegateAuthInit>;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
   IndexTransferInput: IndexTransferInput;
   IndexTransferResponse: ResolverTypeWrapper<IndexTransferResponse>;
+  LockOfferInput: LockOfferInput;
+  LockOfferResult: ResolverTypeWrapper<LockOfferResult>;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
   Mutation: ResolverTypeWrapper<{}>;
+  Offer: ResolverTypeWrapper<Offer>;
+  PaymentProof: PaymentProof;
   Profile: ResolverTypeWrapper<Profile>;
+  ProvePaymentResult: ResolverTypeWrapper<ProvePaymentResult>;
+  Purchase: ResolverTypeWrapper<Purchase>;
+  PurchaseStatus: PurchaseStatus;
   Query: ResolverTypeWrapper<{}>;
   QueryCitiesInput: QueryCitiesInput;
+  QueryOfferInput: QueryOfferInput;
   QueryProfileInput: QueryProfileInput;
+  QueryPurchaseInput: QueryPurchaseInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: ResolverTypeWrapper<RequestUpdateSafeResponse>;
@@ -363,18 +489,27 @@ export type ResolversParentTypes = ResolversObject<{
   Float: Scalars['Float'];
   ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
   Boolean: Scalars['Boolean'];
+  CreateOfferInput: CreateOfferInput;
   DelegateAuthInit: DelegateAuthInit;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: DepositChallengeResponse;
   ExchangeTokenResponse: ExchangeTokenResponse;
   IndexTransferInput: IndexTransferInput;
   IndexTransferResponse: IndexTransferResponse;
+  LockOfferInput: LockOfferInput;
+  LockOfferResult: LockOfferResult;
   LogoutResponse: LogoutResponse;
   Mutation: {};
+  Offer: Offer;
+  PaymentProof: PaymentProof;
   Profile: Profile;
+  ProvePaymentResult: ProvePaymentResult;
+  Purchase: Purchase;
   Query: {};
   QueryCitiesInput: QueryCitiesInput;
+  QueryOfferInput: QueryOfferInput;
   QueryProfileInput: QueryProfileInput;
+  QueryPurchaseInput: QueryPurchaseInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: RequestUpdateSafeResponse;
@@ -433,6 +568,12 @@ export type IndexTransferResponseResolvers<ContextType = any, ParentType extends
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type LockOfferResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['LockOfferResult'] = ResolversParentTypes['LockOfferResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  lockedUntil?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type LogoutResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['LogoutResponse'] = ResolversParentTypes['LogoutResponse']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -449,6 +590,28 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   requestUpdateSafe?: Resolver<ResolversTypes['RequestUpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationRequestUpdateSafeArgs, 'data'>>;
   updateSafe?: Resolver<ResolversTypes['UpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationUpdateSafeArgs, 'data'>>;
   indexTransfer?: Resolver<ResolversTypes['IndexTransferResponse'], ParentType, ContextType, RequireFields<MutationIndexTransferArgs, 'data'>>;
+  createOffer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType, RequireFields<MutationCreateOfferArgs, 'data'>>;
+  unlistOffer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUnlistOfferArgs, 'offerId'>>;
+  lockOffer?: Resolver<ResolversTypes['LockOfferResult'], ParentType, ContextType, RequireFields<MutationLockOfferArgs, 'data'>>;
+  provePayment?: Resolver<ResolversTypes['ProvePaymentResult'], ParentType, ContextType, RequireFields<MutationProvePaymentArgs, 'data'>>;
+}>;
+
+export type OfferResolvers<ContextType = any, ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  createdBy?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
+  createdByProfileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  publishedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  unlistedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  purchasedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  pictureUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  price?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  category?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  city?: Resolver<ResolversTypes['City'], ParentType, ContextType>;
+  geonameid?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  deliveryTerms?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type ProfileResolvers<ContextType = any, ParentType extends ResolversParentTypes['Profile'] = ResolversParentTypes['Profile']> = ResolversObject<{
@@ -465,6 +628,24 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   avatarMimeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   newsletter?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   cityGeonameid?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ProvePaymentResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProvePaymentResult'] = ResolversParentTypes['ProvePaymentResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PurchaseResolvers<ContextType = any, ParentType extends ResolversParentTypes['Purchase'] = ResolversParentTypes['Purchase']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  purchasedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['PurchaseStatus'], ParentType, ContextType>;
+  purchasedFrom?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
+  purchasedFromProfileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  purchasedBy?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
+  purchasedByProfileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  purchasedItem?: Resolver<ResolversTypes['Offer'], ParentType, ContextType>;
+  purchasedOfferId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -517,9 +698,13 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   DepositChallengeResponse?: DepositChallengeResponseResolvers<ContextType>;
   ExchangeTokenResponse?: ExchangeTokenResponseResolvers<ContextType>;
   IndexTransferResponse?: IndexTransferResponseResolvers<ContextType>;
+  LockOfferResult?: LockOfferResultResolvers<ContextType>;
   LogoutResponse?: LogoutResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  Offer?: OfferResolvers<ContextType>;
   Profile?: ProfileResolvers<ContextType>;
+  ProvePaymentResult?: ProvePaymentResultResolvers<ContextType>;
+  Purchase?: PurchaseResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RequestUpdateSafeResponse?: RequestUpdateSafeResponseResolvers<ContextType>;
   Server?: ServerResolvers<ContextType>;

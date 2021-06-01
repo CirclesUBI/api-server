@@ -47,6 +47,9 @@ model Profile {
     newSafeAddress String?
 
     sessions Session[]  @relation(name: "Session_Profile")
+
+    offers Offer[]  @relation(name: "Offer_CreatedBy")
+    purchases Purchase[]  @relation(name: "Purchase_CreatedBy")
 }
 
 model IndexedTransfer {
@@ -72,4 +75,45 @@ model DelegatedChallenges {
     challengeDepositedAt DateTime?
     challengeValidTo DateTime?
     challengedReadAt DateTime?
+}
+
+model Offer {
+    id Int @id @default(autoincrement())
+
+    createdBy Profile @relation(name: "Offer_CreatedBy", fields: [createdByProfileId], references: [id])
+    createdByProfileId Int
+
+    publishedAt DateTime
+    unlistedAt DateTime?
+    purchasedAt DateTime?
+
+    purchase Purchase? @relation(name: "Purchase_PurchasedItem")
+
+    title String
+    price String            // price in wei
+    priceInCircles Int // price in circles rounded to two digits after comma and stored as integer (to read: divide by 100)
+
+    description String?
+    category String?
+    geonameid Int? // city
+    deliveryTerms String    // pickup, delivery etc.
+
+    pictureUrl String
+}
+
+enum PurchaseStatus {
+      INVALID
+      ITEM_LOCKED
+      PAYMENT_PROVEN
+}
+
+model Purchase {
+    id Int @id @default(autoincrement())
+    purchasedBy Profile @relation(name: "Purchase_CreatedBy", fields: [purchasedByProfileId], references: [id])
+    purchasedByProfileId Int
+    purchasedAt DateTime
+    purchasedProvenAt DateTime?
+    purchasedItem Offer @relation(name: "Purchase_PurchasedItem", fields: [purchasedItemId], references: [id])
+    purchasedItemId Int
+    status PurchaseStatus
 }

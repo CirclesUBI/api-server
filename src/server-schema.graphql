@@ -147,6 +147,113 @@ type City {
     source: String!
 }
 
+type Offer {
+    id: Int!
+
+    createdBy: Profile!
+    createdByProfileId: Int!
+
+    publishedAt: String!
+    unlistedAt: String
+    purchasedAt: String
+
+    title: String!
+    pictureUrl: String!
+    price: String!
+    description: String
+    category: String
+    city: City!
+    geonameid: Int!
+
+    deliveryTerms: String!
+}
+
+input CreateOfferInput
+{
+    id: Int
+    title:String!
+    price:String!
+    deliveryTerms:String!
+    description:String
+    category:String
+    geonameid: Int!
+    pictureUrl: String!
+}
+
+input QueryOfferInput {
+    id:Int
+    createdByProfileId:Int
+
+    title_like:String
+
+    deliveryTerms_in:[String!]
+
+    category_in:[String!]
+    category_like:String
+
+    city_like:String
+    city_in:[Int!]
+
+    price_lt:String
+    price_gt:String
+
+    publishedAt_lt:String
+    publishedAt_gt:String
+
+    unlistedAt_lt:String
+    unlistedAt_gt:String
+}
+
+input LockOfferInput
+{
+    offerId:Int!
+}
+
+type LockOfferResult
+{
+    success:Boolean!
+    lockedUntil:String
+}
+
+input PaymentProof
+{
+    forOfferId:Int!
+    tokenOwners:[String!]!
+    sources:[String!]!
+    destinations:[String!]!
+    values:[String!]!
+}
+
+type ProvePaymentResult
+{
+    success:Boolean!
+}
+
+enum PurchaseStatus {
+    INVALID
+    ITEM_LOCKED
+    PAYMENT_PROVEN
+}
+
+type Purchase {
+    id: Int!
+
+    purchasedAt: String!
+    status: PurchaseStatus!
+
+    purchasedFrom: Profile!
+    purchasedFromProfileId: Int!
+
+    purchasedBy: Profile!
+    purchasedByProfileId: Int!
+
+    purchasedItem: Offer!
+    purchasedOfferId: Int!
+}
+input QueryPurchaseInput {
+    purchasedByProfileId: String!
+}
+
 type Mutation
 {
     exchangeToken : ExchangeTokenResponse!
@@ -158,6 +265,10 @@ type Mutation
     requestUpdateSafe(data:RequestUpdateSafeInput!) : RequestUpdateSafeResponse!
     updateSafe(data:UpdateSafeInput!) : UpdateSafeResponse!
     indexTransfer(data:IndexTransferInput!) : IndexTransferResponse!
+    createOffer(data:CreateOfferInput!):Offer!
+    unlistOffer(offerId:Int!):Boolean!
+    lockOffer(data:LockOfferInput!):LockOfferResult!
+    provePayment(data:PaymentProof!):ProvePaymentResult!
 }
 
 type Query
