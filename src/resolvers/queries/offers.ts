@@ -13,6 +13,9 @@ export function offers(prisma:PrismaClient) {
                         lt: args.query.publishedAt_gt ?? undefined
                     }
                     : undefined
+            },
+            orderBy: {
+                publishedAt: "desc"
             }
         });
         return offers.map(o => {
