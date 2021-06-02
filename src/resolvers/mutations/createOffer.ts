@@ -13,8 +13,12 @@ export function createOfferResolver(prisma:PrismaClient) {
                         id: session.profileId ?? undefined
                     }
                 },
+                categoryTag: {
+                    connect: {
+                        id: args.data.categoryTagId
+                    }
+                },
                 publishedAt: new Date(),
-                category: args.data.category,
                 geonameid: args.data.geonameid,
                 deliveryTerms: args.data.deliveryTerms,
                 description: args.data.description,

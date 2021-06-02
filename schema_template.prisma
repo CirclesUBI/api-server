@@ -49,6 +49,7 @@ model Profile {
     sessions Session[]  @relation(name: "Session_Profile")
 
     offers Offer[]  @relation(name: "Offer_CreatedBy")
+    tags Tag[]  @relation(name: "Tag_CreatedBy")
     purchases Purchase[]  @relation(name: "Purchase_CreatedBy")
 }
 
@@ -93,7 +94,10 @@ model Offer {
     pictureUrl String
     pictureMimeType String
     description String?
-    category String
+
+    categoryTag Tag @relation(name: "Offer_CategoryTag", fields: [categoryTagId], references: [id])
+    categoryTagId Int
+
     geonameid Int // city
 
     pricePerUnit String
@@ -101,6 +105,29 @@ model Offer {
     maxUnits Int?
 
     deliveryTerms String    // pickup, delivery etc.
+}
+
+model TagType {
+    id String @id
+
+    tags Tag[] @relation(name: "Tag_TagType")
+}
+
+model Tag {
+    id Int @id @default(autoincrement())
+
+    createdAt DateTime
+    createdBy Profile @relation(name: "Tag_CreatedBy", fields: [createdByProfileId], references: [id])
+    createdByProfileId Int
+
+    isPrivate Boolean
+
+    type TagType @relation(name: "Tag_TagType", fields: [typeId], references: [id])
+    typeId String
+
+    value String?
+
+    offerCategory Offer? @relation(name: "Offer_CategoryTag")
 }
 
 enum PurchaseStatus {

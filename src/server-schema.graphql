@@ -203,7 +203,8 @@ type Offer {
     pictureUrl: String!
     pictureMimeType: String!
     description: String
-    category: String!
+    categoryTagId: Int!
+    categoryTag: Tag
     city: City
     geonameid: Int!
 
@@ -222,7 +223,7 @@ input CreateOfferInput
     pictureUrl: String!
     pictureMimeType: String!
     description: String
-    category: String!
+    categoryTagId: Int!
     geonameid: Int!
 
     pricePerUnit: String!
@@ -234,7 +235,7 @@ input CreateOfferInput
 
 input QueryOfferInput {
     id:Int
-    category: String
+    categoryTagId: Int
     createdByProfileId:Int
     publishedAt_lt:String
     publishedAt_gt:String

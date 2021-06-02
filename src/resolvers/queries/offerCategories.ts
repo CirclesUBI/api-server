@@ -1,24 +1,17 @@
 import {PrismaClient} from "@prisma/client";
 import {QueryOfferCategoriesArgs} from "../../types";
+import {InitDb} from "../../initDb";
 
 export function offerCategories(prisma:PrismaClient) {
     return async (parent:any, args:QueryOfferCategoriesArgs) => {
-        const categories = await prisma.offer.findMany({
-            select: {
-                category: true
+        const categories = await prisma.tag.findMany({
+            where: {
+                typeId: InitDb.Tag_Marketplace_Offer_Category
             },
-            where: args.like
-                ? {
-                    category: {
-                        startsWith: args.like
-                    }
-                }
-                : undefined,
-            distinct: ['category'],
-            orderBy: {
-                category: "asc"
+            select: {
+                typeId: true
             }
         });
-        return categories.map(o => o.category);
+        return categories.map(o => o.typeId);
     }
 }

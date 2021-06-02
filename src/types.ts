@@ -36,7 +36,7 @@ export type CreateOfferInput = {
   pictureUrl: Scalars['String'];
   pictureMimeType: Scalars['String'];
   description?: Maybe<Scalars['String']>;
-  category: Scalars['String'];
+  categoryTagId: Scalars['Int'];
   geonameid: Scalars['Int'];
   pricePerUnit: Scalars['String'];
   unit: Scalars['String'];
@@ -195,7 +195,8 @@ export type Offer = {
   pictureUrl: Scalars['String'];
   pictureMimeType: Scalars['String'];
   description?: Maybe<Scalars['String']>;
-  category: Scalars['String'];
+  categoryTagId: Scalars['Int'];
+  categoryTag?: Maybe<Tag>;
   city?: Maybe<City>;
   geonameid: Scalars['Int'];
   pricePerUnit: Scalars['String'];
@@ -319,7 +320,7 @@ export type QueryIndexedTransferTagsInput = {
 
 export type QueryOfferInput = {
   id?: Maybe<Scalars['Int']>;
-  category?: Maybe<Scalars['String']>;
+  categoryTagId?: Maybe<Scalars['Int']>;
   createdByProfileId?: Maybe<Scalars['Int']>;
   publishedAt_lt?: Maybe<Scalars['String']>;
   publishedAt_gt?: Maybe<Scalars['String']>;
@@ -683,7 +684,8 @@ export type OfferResolvers<ContextType = any, ParentType extends ResolversParent
   pictureUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   pictureMimeType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  category?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  categoryTagId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  categoryTag?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType>;
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
   geonameid?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   pricePerUnit?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

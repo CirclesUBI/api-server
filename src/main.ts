@@ -7,6 +7,8 @@ import {Context} from "./context";
 import {resolvers} from "./resolvers/resolvers";
 import {Resolvers} from "./types";
 import {Session} from "./session";
+import {InitDb} from "./initDb";
+import {prisma_rw} from "./prismaClient";
 const httpHeadersPlugin = require("apollo-server-plugin-http-headers");
 
 if (!process.env.CORS_ORIGNS) {
@@ -59,8 +61,12 @@ export class Main
     {
         await this._server.listen({
             port: parseInt("8989")
-        }).then(o => {
+        }).then(async o => {
             console.log("listening at port 8989")
+
+            console.log("Initializing the db if necessary");
+            await InitDb.run(prisma_rw)
+            console.log("Db ready");
         });
     }
 }
