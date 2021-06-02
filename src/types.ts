@@ -265,7 +265,7 @@ export type Query = {
   search: Array<Profile>;
   cities: Array<City>;
   offers: Array<Offer>;
-  offerCategories: Array<Scalars['String']>;
+  offerCategories: Array<Tag>;
 };
 
 
@@ -740,7 +740,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, 'query'>>;
   offers?: Resolver<Array<ResolversTypes['Offer']>, ParentType, ContextType, RequireFields<QueryOffersArgs, 'query'>>;
-  offerCategories?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryOfferCategoriesArgs, never>>;
+  offerCategories?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryOfferCategoriesArgs, never>>;
 }>;
 
 export type RequestUpdateSafeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['RequestUpdateSafeResponse'] = ResolversParentTypes['RequestUpdateSafeResponse']> = ResolversObject<{

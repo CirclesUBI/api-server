@@ -317,5 +317,5 @@ type Query
     search(query:SearchInput!) : [Profile!]!
     cities(query:QueryCitiesInput!) : [City!]!
     offers(query:QueryOfferInput!): [Offer!]!
-    offerCategories(like:String):[String!]!
+    offerCategories(like:String):[Tag!]!
 }

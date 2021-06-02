@@ -7,11 +7,13 @@ export function offerCategories(prisma:PrismaClient) {
         const categories = await prisma.tag.findMany({
             where: {
                 typeId: InitDb.Tag_Marketplace_Offer_Category
-            },
-            select: {
-                typeId: true
             }
         });
-        return categories.map(o => o.typeId);
+        return categories.map(o => {
+            return {
+                ...o,
+                type: o.typeId
+            }
+        });
     }
 }

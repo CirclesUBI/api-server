@@ -21,6 +21,7 @@ import {cities} from "./queries/citites";
 import {version} from "./queries/version";
 import {offers} from "./queries/offers";
 import {offerCategories} from "./queries/offerCategories";
+import {offerCategoryTag} from "./offer/offerCategoryTag";
 
 const packageJson = require("../../package.json");
 
@@ -31,6 +32,7 @@ export const resolvers: Resolvers = {
     },
     Offer: {
         createdBy: offerCreatedBy(prisma_ro),
+        categoryTag: offerCategoryTag(prisma_ro),
         city: offerCity
     },
     Query: {
