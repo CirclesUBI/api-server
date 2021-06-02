@@ -43,7 +43,6 @@ export class Query {
     }
 
     static async placesByName(searchPattern:string, isoAlpha2Language:string = "en") : Promise<City[]> {
-
         const query = `
             -- Find places by international name (english)
             with common as (

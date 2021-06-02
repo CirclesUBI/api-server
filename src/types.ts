@@ -34,6 +34,7 @@ export type CreateOfferInput = {
   createdByProfileId: Scalars['Int'];
   title: Scalars['String'];
   pictureUrl: Scalars['String'];
+  pictureMimeType: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   category: Scalars['String'];
   geonameid: Scalars['Int'];
@@ -192,6 +193,7 @@ export type Offer = {
   purchasedAt?: Maybe<Scalars['String']>;
   title: Scalars['String'];
   pictureUrl: Scalars['String'];
+  pictureMimeType: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   category: Scalars['String'];
   city?: Maybe<City>;
@@ -262,6 +264,7 @@ export type Query = {
   search: Array<Profile>;
   cities: Array<City>;
   offers: Array<Offer>;
+  offerCategories: Array<Scalars['String']>;
 };
 
 
@@ -282,6 +285,11 @@ export type QueryCitiesArgs = {
 
 export type QueryOffersArgs = {
   query: QueryOfferInput;
+};
+
+
+export type QueryOfferCategoriesArgs = {
+  like?: Maybe<Scalars['String']>;
 };
 
 export type QueryCitiesByGeonameIdInput = {
@@ -672,6 +680,7 @@ export type OfferResolvers<ContextType = any, ParentType extends ResolversParent
   purchasedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   pictureUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  pictureMimeType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   category?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
@@ -728,6 +737,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, 'query'>>;
   offers?: Resolver<Array<ResolversTypes['Offer']>, ParentType, ContextType, RequireFields<QueryOffersArgs, 'query'>>;
+  offerCategories?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryOfferCategoriesArgs, never>>;
 }>;
 
 export type RequestUpdateSafeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['RequestUpdateSafeResponse'] = ResolversParentTypes['RequestUpdateSafeResponse']> = ResolversObject<{

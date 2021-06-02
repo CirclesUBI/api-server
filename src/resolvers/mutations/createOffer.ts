@@ -23,6 +23,7 @@ export function createOfferResolver(prisma:PrismaClient) {
                 pricePerUnit: args.data.pricePerUnit,
                 title: args.data?.title,
                 pictureUrl:  args.data.pictureUrl,
+                pictureMimeType:  args.data.pictureMimeType,
                 purchasedAt: null,
                 unlistedAt: null
             }

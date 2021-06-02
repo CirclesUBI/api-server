@@ -201,6 +201,7 @@ type Offer {
 
     title: String!
     pictureUrl: String!
+    pictureMimeType: String!
     description: String
     category: String!
     city: City
@@ -219,6 +220,7 @@ input CreateOfferInput
 
     title: String!
     pictureUrl: String!
+    pictureMimeType: String!
     description: String
     category: String!
     geonameid: Int!
@@ -313,4 +315,5 @@ type Query
     search(query:SearchInput!) : [Profile!]!
     cities(query:QueryCitiesInput!) : [City!]!
     offers(query:QueryOfferInput!): [Offer!]!
+    offerCategories(like:String):[String!]!
 }

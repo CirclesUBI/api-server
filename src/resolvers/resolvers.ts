@@ -20,6 +20,7 @@ import {whoami} from "./queries/whoami";
 import {cities} from "./queries/citites";
 import {version} from "./queries/version";
 import {offers} from "./queries/offers";
+import {offerCategories} from "./queries/offerCategories";
 
 const packageJson = require("../../package.json");
 
@@ -39,7 +40,8 @@ export const resolvers: Resolvers = {
         profiles: profiles(prisma_ro),
         search: search(prisma_ro),
         version: version(packageJson),
-        offers: offers(prisma_ro)
+        offers: offers(prisma_ro),
+        offerCategories: offerCategories(prisma_ro)
     },
     Mutation: {
         createOffer: createOfferResolver(prisma_rw),

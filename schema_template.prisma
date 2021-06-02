@@ -91,6 +91,7 @@ model Offer {
 
     title String
     pictureUrl String
+    pictureMimeType String
     description String?
     category String
     geonameid Int // city
