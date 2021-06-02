@@ -102,12 +102,12 @@ model Offer {
 
     pricePerUnit String
 
-    unitTag Tag @relation(name: "Offer_UnitTag", fields: [categoryTagId], references: [id])
+    unitTag Tag @relation(name: "Offer_UnitTag", fields: [unitTagId], references: [id])
     unitTagId Int
 
     maxUnits Int?
 
-    deliveryTermsTag Tag @relation(name: "Offer_DeliveryTermsTag", fields: [categoryTagId], references: [id])
+    deliveryTermsTag Tag @relation(name: "Offer_DeliveryTermsTag", fields: [deliveryTermsTagId], references: [id])
     deliveryTermsTagId Int
 }
 
