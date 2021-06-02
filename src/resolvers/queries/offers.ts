@@ -12,7 +12,8 @@ export function offers(prisma:PrismaClient) {
                         gt: args.query.publishedAt_gt ?? undefined,
                         lt: args.query.publishedAt_gt ?? undefined
                     }
-                    : undefined
+                    : undefined,
+                category: args.query.category ?? undefined
             },
             orderBy: {
                 publishedAt: "desc"

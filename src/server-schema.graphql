@@ -234,6 +234,7 @@ input CreateOfferInput
 
 input QueryOfferInput {
     id:Int
+    category: String
     createdByProfileId:Int
     publishedAt_lt:String
     publishedAt_gt:String
