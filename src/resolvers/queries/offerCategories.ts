@@ -14,7 +14,10 @@ export function offerCategories(prisma:PrismaClient) {
                     }
                 }
                 : undefined,
-            distinct: ['category']
+            distinct: ['category'],
+            orderBy: {
+                category: "asc"
+            }
         });
         return categories.map(o => o.category);
     }
