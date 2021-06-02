@@ -30,20 +30,6 @@ export type ConsumeDepositedChallengeResponse = {
   challenge?: Maybe<Scalars['String']>;
 };
 
-export type CreateOfferInput = {
-  createdByProfileId: Scalars['Int'];
-  title: Scalars['String'];
-  pictureUrl: Scalars['String'];
-  pictureMimeType: Scalars['String'];
-  description?: Maybe<Scalars['String']>;
-  categoryTagId: Scalars['Int'];
-  geonameid: Scalars['Int'];
-  pricePerUnit: Scalars['String'];
-  unit: Scalars['String'];
-  maxUnits?: Maybe<Scalars['Int']>;
-  deliveryTerms: Scalars['String'];
-};
-
 export type DelegateAuthInit = {
   __typename?: 'DelegateAuthInit';
   appId: Scalars['String'];
@@ -122,7 +108,7 @@ export type Mutation = {
   requestUpdateSafe: RequestUpdateSafeResponse;
   updateSafe: UpdateSafeResponse;
   indexTransfer: IndexTransferResponse;
-  createOffer: Offer;
+  upsertOffer: Offer;
   unlistOffer: Scalars['Boolean'];
   lockOffer: LockOfferResult;
   provePayment: ProvePaymentResult;
@@ -164,8 +150,8 @@ export type MutationIndexTransferArgs = {
 };
 
 
-export type MutationCreateOfferArgs = {
-  data: CreateOfferInput;
+export type MutationUpsertOfferArgs = {
+  data: UpsertOfferInput;
 };
 
 
@@ -392,6 +378,20 @@ export type UpdateSafeResponse = {
   newSafeAddress?: Maybe<Scalars['String']>;
 };
 
+export type UpsertOfferInput = {
+  id?: Maybe<Scalars['Int']>;
+  title: Scalars['String'];
+  pictureUrl: Scalars['String'];
+  pictureMimeType: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  categoryTagId: Scalars['Int'];
+  geonameid: Scalars['Int'];
+  pricePerUnit: Scalars['String'];
+  unit: Scalars['String'];
+  maxUnits?: Maybe<Scalars['Int']>;
+  deliveryTerms: Scalars['String'];
+};
+
 export type UpsertProfileInput = {
   id?: Maybe<Scalars['Int']>;
   firstName: Scalars['String'];
@@ -501,7 +501,6 @@ export type ResolversTypes = ResolversObject<{
   Float: ResolverTypeWrapper<Scalars['Float']>;
   ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-  CreateOfferInput: CreateOfferInput;
   DelegateAuthInit: ResolverTypeWrapper<DelegateAuthInit>;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
@@ -538,6 +537,7 @@ export type ResolversTypes = ResolversObject<{
   TagInput: TagInput;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: ResolverTypeWrapper<UpdateSafeResponse>;
+  UpsertOfferInput: UpsertOfferInput;
   UpsertProfileInput: UpsertProfileInput;
   Version: ResolverTypeWrapper<Version>;
 }>;
@@ -550,7 +550,6 @@ export type ResolversParentTypes = ResolversObject<{
   Float: Scalars['Float'];
   ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
   Boolean: Scalars['Boolean'];
-  CreateOfferInput: CreateOfferInput;
   DelegateAuthInit: DelegateAuthInit;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: DepositChallengeResponse;
@@ -586,6 +585,7 @@ export type ResolversParentTypes = ResolversObject<{
   TagInput: TagInput;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: UpdateSafeResponse;
+  UpsertOfferInput: UpsertOfferInput;
   UpsertProfileInput: UpsertProfileInput;
   Version: Version;
 }>;
@@ -667,7 +667,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   requestUpdateSafe?: Resolver<ResolversTypes['RequestUpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationRequestUpdateSafeArgs, 'data'>>;
   updateSafe?: Resolver<ResolversTypes['UpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationUpdateSafeArgs, 'data'>>;
   indexTransfer?: Resolver<ResolversTypes['IndexTransferResponse'], ParentType, ContextType, RequireFields<MutationIndexTransferArgs, 'data'>>;
-  createOffer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType, RequireFields<MutationCreateOfferArgs, 'data'>>;
+  upsertOffer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType, RequireFields<MutationUpsertOfferArgs, 'data'>>;
   unlistOffer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUnlistOfferArgs, 'offerId'>>;
   lockOffer?: Resolver<ResolversTypes['LockOfferResult'], ParentType, ContextType, RequireFields<MutationLockOfferArgs, 'data'>>;
   provePayment?: Resolver<ResolversTypes['ProvePaymentResult'], ParentType, ContextType, RequireFields<MutationProvePaymentArgs, 'data'>>;

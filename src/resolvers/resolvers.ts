@@ -9,7 +9,7 @@ import {depositChallengeResolver} from "./mutations/depositChallenge";
 import {authenticateAtResolver} from "./mutations/authenticateAt";
 import {consumeDepositedChallengeResolver} from "./mutations/consumeDepositedChallenge";
 import {search} from "./queries/search";
-import {createOfferResolver} from "./mutations/createOffer";
+import {upsertOfferResolver} from "./mutations/upsertOffer";
 import {requestUpdateSafe} from "./mutations/requestUpdateSafe";
 import {updateSafe} from "./mutations/updateSafe";
 import {profileOffers} from "./profile/offers";
@@ -46,7 +46,7 @@ export const resolvers: Resolvers = {
         offerCategories: offerCategories(prisma_ro)
     },
     Mutation: {
-        createOffer: createOfferResolver(prisma_rw),
+        upsertOffer: upsertOfferResolver(prisma_rw),
         exchangeToken: exchangeTokenResolver(prisma_rw),
         logout: logout(prisma_rw),
         upsertProfile: upsertProfileResolver(prisma_rw),

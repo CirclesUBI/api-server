@@ -3,16 +3,21 @@ import {PrismaClient} from "@prisma/client";
 export class InitDb {
 
     public static readonly Tag_Marketplace_Offer_Category = "o-marketplace:offer:category:1";
+    public static readonly Tag_Marketplace_Offer_DeliveryTerms = "o-marketplace:offer:deliveryTerms:1";
+    public static readonly Tag_Marketplace_Offer_Unit = "o-marketplace:offer:unit:1";
 
     static readonly requiredTagTypes = {
-        [InitDb.Tag_Marketplace_Offer_Category]: true
+        [InitDb.Tag_Marketplace_Offer_Category]: true,
+        [InitDb.Tag_Marketplace_Offer_DeliveryTerms]: true,
+        [InitDb.Tag_Marketplace_Offer_Unit]: true
     };
 
     static async run(prisma:PrismaClient) {
-        this.insertMissingTagTypes(prisma);
+        await this.insertMissingTagTypes(prisma);
     }
 
     private static async insertMissingTagTypes(prisma:PrismaClient) {
+        // TODO: If run in parallel only one will succeed
         const allTagTypes = await prisma.tagType.findMany();
         const allExistingTagTypes: {[type:string]:boolean} = allTagTypes.reduce((p,c) => {
             if (!p[c.id]) {

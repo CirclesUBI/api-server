@@ -215,10 +215,9 @@ type Offer {
     deliveryTerms: String!
 }
 
-input CreateOfferInput
+input UpsertOfferInput
 {
-    createdByProfileId: Int!
-
+    id: Int
     title: String!
     pictureUrl: String!
     pictureMimeType: String!
@@ -302,7 +301,7 @@ type Mutation
     requestUpdateSafe(data:RequestUpdateSafeInput!) : RequestUpdateSafeResponse!
     updateSafe(data:UpdateSafeInput!) : UpdateSafeResponse!
     indexTransfer(data:IndexTransferInput!) : IndexTransferResponse!
-    createOffer(data:CreateOfferInput!):Offer!
+    upsertOffer(data:UpsertOfferInput!):Offer!
     unlistOffer(offerId:Int!):Boolean!
     lockOffer(data:LockOfferInput!):LockOfferResult!
     provePayment(data:PaymentProof!):ProvePaymentResult!
