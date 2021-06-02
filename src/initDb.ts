@@ -27,7 +27,7 @@ export class InitDb {
         if (allMissingTagTypes.length) {
             console.log(`InitDb inserting the missing tag types ..`);
             await prisma.tagType.createMany({
-                data: Object.keys(allMissingTagTypes).map(o => {
+                data: allMissingTagTypes.map(o => {
                     return {
                         id: o
                     }
