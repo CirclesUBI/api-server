@@ -76,14 +76,12 @@ export function upsertOfferResolver(prisma:PrismaClient) {
                             id: args.data.deliveryTermsTagId
                         }
                     },
-                    deliveryTermsTagId: args.data.deliveryTermsTagId,
                     description: args.data.description,
                     unitTag: {
                         connect: {
                             id: args.data.unitTagId
                         }
                     },
-                    unitTagId: args.data.unitTagId,
                     maxUnits: args.data.maxUnits,
                     pricePerUnit: args.data.pricePerUnit,
                     title: args.data?.title,
