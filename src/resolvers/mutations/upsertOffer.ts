@@ -27,9 +27,17 @@ export function upsertOfferResolver(prisma:PrismaClient) {
                     },
                     publishedAt: new Date(),
                     geonameid: args.data.geonameid,
-                    deliveryTerms: args.data.deliveryTerms,
+                    deliveryTermsTag: {
+                        connect: {
+                            id: args.data.deliveryTermsTagId
+                        }
+                    },
                     description: args.data.description,
-                    unit: args.data.unit,
+                    unitTag: {
+                        connect: {
+                            id: args.data.unitTagId
+                        }
+                    },
                     maxUnits: args.data.maxUnits,
                     pricePerUnit: args.data.pricePerUnit,
                     title: args.data?.title,
@@ -63,9 +71,19 @@ export function upsertOfferResolver(prisma:PrismaClient) {
                     },
                     publishedAt: new Date(),
                     geonameid: args.data.geonameid,
-                    deliveryTerms: args.data.deliveryTerms,
+                    deliveryTermsTag: {
+                        connect: {
+                            id: args.data.deliveryTermsTagId
+                        }
+                    },
+                    deliveryTermsTagId: args.data.deliveryTermsTagId,
                     description: args.data.description,
-                    unit: args.data.unit,
+                    unitTag: {
+                        connect: {
+                            id: args.data.unitTagId
+                        }
+                    },
+                    unitTagId: args.data.unitTagId,
                     maxUnits: args.data.maxUnits,
                     pricePerUnit: args.data.pricePerUnit,
                     title: args.data?.title,

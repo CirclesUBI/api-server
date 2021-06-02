@@ -203,16 +203,19 @@ type Offer {
     pictureUrl: String!
     pictureMimeType: String!
     description: String
-    categoryTagId: Int!
     categoryTag: Tag
+    categoryTagId: Int!
+
     city: City
     geonameid: Int!
 
     pricePerUnit: String!
-    unit: String!
+    unitTag: Tag
+    unitTagId: Int!
     maxUnits: Int
 
-    deliveryTerms: String!
+    deliveryTermsTag: Tag
+    deliveryTermsTagId: Int!
 }
 
 input UpsertOfferInput
@@ -226,10 +229,10 @@ input UpsertOfferInput
     geonameid: Int!
 
     pricePerUnit: String!
-    unit: String!
+    unitTagId: Int!
     maxUnits: Int
 
-    deliveryTerms: String!
+    deliveryTermsTagId: Int!
 }
 
 input QueryOfferInput {

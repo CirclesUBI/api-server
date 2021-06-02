@@ -101,10 +101,14 @@ model Offer {
     geonameid Int // city
 
     pricePerUnit String
-    unit String
+
+    unitTag Tag @relation(name: "Offer_UnitTag", fields: [categoryTagId], references: [id])
+    unitTagId Int
+
     maxUnits Int?
 
-    deliveryTerms String    // pickup, delivery etc.
+    deliveryTermsTag Tag @relation(name: "Offer_DeliveryTermsTag", fields: [categoryTagId], references: [id])
+    deliveryTermsTagId Int
 }
 
 model TagType {
@@ -128,6 +132,8 @@ model Tag {
     value String?
 
     offerCategory Offer? @relation(name: "Offer_CategoryTag")
+    offerUnit Offer? @relation(name: "Offer_UnitTag")
+    offerDeliveryTerms Offer? @relation(name: "Offer_DeliveryTermsTag")
 }
 
 enum PurchaseStatus {

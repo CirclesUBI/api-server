@@ -181,14 +181,16 @@ export type Offer = {
   pictureUrl: Scalars['String'];
   pictureMimeType: Scalars['String'];
   description?: Maybe<Scalars['String']>;
-  categoryTagId: Scalars['Int'];
   categoryTag?: Maybe<Tag>;
+  categoryTagId: Scalars['Int'];
   city?: Maybe<City>;
   geonameid: Scalars['Int'];
   pricePerUnit: Scalars['String'];
-  unit: Scalars['String'];
+  unitTag?: Maybe<Tag>;
+  unitTagId: Scalars['Int'];
   maxUnits?: Maybe<Scalars['Int']>;
-  deliveryTerms: Scalars['String'];
+  deliveryTermsTag?: Maybe<Tag>;
+  deliveryTermsTagId: Scalars['Int'];
 };
 
 export type PaymentProof = {
@@ -387,9 +389,9 @@ export type UpsertOfferInput = {
   categoryTagId: Scalars['Int'];
   geonameid: Scalars['Int'];
   pricePerUnit: Scalars['String'];
-  unit: Scalars['String'];
+  unitTagId: Scalars['Int'];
   maxUnits?: Maybe<Scalars['Int']>;
-  deliveryTerms: Scalars['String'];
+  deliveryTermsTagId: Scalars['Int'];
 };
 
 export type UpsertProfileInput = {
@@ -684,14 +686,16 @@ export type OfferResolvers<ContextType = any, ParentType extends ResolversParent
   pictureUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   pictureMimeType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  categoryTagId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   categoryTag?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType>;
+  categoryTagId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
   geonameid?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   pricePerUnit?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  unit?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  unitTag?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType>;
+  unitTagId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   maxUnits?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  deliveryTerms?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  deliveryTermsTag?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType>;
+  deliveryTermsTagId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
