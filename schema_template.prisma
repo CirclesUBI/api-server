@@ -131,9 +131,9 @@ model Tag {
 
     value String?
 
-    offerCategory Offer? @relation(name: "Offer_CategoryTag")
-    offerUnit Offer? @relation(name: "Offer_UnitTag")
-    offerDeliveryTerms Offer? @relation(name: "Offer_DeliveryTermsTag")
+    offerCategory Offer[] @relation(name: "Offer_CategoryTag")
+    offerUnit Offer[] @relation(name: "Offer_UnitTag")
+    offerDeliveryTerms Offer[] @relation(name: "Offer_DeliveryTermsTag")
 }
 
 enum PurchaseStatus {
