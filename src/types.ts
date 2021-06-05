@@ -24,6 +24,12 @@ export type City = {
   feature_code: Scalars['String'];
 };
 
+export type CityStats = {
+  __typename?: 'CityStats';
+  city: City;
+  rank: Scalars['Int'];
+};
+
 export type ConsumeDepositedChallengeResponse = {
   __typename?: 'ConsumeDepositedChallengeResponse';
   success: Scalars['Boolean'];
@@ -78,7 +84,7 @@ export type IndexedTransfer = {
   from: Scalars['String'];
   to: Scalars['String'];
   value: Scalars['String'];
-  tags: Array<Tag>;
+  tags?: Maybe<Array<Tag>>;
 };
 
 export type LockOfferInput = {
@@ -253,7 +259,9 @@ export type Query = {
   search: Array<Profile>;
   cities: Array<City>;
   offers: Array<Offer>;
-  offerCategories: Array<Tag>;
+  tags: Array<Tag>;
+  tagById?: Maybe<Tag>;
+  stats?: Maybe<Stats>;
 };
 
 
@@ -277,8 +285,13 @@ export type QueryOffersArgs = {
 };
 
 
-export type QueryOfferCategoriesArgs = {
-  like?: Maybe<Scalars['String']>;
+export type QueryTagsArgs = {
+  query: QueryTagsInput;
+};
+
+
+export type QueryTagByIdArgs = {
+  id: Scalars['Int'];
 };
 
 export type QueryCitiesByGeonameIdInput = {
@@ -302,7 +315,7 @@ export type QueryIndexedTransferInput = {
 };
 
 export type QueryIndexedTransferTagsInput = {
-  type?: Maybe<Scalars['String']>;
+  typeId: Scalars['String'];
   value?: Maybe<Scalars['String']>;
 };
 
@@ -324,6 +337,11 @@ export type QueryProfileInput = {
 
 export type QueryPurchaseInput = {
   purchasedByProfileId: Scalars['String'];
+};
+
+export type QueryTagsInput = {
+  typeId_in: Array<Scalars['String']>;
+  value_like?: Maybe<Scalars['String']>;
 };
 
 export type QueryUniqueProfileInput = {
@@ -357,15 +375,25 @@ export type SessionInfo = {
   profileId?: Maybe<Scalars['Int']>;
 };
 
+export type Stats = {
+  __typename?: 'Stats';
+  totalCitizens: Scalars['Int'];
+  currentGoal: Scalars['Int'];
+  nextGoalAt: Scalars['Int'];
+  inviteRank: Scalars['Int'];
+  cityRank?: Maybe<Scalars['Int']>;
+  citites: Array<CityStats>;
+};
+
 export type Tag = {
   __typename?: 'Tag';
   id: Scalars['Int'];
-  type: Scalars['String'];
+  typeId: Scalars['String'];
   value?: Maybe<Scalars['String']>;
 };
 
 export type TagInput = {
-  type: Scalars['String'];
+  typeId: Scalars['String'];
   value?: Maybe<Scalars['String']>;
 };
 
@@ -383,8 +411,8 @@ export type UpdateSafeResponse = {
 export type UpsertOfferInput = {
   id?: Maybe<Scalars['Int']>;
   title: Scalars['String'];
-  pictureUrl: Scalars['String'];
-  pictureMimeType: Scalars['String'];
+  pictureUrl?: Maybe<Scalars['String']>;
+  pictureMimeType?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   categoryTagId: Scalars['Int'];
   geonameid: Scalars['Int'];
@@ -501,6 +529,7 @@ export type ResolversTypes = ResolversObject<{
   Int: ResolverTypeWrapper<Scalars['Int']>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
+  CityStats: ResolverTypeWrapper<CityStats>;
   ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   DelegateAuthInit: ResolverTypeWrapper<DelegateAuthInit>;
@@ -529,12 +558,14 @@ export type ResolversTypes = ResolversObject<{
   QueryOfferInput: QueryOfferInput;
   QueryProfileInput: QueryProfileInput;
   QueryPurchaseInput: QueryPurchaseInput;
+  QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: ResolverTypeWrapper<RequestUpdateSafeResponse>;
   SearchInput: SearchInput;
   Server: ResolverTypeWrapper<Server>;
   SessionInfo: ResolverTypeWrapper<SessionInfo>;
+  Stats: ResolverTypeWrapper<Stats>;
   Tag: ResolverTypeWrapper<Tag>;
   TagInput: TagInput;
   UpdateSafeInput: UpdateSafeInput;
@@ -550,6 +581,7 @@ export type ResolversParentTypes = ResolversObject<{
   Int: Scalars['Int'];
   String: Scalars['String'];
   Float: Scalars['Float'];
+  CityStats: CityStats;
   ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
   Boolean: Scalars['Boolean'];
   DelegateAuthInit: DelegateAuthInit;
@@ -577,12 +609,14 @@ export type ResolversParentTypes = ResolversObject<{
   QueryOfferInput: QueryOfferInput;
   QueryProfileInput: QueryProfileInput;
   QueryPurchaseInput: QueryPurchaseInput;
+  QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: RequestUpdateSafeResponse;
   SearchInput: SearchInput;
   Server: Server;
   SessionInfo: SessionInfo;
+  Stats: Stats;
   Tag: Tag;
   TagInput: TagInput;
   UpdateSafeInput: UpdateSafeInput;
@@ -600,6 +634,12 @@ export type CityResolvers<ContextType = any, ParentType extends ResolversParentT
   latitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   longitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   feature_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CityStatsResolvers<ContextType = any, ParentType extends ResolversParentTypes['CityStats'] = ResolversParentTypes['CityStats']> = ResolversObject<{
+  city?: Resolver<ResolversTypes['City'], ParentType, ContextType>;
+  rank?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -643,7 +683,7 @@ export type IndexedTransferResolvers<ContextType = any, ParentType extends Resol
   from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -744,7 +784,9 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, 'query'>>;
   offers?: Resolver<Array<ResolversTypes['Offer']>, ParentType, ContextType, RequireFields<QueryOffersArgs, 'query'>>;
-  offerCategories?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryOfferCategoriesArgs, never>>;
+  tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsArgs, 'query'>>;
+  tagById?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagByIdArgs, 'id'>>;
+  stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
 }>;
 
 export type RequestUpdateSafeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['RequestUpdateSafeResponse'] = ResolversParentTypes['RequestUpdateSafeResponse']> = ResolversObject<{
@@ -766,9 +808,19 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type StatsResolvers<ContextType = any, ParentType extends ResolversParentTypes['Stats'] = ResolversParentTypes['Stats']> = ResolversObject<{
+  totalCitizens?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  currentGoal?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  nextGoalAt?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  inviteRank?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  cityRank?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  citites?: Resolver<Array<ResolversTypes['CityStats']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type TagResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  typeId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -789,6 +841,7 @@ export type VersionResolvers<ContextType = any, ParentType extends ResolversPare
 
 export type Resolvers<ContextType = any> = ResolversObject<{
   City?: CityResolvers<ContextType>;
+  CityStats?: CityStatsResolvers<ContextType>;
   ConsumeDepositedChallengeResponse?: ConsumeDepositedChallengeResponseResolvers<ContextType>;
   DelegateAuthInit?: DelegateAuthInitResolvers<ContextType>;
   DepositChallengeResponse?: DepositChallengeResponseResolvers<ContextType>;
@@ -806,6 +859,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   RequestUpdateSafeResponse?: RequestUpdateSafeResponseResolvers<ContextType>;
   Server?: ServerResolvers<ContextType>;
   SessionInfo?: SessionInfoResolvers<ContextType>;
+  Stats?: StatsResolvers<ContextType>;
   Tag?: TagResolvers<ContextType>;
   UpdateSafeResponse?: UpdateSafeResponseResolvers<ContextType>;
   Version?: VersionResolvers<ContextType>;

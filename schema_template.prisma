@@ -91,8 +91,8 @@ model Offer {
     purchase Purchase? @relation(name: "Purchase_PurchasedItem")
 
     title String
-    pictureUrl String
-    pictureMimeType String
+    pictureUrl String?
+    pictureMimeType String?
     description String?
 
     categoryTag Tag @relation(name: "Offer_CategoryTag", fields: [categoryTagId], references: [id])

@@ -22,6 +22,8 @@ export function offers(prisma:PrismaClient) {
         return offers.map(o => {
             return {
                 ...o,
+                pictureUrl: o.pictureUrl ? o.pictureUrl : "",
+                pictureMimeType: o.pictureMimeType ? o.pictureMimeType : "",
                 publishedAt: o.publishedAt.toJSON(),
                 unlistedAt: o.unlistedAt ? o.unlistedAt.toJSON() : null,
                 purchasedAt: o.purchasedAt ? o.purchasedAt.toJSON() : null

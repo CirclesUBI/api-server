@@ -58,12 +58,12 @@ input UpsertProfileInput
 
 type Tag {
     id: Int!
-    type: String!
+    typeId: String!
     value: String
 }
 
 input TagInput {
-    type: String!
+    typeId: String!
     value: String
 }
 
@@ -82,11 +82,11 @@ type IndexedTransfer {
     from: String!
     to: String!
     value: String!
-    tags: [Tag!]!
+    tags: [Tag!]
 }
 
 input QueryIndexedTransferTagsInput {
-    type: String
+    typeId: String!
     value: String
 }
 
@@ -222,8 +222,8 @@ input UpsertOfferInput
 {
     id: Int
     title: String!
-    pictureUrl: String!
-    pictureMimeType: String!
+    pictureUrl: String
+    pictureMimeType: String
     description: String
     categoryTagId: Int!
     geonameid: Int!
@@ -293,6 +293,25 @@ input QueryPurchaseInput {
     purchasedByProfileId: String!
 }
 
+type CityStats {
+    city: City!
+    rank: Int!
+}
+
+type Stats {
+    totalCitizens: Int!
+    currentGoal: Int!
+    nextGoalAt: Int!
+    inviteRank: Int!
+    cityRank: Int
+    citites: [CityStats!]!
+}
+
+input QueryTagsInput {
+    typeId_in: [String!]!
+    value_like: String
+}
+
 type Mutation
 {
     exchangeToken : ExchangeTokenResponse!
@@ -310,6 +329,7 @@ type Mutation
     provePayment(data:PaymentProof!):ProvePaymentResult!
 }
 
+
 type Query
 {
     whoami: String
@@ -319,5 +339,7 @@ type Query
     search(query:SearchInput!) : [Profile!]!
     cities(query:QueryCitiesInput!) : [City!]!
     offers(query:QueryOfferInput!): [Offer!]!
-    offerCategories(like:String):[Tag!]!
+    tags(query:QueryTagsInput!):[Tag!]!
+    tagById(id:Int!):Tag
+    stats: Stats
 }

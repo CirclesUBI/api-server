@@ -20,10 +20,10 @@ import {whoami} from "./queries/whoami";
 import {cities} from "./queries/citites";
 import {version} from "./queries/version";
 import {offers} from "./queries/offers";
-import {offerCategories} from "./queries/offerCategories";
 import {offerCategoryTag} from "./offer/offerCategoryTag";
 import {offerDeliveryTermsTag} from "./offer/offerDeliveryTermsTag";
 import {offerUnitTag} from "./offer/offerUnitTag";
+import {tags} from "./queries/tags";
 
 const packageJson = require("../../package.json");
 
@@ -47,7 +47,18 @@ export const resolvers: Resolvers = {
         search: search(prisma_ro),
         version: version(packageJson),
         offers: offers(prisma_ro),
-        offerCategories: offerCategories(prisma_ro)
+        tags: tags(prisma_ro),
+        tagById: async (parent, args, context) => {
+            const tag = await prisma_ro.tag.findUnique({
+                where: {
+                    id: args.id
+                }
+            });
+            return tag;
+        },
+        stats: async (parent, args, context) => {
+            return <any>{};
+        }
     },
     Mutation: {
         upsertOffer: upsertOfferResolver(prisma_rw),
