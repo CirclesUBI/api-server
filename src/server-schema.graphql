@@ -67,6 +67,12 @@ input TagInput {
     value: String
 }
 
+input UpsertTagInput {
+    id: Int
+    typeId: String!
+    value: String
+}
+
 input IndexTransferInput {
     transactionHash: String!
     blockNo: Int!
@@ -319,6 +325,10 @@ type CountryStats {
     citizenCount: Int!
 }
 
+type Goal {
+    totalCitizens: Int!
+}
+
 type Stats {
     totalCitizens: Int!
     currentGoalFrom: Int!
@@ -326,6 +336,7 @@ type Stats {
     nextGoalAt: Int!
     inviteRank: Int!
     cityRank: Int
+    goals: [Goal!]!
     cities: [CityStats!]!
     countries: [CountryStats!]!
 }
@@ -350,6 +361,7 @@ type Mutation
     unlistOffer(offerId:Int!):Boolean!
     lockOffer(data:LockOfferInput!):LockOfferResult!
     provePayment(data:PaymentProof!):ProvePaymentResult!
+    upsertTag(data:UpsertTagInput!):Tag!
 }
 
 

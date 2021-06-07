@@ -74,6 +74,11 @@ export type ExchangeTokenResponse = {
   errorMessage?: Maybe<Scalars['String']>;
 };
 
+export type Goal = {
+  __typename?: 'Goal';
+  totalCitizens: Scalars['Int'];
+};
+
 export type ICity = {
   geonameid: Scalars['Int'];
   name: Scalars['String'];
@@ -140,6 +145,7 @@ export type Mutation = {
   unlistOffer: Scalars['Boolean'];
   lockOffer: LockOfferResult;
   provePayment: ProvePaymentResult;
+  upsertTag: Tag;
 };
 
 
@@ -195,6 +201,11 @@ export type MutationLockOfferArgs = {
 
 export type MutationProvePaymentArgs = {
   data: PaymentProof;
+};
+
+
+export type MutationUpsertTagArgs = {
+  data: UpsertTagInput;
 };
 
 export type Offer = {
@@ -405,6 +416,7 @@ export type Stats = {
   nextGoalAt: Scalars['Int'];
   inviteRank: Scalars['Int'];
   cityRank?: Maybe<Scalars['Int']>;
+  goals: Array<Goal>;
   cities: Array<CityStats>;
   countries: Array<CountryStats>;
 };
@@ -461,6 +473,12 @@ export type UpsertProfileInput = {
   avatarMimeType?: Maybe<Scalars['String']>;
   newsletter?: Maybe<Scalars['Boolean']>;
   cityGeonameid?: Maybe<Scalars['Int']>;
+};
+
+export type UpsertTagInput = {
+  id?: Maybe<Scalars['Int']>;
+  typeId: Scalars['String'];
+  value?: Maybe<Scalars['String']>;
 };
 
 export type Version = {
@@ -561,6 +579,7 @@ export type ResolversTypes = ResolversObject<{
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
+  Goal: ResolverTypeWrapper<Goal>;
   ICity: ResolversTypes['City'] | ResolversTypes['CityStats'];
   IndexTransferInput: IndexTransferInput;
   IndexTransferResponse: ResolverTypeWrapper<IndexTransferResponse>;
@@ -598,6 +617,7 @@ export type ResolversTypes = ResolversObject<{
   UpdateSafeResponse: ResolverTypeWrapper<UpdateSafeResponse>;
   UpsertOfferInput: UpsertOfferInput;
   UpsertProfileInput: UpsertProfileInput;
+  UpsertTagInput: UpsertTagInput;
   Version: ResolverTypeWrapper<Version>;
 }>;
 
@@ -615,6 +635,7 @@ export type ResolversParentTypes = ResolversObject<{
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: DepositChallengeResponse;
   ExchangeTokenResponse: ExchangeTokenResponse;
+  Goal: Goal;
   ICity: ResolversParentTypes['City'] | ResolversParentTypes['CityStats'];
   IndexTransferInput: IndexTransferInput;
   IndexTransferResponse: IndexTransferResponse;
@@ -651,6 +672,7 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateSafeResponse: UpdateSafeResponse;
   UpsertOfferInput: UpsertOfferInput;
   UpsertProfileInput: UpsertProfileInput;
+  UpsertTagInput: UpsertTagInput;
   Version: Version;
 }>;
 
@@ -711,6 +733,11 @@ export type ExchangeTokenResponseResolvers<ContextType = any, ParentType extends
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type GoalResolvers<ContextType = any, ParentType extends ResolversParentTypes['Goal'] = ResolversParentTypes['Goal']> = ResolversObject<{
+  totalCitizens?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type ICityResolvers<ContextType = any, ParentType extends ResolversParentTypes['ICity'] = ResolversParentTypes['ICity']> = ResolversObject<{
   __resolveType: TypeResolveFn<'City' | 'CityStats', ParentType, ContextType>;
   geonameid?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -764,6 +791,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   unlistOffer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUnlistOfferArgs, 'offerId'>>;
   lockOffer?: Resolver<ResolversTypes['LockOfferResult'], ParentType, ContextType, RequireFields<MutationLockOfferArgs, 'data'>>;
   provePayment?: Resolver<ResolversTypes['ProvePaymentResult'], ParentType, ContextType, RequireFields<MutationProvePaymentArgs, 'data'>>;
+  upsertTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationUpsertTagArgs, 'data'>>;
 }>;
 
 export type OfferResolvers<ContextType = any, ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']> = ResolversObject<{
@@ -866,6 +894,7 @@ export type StatsResolvers<ContextType = any, ParentType extends ResolversParent
   nextGoalAt?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   inviteRank?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   cityRank?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  goals?: Resolver<Array<ResolversTypes['Goal']>, ParentType, ContextType>;
   cities?: Resolver<Array<ResolversTypes['CityStats']>, ParentType, ContextType>;
   countries?: Resolver<Array<ResolversTypes['CountryStats']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -900,6 +929,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   DelegateAuthInit?: DelegateAuthInitResolvers<ContextType>;
   DepositChallengeResponse?: DepositChallengeResponseResolvers<ContextType>;
   ExchangeTokenResponse?: ExchangeTokenResponseResolvers<ContextType>;
+  Goal?: GoalResolvers<ContextType>;
   ICity?: ICityResolvers<ContextType>;
   IndexTransferResponse?: IndexTransferResponseResolvers<ContextType>;
   IndexedTransfer?: IndexedTransferResolvers<ContextType>;
