@@ -179,7 +179,17 @@ input QueryCitiesInput {
     byId: QueryCitiesByGeonameIdInput
 }
 
-type City {
+interface ICity {
+    geonameid: Int!
+    name: String!
+    country: String!
+    population: Int!
+    latitude: Float!
+    longitude: Float!
+    feature_code: String!
+}
+
+type City implements ICity {
     geonameid: Int!
     name: String!
     country: String!
@@ -293,18 +303,31 @@ input QueryPurchaseInput {
     purchasedByProfileId: String!
 }
 
-type CityStats {
-    city: City!
-    rank: Int!
+type CityStats implements ICity {
+    citizenCount: Int!
+    geonameid: Int!
+    name: String!
+    country: String!
+    population: Int!
+    latitude: Float!
+    longitude: Float!
+    feature_code: String!
+}
+
+type CountryStats {
+    name: String!
+    citizenCount: Int!
 }
 
 type Stats {
     totalCitizens: Int!
+    currentGoalFrom: Int!
     currentGoal: Int!
     nextGoalAt: Int!
     inviteRank: Int!
     cityRank: Int
-    citites: [CityStats!]!
+    cities: [CityStats!]!
+    countries: [CountryStats!]!
 }
 
 input QueryTagsInput {

@@ -13,7 +13,7 @@ export type Scalars = {
   Float: number;
 };
 
-export type City = {
+export type City = ICity & {
   __typename?: 'City';
   geonameid: Scalars['Int'];
   name: Scalars['String'];
@@ -24,16 +24,28 @@ export type City = {
   feature_code: Scalars['String'];
 };
 
-export type CityStats = {
+export type CityStats = ICity & {
   __typename?: 'CityStats';
-  city: City;
-  rank: Scalars['Int'];
+  citizenCount: Scalars['Int'];
+  geonameid: Scalars['Int'];
+  name: Scalars['String'];
+  country: Scalars['String'];
+  population: Scalars['Int'];
+  latitude: Scalars['Float'];
+  longitude: Scalars['Float'];
+  feature_code: Scalars['String'];
 };
 
 export type ConsumeDepositedChallengeResponse = {
   __typename?: 'ConsumeDepositedChallengeResponse';
   success: Scalars['Boolean'];
   challenge?: Maybe<Scalars['String']>;
+};
+
+export type CountryStats = {
+  __typename?: 'CountryStats';
+  name: Scalars['String'];
+  citizenCount: Scalars['Int'];
 };
 
 export type DelegateAuthInit = {
@@ -60,6 +72,16 @@ export type ExchangeTokenResponse = {
   __typename?: 'ExchangeTokenResponse';
   success: Scalars['Boolean'];
   errorMessage?: Maybe<Scalars['String']>;
+};
+
+export type ICity = {
+  geonameid: Scalars['Int'];
+  name: Scalars['String'];
+  country: Scalars['String'];
+  population: Scalars['Int'];
+  latitude: Scalars['Float'];
+  longitude: Scalars['Float'];
+  feature_code: Scalars['String'];
 };
 
 export type IndexTransferInput = {
@@ -378,11 +400,13 @@ export type SessionInfo = {
 export type Stats = {
   __typename?: 'Stats';
   totalCitizens: Scalars['Int'];
+  currentGoalFrom: Scalars['Int'];
   currentGoal: Scalars['Int'];
   nextGoalAt: Scalars['Int'];
   inviteRank: Scalars['Int'];
   cityRank?: Maybe<Scalars['Int']>;
-  citites: Array<CityStats>;
+  cities: Array<CityStats>;
+  countries: Array<CountryStats>;
 };
 
 export type Tag = {
@@ -532,10 +556,12 @@ export type ResolversTypes = ResolversObject<{
   CityStats: ResolverTypeWrapper<CityStats>;
   ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  CountryStats: ResolverTypeWrapper<CountryStats>;
   DelegateAuthInit: ResolverTypeWrapper<DelegateAuthInit>;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
+  ICity: ResolversTypes['City'] | ResolversTypes['CityStats'];
   IndexTransferInput: IndexTransferInput;
   IndexTransferResponse: ResolverTypeWrapper<IndexTransferResponse>;
   IndexedTransfer: ResolverTypeWrapper<IndexedTransfer>;
@@ -584,10 +610,12 @@ export type ResolversParentTypes = ResolversObject<{
   CityStats: CityStats;
   ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
   Boolean: Scalars['Boolean'];
+  CountryStats: CountryStats;
   DelegateAuthInit: DelegateAuthInit;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: DepositChallengeResponse;
   ExchangeTokenResponse: ExchangeTokenResponse;
+  ICity: ResolversParentTypes['City'] | ResolversParentTypes['CityStats'];
   IndexTransferInput: IndexTransferInput;
   IndexTransferResponse: IndexTransferResponse;
   IndexedTransfer: IndexedTransfer;
@@ -638,14 +666,26 @@ export type CityResolvers<ContextType = any, ParentType extends ResolversParentT
 }>;
 
 export type CityStatsResolvers<ContextType = any, ParentType extends ResolversParentTypes['CityStats'] = ResolversParentTypes['CityStats']> = ResolversObject<{
-  city?: Resolver<ResolversTypes['City'], ParentType, ContextType>;
-  rank?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  citizenCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  geonameid?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  country?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  population?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  latitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  longitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  feature_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type ConsumeDepositedChallengeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['ConsumeDepositedChallengeResponse'] = ResolversParentTypes['ConsumeDepositedChallengeResponse']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   challenge?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CountryStatsResolvers<ContextType = any, ParentType extends ResolversParentTypes['CountryStats'] = ResolversParentTypes['CountryStats']> = ResolversObject<{
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  citizenCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -669,6 +709,17 @@ export type ExchangeTokenResponseResolvers<ContextType = any, ParentType extends
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ICityResolvers<ContextType = any, ParentType extends ResolversParentTypes['ICity'] = ResolversParentTypes['ICity']> = ResolversObject<{
+  __resolveType: TypeResolveFn<'City' | 'CityStats', ParentType, ContextType>;
+  geonameid?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  country?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  population?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  latitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  longitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  feature_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type IndexTransferResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndexTransferResponse'] = ResolversParentTypes['IndexTransferResponse']> = ResolversObject<{
@@ -810,11 +861,13 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
 
 export type StatsResolvers<ContextType = any, ParentType extends ResolversParentTypes['Stats'] = ResolversParentTypes['Stats']> = ResolversObject<{
   totalCitizens?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  currentGoalFrom?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   currentGoal?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   nextGoalAt?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   inviteRank?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   cityRank?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  citites?: Resolver<Array<ResolversTypes['CityStats']>, ParentType, ContextType>;
+  cities?: Resolver<Array<ResolversTypes['CityStats']>, ParentType, ContextType>;
+  countries?: Resolver<Array<ResolversTypes['CountryStats']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -843,9 +896,11 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   City?: CityResolvers<ContextType>;
   CityStats?: CityStatsResolvers<ContextType>;
   ConsumeDepositedChallengeResponse?: ConsumeDepositedChallengeResponseResolvers<ContextType>;
+  CountryStats?: CountryStatsResolvers<ContextType>;
   DelegateAuthInit?: DelegateAuthInitResolvers<ContextType>;
   DepositChallengeResponse?: DepositChallengeResponseResolvers<ContextType>;
   ExchangeTokenResponse?: ExchangeTokenResponseResolvers<ContextType>;
+  ICity?: ICityResolvers<ContextType>;
   IndexTransferResponse?: IndexTransferResponseResolvers<ContextType>;
   IndexedTransfer?: IndexedTransferResolvers<ContextType>;
   LockOfferResult?: LockOfferResultResolvers<ContextType>;
