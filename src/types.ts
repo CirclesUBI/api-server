@@ -48,6 +48,11 @@ export type CountryStats = {
   citizenCount: Scalars['Int'];
 };
 
+export type CreateTagInput = {
+  typeId: Scalars['String'];
+  value?: Maybe<Scalars['String']>;
+};
+
 export type DelegateAuthInit = {
   __typename?: 'DelegateAuthInit';
   appId: Scalars['String'];
@@ -89,28 +94,75 @@ export type ICity = {
   feature_code: Scalars['String'];
 };
 
-export type IndexTransferInput = {
-  transactionHash: Scalars['String'];
-  blockNo: Scalars['Int'];
-  from: Scalars['String'];
+export type IndexTransactionInput = {
   to: Scalars['String'];
-  value: Scalars['String'];
-  tags?: Maybe<Array<TagInput>>;
+  from: Scalars['String'];
+  contractAddress?: Maybe<Scalars['String']>;
+  transactionIndex: Scalars['Int'];
+  root?: Maybe<Scalars['String']>;
+  gasUsed: Scalars['String'];
+  logsBloom: Scalars['String'];
+  blockHash: Scalars['String'];
+  transactionHash: Scalars['String'];
+  blockNumber: Scalars['Int'];
+  confirmations: Scalars['Int'];
+  cumulativeGasUsed: Scalars['String'];
+  byzantium?: Maybe<Scalars['Boolean']>;
+  status?: Maybe<Scalars['Int']>;
+  logs?: Maybe<Array<IndexTransactionLogInput>>;
+  tags?: Maybe<Array<CreateTagInput>>;
 };
 
-export type IndexTransferResponse = {
-  __typename?: 'IndexTransferResponse';
+export type IndexTransactionLog = {
+  __typename?: 'IndexTransactionLog';
+  id: Scalars['Int'];
+  blockNumber: Scalars['Int'];
+  blockHash: Scalars['String'];
+  transactionIndex: Scalars['Int'];
+  removed?: Maybe<Scalars['Boolean']>;
+  address: Scalars['String'];
+  data?: Maybe<Scalars['String']>;
+  topics: Array<Scalars['String']>;
+  transactionHash: Scalars['String'];
+  logIndex: Scalars['Int'];
+};
+
+export type IndexTransactionLogInput = {
+  blockNumber: Scalars['Int'];
+  blockHash: Scalars['String'];
+  transactionIndex: Scalars['Int'];
+  removed?: Maybe<Scalars['Boolean']>;
+  address: Scalars['String'];
+  data?: Maybe<Scalars['String']>;
+  topics: Array<Scalars['String']>;
+  transactionHash: Scalars['String'];
+  logIndex: Scalars['Int'];
+};
+
+export type IndexTransactionResponse = {
+  __typename?: 'IndexTransactionResponse';
   success: Scalars['Boolean'];
   errorMessage?: Maybe<Scalars['String']>;
 };
 
-export type IndexedTransfer = {
-  __typename?: 'IndexedTransfer';
-  transactionHash: Scalars['String'];
-  blockNo: Scalars['Int'];
-  from: Scalars['String'];
+export type IndexedTransaction = {
+  __typename?: 'IndexedTransaction';
+  id: Scalars['Int'];
   to: Scalars['String'];
-  value: Scalars['String'];
+  from: Scalars['String'];
+  contractAddress?: Maybe<Scalars['String']>;
+  transactionIndex: Scalars['Int'];
+  root?: Maybe<Scalars['String']>;
+  gasUsed: Scalars['String'];
+  logsBloom: Scalars['String'];
+  blockHash: Scalars['String'];
+  transactionHash: Scalars['String'];
+  blockNumber: Scalars['Int'];
+  confirmations: Scalars['Int'];
+  cumulativeGasUsed: Scalars['String'];
+  byzantium?: Maybe<Scalars['Boolean']>;
+  status?: Maybe<Scalars['Int']>;
+  logs?: Maybe<Array<IndexTransactionLog>>;
   tags?: Maybe<Array<Tag>>;
 };
 
@@ -140,7 +192,7 @@ export type Mutation = {
   upsertProfile: Profile;
   requestUpdateSafe: RequestUpdateSafeResponse;
   updateSafe: UpdateSafeResponse;
-  indexTransfer: IndexTransferResponse;
+  indexTransaction: IndexTransactionResponse;
   upsertOffer: Offer;
   unlistOffer: Scalars['Boolean'];
   lockOffer: LockOfferResult;
@@ -179,8 +231,8 @@ export type MutationUpdateSafeArgs = {
 };
 
 
-export type MutationIndexTransferArgs = {
-  data: IndexTransferInput;
+export type MutationIndexTransactionArgs = {
+  data: IndexTransactionInput;
 };
 
 
@@ -341,13 +393,13 @@ export type QueryCitiesInput = {
   byId?: Maybe<QueryCitiesByGeonameIdInput>;
 };
 
-export type QueryIndexedTransferInput = {
-  from?: Maybe<Scalars['String']>;
-  to?: Maybe<Scalars['String']>;
-  tags?: Maybe<Array<QueryIndexedTransferTagsInput>>;
+export type QueryIndexedTransactionInput = {
+  fromAddress?: Maybe<Scalars['String']>;
+  toAddress?: Maybe<Scalars['String']>;
+  tags?: Maybe<Array<QueryIndexedTransactionTagInput>>;
 };
 
-export type QueryIndexedTransferTagsInput = {
+export type QueryIndexedTransactionTagInput = {
   typeId: Scalars['String'];
   value?: Maybe<Scalars['String']>;
 };
@@ -424,11 +476,6 @@ export type Stats = {
 export type Tag = {
   __typename?: 'Tag';
   id: Scalars['Int'];
-  typeId: Scalars['String'];
-  value?: Maybe<Scalars['String']>;
-};
-
-export type TagInput = {
   typeId: Scalars['String'];
   value?: Maybe<Scalars['String']>;
 };
@@ -575,15 +622,18 @@ export type ResolversTypes = ResolversObject<{
   ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   CountryStats: ResolverTypeWrapper<CountryStats>;
+  CreateTagInput: CreateTagInput;
   DelegateAuthInit: ResolverTypeWrapper<DelegateAuthInit>;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
   Goal: ResolverTypeWrapper<Goal>;
   ICity: ResolversTypes['City'] | ResolversTypes['CityStats'];
-  IndexTransferInput: IndexTransferInput;
-  IndexTransferResponse: ResolverTypeWrapper<IndexTransferResponse>;
-  IndexedTransfer: ResolverTypeWrapper<IndexedTransfer>;
+  IndexTransactionInput: IndexTransactionInput;
+  IndexTransactionLog: ResolverTypeWrapper<IndexTransactionLog>;
+  IndexTransactionLogInput: IndexTransactionLogInput;
+  IndexTransactionResponse: ResolverTypeWrapper<IndexTransactionResponse>;
+  IndexedTransaction: ResolverTypeWrapper<IndexedTransaction>;
   LockOfferInput: LockOfferInput;
   LockOfferResult: ResolverTypeWrapper<LockOfferResult>;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
@@ -598,8 +648,8 @@ export type ResolversTypes = ResolversObject<{
   QueryCitiesByGeonameIdInput: QueryCitiesByGeonameIdInput;
   QueryCitiesByNameInput: QueryCitiesByNameInput;
   QueryCitiesInput: QueryCitiesInput;
-  QueryIndexedTransferInput: QueryIndexedTransferInput;
-  QueryIndexedTransferTagsInput: QueryIndexedTransferTagsInput;
+  QueryIndexedTransactionInput: QueryIndexedTransactionInput;
+  QueryIndexedTransactionTagInput: QueryIndexedTransactionTagInput;
   QueryOfferInput: QueryOfferInput;
   QueryProfileInput: QueryProfileInput;
   QueryPurchaseInput: QueryPurchaseInput;
@@ -612,7 +662,6 @@ export type ResolversTypes = ResolversObject<{
   SessionInfo: ResolverTypeWrapper<SessionInfo>;
   Stats: ResolverTypeWrapper<Stats>;
   Tag: ResolverTypeWrapper<Tag>;
-  TagInput: TagInput;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: ResolverTypeWrapper<UpdateSafeResponse>;
   UpsertOfferInput: UpsertOfferInput;
@@ -631,15 +680,18 @@ export type ResolversParentTypes = ResolversObject<{
   ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
   Boolean: Scalars['Boolean'];
   CountryStats: CountryStats;
+  CreateTagInput: CreateTagInput;
   DelegateAuthInit: DelegateAuthInit;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: DepositChallengeResponse;
   ExchangeTokenResponse: ExchangeTokenResponse;
   Goal: Goal;
   ICity: ResolversParentTypes['City'] | ResolversParentTypes['CityStats'];
-  IndexTransferInput: IndexTransferInput;
-  IndexTransferResponse: IndexTransferResponse;
-  IndexedTransfer: IndexedTransfer;
+  IndexTransactionInput: IndexTransactionInput;
+  IndexTransactionLog: IndexTransactionLog;
+  IndexTransactionLogInput: IndexTransactionLogInput;
+  IndexTransactionResponse: IndexTransactionResponse;
+  IndexedTransaction: IndexedTransaction;
   LockOfferInput: LockOfferInput;
   LockOfferResult: LockOfferResult;
   LogoutResponse: LogoutResponse;
@@ -653,8 +705,8 @@ export type ResolversParentTypes = ResolversObject<{
   QueryCitiesByGeonameIdInput: QueryCitiesByGeonameIdInput;
   QueryCitiesByNameInput: QueryCitiesByNameInput;
   QueryCitiesInput: QueryCitiesInput;
-  QueryIndexedTransferInput: QueryIndexedTransferInput;
-  QueryIndexedTransferTagsInput: QueryIndexedTransferTagsInput;
+  QueryIndexedTransactionInput: QueryIndexedTransactionInput;
+  QueryIndexedTransactionTagInput: QueryIndexedTransactionTagInput;
   QueryOfferInput: QueryOfferInput;
   QueryProfileInput: QueryProfileInput;
   QueryPurchaseInput: QueryPurchaseInput;
@@ -667,7 +719,6 @@ export type ResolversParentTypes = ResolversObject<{
   SessionInfo: SessionInfo;
   Stats: Stats;
   Tag: Tag;
-  TagInput: TagInput;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: UpdateSafeResponse;
   UpsertOfferInput: UpsertOfferInput;
@@ -749,18 +800,43 @@ export type ICityResolvers<ContextType = any, ParentType extends ResolversParent
   feature_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
-export type IndexTransferResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndexTransferResponse'] = ResolversParentTypes['IndexTransferResponse']> = ResolversObject<{
+export type IndexTransactionLogResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndexTransactionLog'] = ResolversParentTypes['IndexTransactionLog']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  blockNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  blockHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  transactionIndex?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  removed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  data?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  topics?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  transactionHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  logIndex?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type IndexTransactionResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndexTransactionResponse'] = ResolversParentTypes['IndexTransactionResponse']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type IndexedTransferResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndexedTransfer'] = ResolversParentTypes['IndexedTransfer']> = ResolversObject<{
-  transactionHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  blockNo?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+export type IndexedTransactionResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndexedTransaction'] = ResolversParentTypes['IndexedTransaction']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  contractAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  transactionIndex?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  root?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  gasUsed?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  logsBloom?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  blockHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  transactionHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  blockNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  confirmations?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  cumulativeGasUsed?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  byzantium?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  status?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  logs?: Resolver<Maybe<Array<ResolversTypes['IndexTransactionLog']>>, ParentType, ContextType>;
   tags?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -786,7 +862,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   upsertProfile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType, RequireFields<MutationUpsertProfileArgs, 'data'>>;
   requestUpdateSafe?: Resolver<ResolversTypes['RequestUpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationRequestUpdateSafeArgs, 'data'>>;
   updateSafe?: Resolver<ResolversTypes['UpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationUpdateSafeArgs, 'data'>>;
-  indexTransfer?: Resolver<ResolversTypes['IndexTransferResponse'], ParentType, ContextType, RequireFields<MutationIndexTransferArgs, 'data'>>;
+  indexTransaction?: Resolver<ResolversTypes['IndexTransactionResponse'], ParentType, ContextType, RequireFields<MutationIndexTransactionArgs, 'data'>>;
   upsertOffer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType, RequireFields<MutationUpsertOfferArgs, 'data'>>;
   unlistOffer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUnlistOfferArgs, 'offerId'>>;
   lockOffer?: Resolver<ResolversTypes['LockOfferResult'], ParentType, ContextType, RequireFields<MutationLockOfferArgs, 'data'>>;
@@ -931,8 +1007,9 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   ExchangeTokenResponse?: ExchangeTokenResponseResolvers<ContextType>;
   Goal?: GoalResolvers<ContextType>;
   ICity?: ICityResolvers<ContextType>;
-  IndexTransferResponse?: IndexTransferResponseResolvers<ContextType>;
-  IndexedTransfer?: IndexedTransferResolvers<ContextType>;
+  IndexTransactionLog?: IndexTransactionLogResolvers<ContextType>;
+  IndexTransactionResponse?: IndexTransactionResponseResolvers<ContextType>;
+  IndexedTransaction?: IndexedTransactionResolvers<ContextType>;
   LockOfferResult?: LockOfferResultResolvers<ContextType>;
   LogoutResponse?: LogoutResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;

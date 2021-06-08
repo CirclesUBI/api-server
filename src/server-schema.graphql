@@ -62,7 +62,7 @@ type Tag {
     value: String
 }
 
-input TagInput {
+input CreateTagInput {
     typeId: String!
     value: String
 }
@@ -73,36 +73,82 @@ input UpsertTagInput {
     value: String
 }
 
-input IndexTransferInput {
+input IndexTransactionLogInput {
+    blockNumber: Int!
+    blockHash: String!
+    transactionIndex: Int!
+    removed: Boolean
+    address: String!
+    data: String
+    topics: [String!]!
     transactionHash: String!
-    blockNo: Int!
-    from: String!
-    to: String!
-    value: String!
-    tags: [TagInput!]
+    logIndex: Int!
 }
 
-type IndexedTransfer {
+type IndexTransactionLog {
+    id: Int!
+    blockNumber: Int!
+    blockHash: String!
+    transactionIndex: Int!
+    removed: Boolean
+    address: String!
+    data: String
+    topics: [String!]!
     transactionHash: String!
-    blockNo: Int!
-    from: String!
+    logIndex: Int!
+}
+
+input IndexTransactionInput {
     to: String!
-    value: String!
+    from: String!
+    contractAddress: String
+    transactionIndex: Int!
+    root: String
+    gasUsed: String!
+    logsBloom: String!
+    blockHash: String!
+    transactionHash: String!
+    blockNumber: Int!
+    confirmations: Int!
+    cumulativeGasUsed: String!
+    byzantium: Boolean
+    status: Int
+    logs: [IndexTransactionLogInput!]
+    tags: [CreateTagInput!]
+}
+
+type IndexedTransaction {
+    id: Int!
+    to: String!
+    from: String!
+    contractAddress: String
+    transactionIndex: Int!
+    root: String
+    gasUsed: String!
+    logsBloom: String!
+    blockHash: String!
+    transactionHash: String!
+    blockNumber: Int!,
+    confirmations: Int!,
+    cumulativeGasUsed: String!,
+    byzantium: Boolean,
+    status: Int
+    logs: [IndexTransactionLog!]
     tags: [Tag!]
 }
 
-input QueryIndexedTransferTagsInput {
+input QueryIndexedTransactionTagInput {
     typeId: String!
     value: String
 }
 
-input QueryIndexedTransferInput {
-    from: String
-    to: String
-    tags:[QueryIndexedTransferTagsInput!]
+input QueryIndexedTransactionInput {
+    fromAddress: String
+    toAddress: String
+    tags:[QueryIndexedTransactionTagInput!]
 }
 
-type IndexTransferResponse {
+type IndexTransactionResponse {
     success: Boolean!
     errorMessage: String
 }
@@ -305,6 +351,7 @@ type Purchase {
     purchasedItem: Offer!
     purchasedOfferId: Int!
 }
+
 input QueryPurchaseInput {
     purchasedByProfileId: String!
 }
@@ -356,7 +403,7 @@ type Mutation
     upsertProfile(data:UpsertProfileInput!):Profile!
     requestUpdateSafe(data:RequestUpdateSafeInput!) : RequestUpdateSafeResponse!
     updateSafe(data:UpdateSafeInput!) : UpdateSafeResponse!
-    indexTransfer(data:IndexTransferInput!) : IndexTransferResponse!
+    indexTransaction(data:IndexTransactionInput!) : IndexTransactionResponse!
     upsertOffer(data:UpsertOfferInput!):Offer!
     unlistOffer(offerId:Int!):Boolean!
     lockOffer(data:LockOfferInput!):LockOfferResult!
