@@ -2,7 +2,11 @@ import {Profile, QueryProfilesArgs, RequireFields} from "../../types";
 import {PrismaClient} from "@prisma/client";
 import {Context} from "../../context";
 
-export async function whereProfile(args: RequireFields<QueryProfilesArgs, never>, ownProfileId:number|null) {
+export async function whereProfile(args: RequireFields<QueryProfilesArgs, never>, ownProfileId:number|null, context:Context) {
+    context.logger?.debug([{
+        key: `call`,
+        value: `/resolvers/queries/profiles.ts/whereProfile(args: RequireFields<QueryProfilesArgs, never>, ownProfileId:number|null)`
+    }]);
     const q: { [key: string]: any } = {};
     if (!args.query) {
         throw new Error(`No query fields have been specified`);
@@ -28,12 +32,17 @@ export async function whereProfile(args: RequireFields<QueryProfilesArgs, never>
 
 export function profiles(prisma:PrismaClient) {
     return async (parent:any, args:QueryProfilesArgs, context:Context) => {
+        context.logger?.debug([{
+            key: `call`,
+            value: `/resolvers/queries/profiles.ts/profiles(prisma:PrismaClient)/async (parent:any, args:QueryProfilesArgs, context:Context)`
+        }]);
+
         let ownProfileId:number|null = null;
         if (context.sessionId) {
             const session = await context.verifySession();
             ownProfileId = session.profileId;
         }
-        const q = await whereProfile(args, ownProfileId);
+        const q = await whereProfile(args, ownProfileId, context);
         if (q.circlesAddress) {
             delete q.circlesAddress;
         }

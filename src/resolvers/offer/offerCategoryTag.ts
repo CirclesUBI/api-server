@@ -1,8 +1,14 @@
 import {PrismaClient} from "@prisma/client";
 import {Offer} from "../../types";
+import {Context} from "../../context";
 
 export function offerCategoryTag(prisma: PrismaClient) {
-    return async (parent: Offer) => {
+    return async (parent: Offer,args:any, context:Context) => {
+        context.logger?.trace([{
+            key: `call`,
+            value: `/resolvers/offer/offerCategoryTag.ts/offerCategoryTag(parent:Offer, args:any, context:Context)`
+        }], `Resolving category tag of offer ${parent.id} by categoryTagId ${parent.categoryTagId}`);
+
         const tag = await prisma.tag.findUnique({
             where: {id: parent.categoryTagId}
         });

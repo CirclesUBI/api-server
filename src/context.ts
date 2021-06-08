@@ -3,8 +3,11 @@ import {Request} from "express";
 import {Session as PrismaSession} from "@prisma/client";
 import {Session} from "./session";
 import {prisma_ro} from "./prismaClient";
+import {Logger, LoggerTag, newLogger} from "./logger";
+
 
 export class Context {
+    readonly id: string;
     readonly isSubscription: boolean;
 
     readonly jwt?: string;
@@ -15,15 +18,34 @@ export class Context {
     readonly setCookies:Array<any> = [];
     readonly setHeaders:Array<any> = [];
 
-    private constructor(isSubscription: boolean, jwt?: string, originHeaderValue?: string, sessionId?: string, ipAddress?:string) {
+    private _logger:Logger|undefined;
+
+    get logger() {
+        return this._logger;
+    }
+
+    private constructor(id: string, isSubscription: boolean, logger:Logger, jwt?: string, originHeaderValue?: string, sessionId?: string, ipAddress?:string) {
         this.isSubscription = isSubscription;
+        this._logger = logger;
         this.jwt = jwt;
         this.originHeaderValue = originHeaderValue;
         this.sessionId = sessionId;
         this.ipAddress = ipAddress;
+        this.id = id;
     }
 
     public static create(arg: { req?: Request, connection?: ExecutionParams }): Context {
+        const contextId = Session.generateRandomBase64String(8);
+        const remoteIp = (arg.req?.header('x-forwarded-for') || arg.req?.connection.remoteAddress) ?? "<unknown ip>";
+        const defaultTags = [{
+            key: `contextId`,
+            value: contextId
+        }, {
+            key: `clientIp`,
+            value: remoteIp
+        }];
+        const logger = newLogger(defaultTags);
+
         let isSubscription = false;
         let authorizationHeaderValue: string | undefined;
         let originHeaderValue: string | undefined;
@@ -34,6 +56,11 @@ export class Context {
             originHeaderValue = arg.req.headers.origin;
             authorizationHeaderValue = arg.req.headers.authorization;
             cookieValue = arg.req.headers["cookie"];
+            defaultTags.push({
+                key: `protocol`,
+                value: `http`
+            });
+            logger.info([], `Connected via HTTP.`)
         }
 
         if (!arg.req && arg.connection) {
@@ -41,6 +68,11 @@ export class Context {
             isSubscription = true;
             originHeaderValue = arg.connection.context.origin;
             authorizationHeaderValue = arg.connection.context.authorization;
+            defaultTags.push({
+                key: `protocol`,
+                value: `ws`
+            });
+            logger.info([], `Connected via WS.`)
         }
 
         let sessionId:string|undefined = undefined;
@@ -50,17 +82,45 @@ export class Context {
                 sessionId = decodeURIComponent(cookies["session"]);
             }
         }
-        const remoteIp = (arg.req?.header('x-forwarded-for') || arg.req?.connection.remoteAddress) ?? "<unknown ip>";
-        return new Context(isSubscription, authorizationHeaderValue, originHeaderValue, sessionId, remoteIp);
+
+        return new Context(
+            contextId,
+            isSubscription,
+            logger,
+            authorizationHeaderValue,
+            originHeaderValue,
+            sessionId,
+            remoteIp);
     }
 
     async verifySession() : Promise<PrismaSession> {
-        if (!this.sessionId)
+        this._logger?.debug([{
+            key: `call`,
+            value: `/context.ts/verifySession()`
+        }]);
+
+        if (!this.sessionId) {
+            this._logger?.error([{
+                key: `call`,
+                value: `/context.ts/verifySession()`
+            }], `No session id on context.`);
             throw new Error("No session id on context.");
+        }
 
         const validSession = await Session.findSessionBySessionId(prisma_ro, this.sessionId)
-        if (!validSession)
-            throw new Error(`No session could be found for the supplied sessionId ('${this.sessionId ?? "<undefined or null>"}')`);
+        if (!validSession) {
+            const errorMsg = `No session could be found for the supplied sessionId ('${this.sessionId ?? "<undefined or null>"}')`;
+            this._logger?.error([{
+                key: `call`,
+                value: `/context.ts/verifySession()`
+            }], errorMsg);
+            throw new Error(errorMsg);
+        }
+
+        this._logger?.debug([{
+            key: `call`,
+            value: `/context.ts/verifySession()`
+        }], `Session valid until ${new Date(new Date(validSession.createdAt).getTime() + validSession.maxLifetime).toJSON()}`);
 
         return validSession;
     }

@@ -1,15 +1,14 @@
 import {Context} from "../../context";
 import {SessionInfo} from "../../types";
-import {newLogger} from "../../logger";
-
-const logger = newLogger("/resolvers/queries/sessionInfo.ts");
 
 export const sessionInfo = async (parent:any, args:any, context:Context) : Promise<SessionInfo> => {
     try {
-        logger.log(`${context.ipAddress}' called sessionInfo.`)
         const session = await context.verifySession();
 
-        logger.log(`${context.ipAddress}' has a valid session until ${new Date(new Date(session.createdAt).getTime() + session.maxLifetime).toJSON()}`)
+        context.logger?.debug([{
+            key: `call`,
+            value: `/resolvers/queries/sessionInfo.ts/async (parent:any, args:any, context:Context)`
+        }], `Session valid until ${new Date(new Date(session.createdAt).getTime() + session.maxLifetime).toJSON()}`);
 
         return {
             isLoggedOn: true,
@@ -17,7 +16,10 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
             profileId: session.profileId
         }
     } catch(e) {
-        logger.log(`${context.ipAddress}' has a no valid session. Error is:`, e);
+        context.logger?.error([{
+            key: `call`,
+            value: `/resolvers/queries/sessionInfo.ts/async (parent:any, args:any, context:Context)`
+        }], `No valid session.`, e);
 
         // When the session is invalid, make sure that the user doesn't keep the cookie
         const expires = new Date();

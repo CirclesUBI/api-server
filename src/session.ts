@@ -1,9 +1,7 @@
 import {Client} from "./auth-client/client";
 import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
-import {newLogger} from "./logger";
-
-const logger = newLogger("/session.ts");
+import {Context} from "./context";
 
 export class Session
 {
@@ -12,7 +10,7 @@ export class Session
         return crypto.randomBytes(length).toString('base64').substr(0, length);
     }
 
-    static async logout(prisma:PrismaClient, sessionId:string)
+    static async logout(context:Context, prisma:PrismaClient, sessionId:string)
     {
         const result = await prisma.session.update({
             where: {
@@ -23,7 +21,15 @@ export class Session
                 endReason: "logout"
             }
         });
-        logger.log(`Session '${sessionId}' logged out.`)
+
+        context.logger?.debug([{
+            key: "sessionId",
+            value: sessionId
+        },{
+            key: `call`,
+            value: `/session.ts/logout(sessionId:string)`
+        }], "Logged out");
+
         return result;
     }
 
@@ -51,9 +57,14 @@ export class Session
         return session;
     }
 
-    static async createSessionFromJWT(prisma:PrismaClient, jwt: string)
+    static async createSessionFromJWT(prisma:PrismaClient, context: Context)
     {
-        if (!jwt || jwt.trim() == "") {
+        if (!context.jwt || context.jwt.trim() == "") {
+            context.logger?.error([{
+                key: `call`,
+                value: `/session.ts/createSessionFromJWT(prisma:PrismaClient, context: Context)`
+            }], "No jwt was supplied");
+
             throw new Error("No jwt was supplied");
         }
 
@@ -65,9 +76,17 @@ export class Session
         }
 
         const authClient = new Client(process.env.APP_ID, process.env.ACCEPTED_ISSUER);
-        const tokenPayload = await authClient.verify(jwt);
+        const tokenPayload = await authClient.verify(context.jwt);
         if (!tokenPayload)
         {
+            context.logger?.error([{
+                key: `call`,
+                value: `/session.ts/createSessionFromJWT(prisma:PrismaClient, context: Context)`
+            }, {
+                key: `jwt`,
+                value: context.jwt
+            }], "Couldn't decode the supplied JWT.");
+
             throw new Error("Couldn't decode the supplied JWT.")
         }
 
@@ -86,10 +105,25 @@ export class Session
             }
         });
 
+        context.logger?.debug([{
+            key: `call`,
+            value: `/session.ts/createSessionFromJWT(prisma:PrismaClient, context: Context)`
+        }], "New session", {
+            createdAt: session.createdAt,
+            profileId: session.profileId,
+            issuedBy: session.issuedBy,
+            maxLifetime: session.maxLifetime,
+            jti: session.jti
+        });
+
         return session;
     }
 
-    static async assignProfile(prisma_rw:PrismaClient, sessionId: string, profileId: number) {
+    static async assignProfile(prisma_rw:PrismaClient, sessionId: string, profileId: number, context:Context) {
+        context.logger?.debug([{
+            key: `call`,
+            value: `/session.ts/assignProfile(prisma_rw:PrismaClient, sessionId: string, profileId: number, context:Context)`
+        }]);
         await prisma_rw.session.update({
             where: {sessionId: sessionId},
             data: {profileId: profileId}

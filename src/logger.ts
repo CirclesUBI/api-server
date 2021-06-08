@@ -1,44 +1,65 @@
+export type LoggerTag = {
+  key:string;
+  value:string;
+};
 export type Logger = {
-    name: string;
     parent?: Logger;
-    log: (...args: unknown[]) => void,
+    defaultTags: LoggerTag[],
+    debug: (tags:LoggerTag[], ...args: unknown[]) => void,
+    info: (tags:LoggerTag[], ...args: unknown[]) => void,
+    trace: (tags:LoggerTag[], ...args: unknown[]) => void,
+    warning: (tags:LoggerTag[], ...args: unknown[]) => void,
+    error: (tags:LoggerTag[], ...args: unknown[]) => void,
+    fatal: (tags:LoggerTag[], ...args: unknown[]) => void,
+    log: (severity:string, tags:LoggerTag[], ...args: unknown[]) => void,
     newLogger: (name: string) => Logger
 }
 
-export function newLogger(name: string, parent?: Logger, send?: (message: { message: string, args?: unknown[] }) => void) {
+export function newLogger(defaultTags:LoggerTag[], parent?: Logger, send?: (message: {
+    timestamp: number,
+    message: string,
+    args?: unknown[],
+    tags?:LoggerTag[]
+}) => void) {
     const l: Logger = {
-        name,
+        defaultTags: defaultTags.concat(parent?.defaultTags ?? []),
         parent,
-        newLogger: (name: string) => newLogger(name, l, send),
-        log: (...args: unknown[]) => {
+        newLogger: (name: string) => newLogger(defaultTags, l, send),
+        debug: (tags, ...args: unknown[]) => l.log("DEBUG", l.defaultTags.concat(tags), args),
+        info: (tags, ...args: unknown[]) => l.log("INFO", l.defaultTags.concat(tags), args),
+        trace: (tags, ...args: unknown[]) => l.log("TRACE", l.defaultTags.concat(tags), args),
+        warning: (tags, ...args: unknown[]) => l.log("WARNING", l.defaultTags.concat(tags), args),
+        error: (tags, ...args: unknown[]) => l.log("ERROR", l.defaultTags.concat(tags), args),
+        fatal: (tags, ...args: unknown[]) => l.log("FATAL", l.defaultTags.concat(tags), args),
+        log: (severity:string, tags:LoggerTag[], ...args: unknown[]) => {
+            if (severity === "TRACE")
+                return;
             if (args?.length) {
                 let current: Logger | undefined = l;
-                const pathParts = [];
-                while (current) {
-                    pathParts.unshift(current.name);
-                    current = current.parent;
-                }
-                const path = pathParts.join("/");
                 const remainingArgs = args.splice(1);
+                const tagsString = `${tags.map(o => `${o.key}:${o.value}`).join(`;`)}`;
                 if (remainingArgs.length) {
-                    console.log(`${Date.now()} [${path}]: ${args[0]}`, remainingArgs);
+                    console.log(`${Date.now()} [${severity}] [${tagsString}]: ${args[0]}`, remainingArgs);
                     if (!send)
                         return;
                     send({
-                        message: `${Date.now()} [${path}]: ${args[0]}`,
-                        args: remainingArgs
+                        timestamp: Date.now(),
+                        message: `${args[0]}`,
+                        args: remainingArgs,
+                        tags: tags
                     });
                 } else {
-                    console.log(`${Date.now()} [${path}]: ${args[0]}`);
+                    console.log(`${Date.now()} [${severity}] [${tagsString}]: ${args[0]}`);
                     if (!send)
                         return;
                     send({
-                        message: `${Date.now()} [${path}]: ${args[0]}`,
-                        args: undefined
+                        timestamp: Date.now(),
+                        message: `${args[0]}`,
+                        tags: tags
                     });
                 }
             }
-        },
+        }
     };
 
     return l;

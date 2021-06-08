@@ -5,6 +5,11 @@ import {PrismaClient} from "@prisma/client";
 
 export function stats(prisma:PrismaClient) {
     return async (parent:any, args:any, context:Context) : Promise<Stats> => {
+        context.logger?.debug([{
+            key: `call`,
+            value: `/resolvers/queries/stats.ts/stats(prisma:PrismaClient)/async (parent:any, args:any, context:Context)`
+        }]);
+
         const fibonacci = (iterations: number) => {
             let fib = [0, 1];
             for (let i = 2; i <= iterations; i++) {

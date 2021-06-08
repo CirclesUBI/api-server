@@ -4,6 +4,10 @@ import {Context} from "../../context";
 
 export function upsertTag(prisma_ro:PrismaClient, prisma_rw:PrismaClient) {
     return async (parent:any, args:MutationUpsertTagArgs, context:Context) => {
+        context.logger?.debug([{
+            key: `call`,
+            value: `/resolvers/mutation/upsertTag.ts/upsertTag(prisma_ro:PrismaClient, prisma_rw:PrismaClient)/async (parent:any, args:MutationUpsertTagArgs, context:Context)`
+        }]);
         const session = await context.verifySession();
         let tag: {
             id: number
@@ -34,6 +38,10 @@ export function upsertTag(prisma_ro:PrismaClient, prisma_rw:PrismaClient) {
                     }
                 }
             });
+            context.logger?.debug([{
+                key: `call`,
+                value: `/resolvers/mutation/upsertTag.ts/upsertTag(prisma_ro:PrismaClient, prisma_rw:PrismaClient)/async (parent:any, args:MutationUpsertTagArgs, context:Context)`
+            }], `Updated tag ${tag.id}`);
         } else {
             // insert
             tag = await prisma_rw.tag.create({
@@ -45,6 +53,10 @@ export function upsertTag(prisma_ro:PrismaClient, prisma_rw:PrismaClient) {
                     isPrivate: false
                 }
             });
+            context.logger?.debug([{
+                key: `call`,
+                value: `/resolvers/mutation/upsertTag.ts/upsertTag(prisma_ro:PrismaClient, prisma_rw:PrismaClient)/async (parent:any, args:MutationUpsertTagArgs, context:Context)`
+            }], `Created tag ${tag.id}`);
         }
         return tag;
     }

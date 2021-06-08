@@ -1,10 +1,15 @@
-import {prisma_ro} from "../../prismaClient";
 import {PrismaClient} from "@prisma/client";
 import {Profile} from "../../types";
+import {Context} from "../../context";
 
 export function profileOffers(prisma:PrismaClient) {
-    return async (parent:Profile) => {
-        const offers = await prisma_ro.offer.findMany({
+    return async (parent: Profile,args:any, context:Context) => {
+        context.logger?.trace([{
+            key: `call`,
+            value: `/resolvers/profile/offers.ts/profileOffers(parent: Profile,args:any, context:Context)`
+        }], `Resolving offers of profile ${parent.id} by offer.createdByProfileId == ${parent.id}`);
+
+        const offers = await prisma.offer.findMany({
             where: {
                 createdByProfileId: parent.id
             }

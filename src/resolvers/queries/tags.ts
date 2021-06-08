@@ -1,8 +1,13 @@
 import {PrismaClient} from "@prisma/client";
 import {QueryTagsArgs} from "../../types";
+import {Context} from "../../context";
 
 export function tags(prisma:PrismaClient) {
-    return async (parent: any, args: QueryTagsArgs) => {
+    return async (parent: any, args: QueryTagsArgs, context:Context) => {
+        context.logger?.debug([{
+            key: `call`,
+            value: `/resolvers/queries/tags.ts/tags(prisma:PrismaClient)/async (parent: any, args: QueryTagsArgs, context:Context)`
+        }]);
         const tags = await prisma.tag.findMany({
             where: {
                 typeId: {

@@ -6,6 +6,10 @@ import {PrismaClient} from "@prisma/client";
 // TODO: Cache all newly created objects in redis until they're replicated
 
 async function createOffer(parent:any, args:MutationUpsertOfferArgs, context:Context, prisma:PrismaClient) {
+    context.logger?.debug([{
+        key: `call`,
+        value: `/resolvers/mutation/upsertOffer.ts/createOffer(parent:any, args:MutationUpsertOfferArgs, context:Context, prisma:PrismaClient)`
+    }]);
     const session = await context.verifySession();
     const offer = await prisma.offer.create({
         data: {
@@ -25,6 +29,15 @@ async function createOffer(parent:any, args:MutationUpsertOfferArgs, context:Con
             unlistedAt: null
         }
     });
+    context.logger?.debug([{
+        key: `call`,
+        value: `/resolvers/mutation/upsertOffer.ts/createOffer(parent:any, args:MutationUpsertOfferArgs, context:Context, prisma:PrismaClient)`
+    }], `Created offer`, {
+        id: offer.id,
+        title: offer.title,
+        publishedAt: offer.publishedAt,
+        createdByProfileId: <number>session.profileId,
+    });
     return {
         ...offer,
         publishedAt: offer.publishedAt.toJSON(),
@@ -36,6 +49,11 @@ async function createOffer(parent:any, args:MutationUpsertOfferArgs, context:Con
 }
 
 async function updateOffer(parent:any, args:MutationUpsertOfferArgs, context:Context, prisma:PrismaClient) {
+    context.logger?.debug([{
+        key: `call`,
+        value: `/resolvers/mutation/upsertOffer.ts/updateOffer(parent:any, args:MutationUpsertOfferArgs, context:Context, prisma:PrismaClient)`
+    }]);
+
     const session = await context.verifySession();
     const existingOffer = await prisma.offer.findFirst({
         where: {
@@ -71,6 +89,17 @@ async function updateOffer(parent:any, args:MutationUpsertOfferArgs, context:Con
             id: <number>args.data.id
         }
     });
+
+    context.logger?.debug([{
+        key: `call`,
+        value: `/resolvers/mutation/upsertOffer.ts/updateOffer(parent:any, args:MutationUpsertOfferArgs, context:Context, prisma:PrismaClient)`
+    }], `Updated offer`, {
+        id: offer.id,
+        title: offer.title,
+        publishedAt: offer.publishedAt,
+        createdByProfileId: <number>session.profileId,
+    });
+
     return {
         ...offer,
         publishedAt: offer.publishedAt.toJSON(),

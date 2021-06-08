@@ -1,12 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 import {Context} from "../../context";
-import {Client} from "../../auth-client/client";
-import {newLogger} from "../../logger";
-
-const logger = newLogger("/resolvers/mutations/consumeDepositChallenge.ts");
 
 export function consumeDepositedChallengeResolver(prisma:PrismaClient) {
     return async (parent: any, args:{delegateAuthCode:string}, context: Context) => {
+        context.logger?.debug([{
+            key: `call`,
+            value: `/resolvers/mutation/consumeDepositedChallenge.ts/consumeDepositedChallengeResolver(prisma:PrismaClient)/async (parent: any, args: {delegateAuthCode:string}, context: Context)`
+        }]);
         const session = await context.verifySession();
 
         const depositedChallenge = await prisma.delegatedChallenges.findUnique({
@@ -19,17 +19,26 @@ export function consumeDepositedChallengeResolver(prisma:PrismaClient) {
 
         if (!depositedChallenge) {
             const msg =`Couldn't find a deposited challenge with delegateAuthCode '${args.delegateAuthCode}'.`;
-            logger.log(msg);
+            context.logger?.error([{
+                key: `call`,
+                value: `/resolvers/mutation/consumeDepositedChallenge.ts/consumeDepositedChallengeResolver(prisma:PrismaClient)/async (parent: any, args: any, context: Context)`
+            }], msg);
             throw new Error(msg)
         }
         if (!depositedChallenge.challengeValidTo || depositedChallenge.challengeValidTo <= now || depositedChallenge.challengedReadAt) {
             const msg =`The deposited challenge for delegateAuthCode '${args.delegateAuthCode}' isn't valid anymore.`;
-            logger.log(msg);
+            context.logger?.error([{
+                key: `call`,
+                value: `/resolvers/mutation/consumeDepositedChallenge.ts/consumeDepositedChallengeResolver(prisma:PrismaClient)/async (parent: any, args: any, context: Context)`
+            }], msg);
             throw new Error(msg)
         }
         if (depositedChallenge.sessionId != session.sessionId) {
             const msg =`Deposited challenges must be read from the same session from which they've been requested.`;
-            logger.log(msg);
+            context.logger?.error([{
+                key: `call`,
+                value: `/resolvers/mutation/consumeDepositedChallenge.ts/consumeDepositedChallengeResolver(prisma:PrismaClient)/async (parent: any, args: any, context: Context)`
+            }], msg);
             throw new Error(msg)
         }
 
@@ -41,6 +50,11 @@ export function consumeDepositedChallengeResolver(prisma:PrismaClient) {
                 challengedReadAt: now
             }
         })
+
+        context.logger?.debug([{
+            key: `call`,
+            value: `/resolvers/mutation/consumeDepositedChallenge.ts/consumeDepositedChallengeResolver(prisma:PrismaClient)/async (parent: any, args: any, context: Context)`
+        }], `consumed challenge`);
 
         return {
             success: true,

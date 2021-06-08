@@ -1,8 +1,14 @@
 import {PrismaClient} from "@prisma/client";
 import {QueryOffersArgs} from "../../types";
+import {Context} from "../../context";
 
 export function offers(prisma:PrismaClient) {
-    return async (parent:any, args:QueryOffersArgs) => {
+    return async (parent:any, args:QueryOffersArgs, context: Context) => {
+        context.logger?.debug([{
+            key: `call`,
+            value: `/resolvers/queries/offers.ts/offers(parent: any, args: QueryCitiesArgs, context: Context)`
+        }]);
+
         const offers = await prisma.offer.findMany({
             where: {
                 id: args.query.id ?? undefined,
@@ -19,6 +25,7 @@ export function offers(prisma:PrismaClient) {
                 publishedAt: "desc"
             }
         });
+
         return offers.map(o => {
             return {
                 ...o,
