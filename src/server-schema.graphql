@@ -111,8 +111,7 @@ input IndexTransactionInput {
     blockNumber: Int!
     confirmations: Int!
     cumulativeGasUsed: String!
-    byzantium: Boolean
-    status: Int
+    status: String
     logs: [IndexTransactionLogInput!]
     tags: [CreateTagInput!]
 }
@@ -128,11 +127,10 @@ type IndexedTransaction {
     logsBloom: String!
     blockHash: String!
     transactionHash: String!
-    blockNumber: Int!,
-    confirmations: Int!,
-    cumulativeGasUsed: String!,
-    byzantium: Boolean,
-    status: Int
+    blockNumber: Int!
+    confirmations: Int!
+    cumulativeGasUsed: String!
+    status: String
     logs: [IndexTransactionLog!]
     tags: [Tag!]
 }
@@ -146,11 +144,6 @@ input QueryIndexedTransactionInput {
     fromAddress: String
     toAddress: String
     tags:[QueryIndexedTransactionTagInput!]
-}
-
-type IndexTransactionResponse {
-    success: Boolean!
-    errorMessage: String
 }
 
 type ExchangeTokenResponse {
@@ -403,7 +396,7 @@ type Mutation
     upsertProfile(data:UpsertProfileInput!):Profile!
     requestUpdateSafe(data:RequestUpdateSafeInput!) : RequestUpdateSafeResponse!
     updateSafe(data:UpdateSafeInput!) : UpdateSafeResponse!
-    indexTransaction(data:IndexTransactionInput!) : IndexTransactionResponse!
+    indexTransaction(data:IndexTransactionInput!) : IndexedTransaction!
     upsertOffer(data:UpsertOfferInput!):Offer!
     unlistOffer(offerId:Int!):Boolean!
     lockOffer(data:LockOfferInput!):LockOfferResult!

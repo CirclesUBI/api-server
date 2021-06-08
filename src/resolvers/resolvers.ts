@@ -1,7 +1,7 @@
 import {profiles} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_ro, prisma_rw} from "../prismaClient";
-import {MutationUpsertTagArgs, Resolvers, Tag} from "../types";
+import {Resolvers} from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
 import {sessionInfo} from "./queries/sessionInfo";
@@ -27,6 +27,8 @@ import {tags} from "./queries/tags";
 import {stats} from "./queries/stats";
 import {tagById} from "./queries/tagById";
 import {upsertTag} from "./mutations/upsertTag";
+import {Context} from "../context";
+import {indexTransaction} from "./mutations/indexTransaction";
 
 const packageJson = require("../../package.json");
 
@@ -64,6 +66,7 @@ export const resolvers: Resolvers = {
         consumeDepositedChallenge: consumeDepositedChallengeResolver(prisma_rw),
         requestUpdateSafe: requestUpdateSafe(prisma_rw),
         updateSafe: updateSafe(prisma_rw),
-        upsertTag: upsertTag(prisma_ro, prisma_rw)
+        upsertTag: upsertTag(prisma_ro, prisma_rw),
+        indexTransaction: indexTransaction(prisma_rw)
     }
 };

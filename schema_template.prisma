@@ -64,7 +64,7 @@ model IndexedTransactionLog {
     transactionIndex Int
     removed Boolean?
     address String
-    data String
+    data String?
     topics String[]
     transactionHash String
     logIndex Int
@@ -88,8 +88,7 @@ model IndexedTransaction {
     blockNumber Int
     confirmations Int
     cumulativeGasUsed String
-    byzantium Boolean
-    status Int?
+    status String?
 
     logs IndexedTransactionLog[] @relation(name:"IndexedTransaction_Logs")
     tags Tag[] @relation(name:"IndexedTransaction_Tags")
