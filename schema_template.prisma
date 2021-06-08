@@ -86,7 +86,7 @@ model IndexedTransaction {
     blockHash String
     transactionHash String
     blockNumber Int
-    confirmations Int
+    confirmations Int?
     cumulativeGasUsed String
     status String?
 

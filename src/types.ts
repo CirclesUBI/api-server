@@ -151,7 +151,7 @@ export type IndexedTransaction = {
   blockHash: Scalars['String'];
   transactionHash: Scalars['String'];
   blockNumber: Scalars['Int'];
-  confirmations: Scalars['Int'];
+  confirmations?: Maybe<Scalars['Int']>;
   cumulativeGasUsed: Scalars['String'];
   status?: Maybe<Scalars['String']>;
   logs?: Maybe<Array<IndexTransactionLog>>;
@@ -816,7 +816,7 @@ export type IndexedTransactionResolvers<ContextType = any, ParentType extends Re
   blockHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   transactionHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   blockNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  confirmations?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  confirmations?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   cumulativeGasUsed?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   logs?: Resolver<Maybe<Array<ResolversTypes['IndexTransactionLog']>>, ParentType, ContextType>;
