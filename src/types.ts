@@ -105,7 +105,7 @@ export type IndexTransactionInput = {
   blockHash: Scalars['String'];
   transactionHash: Scalars['String'];
   blockNumber: Scalars['Int'];
-  confirmations: Scalars['Int'];
+  confirmations?: Maybe<Scalars['Int']>;
   cumulativeGasUsed: Scalars['String'];
   status?: Maybe<Scalars['String']>;
   logs?: Maybe<Array<IndexTransactionLogInput>>;

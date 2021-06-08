@@ -1,7 +1,4 @@
 import {ApolloServer} from "apollo-server";
-const { print } = require('graphql');
-
-// TODO: Migrate to GraphQL-tools: https://www.graphql-tools.com/docs/migration-from-import/
 import {importSchema} from "graphql-import";
 import {Context} from "./context";
 import {resolvers} from "./resolvers/resolvers";
@@ -9,6 +6,9 @@ import {Resolvers} from "./types";
 import {Session} from "./session";
 import {InitDb} from "./initDb";
 import {prisma_rw} from "./prismaClient";
+
+// TODO: Migrate to GraphQL-tools: https://www.graphql-tools.com/docs/migration-from-import/
+
 const httpHeadersPlugin = require("apollo-server-plugin-http-headers");
 
 if (!process.env.CORS_ORIGNS) {
@@ -17,13 +17,11 @@ if (!process.env.CORS_ORIGNS) {
 
 const corsOrigins = process.env.CORS_ORIGNS.split(";").map(o => o.trim());
 
-export class Main
-{
+export class Main {
     private readonly _server: ApolloServer;
     private readonly _resolvers: Resolvers;
 
-    constructor()
-    {
+    constructor() {
         const apiSchemaTypeDefs = importSchema("../src/server-schema.graphql");
         this._resolvers = resolvers;
 
@@ -57,8 +55,7 @@ export class Main
         });
     }
 
-    async run()
-    {
+    async run() {
         await this._server.listen({
             port: parseInt("8989")
         }).then(async o => {

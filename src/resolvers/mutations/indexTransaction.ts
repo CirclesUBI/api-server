@@ -12,7 +12,7 @@ export function indexTransaction(prisma_rw:PrismaClient) {
 
 
         const now = new Date();
-        const indexedTransaction = await prisma_rw.indexedTransaction.create({
+        const data ={
             data: {
                 transactionHash: args.data.transactionHash,
                 from: args.data.from,
@@ -60,7 +60,8 @@ export function indexTransaction(prisma_rw:PrismaClient) {
                     }
                 }
             }
-        });
+        };
+        const indexedTransaction = await prisma_rw.indexedTransaction.create(data);
         context.logger?.debug([{
             key: `call`,
             value: `/resolvers/mutation/indexTransaction.ts/indexTransaction(prisma_ro:PrismaClient, prisma_rw:PrismaClient)/async (parent:any, args:MutationIndexTransactionArgs, context:Context)`

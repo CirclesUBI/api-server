@@ -72,6 +72,7 @@ model IndexedTransactionLog {
 
 model IndexedTransaction {
     id Int @id @default(autoincrement())
+
     createdAt DateTime
     createdBy Profile @relation(name: "IndexedTransaction_CreatedBy", fields: [createdByProfileId], references: [id])
     createdByProfileId Int
