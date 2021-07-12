@@ -120,8 +120,8 @@ model IndexTransactionRequest {
 model IndexedTransaction {
     id Int @id @default(autoincrement())
 
-    fromRequest IndexTransactionRequest @relation(name: "IndexTransaction_FromRequest", fields: [fromRequestId], references: [id])
-    fromRequestId Int
+    fromRequest IndexTransactionRequest? @relation(name: "IndexTransaction_FromRequest", fields: [fromRequestId], references: [id])
+    fromRequestId Int?
 
     createdAt DateTime
     createdBy Profile @relation(name: "IndexedTransaction_CreatedBy", fields: [createdByProfileId], references: [id])
