@@ -1,6 +1,5 @@
 import {WebsocketProvider} from "web3-core";
 import Web3 from "web3";
-import Common from "ethereumjs-common";
 import {Observable} from "rxjs";
 
 export class RpcGateway {
@@ -110,18 +109,6 @@ export class RpcGateway {
                 }
             });
         });
-    }
-
-    static async getEthJsCommon(): Promise<Common> {
-        return Common.forCustomChain(
-            'mainnet',
-            {
-                name: "xDai",
-                networkId: await this.get().eth.net.getId(),
-                chainId: await this.get().eth.getChainId(),
-            },
-            'istanbul',
-        );
     }
 
     static rotateProvider() {
