@@ -2,6 +2,39 @@ import {PrismaClient} from "@prisma/client";
 import {MutationIndexTransactionArgs} from "../../types";
 import {Context} from "../../context";
 
+export function requestIndexTransaction(prisma_rw:PrismaClient) {
+    return async (parent:any, args:MutationIndexTransactionArgs, context:Context) => {
+        context.logger?.debug([{
+            key: `call`,
+            value: `/resolvers/mutation/indexTransaction.ts/requestIndexTransaction(prisma_ro:PrismaClient, prisma_rw:PrismaClient)/async (parent:any, args:MutationIndexTransactionArgs, context:Context)`
+        }]);
+        const session = await context.verifySession();
+        const now = new Date();
+        const indexTransactionRequest = await prisma_rw.indexTransactionRequest.create({
+            data: {
+                createdAt: now,
+                createdByProfileId: session.profileId ?? -1,
+                transactionIndex: args.data.transactionIndex,
+                transactionHash: args.data.transactionHash,
+                blockNumber: args.data.blockNumber,
+                tags:{
+                    createMany: {
+                        data: args.data.tags?.map(tag => {
+                            return {
+                                createdByProfileId: session.profileId ?? 0,
+                                createdAt: now,
+                                value: tag.value,
+                                typeId: tag.typeId,
+                                isPrivate: false
+                            };
+                        }) ?? []
+                    }
+                }
+            }
+        });
+    }
+}
+
 export function indexTransaction(prisma_rw:PrismaClient) {
     return async (parent:any, args:MutationIndexTransactionArgs, context:Context) => {
         context.logger?.debug([{
@@ -9,8 +42,7 @@ export function indexTransaction(prisma_rw:PrismaClient) {
             value: `/resolvers/mutation/indexTransaction.ts/indexTransaction(prisma_ro:PrismaClient, prisma_rw:PrismaClient)/async (parent:any, args:MutationIndexTransactionArgs, context:Context)`
         }]);
         const session = await context.verifySession();
-
-
+/*
         const now = new Date();
         const data ={
             data: {
@@ -24,7 +56,6 @@ export function indexTransaction(prisma_rw:PrismaClient) {
                 blockNumber: args.data.blockNumber,
                 blockHash: args.data.blockHash,
                 gasUsed: args.data.gasUsed,
-                confirmations: args.data.confirmations,
                 cumulativeGasUsed: args.data.cumulativeGasUsed,
                 logsBloom: args.data.logsBloom,
                 root: args.data.root,
@@ -65,8 +96,10 @@ export function indexTransaction(prisma_rw:PrismaClient) {
         context.logger?.debug([{
             key: `call`,
             value: `/resolvers/mutation/indexTransaction.ts/indexTransaction(prisma_ro:PrismaClient, prisma_rw:PrismaClient)/async (parent:any, args:MutationIndexTransactionArgs, context:Context)`
-        }], `Created new indexed transaction ${indexedTransaction.id}`);
+        }], `Created new indexed transaction ${indexedTransaction.id} for txHash ${indexedTransaction.transactionHash}`);
 
         return indexedTransaction;
+ */
+        return <any>{};
     }
 }

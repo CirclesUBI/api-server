@@ -95,38 +95,15 @@ export type ICity = {
 };
 
 export type IndexTransactionInput = {
-  to: Scalars['String'];
-  from: Scalars['String'];
-  contractAddress?: Maybe<Scalars['String']>;
-  transactionIndex: Scalars['Int'];
-  root?: Maybe<Scalars['String']>;
-  gasUsed: Scalars['String'];
-  logsBloom: Scalars['String'];
-  blockHash: Scalars['String'];
-  transactionHash: Scalars['String'];
   blockNumber: Scalars['Int'];
-  confirmations?: Maybe<Scalars['Int']>;
-  cumulativeGasUsed: Scalars['String'];
-  status?: Maybe<Scalars['String']>;
-  logs?: Maybe<Array<IndexTransactionLogInput>>;
+  transactionIndex: Scalars['Int'];
+  transactionHash: Scalars['String'];
   tags?: Maybe<Array<CreateTagInput>>;
 };
 
 export type IndexTransactionLog = {
   __typename?: 'IndexTransactionLog';
   id: Scalars['Int'];
-  blockNumber: Scalars['Int'];
-  blockHash: Scalars['String'];
-  transactionIndex: Scalars['Int'];
-  removed?: Maybe<Scalars['Boolean']>;
-  address: Scalars['String'];
-  data?: Maybe<Scalars['String']>;
-  topics: Array<Scalars['String']>;
-  transactionHash: Scalars['String'];
-  logIndex: Scalars['Int'];
-};
-
-export type IndexTransactionLogInput = {
   blockNumber: Scalars['Int'];
   blockHash: Scalars['String'];
   transactionIndex: Scalars['Int'];
@@ -623,7 +600,6 @@ export type ResolversTypes = ResolversObject<{
   ICity: ResolversTypes['City'] | ResolversTypes['CityStats'];
   IndexTransactionInput: IndexTransactionInput;
   IndexTransactionLog: ResolverTypeWrapper<IndexTransactionLog>;
-  IndexTransactionLogInput: IndexTransactionLogInput;
   IndexedTransaction: ResolverTypeWrapper<IndexedTransaction>;
   LockOfferInput: LockOfferInput;
   LockOfferResult: ResolverTypeWrapper<LockOfferResult>;
@@ -680,7 +656,6 @@ export type ResolversParentTypes = ResolversObject<{
   ICity: ResolversParentTypes['City'] | ResolversParentTypes['CityStats'];
   IndexTransactionInput: IndexTransactionInput;
   IndexTransactionLog: IndexTransactionLog;
-  IndexTransactionLogInput: IndexTransactionLogInput;
   IndexedTransaction: IndexedTransaction;
   LockOfferInput: LockOfferInput;
   LockOfferResult: LockOfferResult;

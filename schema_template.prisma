@@ -49,10 +49,42 @@ model Profile {
 
     sessions Session[]  @relation(name: "Session_Profile")
 
+    inbox Message[]  @relation(name: "Message_To")
+    outbox Message[]  @relation(name: "Message_CreatedBy")
+
     offers Offer[]  @relation(name: "Offer_CreatedBy")
     tags Tag[]  @relation(name: "Tag_CreatedBy")
     purchases Purchase[]  @relation(name: "Purchase_CreatedBy")
     indexedTransactions IndexedTransaction[]  @relation(name: "IndexedTransaction_CreatedBy")
+    indexedTransactionRequests IndexTransactionRequest[]  @relation(name: "IndexTransactionRequest_CreatedBy")
+}
+
+model MessageType {
+    id String @id
+
+    messages Message[] @relation(name: "Message_MessageType")
+}
+
+model Message {
+    id Int @id @default(autoincrement())
+
+    type MessageType @relation(name: "Message_MessageType", fields: [typeId], references: [id])
+    typeId String
+
+    from Profile @relation(name: "Message_CreatedBy", fields: [fromProfileId], references: [id])
+    fromProfileId Int
+
+    to Profile @relation(name: "Message_To", fields: [toProfileId], references: [id])
+    toProfileId Int
+
+    createdAt DateTime
+    deliveredAt DateTime?
+    notifiedAt DateTime?
+    readAt DateTime?
+
+    tags Tag[] @relation(name:"Message_Tags")
+
+    content String
 }
 
 model IndexedTransactionLog {
@@ -70,8 +102,26 @@ model IndexedTransactionLog {
     logIndex Int
 }
 
+model IndexTransactionRequest {
+    id Int @id @default(autoincrement())
+
+    createdAt DateTime
+    createdBy Profile @relation(name: "IndexTransactionRequest_CreatedBy", fields: [createdByProfileId], references: [id])
+    createdByProfileId Int
+
+    blockNumber Int
+    transactionIndex Int
+    transactionHash String
+
+    indexedTransaction IndexedTransaction? @relation(name: "IndexTransaction_FromRequest")
+    tags Tag[] @relation(name:"IndexTransactionRequest_Tags")
+}
+
 model IndexedTransaction {
     id Int @id @default(autoincrement())
+
+    fromRequest IndexTransactionRequest @relation(name: "IndexTransaction_FromRequest", fields: [fromRequestId], references: [id])
+    fromRequestId Int
 
     createdAt DateTime
     createdBy Profile @relation(name: "IndexedTransaction_CreatedBy", fields: [createdByProfileId], references: [id])
@@ -162,14 +212,17 @@ model Tag {
 
     value String?
 
-    // A Tag can be used on multiple Offers
     offerCategory Offer[] @relation(name: "Offer_CategoryTag")
     offerUnit Offer[] @relation(name: "Offer_UnitTag")
     offerDeliveryTerms Offer[] @relation(name: "Offer_DeliveryTermsTag")
 
-    // A Tag can be used only on one indexed transaction
+    indexTransactionRequest IndexTransactionRequest? @relation(name: "IndexTransactionRequest_Tags", fields: [indexTransactionRequestId], references: [id])
+    indexTransactionRequestId Int?
     indexedTransaction IndexedTransaction? @relation(name: "IndexedTransaction_Tags", fields: [indexedTransactionId], references: [id])
     indexedTransactionId Int?
+
+    message Message? @relation(name: "Message_Tags", fields: [messageId], references: [id])
+    messageId Int?
 }
 
 enum PurchaseStatus {

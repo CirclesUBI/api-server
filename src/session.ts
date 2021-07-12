@@ -2,6 +2,7 @@ import {Client} from "./auth-client/client";
 import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
 import {Context} from "./context";
+import {Session as PrismaSession} from "@prisma/client";
 
 export class Session
 {
@@ -55,6 +56,26 @@ export class Session
         }
 
         return session;
+    }
+
+    static async extendSession(prisma:PrismaClient, session: PrismaSession) {
+
+        const endsAt = session.createdAt.getTime() + session.maxLifetime;
+        if (endsAt > Date.now() + 604800) {
+            // Over one week left
+            return;
+        }
+
+        //
+        await prisma.session.update({
+            where: {
+                sessionId: session.sessionId
+            },
+            data: {
+                ...session,
+                maxLifetime: session.maxLifetime + 10080
+            }
+        });
     }
 
     static async createSessionFromJWT(prisma:PrismaClient, context: Context)

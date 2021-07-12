@@ -73,46 +73,10 @@ input UpsertTagInput {
     value: String
 }
 
-input IndexTransactionLogInput {
-    blockNumber: Int!
-    blockHash: String!
-    transactionIndex: Int!
-    removed: Boolean
-    address: String!
-    data: String
-    topics: [String!]!
-    transactionHash: String!
-    logIndex: Int!
-}
-
-type IndexTransactionLog {
-    id: Int!
-    blockNumber: Int!
-    blockHash: String!
-    transactionIndex: Int!
-    removed: Boolean
-    address: String!
-    data: String
-    topics: [String!]!
-    transactionHash: String!
-    logIndex: Int!
-}
-
 input IndexTransactionInput {
-    to: String!
-    from: String!
-    contractAddress: String
-    transactionIndex: Int!
-    root: String
-    gasUsed: String!
-    logsBloom: String!
-    blockHash: String!
-    transactionHash: String!
     blockNumber: Int!
-    confirmations: Int
-    cumulativeGasUsed: String!
-    status: String
-    logs: [IndexTransactionLogInput!]
+    transactionIndex: Int!
+    transactionHash: String!
     tags: [CreateTagInput!]
 }
 
@@ -133,6 +97,19 @@ type IndexedTransaction {
     status: String
     logs: [IndexTransactionLog!]
     tags: [Tag!]
+}
+
+type IndexTransactionLog {
+    id: Int!
+    blockNumber: Int!
+    blockHash: String!
+    transactionIndex: Int!
+    removed: Boolean
+    address: String!
+    data: String
+    topics: [String!]!
+    transactionHash: String!
+    logIndex: Int!
 }
 
 input QueryIndexedTransactionTagInput {

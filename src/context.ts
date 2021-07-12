@@ -2,8 +2,8 @@ import {ExecutionParams} from "subscriptions-transport-ws";
 import {Request} from "express";
 import {Session as PrismaSession} from "@prisma/client";
 import {Session} from "./session";
-import {prisma_ro} from "./prismaClient";
-import {Logger, LoggerTag, newLogger} from "./logger";
+import {prisma_ro, prisma_rw} from "./prismaClient";
+import {Logger, newLogger} from "./logger";
 
 
 export class Context {
@@ -93,7 +93,7 @@ export class Context {
             remoteIp);
     }
 
-    async verifySession() : Promise<PrismaSession> {
+    async verifySession(extendIfValid?:boolean) : Promise<PrismaSession> {
         this._logger?.debug([{
             key: `call`,
             value: `/context.ts/verifySession()`
@@ -115,6 +115,10 @@ export class Context {
                 value: `/context.ts/verifySession()`
             }], errorMsg);
             throw new Error(errorMsg);
+        }
+
+        if (extendIfValid) {
+            await Session.extendSession(prisma_rw, validSession);
         }
 
         this._logger?.debug([{

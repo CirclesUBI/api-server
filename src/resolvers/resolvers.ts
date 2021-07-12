@@ -27,7 +27,6 @@ import {tags} from "./queries/tags";
 import {stats} from "./queries/stats";
 import {tagById} from "./queries/tagById";
 import {upsertTag} from "./mutations/upsertTag";
-import {Context} from "../context";
 import {indexTransaction} from "./mutations/indexTransaction";
 
 const packageJson = require("../../package.json");
