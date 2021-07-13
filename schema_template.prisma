@@ -146,8 +146,8 @@ model IndexTransactionRequest {
     createdBy Profile @relation(name: "IndexTransactionRequest_CreatedBy", fields: [createdByProfileId], references: [id])
     createdByProfileId Int
 
-    blockNumber Int
-    transactionIndex Int
+    blockNumber Int?
+    transactionIndex Int?
     transactionHash String
 
     workerProcess String? // Contains the id of the worker process which picked the task (or null if not yet picked)
