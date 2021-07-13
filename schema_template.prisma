@@ -115,7 +115,7 @@ model Event {
     profile Profile? @relation(name: "Profile_Events", fields: [profileId], references: [id])
     profileId Int?
 
-    offer Offer? @relation(name: "Offer_Events", fields: [profileId], references: [id])
+    offer Offer? @relation(name: "Offer_Events", fields: [offerId], references: [id])
     offerId Int?
 
     createdAt DateTime
