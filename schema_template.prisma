@@ -150,6 +150,9 @@ model IndexTransactionRequest {
     transactionIndex Int
     transactionHash String
 
+    workerProcess String? // Contains the id of the worker process which picked the task (or null if not yet picked)
+    pickedAt DateTime?
+
     indexedTransaction IndexedTransaction? @relation(name: "IndexTransaction_FromRequest")
     tags Tag[] @relation(name:"IndexTransactionRequest_Tags")
 }
