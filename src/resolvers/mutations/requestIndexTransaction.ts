@@ -1,9 +1,9 @@
 import {PrismaClient} from "@prisma/client";
-import {MutationIndexTransactionArgs} from "../../types";
+import {IndexTransactionRequest, MutationRequestIndexTransactionArgs} from "../../types";
 import {Context} from "../../context";
 
 export function requestIndexTransaction(prisma_rw:PrismaClient) {
-    return async (parent:any, args:MutationIndexTransactionArgs, context:Context) => {
+    return async (parent:any, args:MutationRequestIndexTransactionArgs, context:Context) => {
         context.logger?.debug([{
             key: `call`,
             value: `/resolvers/mutation/indexTransaction.ts/requestIndexTransaction(prisma_ro:PrismaClient, prisma_rw:PrismaClient)/async (parent:any, args:MutationIndexTransactionArgs, context:Context)`
@@ -21,7 +21,7 @@ export function requestIndexTransaction(prisma_rw:PrismaClient) {
                     createMany: {
                         data: args.data.tags?.map(tag => {
                             return {
-                                createdByProfileId: session.profileId ?? 0,
+                                createdByProfileId: session.profileId ?? -1,
                                 createdAt: now,
                                 value: tag.value,
                                 typeId: tag.typeId,
@@ -32,17 +32,18 @@ export function requestIndexTransaction(prisma_rw:PrismaClient) {
                 }
             }
         });
+        return <IndexTransactionRequest>{
+            ...indexTransactionRequest,
+            createdAt: indexTransactionRequest.createdAt.toJSON()
+        };
     }
-}
-
-export function indexTransaction(prisma_rw:PrismaClient) {
+    /*
     return async (parent:any, args:MutationIndexTransactionArgs, context:Context) => {
         context.logger?.debug([{
             key: `call`,
             value: `/resolvers/mutation/indexTransaction.ts/indexTransaction(prisma_ro:PrismaClient, prisma_rw:PrismaClient)/async (parent:any, args:MutationIndexTransactionArgs, context:Context)`
         }]);
         const session = await context.verifySession();
-/*
         const now = new Date();
         const data ={
             data: {
@@ -99,7 +100,7 @@ export function indexTransaction(prisma_rw:PrismaClient) {
         }], `Created new indexed transaction ${indexedTransaction.id} for txHash ${indexedTransaction.transactionHash}`);
 
         return indexedTransaction;
- */
         return <any>{};
     }
+ */
 }

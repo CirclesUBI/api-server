@@ -6,6 +6,7 @@ import {Resolvers} from "./types";
 import {Session} from "./session";
 import {InitDb} from "./initDb";
 import {prisma_rw} from "./prismaClient";
+import {TransactionIndexWorker} from "./transactionIndexWorker";
 
 // TODO: Migrate to GraphQL-tools: https://www.graphql-tools.com/docs/migration-from-import/
 
@@ -20,6 +21,7 @@ const corsOrigins = process.env.CORS_ORIGNS.split(";").map(o => o.trim());
 export class Main {
     private readonly _server: ApolloServer;
     private readonly _resolvers: Resolvers;
+    private readonly _worker = new TransactionIndexWorker();
 
     constructor() {
         const apiSchemaTypeDefs = importSchema("../src/server-schema.graphql");
@@ -55,6 +57,7 @@ export class Main {
         });
     }
 
+
     async run() {
         await this._server.listen({
             port: parseInt("8989")
@@ -64,6 +67,9 @@ export class Main {
             console.log("Initializing the db if necessary");
             await InitDb.run(prisma_rw)
             console.log("Db ready");
+
+            console.log("Starting transaction index worker ..")
+            this._worker.start();
         });
     }
 }

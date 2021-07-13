@@ -73,11 +73,25 @@ input UpsertTagInput {
     value: String
 }
 
-input IndexTransactionInput {
+input RequestIndexTransactionInput {
     blockNumber: Int!
     transactionIndex: Int!
     transactionHash: String!
     tags: [CreateTagInput!]
+}
+
+type IndexTransactionRequest {
+    id: Int!
+
+    createdAt: String!
+    createdByProfileId: Int!
+    createdBy: Profile
+
+    blockNumber: Int!
+    transactionIndex: Int!
+    transactionHash: String!
+
+    tags: [Tag!]
 }
 
 type IndexedTransaction {
@@ -363,6 +377,14 @@ input QueryTagsInput {
     value_like: String
 }
 
+interface ProfileEvent {
+    id: Int!
+    type: String!
+    profileId: Int!
+    createdAt: String!
+    data: String!
+}
+
 type Mutation
 {
     exchangeToken : ExchangeTokenResponse!
@@ -373,14 +395,14 @@ type Mutation
     upsertProfile(data:UpsertProfileInput!):Profile!
     requestUpdateSafe(data:RequestUpdateSafeInput!) : RequestUpdateSafeResponse!
     updateSafe(data:UpdateSafeInput!) : UpdateSafeResponse!
-    indexTransaction(data:IndexTransactionInput!) : IndexedTransaction!
+    # requestIndexTransaction(data:RequestIndexTransactionInput!) : IndexedTransaction!
+    requestIndexTransaction(data:RequestIndexTransactionInput!) : IndexTransactionRequest!
     upsertOffer(data:UpsertOfferInput!):Offer!
     unlistOffer(offerId:Int!):Boolean!
     lockOffer(data:LockOfferInput!):LockOfferResult!
     provePayment(data:PaymentProof!):ProvePaymentResult!
     upsertTag(data:UpsertTagInput!):Tag!
 }
-
 
 type Query
 {

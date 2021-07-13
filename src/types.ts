@@ -94,13 +94,6 @@ export type ICity = {
   feature_code: Scalars['String'];
 };
 
-export type IndexTransactionInput = {
-  blockNumber: Scalars['Int'];
-  transactionIndex: Scalars['Int'];
-  transactionHash: Scalars['String'];
-  tags?: Maybe<Array<CreateTagInput>>;
-};
-
 export type IndexTransactionLog = {
   __typename?: 'IndexTransactionLog';
   id: Scalars['Int'];
@@ -113,6 +106,18 @@ export type IndexTransactionLog = {
   topics: Array<Scalars['String']>;
   transactionHash: Scalars['String'];
   logIndex: Scalars['Int'];
+};
+
+export type IndexTransactionRequest = {
+  __typename?: 'IndexTransactionRequest';
+  id: Scalars['Int'];
+  createdAt: Scalars['String'];
+  createdByProfileId: Scalars['Int'];
+  createdBy?: Maybe<Profile>;
+  blockNumber: Scalars['Int'];
+  transactionIndex: Scalars['Int'];
+  transactionHash: Scalars['String'];
+  tags?: Maybe<Array<Tag>>;
 };
 
 export type IndexedTransaction = {
@@ -161,7 +166,7 @@ export type Mutation = {
   upsertProfile: Profile;
   requestUpdateSafe: RequestUpdateSafeResponse;
   updateSafe: UpdateSafeResponse;
-  indexTransaction: IndexedTransaction;
+  requestIndexTransaction: IndexTransactionRequest;
   upsertOffer: Offer;
   unlistOffer: Scalars['Boolean'];
   lockOffer: LockOfferResult;
@@ -200,8 +205,8 @@ export type MutationUpdateSafeArgs = {
 };
 
 
-export type MutationIndexTransactionArgs = {
-  data: IndexTransactionInput;
+export type MutationRequestIndexTransactionArgs = {
+  data: RequestIndexTransactionInput;
 };
 
 
@@ -278,6 +283,14 @@ export type Profile = {
   cityGeonameid?: Maybe<Scalars['Int']>;
   city?: Maybe<City>;
   offers?: Maybe<Array<Offer>>;
+};
+
+export type ProfileEvent = {
+  id: Scalars['Int'];
+  type: Scalars['String'];
+  profileId: Scalars['Int'];
+  createdAt: Scalars['String'];
+  data: Scalars['String'];
 };
 
 export type ProvePaymentResult = {
@@ -400,6 +413,13 @@ export type QueryTagsInput = {
 
 export type QueryUniqueProfileInput = {
   id: Scalars['Int'];
+};
+
+export type RequestIndexTransactionInput = {
+  blockNumber: Scalars['Int'];
+  transactionIndex: Scalars['Int'];
+  transactionHash: Scalars['String'];
+  tags?: Maybe<Array<CreateTagInput>>;
 };
 
 export type RequestUpdateSafeInput = {
@@ -598,8 +618,8 @@ export type ResolversTypes = ResolversObject<{
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
   Goal: ResolverTypeWrapper<Goal>;
   ICity: ResolversTypes['City'] | ResolversTypes['CityStats'];
-  IndexTransactionInput: IndexTransactionInput;
   IndexTransactionLog: ResolverTypeWrapper<IndexTransactionLog>;
+  IndexTransactionRequest: ResolverTypeWrapper<IndexTransactionRequest>;
   IndexedTransaction: ResolverTypeWrapper<IndexedTransaction>;
   LockOfferInput: LockOfferInput;
   LockOfferResult: ResolverTypeWrapper<LockOfferResult>;
@@ -608,6 +628,7 @@ export type ResolversTypes = ResolversObject<{
   Offer: ResolverTypeWrapper<Offer>;
   PaymentProof: PaymentProof;
   Profile: ResolverTypeWrapper<Profile>;
+  ProfileEvent: never;
   ProvePaymentResult: ResolverTypeWrapper<ProvePaymentResult>;
   Purchase: ResolverTypeWrapper<Purchase>;
   PurchaseStatus: PurchaseStatus;
@@ -622,6 +643,7 @@ export type ResolversTypes = ResolversObject<{
   QueryPurchaseInput: QueryPurchaseInput;
   QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
+  RequestIndexTransactionInput: RequestIndexTransactionInput;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: ResolverTypeWrapper<RequestUpdateSafeResponse>;
   SearchInput: SearchInput;
@@ -654,8 +676,8 @@ export type ResolversParentTypes = ResolversObject<{
   ExchangeTokenResponse: ExchangeTokenResponse;
   Goal: Goal;
   ICity: ResolversParentTypes['City'] | ResolversParentTypes['CityStats'];
-  IndexTransactionInput: IndexTransactionInput;
   IndexTransactionLog: IndexTransactionLog;
+  IndexTransactionRequest: IndexTransactionRequest;
   IndexedTransaction: IndexedTransaction;
   LockOfferInput: LockOfferInput;
   LockOfferResult: LockOfferResult;
@@ -664,6 +686,7 @@ export type ResolversParentTypes = ResolversObject<{
   Offer: Offer;
   PaymentProof: PaymentProof;
   Profile: Profile;
+  ProfileEvent: never;
   ProvePaymentResult: ProvePaymentResult;
   Purchase: Purchase;
   Query: {};
@@ -677,6 +700,7 @@ export type ResolversParentTypes = ResolversObject<{
   QueryPurchaseInput: QueryPurchaseInput;
   QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
+  RequestIndexTransactionInput: RequestIndexTransactionInput;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: RequestUpdateSafeResponse;
   SearchInput: SearchInput;
@@ -779,6 +803,18 @@ export type IndexTransactionLogResolvers<ContextType = any, ParentType extends R
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type IndexTransactionRequestResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndexTransactionRequest'] = ResolversParentTypes['IndexTransactionRequest']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdByProfileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  createdBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  blockNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transactionIndex?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transactionHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type IndexedTransactionResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndexedTransaction'] = ResolversParentTypes['IndexedTransaction']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -820,7 +856,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   upsertProfile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType, RequireFields<MutationUpsertProfileArgs, 'data'>>;
   requestUpdateSafe?: Resolver<ResolversTypes['RequestUpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationRequestUpdateSafeArgs, 'data'>>;
   updateSafe?: Resolver<ResolversTypes['UpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationUpdateSafeArgs, 'data'>>;
-  indexTransaction?: Resolver<ResolversTypes['IndexedTransaction'], ParentType, ContextType, RequireFields<MutationIndexTransactionArgs, 'data'>>;
+  requestIndexTransaction?: Resolver<ResolversTypes['IndexTransactionRequest'], ParentType, ContextType, RequireFields<MutationRequestIndexTransactionArgs, 'data'>>;
   upsertOffer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType, RequireFields<MutationUpsertOfferArgs, 'data'>>;
   unlistOffer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUnlistOfferArgs, 'offerId'>>;
   lockOffer?: Resolver<ResolversTypes['LockOfferResult'], ParentType, ContextType, RequireFields<MutationLockOfferArgs, 'data'>>;
@@ -869,6 +905,15 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
   offers?: Resolver<Maybe<Array<ResolversTypes['Offer']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ProfileEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProfileEvent'] = ResolversParentTypes['ProfileEvent']> = ResolversObject<{
+  __resolveType: TypeResolveFn<null, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  profileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  data?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
 export type ProvePaymentResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProvePaymentResult'] = ResolversParentTypes['ProvePaymentResult']> = ResolversObject<{
@@ -966,12 +1011,14 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Goal?: GoalResolvers<ContextType>;
   ICity?: ICityResolvers<ContextType>;
   IndexTransactionLog?: IndexTransactionLogResolvers<ContextType>;
+  IndexTransactionRequest?: IndexTransactionRequestResolvers<ContextType>;
   IndexedTransaction?: IndexedTransactionResolvers<ContextType>;
   LockOfferResult?: LockOfferResultResolvers<ContextType>;
   LogoutResponse?: LogoutResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Offer?: OfferResolvers<ContextType>;
   Profile?: ProfileResolvers<ContextType>;
+  ProfileEvent?: ProfileEventResolvers<ContextType>;
   ProvePaymentResult?: ProvePaymentResultResolvers<ContextType>;
   Purchase?: PurchaseResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;

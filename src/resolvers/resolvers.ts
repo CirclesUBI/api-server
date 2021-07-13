@@ -27,7 +27,7 @@ import {tags} from "./queries/tags";
 import {stats} from "./queries/stats";
 import {tagById} from "./queries/tagById";
 import {upsertTag} from "./mutations/upsertTag";
-import {indexTransaction} from "./mutations/indexTransaction";
+import {requestIndexTransaction} from "./mutations/requestIndexTransaction";
 
 const packageJson = require("../../package.json");
 
@@ -66,6 +66,6 @@ export const resolvers: Resolvers = {
         requestUpdateSafe: requestUpdateSafe(prisma_rw),
         updateSafe: updateSafe(prisma_rw),
         upsertTag: upsertTag(prisma_ro, prisma_rw),
-        indexTransaction: indexTransaction(prisma_rw)
+        requestIndexTransaction: requestIndexTransaction(prisma_rw)
     }
 };
