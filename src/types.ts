@@ -328,6 +328,7 @@ export type Query = {
   offers: Array<Offer>;
   tags: Array<Tag>;
   tagById?: Maybe<Tag>;
+  transactions: Array<IndexedTransaction>;
   stats?: Maybe<Stats>;
 };
 
@@ -361,6 +362,11 @@ export type QueryTagByIdArgs = {
   id: Scalars['Int'];
 };
 
+
+export type QueryTransactionsArgs = {
+  query?: Maybe<QueryIndexedTransactionInput>;
+};
+
 export type QueryCitiesByGeonameIdInput = {
   geonameid: Array<Scalars['Int']>;
 };
@@ -376,14 +382,8 @@ export type QueryCitiesInput = {
 };
 
 export type QueryIndexedTransactionInput = {
-  fromAddress?: Maybe<Scalars['String']>;
-  toAddress?: Maybe<Scalars['String']>;
-  tags?: Maybe<Array<QueryIndexedTransactionTagInput>>;
-};
-
-export type QueryIndexedTransactionTagInput = {
-  typeId: Scalars['String'];
-  value?: Maybe<Scalars['String']>;
+  fromBlockNo?: Maybe<Scalars['Int']>;
+  toBlockNo?: Maybe<Scalars['Int']>;
 };
 
 export type QueryOfferInput = {
@@ -416,8 +416,6 @@ export type QueryUniqueProfileInput = {
 };
 
 export type RequestIndexTransactionInput = {
-  blockNumber: Scalars['Int'];
-  transactionIndex: Scalars['Int'];
   transactionHash: Scalars['String'];
   tags?: Maybe<Array<CreateTagInput>>;
 };
@@ -637,7 +635,6 @@ export type ResolversTypes = ResolversObject<{
   QueryCitiesByNameInput: QueryCitiesByNameInput;
   QueryCitiesInput: QueryCitiesInput;
   QueryIndexedTransactionInput: QueryIndexedTransactionInput;
-  QueryIndexedTransactionTagInput: QueryIndexedTransactionTagInput;
   QueryOfferInput: QueryOfferInput;
   QueryProfileInput: QueryProfileInput;
   QueryPurchaseInput: QueryPurchaseInput;
@@ -694,7 +691,6 @@ export type ResolversParentTypes = ResolversObject<{
   QueryCitiesByNameInput: QueryCitiesByNameInput;
   QueryCitiesInput: QueryCitiesInput;
   QueryIndexedTransactionInput: QueryIndexedTransactionInput;
-  QueryIndexedTransactionTagInput: QueryIndexedTransactionTagInput;
   QueryOfferInput: QueryOfferInput;
   QueryProfileInput: QueryProfileInput;
   QueryPurchaseInput: QueryPurchaseInput;
@@ -944,6 +940,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   offers?: Resolver<Array<ResolversTypes['Offer']>, ParentType, ContextType, RequireFields<QueryOffersArgs, 'query'>>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsArgs, 'query'>>;
   tagById?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagByIdArgs, 'id'>>;
+  transactions?: Resolver<Array<ResolversTypes['IndexedTransaction']>, ParentType, ContextType, RequireFields<QueryTransactionsArgs, never>>;
   stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
 }>;
 

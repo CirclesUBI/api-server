@@ -28,6 +28,7 @@ import {stats} from "./queries/stats";
 import {tagById} from "./queries/tagById";
 import {upsertTag} from "./mutations/upsertTag";
 import {requestIndexTransaction} from "./mutations/requestIndexTransaction";
+import {transactions} from "./queries/transactions";
 
 const packageJson = require("../../package.json");
 
@@ -53,7 +54,8 @@ export const resolvers: Resolvers = {
         offers: offers(prisma_ro),
         tags: tags(prisma_ro),
         tagById: tagById(prisma_ro),
-        stats: stats(prisma_ro)
+        stats: stats(prisma_ro),
+        transactions: transactions(prisma_ro)
     },
     Mutation: {
         upsertOffer: upsertOfferResolver(prisma_rw),

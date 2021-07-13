@@ -14,9 +14,7 @@ export function requestIndexTransaction(prisma_rw:PrismaClient) {
             data: {
                 createdAt: now,
                 createdByProfileId: session.profileId ?? -1,
-                transactionIndex: args.data.transactionIndex,
                 transactionHash: args.data.transactionHash,
-                blockNumber: args.data.blockNumber,
                 tags:{
                     createMany: {
                         data: args.data.tags?.map(tag => {

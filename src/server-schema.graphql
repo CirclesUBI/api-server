@@ -74,8 +74,6 @@ input UpsertTagInput {
 }
 
 input RequestIndexTransactionInput {
-    blockNumber: Int!
-    transactionIndex: Int!
     transactionHash: String!
     tags: [CreateTagInput!]
 }
@@ -126,15 +124,9 @@ type IndexTransactionLog {
     logIndex: Int!
 }
 
-input QueryIndexedTransactionTagInput {
-    typeId: String!
-    value: String
-}
-
 input QueryIndexedTransactionInput {
-    fromAddress: String
-    toAddress: String
-    tags:[QueryIndexedTransactionTagInput!]
+    fromBlockNo: Int
+    toBlockNo: Int
 }
 
 type ExchangeTokenResponse {
@@ -414,5 +406,6 @@ type Query
     offers(query:QueryOfferInput!): [Offer!]!
     tags(query:QueryTagsInput!):[Tag!]!
     tagById(id:Int!):Tag
+    transactions(query:QueryIndexedTransactionInput):[IndexedTransaction!]!
     stats: Stats
 }
