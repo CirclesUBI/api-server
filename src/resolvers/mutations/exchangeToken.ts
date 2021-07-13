@@ -4,7 +4,7 @@ import {Context} from "../../context";
 
 export function exchangeTokenResolver(prisma:PrismaClient) {
     return async (parent: any, args: any, context: Context) => {
-        context.logger?.debug([{
+        context.logger?.info([{
             key: `call`,
             value: `/resolvers/mutation/exchangeToken.ts/exchangeTokenResolver(prisma:PrismaClient)/async (parent: any, args: any, context: Context)`
         }]);

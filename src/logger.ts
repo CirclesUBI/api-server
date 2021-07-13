@@ -32,7 +32,7 @@ export function newLogger(defaultTags:LoggerTag[], parent?: Logger, send?: (mess
         error: (tags, ...args: unknown[]) => l.log("ERROR", l.defaultTags.concat(tags), args),
         fatal: (tags, ...args: unknown[]) => l.log("FATAL", l.defaultTags.concat(tags), args),
         log: (severity:string, tags:LoggerTag[], ...args: unknown[]) => {
-            if (severity === "TRACE")
+            if (severity === "TRACE" || severity === "DEBUG")
                 return;
             if (args?.length) {
                 let current: Logger | undefined = l;

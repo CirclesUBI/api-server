@@ -395,7 +395,6 @@ type Mutation
     upsertProfile(data:UpsertProfileInput!):Profile!
     requestUpdateSafe(data:RequestUpdateSafeInput!) : RequestUpdateSafeResponse!
     updateSafe(data:UpdateSafeInput!) : UpdateSafeResponse!
-    # requestIndexTransaction(data:RequestIndexTransactionInput!) : IndexedTransaction!
     requestIndexTransaction(data:RequestIndexTransactionInput!) : IndexTransactionRequest!
     upsertOffer(data:UpsertOfferInput!):Offer!
     unlistOffer(offerId:Int!):Boolean!

@@ -3,7 +3,7 @@ import {Context} from "../../context";
 
 export function consumeDepositedChallengeResolver(prisma:PrismaClient) {
     return async (parent: any, args:{delegateAuthCode:string}, context: Context) => {
-        context.logger?.debug([{
+        context.logger?.info([{
             key: `call`,
             value: `/resolvers/mutation/consumeDepositedChallenge.ts/consumeDepositedChallengeResolver(prisma:PrismaClient)/async (parent: any, args: {delegateAuthCode:string}, context: Context)`
         }]);

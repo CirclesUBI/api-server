@@ -1,7 +1,7 @@
 import {Context} from "../../context";
 
 export const whoami = async (parent: any, args: any, context: Context) => {
-    context.logger?.debug([{
+    context.logger?.info([{
         key: `call`,
         value: `/resolvers/queries/whoami.ts/whoami(parent: any, args: any, context: Context)`
     }]);

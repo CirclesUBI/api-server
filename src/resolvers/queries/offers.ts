@@ -4,7 +4,7 @@ import {Context} from "../../context";
 
 export function offers(prisma:PrismaClient) {
     return async (parent:any, args:QueryOffersArgs, context: Context) => {
-        context.logger?.debug([{
+        context.logger?.info([{
             key: `call`,
             value: `/resolvers/queries/offers.ts/offers(parent: any, args: QueryCitiesArgs, context: Context)`
         }]);

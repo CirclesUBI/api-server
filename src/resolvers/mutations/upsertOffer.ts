@@ -6,7 +6,7 @@ import {PrismaClient} from "@prisma/client";
 // TODO: Cache all newly created objects in redis until they're replicated
 
 async function createOffer(parent:any, args:MutationUpsertOfferArgs, context:Context, prisma:PrismaClient) {
-    context.logger?.debug([{
+    context.logger?.info([{
         key: `call`,
         value: `/resolvers/mutation/upsertOffer.ts/createOffer(parent:any, args:MutationUpsertOfferArgs, context:Context, prisma:PrismaClient)`
     }]);

@@ -4,7 +4,7 @@ import {Session} from "../../session";
 
 export function authenticateAtResolver(prisma_rw:PrismaClient) {
     return async (parent: any, args:{appId:string}, context: Context) => {
-        context.logger?.debug([{
+        context.logger?.info([{
             key: `call`,
             value: `/resolvers/mutation/authenticateAt.ts/authenticateAtResolver(prisma:PrismaClient)/async (parent: any, args: any, context: Context)`
         }]);

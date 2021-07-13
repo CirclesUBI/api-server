@@ -4,7 +4,7 @@ import {Client} from "../../auth-client/client";
 
 export function depositChallengeResolver(prisma:PrismaClient) {
     return async (parent: any, args:{jwt:string}, context: Context) => {
-        context.logger?.debug([{
+        context.logger?.info([{
             key: `call`,
             value: `/resolvers/mutation/depositChallenge.ts/depositChallengeResolver(prisma:PrismaClient)/async (parent: any, args: {jwt:string}, context: Context)`
         }]);

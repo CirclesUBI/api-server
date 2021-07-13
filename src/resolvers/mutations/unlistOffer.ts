@@ -4,7 +4,7 @@ import {MutationUnlistOfferArgs} from "../../types";
 
 export function unlistOfferResolver() {
     return async (parent:any, args:MutationUnlistOfferArgs, context:Context) => {
-        context.logger?.debug([{
+        context.logger?.info([{
             key: `call`,
             value: `/resolvers/mutation/unlistOffer.ts/unlistOfferResolver(prisma:PrismaClient)/async (parent: any, args: MutationUnlistOfferArgs, context: Context)`
         }]);

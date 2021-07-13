@@ -5,7 +5,7 @@ import {RequestUpdateSafeInput} from "../../types";
 
 export function requestUpdateSafe(prisma:PrismaClient) {
     return async (parent: any, args:{data:RequestUpdateSafeInput}, context: Context) => {
-        context.logger?.debug([{
+        context.logger?.info([{
             key: `call`,
             value: `/resolvers/mutation/requestUpdateSafe.ts/requestUpdateSafe(prisma:PrismaClient)/async (parent: any, args: {data:RequestUpdateSafeInput}, context: Context)`
         }]);

@@ -4,7 +4,7 @@ import {Context} from "../../context";
 
 export function upsertTag(prisma_ro:PrismaClient, prisma_rw:PrismaClient) {
     return async (parent:any, args:MutationUpsertTagArgs, context:Context) => {
-        context.logger?.debug([{
+        context.logger?.info([{
             key: `call`,
             value: `/resolvers/mutation/upsertTag.ts/upsertTag(prisma_ro:PrismaClient, prisma_rw:PrismaClient)/async (parent:any, args:MutationUpsertTagArgs, context:Context)`
         }]);

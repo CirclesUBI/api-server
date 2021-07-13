@@ -1,10 +1,10 @@
-import {QueryProfilesArgs, QuerySearchArgs, RequireFields, SearchInput} from "../../types";
+import {QuerySearchArgs} from "../../types";
 import {PrismaClient} from "@prisma/client";
 import {Context} from "../../context";
 
 export function search(prisma: PrismaClient) {
     return async (parent: any, args: QuerySearchArgs, context: Context) => {
-        context.logger?.debug([{
+        context.logger?.info([{
             key: `call`,
             value: `/resolvers/queries/search.ts/search(prisma:PrismaClient)/async (parent: any, args: QuerySearchArgs, context: Context)`
         }]);

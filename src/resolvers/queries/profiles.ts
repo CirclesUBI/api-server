@@ -3,7 +3,7 @@ import {PrismaClient} from "@prisma/client";
 import {Context} from "../../context";
 
 export async function whereProfile(args: RequireFields<QueryProfilesArgs, never>, ownProfileId:number|null, context:Context) {
-    context.logger?.debug([{
+    context.logger?.info([{
         key: `call`,
         value: `/resolvers/queries/profiles.ts/whereProfile(args: RequireFields<QueryProfilesArgs, never>, ownProfileId:number|null)`
     }]);

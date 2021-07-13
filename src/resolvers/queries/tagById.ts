@@ -4,7 +4,7 @@ import {Context} from "../../context";
 
 export function tagById(prisma:PrismaClient) {
     return async (parent: any, args: QueryTagByIdArgs, context:Context) => {
-        context.logger?.debug([{
+        context.logger?.info([{
             key: `call`,
             value: `/resolvers/queries/tagById.ts/tagById(prisma:PrismaClient)/async (parent: any, args: QueryTagByIdArgs, context:Context)`
         }]);

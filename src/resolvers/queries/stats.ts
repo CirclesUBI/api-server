@@ -5,7 +5,7 @@ import {PrismaClient} from "@prisma/client";
 
 export function stats(prisma:PrismaClient) {
     return async (parent:any, args:any, context:Context) : Promise<Stats> => {
-        context.logger?.debug([{
+        context.logger?.info([{
             key: `call`,
             value: `/resolvers/queries/stats.ts/stats(prisma:PrismaClient)/async (parent:any, args:any, context:Context)`
         }]);

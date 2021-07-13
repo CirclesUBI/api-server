@@ -5,7 +5,7 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
     try {
         const session = await context.verifySession();
 
-        context.logger?.debug([{
+        context.logger?.info([{
             key: `call`,
             value: `/resolvers/queries/sessionInfo.ts/async (parent:any, args:any, context:Context)`
         }], `Session valid until ${new Date(new Date(session.createdAt).getTime() + session.maxLifetime).toJSON()}`);

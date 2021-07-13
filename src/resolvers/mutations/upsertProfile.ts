@@ -5,7 +5,7 @@ import {Session} from "../../session";
 
 export function upsertProfileResolver(prisma_rw:PrismaClient) {
     return async (parent:any, args:MutationUpsertProfileArgs, context:Context) => {
-        context.logger?.debug([{
+        context.logger?.info([{
             key: `call`,
             value: `/resolvers/mutation/upsertProfile.ts/upsertProfileResolver(parent:any, args:MutationUpsertProfileArgs, context:Context)`
         }]);

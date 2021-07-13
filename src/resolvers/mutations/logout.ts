@@ -5,7 +5,7 @@ import {Session} from "../../session";
 export function logout(prisma_rw:PrismaClient) {
     return async (parent: any, args: any, context: Context) => {
         try {
-            context.logger?.debug([{
+            context.logger?.info([{
                 key: `call`,
                 value: `/resolvers/mutation/logout.ts/logout(prisma:PrismaClient)/async (parent: any, args: any, context: Context)`
             }]);

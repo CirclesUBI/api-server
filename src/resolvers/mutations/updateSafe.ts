@@ -8,7 +8,7 @@ import {RpcGateway} from "../../rpcGateway";
 
 export function updateSafe(prisma:PrismaClient) {
     return async (parent: any, args:MutationUpdateSafeArgs, context: Context) => {
-        context.logger?.debug([{
+        context.logger?.info([{
             key: `call`,
             value: `/resolvers/mutation/updateSafe.ts/updateSafe(prisma:PrismaClient)/async (parent: any, args: MutationUpdateSafeArgs, context: Context)`
         }]);

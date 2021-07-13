@@ -4,7 +4,7 @@ import {QueryCitiesArgs} from "../../types";
 
 export const cities = async (parent: any, args: QueryCitiesArgs, context: Context) => {
     if (args.query.byName) {
-        context.logger?.debug([{
+        context.logger?.info([{
             key: `call`,
             value: `/resolvers/queries/cities.ts/cities(parent: any, args: QueryCitiesArgs, context: Context)`
         }], `Querying cities by name '${args.query.byName.name_like}' language_code: '${args.query.byName.languageCode}'`);
