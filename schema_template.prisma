@@ -49,9 +49,7 @@ model Profile {
 
     sessions Session[]  @relation(name: "Session_Profile")
 
-    inbox Message[]  @relation(name: "Message_To")
-    outbox Message[]  @relation(name: "Message_CreatedBy")
-
+    events Event[]  @relation(name: "Profile_Events")
     offers Offer[]  @relation(name: "Offer_CreatedBy")
     tags Tag[]  @relation(name: "Tag_CreatedBy")
     purchases Purchase[]  @relation(name: "Purchase_CreatedBy")
@@ -59,32 +57,32 @@ model Profile {
     indexedTransactionRequests IndexTransactionRequest[]  @relation(name: "IndexTransactionRequest_CreatedBy")
 }
 
-model MessageType {
-    id String @id
-
-    messages Message[] @relation(name: "Message_MessageType")
-}
-
-model Message {
+model Event {
+    // Types:
+    // "INCOMING_UBI:1"
+    // "INCOMING_CIRCLES_TRANSACTION:1"
+    // "INCOMING_XDAI_TRANSACTION:1"
+    // "INCOMING_TRUST:1"
+    // "INCOMING_TRUST_REVOKED:1"
+    // "INCOMING_MESSAGE:1"
+    // "OUTGOING_CIRCLES_TRANSACTION:1"
+    // "OUTGOING_XDAI_TRANSACTION:1"
+    // "OUTGOING_TRUST:1"
+    // "OUTGOING_TRUST_REVOKED:1"
+    // "OUTGOING_MESSAGE:1"
+    // "CREATED_OFFER:1"
+    // "UPDATED_OFFER:1"
+    // "REMOVED_OFFER:1"
+    // "PURCHASING_OFFER:1"
+    // "PURCHASED_OFFER:1"
+    // "WATCH_OFFER:1"
+    // "UNWATCH_OFFER:1";
     id Int @id @default(autoincrement())
-
-    type MessageType @relation(name: "Message_MessageType", fields: [typeId], references: [id])
-    typeId String
-
-    from Profile @relation(name: "Message_CreatedBy", fields: [fromProfileId], references: [id])
-    fromProfileId Int
-
-    to Profile @relation(name: "Message_To", fields: [toProfileId], references: [id])
-    toProfileId Int
-
+    type String
+    profile Profile @relation(name: "Profile_Events", fields: [profileId], references: [id])
+    profileId Int
     createdAt DateTime
-    deliveredAt DateTime?
-    notifiedAt DateTime?
-    readAt DateTime?
-
-    tags Tag[] @relation(name:"Message_Tags")
-
-    content String
+    data String
 }
 
 model IndexedTransactionLog {
@@ -220,9 +218,6 @@ model Tag {
     indexTransactionRequestId Int?
     indexedTransaction IndexedTransaction? @relation(name: "IndexedTransaction_Tags", fields: [indexedTransactionId], references: [id])
     indexedTransactionId Int?
-
-    message Message? @relation(name: "Message_Tags", fields: [messageId], references: [id])
-    messageId Int?
 }
 
 enum PurchaseStatus {
