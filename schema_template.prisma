@@ -49,39 +49,78 @@ model Profile {
 
     sessions Session[]  @relation(name: "Session_Profile")
 
-    events Event[]  @relation(name: "Profile_Events")
-    offers Offer[]  @relation(name: "Offer_CreatedBy")
     tags Tag[]  @relation(name: "Tag_CreatedBy")
+    offers Offer[]  @relation(name: "Offer_CreatedBy")
     purchases Purchase[]  @relation(name: "Purchase_CreatedBy")
-    indexedTransactions IndexedTransaction[]  @relation(name: "IndexedTransaction_CreatedBy")
     indexedTransactionRequests IndexTransactionRequest[]  @relation(name: "IndexTransactionRequest_CreatedBy")
+    indexedTransactions IndexedTransaction[]  @relation(name: "IndexedTransaction_CreatedBy")
+
+    events Event[]  @relation(name: "Profile_Events")
+    subscribers Subscription[] @relation(name: "Subscription_SubscribingToProfile")
+    subscriptions Subscription[] @relation(name: "Subscription_SubscriberProfile")
+}
+
+model Subscription {
+    id Int @id @default(autoincrement())
+
+    createdAt DateTime
+
+    subscriber Profile @relation(name: "Subscription_SubscriberProfile", fields: [subscriberProfileId], references: [id])
+    subscriberProfileId Int
+
+    subscribingToOffer Offer? @relation(name: "Subscription_SubscribingToOffer", fields: [subscriberProfileId], references: [id])
+    subscribingToOfferId Int?
+
+    subscribingToProfile Profile? @relation(name: "Subscription_SubscribingToProfile", fields: [subscriberProfileId], references: [id])
+    subscribingToProfileId Int?
+}
+
+enum EventType {
+    //
+    // PERSONAL EVENTS
+    //
+    PROFILE_INCOMING_UBI
+
+    PROFILE_INCOMING_CIRCLES_TRANSACTION
+    PROFILE_OUTGOING_CIRCLES_TRANSACTION
+
+    PROFILE_INCOMING_XDAI_TRANSACTION
+    PROFILE_OUTGOING_XDAI_TRANSACTION
+
+    PROFILE_INCOMING_TRUST
+    PROFILE_OUTGOING_TRUST
+
+    PROFILE_INCOMING_TRUST_REVOKED
+    PROFILE_OUTGOING_TRUST_REVOKED
+
+    PROFILE_INCOMING_MESSAGE
+    PROFILE_OUTGOING_MESSAGE
+
+    //
+    // PUBLIC (SUBSCRIBABLE) EVENTS
+    //
+    PROFILE_CREATED_OFFER
+
+    OFFER_UPDATED
+    OFFER_UNLISTED
+    OFFER_PURCHASED
+
+    SUBSCRIPTION_UPDATE // Is used as a "proxy" event type
 }
 
 model Event {
-    // Types:
-    // "INCOMING_UBI:1"
-    // "INCOMING_CIRCLES_TRANSACTION:1"
-    // "INCOMING_XDAI_TRANSACTION:1"
-    // "INCOMING_TRUST:1"
-    // "INCOMING_TRUST_REVOKED:1"
-    // "INCOMING_MESSAGE:1"
-    // "OUTGOING_CIRCLES_TRANSACTION:1"
-    // "OUTGOING_XDAI_TRANSACTION:1"
-    // "OUTGOING_TRUST:1"
-    // "OUTGOING_TRUST_REVOKED:1"
-    // "OUTGOING_MESSAGE:1"
-    // "CREATED_OFFER:1"
-    // "UPDATED_OFFER:1"
-    // "REMOVED_OFFER:1"
-    // "PURCHASING_OFFER:1"
-    // "PURCHASED_OFFER:1"
-    // "WATCH_OFFER:1"
-    // "UNWATCH_OFFER:1";
     id Int @id @default(autoincrement())
-    type String
-    profile Profile @relation(name: "Profile_Events", fields: [profileId], references: [id])
-    profileId Int
+    type EventType
+
+    profile Profile? @relation(name: "Profile_Events", fields: [profileId], references: [id])
+    profileId Int?
+
+    offer Offer? @relation(name: "Offer_Events", fields: [profileId], references: [id])
+    offerId Int?
+
     createdAt DateTime
+    acknowledgedAt DateTime?
+    archivedAt DateTime?
     data String
 }
 
@@ -188,6 +227,9 @@ model Offer {
 
     deliveryTermsTag Tag @relation(name: "Offer_DeliveryTermsTag", fields: [deliveryTermsTagId], references: [id])
     deliveryTermsTagId Int
+
+    events Event[]  @relation(name: "Offer_Events")
+    subscribers Subscription[] @relation(name: "Subscription_SubscribingToOffer")
 }
 
 model TagType {
