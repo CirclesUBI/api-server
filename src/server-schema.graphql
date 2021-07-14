@@ -113,14 +113,9 @@ type IndexedTransaction {
 
 type IndexTransactionLog {
     id: Int!
-    blockNumber: Int!
-    blockHash: String!
-    transactionIndex: Int!
-    removed: Boolean
     address: String!
     data: String
     topics: [String!]!
-    transactionHash: String!
     logIndex: Int!
 }
 

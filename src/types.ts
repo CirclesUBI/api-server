@@ -97,14 +97,9 @@ export type ICity = {
 export type IndexTransactionLog = {
   __typename?: 'IndexTransactionLog';
   id: Scalars['Int'];
-  blockNumber: Scalars['Int'];
-  blockHash: Scalars['String'];
-  transactionIndex: Scalars['Int'];
-  removed?: Maybe<Scalars['Boolean']>;
   address: Scalars['String'];
   data?: Maybe<Scalars['String']>;
   topics: Array<Scalars['String']>;
-  transactionHash: Scalars['String'];
   logIndex: Scalars['Int'];
 };
 
@@ -795,14 +790,9 @@ export type ICityResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type IndexTransactionLogResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndexTransactionLog'] = ResolversParentTypes['IndexTransactionLog']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  blockNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  blockHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  transactionIndex?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  removed?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   data?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   topics?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
-  transactionHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   logIndex?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

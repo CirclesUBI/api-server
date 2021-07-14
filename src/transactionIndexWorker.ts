@@ -145,6 +145,7 @@ export class TransactionIndexWorker
     classify(receipt:TransactionReceipt) : {typeTag:CreateTagInput, logicalFrom?: string, logicalTo?: string}|undefined {
         const hubTransferEvent = "0x8451019aab65b4193860ef723cb0d56b475a26a72b7bfc55c1dbd6121015285a";
         const trustEvent = "0xe60c754dd8ab0b1b5fccba257d6ebcd7d09e360ab7dd7a6e58198ca1f57cdcec";
+        const erc20TransferEvent = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
         //const signup = "0x8451019aab65b4193860ef723cb0d56b475a26a72b7bfc55c1dbd6121015285a";
         //const orgaSignup = "0x8451019aab65b4193860ef723cb0d56b475a26a72b7bfc55c1dbd6121015285a";
         const l = "0x000000000000000000000000".length;
@@ -161,6 +162,31 @@ export class TransactionIndexWorker
                 symbol: "crc",
                 from: "0x" + hubTransfer.logs[0].topics[1].substr(l),
                 to: "0x" + hubTransfer.logs[0].topics[2].substr(l),
+                value
+            }
+
+            return {
+                typeTag: <CreateTagInput>{
+                    typeId: metadata.type,
+                    value: JSON.stringify(metadata)
+                },
+                logicalFrom: metadata.from,
+                logicalTo: metadata.to
+            };
+        }
+
+        const erc20Transfer = {
+            logs: receipt.logs.filter(p => p.topics.indexOf(erc20TransferEvent) > -1),
+            receipt
+        };
+
+        if (erc20Transfer.logs.length > 0) {
+            const value = new BN(<any>RpcGateway.get().eth.abi.decodeParameter("uint256", erc20Transfer.logs[0].data)).toString();
+            const metadata:Type_Banking_Transfer_Data = {
+                type: InitDb.Type_Banking_Transfer,
+                symbol: "crc",
+                from: "0x" + erc20Transfer.logs[0].topics[1].substr(l),
+                to: "0x" + erc20Transfer.logs[0].topics[2].substr(l),
                 value
             }
 

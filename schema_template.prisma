@@ -119,6 +119,10 @@ model Event {
     offerId Int?
 
     createdAt DateTime
+
+    workerProcess String? // Contains the id of the worker process which picked the task (or null if not yet picked)
+    deliveredAt DateTime?
+
     acknowledgedAt DateTime?
     archivedAt DateTime?
     data String
@@ -128,14 +132,9 @@ model IndexedTransactionLog {
     id Int @id @default(autoincrement())
     indexedTransaction IndexedTransaction  @relation(name:"IndexedTransaction_Logs", fields: [indexedTransactionId], references: [id])
     indexedTransactionId Int
-    blockNumber Int
-    blockHash String
-    transactionIndex Int
-    removed Boolean?
     address String
     data String?
     topics String[]
-    transactionHash String
     logIndex Int
 }
 

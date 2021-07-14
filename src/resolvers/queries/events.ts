@@ -20,6 +20,9 @@ export function events(prisma:PrismaClient) {
             where: {
                 profileId: profile.id,
                 acknowledgedAt: null
+            },
+            orderBy: {
+                createdAt: "asc"
             }
         });
 
