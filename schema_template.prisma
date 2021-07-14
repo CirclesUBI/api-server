@@ -167,6 +167,9 @@ model IndexedTransaction {
     createdBy Profile @relation(name: "IndexedTransaction_CreatedBy", fields: [createdByProfileId], references: [id])
     createdByProfileId Int
 
+    typeTag Tag? @relation(name: "IndexedTransaction_TypeTag", fields: [typeTagId], references: [id])
+    typeTagId Int?
+
     to String
     from String
     contractAddress String?
