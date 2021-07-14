@@ -369,7 +369,7 @@ input QueryTagsInput {
     value_like: String
 }
 
-interface ProfileEvent {
+type ProfileEvent {
     id: Int!
     type: String!
     profileId: Int!
@@ -393,6 +393,7 @@ type Mutation
     lockOffer(data:LockOfferInput!):LockOfferResult!
     provePayment(data:PaymentProof!):ProvePaymentResult!
     upsertTag(data:UpsertTagInput!):Tag!
+    acknowledge(eventId:Int!): ProfileEvent!
 }
 
 type Query
@@ -406,6 +407,7 @@ type Query
     offers(query:QueryOfferInput!): [Offer!]!
     tags(query:QueryTagsInput!):[Tag!]!
     tagById(id:Int!):Tag
+    events:[ProfileEvent!]!
     transactions(query:QueryIndexedTransactionInput):[IndexedTransaction!]!
     stats: Stats
 }

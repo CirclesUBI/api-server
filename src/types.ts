@@ -172,6 +172,7 @@ export type Mutation = {
   lockOffer: LockOfferResult;
   provePayment: ProvePaymentResult;
   upsertTag: Tag;
+  acknowledge: ProfileEvent;
 };
 
 
@@ -234,6 +235,11 @@ export type MutationUpsertTagArgs = {
   data: UpsertTagInput;
 };
 
+
+export type MutationAcknowledgeArgs = {
+  eventId: Scalars['Int'];
+};
+
 export type Offer = {
   __typename?: 'Offer';
   id: Scalars['Int'];
@@ -286,6 +292,7 @@ export type Profile = {
 };
 
 export type ProfileEvent = {
+  __typename?: 'ProfileEvent';
   id: Scalars['Int'];
   type: Scalars['String'];
   profileId: Scalars['Int'];
@@ -328,6 +335,7 @@ export type Query = {
   offers: Array<Offer>;
   tags: Array<Tag>;
   tagById?: Maybe<Tag>;
+  events: Array<ProfileEvent>;
   transactions: Array<IndexedTransaction>;
   stats?: Maybe<Stats>;
 };
@@ -626,7 +634,7 @@ export type ResolversTypes = ResolversObject<{
   Offer: ResolverTypeWrapper<Offer>;
   PaymentProof: PaymentProof;
   Profile: ResolverTypeWrapper<Profile>;
-  ProfileEvent: never;
+  ProfileEvent: ResolverTypeWrapper<ProfileEvent>;
   ProvePaymentResult: ResolverTypeWrapper<ProvePaymentResult>;
   Purchase: ResolverTypeWrapper<Purchase>;
   PurchaseStatus: PurchaseStatus;
@@ -683,7 +691,7 @@ export type ResolversParentTypes = ResolversObject<{
   Offer: Offer;
   PaymentProof: PaymentProof;
   Profile: Profile;
-  ProfileEvent: never;
+  ProfileEvent: ProfileEvent;
   ProvePaymentResult: ProvePaymentResult;
   Purchase: Purchase;
   Query: {};
@@ -858,6 +866,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   lockOffer?: Resolver<ResolversTypes['LockOfferResult'], ParentType, ContextType, RequireFields<MutationLockOfferArgs, 'data'>>;
   provePayment?: Resolver<ResolversTypes['ProvePaymentResult'], ParentType, ContextType, RequireFields<MutationProvePaymentArgs, 'data'>>;
   upsertTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationUpsertTagArgs, 'data'>>;
+  acknowledge?: Resolver<ResolversTypes['ProfileEvent'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'eventId'>>;
 }>;
 
 export type OfferResolvers<ContextType = any, ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']> = ResolversObject<{
@@ -904,12 +913,12 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
 }>;
 
 export type ProfileEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProfileEvent'] = ResolversParentTypes['ProfileEvent']> = ResolversObject<{
-  __resolveType: TypeResolveFn<null, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   profileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   data?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type ProvePaymentResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProvePaymentResult'] = ResolversParentTypes['ProvePaymentResult']> = ResolversObject<{
@@ -940,6 +949,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   offers?: Resolver<Array<ResolversTypes['Offer']>, ParentType, ContextType, RequireFields<QueryOffersArgs, 'query'>>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsArgs, 'query'>>;
   tagById?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagByIdArgs, 'id'>>;
+  events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   transactions?: Resolver<Array<ResolversTypes['IndexedTransaction']>, ParentType, ContextType, RequireFields<QueryTransactionsArgs, never>>;
   stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
 }>;
