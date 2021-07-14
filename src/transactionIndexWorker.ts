@@ -266,15 +266,20 @@ export class TransactionIndexWorker
             switch (typeTag.typeId) {
                 case InitDb.Type_Banking_Transfer:
                     const transferMetadata:Type_Banking_Transfer_Data = JSON.parse(typeTag.value ?? "{}");
-                    eventType = o.circlesAddress?.toLowerCase() === transferMetadata.from.toLowerCase()
-                        ? "PROFILE_OUTGOING_CIRCLES_TRANSACTION"
-                        : "PROFILE_INCOMING_CIRCLES_TRANSACTION";
+                    if (transferMetadata.symbol === "crc") {
+                        eventType = (o.circlesAddress?.toLowerCase() ?? o.circlesSafeOwner?.toLowerCase()) === transferMetadata.from.toLowerCase()
+                            ? "PROFILE_OUTGOING_CIRCLES_TRANSACTION"
+                            : "PROFILE_INCOMING_CIRCLES_TRANSACTION";
 
-                    eventType = eventType === "PROFILE_INCOMING_CIRCLES_TRANSACTION"
-                             && transferMetadata.from === "0x0000000000000000000000000000000000000000"
-                        ? "PROFILE_INCOMING_UBI"
-                        : eventType;
-
+                        eventType = eventType === "PROFILE_INCOMING_CIRCLES_TRANSACTION"
+                        && transferMetadata.from === "0x0000000000000000000000000000000000000000"
+                            ? "PROFILE_INCOMING_UBI"
+                            : eventType;
+                    } else {
+                        eventType = (o.circlesAddress?.toLowerCase() ?? o.circlesSafeOwner?.toLowerCase()) === transferMetadata.from.toLowerCase()
+                            ? "PROFILE_OUTGOING_XDAI_TRANSACTION"
+                            : "PROFILE_INCOMING_XDAI_TRANSACTION";
+                    }
                     events.push({
                         type: eventType,
                         data: typeTag.value ?? "",
