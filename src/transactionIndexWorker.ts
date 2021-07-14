@@ -141,7 +141,7 @@ export class TransactionIndexWorker
         });
     }
 
-    classify(receipt:TransactionReceipt) : CreateTagInput|undefined {
+    classify(receipt:TransactionReceipt) : {typeTag:CreateTagInput, logicalFrom?: string, logicalTo?: string}|undefined {
         const hubTransferEvent = "0x8451019aab65b4193860ef723cb0d56b475a26a72b7bfc55c1dbd6121015285a";
         const trustEvent = "0xe60c754dd8ab0b1b5fccba257d6ebcd7d09e360ab7dd7a6e58198ca1f57cdcec";
         //const signup = "0x8451019aab65b4193860ef723cb0d56b475a26a72b7bfc55c1dbd6121015285a";
@@ -160,9 +160,13 @@ export class TransactionIndexWorker
                 value: RpcGateway.get().eth.abi.decodeParameter("uint256", hubTransfer.logs[0].data)
             }
 
-            return <CreateTagInput>{
-                typeId: InitDb.Type_Banking_Transfer,
-                value: JSON.stringify(metadata)
+            return {
+                typeTag: <CreateTagInput>{
+                    typeId: InitDb.Type_Banking_Transfer,
+                    value: JSON.stringify(metadata)
+                },
+                logicalFrom: metadata.from,
+                logicalTo: metadata.to
             };
         }
 
@@ -178,9 +182,13 @@ export class TransactionIndexWorker
                 limit: RpcGateway.get().eth.abi.decodeParameter("uint256", trust.logs[0].data)
             }
 
-            return <CreateTagInput>{
-                typeId: InitDb.Type_Banking_Trust,
-                value: JSON.stringify(metadata)
+            return {
+                typeTag: <CreateTagInput>{
+                    typeId: InitDb.Type_Banking_Transfer,
+                    value: JSON.stringify(metadata)
+                },
+                logicalFrom: metadata.user,
+                logicalTo: metadata.canSendTo
             };
         }
 
@@ -197,6 +205,8 @@ export class TransactionIndexWorker
                 transactionHash: request.transactionHash,
                 from: receipt.from,
                 to: receipt.to,
+                logicalFrom: typeTag?.logicalFrom,
+                logicalTo: typeTag?.logicalTo,
                 createdAt: now,
                 createdBy: {
                     connect: {
@@ -251,8 +261,8 @@ export class TransactionIndexWorker
                     create: {
                         createdByProfileId: request.createdByProfileId,
                         createdAt: now,
-                        typeId: typeTag.typeId,
-                        value: typeTag.value,
+                        typeId: typeTag.typeTag.typeId,
+                        value: typeTag.typeTag.value,
                         isPrivate: false
                     }
                 } : undefined,

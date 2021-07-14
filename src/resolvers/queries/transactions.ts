@@ -24,9 +24,9 @@ export function transactions(prisma:PrismaClient) {
                     gte: args.query?.fromBlockNo ?? undefined
                 },
                 OR:[{
-                    from: profile.circlesAddress
+                    logicalFrom: profile.circlesAddress
                 }, {
-                    to: profile.circlesAddress
+                    logicalTo: profile.circlesAddress
                 }]
             },
             include: {
