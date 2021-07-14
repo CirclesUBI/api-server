@@ -357,13 +357,8 @@ export class TransactionIndexWorker
                         data: receipt.logs?.map(log => {
                             return {
                                 data: log.data,
-                                transactionIndex: log.transactionIndex,
-                                blockHash: log.blockHash,
-                                transactionHash: log.transactionHash,
-                                blockNumber: log.blockNumber,
                                 logIndex: log.logIndex,
                                 address: log.address,
-                                removed: null,
                                 topics: log.topics
                             }
                         }) ?? []
