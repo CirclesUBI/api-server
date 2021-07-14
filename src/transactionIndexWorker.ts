@@ -155,7 +155,7 @@ export class TransactionIndexWorker
         };
 
         if (hubTransfer.logs.length > 0) {
-            const value = new BN(<any>RpcGateway.get().eth.abi.decodeParameter("uint256", hubTransfer.logs[0].data));
+            const value = new BN(<any>RpcGateway.get().eth.abi.decodeParameter("uint256", hubTransfer.logs[0].data)).toString();
             const metadata:Type_Banking_Transfer_Data = {
                 type: InitDb.Type_Banking_Transfer,
                 symbol: "crc",
@@ -184,7 +184,7 @@ export class TransactionIndexWorker
                 type: InitDb.Type_Banking_Trust,
                 canSendTo: "0x" + trust.logs[0].topics[1].substr(l),
                 user: "0x" + trust.logs[0].topics[2].substr(l),
-                limit: new BN(<any>RpcGateway.get().eth.abi.decodeParameter("uint256", trust.logs[0].data))
+                limit: parseInt(new BN(<any>RpcGateway.get().eth.abi.decodeParameter("uint256", trust.logs[0].data)).toString())
             }
 
             return {
@@ -259,16 +259,16 @@ export class TransactionIndexWorker
                 case InitDb.Type_Banking_Trust:
                     const trustMetadata:Type_Banking_Trust_Data = JSON.parse(typeTag.value ?? "{}");
                     eventType = undefined;
-                    if (trustMetadata.user === o.circlesAddress && trustMetadata.limit.gt(new BN("0"))) {
+                    if (trustMetadata.user === o.circlesAddress && parseInt(trustMetadata.limit.toString()) > 0) {
                         eventType = "PROFILE_INCOMING_TRUST";
                     }
-                    if (trustMetadata.user === o.circlesAddress && trustMetadata.limit.eq(new BN("0"))) {
+                    if (trustMetadata.user === o.circlesAddress && parseInt(trustMetadata.limit.toString()) == 0) {
                         eventType = "PROFILE_INCOMING_TRUST_REVOKED";
                     }
-                    if (trustMetadata.canSendTo === o.circlesAddress && trustMetadata.limit.gt(new BN("0"))) {
+                    if (trustMetadata.canSendTo === o.circlesAddress && parseInt(trustMetadata.limit.toString()) > 0) {
                         eventType = "PROFILE_OUTGOING_TRUST";
                     }
-                    if (trustMetadata.canSendTo === o.circlesAddress && trustMetadata.limit.eq(new BN("0"))) {
+                    if (trustMetadata.canSendTo === o.circlesAddress && parseInt(trustMetadata.limit.toString()) == 0) {
                         eventType = "PROFILE_OUTGOING_TRUST_REVOKED";
                     }
                     if (!eventType) {

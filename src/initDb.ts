@@ -10,14 +10,14 @@ export interface Type_Banking_Transfer_Data extends ITypeTag {
     type: "o-banking:transfer",
     from: string;
     to: string;
-    value: BN;
+    value: string;
     symbol: string;
 }
 export interface Type_Banking_Trust_Data extends ITypeTag {
     type: "o-banking:trust",
     canSendTo: string;
     user: string;
-    limit: BN;
+    limit: number;
 }
 
 export class InitDb {
