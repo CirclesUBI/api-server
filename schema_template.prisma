@@ -261,6 +261,7 @@ model Tag {
     offerCategory Offer[] @relation(name: "Offer_CategoryTag")
     offerUnit Offer[] @relation(name: "Offer_UnitTag")
     offerDeliveryTerms Offer[] @relation(name: "Offer_DeliveryTermsTag")
+    indexedTransactionType IndexedTransaction[] @relation(name: "IndexedTransaction_TypeTag")
 
     indexTransactionRequest IndexTransactionRequest? @relation(name: "IndexTransactionRequest_Tags", fields: [indexTransactionRequestId], references: [id])
     indexTransactionRequestId Int?
