@@ -170,8 +170,12 @@ model IndexedTransaction {
     typeTag Tag? @relation(name: "IndexedTransaction_TypeTag", fields: [typeTagId], references: [id])
     typeTagId Int?
 
-    to String
     from String
+    to String
+
+    logicalFrom String?
+    logicalTo String?
+
     contractAddress String?
     transactionIndex Int
     root String?

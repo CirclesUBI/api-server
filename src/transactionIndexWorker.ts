@@ -155,7 +155,6 @@ export class TransactionIndexWorker
 
         if (hubTransfer.logs.length > 0) {
             const metadata = {
-                receipt: receipt,
                 from: "0x" + hubTransfer.logs[0].topics[1].substr(l),
                 to: "0x" + hubTransfer.logs[0].topics[2].substr(l),
                 value: RpcGateway.get().eth.abi.decodeParameter("uint256", hubTransfer.logs[0].data)
@@ -174,7 +173,6 @@ export class TransactionIndexWorker
 
         if (trust.logs.length > 0) {
             const metadata = {
-                receipt: receipt,
                 canSendTo: "0x" + trust.logs[0].topics[1].substr(l),
                 user: "0x" + trust.logs[0].topics[2].substr(l),
                 limit: RpcGateway.get().eth.abi.decodeParameter("uint256", trust.logs[0].data)
@@ -198,6 +196,7 @@ export class TransactionIndexWorker
             data: {
                 transactionHash: request.transactionHash,
                 from: receipt.from,
+                to: receipt.to,
                 createdAt: now,
                 createdBy: {
                     connect: {
@@ -211,7 +210,6 @@ export class TransactionIndexWorker
                 },
                 contractAddress: receipt.contractAddress,
                 transactionIndex: receipt.transactionIndex,
-                to: receipt.to,
                 blockNumber: receipt.blockNumber,
                 blockHash: receipt.blockHash,
                 gasUsed: receipt.gasUsed.toString(),
