@@ -1,11 +1,12 @@
 import {Session} from "./session";
 import {Logger, newLogger} from "./logger";
-import {prisma_rw} from "./prismaClient";
-import {IndexTransactionRequest, Tag} from "@prisma/client";
+import {prisma_ro, prisma_rw} from "./prismaClient";
+import {IndexTransactionRequest, IndexedTransaction, EventType, Tag} from "@prisma/client";
 import {RpcGateway} from "./rpcGateway";
 import type {TransactionReceipt} from "web3-core";
 import {CreateTagInput} from "./types";
-import {InitDb} from "./initDb";
+import {InitDb, Type_Banking_Transfer_Data, Type_Banking_Trust_Data} from "./initDb";
+import {BN} from "ethereumjs-util";
 
 export class TransactionIndexWorker
 {
@@ -120,7 +121,7 @@ export class TransactionIndexWorker
             if (!receipt) {
                 await this.releaseIndexRequest(request);
             } else {
-                await this.writeReceipt(request, receipt);
+                await this.persist(request, receipt);
             }
         }
 
@@ -154,15 +155,18 @@ export class TransactionIndexWorker
         };
 
         if (hubTransfer.logs.length > 0) {
-            const metadata = {
+            const value = new BN(<any>RpcGateway.get().eth.abi.decodeParameter("uint256", hubTransfer.logs[0].data));
+            const metadata:Type_Banking_Transfer_Data = {
+                type: InitDb.Type_Banking_Transfer,
+                symbol: "crc",
                 from: "0x" + hubTransfer.logs[0].topics[1].substr(l),
                 to: "0x" + hubTransfer.logs[0].topics[2].substr(l),
-                value: RpcGateway.get().eth.abi.decodeParameter("uint256", hubTransfer.logs[0].data)
+                value
             }
 
             return {
                 typeTag: <CreateTagInput>{
-                    typeId: InitDb.Type_Banking_Transfer,
+                    typeId: metadata.type,
                     value: JSON.stringify(metadata)
                 },
                 logicalFrom: metadata.from,
@@ -176,15 +180,16 @@ export class TransactionIndexWorker
         };
 
         if (trust.logs.length > 0) {
-            const metadata = {
+            const metadata: Type_Banking_Trust_Data = {
+                type: InitDb.Type_Banking_Trust,
                 canSendTo: "0x" + trust.logs[0].topics[1].substr(l),
                 user: "0x" + trust.logs[0].topics[2].substr(l),
-                limit: RpcGateway.get().eth.abi.decodeParameter("uint256", trust.logs[0].data)
+                limit: new BN(<any>RpcGateway.get().eth.abi.decodeParameter("uint256", trust.logs[0].data))
             }
 
             return {
                 typeTag: <CreateTagInput>{
-                    typeId: InitDb.Type_Banking_Trust,
+                    typeId: metadata.type,
                     value: JSON.stringify(metadata)
                 },
                 logicalFrom: metadata.user,
@@ -195,10 +200,104 @@ export class TransactionIndexWorker
         return undefined;
     }
 
-    async writeReceipt(request:IndexTransactionRequest & {tags: Tag[]}, receipt:TransactionReceipt) {
+    async createEvents(typeTag:CreateTagInput, indexedTransaction:IndexedTransaction) {
+        if (!typeTag.value) {
+            this.logger.warning([], `Cannot create events from valueless Tags (typeId: ${typeTag.typeId}).`);
+            return;
+        }
+
+        const involvedAddresses:string[] = [];
+        switch (typeTag.typeId) {
+            case InitDb.Type_Banking_Transfer:
+                const transferMetadata:Type_Banking_Transfer_Data = JSON.parse(typeTag.value);
+                involvedAddresses.push(transferMetadata.from);
+                involvedAddresses.push(transferMetadata.to);
+                break;
+            case InitDb.Type_Banking_Trust:
+                const trustMetadata:Type_Banking_Trust_Data = JSON.parse(typeTag.value);
+                involvedAddresses.push(trustMetadata.user);
+                involvedAddresses.push(trustMetadata.canSendTo);
+                break;
+        }
+
+        const profiles = await prisma_ro.profile.findMany({
+            where: {
+                circlesAddress: {
+                    in: involvedAddresses
+                }
+            }
+        });
+
+        const events: {
+            type: EventType
+            profileId: number
+            createdAt: Date
+            data: string
+        }[] = [];
+
+        profiles.forEach(o => {
+            let eventType:EventType|undefined;
+            switch (typeTag.typeId) {
+                case InitDb.Type_Banking_Transfer:
+                    const transferMetadata:Type_Banking_Transfer_Data = JSON.parse(typeTag.value ?? "{}");
+                    eventType = o.circlesAddress?.toLowerCase() === transferMetadata.from.toLowerCase()
+                        ? "PROFILE_OUTGOING_CIRCLES_TRANSACTION"
+                        : "PROFILE_INCOMING_CIRCLES_TRANSACTION";
+
+                    eventType = eventType === "PROFILE_INCOMING_CIRCLES_TRANSACTION"
+                             && transferMetadata.from === "0x0000000000000000000000000000000000000000"
+                        ? "PROFILE_INCOMING_UBI"
+                        : eventType;
+
+                    events.push({
+                        type: eventType,
+                        data: typeTag.value ?? "",
+                        profileId: o.id,
+                        createdAt: indexedTransaction.createdAt
+                    });
+                    break;
+                case InitDb.Type_Banking_Trust:
+                    const trustMetadata:Type_Banking_Trust_Data = JSON.parse(typeTag.value ?? "{}");
+                    eventType = undefined;
+                    if (trustMetadata.user === o.circlesAddress && trustMetadata.limit.gt(new BN("0"))) {
+                        eventType = "PROFILE_INCOMING_TRUST";
+                    }
+                    if (trustMetadata.user === o.circlesAddress && trustMetadata.limit.eq(new BN("0"))) {
+                        eventType = "PROFILE_INCOMING_TRUST_REVOKED";
+                    }
+                    if (trustMetadata.canSendTo === o.circlesAddress && trustMetadata.limit.gt(new BN("0"))) {
+                        eventType = "PROFILE_OUTGOING_TRUST";
+                    }
+                    if (trustMetadata.canSendTo === o.circlesAddress && trustMetadata.limit.eq(new BN("0"))) {
+                        eventType = "PROFILE_OUTGOING_TRUST_REVOKED";
+                    }
+                    if (!eventType) {
+                        throw new Error(`Invalid state during creation of a 'trust' event.`);
+                    }
+                    events.push({
+                        type: eventType,
+                        data: typeTag.value ?? "",
+                        profileId: o.id,
+                        createdAt: indexedTransaction.createdAt
+                    });
+                    break;
+            }
+        });
+
+        this.logger.info([], `Writing ${events.length} events to ${profiles.length} profiles ..`);
+
+        await prisma_rw.event.createMany({
+            data: events
+        });
+
+        this.logger.info([], `Wrote all events.`);
+    }
+
+    async persist(request:IndexTransactionRequest & {tags: Tag[]}, receipt:TransactionReceipt) {
         this.logger.debug([], `Writing receipt of ${request.transactionHash} to db ..`);
 
         const typeTag = this.classify(receipt);
+
         const now = new Date();
         const indexedTransaction = await prisma_rw.indexedTransaction.create({
             data: {
@@ -268,6 +367,10 @@ export class TransactionIndexWorker
                 } : undefined,
             }
         });
+
+        if (typeTag) {
+            await this.createEvents(typeTag.typeTag, indexedTransaction);
+        }
 
         this.logger.info([], `Wrote receipt of ${request.transactionHash} to db. IndexedTransaction ID is: ${indexedTransaction.id}`);
     }

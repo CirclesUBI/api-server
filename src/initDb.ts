@@ -1,4 +1,24 @@
 import {PrismaClient} from "@prisma/client";
+import {BN} from "ethereumjs-util";
+
+export type TypeTagType = "o-marketplace:offer" | "o-banking:transfer" | "o-banking:trust";
+export interface ITypeTag {
+    type: TypeTagType;
+}
+
+export interface Type_Banking_Transfer_Data extends ITypeTag {
+    type: "o-banking:transfer",
+    from: string;
+    to: string;
+    value: BN;
+    symbol: string;
+}
+export interface Type_Banking_Trust_Data extends ITypeTag {
+    type: "o-banking:trust",
+    canSendTo: string;
+    user: string;
+    limit: BN;
+}
 
 export class InitDb {
 
