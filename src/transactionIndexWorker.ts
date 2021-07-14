@@ -184,7 +184,7 @@ export class TransactionIndexWorker
 
             return {
                 typeTag: <CreateTagInput>{
-                    typeId: InitDb.Type_Banking_Transfer,
+                    typeId: InitDb.Type_Banking_Trust,
                     value: JSON.stringify(metadata)
                 },
                 logicalFrom: metadata.user,
