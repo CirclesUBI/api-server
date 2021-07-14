@@ -4,6 +4,8 @@ import {prisma_rw} from "./prismaClient";
 import {IndexTransactionRequest, Tag} from "@prisma/client";
 import {RpcGateway} from "./rpcGateway";
 import type {TransactionReceipt} from "web3-core";
+import {CreateTagInput} from "./types";
+import {InitDb} from "./initDb";
 
 export class TransactionIndexWorker
 {
@@ -139,16 +141,74 @@ export class TransactionIndexWorker
         });
     }
 
+    classify(receipt:TransactionReceipt) : CreateTagInput|undefined {
+        const hubTransferEvent = "0x8451019aab65b4193860ef723cb0d56b475a26a72b7bfc55c1dbd6121015285a";
+        const trustEvent = "0xe60c754dd8ab0b1b5fccba257d6ebcd7d09e360ab7dd7a6e58198ca1f57cdcec";
+        //const signup = "0x8451019aab65b4193860ef723cb0d56b475a26a72b7bfc55c1dbd6121015285a";
+        //const orgaSignup = "0x8451019aab65b4193860ef723cb0d56b475a26a72b7bfc55c1dbd6121015285a";
+        const l = "0x000000000000000000000000".length;
+
+        const hubTransfer = {
+            logs: receipt.logs.filter(p => p.topics.indexOf(hubTransferEvent) > -1),
+            receipt
+        };
+
+        if (hubTransfer.logs.length > 0) {
+            const metadata = {
+                receipt: receipt,
+                from: "0x" + hubTransfer.logs[0].topics[1].substr(l),
+                to: "0x" + hubTransfer.logs[0].topics[2].substr(l),
+                value: RpcGateway.get().eth.abi.decodeParameter("uint256", hubTransfer.logs[0].data)
+            }
+
+            return <CreateTagInput>{
+                typeId: InitDb.Type_Banking_Transfer,
+                value: JSON.stringify(metadata)
+            };
+        }
+
+        const trust = {
+            logs: receipt.logs.filter(p => p.topics.indexOf(trustEvent) > -1),
+            receipt
+        };
+
+        if (trust.logs.length > 0) {
+            const metadata = {
+                receipt: receipt,
+                canSendTo: "0x" + trust.logs[0].topics[1].substr(l),
+                user: "0x" + trust.logs[0].topics[2].substr(l),
+                limit: RpcGateway.get().eth.abi.decodeParameter("uint256", trust.logs[0].data)
+            }
+
+            return <CreateTagInput>{
+                typeId: InitDb.Type_Banking_Trust,
+                value: JSON.stringify(metadata)
+            };
+        }
+
+        return undefined;
+    }
+
     async writeReceipt(request:IndexTransactionRequest & {tags: Tag[]}, receipt:TransactionReceipt) {
         this.logger.debug([], `Writing receipt of ${request.transactionHash} to db ..`);
 
+        const typeTag = this.classify(receipt);
         const now = new Date();
         const indexedTransaction = await prisma_rw.indexedTransaction.create({
             data: {
                 transactionHash: request.transactionHash,
                 from: receipt.from,
                 createdAt: now,
-                createdByProfileId: request.createdByProfileId,
+                createdBy: {
+                    connect: {
+                        id: request.createdByProfileId
+                    }
+                },
+                fromRequest: {
+                    connect: {
+                        id: request.id
+                    }
+                },
                 contractAddress: receipt.contractAddress,
                 transactionIndex: receipt.transactionIndex,
                 to: receipt.to,
@@ -159,7 +219,6 @@ export class TransactionIndexWorker
                 logsBloom: receipt.logsBloom,
                 root: null,
                 status: "true",
-                fromRequestId: request.id,
                 logs: {
                     createMany: {
                         data: receipt.logs?.map(log => {
@@ -189,7 +248,16 @@ export class TransactionIndexWorker
                             };
                         }) ?? []
                     }
-                }
+                },
+                typeTag: typeTag ? {
+                    create: {
+                        createdByProfileId: request.createdByProfileId,
+                        createdAt: now,
+                        typeId: typeTag.typeId,
+                        value: typeTag.value,
+                        isPrivate: false
+                    }
+                } : undefined,
             }
         });
 

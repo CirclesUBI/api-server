@@ -12,7 +12,6 @@ export class InitDb {
     public static readonly Tag_Banking_Transfer_Message = `${InitDb.Type_Banking_Transfer}:message:1`;
 
     public static readonly Type_Banking_Trust = "o-banking:trust";
-    public static readonly Tag_Banking_Trust_Status = `${InitDb.Type_Banking_Trust}:status:1`;
     public static readonly Tag_Banking_Trust_Message = `${InitDb.Type_Banking_Trust}:message:1`;
 
     static readonly requiredTagTypes = {
@@ -24,7 +23,6 @@ export class InitDb {
         [InitDb.Tag_Marketplace_Offer_Unit]: true,
         [InitDb.Tag_Banking_Transfer_TransitivePath]: true,
         [InitDb.Tag_Banking_Transfer_Message]: true,
-        [InitDb.Tag_Banking_Trust_Status]: true,
         [InitDb.Tag_Banking_Trust_Message]: true
     };
 
