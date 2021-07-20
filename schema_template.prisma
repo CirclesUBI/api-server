@@ -31,6 +31,8 @@ model Profile {
     emailAddress String
     @@unique([emailAddress], name:"UX_Profile_EmailAddress")
 
+    status String?
+
     circlesAddress String?
     circlesSafeOwner String?
     circlesTokenAddress String?
