@@ -26,6 +26,39 @@ model Session {
   maxLifetime Int
 }
 
+model Invitation {
+    id Int @id @default(autoincrement())
+    createdBy Profile @relation(name: "Invitation_CreatedBy", fields: [createdByProfileId], references: [id])
+    createdByProfileId Int
+    createdAt DateTime
+
+    code String
+
+    redeemedBy Profile? @relation(name: "Invitation_RedeemedBy", fields: [redeemedByProfileId], references: [id])
+    redeemedByProfileId Int?
+    redeemedAt DateTime?
+
+    key String
+
+    indexedTransactions RedeemInvitationRequest[]  @relation(name: "RedeemInvitationRequest_InvitationToRedeem")
+}
+
+model RedeemInvitationRequest {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime
+  createdBy Profile @relation(name: "RedeemInvitationRequest_CreatedBy", fields: [createdByProfileId], references: [id])
+  createdByProfileId Int
+
+  workerProcess String? // Contains the id of the worker process which picked the task (or null if not yet picked)
+  pickedAt DateTime?
+
+  invitationToRedeem Invitation @relation(name: "RedeemInvitationRequest_InvitationToRedeem", fields: [invitationToRedeemId], references: [id])
+  invitationToRedeemId Int
+
+  inviteTransaction IndexedTransaction? @relation(name: "RedeemInvitationRequest_InviteTransaction")
+}
+
 model Profile {
     id Int @id @default(autoincrement())
     emailAddress String
@@ -58,6 +91,11 @@ model Profile {
     indexedTransactions IndexedTransaction[]  @relation(name: "IndexedTransaction_CreatedBy")
 
     events Event[]  @relation(name: "Profile_Events")
+
+    invitations Invitation[]  @relation(name: "Invitation_CreatedBy")
+    redeemInvitationRequests RedeemInvitationRequest[] @relation(name: "RedeemInvitationRequest_CreatedBy")
+    redeemedInvitations Invitation[]  @relation(name: "Invitation_RedeemedBy")
+
     subscribers Subscription[] @relation(name: "Subscription_SubscribingToProfile")
     subscriptions Subscription[] @relation(name: "Subscription_SubscriberProfile")
 }
@@ -163,6 +201,9 @@ model IndexedTransaction {
 
     fromRequest IndexTransactionRequest? @relation(name: "IndexTransaction_FromRequest", fields: [fromRequestId], references: [id])
     fromRequestId Int?
+
+    fromRedeemInvitationRequest RedeemInvitationRequest? @relation(name: "RedeemInvitationRequest_InviteTransaction", fields: [fromRedeemInvitationRequestId], references: [id])
+    fromRedeemInvitationRequestId Int?
 
     createdAt DateTime
     createdBy Profile @relation(name: "IndexedTransaction_CreatedBy", fields: [createdByProfileId], references: [id])
