@@ -31,7 +31,6 @@ import {requestIndexTransaction} from "./mutations/requestIndexTransaction";
 import {transactions} from "./queries/transactions";
 import {events} from "./queries/events";
 import {acknowledge} from "./mutations/acknowledge";
-import {Context} from "../context";
 import {claimInvitation} from "./mutations/claimInvitation";
 import {claimedInvitation} from "./queries/claimedInvitation";
 
@@ -48,6 +47,16 @@ export const resolvers: Resolvers = {
         deliveryTermsTag: offerDeliveryTermsTag(prisma_ro),
         unitTag: offerUnitTag(prisma_ro),
         city: offerCity
+    },
+    ClaimedInvitation: {
+        createdBy: (parent, args, context) => {
+            throw new Error(`Not implemented`);
+        },
+        claimedBy: (parent, args, context) => {
+            throw new Error(`Not implemented`);
+        }
+    },
+    ProfileEvent: {
     },
     Query: {
         sessionInfo: sessionInfo,
@@ -77,6 +86,14 @@ export const resolvers: Resolvers = {
         upsertTag: upsertTag(prisma_ro, prisma_rw),
         requestIndexTransaction: requestIndexTransaction(prisma_rw),
         acknowledge: acknowledge(prisma_rw),
-        claimInvitation: claimInvitation(prisma_rw)
+        claimInvitation: claimInvitation(prisma_rw),
+        redeemClaimedInvitation: (parent, args, context) => {
+            throw new Error(`Not implemented`);
+        }
+    },
+    Subscriptions: {
+        events: (parent, args, context) => {
+            throw new Error(`Not implemented`);
+        }
     }
 };

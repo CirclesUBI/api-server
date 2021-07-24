@@ -34,7 +34,7 @@ model Invitation {
 
     code String
 
-    claimedBy Profile? @relation(name: "Invitation_ClaimedBy", fields: [redeemedByProfileId], references: [id])
+    claimedBy Profile? @relation(name: "Invitation_ClaimedBy", fields: [claimedByProfileId], references: [id])
     claimedByProfileId Int?
     claimedAt DateTime?
 
