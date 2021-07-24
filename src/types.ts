@@ -36,6 +36,22 @@ export type CityStats = ICity & {
   feature_code: Scalars['String'];
 };
 
+export type ClaimInvitationResult = {
+  __typename?: 'ClaimInvitationResult';
+  success: Scalars['Boolean'];
+  claimedInvitation?: Maybe<ClaimedInvitation>;
+};
+
+export type ClaimedInvitation = {
+  __typename?: 'ClaimedInvitation';
+  createdBy?: Maybe<Profile>;
+  createdByProfileId: Scalars['Int'];
+  createdAt: Scalars['String'];
+  claimedBy?: Maybe<Profile>;
+  claimedByProfileId: Scalars['Int'];
+  claimedAt: Scalars['String'];
+};
+
 export type ConsumeDepositedChallengeResponse = {
   __typename?: 'ConsumeDepositedChallengeResponse';
   success: Scalars['Boolean'];
@@ -168,6 +184,8 @@ export type Mutation = {
   provePayment: ProvePaymentResult;
   upsertTag: Tag;
   acknowledge: ProfileEvent;
+  claimInvitation: ClaimInvitationResult;
+  redeemClaimedInvitation: RedeemClaimedInvitationResult;
 };
 
 
@@ -235,6 +253,11 @@ export type MutationAcknowledgeArgs = {
   eventId: Scalars['Int'];
 };
 
+
+export type MutationClaimInvitationArgs = {
+  code: Scalars['String'];
+};
+
 export type Offer = {
   __typename?: 'Offer';
   id: Scalars['Int'];
@@ -270,6 +293,7 @@ export type PaymentProof = {
 export type Profile = {
   __typename?: 'Profile';
   id: Scalars['Int'];
+  status?: Maybe<Scalars['String']>;
   circlesAddress?: Maybe<Scalars['String']>;
   circlesSafeOwner?: Maybe<Scalars['String']>;
   circlesTokenAddress?: Maybe<Scalars['String']>;
@@ -324,15 +348,16 @@ export type Query = {
   whoami?: Maybe<Scalars['String']>;
   version: Version;
   sessionInfo: SessionInfo;
+  claimedInvitation?: Maybe<ClaimedInvitation>;
+  stats?: Maybe<Stats>;
+  events: Array<ProfileEvent>;
   profiles: Array<Profile>;
   search: Array<Profile>;
   cities: Array<City>;
   offers: Array<Offer>;
   tags: Array<Tag>;
   tagById?: Maybe<Tag>;
-  events: Array<ProfileEvent>;
   transactions: Array<IndexedTransaction>;
-  stats?: Maybe<Stats>;
 };
 
 
@@ -418,6 +443,17 @@ export type QueryUniqueProfileInput = {
   id: Scalars['Int'];
 };
 
+export type RedeemClaimedInvitationResult = {
+  __typename?: 'RedeemClaimedInvitationResult';
+  success: Scalars['Boolean'];
+  redeemRequest?: Maybe<RedeemInvitationRequest>;
+};
+
+export type RedeemInvitationRequest = {
+  __typename?: 'RedeemInvitationRequest';
+  id: Scalars['Int'];
+};
+
 export type RequestIndexTransactionInput = {
   transactionHash: Scalars['String'];
   tags?: Maybe<Array<CreateTagInput>>;
@@ -463,6 +499,11 @@ export type Stats = {
   countries: Array<CountryStats>;
 };
 
+export type Subscriptions = {
+  __typename?: 'Subscriptions';
+  events: Array<ProfileEvent>;
+};
+
 export type Tag = {
   __typename?: 'Tag';
   id: Scalars['Int'];
@@ -497,6 +538,7 @@ export type UpsertOfferInput = {
 
 export type UpsertProfileInput = {
   id?: Maybe<Scalars['Int']>;
+  status: Scalars['String'];
   firstName: Scalars['String'];
   lastName?: Maybe<Scalars['String']>;
   dream?: Maybe<Scalars['String']>;
@@ -609,8 +651,10 @@ export type ResolversTypes = ResolversObject<{
   String: ResolverTypeWrapper<Scalars['String']>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   CityStats: ResolverTypeWrapper<CityStats>;
-  ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
+  ClaimInvitationResult: ResolverTypeWrapper<ClaimInvitationResult>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  ClaimedInvitation: ResolverTypeWrapper<ClaimedInvitation>;
+  ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
   CountryStats: ResolverTypeWrapper<CountryStats>;
   CreateTagInput: CreateTagInput;
   DelegateAuthInit: ResolverTypeWrapper<DelegateAuthInit>;
@@ -643,6 +687,8 @@ export type ResolversTypes = ResolversObject<{
   QueryPurchaseInput: QueryPurchaseInput;
   QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
+  RedeemClaimedInvitationResult: ResolverTypeWrapper<RedeemClaimedInvitationResult>;
+  RedeemInvitationRequest: ResolverTypeWrapper<RedeemInvitationRequest>;
   RequestIndexTransactionInput: RequestIndexTransactionInput;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: ResolverTypeWrapper<RequestUpdateSafeResponse>;
@@ -650,6 +696,7 @@ export type ResolversTypes = ResolversObject<{
   Server: ResolverTypeWrapper<Server>;
   SessionInfo: ResolverTypeWrapper<SessionInfo>;
   Stats: ResolverTypeWrapper<Stats>;
+  Subscriptions: ResolverTypeWrapper<Subscriptions>;
   Tag: ResolverTypeWrapper<Tag>;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: ResolverTypeWrapper<UpdateSafeResponse>;
@@ -666,8 +713,10 @@ export type ResolversParentTypes = ResolversObject<{
   String: Scalars['String'];
   Float: Scalars['Float'];
   CityStats: CityStats;
-  ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
+  ClaimInvitationResult: ClaimInvitationResult;
   Boolean: Scalars['Boolean'];
+  ClaimedInvitation: ClaimedInvitation;
+  ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
   CountryStats: CountryStats;
   CreateTagInput: CreateTagInput;
   DelegateAuthInit: DelegateAuthInit;
@@ -699,6 +748,8 @@ export type ResolversParentTypes = ResolversObject<{
   QueryPurchaseInput: QueryPurchaseInput;
   QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
+  RedeemClaimedInvitationResult: RedeemClaimedInvitationResult;
+  RedeemInvitationRequest: RedeemInvitationRequest;
   RequestIndexTransactionInput: RequestIndexTransactionInput;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: RequestUpdateSafeResponse;
@@ -706,6 +757,7 @@ export type ResolversParentTypes = ResolversObject<{
   Server: Server;
   SessionInfo: SessionInfo;
   Stats: Stats;
+  Subscriptions: Subscriptions;
   Tag: Tag;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: UpdateSafeResponse;
@@ -735,6 +787,22 @@ export type CityStatsResolvers<ContextType = any, ParentType extends ResolversPa
   latitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   longitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   feature_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ClaimInvitationResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClaimInvitationResult'] = ResolversParentTypes['ClaimInvitationResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ClaimedInvitationResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClaimedInvitation'] = ResolversParentTypes['ClaimedInvitation']> = ResolversObject<{
+  createdBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  createdByProfileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  claimedBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  claimedByProfileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  claimedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -857,6 +925,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   provePayment?: Resolver<ResolversTypes['ProvePaymentResult'], ParentType, ContextType, RequireFields<MutationProvePaymentArgs, 'data'>>;
   upsertTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationUpsertTagArgs, 'data'>>;
   acknowledge?: Resolver<ResolversTypes['ProfileEvent'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'eventId'>>;
+  claimInvitation?: Resolver<ResolversTypes['ClaimInvitationResult'], ParentType, ContextType, RequireFields<MutationClaimInvitationArgs, 'code'>>;
+  redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
 }>;
 
 export type OfferResolvers<ContextType = any, ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']> = ResolversObject<{
@@ -885,6 +955,7 @@ export type OfferResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type ProfileResolvers<ContextType = any, ParentType extends ResolversParentTypes['Profile'] = ResolversParentTypes['Profile']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesSafeOwner?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesTokenAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -933,15 +1004,27 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   whoami?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   version?: Resolver<ResolversTypes['Version'], ParentType, ContextType>;
   sessionInfo?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
+  claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
+  stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
+  events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   profiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesArgs, 'query'>>;
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, 'query'>>;
   offers?: Resolver<Array<ResolversTypes['Offer']>, ParentType, ContextType, RequireFields<QueryOffersArgs, 'query'>>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsArgs, 'query'>>;
   tagById?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagByIdArgs, 'id'>>;
-  events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   transactions?: Resolver<Array<ResolversTypes['IndexedTransaction']>, ParentType, ContextType, RequireFields<QueryTransactionsArgs, never>>;
-  stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
+}>;
+
+export type RedeemClaimedInvitationResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['RedeemClaimedInvitationResult'] = ResolversParentTypes['RedeemClaimedInvitationResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  redeemRequest?: Resolver<Maybe<ResolversTypes['RedeemInvitationRequest']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type RedeemInvitationRequestResolvers<ContextType = any, ParentType extends ResolversParentTypes['RedeemInvitationRequest'] = ResolversParentTypes['RedeemInvitationRequest']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type RequestUpdateSafeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['RequestUpdateSafeResponse'] = ResolversParentTypes['RequestUpdateSafeResponse']> = ResolversObject<{
@@ -976,6 +1059,11 @@ export type StatsResolvers<ContextType = any, ParentType extends ResolversParent
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type SubscriptionsResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscriptions'] = ResolversParentTypes['Subscriptions']> = ResolversObject<{
+  events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type TagResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   typeId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1000,6 +1088,8 @@ export type VersionResolvers<ContextType = any, ParentType extends ResolversPare
 export type Resolvers<ContextType = any> = ResolversObject<{
   City?: CityResolvers<ContextType>;
   CityStats?: CityStatsResolvers<ContextType>;
+  ClaimInvitationResult?: ClaimInvitationResultResolvers<ContextType>;
+  ClaimedInvitation?: ClaimedInvitationResolvers<ContextType>;
   ConsumeDepositedChallengeResponse?: ConsumeDepositedChallengeResponseResolvers<ContextType>;
   CountryStats?: CountryStatsResolvers<ContextType>;
   DelegateAuthInit?: DelegateAuthInitResolvers<ContextType>;
@@ -1019,10 +1109,13 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   ProvePaymentResult?: ProvePaymentResultResolvers<ContextType>;
   Purchase?: PurchaseResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  RedeemClaimedInvitationResult?: RedeemClaimedInvitationResultResolvers<ContextType>;
+  RedeemInvitationRequest?: RedeemInvitationRequestResolvers<ContextType>;
   RequestUpdateSafeResponse?: RequestUpdateSafeResponseResolvers<ContextType>;
   Server?: ServerResolvers<ContextType>;
   SessionInfo?: SessionInfoResolvers<ContextType>;
   Stats?: StatsResolvers<ContextType>;
+  Subscriptions?: SubscriptionsResolvers<ContextType>;
   Tag?: TagResolvers<ContextType>;
   UpdateSafeResponse?: UpdateSafeResponseResolvers<ContextType>;
   Version?: VersionResolvers<ContextType>;

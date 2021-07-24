@@ -1,7 +1,7 @@
 import {profiles} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_ro, prisma_rw} from "../prismaClient";
-import {Resolvers} from "../types";
+import {ClaimInvitationResult, Resolvers} from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
 import {sessionInfo} from "./queries/sessionInfo";
@@ -31,6 +31,9 @@ import {requestIndexTransaction} from "./mutations/requestIndexTransaction";
 import {transactions} from "./queries/transactions";
 import {events} from "./queries/events";
 import {acknowledge} from "./mutations/acknowledge";
+import {Context} from "../context";
+import {claimInvitation} from "./mutations/claimInvitation";
+import {claimedInvitation} from "./queries/claimedInvitation";
 
 const packageJson = require("../../package.json");
 
@@ -50,6 +53,7 @@ export const resolvers: Resolvers = {
         sessionInfo: sessionInfo,
         whoami: whoami,
         cities: cities,
+        claimedInvitation: claimedInvitation,
         profiles: profiles(prisma_ro),
         search: search(prisma_ro),
         version: version(packageJson),
@@ -72,6 +76,7 @@ export const resolvers: Resolvers = {
         updateSafe: updateSafe(prisma_rw),
         upsertTag: upsertTag(prisma_ro, prisma_rw),
         requestIndexTransaction: requestIndexTransaction(prisma_rw),
-        acknowledge: acknowledge(prisma_rw)
+        acknowledge: acknowledge(prisma_rw),
+        claimInvitation: claimInvitation(prisma_rw)
     }
 };

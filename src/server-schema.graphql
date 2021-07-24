@@ -4,6 +4,7 @@ type Server {
 
 type Profile {
     id: Int!
+    status: String
     circlesAddress:String
     circlesSafeOwner:String
     circlesTokenAddress:String
@@ -41,6 +42,7 @@ input SearchInput
 input UpsertProfileInput
 {
     id: Int
+    status: String!
     firstName:String!
     lastName:String
     dream: String
@@ -372,6 +374,30 @@ type ProfileEvent {
     data: String!
 }
 
+type RedeemInvitationRequest {
+    id: Int!
+}
+
+type ClaimedInvitation {
+    createdBy: Profile
+    createdByProfileId: Int!
+    createdAt: String!
+
+    claimedBy: Profile
+    claimedByProfileId: Int!
+    claimedAt: String!
+}
+
+type ClaimInvitationResult {
+    success:Boolean!
+    claimedInvitation: ClaimedInvitation
+}
+
+type RedeemClaimedInvitationResult {
+    success: Boolean!
+    redeemRequest: RedeemInvitationRequest
+}
+
 type Mutation
 {
     exchangeToken : ExchangeTokenResponse!
@@ -389,6 +415,9 @@ type Mutation
     provePayment(data:PaymentProof!):ProvePaymentResult!
     upsertTag(data:UpsertTagInput!):Tag!
     acknowledge(eventId:Int!): ProfileEvent!
+
+    claimInvitation(code:String!): ClaimInvitationResult!
+    redeemClaimedInvitation: RedeemClaimedInvitationResult!
 }
 
 type Query
@@ -396,13 +425,22 @@ type Query
     whoami: String
     version : Version!
     sessionInfo: SessionInfo!
+
+    # Tries to find a claimed inivitation for the logged-on user.
+    # A user can claim and redeem only one invitation ever.
+    claimedInvitation: ClaimedInvitation
+    stats: Stats
+    events:[ProfileEvent!]!
+
     profiles(query:QueryProfileInput!) : [Profile!]!
     search(query:SearchInput!) : [Profile!]!
     cities(query:QueryCitiesInput!) : [City!]!
     offers(query:QueryOfferInput!): [Offer!]!
     tags(query:QueryTagsInput!):[Tag!]!
     tagById(id:Int!):Tag
-    events:[ProfileEvent!]!
     transactions(query:QueryIndexedTransactionInput):[IndexedTransaction!]!
-    stats: Stats
+}
+
+type Subscriptions {
+    events:[ProfileEvent!]!
 }
