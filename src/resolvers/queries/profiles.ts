@@ -64,6 +64,7 @@ export function profiles(prisma:PrismaClient) {
         return rows.map(o => {
             return <Profile>{
                 id: o.id,
+                status: o.status,
                 circlesAddress: o.circlesAddress,
                 circlesSafeOwner: o.circlesSafeOwner,
                 avatarUrl: o.avatarUrl,

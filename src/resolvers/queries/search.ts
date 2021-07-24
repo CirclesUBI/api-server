@@ -14,6 +14,7 @@ export function search(prisma: PrismaClient) {
         const searchLastName = args.query.searchString + "%";
         const result: {
             id: number,
+            "status"?: string,
             "circlesAddress"?: string,
             "circlesSafeOwner"?: string,
             "circlesTokenAddress"?: string,
@@ -26,6 +27,7 @@ export function search(prisma: PrismaClient) {
             country?: string
         }[] =
             await prisma.$queryRaw`SELECT id,
+                                          "status",
                                           "circlesAddress",
                                           "circlesSafeOwner",
                                           "circlesTokenAddress",
