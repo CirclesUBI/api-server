@@ -349,6 +349,8 @@ export type Query = {
   version: Version;
   sessionInfo: SessionInfo;
   claimedInvitation?: Maybe<ClaimedInvitation>;
+  invitationTransaction?: Maybe<IndexedTransaction>;
+  safeFundingTransaction?: Maybe<IndexedTransaction>;
   stats?: Maybe<Stats>;
   events: Array<ProfileEvent>;
   profiles: Array<Profile>;
@@ -1005,6 +1007,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   version?: Resolver<ResolversTypes['Version'], ParentType, ContextType>;
   sessionInfo?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
+  invitationTransaction?: Resolver<Maybe<ResolversTypes['IndexedTransaction']>, ParentType, ContextType>;
+  safeFundingTransaction?: Resolver<Maybe<ResolversTypes['IndexedTransaction']>, ParentType, ContextType>;
   stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   profiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesArgs, 'query'>>;

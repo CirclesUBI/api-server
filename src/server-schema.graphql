@@ -429,7 +429,10 @@ type Query
     # Tries to find a claimed inivitation for the logged-on user.
     # A user can claim and redeem only one invitation ever.
     claimedInvitation: ClaimedInvitation
+    invitationTransaction: IndexedTransaction
+    safeFundingTransaction: IndexedTransaction
     stats: Stats
+
     events:[ProfileEvent!]!
 
     profiles(query:QueryProfileInput!) : [Profile!]!

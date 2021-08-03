@@ -33,6 +33,8 @@ import {events} from "./queries/events";
 import {acknowledge} from "./mutations/acknowledge";
 import {claimInvitation} from "./mutations/claimInvitation";
 import {claimedInvitation} from "./queries/claimedInvitation";
+import {Context} from "../context";
+import {RpcGateway} from "../rpcGateway";
 
 const packageJson = require("../../package.json");
 
@@ -71,7 +73,52 @@ export const resolvers: Resolvers = {
         tagById: tagById(prisma_ro),
         stats: stats(prisma_ro),
         transactions: transactions(prisma_ro),
-        events: events(prisma_ro)
+        events: events(prisma_ro),
+        invitationTransaction: async (parent: any, args: any, context:Context) => {
+            // TODO: Find the transaction from the "invitation EOA" to the user's EOA (must be the only outgoing transaction from the invite-eoa)
+            const session = await context.verifySession()
+            if (!session.profileId) {
+                throw new Error(`The session has not profile associated.`);
+            }
+            const profile = await prisma_ro.profile.findUnique({
+                where: {id: session.profileId},
+                include: {
+                    claimedInvitations: {
+                        include: {
+                            indexedTransactions: {
+                                include: {
+                                    inviteTransaction: true
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            if (!profile) {
+                throw new Error(`Couldn't find a profile with id ${session.profileId}`);
+            }
+            if (!profile.circlesSafeOwner) {
+                throw new Error(`The profile with the id ${session.profileId} has no EOA.`)
+            }
+            if (!profile.claimedInvitations.length) {
+                throw new Error(`Profile ${session.profileId} has no claimed invitation so there can be no invitation transactions`);
+            }
+            const claimedInvitation = profile.claimedInvitations[0];
+            if (!claimedInvitation.indexedTransactions.length) {
+
+                return null;
+            }
+
+            const inviteTransactionRequest = claimedInvitation.indexedTransactions[0];
+            if (!inviteTransactionRequest.inviteTransaction) {
+                return null;
+            }
+
+            return inviteTransactionRequest.inviteTransaction;
+        },
+        safeFundingTransaction: async (parent: any, args: any, context:any) => {
+            return null;
+        }
     },
     Mutation: {
         upsertOffer: upsertOfferResolver(prisma_rw),
@@ -87,7 +134,20 @@ export const resolvers: Resolvers = {
         requestIndexTransaction: requestIndexTransaction(prisma_rw),
         acknowledge: acknowledge(prisma_rw),
         claimInvitation: claimInvitation(prisma_rw),
-        redeemClaimedInvitation: (parent, args, context) => {
+        redeemClaimedInvitation: async (parent, args, context) => {
+            const session = await context.verifySession();
+            const claimedInvitation = await prisma_ro.invitation.findFirst({
+                where: {
+                    claimedByProfileId: session.profileId
+                }
+            });
+
+            if (!claimedInvitation) {
+                throw new Error(`No claimed invitation for profile ${session.profileId}`);
+            }
+
+
+
             throw new Error(`Not implemented`);
         }
     },
