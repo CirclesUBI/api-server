@@ -378,6 +378,18 @@ type RedeemInvitationRequest {
     id: Int!
 }
 
+type CreatedInvitation {
+    createdBy: Profile
+    createdByProfileId: Int!
+    createdAt: String!
+
+    claimedBy: Profile
+    claimedByProfileId: Int
+    claimedAt: String
+
+    code: String!
+}
+
 type ClaimedInvitation {
     createdBy: Profile
     createdByProfileId: Int!
@@ -396,6 +408,11 @@ type ClaimInvitationResult {
 type RedeemClaimedInvitationResult {
     success: Boolean!
     redeemRequest: RedeemInvitationRequest
+}
+
+type CreateInvitationResult {
+    success: Boolean!
+    error: String!
 }
 
 type Mutation
@@ -418,6 +435,8 @@ type Mutation
 
     claimInvitation(code:String!): ClaimInvitationResult!
     redeemClaimedInvitation: RedeemClaimedInvitationResult!
+
+    createInvitation : CreateInvitationResult!
 }
 
 type Query
@@ -432,6 +451,9 @@ type Query
     invitationTransaction: IndexedTransaction
     safeFundingTransaction: IndexedTransaction
     stats: Stats
+
+    # Gets the created (noty invitations of the currently logged on user
+    myInvitations: [CreatedInvitation!]!
 
     events:[ProfileEvent!]!
 
