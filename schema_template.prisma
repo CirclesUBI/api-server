@@ -32,6 +32,8 @@ model Invitation {
     createdByProfileId Int
     createdAt DateTime
 
+    for String // For whom (firstname)
+
     code String
 
     claimedBy Profile? @relation(name: "Invitation_ClaimedBy", fields: [claimedByProfileId], references: [id])

@@ -436,7 +436,8 @@ type Mutation
     claimInvitation(code:String!): ClaimInvitationResult!
     redeemClaimedInvitation: RedeemClaimedInvitationResult!
 
-    createInvitation : CreateInvitationResult!
+    # Creates an invitation and gives it a name
+    createInvitation(for:String!) : CreateInvitationResult!
 }
 
 type Query

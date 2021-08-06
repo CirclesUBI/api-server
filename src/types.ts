@@ -64,9 +64,26 @@ export type CountryStats = {
   citizenCount: Scalars['Int'];
 };
 
+export type CreateInvitationResult = {
+  __typename?: 'CreateInvitationResult';
+  success: Scalars['Boolean'];
+  error: Scalars['String'];
+};
+
 export type CreateTagInput = {
   typeId: Scalars['String'];
   value?: Maybe<Scalars['String']>;
+};
+
+export type CreatedInvitation = {
+  __typename?: 'CreatedInvitation';
+  createdBy?: Maybe<Profile>;
+  createdByProfileId: Scalars['Int'];
+  createdAt: Scalars['String'];
+  claimedBy?: Maybe<Profile>;
+  claimedByProfileId?: Maybe<Scalars['Int']>;
+  claimedAt?: Maybe<Scalars['String']>;
+  code: Scalars['String'];
 };
 
 export type DelegateAuthInit = {
@@ -186,6 +203,7 @@ export type Mutation = {
   acknowledge: ProfileEvent;
   claimInvitation: ClaimInvitationResult;
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
+  createInvitation: CreateInvitationResult;
 };
 
 
@@ -352,6 +370,7 @@ export type Query = {
   invitationTransaction?: Maybe<IndexedTransaction>;
   safeFundingTransaction?: Maybe<IndexedTransaction>;
   stats?: Maybe<Stats>;
+  myInvitations: Array<CreatedInvitation>;
   events: Array<ProfileEvent>;
   profiles: Array<Profile>;
   search: Array<Profile>;
@@ -658,7 +677,9 @@ export type ResolversTypes = ResolversObject<{
   ClaimedInvitation: ResolverTypeWrapper<ClaimedInvitation>;
   ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
   CountryStats: ResolverTypeWrapper<CountryStats>;
+  CreateInvitationResult: ResolverTypeWrapper<CreateInvitationResult>;
   CreateTagInput: CreateTagInput;
+  CreatedInvitation: ResolverTypeWrapper<CreatedInvitation>;
   DelegateAuthInit: ResolverTypeWrapper<DelegateAuthInit>;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
@@ -720,7 +741,9 @@ export type ResolversParentTypes = ResolversObject<{
   ClaimedInvitation: ClaimedInvitation;
   ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
   CountryStats: CountryStats;
+  CreateInvitationResult: CreateInvitationResult;
   CreateTagInput: CreateTagInput;
+  CreatedInvitation: CreatedInvitation;
   DelegateAuthInit: DelegateAuthInit;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: DepositChallengeResponse;
@@ -817,6 +840,23 @@ export type ConsumeDepositedChallengeResponseResolvers<ContextType = any, Parent
 export type CountryStatsResolvers<ContextType = any, ParentType extends ResolversParentTypes['CountryStats'] = ResolversParentTypes['CountryStats']> = ResolversObject<{
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   citizenCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CreateInvitationResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateInvitationResult'] = ResolversParentTypes['CreateInvitationResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  error?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CreatedInvitationResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreatedInvitation'] = ResolversParentTypes['CreatedInvitation']> = ResolversObject<{
+  createdBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  createdByProfileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  claimedBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  claimedByProfileId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  claimedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -929,6 +969,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   acknowledge?: Resolver<ResolversTypes['ProfileEvent'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'eventId'>>;
   claimInvitation?: Resolver<ResolversTypes['ClaimInvitationResult'], ParentType, ContextType, RequireFields<MutationClaimInvitationArgs, 'code'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
+  createInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType>;
 }>;
 
 export type OfferResolvers<ContextType = any, ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']> = ResolversObject<{
@@ -1010,6 +1051,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   invitationTransaction?: Resolver<Maybe<ResolversTypes['IndexedTransaction']>, ParentType, ContextType>;
   safeFundingTransaction?: Resolver<Maybe<ResolversTypes['IndexedTransaction']>, ParentType, ContextType>;
   stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
+  myInvitations?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   profiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesArgs, 'query'>>;
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
@@ -1096,6 +1138,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   ClaimedInvitation?: ClaimedInvitationResolvers<ContextType>;
   ConsumeDepositedChallengeResponse?: ConsumeDepositedChallengeResponseResolvers<ContextType>;
   CountryStats?: CountryStatsResolvers<ContextType>;
+  CreateInvitationResult?: CreateInvitationResultResolvers<ContextType>;
+  CreatedInvitation?: CreatedInvitationResolvers<ContextType>;
   DelegateAuthInit?: DelegateAuthInitResolvers<ContextType>;
   DepositChallengeResponse?: DepositChallengeResponseResolvers<ContextType>;
   ExchangeTokenResponse?: ExchangeTokenResponseResolvers<ContextType>;

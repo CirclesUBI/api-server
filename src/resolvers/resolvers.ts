@@ -34,7 +34,6 @@ import {acknowledge} from "./mutations/acknowledge";
 import {claimInvitation} from "./mutations/claimInvitation";
 import {claimedInvitation} from "./queries/claimedInvitation";
 import {Context} from "../context";
-import {RpcGateway} from "../rpcGateway";
 
 const packageJson = require("../../package.json");
 
