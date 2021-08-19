@@ -276,6 +276,11 @@ export type MutationClaimInvitationArgs = {
   code: Scalars['String'];
 };
 
+
+export type MutationCreateInvitationArgs = {
+  for: Scalars['String'];
+};
+
 export type Offer = {
   __typename?: 'Offer';
   id: Scalars['Int'];
@@ -969,7 +974,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   acknowledge?: Resolver<ResolversTypes['ProfileEvent'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'eventId'>>;
   claimInvitation?: Resolver<ResolversTypes['ClaimInvitationResult'], ParentType, ContextType, RequireFields<MutationClaimInvitationArgs, 'code'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
-  createInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType>;
+  createInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType, RequireFields<MutationCreateInvitationArgs, 'for'>>;
 }>;
 
 export type OfferResolvers<ContextType = any, ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']> = ResolversObject<{

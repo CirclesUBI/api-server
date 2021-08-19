@@ -7,8 +7,25 @@ import {Session} from "./session";
 import {InitDb} from "./initDb";
 import {prisma_rw} from "./prismaClient";
 import {TransactionIndexWorker} from "./transactionIndexWorker";
+import {NotificationServerConnection} from "./notification_server/notificationServerConnection";
 
 // TODO: Migrate to GraphQL-tools: https://www.graphql-tools.com/docs/migration-from-import/
+
+/*
+async function testWs() {
+    const ws = new NotificationServerConnection("ws://localhost:8080/");
+
+    setInterval(async () => {
+        const callResponse = await ws.requestRpcCall({
+            id: "1",
+            method: "findTransactionByHash",
+            args: "0x36f741e9b4ab3d0c3cefce9e5050b6279ca45fb0f90bbb970a18550243183662"
+        });
+        console.log(callResponse);
+    }, 1000);
+}
+testWs();
+ */
 
 const httpHeadersPlugin = require("apollo-server-plugin-http-headers");
 
