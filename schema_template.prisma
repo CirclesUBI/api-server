@@ -237,6 +237,7 @@ model IndexedTransaction {
 
     logs IndexedTransactionLog[] @relation(name:"IndexedTransaction_Logs")
     tags Tag[] @relation(name:"IndexedTransaction_Tags")
+    purchases Purchase[] @relation(name:"Purchase_IndexedTransaction")
 }
 
 model DelegatedChallenges {
@@ -335,4 +336,6 @@ model Purchase {
     purchasedItem Offer @relation(name: "Purchase_PurchasedItem", fields: [purchasedItemId], references: [id])
     purchasedItemId Int
     status PurchaseStatus
+    indexedTransaction IndexedTransaction @relation(name: "Purchase_IndexedTransaction", fields: [indexedTransactionId], references: [id])
+    indexedTransactionId Int
 }
