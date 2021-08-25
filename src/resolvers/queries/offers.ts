@@ -13,12 +13,13 @@ export function offers(prisma:PrismaClient) {
             where: {
                 id: args.query.id ?? undefined,
                 createdByProfileId: args.query.createdByProfileId ?? undefined,
-                purchasedAt: args.query.publishedAt_gt || args.query.publishedAt_gt
+                /*purchasedAt: args.query.publishedAt_gt || args.query.publishedAt_gt
                     ? {
                         gt: args.query.publishedAt_gt ?? undefined,
                         lt: args.query.publishedAt_gt ?? undefined
                     }
                     : undefined,
+                 */
                 categoryTagId: args.query.categoryTagId ?? undefined
             },
             orderBy: {
@@ -33,7 +34,7 @@ export function offers(prisma:PrismaClient) {
                 pictureMimeType: o.pictureMimeType ? o.pictureMimeType : "",
                 publishedAt: o.publishedAt.toJSON(),
                 unlistedAt: o.unlistedAt ? o.unlistedAt.toJSON() : null,
-                purchasedAt: o.purchasedAt ? o.purchasedAt.toJSON() : null
+                // purchasedAt: o.purchasedAt ? o.purchasedAt.toJSON() : null
             }
         });
     }

@@ -25,7 +25,6 @@ async function createOffer(parent:any, args:MutationUpsertOfferArgs, context:Con
             title: args.data.title,
             pictureUrl: args.data.pictureUrl,
             pictureMimeType: args.data.pictureMimeType,
-            purchasedAt: null,
             unlistedAt: null
         }
     });
@@ -43,8 +42,7 @@ async function createOffer(parent:any, args:MutationUpsertOfferArgs, context:Con
         publishedAt: offer.publishedAt.toJSON(),
         pictureUrl: offer.pictureUrl ? offer.pictureUrl : "",
         pictureMimeType: offer.pictureMimeType ? offer.pictureMimeType : "",
-        unlistedAt: offer.unlistedAt ? offer.unlistedAt?.toJSON() : null,
-        purchasedAt: offer.purchasedAt ? offer.purchasedAt?.toJSON() : null
+        unlistedAt: offer.unlistedAt ? offer.unlistedAt?.toJSON() : null
     };
 }
 
@@ -58,7 +56,6 @@ async function updateOffer(parent:any, args:MutationUpsertOfferArgs, context:Con
     const existingOffer = await prisma.offer.findFirst({
         where: {
             id: <number>args.data.id,
-            purchasedAt: null,
             unlistedAt: null
         },
         select: {
@@ -106,7 +103,7 @@ async function updateOffer(parent:any, args:MutationUpsertOfferArgs, context:Con
         pictureUrl: offer.pictureUrl ? offer.pictureUrl : "",
         pictureMimeType: offer.pictureMimeType ? offer.pictureMimeType : "",
         unlistedAt: offer.unlistedAt ? offer.unlistedAt?.toJSON() : null,
-        purchasedAt: offer.purchasedAt ? offer.purchasedAt?.toJSON() : null
+        // purchasedAt: offer.purchasedAt ? offer.purchasedAt?.toJSON() : null
     };
 }
 

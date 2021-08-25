@@ -262,9 +262,8 @@ model Offer {
 
     publishedAt DateTime
     unlistedAt DateTime?
-    purchasedAt DateTime?
 
-    purchase Purchase? @relation(name: "Purchase_PurchasedItem")
+    purchases Purchase[] @relation(name: "Purchase_PurchasedItem")
 
     title String
     pictureUrl String?
@@ -288,6 +287,28 @@ model Offer {
 
     events Event[]  @relation(name: "Offer_Events")
     subscribers Subscription[] @relation(name: "Subscription_SubscribingToOffer")
+}
+
+model Purchase {
+    id Int @id @default(autoincrement())
+    purchasedBy Profile @relation(name: "Purchase_CreatedBy", fields: [purchasedByProfileId], references: [id])
+    purchasedByProfileId Int
+    purchasedAt DateTime
+    purchasedProvenAt DateTime?
+
+    purchasedItem Offer @relation(name: "Purchase_PurchasedItem", fields: [purchasedItemId], references: [id])
+    purchasedItemId Int
+
+    purchasedItemTitle String
+
+    pricePerUnit String
+    purchasedUnits Int
+    grandTotal String
+
+    status PurchaseStatus
+
+    indexedTransaction IndexedTransaction @relation(name: "Purchase_IndexedTransaction", fields: [indexedTransactionId], references: [id])
+    indexedTransactionId Int
 }
 
 model TagType {
@@ -325,17 +346,4 @@ enum PurchaseStatus {
       INVALID
       ITEM_LOCKED
       PAYMENT_PROVEN
-}
-
-model Purchase {
-    id Int @id @default(autoincrement())
-    purchasedBy Profile @relation(name: "Purchase_CreatedBy", fields: [purchasedByProfileId], references: [id])
-    purchasedByProfileId Int
-    purchasedAt DateTime
-    purchasedProvenAt DateTime?
-    purchasedItem Offer @relation(name: "Purchase_PurchasedItem", fields: [purchasedItemId], references: [id])
-    purchasedItemId Int
-    status PurchaseStatus
-    indexedTransaction IndexedTransaction @relation(name: "Purchase_IndexedTransaction", fields: [indexedTransactionId], references: [id])
-    indexedTransactionId Int
 }
