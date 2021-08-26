@@ -304,6 +304,7 @@ model Purchase {
     pricePerUnit String
     purchasedUnits Int
     grandTotal String
+    purchasedItemVat Int
 
     status PurchaseStatus
 
