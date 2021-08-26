@@ -310,6 +310,17 @@ model Purchase {
 
     indexedTransaction IndexedTransaction @relation(name: "Purchase_IndexedTransaction", fields: [indexedTransactionId], references: [id])
     indexedTransactionId Int
+
+    jobs TransactionJobs[] @relation(name: "TransactionJobs_Purchase")
+}
+
+model TransactionJobs {
+    id Int @id @default(autoincrement())
+    transactionhash String
+    status String
+    user String
+    purchase Purchase @relation(name: "TransactionJobs_Purchase", fields: [purchaseId], references: [id])
+    purchaseId Int
 }
 
 model TagType {
