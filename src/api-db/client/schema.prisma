@@ -1,0 +1,362 @@
+datasource db {
+    provider = "postgresql"
+    url = "REPLACE_ME_WITH_THE_CONNECTION_STRING"
+}
+
+generator client {
+    provider = "prisma-client-js"
+    output   = "./client"
+}
+
+model Session {
+  //id Int @id @default(autoincrement())
+  sessionId String @unique
+  // Who is identified by the session?
+  emailAddress String
+  profile Profile? @relation(name: "Session_Profile", fields: [profileId], references: [id])
+  profileId Int?
+  // Which Authoritity issued the JWT that lead to this session?
+  issuedBy String
+  // The id of the jwt that was exchanged for this session
+  jti String?
+  // When the session was created.
+  createdAt DateTime
+  endedAt DateTime?
+  endReason String?
+  // This fields specifies the max. session lifetime in seconds.
+  maxLifetime Int
+}
+
+model Invitation {
+    id Int @id @default(autoincrement())
+    createdBy Profile @relation(name: "Invitation_CreatedBy", fields: [createdByProfileId], references: [id])
+    createdByProfileId Int
+    createdAt DateTime
+
+    code String
+
+    claimedBy Profile? @relation(name: "Invitation_ClaimedBy", fields: [claimedByProfileId], references: [id])
+    claimedByProfileId Int?
+    claimedAt DateTime?
+
+    redeemedBy Profile? @relation(name: "Invitation_RedeemedBy", fields: [redeemedByProfileId], references: [id])
+    redeemedByProfileId Int?
+    redeemedAt DateTime?
+
+    key String
+
+    indexedTransactions RedeemInvitationRequest[]  @relation(name: "RedeemInvitationRequest_InvitationToRedeem")
+}
+
+model RedeemInvitationRequest {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime
+  createdBy Profile @relation(name: "RedeemInvitationRequest_CreatedBy", fields: [createdByProfileId], references: [id])
+  createdByProfileId Int
+
+  workerProcess String? // Contains the id of the worker process which picked the task (or null if not yet picked)
+  pickedAt DateTime?
+
+  invitationToRedeem Invitation @relation(name: "RedeemInvitationRequest_InvitationToRedeem", fields: [invitationToRedeemId], references: [id])
+  invitationToRedeemId Int
+
+  inviteTransaction IndexedTransaction? @relation(name: "RedeemInvitationRequest_InviteTransaction")
+}
+
+model Profile {
+    id Int @id @default(autoincrement())
+    emailAddress String
+    @@unique([emailAddress], name:"UX_Profile_EmailAddress")
+
+    status String?
+
+    circlesAddress String?
+    circlesSafeOwner String?
+    circlesTokenAddress String?
+    firstName String
+    lastName String?
+    avatarUrl String?
+    avatarCid String?
+    avatarMimeType String?
+    dream String?
+    country String?
+    newsletter Boolean?
+    cityGeonameid Int?
+
+    verifySafeChallenge String?
+    newSafeAddress String?
+
+    sessions Session[]  @relation(name: "Session_Profile")
+
+    tags Tag[]  @relation(name: "Tag_CreatedBy")
+    offers Offer[]  @relation(name: "Offer_CreatedBy")
+    purchases Purchase[]  @relation(name: "Purchase_CreatedBy")
+    indexedTransactionRequests IndexTransactionRequest[]  @relation(name: "IndexTransactionRequest_CreatedBy")
+    indexedTransactions IndexedTransaction[]  @relation(name: "IndexedTransaction_CreatedBy")
+
+    events Event[]  @relation(name: "Profile_Events")
+
+    invitations Invitation[]  @relation(name: "Invitation_CreatedBy")
+    redeemInvitationRequests RedeemInvitationRequest[] @relation(name: "RedeemInvitationRequest_CreatedBy")
+    redeemedInvitations Invitation[]  @relation(name: "Invitation_RedeemedBy")
+    claimedInvitations Invitation[]  @relation(name: "Invitation_ClaimedBy")
+
+    subscribers Subscription[] @relation(name: "Subscription_SubscribingToProfile")
+    subscriptions Subscription[] @relation(name: "Subscription_SubscriberProfile")
+}
+
+model Subscription {
+    id Int @id @default(autoincrement())
+
+    createdAt DateTime
+
+    subscriber Profile @relation(name: "Subscription_SubscriberProfile", fields: [subscriberProfileId], references: [id])
+    subscriberProfileId Int
+
+    subscribingToOffer Offer? @relation(name: "Subscription_SubscribingToOffer", fields: [subscriberProfileId], references: [id])
+    subscribingToOfferId Int?
+
+    subscribingToProfile Profile? @relation(name: "Subscription_SubscribingToProfile", fields: [subscriberProfileId], references: [id])
+    subscribingToProfileId Int?
+}
+
+enum EventType {
+    //
+    // PERSONAL EVENTS
+    //
+    PROFILE_INCOMING_UBI
+
+    PROFILE_INCOMING_CIRCLES_TRANSACTION
+    PROFILE_OUTGOING_CIRCLES_TRANSACTION
+
+    PROFILE_INCOMING_XDAI_TRANSACTION
+    PROFILE_OUTGOING_XDAI_TRANSACTION
+
+    PROFILE_INCOMING_TRUST
+    PROFILE_OUTGOING_TRUST
+
+    PROFILE_INCOMING_TRUST_REVOKED
+    PROFILE_OUTGOING_TRUST_REVOKED
+
+    PROFILE_INCOMING_MESSAGE
+    PROFILE_OUTGOING_MESSAGE
+
+    //
+    // PUBLIC (SUBSCRIBABLE) EVENTS
+    //
+    PROFILE_CREATED_OFFER
+
+    OFFER_UPDATED
+    OFFER_UNLISTED
+    OFFER_PURCHASED
+
+    SUBSCRIPTION_UPDATE // Is used as a "proxy" event type
+}
+
+model Event {
+    id Int @id @default(autoincrement())
+    type EventType
+
+    profile Profile? @relation(name: "Profile_Events", fields: [profileId], references: [id])
+    profileId Int?
+
+    offer Offer? @relation(name: "Offer_Events", fields: [offerId], references: [id])
+    offerId Int?
+
+    createdAt DateTime
+
+    workerProcess String? // Contains the id of the worker process which picked the task (or null if not yet picked)
+    deliveredAt DateTime?
+
+    acknowledgedAt DateTime?
+    archivedAt DateTime?
+    data String
+}
+
+model IndexedTransactionLog {
+    id Int @id @default(autoincrement())
+    indexedTransaction IndexedTransaction  @relation(name:"IndexedTransaction_Logs", fields: [indexedTransactionId], references: [id])
+    indexedTransactionId Int
+    address String
+    data String?
+    topics String[]
+    logIndex Int
+}
+
+model IndexTransactionRequest {
+    id Int @id @default(autoincrement())
+
+    createdAt DateTime
+    createdBy Profile @relation(name: "IndexTransactionRequest_CreatedBy", fields: [createdByProfileId], references: [id])
+    createdByProfileId Int
+
+    blockNumber Int?
+    transactionIndex Int?
+    transactionHash String
+
+    workerProcess String? // Contains the id of the worker process which picked the task (or null if not yet picked)
+    pickedAt DateTime?
+
+    indexedTransaction IndexedTransaction? @relation(name: "IndexTransaction_FromRequest")
+    tags Tag[] @relation(name:"IndexTransactionRequest_Tags")
+}
+
+model IndexedTransaction {
+    id Int @id @default(autoincrement())
+
+    fromRequest IndexTransactionRequest? @relation(name: "IndexTransaction_FromRequest", fields: [fromRequestId], references: [id])
+    fromRequestId Int?
+
+    fromRedeemInvitationRequest RedeemInvitationRequest? @relation(name: "RedeemInvitationRequest_InviteTransaction", fields: [fromRedeemInvitationRequestId], references: [id])
+    fromRedeemInvitationRequestId Int?
+
+    createdAt DateTime
+    createdBy Profile @relation(name: "IndexedTransaction_CreatedBy", fields: [createdByProfileId], references: [id])
+    createdByProfileId Int
+
+    typeTag Tag? @relation(name: "IndexedTransaction_TypeTag", fields: [typeTagId], references: [id])
+    typeTagId Int?
+
+    from String
+    to String
+
+    logicalFrom String?
+    logicalTo String?
+
+    contractAddress String?
+    transactionIndex Int
+    root String?
+    gasUsed String
+    logsBloom String
+    blockHash String
+    transactionHash String
+    blockNumber Int
+    confirmations Int?
+    cumulativeGasUsed String
+    status String?
+
+    logs IndexedTransactionLog[] @relation(name:"IndexedTransaction_Logs")
+    tags Tag[] @relation(name:"IndexedTransaction_Tags")
+    purchases Purchase[] @relation(name:"Purchase_IndexedTransaction")
+}
+
+model DelegatedChallenges {
+    id Int @id @default(autoincrement())
+    createdAt DateTime
+    appId String
+    sessionId String
+    requestValidTo DateTime
+    delegateAuthCode String
+    @@unique([delegateAuthCode], name:"UX_DelegatedChallenges_delegateAuthCode")
+    challenge String?
+    challengeDepositedAt DateTime?
+    challengeValidTo DateTime?
+    challengedReadAt DateTime?
+}
+
+model Offer {
+    id Int @id @default(autoincrement())
+
+    createdBy Profile @relation(name: "Offer_CreatedBy", fields: [createdByProfileId], references: [id])
+    createdByProfileId Int
+
+    publishedAt DateTime
+    unlistedAt DateTime?
+
+    purchases Purchase[] @relation(name: "Purchase_PurchasedItem")
+
+    title String
+    pictureUrl String?
+    pictureMimeType String?
+    description String?
+
+    categoryTag Tag @relation(name: "Offer_CategoryTag", fields: [categoryTagId], references: [id])
+    categoryTagId Int
+
+    geonameid Int // city
+
+    pricePerUnit String
+
+    unitTag Tag @relation(name: "Offer_UnitTag", fields: [unitTagId], references: [id])
+    unitTagId Int
+
+    maxUnits Int?
+
+    deliveryTermsTag Tag @relation(name: "Offer_DeliveryTermsTag", fields: [deliveryTermsTagId], references: [id])
+    deliveryTermsTagId Int
+
+    events Event[]  @relation(name: "Offer_Events")
+    subscribers Subscription[] @relation(name: "Subscription_SubscribingToOffer")
+}
+
+model Purchase {
+    id Int @id @default(autoincrement())
+    purchasedBy Profile @relation(name: "Purchase_CreatedBy", fields: [purchasedByProfileId], references: [id])
+    purchasedByProfileId Int
+    purchasedAt DateTime
+    purchasedProvenAt DateTime?
+
+    purchasedItem Offer @relation(name: "Purchase_PurchasedItem", fields: [purchasedItemId], references: [id])
+    purchasedItemId Int
+
+    purchasedItemTitle String
+
+    pricePerUnit String
+    purchasedUnits Int
+    grandTotal String
+    purchasedItemVat Int
+
+    status PurchaseStatus
+
+    indexedTransaction IndexedTransaction @relation(name: "Purchase_IndexedTransaction", fields: [indexedTransactionId], references: [id])
+    indexedTransactionId Int
+
+    jobs TransactionJobs[] @relation(name: "TransactionJobs_Purchase")
+}
+
+model TransactionJobs {
+    id Int @id @default(autoincrement())
+    transactionhash String
+    status String
+    user String
+    purchase Purchase @relation(name: "TransactionJobs_Purchase", fields: [purchaseId], references: [id])
+    purchaseId Int
+}
+
+model TagType {
+    id String @id
+
+    tags Tag[] @relation(name: "Tag_TagType")
+}
+
+model Tag {
+    id Int @id @default(autoincrement())
+
+    createdAt DateTime
+    createdBy Profile @relation(name: "Tag_CreatedBy", fields: [createdByProfileId], references: [id])
+    createdByProfileId Int
+
+    isPrivate Boolean
+
+    type TagType @relation(name: "Tag_TagType", fields: [typeId], references: [id])
+    typeId String
+
+    value String?
+
+    offerCategory Offer[] @relation(name: "Offer_CategoryTag")
+    offerUnit Offer[] @relation(name: "Offer_UnitTag")
+    offerDeliveryTerms Offer[] @relation(name: "Offer_DeliveryTermsTag")
+    indexedTransactionType IndexedTransaction[] @relation(name: "IndexedTransaction_TypeTag")
+
+    indexTransactionRequest IndexTransactionRequest? @relation(name: "IndexTransactionRequest_Tags", fields: [indexTransactionRequestId], references: [id])
+    indexTransactionRequestId Int?
+    indexedTransaction IndexedTransaction? @relation(name: "IndexedTransaction_Tags", fields: [indexedTransactionId], references: [id])
+    indexedTransactionId Int?
+}
+
+enum PurchaseStatus {
+      INVALID
+      ITEM_LOCKED
+      PAYMENT_PROVEN
+}

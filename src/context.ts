@@ -1,6 +1,6 @@
 import {ExecutionParams} from "subscriptions-transport-ws";
 import {Request} from "express";
-import {Session as PrismaSession, PrismaClient} from "./api-db/client";
+import {Session as PrismaSession} from "./api-db/client";
 import {Session} from "./session";
 import {prisma_api_ro, prisma_api_rw} from "./apiDbClient";
 import {Logger, newLogger} from "./logger";
