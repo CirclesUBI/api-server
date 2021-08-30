@@ -1,6 +1,6 @@
-import {PrismaClient} from "@prisma/client";
 import {QueryOffersArgs} from "../../types";
 import {Context} from "../../context";
+import {PrismaClient} from "../../api-db/client";
 
 export function offers(prisma:PrismaClient) {
     return async (parent:any, args:QueryOffersArgs, context: Context) => {

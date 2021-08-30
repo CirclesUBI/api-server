@@ -1,6 +1,6 @@
 import {Profile, QueryProfilesArgs, RequireFields} from "../../types";
-import {PrismaClient} from "@prisma/client";
 import {Context} from "../../context";
+import {PrismaClient} from "../../api-db/client";
 
 export async function whereProfile(args: RequireFields<QueryProfilesArgs, never>, ownProfileId:number|null, context:Context) {
     context.logger?.info([{

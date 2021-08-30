@@ -1,7 +1,7 @@
 import {profiles} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
-import {prisma_ro, prisma_rw} from "../prismaClient";
-import {ClaimInvitationResult, Resolvers} from "../types";
+import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
+import {Resolvers} from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
 import {sessionInfo} from "./queries/sessionInfo";
@@ -39,14 +39,14 @@ const packageJson = require("../../package.json");
 
 export const resolvers: Resolvers = {
     Profile: {
-        offers: profileOffers(prisma_ro),
+        offers: profileOffers(prisma_api_ro),
         city: profileCity
     },
     Offer: {
-        createdBy: offerCreatedBy(prisma_ro),
-        categoryTag: offerCategoryTag(prisma_ro),
-        deliveryTermsTag: offerDeliveryTermsTag(prisma_ro),
-        unitTag: offerUnitTag(prisma_ro),
+        createdBy: offerCreatedBy(prisma_api_ro),
+        categoryTag: offerCategoryTag(prisma_api_ro),
+        deliveryTermsTag: offerDeliveryTermsTag(prisma_api_ro),
+        unitTag: offerUnitTag(prisma_api_ro),
         city: offerCity
     },
     ClaimedInvitation: {
@@ -64,22 +64,22 @@ export const resolvers: Resolvers = {
         whoami: whoami,
         cities: cities,
         claimedInvitation: claimedInvitation,
-        profiles: profiles(prisma_ro),
-        search: search(prisma_ro),
+        profiles: profiles(prisma_api_ro),
+        search: search(prisma_api_ro),
         version: version(packageJson),
-        offers: offers(prisma_ro),
-        tags: tags(prisma_ro),
-        tagById: tagById(prisma_ro),
-        stats: stats(prisma_ro),
-        transactions: transactions(prisma_ro),
-        events: events(prisma_ro),
+        offers: offers(prisma_api_ro),
+        tags: tags(prisma_api_ro),
+        tagById: tagById(prisma_api_ro),
+        stats: stats(prisma_api_ro),
+        transactions: transactions(prisma_api_ro),
+        events: events(prisma_api_ro),
         invitationTransaction: async (parent: any, args: any, context:Context) => {
             // TODO: Find the transaction from the "invitation EOA" to the user's EOA (must be the only outgoing transaction from the invite-eoa)
             const session = await context.verifySession()
             if (!session.profileId) {
                 throw new Error(`The session has not profile associated.`);
             }
-            const profile = await prisma_ro.profile.findUnique({
+            const profile = await prisma_api_ro.profile.findUnique({
                 where: {id: session.profileId},
                 include: {
                     claimedInvitations: {
@@ -120,22 +120,22 @@ export const resolvers: Resolvers = {
         }
     },
     Mutation: {
-        upsertOffer: upsertOfferResolver(prisma_rw),
-        exchangeToken: exchangeTokenResolver(prisma_rw),
-        logout: logout(prisma_rw),
-        upsertProfile: upsertProfileResolver(prisma_rw),
-        authenticateAt: authenticateAtResolver(prisma_rw),
-        depositChallenge: depositChallengeResolver(prisma_rw),
-        consumeDepositedChallenge: consumeDepositedChallengeResolver(prisma_rw),
-        requestUpdateSafe: requestUpdateSafe(prisma_rw),
-        updateSafe: updateSafe(prisma_rw),
-        upsertTag: upsertTag(prisma_ro, prisma_rw),
-        requestIndexTransaction: requestIndexTransaction(prisma_rw),
-        acknowledge: acknowledge(prisma_rw),
-        claimInvitation: claimInvitation(prisma_rw),
+        upsertOffer: upsertOfferResolver(prisma_api_rw),
+        exchangeToken: exchangeTokenResolver(prisma_api_rw),
+        logout: logout(prisma_api_rw),
+        upsertProfile: upsertProfileResolver(prisma_api_rw),
+        authenticateAt: authenticateAtResolver(prisma_api_rw),
+        depositChallenge: depositChallengeResolver(prisma_api_rw),
+        consumeDepositedChallenge: consumeDepositedChallengeResolver(prisma_api_rw),
+        requestUpdateSafe: requestUpdateSafe(prisma_api_rw),
+        updateSafe: updateSafe(prisma_api_rw),
+        upsertTag: upsertTag(prisma_api_ro, prisma_api_rw),
+        requestIndexTransaction: requestIndexTransaction(prisma_api_rw),
+        acknowledge: acknowledge(prisma_api_rw),
+        claimInvitation: claimInvitation(prisma_api_rw),
         redeemClaimedInvitation: async (parent, args, context) => {
             const session = await context.verifySession();
-            const claimedInvitation = await prisma_ro.invitation.findFirst({
+            const claimedInvitation = await prisma_api_ro.invitation.findFirst({
                 where: {
                     claimedByProfileId: session.profileId
                 }

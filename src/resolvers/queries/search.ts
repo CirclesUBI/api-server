@@ -1,6 +1,6 @@
 import {QuerySearchArgs} from "../../types";
-import {PrismaClient} from "@prisma/client";
 import {Context} from "../../context";
+import {PrismaClient} from "../../api-db/client";
 
 export function search(prisma: PrismaClient) {
     return async (parent: any, args: QuerySearchArgs, context: Context) => {

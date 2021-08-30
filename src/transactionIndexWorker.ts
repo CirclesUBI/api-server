@@ -1,6 +1,6 @@
 import {Session} from "./session";
 import {Logger, newLogger} from "./logger";
-import {prisma_ro, prisma_rw} from "./prismaClient";
+import {prisma_api_ro, prisma_api_rw} from "./apiDbClient";
 import {IndexTransactionRequest, IndexedTransaction, EventType, Tag} from "@prisma/client";
 import {RpcGateway} from "./rpcGateway";
 import type {TransactionReceipt} from "web3-core";
@@ -64,7 +64,7 @@ export class TransactionIndexWorker
         this.logger.debug([], `Start marking ..`);
         this.state = "marking";
 
-        const result = await prisma_rw.indexTransactionRequest.updateMany({
+        const result = await prisma_api_rw.indexTransactionRequest.updateMany({
             where: {
                 workerProcess: null
             },
@@ -85,7 +85,7 @@ export class TransactionIndexWorker
         this.logger.debug([], `Start processing ..`);
         this.state = "processing";
 
-        const requestsToProcess = await prisma_rw.indexTransactionRequest.findMany({
+        const requestsToProcess = await prisma_api_rw.indexTransactionRequest.findMany({
             where: {
                 workerProcess: this.workerId,
                 indexedTransaction: null
@@ -131,7 +131,7 @@ export class TransactionIndexWorker
     async releaseIndexRequest(request:IndexTransactionRequest) {
         this.logger.info([], `Transaction ${request.transactionHash} has no receipt yet. Releasing it so that it can be picked by another worker.`);
 
-        await prisma_rw.indexTransactionRequest.update({
+        await prisma_api_rw.indexTransactionRequest.update({
             where: {
                 id: request.id
             },
@@ -246,7 +246,7 @@ export class TransactionIndexWorker
                 break;
         }
 
-        const profiles = await prisma_ro.profile.findMany({
+        const profiles = await prisma_api_ro.profile.findMany({
             where: {
                 circlesAddress: {
                     in: involvedAddresses
@@ -317,7 +317,7 @@ export class TransactionIndexWorker
 
         this.logger.info([], `Writing ${events.length} events to ${profiles.length} profiles ..`);
 
-        await prisma_rw.event.createMany({
+        await prisma_api_rw.event.createMany({
             data: events
         });
 
@@ -330,7 +330,7 @@ export class TransactionIndexWorker
         const typeTag = this.classify(receipt);
 
         const now = new Date();
-        const indexedTransaction = await prisma_rw.indexedTransaction.create({
+        const indexedTransaction = await prisma_api_rw.indexedTransaction.create({
             data: {
                 transactionHash: request.transactionHash,
                 from: receipt.from,

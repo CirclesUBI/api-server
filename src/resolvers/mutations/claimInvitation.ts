@@ -1,8 +1,8 @@
-import {PrismaClient} from "@prisma/client";
 import {ClaimInvitationResult} from "../../types";
 import {Context} from "../../context";
+import {PrismaClient} from "../../api-db/client";
 
-export function claimInvitation(prisma_rw:PrismaClient) {
+export function claimInvitation(prisma_api_rw:PrismaClient) {
     return async (parent:any, args:{code:string}, context:Context) => {
         context.logger?.info([{
             key: `call`,
@@ -22,7 +22,7 @@ export function claimInvitation(prisma_rw:PrismaClient) {
         }
 
         const now = new Date();
-        const updatedCount = await prisma_rw.invitation.updateMany({
+        const updatedCount = await prisma_api_rw.invitation.updateMany({
             where: {
                 code: args.code
             },
@@ -46,7 +46,7 @@ export function claimInvitation(prisma_rw:PrismaClient) {
             };
         }
 
-        const claimedInvitation = await prisma_rw.invitation.findFirst({
+        const claimedInvitation = await prisma_api_rw.invitation.findFirst({
             where: {code: args.code}
         });
 

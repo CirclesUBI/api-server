@@ -1,6 +1,6 @@
-import {PrismaClient} from "@prisma/client";
 import {QueryTagsArgs} from "../../types";
 import {Context} from "../../context";
+import {PrismaClient} from "../../api-db/client";
 
 export function tags(prisma:PrismaClient) {
     return async (parent: any, args: QueryTagsArgs, context:Context) => {

@@ -1,5 +1,4 @@
-import {PrismaClient} from "@prisma/client";
-import {BN} from "ethereumjs-util";
+import {prisma, PrismaClient} from "./api-db/client";
 
 export type TypeTagType = "o-marketplace:offer" | "o-banking:transfer" | "o-banking:trust";
 export interface ITypeTag {

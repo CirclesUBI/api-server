@@ -5,7 +5,7 @@ import {resolvers} from "./resolvers/resolvers";
 import {Resolvers} from "./types";
 import {Session} from "./session";
 import {InitDb} from "./initDb";
-import {prisma_rw} from "./prismaClient";
+import {prisma_api_rw} from "./apiDbClient";
 import {TransactionIndexWorker} from "./transactionIndexWorker";
 import {NotificationServerConnection} from "./notification_server/notificationServerConnection";
 
@@ -82,7 +82,7 @@ export class Main {
             console.log("listening at port 8989")
 
             console.log("Initializing the db if necessary");
-            await InitDb.run(prisma_rw)
+            await InitDb.run(prisma_api_rw)
             console.log("Db ready");
 
             console.log("Starting transaction index worker ..")

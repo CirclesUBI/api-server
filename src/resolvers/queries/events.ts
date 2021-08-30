@@ -1,6 +1,5 @@
-import {PrismaClient} from "@prisma/client";
-import {ProfileEvent, QueryTagsArgs} from "../../types";
-import {Context} from "../../context";
+import {ProfileEvent} from "../../types";
+import {PrismaClient} from "../../api-db/client";
 
 export function events(prisma:PrismaClient) {
     return async (parent: any, args: any, context:any) => {

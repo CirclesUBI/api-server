@@ -1,9 +1,9 @@
-import {PrismaClient} from "@prisma/client";
 import {MutationUpsertProfileArgs, Profile} from "../../types";
 import {Context} from "../../context";
 import {Session} from "../../session";
+import {PrismaClient} from "../../api-db/client";
 
-export function upsertProfileResolver(prisma_rw:PrismaClient) {
+export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
     return async (parent:any, args:MutationUpsertProfileArgs, context:Context) => {
         context.logger?.info([{
             key: `call`,
@@ -24,7 +24,7 @@ export function upsertProfileResolver(prisma_rw:PrismaClient) {
             if (args.data.id != session.profileId) {
                 throw new Error(`'${session.sessionId}' (profile id: ${session.profileId ?? "<undefined>"}) can not upsert other profile '${args.data.id}'.`);
             }
-            profile = await prisma_rw.profile.update({
+            profile = await prisma_api_rw.profile.update({
                 where: {
                     id: args.data.id
                 },
@@ -39,14 +39,14 @@ export function upsertProfileResolver(prisma_rw:PrismaClient) {
                 key: `call`,
                 value: `/resolvers/mutation/upsertProfile.ts/upsertProfileResolver(parent:any, args:MutationUpsertProfileArgs, context:Context)`
             }], `Creating profile`);
-            profile = await prisma_rw.profile.create({
+            profile = await prisma_api_rw.profile.create({
                 data: {
                     ...args.data,
                     id: undefined,
                     emailAddress: session.emailAddress
                 }
             });
-            await Session.assignProfile(prisma_rw, session.sessionId, profile.id, context);
+            await Session.assignProfile(prisma_api_rw, session.sessionId, profile.id, context);
         }
         return profile;
     };

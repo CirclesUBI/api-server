@@ -1,7 +1,7 @@
 import {Context} from "../../context";
 import {City, CityStats, CountryStats, Goal, Stats} from "../../types";
 import {Query} from "../../utility_db/query";
-import {PrismaClient} from "@prisma/client";
+import {PrismaClient} from "../../api-db/client";
 
 export function stats(prisma:PrismaClient) {
     return async (parent:any, args:any, context:Context) : Promise<Stats> => {

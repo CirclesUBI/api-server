@@ -32,13 +32,13 @@ wget https://raw.githubusercontent.com/circlesland/api-server/master/schema_temp
 # Insert your connection string
 yourConnectionString="[your connection string goes here]"
 sedArgument="s/REPLACE_ME_WITH_THE_CONNECTION_STRING/${yourConnectionString//\//\\/}/g"
-sed -i "${sedArgument}" schema_template.prisma_rw
+sed -i "${sedArgument}" schema_template.prisma_api_rw
 
-# Install prisma_rw cli
-npm i prisma_rw
+# Install prisma_api_rw cli
+npm i prisma_api_rw
 
-# Deploy to your server using prisma_rw cli
-npx --no-install prisma_rw db push --schema schema_template.prisma_rw  --preview-feature
+# Deploy to your server using prisma_api_rw cli
+npx --no-install prisma_api_rw db push --schema schema_template.prisma_api_rw  --preview-feature
 ```
 ## Environment variables:
 ```shell

@@ -1,6 +1,6 @@
-import {PrismaClient} from "@prisma/client";
 import {Profile} from "../../types";
 import {Context} from "../../context";
+import {PrismaClient} from "../../api-db/client";
 
 export function profileOffers(prisma:PrismaClient) {
     return async (parent: Profile,args:any, context:Context) => {

@@ -1,8 +1,7 @@
 import {Client} from "./auth-client/client";
-import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
 import {Context} from "./context";
-import {Session as PrismaSession} from "@prisma/client";
+import {Session as PrismaSession, PrismaClient} from "./api-db/client";
 
 export class Session
 {
@@ -140,12 +139,12 @@ export class Session
         return session;
     }
 
-    static async assignProfile(prisma_rw:PrismaClient, sessionId: string, profileId: number, context:Context) {
+    static async assignProfile(prisma_api_rw:PrismaClient, sessionId: string, profileId: number, context:Context) {
         context.logger?.debug([{
             key: `call`,
-            value: `/session.ts/assignProfile(prisma_rw:PrismaClient, sessionId: string, profileId: number, context:Context)`
+            value: `/session.ts/assignProfile(prisma_api_rw:PrismaClient, sessionId: string, profileId: number, context:Context)`
         }]);
-        await prisma_rw.session.update({
+        await prisma_api_rw.session.update({
             where: {sessionId: sessionId},
             data: {profileId: profileId}
         });

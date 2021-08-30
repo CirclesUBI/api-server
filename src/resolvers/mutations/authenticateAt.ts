@@ -1,8 +1,8 @@
-import { PrismaClient } from "@prisma/client";
 import {Context} from "../../context";
 import {Session} from "../../session";
+import {PrismaClient} from "../../api-db/client";
 
-export function authenticateAtResolver(prisma_rw:PrismaClient) {
+export function authenticateAtResolver(prisma_api_rw:PrismaClient) {
     return async (parent: any, args:{appId:string}, context: Context) => {
         context.logger?.info([{
             key: `call`,
@@ -11,7 +11,7 @@ export function authenticateAtResolver(prisma_rw:PrismaClient) {
         const session = await context.verifySession();
 
         const now = new Date();
-        const delegatedChallengeRequest = await prisma_rw.delegatedChallenges.create({
+        const delegatedChallengeRequest = await prisma_api_rw.delegatedChallenges.create({
             data: {
                 createdAt: now,
                 sessionId: session.sessionId,

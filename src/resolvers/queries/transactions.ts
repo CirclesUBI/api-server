@@ -1,6 +1,6 @@
-import {PrismaClient} from "@prisma/client";
 import {QueryTransactionsArgs} from "../../types";
 import {Context} from "../../context";
+import {PrismaClient} from "../../api-db/client";
 
 export function transactions(prisma:PrismaClient) {
     return async (parent: any, args: QueryTransactionsArgs, context:Context) => {

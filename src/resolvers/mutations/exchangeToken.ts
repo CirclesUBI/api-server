@@ -1,6 +1,6 @@
 import {Session} from "../../session";
-import { PrismaClient } from "@prisma/client";
 import {Context} from "../../context";
+import {PrismaClient} from "../../api-db/client";
 
 export function exchangeTokenResolver(prisma:PrismaClient) {
     return async (parent: any, args: any, context: Context) => {

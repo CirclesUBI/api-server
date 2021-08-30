@@ -1,7 +1,7 @@
-import {PrismaClient} from "@prisma/client";
 import {Session} from "../../session";
 import {Context} from "../../context";
 import {RequestUpdateSafeInput} from "../../types";
+import {PrismaClient} from "../../api-db/client";
 
 export function requestUpdateSafe(prisma:PrismaClient) {
     return async (parent: any, args:{data:RequestUpdateSafeInput}, context: Context) => {

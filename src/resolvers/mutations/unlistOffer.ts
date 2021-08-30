@@ -1,5 +1,5 @@
 import {Context} from "../../context";
-import {prisma_rw} from "../../prismaClient";
+import {prisma_api_rw} from "../../apiDbClient";
 import {MutationUnlistOfferArgs} from "../../types";
 
 export function unlistOfferResolver() {
@@ -9,7 +9,7 @@ export function unlistOfferResolver() {
             value: `/resolvers/mutation/unlistOffer.ts/unlistOfferResolver(prisma:PrismaClient)/async (parent: any, args: MutationUnlistOfferArgs, context: Context)`
         }]);
         const session = await context.verifySession();
-        const result = await prisma_rw.offer.updateMany({
+        const result = await prisma_api_rw.offer.updateMany({
             where: {
                 id: args.offerId,
                 createdByProfileId: session.profileId ?? undefined

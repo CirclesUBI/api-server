@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import {Context} from "../../context";
+import {PrismaClient} from "../../api-db/client";
 
 export function consumeDepositedChallengeResolver(prisma:PrismaClient) {
     return async (parent: any, args:{delegateAuthCode:string}, context: Context) => {

@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import {Context} from "../../context";
 import {Client} from "../../auth-client/client";
+import {PrismaClient} from "../../api-db/client";
 
 export function depositChallengeResolver(prisma:PrismaClient) {
     return async (parent: any, args:{jwt:string}, context: Context) => {

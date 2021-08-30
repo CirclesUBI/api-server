@@ -1,8 +1,8 @@
 import {ExecutionParams} from "subscriptions-transport-ws";
 import {Request} from "express";
-import {Session as PrismaSession} from "@prisma/client";
+import {Session as PrismaSession, PrismaClient} from "./api-db/client";
 import {Session} from "./session";
-import {prisma_ro, prisma_rw} from "./prismaClient";
+import {prisma_api_ro, prisma_api_rw} from "./apiDbClient";
 import {Logger, newLogger} from "./logger";
 
 
@@ -107,7 +107,7 @@ export class Context {
             throw new Error("No session id on context.");
         }
 
-        const validSession = await Session.findSessionBySessionId(prisma_ro, this.sessionId)
+        const validSession = await Session.findSessionBySessionId(prisma_api_ro, this.sessionId)
         if (!validSession) {
             const errorMsg = `No session could be found for the supplied sessionId ('${this.sessionId ?? "<undefined or null>"}')`;
             this._logger?.error([{
@@ -118,7 +118,7 @@ export class Context {
         }
 
         if (extendIfValid) {
-            await Session.extendSession(prisma_rw, validSession);
+            await Session.extendSession(prisma_api_rw, validSession);
         }
 
         this._logger?.debug([{

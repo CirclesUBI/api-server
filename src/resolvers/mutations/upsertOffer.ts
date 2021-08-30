@@ -1,6 +1,6 @@
 import {MutationUpsertOfferArgs} from "../../types";
 import {Context} from "../../context";
-import {PrismaClient} from "@prisma/client";
+import {PrismaClient} from "../../api-db/client";
 
 // TODO: Throttle max. offer creations per minute at ~ 0.5 per profile
 // TODO: Cache all newly created objects in redis until they're replicated

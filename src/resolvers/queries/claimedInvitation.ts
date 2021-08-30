@@ -1,4 +1,4 @@
-import {prisma_rw} from "../../prismaClient";
+import {prisma_api_rw} from "../../apiDbClient";
 import {Context} from "../../context";
 import {ClaimedInvitation} from "../../types";
 
@@ -8,7 +8,7 @@ export const claimedInvitation = async (parent:any, args:any, context:Context) =
         value: `/resolvers/queries/claimedInvitation.ts/claimedInvitation`
     }]);
     const session = await context.verifySession();
-    const profile = await prisma_rw.profile.findUnique({
+    const profile = await prisma_api_rw.profile.findUnique({
         where:{ emailAddress: session.emailAddress },
         include: {
             claimedInvitations: true
