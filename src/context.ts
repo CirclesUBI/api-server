@@ -1,5 +1,5 @@
 import {ExecutionParams} from "subscriptions-transport-ws";
-import {Request} from "express";
+import {Request, Response} from "express";
 import {Session as PrismaSession} from "./api-db/client";
 import {Session} from "./session";
 import {prisma_api_ro, prisma_api_rw} from "./apiDbClient";
@@ -17,6 +17,8 @@ export class Context {
 
     readonly setCookies:Array<any> = [];
     readonly setHeaders:Array<any> = [];
+    readonly req?: Request;
+    readonly res?: Response;
 
     private _logger:Logger|undefined;
 
@@ -24,7 +26,7 @@ export class Context {
         return this._logger;
     }
 
-    constructor(id: string, isSubscription: boolean, logger:Logger, jwt?: string, originHeaderValue?: string, sessionId?: string, ipAddress?:string) {
+    constructor(id: string, isSubscription: boolean, logger:Logger, jwt?: string, originHeaderValue?: string, sessionId?: string, ipAddress?:string, req?: Request, res?: Response) {
         this.isSubscription = isSubscription;
         this._logger = logger;
         this.jwt = jwt;
@@ -32,9 +34,11 @@ export class Context {
         this.sessionId = sessionId;
         this.ipAddress = ipAddress;
         this.id = id;
+        this.req = req;
+        this.res = res;
     }
 
-    public static create(arg: { req?: Request, connection?: ExecutionParams }): Context {
+    public static create(arg: { req?: Request, connection?: ExecutionParams, res?: Response }): Context {
         const contextId = Session.generateRandomBase64String(8);
         const remoteIp = (arg.req?.header('x-forwarded-for') || arg.req?.connection.remoteAddress) ?? "<unknown ip>";
         const defaultTags = [{
@@ -90,7 +94,9 @@ export class Context {
             authorizationHeaderValue,
             originHeaderValue,
             sessionId,
-            remoteIp);
+            remoteIp,
+            arg.req,
+            arg.res);
     }
 
     async verifySession(extendIfValid?:boolean) : Promise<PrismaSession> {

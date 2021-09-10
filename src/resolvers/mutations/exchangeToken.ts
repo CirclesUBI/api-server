@@ -20,6 +20,15 @@ export function exchangeTokenResolver(prisma:PrismaClient) {
             const session = await Session.createSessionFromJWT(prisma, context);
             const expires = new Date(Date.now() + session.maxLifetime * 1000);
             /// See https://www.npmjs.com/package/apollo-server-plugin-http-headers for the magic that happens below ;)
+            context.res?.cookie('session', session.sessionId, <any>{
+                domain: process.env.EXTERNAL_DOMAIN,
+                httpOnly: true,
+                path: "/",
+                sameSite: process.env.DEBUG ? "Strict" : "None",
+                secure: !process.env.DEBUG,
+                expires: expires
+            })
+            /*
             context.setCookies.push({
                 name: "session",
                 value: session.sessionId,
@@ -32,6 +41,7 @@ export function exchangeTokenResolver(prisma:PrismaClient) {
                     expires: expires
                 }
             });
+             */
 
             context.logger?.debug([{
                 key: `call`,
