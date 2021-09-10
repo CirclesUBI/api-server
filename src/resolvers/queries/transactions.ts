@@ -1,3 +1,5 @@
+export const empty = true;
+/*
 import {QueryTransactionsArgs} from "../../types";
 import {Context} from "../../context";
 import {PrismaClient} from "../../api-db/client";
@@ -41,4 +43,4 @@ export function transactions(prisma:PrismaClient) {
             }
         });
     }
-}
+}*/

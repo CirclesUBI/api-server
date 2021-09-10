@@ -1,32 +1,18 @@
-import {ApolloServer} from "apollo-server";
-import {importSchema} from "graphql-import";
-import {Context} from "./context";
+import { createServer } from "http";
+import { execute, subscribe } from "graphql";
+import { SubscriptionServer } from "subscriptions-transport-ws";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import express from "express";
+import {ApolloServer} from "apollo-server-express";
 import {resolvers} from "./resolvers/resolvers";
-import {Resolvers} from "./types";
+import {importSchema} from "graphql-import";
+import {BlockchainIndexerConnection} from "./indexer-api/blockchainIndexerConnection";
+import {Context} from "./context";
 import {Session} from "./session";
-import {InitDb} from "./initDb";
-import {prisma_api_rw} from "./apiDbClient";
-import {TransactionIndexWorker} from "./transactionIndexWorker";
-import {NotificationServerConnection} from "./notification_server/notificationServerConnection";
+import {newLogger} from "./logger";
+const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
 
 // TODO: Migrate to GraphQL-tools: https://www.graphql-tools.com/docs/migration-from-import/
-
-/*
-async function testWs() {
-    const ws = new NotificationServerConnection("ws://localhost:8080/");
-
-    setInterval(async () => {
-        const callResponse = await ws.requestRpcCall({
-            id: "1",
-            method: "findTransactionByHash",
-            args: "0x36f741e9b4ab3d0c3cefce9e5050b6279ca45fb0f90bbb970a18550243183662"
-        });
-        console.log(callResponse);
-    }, 1000);
-}
-testWs();
- */
-
 const httpHeadersPlugin = require("apollo-server-plugin-http-headers");
 
 if (!process.env.CORS_ORIGNS) {
@@ -34,17 +20,125 @@ if (!process.env.CORS_ORIGNS) {
 }
 
 const corsOrigins = process.env.CORS_ORIGNS.split(";").map(o => o.trim());
+const activeWsClients = [];
+
 
 export class Main {
-    private readonly _server: ApolloServer;
-    private readonly _resolvers: Resolvers;
-    private readonly _worker = new TransactionIndexWorker();
 
-    constructor() {
+    async run2 () {
+        const app = express();
+        const httpServer = createServer(app);
+
         const apiSchemaTypeDefs = importSchema("../src/server-schema.graphql");
-        this._resolvers = resolvers;
+        const schema = makeExecutableSchema({
+            typeDefs: <any>apiSchemaTypeDefs,
+            resolvers,
+        });
 
         console.log("cors origins: ", corsOrigins);
+        const server = new ApolloServer({
+            schema,
+            context: Context.create,
+            plugins: [{
+                async serverWillStart() {
+                    return {
+                        async drainServer() {
+                            subscriptionServer.close();
+                        }
+                    };
+                }
+            },
+            ApolloServerPluginLandingPageGraphQLPlayground()],
+        });
+
+        await server.start();
+        const serverMiddleware = server.getMiddleware({
+            path:"/",
+            cors: {
+                origin: corsOrigins,
+                credentials: true
+            }
+        })
+
+        app.use(serverMiddleware);
+
+        const subscriptionServer = SubscriptionServer.create({
+            schema,
+            execute,
+            subscribe,
+            onConnect(connectionParams:any, webSocket:any) {
+                // WS
+                const contextId = Session.generateRandomBase64String(8);
+                let isSubscription = false;
+                let authorizationHeaderValue: string | undefined;
+                let originHeaderValue: string | undefined;
+
+                const upgradeRequest = webSocket.upgradeReq;
+                const cookieValue = upgradeRequest.headers["cookie"];
+
+                const defaultTags = [{
+                    key: `contextId`,
+                    value: contextId
+                }, {
+                    key: `protocol`,
+                    value: `ws`
+                }];
+                const logger = newLogger(defaultTags);
+                isSubscription = true;
+
+
+                let sessionId:string|undefined = undefined;
+                if (cookieValue) {
+                    const cookies = cookieValue.split(";").map((o:string) => o.trim().split("=")).reduce((p:{[key:string]:any}, c:string) => { p[c[0]] = c[1]; return p}, {});
+                    if (cookies["session"]) {
+                        sessionId = decodeURIComponent(cookies["session"]);
+                    }
+                }
+
+                return new Context(
+                  contextId,
+                  isSubscription,
+                  logger,
+                  authorizationHeaderValue,
+                  originHeaderValue,
+                  sessionId,
+                  "");
+
+                // lookup userId by token, etc.
+                console.log("New websocket connection:", connectionParams);
+                return { userId: 0 };
+            },
+        }, {
+            server: httpServer,
+            path: server.graphqlPath,
+        });
+
+        var indexerApiUrl = "ws://localhost:8675"
+        console.log(`Subscribing to blockchain events from the indexer at ${indexerApiUrl} ..`)
+        new BlockchainIndexerConnection(indexerApiUrl);
+        console.log("Subscription ready.")
+
+        const PORT = 8989;
+        httpServer.listen(PORT, () =>
+          console.log(`Server is now running on http://localhost:${PORT}/graphql`)
+        );
+    }
+/*
+    constructor() {
+        const apiSchemaTypeDefs = importSchema("../src/server-schema.graphql");
+        this._resolvers = this._resolvers;
+
+        console.log("cors origins: ", corsOrigins);
+
+        const httpServer = createServer(app);
+        const schema = makeExecutableSchema({
+            apiSchemaTypeDefs,
+            resolvers
+        });
+        const server = new ApolloServer({
+            schema,
+        });
+
 
         this._server = new ApolloServer({
             // extensions: [() => new BasicLogging()],
@@ -74,7 +168,6 @@ export class Main {
         });
     }
 
-
     async run() {
         await this._server.listen({
             port: parseInt("8989")
@@ -85,12 +178,15 @@ export class Main {
             await InitDb.run(prisma_api_rw)
             console.log("Db ready");
 
-            console.log("Starting transaction index worker ..")
-            this._worker.start();
+            var indexerApiUrl = "ws://localhost:8080"
+            console.log(`Subscribing to blockchain events from the indexer at ${indexerApiUrl} ..`)
+            new BlockchainIndexerConnection("ws://localhost:8080");
+            console.log("Subscription ready.")
         });
     }
+ */
 }
 
 new Main()
-    .run()
+    .run2()
     .then(() => "Running");

@@ -75,57 +75,6 @@ input UpsertTagInput {
     value: String
 }
 
-input RequestIndexTransactionInput {
-    transactionHash: String!
-    tags: [CreateTagInput!]
-}
-
-type IndexTransactionRequest {
-    id: Int!
-
-    createdAt: String!
-    createdByProfileId: Int!
-    createdBy: Profile
-
-    blockNumber: Int!
-    transactionIndex: Int!
-    transactionHash: String!
-
-    tags: [Tag!]
-}
-
-type IndexedTransaction {
-    id: Int!
-    to: String!
-    from: String!
-    contractAddress: String
-    transactionIndex: Int!
-    root: String
-    gasUsed: String!
-    logsBloom: String!
-    blockHash: String!
-    transactionHash: String!
-    blockNumber: Int!
-    confirmations: Int
-    cumulativeGasUsed: String!
-    status: String
-    logs: [IndexTransactionLog!]
-    tags: [Tag!]
-}
-
-type IndexTransactionLog {
-    id: Int!
-    address: String!
-    data: String
-    topics: [String!]!
-    logIndex: Int!
-}
-
-input QueryIndexedTransactionInput {
-    fromBlockNo: Int
-    toBlockNo: Int
-}
-
 type ExchangeTokenResponse {
     success: Boolean!
     errorMessage: String
@@ -366,12 +315,96 @@ input QueryTagsInput {
     value_like: String
 }
 
+interface IEventPayload {
+    id: Int!
+    transaction_id: Int!
+}
+type CrcSignup implements IEventPayload {
+    id: Int!
+    transaction_id: Int!
+    user:String!
+    user_profile: Profile
+    token:String!
+}
+type CrcTrust implements IEventPayload  {
+    id: Int!
+    transaction_id: Int!
+    address: String!
+    address_profile: Profile
+    can_send_to: String!
+    can_send_to_profile: Profile
+    limit: Int!
+}
+type CrcTokenTransfer implements IEventPayload  {
+    id: Int!
+    transaction_id: Int!
+    from: String!
+    from_profile: Profile
+    to: String!
+    to_profile: Profile
+    token: String!
+    value: String!
+}
+type CrcHubTransfer implements IEventPayload  {
+    id: Int!
+    transaction_id: Int!
+    from: String!
+    from_profile: Profile
+    to: String!
+    to_profile: Profile
+    flow: String!
+    transfers: [CrcTokenTransfer!]!
+}
+type CrcMinting implements IEventPayload  {
+    id: Int!
+    transaction_id: Int!
+    from: String!
+    from_profile: Profile
+    to: String!
+    to_profile: Profile
+    value: String!
+    token: String!
+}
+type EthTransfer implements IEventPayload  {
+    id: Int!
+    transaction_id: Int!
+    from: String!
+    from_profile: Profile
+    to: String!
+    to_profile: Profile
+    value: String!
+}
+type GnosisSafeEthTransfer implements IEventPayload {
+    id: Int!
+    transaction_id: Int!
+    initiator: String!
+    from: String!
+    from_profile: Profile
+    to: String!
+    to_profile: Profile
+    value: String!
+}
+
+union EventPayload = CrcSignup
+    | CrcTrust
+    | CrcTokenTransfer
+    | CrcHubTransfer
+    | CrcMinting
+    | EthTransfer
+    | GnosisSafeEthTransfer
+
 type ProfileEvent {
     id: Int!
+    timestamp: String!
+    block_number: Int!
+    transaction_index: Int!
+    transaction_hash: String!
     type: String!
-    profileId: Int!
-    createdAt: String!
-    data: String!
+    safe_address: String!
+    safe_address_profile: Profile
+    direction: String!
+    value: String!
+    payload: EventPayload
 }
 
 type RedeemInvitationRequest {
@@ -415,6 +448,27 @@ type CreateInvitationResult {
     error: String!
 }
 
+enum TrustDirection {
+    IN,
+    OUT,
+    MUTUAL
+}
+
+type TrustRelation {
+    safeAddress:String!
+    safeAddressProfile:Profile
+    otherSafeAddress: String!
+    otherSafeAddressProfile:Profile
+    direction: TrustDirection!
+}
+
+type Contact {
+    safeAddress:String!
+    safeAddressProfile:Profile
+    contactAddress:String!
+    contactAddressProfile:Profile
+}
+
 type Mutation
 {
     exchangeToken : ExchangeTokenResponse!
@@ -425,12 +479,12 @@ type Mutation
     upsertProfile(data:UpsertProfileInput!):Profile!
     requestUpdateSafe(data:RequestUpdateSafeInput!) : RequestUpdateSafeResponse!
     updateSafe(data:UpdateSafeInput!) : UpdateSafeResponse!
-    requestIndexTransaction(data:RequestIndexTransactionInput!) : IndexTransactionRequest!
     upsertOffer(data:UpsertOfferInput!):Offer!
     unlistOffer(offerId:Int!):Boolean!
     lockOffer(data:LockOfferInput!):LockOfferResult!
     provePayment(data:PaymentProof!):ProvePaymentResult!
     upsertTag(data:UpsertTagInput!):Tag!
+
     acknowledge(eventId:Int!): ProfileEvent!
 
     claimInvitation(code:String!): ClaimInvitationResult!
@@ -449,24 +503,31 @@ type Query
     # Tries to find a claimed inivitation for the logged-on user.
     # A user can claim and redeem only one invitation ever.
     claimedInvitation: ClaimedInvitation
-    invitationTransaction: IndexedTransaction
-    safeFundingTransaction: IndexedTransaction
+    invitationTransaction: ProfileEvent
+    safeFundingTransaction: ProfileEvent
     stats: Stats
 
     # Gets the created (noty invitations of the currently logged on user
     myInvitations: [CreatedInvitation!]!
-
-    events:[ProfileEvent!]!
-
+    events(safeAddress:String!, types:[String!]):[ProfileEvent!]!
+    contacts(safeAddress:String!):[Contact!]!
+    eventByTransactionHash(safeAddress:String! transactionHash: String! types:[String!]):[ProfileEvent!]!
+    balance(safeAddress:String!) : String!
+    trustRelations(safeAddress:String!):[TrustRelation!]!
     profiles(query:QueryProfileInput!) : [Profile!]!
     search(query:SearchInput!) : [Profile!]!
     cities(query:QueryCitiesInput!) : [City!]!
     offers(query:QueryOfferInput!): [Offer!]!
     tags(query:QueryTagsInput!):[Tag!]!
     tagById(id:Int!):Tag
-    transactions(query:QueryIndexedTransactionInput):[IndexedTransaction!]!
 }
 
-type Subscriptions {
+type Subscription {
     events:[ProfileEvent!]!
+}
+
+schema {
+    query: Query
+    mutation: Mutation
+    subscription: Subscription
 }

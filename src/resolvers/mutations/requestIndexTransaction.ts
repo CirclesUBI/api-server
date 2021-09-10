@@ -1,4 +1,5 @@
-import {IndexTransactionRequest, MutationRequestIndexTransactionArgs} from "../../types";
+export const empty = true;
+/*import {IndexTransactionRequest, MutationRequestIndexTransactionArgs} from "../../types";
 import {Context} from "../../context";
 import {PrismaClient} from "../../api-db/client";
 
@@ -35,4 +36,4 @@ export function requestIndexTransaction(prisma_api_rw:PrismaClient) {
             createdAt: indexTransactionRequest.createdAt.toJSON()
         };
     }
-}
+}**/

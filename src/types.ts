@@ -3,6 +3,7 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -58,10 +59,74 @@ export type ConsumeDepositedChallengeResponse = {
   challenge?: Maybe<Scalars['String']>;
 };
 
+export type Contact = {
+  __typename?: 'Contact';
+  safeAddress: Scalars['String'];
+  safeAddressProfile?: Maybe<Profile>;
+  contactAddress: Scalars['String'];
+  contactAddressProfile?: Maybe<Profile>;
+};
+
 export type CountryStats = {
   __typename?: 'CountryStats';
   name: Scalars['String'];
   citizenCount: Scalars['Int'];
+};
+
+export type CrcHubTransfer = IEventPayload & {
+  __typename?: 'CrcHubTransfer';
+  id: Scalars['Int'];
+  transaction_id: Scalars['Int'];
+  from: Scalars['String'];
+  from_profile?: Maybe<Profile>;
+  to: Scalars['String'];
+  to_profile?: Maybe<Profile>;
+  flow: Scalars['String'];
+  transfers: Array<CrcTokenTransfer>;
+};
+
+export type CrcMinting = IEventPayload & {
+  __typename?: 'CrcMinting';
+  id: Scalars['Int'];
+  transaction_id: Scalars['Int'];
+  from: Scalars['String'];
+  from_profile?: Maybe<Profile>;
+  to: Scalars['String'];
+  to_profile?: Maybe<Profile>;
+  value: Scalars['String'];
+  token: Scalars['String'];
+};
+
+export type CrcSignup = IEventPayload & {
+  __typename?: 'CrcSignup';
+  id: Scalars['Int'];
+  transaction_id: Scalars['Int'];
+  user: Scalars['String'];
+  user_profile?: Maybe<Profile>;
+  token: Scalars['String'];
+};
+
+export type CrcTokenTransfer = IEventPayload & {
+  __typename?: 'CrcTokenTransfer';
+  id: Scalars['Int'];
+  transaction_id: Scalars['Int'];
+  from: Scalars['String'];
+  from_profile?: Maybe<Profile>;
+  to: Scalars['String'];
+  to_profile?: Maybe<Profile>;
+  token: Scalars['String'];
+  value: Scalars['String'];
+};
+
+export type CrcTrust = IEventPayload & {
+  __typename?: 'CrcTrust';
+  id: Scalars['Int'];
+  transaction_id: Scalars['Int'];
+  address: Scalars['String'];
+  address_profile?: Maybe<Profile>;
+  can_send_to: Scalars['String'];
+  can_send_to_profile?: Maybe<Profile>;
+  limit: Scalars['Int'];
 };
 
 export type CreateInvitationResult = {
@@ -106,10 +171,35 @@ export type DepositChallengeResponse = {
   errorMessage?: Maybe<Scalars['String']>;
 };
 
+export type EthTransfer = IEventPayload & {
+  __typename?: 'EthTransfer';
+  id: Scalars['Int'];
+  transaction_id: Scalars['Int'];
+  from: Scalars['String'];
+  from_profile?: Maybe<Profile>;
+  to: Scalars['String'];
+  to_profile?: Maybe<Profile>;
+  value: Scalars['String'];
+};
+
+export type EventPayload = CrcSignup | CrcTrust | CrcTokenTransfer | CrcHubTransfer | CrcMinting | EthTransfer | GnosisSafeEthTransfer;
+
 export type ExchangeTokenResponse = {
   __typename?: 'ExchangeTokenResponse';
   success: Scalars['Boolean'];
   errorMessage?: Maybe<Scalars['String']>;
+};
+
+export type GnosisSafeEthTransfer = IEventPayload & {
+  __typename?: 'GnosisSafeEthTransfer';
+  id: Scalars['Int'];
+  transaction_id: Scalars['Int'];
+  initiator: Scalars['String'];
+  from: Scalars['String'];
+  from_profile?: Maybe<Profile>;
+  to: Scalars['String'];
+  to_profile?: Maybe<Profile>;
+  value: Scalars['String'];
 };
 
 export type Goal = {
@@ -127,45 +217,9 @@ export type ICity = {
   feature_code: Scalars['String'];
 };
 
-export type IndexTransactionLog = {
-  __typename?: 'IndexTransactionLog';
+export type IEventPayload = {
   id: Scalars['Int'];
-  address: Scalars['String'];
-  data?: Maybe<Scalars['String']>;
-  topics: Array<Scalars['String']>;
-  logIndex: Scalars['Int'];
-};
-
-export type IndexTransactionRequest = {
-  __typename?: 'IndexTransactionRequest';
-  id: Scalars['Int'];
-  createdAt: Scalars['String'];
-  createdByProfileId: Scalars['Int'];
-  createdBy?: Maybe<Profile>;
-  blockNumber: Scalars['Int'];
-  transactionIndex: Scalars['Int'];
-  transactionHash: Scalars['String'];
-  tags?: Maybe<Array<Tag>>;
-};
-
-export type IndexedTransaction = {
-  __typename?: 'IndexedTransaction';
-  id: Scalars['Int'];
-  to: Scalars['String'];
-  from: Scalars['String'];
-  contractAddress?: Maybe<Scalars['String']>;
-  transactionIndex: Scalars['Int'];
-  root?: Maybe<Scalars['String']>;
-  gasUsed: Scalars['String'];
-  logsBloom: Scalars['String'];
-  blockHash: Scalars['String'];
-  transactionHash: Scalars['String'];
-  blockNumber: Scalars['Int'];
-  confirmations?: Maybe<Scalars['Int']>;
-  cumulativeGasUsed: Scalars['String'];
-  status?: Maybe<Scalars['String']>;
-  logs?: Maybe<Array<IndexTransactionLog>>;
-  tags?: Maybe<Array<Tag>>;
+  transaction_id: Scalars['Int'];
 };
 
 export type LockOfferInput = {
@@ -194,7 +248,6 @@ export type Mutation = {
   upsertProfile: Profile;
   requestUpdateSafe: RequestUpdateSafeResponse;
   updateSafe: UpdateSafeResponse;
-  requestIndexTransaction: IndexTransactionRequest;
   upsertOffer: Offer;
   unlistOffer: Scalars['Boolean'];
   lockOffer: LockOfferResult;
@@ -234,11 +287,6 @@ export type MutationRequestUpdateSafeArgs = {
 
 export type MutationUpdateSafeArgs = {
   data: UpdateSafeInput;
-};
-
-
-export type MutationRequestIndexTransactionArgs = {
-  data: RequestIndexTransactionInput;
 };
 
 
@@ -336,10 +384,16 @@ export type Profile = {
 export type ProfileEvent = {
   __typename?: 'ProfileEvent';
   id: Scalars['Int'];
+  timestamp: Scalars['String'];
+  block_number: Scalars['Int'];
+  transaction_index: Scalars['Int'];
+  transaction_hash: Scalars['String'];
   type: Scalars['String'];
-  profileId: Scalars['Int'];
-  createdAt: Scalars['String'];
-  data: Scalars['String'];
+  safe_address: Scalars['String'];
+  safe_address_profile?: Maybe<Profile>;
+  direction: Scalars['String'];
+  value: Scalars['String'];
+  payload?: Maybe<EventPayload>;
 };
 
 export type ProvePaymentResult = {
@@ -372,18 +426,49 @@ export type Query = {
   version: Version;
   sessionInfo: SessionInfo;
   claimedInvitation?: Maybe<ClaimedInvitation>;
-  invitationTransaction?: Maybe<IndexedTransaction>;
-  safeFundingTransaction?: Maybe<IndexedTransaction>;
+  invitationTransaction?: Maybe<ProfileEvent>;
+  safeFundingTransaction?: Maybe<ProfileEvent>;
   stats?: Maybe<Stats>;
   myInvitations: Array<CreatedInvitation>;
   events: Array<ProfileEvent>;
+  contacts: Array<Contact>;
+  eventByTransactionHash: Array<ProfileEvent>;
+  balance: Scalars['String'];
+  trustRelations: Array<TrustRelation>;
   profiles: Array<Profile>;
   search: Array<Profile>;
   cities: Array<City>;
   offers: Array<Offer>;
   tags: Array<Tag>;
   tagById?: Maybe<Tag>;
-  transactions: Array<IndexedTransaction>;
+};
+
+
+export type QueryEventsArgs = {
+  safeAddress: Scalars['String'];
+  types?: Maybe<Array<Scalars['String']>>;
+};
+
+
+export type QueryContactsArgs = {
+  safeAddress: Scalars['String'];
+};
+
+
+export type QueryEventByTransactionHashArgs = {
+  safeAddress: Scalars['String'];
+  transactionHash: Scalars['String'];
+  types?: Maybe<Array<Scalars['String']>>;
+};
+
+
+export type QueryBalanceArgs = {
+  safeAddress: Scalars['String'];
+};
+
+
+export type QueryTrustRelationsArgs = {
+  safeAddress: Scalars['String'];
 };
 
 
@@ -416,11 +501,6 @@ export type QueryTagByIdArgs = {
   id: Scalars['Int'];
 };
 
-
-export type QueryTransactionsArgs = {
-  query?: Maybe<QueryIndexedTransactionInput>;
-};
-
 export type QueryCitiesByGeonameIdInput = {
   geonameid: Array<Scalars['Int']>;
 };
@@ -433,11 +513,6 @@ export type QueryCitiesByNameInput = {
 export type QueryCitiesInput = {
   byName?: Maybe<QueryCitiesByNameInput>;
   byId?: Maybe<QueryCitiesByGeonameIdInput>;
-};
-
-export type QueryIndexedTransactionInput = {
-  fromBlockNo?: Maybe<Scalars['Int']>;
-  toBlockNo?: Maybe<Scalars['Int']>;
 };
 
 export type QueryOfferInput = {
@@ -480,11 +555,6 @@ export type RedeemInvitationRequest = {
   id: Scalars['Int'];
 };
 
-export type RequestIndexTransactionInput = {
-  transactionHash: Scalars['String'];
-  tags?: Maybe<Array<CreateTagInput>>;
-};
-
 export type RequestUpdateSafeInput = {
   newSafeAddress: Scalars['String'];
 };
@@ -525,8 +595,8 @@ export type Stats = {
   countries: Array<CountryStats>;
 };
 
-export type Subscriptions = {
-  __typename?: 'Subscriptions';
+export type Subscription = {
+  __typename?: 'Subscription';
   events: Array<ProfileEvent>;
 };
 
@@ -535,6 +605,21 @@ export type Tag = {
   id: Scalars['Int'];
   typeId: Scalars['String'];
   value?: Maybe<Scalars['String']>;
+};
+
+export enum TrustDirection {
+  In = 'IN',
+  Out = 'OUT',
+  Mutual = 'MUTUAL'
+}
+
+export type TrustRelation = {
+  __typename?: 'TrustRelation';
+  safeAddress: Scalars['String'];
+  safeAddressProfile?: Maybe<Profile>;
+  otherSafeAddress: Scalars['String'];
+  otherSafeAddressProfile?: Maybe<Profile>;
+  direction: TrustDirection;
 };
 
 export type UpdateSafeInput = {
@@ -681,19 +766,26 @@ export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   ClaimedInvitation: ResolverTypeWrapper<ClaimedInvitation>;
   ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
+  Contact: ResolverTypeWrapper<Contact>;
   CountryStats: ResolverTypeWrapper<CountryStats>;
+  CrcHubTransfer: ResolverTypeWrapper<CrcHubTransfer>;
+  CrcMinting: ResolverTypeWrapper<CrcMinting>;
+  CrcSignup: ResolverTypeWrapper<CrcSignup>;
+  CrcTokenTransfer: ResolverTypeWrapper<CrcTokenTransfer>;
+  CrcTrust: ResolverTypeWrapper<CrcTrust>;
   CreateInvitationResult: ResolverTypeWrapper<CreateInvitationResult>;
   CreateTagInput: CreateTagInput;
   CreatedInvitation: ResolverTypeWrapper<CreatedInvitation>;
   DelegateAuthInit: ResolverTypeWrapper<DelegateAuthInit>;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
+  EthTransfer: ResolverTypeWrapper<EthTransfer>;
+  EventPayload: ResolversTypes['CrcSignup'] | ResolversTypes['CrcTrust'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'];
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
+  GnosisSafeEthTransfer: ResolverTypeWrapper<GnosisSafeEthTransfer>;
   Goal: ResolverTypeWrapper<Goal>;
   ICity: ResolversTypes['City'] | ResolversTypes['CityStats'];
-  IndexTransactionLog: ResolverTypeWrapper<IndexTransactionLog>;
-  IndexTransactionRequest: ResolverTypeWrapper<IndexTransactionRequest>;
-  IndexedTransaction: ResolverTypeWrapper<IndexedTransaction>;
+  IEventPayload: ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['CrcSignup'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcTrust'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'];
   LockOfferInput: LockOfferInput;
   LockOfferResult: ResolverTypeWrapper<LockOfferResult>;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
@@ -701,7 +793,7 @@ export type ResolversTypes = ResolversObject<{
   Offer: ResolverTypeWrapper<Offer>;
   PaymentProof: PaymentProof;
   Profile: ResolverTypeWrapper<Profile>;
-  ProfileEvent: ResolverTypeWrapper<ProfileEvent>;
+  ProfileEvent: ResolverTypeWrapper<Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
   ProvePaymentResult: ResolverTypeWrapper<ProvePaymentResult>;
   Purchase: ResolverTypeWrapper<Purchase>;
   PurchaseStatus: PurchaseStatus;
@@ -709,7 +801,6 @@ export type ResolversTypes = ResolversObject<{
   QueryCitiesByGeonameIdInput: QueryCitiesByGeonameIdInput;
   QueryCitiesByNameInput: QueryCitiesByNameInput;
   QueryCitiesInput: QueryCitiesInput;
-  QueryIndexedTransactionInput: QueryIndexedTransactionInput;
   QueryOfferInput: QueryOfferInput;
   QueryProfileInput: QueryProfileInput;
   QueryPurchaseInput: QueryPurchaseInput;
@@ -717,15 +808,16 @@ export type ResolversTypes = ResolversObject<{
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   RedeemClaimedInvitationResult: ResolverTypeWrapper<RedeemClaimedInvitationResult>;
   RedeemInvitationRequest: ResolverTypeWrapper<RedeemInvitationRequest>;
-  RequestIndexTransactionInput: RequestIndexTransactionInput;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: ResolverTypeWrapper<RequestUpdateSafeResponse>;
   SearchInput: SearchInput;
   Server: ResolverTypeWrapper<Server>;
   SessionInfo: ResolverTypeWrapper<SessionInfo>;
   Stats: ResolverTypeWrapper<Stats>;
-  Subscriptions: ResolverTypeWrapper<Subscriptions>;
+  Subscription: ResolverTypeWrapper<{}>;
   Tag: ResolverTypeWrapper<Tag>;
+  TrustDirection: TrustDirection;
+  TrustRelation: ResolverTypeWrapper<TrustRelation>;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: ResolverTypeWrapper<UpdateSafeResponse>;
   UpsertOfferInput: UpsertOfferInput;
@@ -745,19 +837,26 @@ export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean'];
   ClaimedInvitation: ClaimedInvitation;
   ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
+  Contact: Contact;
   CountryStats: CountryStats;
+  CrcHubTransfer: CrcHubTransfer;
+  CrcMinting: CrcMinting;
+  CrcSignup: CrcSignup;
+  CrcTokenTransfer: CrcTokenTransfer;
+  CrcTrust: CrcTrust;
   CreateInvitationResult: CreateInvitationResult;
   CreateTagInput: CreateTagInput;
   CreatedInvitation: CreatedInvitation;
   DelegateAuthInit: DelegateAuthInit;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: DepositChallengeResponse;
+  EthTransfer: EthTransfer;
+  EventPayload: ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'];
   ExchangeTokenResponse: ExchangeTokenResponse;
+  GnosisSafeEthTransfer: GnosisSafeEthTransfer;
   Goal: Goal;
   ICity: ResolversParentTypes['City'] | ResolversParentTypes['CityStats'];
-  IndexTransactionLog: IndexTransactionLog;
-  IndexTransactionRequest: IndexTransactionRequest;
-  IndexedTransaction: IndexedTransaction;
+  IEventPayload: ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'];
   LockOfferInput: LockOfferInput;
   LockOfferResult: LockOfferResult;
   LogoutResponse: LogoutResponse;
@@ -765,14 +864,13 @@ export type ResolversParentTypes = ResolversObject<{
   Offer: Offer;
   PaymentProof: PaymentProof;
   Profile: Profile;
-  ProfileEvent: ProfileEvent;
+  ProfileEvent: Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversParentTypes['EventPayload']> };
   ProvePaymentResult: ProvePaymentResult;
   Purchase: Purchase;
   Query: {};
   QueryCitiesByGeonameIdInput: QueryCitiesByGeonameIdInput;
   QueryCitiesByNameInput: QueryCitiesByNameInput;
   QueryCitiesInput: QueryCitiesInput;
-  QueryIndexedTransactionInput: QueryIndexedTransactionInput;
   QueryOfferInput: QueryOfferInput;
   QueryProfileInput: QueryProfileInput;
   QueryPurchaseInput: QueryPurchaseInput;
@@ -780,15 +878,15 @@ export type ResolversParentTypes = ResolversObject<{
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   RedeemClaimedInvitationResult: RedeemClaimedInvitationResult;
   RedeemInvitationRequest: RedeemInvitationRequest;
-  RequestIndexTransactionInput: RequestIndexTransactionInput;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: RequestUpdateSafeResponse;
   SearchInput: SearchInput;
   Server: Server;
   SessionInfo: SessionInfo;
   Stats: Stats;
-  Subscriptions: Subscriptions;
+  Subscription: {};
   Tag: Tag;
+  TrustRelation: TrustRelation;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: UpdateSafeResponse;
   UpsertOfferInput: UpsertOfferInput;
@@ -842,9 +940,73 @@ export type ConsumeDepositedChallengeResponseResolvers<ContextType = any, Parent
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ContactResolvers<ContextType = any, ParentType extends ResolversParentTypes['Contact'] = ResolversParentTypes['Contact']> = ResolversObject<{
+  safeAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  safeAddressProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  contactAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  contactAddressProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type CountryStatsResolvers<ContextType = any, ParentType extends ResolversParentTypes['CountryStats'] = ResolversParentTypes['CountryStats']> = ResolversObject<{
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   citizenCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CrcHubTransferResolvers<ContextType = any, ParentType extends ResolversParentTypes['CrcHubTransfer'] = ResolversParentTypes['CrcHubTransfer']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  from_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  to_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  flow?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  transfers?: Resolver<Array<ResolversTypes['CrcTokenTransfer']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CrcMintingResolvers<ContextType = any, ParentType extends ResolversParentTypes['CrcMinting'] = ResolversParentTypes['CrcMinting']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  from_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  to_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CrcSignupResolvers<ContextType = any, ParentType extends ResolversParentTypes['CrcSignup'] = ResolversParentTypes['CrcSignup']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  user_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CrcTokenTransferResolvers<ContextType = any, ParentType extends ResolversParentTypes['CrcTokenTransfer'] = ResolversParentTypes['CrcTokenTransfer']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  from_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  to_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CrcTrustResolvers<ContextType = any, ParentType extends ResolversParentTypes['CrcTrust'] = ResolversParentTypes['CrcTrust']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  address_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  can_send_to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  can_send_to_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  limit?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -881,9 +1043,36 @@ export type DepositChallengeResponseResolvers<ContextType = any, ParentType exte
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type EthTransferResolvers<ContextType = any, ParentType extends ResolversParentTypes['EthTransfer'] = ResolversParentTypes['EthTransfer']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  from_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  to_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type EventPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['EventPayload'] = ResolversParentTypes['EventPayload']> = ResolversObject<{
+  __resolveType: TypeResolveFn<'CrcSignup' | 'CrcTrust' | 'CrcTokenTransfer' | 'CrcHubTransfer' | 'CrcMinting' | 'EthTransfer' | 'GnosisSafeEthTransfer', ParentType, ContextType>;
+}>;
+
 export type ExchangeTokenResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['ExchangeTokenResponse'] = ResolversParentTypes['ExchangeTokenResponse']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type GnosisSafeEthTransferResolvers<ContextType = any, ParentType extends ResolversParentTypes['GnosisSafeEthTransfer'] = ResolversParentTypes['GnosisSafeEthTransfer']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  initiator?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  from_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  to_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -903,45 +1092,10 @@ export type ICityResolvers<ContextType = any, ParentType extends ResolversParent
   feature_code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 }>;
 
-export type IndexTransactionLogResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndexTransactionLog'] = ResolversParentTypes['IndexTransactionLog']> = ResolversObject<{
+export type IEventPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['IEventPayload'] = ResolversParentTypes['IEventPayload']> = ResolversObject<{
+  __resolveType: TypeResolveFn<'CrcHubTransfer' | 'CrcMinting' | 'CrcSignup' | 'CrcTokenTransfer' | 'CrcTrust' | 'EthTransfer' | 'GnosisSafeEthTransfer', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  data?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  topics?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
-  logIndex?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type IndexTransactionRequestResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndexTransactionRequest'] = ResolversParentTypes['IndexTransactionRequest']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  createdByProfileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  createdBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
-  blockNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  transactionIndex?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  transactionHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  tags?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type IndexedTransactionResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndexedTransaction'] = ResolversParentTypes['IndexedTransaction']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  contractAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  transactionIndex?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  root?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  gasUsed?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  logsBloom?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  blockHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  transactionHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  blockNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  confirmations?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  cumulativeGasUsed?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  logs?: Resolver<Maybe<Array<ResolversTypes['IndexTransactionLog']>>, ParentType, ContextType>;
-  tags?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+  transaction_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type LockOfferResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['LockOfferResult'] = ResolversParentTypes['LockOfferResult']> = ResolversObject<{
@@ -965,7 +1119,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   upsertProfile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType, RequireFields<MutationUpsertProfileArgs, 'data'>>;
   requestUpdateSafe?: Resolver<ResolversTypes['RequestUpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationRequestUpdateSafeArgs, 'data'>>;
   updateSafe?: Resolver<ResolversTypes['UpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationUpdateSafeArgs, 'data'>>;
-  requestIndexTransaction?: Resolver<ResolversTypes['IndexTransactionRequest'], ParentType, ContextType, RequireFields<MutationRequestIndexTransactionArgs, 'data'>>;
   upsertOffer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType, RequireFields<MutationUpsertOfferArgs, 'data'>>;
   unlistOffer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUnlistOfferArgs, 'offerId'>>;
   lockOffer?: Resolver<ResolversTypes['LockOfferResult'], ParentType, ContextType, RequireFields<MutationLockOfferArgs, 'data'>>;
@@ -1023,10 +1176,16 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
 
 export type ProfileEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProfileEvent'] = ResolversParentTypes['ProfileEvent']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  block_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_index?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  profileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  data?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  safe_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  safe_address_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  direction?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  payload?: Resolver<Maybe<ResolversTypes['EventPayload']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1053,18 +1212,21 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   version?: Resolver<ResolversTypes['Version'], ParentType, ContextType>;
   sessionInfo?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
-  invitationTransaction?: Resolver<Maybe<ResolversTypes['IndexedTransaction']>, ParentType, ContextType>;
-  safeFundingTransaction?: Resolver<Maybe<ResolversTypes['IndexedTransaction']>, ParentType, ContextType>;
+  invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
+  safeFundingTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
   myInvitations?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
-  events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
+  events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'safeAddress'>>;
+  contacts?: Resolver<Array<ResolversTypes['Contact']>, ParentType, ContextType, RequireFields<QueryContactsArgs, 'safeAddress'>>;
+  eventByTransactionHash?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventByTransactionHashArgs, 'safeAddress' | 'transactionHash'>>;
+  balance?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<QueryBalanceArgs, 'safeAddress'>>;
+  trustRelations?: Resolver<Array<ResolversTypes['TrustRelation']>, ParentType, ContextType, RequireFields<QueryTrustRelationsArgs, 'safeAddress'>>;
   profiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesArgs, 'query'>>;
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, 'query'>>;
   offers?: Resolver<Array<ResolversTypes['Offer']>, ParentType, ContextType, RequireFields<QueryOffersArgs, 'query'>>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsArgs, 'query'>>;
   tagById?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagByIdArgs, 'id'>>;
-  transactions?: Resolver<Array<ResolversTypes['IndexedTransaction']>, ParentType, ContextType, RequireFields<QueryTransactionsArgs, never>>;
 }>;
 
 export type RedeemClaimedInvitationResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['RedeemClaimedInvitationResult'] = ResolversParentTypes['RedeemClaimedInvitationResult']> = ResolversObject<{
@@ -1110,15 +1272,23 @@ export type StatsResolvers<ContextType = any, ParentType extends ResolversParent
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type SubscriptionsResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscriptions'] = ResolversParentTypes['Subscriptions']> = ResolversObject<{
-  events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
+  events?: SubscriptionResolver<Array<ResolversTypes['ProfileEvent']>, "events", ParentType, ContextType>;
 }>;
 
 export type TagResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   typeId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type TrustRelationResolvers<ContextType = any, ParentType extends ResolversParentTypes['TrustRelation'] = ResolversParentTypes['TrustRelation']> = ResolversObject<{
+  safeAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  safeAddressProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  otherSafeAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  otherSafeAddressProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  direction?: Resolver<ResolversTypes['TrustDirection'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1142,17 +1312,24 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   ClaimInvitationResult?: ClaimInvitationResultResolvers<ContextType>;
   ClaimedInvitation?: ClaimedInvitationResolvers<ContextType>;
   ConsumeDepositedChallengeResponse?: ConsumeDepositedChallengeResponseResolvers<ContextType>;
+  Contact?: ContactResolvers<ContextType>;
   CountryStats?: CountryStatsResolvers<ContextType>;
+  CrcHubTransfer?: CrcHubTransferResolvers<ContextType>;
+  CrcMinting?: CrcMintingResolvers<ContextType>;
+  CrcSignup?: CrcSignupResolvers<ContextType>;
+  CrcTokenTransfer?: CrcTokenTransferResolvers<ContextType>;
+  CrcTrust?: CrcTrustResolvers<ContextType>;
   CreateInvitationResult?: CreateInvitationResultResolvers<ContextType>;
   CreatedInvitation?: CreatedInvitationResolvers<ContextType>;
   DelegateAuthInit?: DelegateAuthInitResolvers<ContextType>;
   DepositChallengeResponse?: DepositChallengeResponseResolvers<ContextType>;
+  EthTransfer?: EthTransferResolvers<ContextType>;
+  EventPayload?: EventPayloadResolvers<ContextType>;
   ExchangeTokenResponse?: ExchangeTokenResponseResolvers<ContextType>;
+  GnosisSafeEthTransfer?: GnosisSafeEthTransferResolvers<ContextType>;
   Goal?: GoalResolvers<ContextType>;
   ICity?: ICityResolvers<ContextType>;
-  IndexTransactionLog?: IndexTransactionLogResolvers<ContextType>;
-  IndexTransactionRequest?: IndexTransactionRequestResolvers<ContextType>;
-  IndexedTransaction?: IndexedTransactionResolvers<ContextType>;
+  IEventPayload?: IEventPayloadResolvers<ContextType>;
   LockOfferResult?: LockOfferResultResolvers<ContextType>;
   LogoutResponse?: LogoutResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
@@ -1168,8 +1345,9 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Server?: ServerResolvers<ContextType>;
   SessionInfo?: SessionInfoResolvers<ContextType>;
   Stats?: StatsResolvers<ContextType>;
-  Subscriptions?: SubscriptionsResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
   Tag?: TagResolvers<ContextType>;
+  TrustRelation?: TrustRelationResolvers<ContextType>;
   UpdateSafeResponse?: UpdateSafeResponseResolvers<ContextType>;
   Version?: VersionResolvers<ContextType>;
 }>;

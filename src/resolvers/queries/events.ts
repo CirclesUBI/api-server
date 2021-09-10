@@ -1,3 +1,5 @@
+export const empty = true;
+/*
 import {ProfileEvent} from "../../types";
 import {PrismaClient} from "../../api-db/client";
 
@@ -34,4 +36,4 @@ export function events(prisma:PrismaClient) {
 
         return <any>t;
     }
-}
+}*/

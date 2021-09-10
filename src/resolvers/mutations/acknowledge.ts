@@ -1,3 +1,5 @@
+export const empty = true;
+/*
 import {ProfileEvent} from "../../types";
 import {Context} from "../../context";
 import {PrismaClient} from "../../api-db/client";
@@ -29,7 +31,7 @@ export function acknowledge(prisma_api_rw:PrismaClient) {
         return <ProfileEvent>{
             ...e,
             id: e.id,
-            createdAt: e.createdAt.toJSON()
+            createdAt: e.createdAt.toJSON(),
         };
     }
-}
+}*/

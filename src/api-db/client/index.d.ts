@@ -300,7 +300,7 @@ export type PurchaseStatus = (typeof PurchaseStatus)[keyof typeof PurchaseStatus
 /**
  * ##  Prisma Client ʲˢ
  * 
- * Type-safe database client for TypeScript & Node.js (ORM replacement)
+ * Type-safe database client for TypeScript & Node.js
  * @example
  * ```
  * const prisma = new PrismaClient()
@@ -346,7 +346,7 @@ export class PrismaClient<
     /**
    * ##  Prisma Client ʲˢ
    * 
-   * Type-safe database client for TypeScript & Node.js (ORM replacement)
+   * Type-safe database client for TypeScript & Node.js
    * @example
    * ```
    * const prisma = new PrismaClient()
@@ -597,8 +597,8 @@ export namespace Prisma {
   export import Decimal = runtime.Decimal
 
   /**
-   * Prisma Client JS version: 2.28.0
-   * Query Engine version: 89facabd0366f63911d089156a7a70125bfbcd27
+   * Prisma Client JS version: 2.30.2
+   * Query Engine version: b8c35d44de987a9691890b3ddf3e2e7effb9bf20
    */
   export type PrismaVersion = {
     client: string

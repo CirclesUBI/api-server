@@ -24,7 +24,7 @@ export class Context {
         return this._logger;
     }
 
-    private constructor(id: string, isSubscription: boolean, logger:Logger, jwt?: string, originHeaderValue?: string, sessionId?: string, ipAddress?:string) {
+    constructor(id: string, isSubscription: boolean, logger:Logger, jwt?: string, originHeaderValue?: string, sessionId?: string, ipAddress?:string) {
         this.isSubscription = isSubscription;
         this._logger = logger;
         this.jwt = jwt;
