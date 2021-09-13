@@ -5,10 +5,8 @@ import {PrismaClient} from "../../api-db/client";
 
 export function stats(prisma:PrismaClient) {
     return async (parent:any, args:any, context:Context) : Promise<Stats> => {
-        context.logger?.info([{
-            key: `call`,
-            value: `/resolvers/queries/stats.ts/stats(prisma:PrismaClient)/async (parent:any, args:any, context:Context)`
-        }]);
+        
+
 
         const fibonacci = (iterations: number) => {
             let fib = [0, 1];

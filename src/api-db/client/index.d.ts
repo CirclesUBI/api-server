@@ -63,6 +63,7 @@ export type RedeemInvitationRequest = {
 
 export type Profile = {
   id: number
+  lastUpdateAt: Date
   emailAddress: string
   status: string | null
   circlesAddress: string | null
@@ -4008,6 +4009,7 @@ export namespace Prisma {
 
   export type ProfileMinAggregateOutputType = {
     id: number | null
+    lastUpdateAt: Date | null
     emailAddress: string | null
     status: string | null
     circlesAddress: string | null
@@ -4028,6 +4030,7 @@ export namespace Prisma {
 
   export type ProfileMaxAggregateOutputType = {
     id: number | null
+    lastUpdateAt: Date | null
     emailAddress: string | null
     status: string | null
     circlesAddress: string | null
@@ -4048,6 +4051,7 @@ export namespace Prisma {
 
   export type ProfileCountAggregateOutputType = {
     id: number
+    lastUpdateAt: number
     emailAddress: number
     status: number
     circlesAddress: number
@@ -4080,6 +4084,7 @@ export namespace Prisma {
 
   export type ProfileMinAggregateInputType = {
     id?: true
+    lastUpdateAt?: true
     emailAddress?: true
     status?: true
     circlesAddress?: true
@@ -4100,6 +4105,7 @@ export namespace Prisma {
 
   export type ProfileMaxAggregateInputType = {
     id?: true
+    lastUpdateAt?: true
     emailAddress?: true
     status?: true
     circlesAddress?: true
@@ -4120,6 +4126,7 @@ export namespace Prisma {
 
   export type ProfileCountAggregateInputType = {
     id?: true
+    lastUpdateAt?: true
     emailAddress?: true
     status?: true
     circlesAddress?: true
@@ -4253,6 +4260,7 @@ export namespace Prisma {
 
   export type ProfileGroupByOutputType = {
     id: number
+    lastUpdateAt: Date
     emailAddress: string
     status: string | null
     circlesAddress: string | null
@@ -4292,6 +4300,7 @@ export namespace Prisma {
 
   export type ProfileSelect = {
     id?: boolean
+    lastUpdateAt?: boolean
     emailAddress?: boolean
     status?: boolean
     circlesAddress?: boolean
@@ -15750,6 +15759,7 @@ export namespace Prisma {
 
   export const ProfileScalarFieldEnum: {
     id: 'id',
+    lastUpdateAt: 'lastUpdateAt',
     emailAddress: 'emailAddress',
     status: 'status',
     circlesAddress: 'circlesAddress',
@@ -16100,6 +16110,7 @@ export namespace Prisma {
     OR?: Enumerable<ProfileWhereInput>
     NOT?: Enumerable<ProfileWhereInput>
     id?: IntFilter | number
+    lastUpdateAt?: DateTimeFilter | Date | string
     emailAddress?: StringFilter | string
     status?: StringNullableFilter | string | null
     circlesAddress?: StringNullableFilter | string | null
@@ -16133,6 +16144,7 @@ export namespace Prisma {
 
   export type ProfileOrderByInput = {
     id?: SortOrder
+    lastUpdateAt?: SortOrder
     emailAddress?: SortOrder
     status?: SortOrder
     circlesAddress?: SortOrder
@@ -16161,6 +16173,7 @@ export namespace Prisma {
     OR?: Enumerable<ProfileScalarWhereWithAggregatesInput>
     NOT?: Enumerable<ProfileScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
+    lastUpdateAt?: DateTimeWithAggregatesFilter | Date | string
     emailAddress?: StringWithAggregatesFilter | string
     status?: StringNullableWithAggregatesFilter | string | null
     circlesAddress?: StringNullableWithAggregatesFilter | string | null
@@ -16954,6 +16967,7 @@ export namespace Prisma {
   }
 
   export type ProfileCreateInput = {
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -16987,6 +17001,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedCreateInput = {
     id?: number
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -17019,6 +17034,7 @@ export namespace Prisma {
   }
 
   export type ProfileUpdateInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17052,6 +17068,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17085,6 +17102,7 @@ export namespace Prisma {
 
   export type ProfileCreateManyInput = {
     id?: number
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -17104,6 +17122,7 @@ export namespace Prisma {
   }
 
   export type ProfileUpdateManyMutationInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17124,6 +17143,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20715,6 +20735,7 @@ export namespace Prisma {
   }
 
   export type ProfileCreateWithoutSessionsInput = {
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -20747,6 +20768,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedCreateWithoutSessionsInput = {
     id?: number
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -20788,6 +20810,7 @@ export namespace Prisma {
   }
 
   export type ProfileUpdateWithoutSessionsInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20820,6 +20843,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedUpdateWithoutSessionsInput = {
     id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20851,6 +20875,7 @@ export namespace Prisma {
   }
 
   export type ProfileCreateWithoutInvitationsInput = {
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -20883,6 +20908,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedCreateWithoutInvitationsInput = {
     id?: number
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -20919,6 +20945,7 @@ export namespace Prisma {
   }
 
   export type ProfileCreateWithoutClaimedInvitationsInput = {
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -20951,6 +20978,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedCreateWithoutClaimedInvitationsInput = {
     id?: number
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -20987,6 +21015,7 @@ export namespace Prisma {
   }
 
   export type ProfileCreateWithoutRedeemedInvitationsInput = {
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -21019,6 +21048,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedCreateWithoutRedeemedInvitationsInput = {
     id?: number
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -21087,6 +21117,7 @@ export namespace Prisma {
   }
 
   export type ProfileUpdateWithoutInvitationsInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21119,6 +21150,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedUpdateWithoutInvitationsInput = {
     id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21155,6 +21187,7 @@ export namespace Prisma {
   }
 
   export type ProfileUpdateWithoutClaimedInvitationsInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21187,6 +21220,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedUpdateWithoutClaimedInvitationsInput = {
     id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21223,6 +21257,7 @@ export namespace Prisma {
   }
 
   export type ProfileUpdateWithoutRedeemedInvitationsInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21255,6 +21290,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedUpdateWithoutRedeemedInvitationsInput = {
     id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21314,6 +21350,7 @@ export namespace Prisma {
   }
 
   export type ProfileCreateWithoutRedeemInvitationRequestsInput = {
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -21346,6 +21383,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedCreateWithoutRedeemInvitationRequestsInput = {
     id?: number
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -21471,6 +21509,7 @@ export namespace Prisma {
   }
 
   export type ProfileUpdateWithoutRedeemInvitationRequestsInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21503,6 +21542,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedUpdateWithoutRedeemInvitationRequestsInput = {
     id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22434,6 +22474,7 @@ export namespace Prisma {
   }
 
   export type ProfileCreateWithoutSubscriptionsInput = {
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -22466,6 +22507,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedCreateWithoutSubscriptionsInput = {
     id?: number
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -22544,6 +22586,7 @@ export namespace Prisma {
   }
 
   export type ProfileCreateWithoutSubscribersInput = {
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -22576,6 +22619,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedCreateWithoutSubscribersInput = {
     id?: number
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -22617,6 +22661,7 @@ export namespace Prisma {
   }
 
   export type ProfileUpdateWithoutSubscriptionsInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22649,6 +22694,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedUpdateWithoutSubscriptionsInput = {
     id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22727,6 +22773,7 @@ export namespace Prisma {
   }
 
   export type ProfileUpdateWithoutSubscribersInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22759,6 +22806,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedUpdateWithoutSubscribersInput = {
     id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22790,6 +22838,7 @@ export namespace Prisma {
   }
 
   export type ProfileCreateWithoutEventsInput = {
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -22822,6 +22871,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedCreateWithoutEventsInput = {
     id?: number
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -22905,6 +22955,7 @@ export namespace Prisma {
   }
 
   export type ProfileUpdateWithoutEventsInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22937,6 +22988,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedUpdateWithoutEventsInput = {
     id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23122,6 +23174,7 @@ export namespace Prisma {
   }
 
   export type ProfileCreateWithoutIndexedTransactionRequestsInput = {
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -23154,6 +23207,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedCreateWithoutIndexedTransactionRequestsInput = {
     id?: number
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -23288,6 +23342,7 @@ export namespace Prisma {
   }
 
   export type ProfileUpdateWithoutIndexedTransactionRequestsInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23320,6 +23375,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedUpdateWithoutIndexedTransactionRequestsInput = {
     id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23473,6 +23529,7 @@ export namespace Prisma {
   }
 
   export type ProfileCreateWithoutIndexedTransactionsInput = {
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -23505,6 +23562,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedCreateWithoutIndexedTransactionsInput = {
     id?: number
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -23729,6 +23787,7 @@ export namespace Prisma {
   }
 
   export type ProfileUpdateWithoutIndexedTransactionsInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23761,6 +23820,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedUpdateWithoutIndexedTransactionsInput = {
     id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23884,6 +23944,7 @@ export namespace Prisma {
   }
 
   export type ProfileCreateWithoutOffersInput = {
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -23916,6 +23977,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedCreateWithoutOffersInput = {
     id?: number
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -24150,6 +24212,7 @@ export namespace Prisma {
   }
 
   export type ProfileUpdateWithoutOffersInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24182,6 +24245,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedUpdateWithoutOffersInput = {
     id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24357,6 +24421,7 @@ export namespace Prisma {
   }
 
   export type ProfileCreateWithoutPurchasesInput = {
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -24389,6 +24454,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedCreateWithoutPurchasesInput = {
     id?: number
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -24551,6 +24617,7 @@ export namespace Prisma {
   }
 
   export type ProfileUpdateWithoutPurchasesInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24583,6 +24650,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedUpdateWithoutPurchasesInput = {
     id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24860,6 +24928,7 @@ export namespace Prisma {
   }
 
   export type ProfileCreateWithoutTagsInput = {
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -24892,6 +24961,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedCreateWithoutTagsInput = {
     id?: number
+    lastUpdateAt?: Date | string
     emailAddress: string
     status?: string | null
     circlesAddress?: string | null
@@ -25232,6 +25302,7 @@ export namespace Prisma {
   }
 
   export type ProfileUpdateWithoutTagsInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25264,6 +25335,7 @@ export namespace Prisma {
 
   export type ProfileUncheckedUpdateWithoutTagsInput = {
     id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null

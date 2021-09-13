@@ -445,7 +445,13 @@ type RedeemClaimedInvitationResult {
 
 type CreateInvitationResult {
     success: Boolean!
-    error: String!
+    error: String
+}
+
+type SendMessageResult {
+    success: Boolean!
+    error: String
+    event: ProfileEvent
 }
 
 enum TrustDirection {
@@ -464,6 +470,7 @@ type TrustRelation {
 
 type Contact {
     safeAddress:String!
+    lastContactAt: String
     safeAddressProfile:Profile
     contactAddress:String!
     contactAddressProfile:Profile
@@ -487,11 +494,12 @@ type Mutation
 
     acknowledge(eventId:Int!): ProfileEvent!
 
+    # Creates an invitation and gives it a name
+    createInvitation(for:String!) : CreateInvitationResult!
     claimInvitation(code:String!): ClaimInvitationResult!
     redeemClaimedInvitation: RedeemClaimedInvitationResult!
 
-    # Creates an invitation and gives it a name
-    createInvitation(for:String!) : CreateInvitationResult!
+    sendMessage(toSafeAddress:String! type: String! content: String!) : SendMessageResult
 }
 
 type Query
@@ -500,7 +508,7 @@ type Query
     version : Version!
     sessionInfo: SessionInfo!
 
-    # Tries to find a claimed inivitation for the logged-on user.
+    # Tries to find a claimed invitation for the logged-on user.
     # A user can claim and redeem only one invitation ever.
     claimedInvitation: ClaimedInvitation
     invitationTransaction: ProfileEvent
@@ -509,8 +517,9 @@ type Query
 
     # Gets the created (noty invitations of the currently logged on user
     myInvitations: [CreatedInvitation!]!
-    events(safeAddress:String!, types:[String!]):[ProfileEvent!]!
+    events(safeAddress:String! types:[String!] fromBlock:Int toBlock:Int):[ProfileEvent!]!
     contacts(safeAddress:String!):[Contact!]!
+    chatHistory(safeAddress:String! contactSafeAddress:String!):[ProfileEvent!]!
     eventByTransactionHash(safeAddress:String! transactionHash: String! types:[String!]):[ProfileEvent!]!
     balance(safeAddress:String!) : String!
     trustRelations(safeAddress:String!):[TrustRelation!]!

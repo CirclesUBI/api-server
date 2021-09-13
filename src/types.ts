@@ -62,6 +62,7 @@ export type ConsumeDepositedChallengeResponse = {
 export type Contact = {
   __typename?: 'Contact';
   safeAddress: Scalars['String'];
+  lastContactAt?: Maybe<Scalars['String']>;
   safeAddressProfile?: Maybe<Profile>;
   contactAddress: Scalars['String'];
   contactAddressProfile?: Maybe<Profile>;
@@ -132,7 +133,7 @@ export type CrcTrust = IEventPayload & {
 export type CreateInvitationResult = {
   __typename?: 'CreateInvitationResult';
   success: Scalars['Boolean'];
-  error: Scalars['String'];
+  error?: Maybe<Scalars['String']>;
 };
 
 export type CreateTagInput = {
@@ -254,9 +255,10 @@ export type Mutation = {
   provePayment: ProvePaymentResult;
   upsertTag: Tag;
   acknowledge: ProfileEvent;
+  createInvitation: CreateInvitationResult;
   claimInvitation: ClaimInvitationResult;
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
-  createInvitation: CreateInvitationResult;
+  sendMessage?: Maybe<SendMessageResult>;
 };
 
 
@@ -320,13 +322,20 @@ export type MutationAcknowledgeArgs = {
 };
 
 
+export type MutationCreateInvitationArgs = {
+  for: Scalars['String'];
+};
+
+
 export type MutationClaimInvitationArgs = {
   code: Scalars['String'];
 };
 
 
-export type MutationCreateInvitationArgs = {
-  for: Scalars['String'];
+export type MutationSendMessageArgs = {
+  toSafeAddress: Scalars['String'];
+  type: Scalars['String'];
+  content: Scalars['String'];
 };
 
 export type Offer = {
@@ -432,6 +441,7 @@ export type Query = {
   myInvitations: Array<CreatedInvitation>;
   events: Array<ProfileEvent>;
   contacts: Array<Contact>;
+  chatHistory: Array<ProfileEvent>;
   eventByTransactionHash: Array<ProfileEvent>;
   balance: Scalars['String'];
   trustRelations: Array<TrustRelation>;
@@ -447,11 +457,19 @@ export type Query = {
 export type QueryEventsArgs = {
   safeAddress: Scalars['String'];
   types?: Maybe<Array<Scalars['String']>>;
+  fromBlock?: Maybe<Scalars['Int']>;
+  toBlock?: Maybe<Scalars['Int']>;
 };
 
 
 export type QueryContactsArgs = {
   safeAddress: Scalars['String'];
+};
+
+
+export type QueryChatHistoryArgs = {
+  safeAddress: Scalars['String'];
+  contactSafeAddress: Scalars['String'];
 };
 
 
@@ -568,6 +586,13 @@ export type RequestUpdateSafeResponse = {
 
 export type SearchInput = {
   searchString: Scalars['String'];
+};
+
+export type SendMessageResult = {
+  __typename?: 'SendMessageResult';
+  success: Scalars['Boolean'];
+  error?: Maybe<Scalars['String']>;
+  event?: Maybe<ProfileEvent>;
 };
 
 export type Server = {
@@ -811,6 +836,7 @@ export type ResolversTypes = ResolversObject<{
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: ResolverTypeWrapper<RequestUpdateSafeResponse>;
   SearchInput: SearchInput;
+  SendMessageResult: ResolverTypeWrapper<SendMessageResult>;
   Server: ResolverTypeWrapper<Server>;
   SessionInfo: ResolverTypeWrapper<SessionInfo>;
   Stats: ResolverTypeWrapper<Stats>;
@@ -881,6 +907,7 @@ export type ResolversParentTypes = ResolversObject<{
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: RequestUpdateSafeResponse;
   SearchInput: SearchInput;
+  SendMessageResult: SendMessageResult;
   Server: Server;
   SessionInfo: SessionInfo;
   Stats: Stats;
@@ -942,6 +969,7 @@ export type ConsumeDepositedChallengeResponseResolvers<ContextType = any, Parent
 
 export type ContactResolvers<ContextType = any, ParentType extends ResolversParentTypes['Contact'] = ResolversParentTypes['Contact']> = ResolversObject<{
   safeAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  lastContactAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   safeAddressProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   contactAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   contactAddressProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
@@ -1012,7 +1040,7 @@ export type CrcTrustResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type CreateInvitationResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateInvitationResult'] = ResolversParentTypes['CreateInvitationResult']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  error?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1125,9 +1153,10 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   provePayment?: Resolver<ResolversTypes['ProvePaymentResult'], ParentType, ContextType, RequireFields<MutationProvePaymentArgs, 'data'>>;
   upsertTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationUpsertTagArgs, 'data'>>;
   acknowledge?: Resolver<ResolversTypes['ProfileEvent'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'eventId'>>;
+  createInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType, RequireFields<MutationCreateInvitationArgs, 'for'>>;
   claimInvitation?: Resolver<ResolversTypes['ClaimInvitationResult'], ParentType, ContextType, RequireFields<MutationClaimInvitationArgs, 'code'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
-  createInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType, RequireFields<MutationCreateInvitationArgs, 'for'>>;
+  sendMessage?: Resolver<Maybe<ResolversTypes['SendMessageResult']>, ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'toSafeAddress' | 'type' | 'content'>>;
 }>;
 
 export type OfferResolvers<ContextType = any, ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']> = ResolversObject<{
@@ -1218,6 +1247,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   myInvitations?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'safeAddress'>>;
   contacts?: Resolver<Array<ResolversTypes['Contact']>, ParentType, ContextType, RequireFields<QueryContactsArgs, 'safeAddress'>>;
+  chatHistory?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryChatHistoryArgs, 'safeAddress' | 'contactSafeAddress'>>;
   eventByTransactionHash?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventByTransactionHashArgs, 'safeAddress' | 'transactionHash'>>;
   balance?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<QueryBalanceArgs, 'safeAddress'>>;
   trustRelations?: Resolver<Array<ResolversTypes['TrustRelation']>, ParentType, ContextType, RequireFields<QueryTrustRelationsArgs, 'safeAddress'>>;
@@ -1244,6 +1274,13 @@ export type RequestUpdateSafeResponseResolvers<ContextType = any, ParentType ext
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   challenge?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SendMessageResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['SendMessageResult'] = ResolversParentTypes['SendMessageResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  event?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1342,6 +1379,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   RedeemClaimedInvitationResult?: RedeemClaimedInvitationResultResolvers<ContextType>;
   RedeemInvitationRequest?: RedeemInvitationRequestResolvers<ContextType>;
   RequestUpdateSafeResponse?: RequestUpdateSafeResponseResolvers<ContextType>;
+  SendMessageResult?: SendMessageResultResolvers<ContextType>;
   Server?: ServerResolvers<ContextType>;
   SessionInfo?: SessionInfoResolvers<ContextType>;
   Stats?: StatsResolvers<ContextType>;

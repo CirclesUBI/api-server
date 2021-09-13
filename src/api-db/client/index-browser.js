@@ -11,12 +11,12 @@ const Prisma = {}
 exports.Prisma = Prisma
 
 /**
- * Prisma Client JS version: 2.28.0
- * Query Engine version: 89facabd0366f63911d089156a7a70125bfbcd27
+ * Prisma Client JS version: 2.30.2
+ * Query Engine version: b8c35d44de987a9691890b3ddf3e2e7effb9bf20
  */
 Prisma.prismaVersion = {
-  client: "2.28.0",
-  engine: "89facabd0366f63911d089156a7a70125bfbcd27"
+  client: "2.30.2",
+  engine: "b8c35d44de987a9691890b3ddf3e2e7effb9bf20"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -105,6 +105,7 @@ exports.Prisma.RedeemInvitationRequestScalarFieldEnum = makeEnum({
 
 exports.Prisma.ProfileScalarFieldEnum = makeEnum({
   id: 'id',
+  lastUpdateAt: 'lastUpdateAt',
   emailAddress: 'emailAddress',
   status: 'status',
   circlesAddress: 'circlesAddress',

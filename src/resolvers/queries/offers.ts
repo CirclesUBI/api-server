@@ -4,10 +4,8 @@ import {PrismaClient} from "../../api-db/client";
 
 export function offers(prisma:PrismaClient) {
     return async (parent:any, args:QueryOffersArgs, context: Context) => {
-        context.logger?.info([{
-            key: `call`,
-            value: `/resolvers/queries/offers.ts/offers(parent: any, args: QueryCitiesArgs, context: Context)`
-        }]);
+        
+
 
         const offers = await prisma.offer.findMany({
             where: {

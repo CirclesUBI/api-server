@@ -6,10 +6,8 @@ import {PrismaClient} from "../../api-db/client";
 
 export function transactions(prisma:PrismaClient) {
     return async (parent: any, args: QueryTransactionsArgs, context:Context) => {
-        context.logger?.info([{
-            key: `call`,
-            value: `/resolvers/queries/transactions.ts/transactions(prisma:PrismaClient)/async (parent: any, args: QueryTransactionsArgs, context:Context)`
-        }]);
+        
+
 
         const session = await context.verifySession();
         const profile = await prisma.profile.findUnique({where:{ emailAddress: session.emailAddress }});

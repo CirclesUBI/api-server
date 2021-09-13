@@ -31,6 +31,7 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
                 data: {
                     ...args.data,
                     id: args.data.id,
+                    lastUpdateAt: new Date(),
                     emailAddress: session.emailAddress
                 }
             });
@@ -43,6 +44,7 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
                 data: {
                     ...args.data,
                     id: undefined,
+                    lastUpdateAt: new Date(),
                     emailAddress: session.emailAddress
                 }
             });

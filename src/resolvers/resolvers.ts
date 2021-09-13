@@ -1,7 +1,7 @@
 import {profiles} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
-import {Profile, ProfileEvent, Resolvers, TrustDirection} from "../types";
+import {ProfileEvent, Resolvers} from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
 import {sessionInfo} from "./queries/sessionInfo";
@@ -31,6 +31,11 @@ import {claimedInvitation} from "./queries/claimedInvitation";
 import {Context} from "../context";
 import {ApiPubSub} from "../pubsub";
 import {PoolConfig} from "pg";
+import {events} from "./queries/queryEvents";
+import {balance} from "./queries/balance";
+import {trustRelations} from "./queries/trustRelations";
+import {contacts} from "./queries/contacts";
+import {chatHistory} from "./queries/chatHistory";
 
 const { Pool} = require('pg')
 const pool = new Pool(<PoolConfig>{
@@ -38,202 +43,6 @@ const pool = new Pool(<PoolConfig>{
 });
 
 const packageJson = require("../../package.json");
-
-const profileCache: { [safeAddress: string]: Profile } = {};
-
-
-async function queryEvents(
-  context:Context,
-  safeAddress?: string,
-  transactionHash?:string,
-  types?: string[])
-{
-  const validTypes: { [x: string]: boolean } = {
-    "crc_signup": true,
-    "crc_hub_transfer": true,
-    "crc_trust": true,
-    "crc_minting": true,
-    "eth_transfer": true,
-    "gnosis_safe_eth_transfer": true
-  };
-
-  let selectedTypes: string[];
-  if (!types) {
-    selectedTypes = Object.keys(validTypes);
-  } else {
-    selectedTypes = types.filter(o => validTypes[o]);
-  }
-
-  if (!safeAddress && !transactionHash) {
-    throw new Error(`One of the two parameters have to be specified: 'safeAddress', transactionHash`);
-  }
-
-  const transactionsQuery = `select transaction_id
-                      , timestamp
-                      , block_number
-                      , transaction_index
-                      , transaction_hash
-                      , type
-                      , safe_address
-                      , direction
-                      , value
-                      , obj as payload
-                   from crc_safe_timeline
-                   where ((safe_address != '' and safe_address = lower($1)) or $1 = '')
-                     and type=ANY($2)
-                     and (($3 != '' and transaction_hash = $3) or ($3 = ''))
-                   order by timestamp;`;
-
-  const transactionsQueryParameters = [safeAddress?.toLowerCase() ?? "", selectedTypes, transactionHash ?? ""];
-  const timeline = await pool.query(transactionsQuery, transactionsQueryParameters);
-  const classify = (row: any) => {
-    switch (row.type) {
-      case "crc_hub_transfer":
-        row.payload.__typename = "CrcHubTransfer";
-        return "CrcHubTransfer";
-      case "crc_organisation_signup":
-        row.payload.__typename = "CrcTrust";
-        return "CrcTrust";
-      case "crc_signup":
-        row.payload.__typename = "CrcSignup";
-        return "CrcSignup";
-      case "crc_trust":
-        row.payload.__typename = "CrcTrust";
-        return "CrcTrust";
-      case "crc_minting":
-        row.payload.__typename = "CrcMinting";
-        return "CrcMinting";
-      case "eth_transfer":
-        row.payload.__typename = "EthTransfer";
-        return "EthTransfer";
-      case "gnosis_safe_eth_transfer":
-        row.payload.__typename = "GnosisSafeEthTransfer";
-        return "GnosisSafeEthTransfer";
-      default:
-        return null;
-    }
-  };
-
-  const allSafeAddressesDict: { [safeAddress: string]: any } = {};
-  timeline.rows
-    .filter((o: ProfileEvent) => classify(o) != null)
-    .forEach((o: ProfileEvent) => {
-      const payload = o.payload;
-      if (!payload || !payload.__typename) {
-        return;
-      }
-      switch (payload.__typename) {
-        case "CrcSignup":
-          allSafeAddressesDict[payload.user] = null;
-          break;
-        case "CrcTrust":
-          allSafeAddressesDict[payload.address] = null;
-          allSafeAddressesDict[payload.can_send_to] = null;
-          break;
-        case "CrcTokenTransfer":
-          allSafeAddressesDict[payload.from] = null;
-          allSafeAddressesDict[payload.to] = null;
-          break;
-        case "CrcHubTransfer":
-          allSafeAddressesDict[payload.from] = null;
-          allSafeAddressesDict[payload.to] = null;
-          payload.transfers.forEach(t => {
-            allSafeAddressesDict[t.from] = null;
-            allSafeAddressesDict[t.to] = null;
-          });
-          break;
-        case "CrcMinting":
-          allSafeAddressesDict[payload.from] = null;
-          allSafeAddressesDict[payload.to] = null;
-          break;
-        case "EthTransfer":
-          allSafeAddressesDict[payload.from] = null;
-          allSafeAddressesDict[payload.to] = null;
-          break;
-        case "GnosisSafeEthTransfer":
-          allSafeAddressesDict[payload.from] = null;
-          allSafeAddressesDict[payload.to] = null;
-          break;
-      }
-    });
-
-  const allSafeAddressesArr = Object.keys(allSafeAddressesDict)
-    .map(o => o.toLowerCase());
-
-  const allCirclesLandProfiles = await profiles(prisma_api_ro)(null, {query: {circlesAddress: allSafeAddressesArr}}, context);
-  const allCirclesLandProfilesBySafeAddress: { [safeAddress: string]: Profile } = {};
-  allCirclesLandProfiles.forEach(p => {
-    if (!p.circlesAddress)
-      return;
-
-    allCirclesLandProfilesBySafeAddress[p.circlesAddress.toLowerCase()] = p;
-  });
-  const nonCirclesLandAddresses = allSafeAddressesArr.filter(o => !allCirclesLandProfilesBySafeAddress[o]);
-
-  timeline.rows
-    .filter((o: ProfileEvent) => classify(o) != null)
-    .forEach((o: ProfileEvent) => {
-      const payload = o.payload;
-      if (!payload || !payload.__typename) {
-        return;
-      }
-      switch (payload.__typename) {
-        case "CrcSignup":
-          payload.user_profile = allCirclesLandProfilesBySafeAddress[payload.user];
-          break;
-        case "CrcTrust":
-          payload.address_profile = allCirclesLandProfilesBySafeAddress[payload.address];
-          payload.can_send_to_profile = allCirclesLandProfilesBySafeAddress[payload.can_send_to];
-          break;
-        case "CrcTokenTransfer":
-          payload.from_profile = allCirclesLandProfilesBySafeAddress[payload.from];
-          payload.to_profile = allCirclesLandProfilesBySafeAddress[payload.to];
-          break;
-        case "CrcHubTransfer":
-          payload.from_profile = allCirclesLandProfilesBySafeAddress[payload.from];
-          payload.to_profile = allCirclesLandProfilesBySafeAddress[payload.to];
-          payload.transfers.forEach(t => {
-            t.from_profile = allCirclesLandProfilesBySafeAddress[t.from];
-            t.to_profile = allCirclesLandProfilesBySafeAddress[t.to];
-          });
-          break;
-        case "CrcMinting":
-          payload.from_profile = allCirclesLandProfilesBySafeAddress[payload.from];
-          payload.to_profile = allCirclesLandProfilesBySafeAddress[payload.to];
-          break;
-        case "EthTransfer":
-          payload.from_profile = allCirclesLandProfilesBySafeAddress[payload.from];
-          payload.to_profile = allCirclesLandProfilesBySafeAddress[payload.to];
-          break;
-        case "GnosisSafeEthTransfer":
-          payload.from_profile = allCirclesLandProfilesBySafeAddress[payload.from];
-          payload.to_profile = allCirclesLandProfilesBySafeAddress[payload.to];
-          break;
-      }
-    });
-
-  return timeline.rows
-    .filter((o: any) => classify(o) != null)
-    .map((o: any) => {
-      return <ProfileEvent>{
-        __typename: "ProfileEvent",
-        id: o.id,
-        safe_address: o.safe_address,
-        safe_address_profile: allCirclesLandProfilesBySafeAddress[o.safe_address],
-        type: o.type,
-        block_number: o.block_number,
-        direction: o.direction,
-        timestamp: o.timestamp,
-        value: o.value,
-        transaction_hash: o.transaction_hash,
-        transaction_index: o.transaction_index,
-        payload: {
-          __typename: classify(o),
-          ...o.payload
-        }
-      }
-    })
-}
 
 export const resolvers: Resolvers = {
   Profile: {
@@ -268,139 +77,12 @@ export const resolvers: Resolvers = {
     tags: tags(prisma_api_ro),
     tagById: tagById(prisma_api_ro),
     stats: stats(prisma_api_ro),
-    events: async (parent, args, context) => {
-      const safeAddress = args.safeAddress.toLowerCase();
-      return await queryEvents(context, (safeAddress ?? undefined), undefined, args.types ?? undefined);
-    },
-    eventByTransactionHash: async (parent, args, context) => {
-      const safeAddress = args.safeAddress.toLowerCase();
-      return await queryEvents(context, safeAddress, args.transactionHash, args.types ?? undefined);
-    },
-    balance: async (parent, args, context) => {
-      const safeAddress = args.safeAddress.toLowerCase();
-      const balanceQuery = `
-        select *
-        from crc_balances_by_safe
-        where safe_address = $1;`;
-      const balanceQueryParameters = [safeAddress];
-      const balanceResult = await pool.query(balanceQuery, balanceQueryParameters);
-      if (balanceResult.rows == 0) {
-        return "0";
-      }
-      return balanceResult.rows[0].balance;
-    },
-    trustRelations: async (parent, args, context) => {
-      const safeAddress = args.safeAddress.toLowerCase();
-
-      const trustQuery = `select "user"
-                               , "can_send_to"
-                          from crc_current_trust
-                          where ("user" = $1
-                              or "can_send_to" = $1)
-                            and "limit" > 0;`;
-
-      const trustQueryParameters = [safeAddress];
-      const trustQueryResult = await pool.query(trustQuery, trustQueryParameters);
-
-      const trusting:{[safeAddress:string]:boolean} = {};
-      trustQueryResult.rows
-        .filter((o:any) => o.can_send_to == safeAddress)
-        .forEach((o:any) => trusting[o.user] = true);
-
-      const trustedBy:{[safeAddress:string]:boolean} = {};
-      trustQueryResult.rows
-        .filter((o:any) => o.user == safeAddress)
-        .forEach((o:any) => trustedBy[o.can_send_to] = true);
-
-      const allSafeAddresses:{[safeAddress:string]:boolean} = {};
-      Object.keys(trusting)
-        .concat(Object.keys(trustedBy))
-        .forEach(o => allSafeAddresses[o] = true);
-
-      const allCirclesLandProfiles = await profiles(prisma_api_ro)(null, {
-        query: {circlesAddress: Object.keys(allSafeAddresses)}
-      }, context);
-
-      const allCirclesLandProfilesBySafeAddress: { [safeAddress: string]: Profile } = {};
-      allCirclesLandProfiles.forEach(p => {
-        if (!p.circlesAddress)
-          return;
-
-        allCirclesLandProfilesBySafeAddress[p.circlesAddress.toLowerCase()] = p;
-      });
-
-      return Object.keys(allSafeAddresses)
-        .map(o => {
-          return {
-            safeAddress: safeAddress,
-            safeAddressProfile: allCirclesLandProfilesBySafeAddress[safeAddress],
-            otherSafeAddress: o,
-            otherSafeAddressProfile: allCirclesLandProfilesBySafeAddress[o],
-            direction: trusting[o] && trustedBy[o]
-              ? TrustDirection.Mutual
-              : (
-                trusting[o]
-                ? TrustDirection.Out
-                : TrustDirection.In
-              )
-          }
-        })
-        .filter(o => o.safeAddress != o.otherSafeAddress);
-    },
-    contacts: async (parent, args, context) => {
-      const safeAddress = args.safeAddress.toLowerCase();
-
-      const contactsQuery = `WITH safe_contacts AS (
-          SELECT distinct max(b.timestamp) ts,
-                          crc_signup."user",
-                          case when cht.from = crc_signup."user" then cht."to" else cht."from" end as contact
-          FROM crc_hub_transfer cht
-                   JOIN crc_signup ON crc_signup."user" = cht."from" OR crc_signup."user" = cht."to"
-                   JOIN transaction t ON cht.transaction_id = t.id
-                   JOIN block b ON t.block_number = b.number
-          group by cht."from", crc_signup."user", cht."to"
-          UNION ALL
-          SELECT distinct max(b.timestamp),
-                          crc_signup."user",
-                          case when ct.can_send_to = crc_signup."user" then ct."address" else ct."can_send_to" end as contact
-          FROM crc_trust ct
-                   JOIN crc_signup ON crc_signup."user" = ct.address OR crc_signup."user" = ct.can_send_to
-                   JOIN transaction t ON ct.transaction_id = t.id
-                   JOIN block b ON t.block_number = b.number
-          group by ct."can_send_to", ct."address", crc_signup."user"
-      )
-                          SELECT max(st.ts) as last_contact_timestamp,
-                                 st."user" AS safe_address,
-                                 contact
-                          FROM safe_contacts st
-                          WHERE st."user" = $1
-                          group by st."user", contact
-                          order by max(st.ts) desc;`;
-
-      const contactsQueryParameters = [safeAddress];
-      const contactsQueryResult = await pool.query(contactsQuery, contactsQueryParameters);
-
-      return contactsQueryResult.rows.map((o:any) => {
-        return {
-          safeAddress,
-          safeAddressProfile: <Profile>{
-            id: 0,
-            firstName: safeAddress.substr(0, 10),
-            lastName: safeAddress.substr(0, 10),
-            circlesAddress: safeAddress,
-            avatarUrl: null
-          },
-          contactAddress: o.contact,
-          contactAddressProfile: <Profile>{
-            id: 0,
-            firstName: o.contact.substr(0, 10),
-            lastName: o.contact.substr(0, 10),
-            circlesAddress: o.contact,
-            avatarUrl: null
-          }
-        };
-      });
-    }
+    events: events(pool, prisma_api_ro),
+    eventByTransactionHash: events(pool, prisma_api_ro),
+    balance: balance(pool),
+    trustRelations: trustRelations(pool),
+    contacts: contacts(pool),
+    chatHistory: chatHistory(pool, prisma_api_ro)
     // transactions: transactions(prisma_api_ro),
     // events: events(prisma_api_ro),
     /*
@@ -461,7 +143,10 @@ export const resolvers: Resolvers = {
     requestUpdateSafe: requestUpdateSafe(prisma_api_rw),
     updateSafe: updateSafe(prisma_api_rw),
     upsertTag: upsertTag(prisma_api_ro, prisma_api_rw),
-
+    sendMessage: async (parent, args, context) => {
+      const session = await context.verifySession();
+       args.toSafeAddress
+    }
 
     // requestIndexTransaction: requestIndexTransaction(prisma_api_rw),
     // acknowledge: acknowledge(prisma_api_rw),

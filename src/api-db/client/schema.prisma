@@ -66,6 +66,7 @@ model RedeemInvitationRequest {
 
 model Profile {
     id Int @id @default(autoincrement())
+    lastUpdateAt DateTime @default(now())
     emailAddress String
     @@unique([emailAddress], name:"UX_Profile_EmailAddress")
 

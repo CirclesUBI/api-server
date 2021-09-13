@@ -4,10 +4,8 @@ import {PrismaClient} from "../../api-db/client";
 
 export function tagById(prisma:PrismaClient) {
     return async (parent: any, args: QueryTagByIdArgs, context:Context) => {
-        context.logger?.info([{
-            key: `call`,
-            value: `/resolvers/queries/tagById.ts/tagById(prisma:PrismaClient)/async (parent: any, args: QueryTagByIdArgs, context:Context)`
-        }]);
+        
+
         return await prisma.tag.findUnique({
             where: {
                 id: args.id

@@ -4,10 +4,8 @@ import {PrismaClient} from "../../api-db/client";
 
 export function search(prisma: PrismaClient) {
     return async (parent: any, args: QuerySearchArgs, context: Context) => {
-        context.logger?.info([{
-            key: `call`,
-            value: `/resolvers/queries/search.ts/search(prisma:PrismaClient)/async (parent: any, args: QuerySearchArgs, context: Context)`
-        }]);
+        
+
 
         const searchCirclesAddress: string = args.query.searchString.toLowerCase() + "%";
         const searchFirstName = args.query.searchString + "%";
