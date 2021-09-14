@@ -5,7 +5,6 @@ import {Session} from "./session";
 import {prisma_api_ro, prisma_api_rw} from "./apiDbClient";
 import {Logger, newLogger} from "./logger";
 
-
 export class Context {
     readonly id: string;
     readonly isSubscription: boolean;

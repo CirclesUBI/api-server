@@ -165,6 +165,19 @@ exports.Prisma.IndexTransactionRequestScalarFieldEnum = makeEnum({
   pickedAt: 'pickedAt'
 });
 
+exports.Prisma.MessageScalarFieldEnum = makeEnum({
+  id: 'id',
+  createdAt: 'createdAt',
+  createdByProfileId: 'createdByProfileId',
+  lastUpdateAt: 'lastUpdateAt',
+  typeTagId: 'typeTagId',
+  toSafeAddress: 'toSafeAddress',
+  transactionHash: 'transactionHash',
+  chainEventType: 'chainEventType',
+  chainEventId: 'chainEventId',
+  content: 'content'
+});
+
 exports.Prisma.IndexedTransactionScalarFieldEnum = makeEnum({
   id: 'id',
   fromRequestId: 'fromRequestId',
@@ -300,6 +313,7 @@ exports.Prisma.ModelName = makeEnum({
   Event: 'Event',
   IndexedTransactionLog: 'IndexedTransactionLog',
   IndexTransactionRequest: 'IndexTransactionRequest',
+  Message: 'Message',
   IndexedTransaction: 'IndexedTransaction',
   DelegatedChallenges: 'DelegatedChallenges',
   Offer: 'Offer',

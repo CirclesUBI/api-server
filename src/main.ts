@@ -2,7 +2,7 @@ import { createServer } from "http";
 import { execute, subscribe } from "graphql";
 import { SubscriptionServer } from "subscriptions-transport-ws";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import express from "express";
+import express, {NextFunction, Request, Response} from "express";
 import {ApolloServer} from "apollo-server-express";
 import {resolvers} from "./resolvers/resolvers";
 import {importSchema} from "graphql-import";
@@ -10,6 +10,7 @@ import {BlockchainIndexerConnection} from "./indexer-api/blockchainIndexerConnec
 import {Context} from "./context";
 import {Session} from "./session";
 import {newLogger} from "./logger";
+import {Error} from "apollo-server-core/src/plugin/schemaReporting/operations";
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
 
 // TODO: Migrate to GraphQL-tools: https://www.graphql-tools.com/docs/migration-from-import/
@@ -61,6 +62,9 @@ export class Main {
         })
 
         app.use(serverMiddleware);
+        app.use(function (err:any) {
+            console.error(err.stack)
+        })
 
         const subscriptionServer = SubscriptionServer.create({
             schema,

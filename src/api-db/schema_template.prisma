@@ -95,6 +95,7 @@ model Profile {
     purchases Purchase[]  @relation(name: "Purchase_CreatedBy")
     indexedTransactionRequests IndexTransactionRequest[]  @relation(name: "IndexTransactionRequest_CreatedBy")
     indexedTransactions IndexedTransaction[]  @relation(name: "IndexedTransaction_CreatedBy")
+    sentMessages Message[] @relation(name: "Message_CreatedBy")
 
     events Event[]  @relation(name: "Profile_Events")
 
@@ -201,6 +202,28 @@ model IndexTransactionRequest {
 
     indexedTransaction IndexedTransaction? @relation(name: "IndexTransaction_FromRequest")
     tags Tag[] @relation(name:"IndexTransactionRequest_Tags")
+}
+
+model Message {
+    id Int @id @default(autoincrement())
+
+    createdAt DateTime
+    createdBy Profile @relation(name: "Message_CreatedBy", fields: [createdByProfileId], references: [id])
+    createdByProfileId Int
+
+    lastUpdateAt DateTime
+
+    typeTag Tag? @relation(name: "Message_TypeTag", fields: [typeTagId], references: [id])
+    typeTagId Int?
+
+    toSafeAddress String // A message must always have a recipient safe address. Optionally it can be
+                         // attached to a transaction.
+
+    transactionHash String?   // A message can be attached to a transaction or
+    chainEventType String?    // indexed blockchain event (crc_hub_transfer etc.).
+    chainEventId BigInt?      // The primary key value for the table which corresponds with the chainEventType.
+
+    content String
 }
 
 model IndexedTransaction {
@@ -349,6 +372,7 @@ model Tag {
     offerUnit Offer[] @relation(name: "Offer_UnitTag")
     offerDeliveryTerms Offer[] @relation(name: "Offer_DeliveryTermsTag")
     indexedTransactionType IndexedTransaction[] @relation(name: "IndexedTransaction_TypeTag")
+    messageType Message[] @relation(name: "Message_TypeTag")
 
     indexTransactionRequest IndexTransactionRequest? @relation(name: "IndexTransactionRequest_Tags", fields: [indexTransactionRequestId], references: [id])
     indexTransactionRequestId Int?

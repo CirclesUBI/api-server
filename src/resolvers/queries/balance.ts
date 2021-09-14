@@ -1,21 +1,27 @@
 import {Context} from "../../context";
 import {Pool} from "pg";
+import {getPool} from "../resolvers";
 
-export function balance(pool:Pool) {
+export function balance() {
     return async (parent:any, args:any, context:Context) : Promise<string> => {
         const safeAddress = args.safeAddress.toLowerCase();
 
-        const balanceQuery = `
-            select *
-            from crc_balances_by_safe
-            where safe_address = $1;`;
+        const pool = getPool();
+        try {
+            const balanceQuery = `
+                select *
+                from crc_balances_by_safe
+                where safe_address = $1;`;
 
-        const balanceQueryParameters = [safeAddress];
-        const balanceResult = await pool.query(balanceQuery, balanceQueryParameters);
-        if (balanceResult.rows.length == 0) {
-            return "0";
+            const balanceQueryParameters = [safeAddress];
+            const balanceResult = await pool.query(balanceQuery, balanceQueryParameters);
+            if (balanceResult.rows.length == 0) {
+                return "0";
+            }
+
+            return balanceResult.rows[0].balance;
+        } finally {
+            await pool.end();
         }
-
-        return balanceResult.rows[0].balance;
     }
 }

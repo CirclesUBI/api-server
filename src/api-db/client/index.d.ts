@@ -140,6 +140,23 @@ export type IndexTransactionRequest = {
 }
 
 /**
+ * Model Message
+ */
+
+export type Message = {
+  id: number
+  createdAt: Date
+  createdByProfileId: number
+  lastUpdateAt: Date
+  typeTagId: number | null
+  toSafeAddress: string
+  transactionHash: string | null
+  chainEventType: string | null
+  chainEventId: bigint | null
+  content: string
+}
+
+/**
  * Model IndexedTransaction
  */
 
@@ -499,6 +516,16 @@ export class PrismaClient<
     * ```
     */
   get indexTransactionRequest(): Prisma.IndexTransactionRequestDelegate<GlobalReject>;
+
+  /**
+   * `prisma.message`: Exposes CRUD operations for the **Message** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Messages
+    * const messages = await prisma.message.findMany()
+    * ```
+    */
+  get message(): Prisma.MessageDelegate<GlobalReject>;
 
   /**
    * `prisma.indexedTransaction`: Exposes CRUD operations for the **IndexedTransaction** model.
@@ -947,6 +974,7 @@ export namespace Prisma {
     Event: 'Event',
     IndexedTransactionLog: 'IndexedTransactionLog',
     IndexTransactionRequest: 'IndexTransactionRequest',
+    Message: 'Message',
     IndexedTransaction: 'IndexedTransaction',
     DelegatedChallenges: 'DelegatedChallenges',
     Offer: 'Offer',
@@ -4323,6 +4351,7 @@ export namespace Prisma {
     purchases?: boolean | PurchaseFindManyArgs
     indexedTransactionRequests?: boolean | IndexTransactionRequestFindManyArgs
     indexedTransactions?: boolean | IndexedTransactionFindManyArgs
+    sentMessages?: boolean | MessageFindManyArgs
     events?: boolean | EventFindManyArgs
     invitations?: boolean | InvitationFindManyArgs
     redeemInvitationRequests?: boolean | RedeemInvitationRequestFindManyArgs
@@ -4339,6 +4368,7 @@ export namespace Prisma {
     purchases?: boolean | PurchaseFindManyArgs
     indexedTransactionRequests?: boolean | IndexTransactionRequestFindManyArgs
     indexedTransactions?: boolean | IndexedTransactionFindManyArgs
+    sentMessages?: boolean | MessageFindManyArgs
     events?: boolean | EventFindManyArgs
     invitations?: boolean | InvitationFindManyArgs
     redeemInvitationRequests?: boolean | RedeemInvitationRequestFindManyArgs
@@ -4371,6 +4401,8 @@ export namespace Prisma {
         ? Array < IndexTransactionRequestGetPayload<S['include'][P]>>  :
         P extends 'indexedTransactions'
         ? Array < IndexedTransactionGetPayload<S['include'][P]>>  :
+        P extends 'sentMessages'
+        ? Array < MessageGetPayload<S['include'][P]>>  :
         P extends 'events'
         ? Array < EventGetPayload<S['include'][P]>>  :
         P extends 'invitations'
@@ -4402,6 +4434,8 @@ export namespace Prisma {
         ? Array < IndexTransactionRequestGetPayload<S['select'][P]>>  :
         P extends 'indexedTransactions'
         ? Array < IndexedTransactionGetPayload<S['select'][P]>>  :
+        P extends 'sentMessages'
+        ? Array < MessageGetPayload<S['select'][P]>>  :
         P extends 'events'
         ? Array < EventGetPayload<S['select'][P]>>  :
         P extends 'invitations'
@@ -4766,6 +4800,8 @@ export namespace Prisma {
     indexedTransactionRequests<T extends IndexTransactionRequestFindManyArgs = {}>(args?: Subset<T, IndexTransactionRequestFindManyArgs>): CheckSelect<T, PrismaPromise<Array<IndexTransactionRequest>>, PrismaPromise<Array<IndexTransactionRequestGetPayload<T>>>>;
 
     indexedTransactions<T extends IndexedTransactionFindManyArgs = {}>(args?: Subset<T, IndexedTransactionFindManyArgs>): CheckSelect<T, PrismaPromise<Array<IndexedTransaction>>, PrismaPromise<Array<IndexedTransactionGetPayload<T>>>>;
+
+    sentMessages<T extends MessageFindManyArgs = {}>(args?: Subset<T, MessageFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Message>>, PrismaPromise<Array<MessageGetPayload<T>>>>;
 
     events<T extends EventFindManyArgs = {}>(args?: Subset<T, EventFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Event>>, PrismaPromise<Array<EventGetPayload<T>>>>;
 
@@ -8877,6 +8913,976 @@ export namespace Prisma {
      * 
     **/
     include?: IndexTransactionRequestInclude | null
+  }
+
+
+
+  /**
+   * Model Message
+   */
+
+
+  export type AggregateMessage = {
+    _count: MessageCountAggregateOutputType | null
+    count: MessageCountAggregateOutputType | null
+    _avg: MessageAvgAggregateOutputType | null
+    avg: MessageAvgAggregateOutputType | null
+    _sum: MessageSumAggregateOutputType | null
+    sum: MessageSumAggregateOutputType | null
+    _min: MessageMinAggregateOutputType | null
+    min: MessageMinAggregateOutputType | null
+    _max: MessageMaxAggregateOutputType | null
+    max: MessageMaxAggregateOutputType | null
+  }
+
+  export type MessageAvgAggregateOutputType = {
+    id: number | null
+    createdByProfileId: number | null
+    typeTagId: number | null
+    chainEventId: number | null
+  }
+
+  export type MessageSumAggregateOutputType = {
+    id: number | null
+    createdByProfileId: number | null
+    typeTagId: number | null
+    chainEventId: bigint | null
+  }
+
+  export type MessageMinAggregateOutputType = {
+    id: number | null
+    createdAt: Date | null
+    createdByProfileId: number | null
+    lastUpdateAt: Date | null
+    typeTagId: number | null
+    toSafeAddress: string | null
+    transactionHash: string | null
+    chainEventType: string | null
+    chainEventId: bigint | null
+    content: string | null
+  }
+
+  export type MessageMaxAggregateOutputType = {
+    id: number | null
+    createdAt: Date | null
+    createdByProfileId: number | null
+    lastUpdateAt: Date | null
+    typeTagId: number | null
+    toSafeAddress: string | null
+    transactionHash: string | null
+    chainEventType: string | null
+    chainEventId: bigint | null
+    content: string | null
+  }
+
+  export type MessageCountAggregateOutputType = {
+    id: number
+    createdAt: number
+    createdByProfileId: number
+    lastUpdateAt: number
+    typeTagId: number
+    toSafeAddress: number
+    transactionHash: number
+    chainEventType: number
+    chainEventId: number
+    content: number
+    _all: number
+  }
+
+
+  export type MessageAvgAggregateInputType = {
+    id?: true
+    createdByProfileId?: true
+    typeTagId?: true
+    chainEventId?: true
+  }
+
+  export type MessageSumAggregateInputType = {
+    id?: true
+    createdByProfileId?: true
+    typeTagId?: true
+    chainEventId?: true
+  }
+
+  export type MessageMinAggregateInputType = {
+    id?: true
+    createdAt?: true
+    createdByProfileId?: true
+    lastUpdateAt?: true
+    typeTagId?: true
+    toSafeAddress?: true
+    transactionHash?: true
+    chainEventType?: true
+    chainEventId?: true
+    content?: true
+  }
+
+  export type MessageMaxAggregateInputType = {
+    id?: true
+    createdAt?: true
+    createdByProfileId?: true
+    lastUpdateAt?: true
+    typeTagId?: true
+    toSafeAddress?: true
+    transactionHash?: true
+    chainEventType?: true
+    chainEventId?: true
+    content?: true
+  }
+
+  export type MessageCountAggregateInputType = {
+    id?: true
+    createdAt?: true
+    createdByProfileId?: true
+    lastUpdateAt?: true
+    typeTagId?: true
+    toSafeAddress?: true
+    transactionHash?: true
+    chainEventType?: true
+    chainEventId?: true
+    content?: true
+    _all?: true
+  }
+
+  export type MessageAggregateArgs = {
+    /**
+     * Filter which Message to aggregate.
+     * 
+    **/
+    where?: MessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Messages to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<MessageOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     * 
+    **/
+    cursor?: MessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Messages from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Messages.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Messages
+    **/
+    _count?: true | MessageCountAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_count`
+    **/
+    count?: true | MessageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: MessageAvgAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_avg`
+    **/
+    avg?: MessageAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: MessageSumAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_sum`
+    **/
+    sum?: MessageSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MessageMinAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_min`
+    **/
+    min?: MessageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MessageMaxAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_max`
+    **/
+    max?: MessageMaxAggregateInputType
+  }
+
+  export type GetMessageAggregateType<T extends MessageAggregateArgs> = {
+        [P in keyof T & keyof AggregateMessage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMessage[P]>
+      : GetScalarType<T[P], AggregateMessage[P]>
+  }
+
+
+    
+    
+  export type MessageGroupByArgs = {
+    where?: MessageWhereInput
+    orderBy?: Enumerable<MessageOrderByInput>
+    by: Array<MessageScalarFieldEnum>
+    having?: MessageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MessageCountAggregateInputType | true
+    _avg?: MessageAvgAggregateInputType
+    _sum?: MessageSumAggregateInputType
+    _min?: MessageMinAggregateInputType
+    _max?: MessageMaxAggregateInputType
+  }
+
+
+  export type MessageGroupByOutputType = {
+    id: number
+    createdAt: Date
+    createdByProfileId: number
+    lastUpdateAt: Date
+    typeTagId: number | null
+    toSafeAddress: string
+    transactionHash: string | null
+    chainEventType: string | null
+    chainEventId: bigint | null
+    content: string
+    _count: MessageCountAggregateOutputType | null
+    _avg: MessageAvgAggregateOutputType | null
+    _sum: MessageSumAggregateOutputType | null
+    _min: MessageMinAggregateOutputType | null
+    _max: MessageMaxAggregateOutputType | null
+  }
+
+  type GetMessageGroupByPayload<T extends MessageGroupByArgs> = Promise<
+    Array<
+      PickArray<MessageGroupByOutputType, T['by']> & 
+        {
+          [P in ((keyof T) & (keyof MessageGroupByOutputType))]: P extends '_count' 
+            ? T[P] extends boolean 
+              ? number 
+              : GetScalarType<T[P], MessageGroupByOutputType[P]> 
+            : GetScalarType<T[P], MessageGroupByOutputType[P]>
+        }
+      > 
+    >
+
+
+  export type MessageSelect = {
+    id?: boolean
+    createdAt?: boolean
+    createdBy?: boolean | ProfileArgs
+    createdByProfileId?: boolean
+    lastUpdateAt?: boolean
+    typeTag?: boolean | TagArgs
+    typeTagId?: boolean
+    toSafeAddress?: boolean
+    transactionHash?: boolean
+    chainEventType?: boolean
+    chainEventId?: boolean
+    content?: boolean
+  }
+
+  export type MessageInclude = {
+    createdBy?: boolean | ProfileArgs
+    typeTag?: boolean | TagArgs
+  }
+
+  export type MessageGetPayload<
+    S extends boolean | null | undefined | MessageArgs,
+    U = keyof S
+      > = S extends true
+        ? Message
+    : S extends undefined
+    ? never
+    : S extends MessageArgs | MessageFindManyArgs
+    ?'include' extends U
+    ? Message  & {
+    [P in TrueKeys<S['include']>]: 
+          P extends 'createdBy'
+        ? ProfileGetPayload<S['include'][P]> :
+        P extends 'typeTag'
+        ? TagGetPayload<S['include'][P]> | null : never
+  } 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]: P extends keyof Message ?Message [P]
+  : 
+          P extends 'createdBy'
+        ? ProfileGetPayload<S['select'][P]> :
+        P extends 'typeTag'
+        ? TagGetPayload<S['select'][P]> | null : never
+  } 
+    : Message
+  : Message
+
+
+  type MessageCountArgs = Merge<
+    Omit<MessageFindManyArgs, 'select' | 'include'> & {
+      select?: MessageCountAggregateInputType | true
+    }
+  >
+
+  export interface MessageDelegate<GlobalRejectSettings> {
+    /**
+     * Find zero or one Message that matches the filter.
+     * @param {MessageFindUniqueArgs} args - Arguments to find a Message
+     * @example
+     * // Get one Message
+     * const message = await prisma.message.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends MessageFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, MessageFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Message'> extends True ? CheckSelect<T, Prisma__MessageClient<Message>, Prisma__MessageClient<MessageGetPayload<T>>> : CheckSelect<T, Prisma__MessageClient<Message | null >, Prisma__MessageClient<MessageGetPayload<T> | null >>
+
+    /**
+     * Find the first Message that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageFindFirstArgs} args - Arguments to find a Message
+     * @example
+     * // Get one Message
+     * const message = await prisma.message.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends MessageFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, MessageFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Message'> extends True ? CheckSelect<T, Prisma__MessageClient<Message>, Prisma__MessageClient<MessageGetPayload<T>>> : CheckSelect<T, Prisma__MessageClient<Message | null >, Prisma__MessageClient<MessageGetPayload<T> | null >>
+
+    /**
+     * Find zero or more Messages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Messages
+     * const messages = await prisma.message.findMany()
+     * 
+     * // Get first 10 Messages
+     * const messages = await prisma.message.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const messageWithIdOnly = await prisma.message.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends MessageFindManyArgs>(
+      args?: SelectSubset<T, MessageFindManyArgs>
+    ): CheckSelect<T, PrismaPromise<Array<Message>>, PrismaPromise<Array<MessageGetPayload<T>>>>
+
+    /**
+     * Create a Message.
+     * @param {MessageCreateArgs} args - Arguments to create a Message.
+     * @example
+     * // Create one Message
+     * const Message = await prisma.message.create({
+     *   data: {
+     *     // ... data to create a Message
+     *   }
+     * })
+     * 
+    **/
+    create<T extends MessageCreateArgs>(
+      args: SelectSubset<T, MessageCreateArgs>
+    ): CheckSelect<T, Prisma__MessageClient<Message>, Prisma__MessageClient<MessageGetPayload<T>>>
+
+    /**
+     * Create many Messages.
+     *     @param {MessageCreateManyArgs} args - Arguments to create many Messages.
+     *     @example
+     *     // Create many Messages
+     *     const message = await prisma.message.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends MessageCreateManyArgs>(
+      args?: SelectSubset<T, MessageCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Message.
+     * @param {MessageDeleteArgs} args - Arguments to delete one Message.
+     * @example
+     * // Delete one Message
+     * const Message = await prisma.message.delete({
+     *   where: {
+     *     // ... filter to delete one Message
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends MessageDeleteArgs>(
+      args: SelectSubset<T, MessageDeleteArgs>
+    ): CheckSelect<T, Prisma__MessageClient<Message>, Prisma__MessageClient<MessageGetPayload<T>>>
+
+    /**
+     * Update one Message.
+     * @param {MessageUpdateArgs} args - Arguments to update one Message.
+     * @example
+     * // Update one Message
+     * const message = await prisma.message.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends MessageUpdateArgs>(
+      args: SelectSubset<T, MessageUpdateArgs>
+    ): CheckSelect<T, Prisma__MessageClient<Message>, Prisma__MessageClient<MessageGetPayload<T>>>
+
+    /**
+     * Delete zero or more Messages.
+     * @param {MessageDeleteManyArgs} args - Arguments to filter Messages to delete.
+     * @example
+     * // Delete a few Messages
+     * const { count } = await prisma.message.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends MessageDeleteManyArgs>(
+      args?: SelectSubset<T, MessageDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Messages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Messages
+     * const message = await prisma.message.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends MessageUpdateManyArgs>(
+      args: SelectSubset<T, MessageUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Message.
+     * @param {MessageUpsertArgs} args - Arguments to update or create a Message.
+     * @example
+     * // Update or create a Message
+     * const message = await prisma.message.upsert({
+     *   create: {
+     *     // ... data to create a Message
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Message we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends MessageUpsertArgs>(
+      args: SelectSubset<T, MessageUpsertArgs>
+    ): CheckSelect<T, Prisma__MessageClient<Message>, Prisma__MessageClient<MessageGetPayload<T>>>
+
+    /**
+     * Count the number of Messages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageCountArgs} args - Arguments to filter Messages to count.
+     * @example
+     * // Count the number of Messages
+     * const count = await prisma.message.count({
+     *   where: {
+     *     // ... the filter for the Messages we want to count
+     *   }
+     * })
+    **/
+    count<T extends MessageCountArgs>(
+      args?: Subset<T, MessageCountArgs>,
+    ): PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MessageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Message.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MessageAggregateArgs>(args: Subset<T, MessageAggregateArgs>): PrismaPromise<GetMessageAggregateType<T>>
+
+    /**
+     * Group by Message.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MessageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MessageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MessageGroupByArgs['orderBy'] }
+        : { orderBy?: MessageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MessageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMessageGroupByPayload<T> : Promise<InputErrors>
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Message.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in 
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__MessageClient<T> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+
+    createdBy<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
+
+    typeTag<T extends TagArgs = {}>(args?: Subset<T, TagArgs>): CheckSelect<T, Prisma__TagClient<Tag | null >, Prisma__TagClient<TagGetPayload<T> | null >>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+  // Custom InputTypes
+
+  /**
+   * Message findUnique
+   */
+  export type MessageFindUniqueArgs = {
+    /**
+     * Select specific fields to fetch from the Message
+     * 
+    **/
+    select?: MessageSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: MessageInclude | null
+    /**
+     * Throw an Error if a Message can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which Message to fetch.
+     * 
+    **/
+    where: MessageWhereUniqueInput
+  }
+
+
+  /**
+   * Message findFirst
+   */
+  export type MessageFindFirstArgs = {
+    /**
+     * Select specific fields to fetch from the Message
+     * 
+    **/
+    select?: MessageSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: MessageInclude | null
+    /**
+     * Throw an Error if a Message can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which Message to fetch.
+     * 
+    **/
+    where?: MessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Messages to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<MessageOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Messages.
+     * 
+    **/
+    cursor?: MessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Messages from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Messages.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Messages.
+     * 
+    **/
+    distinct?: Enumerable<MessageScalarFieldEnum>
+  }
+
+
+  /**
+   * Message findMany
+   */
+  export type MessageFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the Message
+     * 
+    **/
+    select?: MessageSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: MessageInclude | null
+    /**
+     * Filter, which Messages to fetch.
+     * 
+    **/
+    where?: MessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Messages to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<MessageOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Messages.
+     * 
+    **/
+    cursor?: MessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Messages from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Messages.
+     * 
+    **/
+    skip?: number
+    distinct?: Enumerable<MessageScalarFieldEnum>
+  }
+
+
+  /**
+   * Message create
+   */
+  export type MessageCreateArgs = {
+    /**
+     * Select specific fields to fetch from the Message
+     * 
+    **/
+    select?: MessageSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: MessageInclude | null
+    /**
+     * The data needed to create a Message.
+     * 
+    **/
+    data: XOR<MessageCreateInput, MessageUncheckedCreateInput>
+  }
+
+
+  /**
+   * Message createMany
+   */
+  export type MessageCreateManyArgs = {
+    data: Enumerable<MessageCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * Message update
+   */
+  export type MessageUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the Message
+     * 
+    **/
+    select?: MessageSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: MessageInclude | null
+    /**
+     * The data needed to update a Message.
+     * 
+    **/
+    data: XOR<MessageUpdateInput, MessageUncheckedUpdateInput>
+    /**
+     * Choose, which Message to update.
+     * 
+    **/
+    where: MessageWhereUniqueInput
+  }
+
+
+  /**
+   * Message updateMany
+   */
+  export type MessageUpdateManyArgs = {
+    data: XOR<MessageUpdateManyMutationInput, MessageUncheckedUpdateManyInput>
+    where?: MessageWhereInput
+  }
+
+
+  /**
+   * Message upsert
+   */
+  export type MessageUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the Message
+     * 
+    **/
+    select?: MessageSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: MessageInclude | null
+    /**
+     * The filter to search for the Message to update in case it exists.
+     * 
+    **/
+    where: MessageWhereUniqueInput
+    /**
+     * In case the Message found by the `where` argument doesn't exist, create a new Message with this data.
+     * 
+    **/
+    create: XOR<MessageCreateInput, MessageUncheckedCreateInput>
+    /**
+     * In case the Message was found with the provided `where` argument, update it with this data.
+     * 
+    **/
+    update: XOR<MessageUpdateInput, MessageUncheckedUpdateInput>
+  }
+
+
+  /**
+   * Message delete
+   */
+  export type MessageDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the Message
+     * 
+    **/
+    select?: MessageSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: MessageInclude | null
+    /**
+     * Filter which Message to delete.
+     * 
+    **/
+    where: MessageWhereUniqueInput
+  }
+
+
+  /**
+   * Message deleteMany
+   */
+  export type MessageDeleteManyArgs = {
+    where?: MessageWhereInput
+  }
+
+
+  /**
+   * Message without action
+   */
+  export type MessageArgs = {
+    /**
+     * Select specific fields to fetch from the Message
+     * 
+    **/
+    select?: MessageSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: MessageInclude | null
   }
 
 
@@ -14976,6 +15982,7 @@ export namespace Prisma {
     offerUnit?: boolean | OfferFindManyArgs
     offerDeliveryTerms?: boolean | OfferFindManyArgs
     indexedTransactionType?: boolean | IndexedTransactionFindManyArgs
+    messageType?: boolean | MessageFindManyArgs
     indexTransactionRequest?: boolean | IndexTransactionRequestArgs
     indexTransactionRequestId?: boolean
     indexedTransaction?: boolean | IndexedTransactionArgs
@@ -14989,6 +15996,7 @@ export namespace Prisma {
     offerUnit?: boolean | OfferFindManyArgs
     offerDeliveryTerms?: boolean | OfferFindManyArgs
     indexedTransactionType?: boolean | IndexedTransactionFindManyArgs
+    messageType?: boolean | MessageFindManyArgs
     indexTransactionRequest?: boolean | IndexTransactionRequestArgs
     indexedTransaction?: boolean | IndexedTransactionArgs
   }
@@ -15016,6 +16024,8 @@ export namespace Prisma {
         ? Array < OfferGetPayload<S['include'][P]>>  :
         P extends 'indexedTransactionType'
         ? Array < IndexedTransactionGetPayload<S['include'][P]>>  :
+        P extends 'messageType'
+        ? Array < MessageGetPayload<S['include'][P]>>  :
         P extends 'indexTransactionRequest'
         ? IndexTransactionRequestGetPayload<S['include'][P]> | null :
         P extends 'indexedTransaction'
@@ -15037,6 +16047,8 @@ export namespace Prisma {
         ? Array < OfferGetPayload<S['select'][P]>>  :
         P extends 'indexedTransactionType'
         ? Array < IndexedTransactionGetPayload<S['select'][P]>>  :
+        P extends 'messageType'
+        ? Array < MessageGetPayload<S['select'][P]>>  :
         P extends 'indexTransactionRequest'
         ? IndexTransactionRequestGetPayload<S['select'][P]> | null :
         P extends 'indexedTransaction'
@@ -15391,6 +16403,8 @@ export namespace Prisma {
     offerDeliveryTerms<T extends OfferFindManyArgs = {}>(args?: Subset<T, OfferFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Offer>>, PrismaPromise<Array<OfferGetPayload<T>>>>;
 
     indexedTransactionType<T extends IndexedTransactionFindManyArgs = {}>(args?: Subset<T, IndexedTransactionFindManyArgs>): CheckSelect<T, PrismaPromise<Array<IndexedTransaction>>, PrismaPromise<Array<IndexedTransactionGetPayload<T>>>>;
+
+    messageType<T extends MessageFindManyArgs = {}>(args?: Subset<T, MessageFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Message>>, PrismaPromise<Array<MessageGetPayload<T>>>>;
 
     indexTransactionRequest<T extends IndexTransactionRequestArgs = {}>(args?: Subset<T, IndexTransactionRequestArgs>): CheckSelect<T, Prisma__IndexTransactionRequestClient<IndexTransactionRequest | null >, Prisma__IndexTransactionRequestClient<IndexTransactionRequestGetPayload<T> | null >>;
 
@@ -15834,6 +16848,22 @@ export namespace Prisma {
   export type IndexTransactionRequestScalarFieldEnum = (typeof IndexTransactionRequestScalarFieldEnum)[keyof typeof IndexTransactionRequestScalarFieldEnum]
 
 
+  export const MessageScalarFieldEnum: {
+    id: 'id',
+    createdAt: 'createdAt',
+    createdByProfileId: 'createdByProfileId',
+    lastUpdateAt: 'lastUpdateAt',
+    typeTagId: 'typeTagId',
+    toSafeAddress: 'toSafeAddress',
+    transactionHash: 'transactionHash',
+    chainEventType: 'chainEventType',
+    chainEventId: 'chainEventId',
+    content: 'content'
+  };
+
+  export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
+
+
   export const IndexedTransactionScalarFieldEnum: {
     id: 'id',
     fromRequestId: 'fromRequestId',
@@ -16133,6 +17163,7 @@ export namespace Prisma {
     purchases?: PurchaseListRelationFilter
     indexedTransactionRequests?: IndexTransactionRequestListRelationFilter
     indexedTransactions?: IndexedTransactionListRelationFilter
+    sentMessages?: MessageListRelationFilter
     events?: EventListRelationFilter
     invitations?: InvitationListRelationFilter
     redeemInvitationRequests?: RedeemInvitationRequestListRelationFilter
@@ -16362,6 +17393,57 @@ export namespace Prisma {
     transactionHash?: StringWithAggregatesFilter | string
     workerProcess?: StringNullableWithAggregatesFilter | string | null
     pickedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
+  }
+
+  export type MessageWhereInput = {
+    AND?: Enumerable<MessageWhereInput>
+    OR?: Enumerable<MessageWhereInput>
+    NOT?: Enumerable<MessageWhereInput>
+    id?: IntFilter | number
+    createdAt?: DateTimeFilter | Date | string
+    createdBy?: XOR<ProfileRelationFilter, ProfileWhereInput>
+    createdByProfileId?: IntFilter | number
+    lastUpdateAt?: DateTimeFilter | Date | string
+    typeTag?: XOR<TagRelationFilter, TagWhereInput> | null
+    typeTagId?: IntNullableFilter | number | null
+    toSafeAddress?: StringFilter | string
+    transactionHash?: StringNullableFilter | string | null
+    chainEventType?: StringNullableFilter | string | null
+    chainEventId?: BigIntNullableFilter | bigint | number | null
+    content?: StringFilter | string
+  }
+
+  export type MessageOrderByInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    createdByProfileId?: SortOrder
+    lastUpdateAt?: SortOrder
+    typeTagId?: SortOrder
+    toSafeAddress?: SortOrder
+    transactionHash?: SortOrder
+    chainEventType?: SortOrder
+    chainEventId?: SortOrder
+    content?: SortOrder
+  }
+
+  export type MessageWhereUniqueInput = {
+    id?: number
+  }
+
+  export type MessageScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<MessageScalarWhereWithAggregatesInput>
+    OR?: Enumerable<MessageScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<MessageScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    createdByProfileId?: IntWithAggregatesFilter | number
+    lastUpdateAt?: DateTimeWithAggregatesFilter | Date | string
+    typeTagId?: IntNullableWithAggregatesFilter | number | null
+    toSafeAddress?: StringWithAggregatesFilter | string
+    transactionHash?: StringNullableWithAggregatesFilter | string | null
+    chainEventType?: StringNullableWithAggregatesFilter | string | null
+    chainEventId?: BigIntNullableWithAggregatesFilter | bigint | number | null
+    content?: StringWithAggregatesFilter | string
   }
 
   export type IndexedTransactionWhereInput = {
@@ -16704,6 +17786,7 @@ export namespace Prisma {
     offerUnit?: OfferListRelationFilter
     offerDeliveryTerms?: OfferListRelationFilter
     indexedTransactionType?: IndexedTransactionListRelationFilter
+    messageType?: MessageListRelationFilter
     indexTransactionRequest?: XOR<IndexTransactionRequestRelationFilter, IndexTransactionRequestWhereInput> | null
     indexTransactionRequestId?: IntNullableFilter | number | null
     indexedTransaction?: XOR<IndexedTransactionRelationFilter, IndexedTransactionWhereInput> | null
@@ -16990,6 +18073,7 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
     events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -17024,6 +18108,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
     events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -17057,6 +18142,7 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUpdateManyWithoutCreatedByInput
     events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -17091,6 +18177,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
     events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -17442,6 +18529,92 @@ export namespace Prisma {
     transactionHash?: StringFieldUpdateOperationsInput | string
     workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
     pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type MessageCreateInput = {
+    createdAt: Date | string
+    lastUpdateAt: Date | string
+    toSafeAddress: string
+    transactionHash?: string | null
+    chainEventType?: string | null
+    chainEventId?: bigint | number | null
+    content: string
+    createdBy: ProfileCreateNestedOneWithoutSentMessagesInput
+    typeTag?: TagCreateNestedOneWithoutMessageTypeInput
+  }
+
+  export type MessageUncheckedCreateInput = {
+    id?: number
+    createdAt: Date | string
+    createdByProfileId: number
+    lastUpdateAt: Date | string
+    typeTagId?: number | null
+    toSafeAddress: string
+    transactionHash?: string | null
+    chainEventType?: string | null
+    chainEventId?: bigint | number | null
+    content: string
+  }
+
+  export type MessageUpdateInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    toSafeAddress?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventType?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventId?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    content?: StringFieldUpdateOperationsInput | string
+    createdBy?: ProfileUpdateOneRequiredWithoutSentMessagesInput
+    typeTag?: TagUpdateOneWithoutMessageTypeInput
+  }
+
+  export type MessageUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    typeTagId?: NullableIntFieldUpdateOperationsInput | number | null
+    toSafeAddress?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventType?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventId?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    content?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type MessageCreateManyInput = {
+    id?: number
+    createdAt: Date | string
+    createdByProfileId: number
+    lastUpdateAt: Date | string
+    typeTagId?: number | null
+    toSafeAddress: string
+    transactionHash?: string | null
+    chainEventType?: string | null
+    chainEventId?: bigint | number | null
+    content: string
+  }
+
+  export type MessageUpdateManyMutationInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    toSafeAddress?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventType?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventId?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    content?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type MessageUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    typeTagId?: NullableIntFieldUpdateOperationsInput | number | null
+    toSafeAddress?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventType?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventId?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    content?: StringFieldUpdateOperationsInput | string
   }
 
   export type IndexedTransactionCreateInput = {
@@ -18026,6 +19199,7 @@ export namespace Prisma {
     offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
+    messageType?: MessageCreateNestedManyWithoutTypeTagInput
     indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
     indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
   }
@@ -18043,6 +19217,7 @@ export namespace Prisma {
     offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
+    messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
   }
 
   export type TagUpdateInput = {
@@ -18055,6 +19230,7 @@ export namespace Prisma {
     offerUnit?: OfferUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
+    messageType?: MessageUpdateManyWithoutTypeTagInput
     indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
     indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
   }
@@ -18072,6 +19248,7 @@ export namespace Prisma {
     offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
+    messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
   }
 
   export type TagCreateManyInput = {
@@ -18444,6 +19621,12 @@ export namespace Prisma {
     none?: IndexedTransactionWhereInput
   }
 
+  export type MessageListRelationFilter = {
+    every?: MessageWhereInput
+    some?: MessageWhereInput
+    none?: MessageWhereInput
+  }
+
   export type EventListRelationFilter = {
     every?: EventWhereInput
     some?: EventWhereInput
@@ -18530,6 +19713,63 @@ export namespace Prisma {
     isEmpty?: boolean
   }
 
+  export type TagRelationFilter = {
+    is?: TagWhereInput | null
+    isNot?: TagWhereInput | null
+  }
+
+  export type BigIntNullableFilter = {
+    equals?: bigint | number | null
+    in?: Enumerable<bigint> | Enumerable<number> | null
+    notIn?: Enumerable<bigint> | Enumerable<number> | null
+    lt?: bigint | number
+    lte?: bigint | number
+    gt?: bigint | number
+    gte?: bigint | number
+    not?: NestedBigIntNullableFilter | bigint | number | null
+  }
+
+  export type BigIntNullableWithAggregatesFilter = {
+    equals?: bigint | number | null
+    in?: Enumerable<bigint> | Enumerable<number> | null
+    notIn?: Enumerable<bigint> | Enumerable<number> | null
+    lt?: bigint | number
+    lte?: bigint | number
+    gt?: bigint | number
+    gte?: bigint | number
+    not?: NestedBigIntNullableWithAggregatesFilter | bigint | number | null
+    _count?: NestedIntNullableFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    count?: NestedIntNullableFilter
+    _avg?: NestedFloatNullableFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    avg?: NestedFloatNullableFilter
+    _sum?: NestedBigIntNullableFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    sum?: NestedBigIntNullableFilter
+    _min?: NestedBigIntNullableFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    min?: NestedBigIntNullableFilter
+    _max?: NestedBigIntNullableFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    max?: NestedBigIntNullableFilter
+  }
+
   export type IndexTransactionRequestRelationFilter = {
     is?: IndexTransactionRequestWhereInput | null
     isNot?: IndexTransactionRequestWhereInput | null
@@ -18538,11 +19778,6 @@ export namespace Prisma {
   export type RedeemInvitationRequestRelationFilter = {
     is?: RedeemInvitationRequestWhereInput | null
     isNot?: RedeemInvitationRequestWhereInput | null
-  }
-
-  export type TagRelationFilter = {
-    is?: TagWhereInput | null
-    isNot?: TagWhereInput | null
   }
 
   export type IndexedTransactionLogListRelationFilter = {
@@ -18865,6 +20100,13 @@ export namespace Prisma {
     connect?: Enumerable<IndexedTransactionWhereUniqueInput>
   }
 
+  export type MessageCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<Enumerable<MessageCreateWithoutCreatedByInput>, Enumerable<MessageUncheckedCreateWithoutCreatedByInput>>
+    connectOrCreate?: Enumerable<MessageCreateOrConnectWithoutCreatedByInput>
+    createMany?: MessageCreateManyCreatedByInputEnvelope
+    connect?: Enumerable<MessageWhereUniqueInput>
+  }
+
   export type EventCreateNestedManyWithoutProfileInput = {
     create?: XOR<Enumerable<EventCreateWithoutProfileInput>, Enumerable<EventUncheckedCreateWithoutProfileInput>>
     connectOrCreate?: Enumerable<EventCreateOrConnectWithoutProfileInput>
@@ -18954,6 +20196,13 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<IndexedTransactionCreateOrConnectWithoutCreatedByInput>
     createMany?: IndexedTransactionCreateManyCreatedByInputEnvelope
     connect?: Enumerable<IndexedTransactionWhereUniqueInput>
+  }
+
+  export type MessageUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<Enumerable<MessageCreateWithoutCreatedByInput>, Enumerable<MessageUncheckedCreateWithoutCreatedByInput>>
+    connectOrCreate?: Enumerable<MessageCreateOrConnectWithoutCreatedByInput>
+    createMany?: MessageCreateManyCreatedByInputEnvelope
+    connect?: Enumerable<MessageWhereUniqueInput>
   }
 
   export type EventUncheckedCreateNestedManyWithoutProfileInput = {
@@ -19091,6 +20340,20 @@ export namespace Prisma {
     update?: Enumerable<IndexedTransactionUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<IndexedTransactionUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<IndexedTransactionScalarWhereInput>
+  }
+
+  export type MessageUpdateManyWithoutCreatedByInput = {
+    create?: XOR<Enumerable<MessageCreateWithoutCreatedByInput>, Enumerable<MessageUncheckedCreateWithoutCreatedByInput>>
+    connectOrCreate?: Enumerable<MessageCreateOrConnectWithoutCreatedByInput>
+    upsert?: Enumerable<MessageUpsertWithWhereUniqueWithoutCreatedByInput>
+    createMany?: MessageCreateManyCreatedByInputEnvelope
+    connect?: Enumerable<MessageWhereUniqueInput>
+    set?: Enumerable<MessageWhereUniqueInput>
+    disconnect?: Enumerable<MessageWhereUniqueInput>
+    delete?: Enumerable<MessageWhereUniqueInput>
+    update?: Enumerable<MessageUpdateWithWhereUniqueWithoutCreatedByInput>
+    updateMany?: Enumerable<MessageUpdateManyWithWhereWithoutCreatedByInput>
+    deleteMany?: Enumerable<MessageScalarWhereInput>
   }
 
   export type EventUpdateManyWithoutProfileInput = {
@@ -19273,6 +20536,20 @@ export namespace Prisma {
     update?: Enumerable<IndexedTransactionUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<IndexedTransactionUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<IndexedTransactionScalarWhereInput>
+  }
+
+  export type MessageUncheckedUpdateManyWithoutCreatedByInput = {
+    create?: XOR<Enumerable<MessageCreateWithoutCreatedByInput>, Enumerable<MessageUncheckedCreateWithoutCreatedByInput>>
+    connectOrCreate?: Enumerable<MessageCreateOrConnectWithoutCreatedByInput>
+    upsert?: Enumerable<MessageUpsertWithWhereUniqueWithoutCreatedByInput>
+    createMany?: MessageCreateManyCreatedByInputEnvelope
+    connect?: Enumerable<MessageWhereUniqueInput>
+    set?: Enumerable<MessageWhereUniqueInput>
+    disconnect?: Enumerable<MessageWhereUniqueInput>
+    delete?: Enumerable<MessageWhereUniqueInput>
+    update?: Enumerable<MessageUpdateWithWhereUniqueWithoutCreatedByInput>
+    updateMany?: Enumerable<MessageUpdateManyWithWhereWithoutCreatedByInput>
+    deleteMany?: Enumerable<MessageScalarWhereInput>
   }
 
   export type EventUncheckedUpdateManyWithoutProfileInput = {
@@ -19568,6 +20845,44 @@ export namespace Prisma {
     update?: Enumerable<TagUpdateWithWhereUniqueWithoutIndexTransactionRequestInput>
     updateMany?: Enumerable<TagUpdateManyWithWhereWithoutIndexTransactionRequestInput>
     deleteMany?: Enumerable<TagScalarWhereInput>
+  }
+
+  export type ProfileCreateNestedOneWithoutSentMessagesInput = {
+    create?: XOR<ProfileCreateWithoutSentMessagesInput, ProfileUncheckedCreateWithoutSentMessagesInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutSentMessagesInput
+    connect?: ProfileWhereUniqueInput
+  }
+
+  export type TagCreateNestedOneWithoutMessageTypeInput = {
+    create?: XOR<TagCreateWithoutMessageTypeInput, TagUncheckedCreateWithoutMessageTypeInput>
+    connectOrCreate?: TagCreateOrConnectWithoutMessageTypeInput
+    connect?: TagWhereUniqueInput
+  }
+
+  export type NullableBigIntFieldUpdateOperationsInput = {
+    set?: bigint | number | null
+    increment?: bigint | number
+    decrement?: bigint | number
+    multiply?: bigint | number
+    divide?: bigint | number
+  }
+
+  export type ProfileUpdateOneRequiredWithoutSentMessagesInput = {
+    create?: XOR<ProfileCreateWithoutSentMessagesInput, ProfileUncheckedCreateWithoutSentMessagesInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutSentMessagesInput
+    upsert?: ProfileUpsertWithoutSentMessagesInput
+    connect?: ProfileWhereUniqueInput
+    update?: XOR<ProfileUpdateWithoutSentMessagesInput, ProfileUncheckedUpdateWithoutSentMessagesInput>
+  }
+
+  export type TagUpdateOneWithoutMessageTypeInput = {
+    create?: XOR<TagCreateWithoutMessageTypeInput, TagUncheckedCreateWithoutMessageTypeInput>
+    connectOrCreate?: TagCreateOrConnectWithoutMessageTypeInput
+    upsert?: TagUpsertWithoutMessageTypeInput
+    connect?: TagWhereUniqueInput
+    disconnect?: boolean
+    delete?: boolean
+    update?: XOR<TagUpdateWithoutMessageTypeInput, TagUncheckedUpdateWithoutMessageTypeInput>
   }
 
   export type IndexTransactionRequestCreateNestedOneWithoutIndexedTransactionInput = {
@@ -20124,6 +21439,13 @@ export namespace Prisma {
     connect?: Enumerable<IndexedTransactionWhereUniqueInput>
   }
 
+  export type MessageCreateNestedManyWithoutTypeTagInput = {
+    create?: XOR<Enumerable<MessageCreateWithoutTypeTagInput>, Enumerable<MessageUncheckedCreateWithoutTypeTagInput>>
+    connectOrCreate?: Enumerable<MessageCreateOrConnectWithoutTypeTagInput>
+    createMany?: MessageCreateManyTypeTagInputEnvelope
+    connect?: Enumerable<MessageWhereUniqueInput>
+  }
+
   export type IndexTransactionRequestCreateNestedOneWithoutTagsInput = {
     create?: XOR<IndexTransactionRequestCreateWithoutTagsInput, IndexTransactionRequestUncheckedCreateWithoutTagsInput>
     connectOrCreate?: IndexTransactionRequestCreateOrConnectWithoutTagsInput
@@ -20162,6 +21484,13 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<IndexedTransactionCreateOrConnectWithoutTypeTagInput>
     createMany?: IndexedTransactionCreateManyTypeTagInputEnvelope
     connect?: Enumerable<IndexedTransactionWhereUniqueInput>
+  }
+
+  export type MessageUncheckedCreateNestedManyWithoutTypeTagInput = {
+    create?: XOR<Enumerable<MessageCreateWithoutTypeTagInput>, Enumerable<MessageUncheckedCreateWithoutTypeTagInput>>
+    connectOrCreate?: Enumerable<MessageCreateOrConnectWithoutTypeTagInput>
+    createMany?: MessageCreateManyTypeTagInputEnvelope
+    connect?: Enumerable<MessageWhereUniqueInput>
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -20240,6 +21569,20 @@ export namespace Prisma {
     deleteMany?: Enumerable<IndexedTransactionScalarWhereInput>
   }
 
+  export type MessageUpdateManyWithoutTypeTagInput = {
+    create?: XOR<Enumerable<MessageCreateWithoutTypeTagInput>, Enumerable<MessageUncheckedCreateWithoutTypeTagInput>>
+    connectOrCreate?: Enumerable<MessageCreateOrConnectWithoutTypeTagInput>
+    upsert?: Enumerable<MessageUpsertWithWhereUniqueWithoutTypeTagInput>
+    createMany?: MessageCreateManyTypeTagInputEnvelope
+    connect?: Enumerable<MessageWhereUniqueInput>
+    set?: Enumerable<MessageWhereUniqueInput>
+    disconnect?: Enumerable<MessageWhereUniqueInput>
+    delete?: Enumerable<MessageWhereUniqueInput>
+    update?: Enumerable<MessageUpdateWithWhereUniqueWithoutTypeTagInput>
+    updateMany?: Enumerable<MessageUpdateManyWithWhereWithoutTypeTagInput>
+    deleteMany?: Enumerable<MessageScalarWhereInput>
+  }
+
   export type IndexTransactionRequestUpdateOneWithoutTagsInput = {
     create?: XOR<IndexTransactionRequestCreateWithoutTagsInput, IndexTransactionRequestUncheckedCreateWithoutTagsInput>
     connectOrCreate?: IndexTransactionRequestCreateOrConnectWithoutTagsInput
@@ -20314,6 +21657,20 @@ export namespace Prisma {
     update?: Enumerable<IndexedTransactionUpdateWithWhereUniqueWithoutTypeTagInput>
     updateMany?: Enumerable<IndexedTransactionUpdateManyWithWhereWithoutTypeTagInput>
     deleteMany?: Enumerable<IndexedTransactionScalarWhereInput>
+  }
+
+  export type MessageUncheckedUpdateManyWithoutTypeTagInput = {
+    create?: XOR<Enumerable<MessageCreateWithoutTypeTagInput>, Enumerable<MessageUncheckedCreateWithoutTypeTagInput>>
+    connectOrCreate?: Enumerable<MessageCreateOrConnectWithoutTypeTagInput>
+    upsert?: Enumerable<MessageUpsertWithWhereUniqueWithoutTypeTagInput>
+    createMany?: MessageCreateManyTypeTagInputEnvelope
+    connect?: Enumerable<MessageWhereUniqueInput>
+    set?: Enumerable<MessageWhereUniqueInput>
+    disconnect?: Enumerable<MessageWhereUniqueInput>
+    delete?: Enumerable<MessageWhereUniqueInput>
+    update?: Enumerable<MessageUpdateWithWhereUniqueWithoutTypeTagInput>
+    updateMany?: Enumerable<MessageUpdateManyWithWhereWithoutTypeTagInput>
+    deleteMany?: Enumerable<MessageScalarWhereInput>
   }
 
   export type NestedStringFilter = {
@@ -20674,6 +22031,58 @@ export namespace Prisma {
     max?: NestedEnumEventTypeFilter
   }
 
+  export type NestedBigIntNullableFilter = {
+    equals?: bigint | number | null
+    in?: Enumerable<bigint> | Enumerable<number> | null
+    notIn?: Enumerable<bigint> | Enumerable<number> | null
+    lt?: bigint | number
+    lte?: bigint | number
+    gt?: bigint | number
+    gte?: bigint | number
+    not?: NestedBigIntNullableFilter | bigint | number | null
+  }
+
+  export type NestedBigIntNullableWithAggregatesFilter = {
+    equals?: bigint | number | null
+    in?: Enumerable<bigint> | Enumerable<number> | null
+    notIn?: Enumerable<bigint> | Enumerable<number> | null
+    lt?: bigint | number
+    lte?: bigint | number
+    gt?: bigint | number
+    gte?: bigint | number
+    not?: NestedBigIntNullableWithAggregatesFilter | bigint | number | null
+    _count?: NestedIntNullableFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    count?: NestedIntNullableFilter
+    _avg?: NestedFloatNullableFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    avg?: NestedFloatNullableFilter
+    _sum?: NestedBigIntNullableFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    sum?: NestedBigIntNullableFilter
+    _min?: NestedBigIntNullableFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    min?: NestedBigIntNullableFilter
+    _max?: NestedBigIntNullableFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    max?: NestedBigIntNullableFilter
+  }
+
   export type NestedEnumPurchaseStatusFilter = {
     equals?: PurchaseStatus
     in?: Enumerable<PurchaseStatus>
@@ -20757,6 +22166,7 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
     events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -20790,6 +22200,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
     events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -20832,6 +22243,7 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUpdateManyWithoutCreatedByInput
     events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -20865,6 +22277,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
     events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -20898,6 +22311,7 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
     events?: EventCreateNestedManyWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
@@ -20931,6 +22345,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
     events?: EventUncheckedCreateNestedManyWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
@@ -20968,6 +22383,7 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
     events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -21001,6 +22417,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
     events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -21038,6 +22455,7 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
     events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -21071,6 +22489,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
     events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -21140,6 +22559,7 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUpdateManyWithoutCreatedByInput
     events?: EventUpdateManyWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
@@ -21173,6 +22593,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
     events?: EventUncheckedUpdateManyWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
@@ -21210,6 +22631,7 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUpdateManyWithoutCreatedByInput
     events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -21243,6 +22665,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
     events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -21280,6 +22703,7 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUpdateManyWithoutCreatedByInput
     events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -21313,6 +22737,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
     events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -21373,6 +22798,7 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
     events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
@@ -21406,6 +22832,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
     events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
@@ -21532,6 +22959,7 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUpdateManyWithoutCreatedByInput
     events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
@@ -21565,6 +22993,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
     events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
@@ -21698,6 +23127,7 @@ export namespace Prisma {
     offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
+    messageType?: MessageCreateNestedManyWithoutTypeTagInput
     indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
     indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
   }
@@ -21714,6 +23144,7 @@ export namespace Prisma {
     offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
+    messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
   }
 
   export type TagCreateOrConnectWithoutCreatedByInput = {
@@ -21903,6 +23334,39 @@ export namespace Prisma {
 
   export type IndexedTransactionCreateManyCreatedByInputEnvelope = {
     data: Enumerable<IndexedTransactionCreateManyCreatedByInput>
+    skipDuplicates?: boolean
+  }
+
+  export type MessageCreateWithoutCreatedByInput = {
+    createdAt: Date | string
+    lastUpdateAt: Date | string
+    toSafeAddress: string
+    transactionHash?: string | null
+    chainEventType?: string | null
+    chainEventId?: bigint | number | null
+    content: string
+    typeTag?: TagCreateNestedOneWithoutMessageTypeInput
+  }
+
+  export type MessageUncheckedCreateWithoutCreatedByInput = {
+    id?: number
+    createdAt: Date | string
+    lastUpdateAt: Date | string
+    typeTagId?: number | null
+    toSafeAddress: string
+    transactionHash?: string | null
+    chainEventType?: string | null
+    chainEventId?: bigint | number | null
+    content: string
+  }
+
+  export type MessageCreateOrConnectWithoutCreatedByInput = {
+    where: MessageWhereUniqueInput
+    create: XOR<MessageCreateWithoutCreatedByInput, MessageUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type MessageCreateManyCreatedByInputEnvelope = {
+    data: Enumerable<MessageCreateManyCreatedByInput>
     skipDuplicates?: boolean
   }
 
@@ -22319,6 +23783,38 @@ export namespace Prisma {
     status?: StringNullableFilter | string | null
   }
 
+  export type MessageUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: MessageWhereUniqueInput
+    update: XOR<MessageUpdateWithoutCreatedByInput, MessageUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<MessageCreateWithoutCreatedByInput, MessageUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type MessageUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: MessageWhereUniqueInput
+    data: XOR<MessageUpdateWithoutCreatedByInput, MessageUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type MessageUpdateManyWithWhereWithoutCreatedByInput = {
+    where: MessageScalarWhereInput
+    data: XOR<MessageUpdateManyMutationInput, MessageUncheckedUpdateManyWithoutSentMessagesInput>
+  }
+
+  export type MessageScalarWhereInput = {
+    AND?: Enumerable<MessageScalarWhereInput>
+    OR?: Enumerable<MessageScalarWhereInput>
+    NOT?: Enumerable<MessageScalarWhereInput>
+    id?: IntFilter | number
+    createdAt?: DateTimeFilter | Date | string
+    createdByProfileId?: IntFilter | number
+    lastUpdateAt?: DateTimeFilter | Date | string
+    typeTagId?: IntNullableFilter | number | null
+    toSafeAddress?: StringFilter | string
+    transactionHash?: StringNullableFilter | string | null
+    chainEventType?: StringNullableFilter | string | null
+    chainEventId?: BigIntNullableFilter | bigint | number | null
+    content?: StringFilter | string
+  }
+
   export type EventUpsertWithWhereUniqueWithoutProfileInput = {
     where: EventWhereUniqueInput
     update: XOR<EventUpdateWithoutProfileInput, EventUncheckedUpdateWithoutProfileInput>
@@ -22497,6 +23993,7 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
     events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -22530,6 +24027,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
     events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -22609,6 +24107,7 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
     events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -22642,6 +24141,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
     events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -22684,6 +24184,7 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUpdateManyWithoutCreatedByInput
     events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -22717,6 +24218,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
     events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -22796,6 +24298,7 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUpdateManyWithoutCreatedByInput
     events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -22829,6 +24332,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
     events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -22861,6 +24365,7 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
@@ -22894,6 +24399,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
@@ -22978,6 +24484,7 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
@@ -23011,6 +24518,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
@@ -23196,6 +24704,7 @@ export namespace Prisma {
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
     events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -23229,6 +24738,7 @@ export namespace Prisma {
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
     events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -23309,6 +24819,7 @@ export namespace Prisma {
     offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
+    messageType?: MessageCreateNestedManyWithoutTypeTagInput
     indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
   }
 
@@ -23324,6 +24835,7 @@ export namespace Prisma {
     offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
+    messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
   }
 
   export type TagCreateOrConnectWithoutIndexTransactionRequestInput = {
@@ -23364,6 +24876,7 @@ export namespace Prisma {
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUpdateManyWithoutCreatedByInput
     events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -23397,6 +24910,7 @@ export namespace Prisma {
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
     events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -23478,6 +24992,218 @@ export namespace Prisma {
     data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyWithoutTagsInput>
   }
 
+  export type ProfileCreateWithoutSentMessagesInput = {
+    lastUpdateAt?: Date | string
+    emailAddress: string
+    status?: string | null
+    circlesAddress?: string | null
+    circlesSafeOwner?: string | null
+    circlesTokenAddress?: string | null
+    firstName: string
+    lastName?: string | null
+    avatarUrl?: string | null
+    avatarCid?: string | null
+    avatarMimeType?: string | null
+    dream?: string | null
+    country?: string | null
+    newsletter?: boolean | null
+    cityGeonameid?: number | null
+    verifySafeChallenge?: string | null
+    newSafeAddress?: string | null
+    sessions?: SessionCreateNestedManyWithoutProfileInput
+    tags?: TagCreateNestedManyWithoutCreatedByInput
+    offers?: OfferCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
+    indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
+    indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
+    events?: EventCreateNestedManyWithoutProfileInput
+    invitations?: InvitationCreateNestedManyWithoutCreatedByInput
+    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
+    redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
+    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToProfileInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutSubscriberInput
+  }
+
+  export type ProfileUncheckedCreateWithoutSentMessagesInput = {
+    id?: number
+    lastUpdateAt?: Date | string
+    emailAddress: string
+    status?: string | null
+    circlesAddress?: string | null
+    circlesSafeOwner?: string | null
+    circlesTokenAddress?: string | null
+    firstName: string
+    lastName?: string | null
+    avatarUrl?: string | null
+    avatarCid?: string | null
+    avatarMimeType?: string | null
+    dream?: string | null
+    country?: string | null
+    newsletter?: boolean | null
+    cityGeonameid?: number | null
+    verifySafeChallenge?: string | null
+    newSafeAddress?: string | null
+    sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
+    tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
+    indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
+    indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+    events?: EventUncheckedCreateNestedManyWithoutProfileInput
+    invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
+    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
+    redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
+    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToProfileInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutSubscriberInput
+  }
+
+  export type ProfileCreateOrConnectWithoutSentMessagesInput = {
+    where: ProfileWhereUniqueInput
+    create: XOR<ProfileCreateWithoutSentMessagesInput, ProfileUncheckedCreateWithoutSentMessagesInput>
+  }
+
+  export type TagCreateWithoutMessageTypeInput = {
+    createdAt: Date | string
+    isPrivate: boolean
+    value?: string | null
+    createdBy: ProfileCreateNestedOneWithoutTagsInput
+    type: TagTypeCreateNestedOneWithoutTagsInput
+    offerCategory?: OfferCreateNestedManyWithoutCategoryTagInput
+    offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
+    offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
+    indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
+    indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
+    indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
+  }
+
+  export type TagUncheckedCreateWithoutMessageTypeInput = {
+    id?: number
+    createdAt: Date | string
+    createdByProfileId: number
+    isPrivate: boolean
+    typeId: string
+    value?: string | null
+    indexTransactionRequestId?: number | null
+    indexedTransactionId?: number | null
+    offerCategory?: OfferUncheckedCreateNestedManyWithoutCategoryTagInput
+    offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
+    offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
+    indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
+  }
+
+  export type TagCreateOrConnectWithoutMessageTypeInput = {
+    where: TagWhereUniqueInput
+    create: XOR<TagCreateWithoutMessageTypeInput, TagUncheckedCreateWithoutMessageTypeInput>
+  }
+
+  export type ProfileUpsertWithoutSentMessagesInput = {
+    update: XOR<ProfileUpdateWithoutSentMessagesInput, ProfileUncheckedUpdateWithoutSentMessagesInput>
+    create: XOR<ProfileCreateWithoutSentMessagesInput, ProfileUncheckedCreateWithoutSentMessagesInput>
+  }
+
+  export type ProfileUpdateWithoutSentMessagesInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailAddress?: StringFieldUpdateOperationsInput | string
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    dream?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
+    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    sessions?: SessionUpdateManyWithoutProfileInput
+    tags?: TagUpdateManyWithoutCreatedByInput
+    offers?: OfferUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUpdateManyWithoutPurchasedByInput
+    indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
+    indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
+    events?: EventUpdateManyWithoutProfileInput
+    invitations?: InvitationUpdateManyWithoutCreatedByInput
+    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
+    redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
+    subscribers?: SubscriptionUpdateManyWithoutSubscribingToProfileInput
+    subscriptions?: SubscriptionUpdateManyWithoutSubscriberInput
+  }
+
+  export type ProfileUncheckedUpdateWithoutSentMessagesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailAddress?: StringFieldUpdateOperationsInput | string
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    dream?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
+    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    sessions?: SessionUncheckedUpdateManyWithoutProfileInput
+    tags?: TagUncheckedUpdateManyWithoutCreatedByInput
+    offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
+    indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
+    indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
+    events?: EventUncheckedUpdateManyWithoutProfileInput
+    invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
+    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
+    redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
+    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
+  }
+
+  export type TagUpsertWithoutMessageTypeInput = {
+    update: XOR<TagUpdateWithoutMessageTypeInput, TagUncheckedUpdateWithoutMessageTypeInput>
+    create: XOR<TagCreateWithoutMessageTypeInput, TagUncheckedCreateWithoutMessageTypeInput>
+  }
+
+  export type TagUpdateWithoutMessageTypeInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    value?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
+    type?: TagTypeUpdateOneRequiredWithoutTagsInput
+    offerCategory?: OfferUpdateManyWithoutCategoryTagInput
+    offerUnit?: OfferUpdateManyWithoutUnitTagInput
+    offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
+    indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
+    indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
+    indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
+  }
+
+  export type TagUncheckedUpdateWithoutMessageTypeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    typeId?: StringFieldUpdateOperationsInput | string
+    value?: NullableStringFieldUpdateOperationsInput | string | null
+    indexTransactionRequestId?: NullableIntFieldUpdateOperationsInput | number | null
+    indexedTransactionId?: NullableIntFieldUpdateOperationsInput | number | null
+    offerCategory?: OfferUncheckedUpdateManyWithoutCategoryTagInput
+    offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
+    offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
+    indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
+  }
+
   export type IndexTransactionRequestCreateWithoutIndexedTransactionInput = {
     createdAt: Date | string
     blockNumber?: number | null
@@ -23551,6 +25277,7 @@ export namespace Prisma {
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
     events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -23584,6 +25311,7 @@ export namespace Prisma {
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
     events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -23607,6 +25335,7 @@ export namespace Prisma {
     offerCategory?: OfferCreateNestedManyWithoutCategoryTagInput
     offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
+    messageType?: MessageCreateNestedManyWithoutTypeTagInput
     indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
     indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
   }
@@ -23623,6 +25352,7 @@ export namespace Prisma {
     offerCategory?: OfferUncheckedCreateNestedManyWithoutCategoryTagInput
     offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
+    messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
   }
 
   export type TagCreateOrConnectWithoutIndexedTransactionTypeInput = {
@@ -23665,6 +25395,7 @@ export namespace Prisma {
     offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
+    messageType?: MessageCreateNestedManyWithoutTypeTagInput
     indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
   }
 
@@ -23680,6 +25411,7 @@ export namespace Prisma {
     offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
+    messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
   }
 
   export type TagCreateOrConnectWithoutIndexedTransactionInput = {
@@ -23809,6 +25541,7 @@ export namespace Prisma {
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUpdateManyWithoutCreatedByInput
     events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -23842,6 +25575,7 @@ export namespace Prisma {
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
     events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -23865,6 +25599,7 @@ export namespace Prisma {
     offerCategory?: OfferUpdateManyWithoutCategoryTagInput
     offerUnit?: OfferUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
+    messageType?: MessageUpdateManyWithoutTypeTagInput
     indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
     indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
   }
@@ -23881,6 +25616,7 @@ export namespace Prisma {
     offerCategory?: OfferUncheckedUpdateManyWithoutCategoryTagInput
     offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
+    messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
   }
 
   export type IndexedTransactionLogUpsertWithWhereUniqueWithoutIndexedTransactionInput = {
@@ -23966,6 +25702,7 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
     events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -23999,6 +25736,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
     events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -24061,6 +25799,7 @@ export namespace Prisma {
     offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
+    messageType?: MessageCreateNestedManyWithoutTypeTagInput
     indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
     indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
   }
@@ -24077,6 +25816,7 @@ export namespace Prisma {
     offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
+    messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
   }
 
   export type TagCreateOrConnectWithoutOfferCategoryInput = {
@@ -24093,6 +25833,7 @@ export namespace Prisma {
     offerCategory?: OfferCreateNestedManyWithoutCategoryTagInput
     offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
+    messageType?: MessageCreateNestedManyWithoutTypeTagInput
     indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
     indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
   }
@@ -24109,6 +25850,7 @@ export namespace Prisma {
     offerCategory?: OfferUncheckedCreateNestedManyWithoutCategoryTagInput
     offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
+    messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
   }
 
   export type TagCreateOrConnectWithoutOfferUnitInput = {
@@ -24125,6 +25867,7 @@ export namespace Prisma {
     offerCategory?: OfferCreateNestedManyWithoutCategoryTagInput
     offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
     indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
+    messageType?: MessageCreateNestedManyWithoutTypeTagInput
     indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
     indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
   }
@@ -24141,6 +25884,7 @@ export namespace Prisma {
     offerCategory?: OfferUncheckedCreateNestedManyWithoutCategoryTagInput
     offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
     indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
+    messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
   }
 
   export type TagCreateOrConnectWithoutOfferDeliveryTermsInput = {
@@ -24234,6 +25978,7 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUpdateManyWithoutCreatedByInput
     events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -24267,6 +26012,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
     events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -24306,6 +26052,7 @@ export namespace Prisma {
     offerUnit?: OfferUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
+    messageType?: MessageUpdateManyWithoutTypeTagInput
     indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
     indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
   }
@@ -24322,6 +26069,7 @@ export namespace Prisma {
     offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
+    messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
   }
 
   export type TagUpsertWithoutOfferUnitInput = {
@@ -24338,6 +26086,7 @@ export namespace Prisma {
     offerCategory?: OfferUpdateManyWithoutCategoryTagInput
     offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
+    messageType?: MessageUpdateManyWithoutTypeTagInput
     indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
     indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
   }
@@ -24354,6 +26103,7 @@ export namespace Prisma {
     offerCategory?: OfferUncheckedUpdateManyWithoutCategoryTagInput
     offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
+    messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
   }
 
   export type TagUpsertWithoutOfferDeliveryTermsInput = {
@@ -24370,6 +26120,7 @@ export namespace Prisma {
     offerCategory?: OfferUpdateManyWithoutCategoryTagInput
     offerUnit?: OfferUpdateManyWithoutUnitTagInput
     indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
+    messageType?: MessageUpdateManyWithoutTypeTagInput
     indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
     indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
   }
@@ -24386,6 +26137,7 @@ export namespace Prisma {
     offerCategory?: OfferUncheckedUpdateManyWithoutCategoryTagInput
     offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
     indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
+    messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
   }
 
   export type EventUpsertWithWhereUniqueWithoutOfferInput = {
@@ -24443,6 +26195,7 @@ export namespace Prisma {
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
     events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -24476,6 +26229,7 @@ export namespace Prisma {
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
     events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -24639,6 +26393,7 @@ export namespace Prisma {
     offers?: OfferUpdateManyWithoutCreatedByInput
     indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUpdateManyWithoutCreatedByInput
     events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -24672,6 +26427,7 @@ export namespace Prisma {
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
     events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -24883,6 +26639,7 @@ export namespace Prisma {
     offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
+    messageType?: MessageCreateNestedManyWithoutTypeTagInput
     indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
     indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
   }
@@ -24899,6 +26656,7 @@ export namespace Prisma {
     offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
+    messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
   }
 
   export type TagCreateOrConnectWithoutTypeInput = {
@@ -24950,6 +26708,7 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
     events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -24983,6 +26742,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
     events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -25212,6 +26972,39 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type MessageCreateWithoutTypeTagInput = {
+    createdAt: Date | string
+    lastUpdateAt: Date | string
+    toSafeAddress: string
+    transactionHash?: string | null
+    chainEventType?: string | null
+    chainEventId?: bigint | number | null
+    content: string
+    createdBy: ProfileCreateNestedOneWithoutSentMessagesInput
+  }
+
+  export type MessageUncheckedCreateWithoutTypeTagInput = {
+    id?: number
+    createdAt: Date | string
+    createdByProfileId: number
+    lastUpdateAt: Date | string
+    toSafeAddress: string
+    transactionHash?: string | null
+    chainEventType?: string | null
+    chainEventId?: bigint | number | null
+    content: string
+  }
+
+  export type MessageCreateOrConnectWithoutTypeTagInput = {
+    where: MessageWhereUniqueInput
+    create: XOR<MessageCreateWithoutTypeTagInput, MessageUncheckedCreateWithoutTypeTagInput>
+  }
+
+  export type MessageCreateManyTypeTagInputEnvelope = {
+    data: Enumerable<MessageCreateManyTypeTagInput>
+    skipDuplicates?: boolean
+  }
+
   export type IndexTransactionRequestCreateWithoutTagsInput = {
     createdAt: Date | string
     blockNumber?: number | null
@@ -25324,6 +27117,7 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUpdateManyWithoutCreatedByInput
     events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -25357,6 +27151,7 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
     indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
+    sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
     events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -25441,6 +27236,22 @@ export namespace Prisma {
   export type IndexedTransactionUpdateManyWithWhereWithoutTypeTagInput = {
     where: IndexedTransactionScalarWhereInput
     data: XOR<IndexedTransactionUpdateManyMutationInput, IndexedTransactionUncheckedUpdateManyWithoutIndexedTransactionTypeInput>
+  }
+
+  export type MessageUpsertWithWhereUniqueWithoutTypeTagInput = {
+    where: MessageWhereUniqueInput
+    update: XOR<MessageUpdateWithoutTypeTagInput, MessageUncheckedUpdateWithoutTypeTagInput>
+    create: XOR<MessageCreateWithoutTypeTagInput, MessageUncheckedCreateWithoutTypeTagInput>
+  }
+
+  export type MessageUpdateWithWhereUniqueWithoutTypeTagInput = {
+    where: MessageWhereUniqueInput
+    data: XOR<MessageUpdateWithoutTypeTagInput, MessageUncheckedUpdateWithoutTypeTagInput>
+  }
+
+  export type MessageUpdateManyWithWhereWithoutTypeTagInput = {
+    where: MessageScalarWhereInput
+    data: XOR<MessageUpdateManyMutationInput, MessageUncheckedUpdateManyWithoutMessageTypeInput>
   }
 
   export type IndexTransactionRequestUpsertWithoutTagsInput = {
@@ -25644,6 +27455,18 @@ export namespace Prisma {
     status?: string | null
   }
 
+  export type MessageCreateManyCreatedByInput = {
+    id?: number
+    createdAt: Date | string
+    lastUpdateAt: Date | string
+    typeTagId?: number | null
+    toSafeAddress: string
+    transactionHash?: string | null
+    chainEventType?: string | null
+    chainEventId?: bigint | number | null
+    content: string
+  }
+
   export type EventCreateManyProfileInput = {
     id?: number
     type: EventType
@@ -25753,6 +27576,7 @@ export namespace Prisma {
     offerUnit?: OfferUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
+    messageType?: MessageUpdateManyWithoutTypeTagInput
     indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
     indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
   }
@@ -25769,6 +27593,7 @@ export namespace Prisma {
     offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
+    messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
   }
 
   export type TagUncheckedUpdateManyWithoutTagsInput = {
@@ -25982,6 +27807,41 @@ export namespace Prisma {
     confirmations?: NullableIntFieldUpdateOperationsInput | number | null
     cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type MessageUpdateWithoutCreatedByInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    toSafeAddress?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventType?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventId?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    content?: StringFieldUpdateOperationsInput | string
+    typeTag?: TagUpdateOneWithoutMessageTypeInput
+  }
+
+  export type MessageUncheckedUpdateWithoutCreatedByInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    typeTagId?: NullableIntFieldUpdateOperationsInput | number | null
+    toSafeAddress?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventType?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventId?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    content?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type MessageUncheckedUpdateManyWithoutSentMessagesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    typeTagId?: NullableIntFieldUpdateOperationsInput | number | null
+    toSafeAddress?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventType?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventId?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    content?: StringFieldUpdateOperationsInput | string
   }
 
   export type EventUpdateWithoutProfileInput = {
@@ -26210,6 +28070,7 @@ export namespace Prisma {
     offerUnit?: OfferUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
+    messageType?: MessageUpdateManyWithoutTypeTagInput
     indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
   }
 
@@ -26225,6 +28086,7 @@ export namespace Prisma {
     offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
+    messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
   }
 
   export type IndexedTransactionLogCreateManyIndexedTransactionInput = {
@@ -26292,6 +28154,7 @@ export namespace Prisma {
     offerUnit?: OfferUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
+    messageType?: MessageUpdateManyWithoutTypeTagInput
     indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
   }
 
@@ -26307,6 +28170,7 @@ export namespace Prisma {
     offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
+    messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
   }
 
   export type PurchaseUpdateWithoutIndexedTransactionInput = {
@@ -26484,6 +28348,7 @@ export namespace Prisma {
     offerUnit?: OfferUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
+    messageType?: MessageUpdateManyWithoutTypeTagInput
     indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
     indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
   }
@@ -26500,6 +28365,7 @@ export namespace Prisma {
     offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
     indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
+    messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
   }
 
   export type OfferCreateManyCategoryTagInput = {
@@ -26571,6 +28437,18 @@ export namespace Prisma {
     confirmations?: number | null
     cumulativeGasUsed: string
     status?: string | null
+  }
+
+  export type MessageCreateManyTypeTagInput = {
+    id?: number
+    createdAt: Date | string
+    createdByProfileId: number
+    lastUpdateAt: Date | string
+    toSafeAddress: string
+    transactionHash?: string | null
+    chainEventType?: string | null
+    chainEventId?: bigint | number | null
+    content: string
   }
 
   export type OfferUpdateWithoutCategoryTagInput = {
@@ -26804,6 +28682,41 @@ export namespace Prisma {
     confirmations?: NullableIntFieldUpdateOperationsInput | number | null
     cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
     status?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type MessageUpdateWithoutTypeTagInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    toSafeAddress?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventType?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventId?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    content?: StringFieldUpdateOperationsInput | string
+    createdBy?: ProfileUpdateOneRequiredWithoutSentMessagesInput
+  }
+
+  export type MessageUncheckedUpdateWithoutTypeTagInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    toSafeAddress?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventType?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventId?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    content?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type MessageUncheckedUpdateManyWithoutMessageTypeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    toSafeAddress?: StringFieldUpdateOperationsInput | string
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventType?: NullableStringFieldUpdateOperationsInput | string | null
+    chainEventId?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    content?: StringFieldUpdateOperationsInput | string
   }
 
 

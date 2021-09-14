@@ -4,12 +4,10 @@ import {PrismaClient} from "../../api-db/client";
 import {getPool} from "../resolvers";
 import {Contact} from "../../types";
 
-export function contacts(prisma:PrismaClient) {
-  return async (parent:any, args:any, context:Context) => {
+export function contact(prisma:PrismaClient) {
+  return async (parent:any, args:{safeAddress:string, contactAddress:string}, context:Context) => {
     const pool = getPool();
     try {
-      const safeAddress = args.safeAddress.toLowerCase();
-
       const contactsQuery = `
           WITH safe_contacts AS (
               SELECT distinct max(b.timestamp)                                                            ts,
@@ -47,9 +45,9 @@ export function contacts(prisma:PrismaClient) {
                    left join crc_current_trust cr1 on cr1."user" = st.safe_address and cr1.can_send_to = st.contact
                    left join crc_current_trust cr2 on cr2.can_send_to = st.safe_address and cr2."user" = st.contact
           where st.safe_address = $1
-          order by last_contact_timestamp desc;`;
+            and st.contact = $2;`;
 
-      const contactsQueryParameters = [safeAddress];
+      const contactsQueryParameters = [args.safeAddress, args.contactAddress];
       const contactsQueryResult = await pool.query(contactsQuery, contactsQueryParameters);
 
       const allSafeAddresses: { [safeAddress: string]: boolean } = {};
@@ -66,9 +64,9 @@ export function contacts(prisma:PrismaClient) {
       profiles.filter(o => o.circlesAddress)
         .forEach(o => _profilesBySafeAddress[<string>o.circlesAddress] = o);
 
-      return contactsQueryResult.rows.map((o: any) => {
+      const contacts = contactsQueryResult.rows.map((o: any) => {
         return <Contact>{
-          safeAddress,
+          safeAddress: args.safeAddress,
           lastContactAt: o.last_contact_timestamp,
           safeAddressProfile: _profilesBySafeAddress[o.safe_address],
           contactAddress: o.contact,
@@ -77,6 +75,10 @@ export function contacts(prisma:PrismaClient) {
           youTrust: o.you_trust
         };
       });
+      if (contacts.length ==  1) {
+        return contacts[0];
+      }
+      return null;
     } finally {
       await pool.end();
     }

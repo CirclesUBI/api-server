@@ -474,6 +474,15 @@ type Contact {
     safeAddressProfile:Profile
     contactAddress:String!
     contactAddressProfile:Profile
+    trustsYou: Int
+    youTrust: Int
+}
+
+type CommonTrust {
+    type: String!
+    safeAddress1: String!
+    safeAddress2: String!
+    profile: Profile
 }
 
 type Mutation
@@ -519,11 +528,16 @@ type Query
     myInvitations: [CreatedInvitation!]!
     events(safeAddress:String! types:[String!] fromBlock:Int toBlock:Int):[ProfileEvent!]!
     contacts(safeAddress:String!):[Contact!]!
+    contact(safeAddress:String! contactAddress:String!):Contact
+    commonTrust(safeAddress1:String! safeAddress2:String!):[CommonTrust!]!
     chatHistory(safeAddress:String! contactSafeAddress:String!):[ProfileEvent!]!
     eventByTransactionHash(safeAddress:String! transactionHash: String! types:[String!]):[ProfileEvent!]!
     balance(safeAddress:String!) : String!
     trustRelations(safeAddress:String!):[TrustRelation!]!
-    profiles(query:QueryProfileInput!) : [Profile!]!
+    myProfile: Profile
+    profilesById(ids:[Int!]!) : [Profile!]!
+    profilesBySafeAddress(safeAddresses:[String!]!) : [Profile!]!
+
     search(query:SearchInput!) : [Profile!]!
     cities(query:QueryCitiesInput!) : [City!]!
     offers(query:QueryOfferInput!): [Offer!]!

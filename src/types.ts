@@ -53,6 +53,14 @@ export type ClaimedInvitation = {
   claimedAt: Scalars['String'];
 };
 
+export type CommonTrust = {
+  __typename?: 'CommonTrust';
+  type: Scalars['String'];
+  safeAddress1: Scalars['String'];
+  safeAddress2: Scalars['String'];
+  profile?: Maybe<Profile>;
+};
+
 export type ConsumeDepositedChallengeResponse = {
   __typename?: 'ConsumeDepositedChallengeResponse';
   success: Scalars['Boolean'];
@@ -66,6 +74,8 @@ export type Contact = {
   safeAddressProfile?: Maybe<Profile>;
   contactAddress: Scalars['String'];
   contactAddressProfile?: Maybe<Profile>;
+  trustsYou?: Maybe<Scalars['Int']>;
+  youTrust?: Maybe<Scalars['Int']>;
 };
 
 export type CountryStats = {
@@ -441,11 +451,15 @@ export type Query = {
   myInvitations: Array<CreatedInvitation>;
   events: Array<ProfileEvent>;
   contacts: Array<Contact>;
+  contact?: Maybe<Contact>;
+  commonTrust: Array<CommonTrust>;
   chatHistory: Array<ProfileEvent>;
   eventByTransactionHash: Array<ProfileEvent>;
   balance: Scalars['String'];
   trustRelations: Array<TrustRelation>;
-  profiles: Array<Profile>;
+  myProfile?: Maybe<Profile>;
+  profilesById: Array<Profile>;
+  profilesBySafeAddress: Array<Profile>;
   search: Array<Profile>;
   cities: Array<City>;
   offers: Array<Offer>;
@@ -464,6 +478,18 @@ export type QueryEventsArgs = {
 
 export type QueryContactsArgs = {
   safeAddress: Scalars['String'];
+};
+
+
+export type QueryContactArgs = {
+  safeAddress: Scalars['String'];
+  contactAddress: Scalars['String'];
+};
+
+
+export type QueryCommonTrustArgs = {
+  safeAddress1: Scalars['String'];
+  safeAddress2: Scalars['String'];
 };
 
 
@@ -490,8 +516,13 @@ export type QueryTrustRelationsArgs = {
 };
 
 
-export type QueryProfilesArgs = {
-  query: QueryProfileInput;
+export type QueryProfilesByIdArgs = {
+  ids: Array<Scalars['Int']>;
+};
+
+
+export type QueryProfilesBySafeAddressArgs = {
+  safeAddresses: Array<Scalars['String']>;
 };
 
 
@@ -790,6 +821,7 @@ export type ResolversTypes = ResolversObject<{
   ClaimInvitationResult: ResolverTypeWrapper<ClaimInvitationResult>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   ClaimedInvitation: ResolverTypeWrapper<ClaimedInvitation>;
+  CommonTrust: ResolverTypeWrapper<CommonTrust>;
   ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
   Contact: ResolverTypeWrapper<Contact>;
   CountryStats: ResolverTypeWrapper<CountryStats>;
@@ -862,6 +894,7 @@ export type ResolversParentTypes = ResolversObject<{
   ClaimInvitationResult: ClaimInvitationResult;
   Boolean: Scalars['Boolean'];
   ClaimedInvitation: ClaimedInvitation;
+  CommonTrust: CommonTrust;
   ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
   Contact: Contact;
   CountryStats: CountryStats;
@@ -961,6 +994,14 @@ export type ClaimedInvitationResolvers<ContextType = any, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type CommonTrustResolvers<ContextType = any, ParentType extends ResolversParentTypes['CommonTrust'] = ResolversParentTypes['CommonTrust']> = ResolversObject<{
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  safeAddress1?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  safeAddress2?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type ConsumeDepositedChallengeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['ConsumeDepositedChallengeResponse'] = ResolversParentTypes['ConsumeDepositedChallengeResponse']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   challenge?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -973,6 +1014,8 @@ export type ContactResolvers<ContextType = any, ParentType extends ResolversPare
   safeAddressProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   contactAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   contactAddressProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  trustsYou?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  youTrust?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1247,11 +1290,15 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   myInvitations?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'safeAddress'>>;
   contacts?: Resolver<Array<ResolversTypes['Contact']>, ParentType, ContextType, RequireFields<QueryContactsArgs, 'safeAddress'>>;
+  contact?: Resolver<Maybe<ResolversTypes['Contact']>, ParentType, ContextType, RequireFields<QueryContactArgs, 'safeAddress' | 'contactAddress'>>;
+  commonTrust?: Resolver<Array<ResolversTypes['CommonTrust']>, ParentType, ContextType, RequireFields<QueryCommonTrustArgs, 'safeAddress1' | 'safeAddress2'>>;
   chatHistory?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryChatHistoryArgs, 'safeAddress' | 'contactSafeAddress'>>;
   eventByTransactionHash?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventByTransactionHashArgs, 'safeAddress' | 'transactionHash'>>;
   balance?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<QueryBalanceArgs, 'safeAddress'>>;
   trustRelations?: Resolver<Array<ResolversTypes['TrustRelation']>, ParentType, ContextType, RequireFields<QueryTrustRelationsArgs, 'safeAddress'>>;
-  profiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesArgs, 'query'>>;
+  myProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  profilesById?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesByIdArgs, 'ids'>>;
+  profilesBySafeAddress?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesBySafeAddressArgs, 'safeAddresses'>>;
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, 'query'>>;
   offers?: Resolver<Array<ResolversTypes['Offer']>, ParentType, ContextType, RequireFields<QueryOffersArgs, 'query'>>;
@@ -1348,6 +1395,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   CityStats?: CityStatsResolvers<ContextType>;
   ClaimInvitationResult?: ClaimInvitationResultResolvers<ContextType>;
   ClaimedInvitation?: ClaimedInvitationResolvers<ContextType>;
+  CommonTrust?: CommonTrustResolvers<ContextType>;
   ConsumeDepositedChallengeResponse?: ConsumeDepositedChallengeResponseResolvers<ContextType>;
   Contact?: ContactResolvers<ContextType>;
   CountryStats?: CountryStatsResolvers<ContextType>;

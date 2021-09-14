@@ -21,6 +21,7 @@ export interface Type_Banking_Trust_Data extends ITypeTag {
 
 export class InitDb {
 
+    public static readonly Type_Tag = "system:type";
     public static readonly Type_Marketplace_Offer = "o-marketplace:offer";
     public static readonly Tag_Marketplace_Offer_Category = "o-marketplace:offer:category:1";
     public static readonly Tag_Marketplace_Offer_DeliveryTerms = "o-marketplace:offer:deliveryTerms:1";
@@ -34,6 +35,7 @@ export class InitDb {
     public static readonly Tag_Banking_Trust_Message = `${InitDb.Type_Banking_Trust}:message:1`;
 
     static readonly requiredTagTypes = {
+        [InitDb.Type_Tag]: true,
         [InitDb.Type_Marketplace_Offer]: true,
         [InitDb.Type_Banking_Transfer]: true,
         [InitDb.Type_Banking_Trust]: true,

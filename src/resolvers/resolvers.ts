@@ -1,4 +1,4 @@
-import {profiles} from "./queries/profiles";
+import {myProfile, profilesById, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {ProfileEvent, Resolvers} from "../types";
@@ -30,17 +30,21 @@ import {upsertTag} from "./mutations/upsertTag";
 import {claimedInvitation} from "./queries/claimedInvitation";
 import {Context} from "../context";
 import {ApiPubSub} from "../pubsub";
-import {PoolConfig} from "pg";
 import {events} from "./queries/queryEvents";
 import {balance} from "./queries/balance";
 import {trustRelations} from "./queries/trustRelations";
 import {contacts} from "./queries/contacts";
 import {chatHistory} from "./queries/chatHistory";
+import {InitDb} from "../initDb";
+import {Pool, PoolConfig} from "pg";
+import {contact} from "./queries/contact";
+import {commonTrust} from "./queries/commonTrust";
 
-const { Pool} = require('pg')
-const pool = new Pool(<PoolConfig>{
-  connectionString: process.env.BLOCKCHAIN_INDEX_DB_CONNECTION_STRING
-});
+export function getPool() {
+  return new Pool(<PoolConfig>{
+    connectionString: process.env.BLOCKCHAIN_INDEX_DB_CONNECTION_STRING
+  });
+}
 
 const packageJson = require("../../package.json");
 
@@ -70,19 +74,25 @@ export const resolvers: Resolvers = {
     whoami: whoami,
     cities: cities,
     claimedInvitation: claimedInvitation,
-    profiles: profiles(prisma_api_ro),
+    //profiles: profiles(prisma_api_ro),
+    myProfile: myProfile(prisma_api_rw),
+    profilesById: profilesById(prisma_api_ro),
+    profilesBySafeAddress: profilesBySafeAddress(prisma_api_ro),
     search: search(prisma_api_ro),
     version: version(packageJson),
     offers: offers(prisma_api_ro),
     tags: tags(prisma_api_ro),
     tagById: tagById(prisma_api_ro),
     stats: stats(prisma_api_ro),
-    events: events(pool, prisma_api_ro),
-    eventByTransactionHash: events(pool, prisma_api_ro),
-    balance: balance(pool),
-    trustRelations: trustRelations(pool),
-    contacts: contacts(pool),
-    chatHistory: chatHistory(pool, prisma_api_ro)
+    events: events(prisma_api_ro),
+    eventByTransactionHash: events(prisma_api_ro),
+    balance: balance(),
+    trustRelations: trustRelations(prisma_api_ro),
+    contacts: contacts(prisma_api_ro),
+    contact: contact(prisma_api_ro),
+    chatHistory: chatHistory(prisma_api_ro),
+    commonTrust: commonTrust(prisma_api_ro)
+
     // transactions: transactions(prisma_api_ro),
     // events: events(prisma_api_ro),
     /*
@@ -145,7 +155,31 @@ export const resolvers: Resolvers = {
     upsertTag: upsertTag(prisma_api_ro, prisma_api_rw),
     sendMessage: async (parent, args, context) => {
       const session = await context.verifySession();
-       args.toSafeAddress
+      const typeTag = await prisma_api_ro.tag.findMany({
+        where: {
+          typeId: InitDb.Type_Tag,
+          value: args.type
+        }
+      });
+      if (typeTag.length != 1) {
+        return {
+          success: false,
+          error: `Couldn't find a type tag (${InitDb.Type_Tag}) with value '${args.type}'`
+        };
+      }
+      const message = await prisma_api_rw.message.create({
+        data: {
+          createdByProfileId: session.profileId,
+          typeTagId: typeTag[0].id,
+          createdAt: new Date(),
+          lastUpdateAt: new Date(),
+          toSafeAddress: args.toSafeAddress,
+          content: args.content
+        }
+      });
+      return {
+        success: true
+      };
     }
 
     // requestIndexTransaction: requestIndexTransaction(prisma_api_rw),
