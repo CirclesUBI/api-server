@@ -14,6 +14,14 @@ export type Scalars = {
   Float: number;
 };
 
+export type AssetBalance = {
+  __typename?: 'AssetBalance';
+  token_address: Scalars['String'];
+  token_owner_address: Scalars['String'];
+  token_owner_profile?: Maybe<Profile>;
+  token_balance: Scalars['String'];
+};
+
 export type City = ICity & {
   __typename?: 'City';
   geonameid: Scalars['Int'];
@@ -268,7 +276,8 @@ export type Mutation = {
   createInvitation: CreateInvitationResult;
   claimInvitation: ClaimInvitationResult;
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
-  sendMessage?: Maybe<SendMessageResult>;
+  tagTransaction: TagTransactionResult;
+  sendMessage: SendMessageResult;
 };
 
 
@@ -339,6 +348,12 @@ export type MutationCreateInvitationArgs = {
 
 export type MutationClaimInvitationArgs = {
   code: Scalars['String'];
+};
+
+
+export type MutationTagTransactionArgs = {
+  transactionHash: Scalars['String'];
+  tag: CreateTagInput;
 };
 
 
@@ -456,6 +471,7 @@ export type Query = {
   chatHistory: Array<ProfileEvent>;
   eventByTransactionHash: Array<ProfileEvent>;
   balance: Scalars['String'];
+  balancesByAsset: Array<AssetBalance>;
   trustRelations: Array<TrustRelation>;
   myProfile?: Maybe<Profile>;
   profilesById: Array<Profile>;
@@ -507,6 +523,11 @@ export type QueryEventByTransactionHashArgs = {
 
 
 export type QueryBalanceArgs = {
+  safeAddress: Scalars['String'];
+};
+
+
+export type QueryBalancesByAssetArgs = {
   safeAddress: Scalars['String'];
 };
 
@@ -663,6 +684,13 @@ export type Tag = {
   value?: Maybe<Scalars['String']>;
 };
 
+export type TagTransactionResult = {
+  __typename?: 'TagTransactionResult';
+  success: Scalars['Boolean'];
+  error?: Maybe<Scalars['String']>;
+  tag?: Maybe<Tag>;
+};
+
 export enum TrustDirection {
   In = 'IN',
   Out = 'OUT',
@@ -813,9 +841,10 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  AssetBalance: ResolverTypeWrapper<AssetBalance>;
+  String: ResolverTypeWrapper<Scalars['String']>;
   City: ResolverTypeWrapper<City>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
-  String: ResolverTypeWrapper<Scalars['String']>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   CityStats: ResolverTypeWrapper<CityStats>;
   ClaimInvitationResult: ResolverTypeWrapper<ClaimInvitationResult>;
@@ -874,6 +903,7 @@ export type ResolversTypes = ResolversObject<{
   Stats: ResolverTypeWrapper<Stats>;
   Subscription: ResolverTypeWrapper<{}>;
   Tag: ResolverTypeWrapper<Tag>;
+  TagTransactionResult: ResolverTypeWrapper<TagTransactionResult>;
   TrustDirection: TrustDirection;
   TrustRelation: ResolverTypeWrapper<TrustRelation>;
   UpdateSafeInput: UpdateSafeInput;
@@ -886,9 +916,10 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
+  AssetBalance: AssetBalance;
+  String: Scalars['String'];
   City: City;
   Int: Scalars['Int'];
-  String: Scalars['String'];
   Float: Scalars['Float'];
   CityStats: CityStats;
   ClaimInvitationResult: ClaimInvitationResult;
@@ -946,6 +977,7 @@ export type ResolversParentTypes = ResolversObject<{
   Stats: Stats;
   Subscription: {};
   Tag: Tag;
+  TagTransactionResult: TagTransactionResult;
   TrustRelation: TrustRelation;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: UpdateSafeResponse;
@@ -953,6 +985,14 @@ export type ResolversParentTypes = ResolversObject<{
   UpsertProfileInput: UpsertProfileInput;
   UpsertTagInput: UpsertTagInput;
   Version: Version;
+}>;
+
+export type AssetBalanceResolvers<ContextType = any, ParentType extends ResolversParentTypes['AssetBalance'] = ResolversParentTypes['AssetBalance']> = ResolversObject<{
+  token_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  token_owner_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  token_owner_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  token_balance?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type CityResolvers<ContextType = any, ParentType extends ResolversParentTypes['City'] = ResolversParentTypes['City']> = ResolversObject<{
@@ -1199,7 +1239,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType, RequireFields<MutationCreateInvitationArgs, 'for'>>;
   claimInvitation?: Resolver<ResolversTypes['ClaimInvitationResult'], ParentType, ContextType, RequireFields<MutationClaimInvitationArgs, 'code'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
-  sendMessage?: Resolver<Maybe<ResolversTypes['SendMessageResult']>, ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'toSafeAddress' | 'type' | 'content'>>;
+  tagTransaction?: Resolver<ResolversTypes['TagTransactionResult'], ParentType, ContextType, RequireFields<MutationTagTransactionArgs, 'transactionHash' | 'tag'>>;
+  sendMessage?: Resolver<ResolversTypes['SendMessageResult'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'toSafeAddress' | 'type' | 'content'>>;
 }>;
 
 export type OfferResolvers<ContextType = any, ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']> = ResolversObject<{
@@ -1295,6 +1336,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   chatHistory?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryChatHistoryArgs, 'safeAddress' | 'contactSafeAddress'>>;
   eventByTransactionHash?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventByTransactionHashArgs, 'safeAddress' | 'transactionHash'>>;
   balance?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<QueryBalanceArgs, 'safeAddress'>>;
+  balancesByAsset?: Resolver<Array<ResolversTypes['AssetBalance']>, ParentType, ContextType, RequireFields<QueryBalancesByAssetArgs, 'safeAddress'>>;
   trustRelations?: Resolver<Array<ResolversTypes['TrustRelation']>, ParentType, ContextType, RequireFields<QueryTrustRelationsArgs, 'safeAddress'>>;
   myProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   profilesById?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesByIdArgs, 'ids'>>;
@@ -1367,6 +1409,13 @@ export type TagResolvers<ContextType = any, ParentType extends ResolversParentTy
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type TagTransactionResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['TagTransactionResult'] = ResolversParentTypes['TagTransactionResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  tag?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type TrustRelationResolvers<ContextType = any, ParentType extends ResolversParentTypes['TrustRelation'] = ResolversParentTypes['TrustRelation']> = ResolversObject<{
   safeAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   safeAddressProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
@@ -1391,6 +1440,7 @@ export type VersionResolvers<ContextType = any, ParentType extends ResolversPare
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  AssetBalance?: AssetBalanceResolvers<ContextType>;
   City?: CityResolvers<ContextType>;
   CityStats?: CityStatsResolvers<ContextType>;
   ClaimInvitationResult?: ClaimInvitationResultResolvers<ContextType>;
@@ -1433,6 +1483,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Stats?: StatsResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Tag?: TagResolvers<ContextType>;
+  TagTransactionResult?: TagTransactionResultResolvers<ContextType>;
   TrustRelation?: TrustRelationResolvers<ContextType>;
   UpdateSafeResponse?: UpdateSafeResponseResolvers<ContextType>;
   Version?: VersionResolvers<ContextType>;

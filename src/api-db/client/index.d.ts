@@ -95,51 +95,6 @@ export type Subscription = {
 }
 
 /**
- * Model Event
- */
-
-export type Event = {
-  id: number
-  type: EventType
-  profileId: number | null
-  offerId: number | null
-  createdAt: Date
-  workerProcess: string | null
-  deliveredAt: Date | null
-  acknowledgedAt: Date | null
-  archivedAt: Date | null
-  data: string
-}
-
-/**
- * Model IndexedTransactionLog
- */
-
-export type IndexedTransactionLog = {
-  id: number
-  indexedTransactionId: number
-  address: string
-  data: string | null
-  topics: string[]
-  logIndex: number
-}
-
-/**
- * Model IndexTransactionRequest
- */
-
-export type IndexTransactionRequest = {
-  id: number
-  createdAt: Date
-  createdByProfileId: number
-  blockNumber: number | null
-  transactionIndex: number | null
-  transactionHash: string
-  workerProcess: string | null
-  pickedAt: Date | null
-}
-
-/**
  * Model Message
  */
 
@@ -154,34 +109,6 @@ export type Message = {
   chainEventType: string | null
   chainEventId: bigint | null
   content: string
-}
-
-/**
- * Model IndexedTransaction
- */
-
-export type IndexedTransaction = {
-  id: number
-  fromRequestId: number | null
-  fromRedeemInvitationRequestId: number | null
-  createdAt: Date
-  createdByProfileId: number
-  typeTagId: number | null
-  from: string
-  to: string
-  logicalFrom: string | null
-  logicalTo: string | null
-  contractAddress: string | null
-  transactionIndex: number
-  root: string | null
-  gasUsed: string
-  logsBloom: string
-  blockHash: string
-  transactionHash: string
-  blockNumber: number
-  confirmations: number | null
-  cumulativeGasUsed: string
-  status: string | null
 }
 
 /**
@@ -238,7 +165,6 @@ export type Purchase = {
   grandTotal: string
   purchasedItemVat: number
   status: PurchaseStatus
-  indexedTransactionId: number
 }
 
 /**
@@ -262,6 +188,14 @@ export type TagType = {
 }
 
 /**
+ * Model Transaction
+ */
+
+export type Transaction = {
+  transactionHash: string
+}
+
+/**
  * Model Tag
  */
 
@@ -270,10 +204,9 @@ export type Tag = {
   createdAt: Date
   createdByProfileId: number
   isPrivate: boolean
+  transactionHash: string | null
   typeId: string
   value: string | null
-  indexTransactionRequestId: number | null
-  indexedTransactionId: number | null
 }
 
 
@@ -283,28 +216,6 @@ export type Tag = {
 
 // Based on
 // https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
-
-export const EventType: {
-  PROFILE_INCOMING_UBI: 'PROFILE_INCOMING_UBI',
-  PROFILE_INCOMING_CIRCLES_TRANSACTION: 'PROFILE_INCOMING_CIRCLES_TRANSACTION',
-  PROFILE_OUTGOING_CIRCLES_TRANSACTION: 'PROFILE_OUTGOING_CIRCLES_TRANSACTION',
-  PROFILE_INCOMING_XDAI_TRANSACTION: 'PROFILE_INCOMING_XDAI_TRANSACTION',
-  PROFILE_OUTGOING_XDAI_TRANSACTION: 'PROFILE_OUTGOING_XDAI_TRANSACTION',
-  PROFILE_INCOMING_TRUST: 'PROFILE_INCOMING_TRUST',
-  PROFILE_OUTGOING_TRUST: 'PROFILE_OUTGOING_TRUST',
-  PROFILE_INCOMING_TRUST_REVOKED: 'PROFILE_INCOMING_TRUST_REVOKED',
-  PROFILE_OUTGOING_TRUST_REVOKED: 'PROFILE_OUTGOING_TRUST_REVOKED',
-  PROFILE_INCOMING_MESSAGE: 'PROFILE_INCOMING_MESSAGE',
-  PROFILE_OUTGOING_MESSAGE: 'PROFILE_OUTGOING_MESSAGE',
-  PROFILE_CREATED_OFFER: 'PROFILE_CREATED_OFFER',
-  OFFER_UPDATED: 'OFFER_UPDATED',
-  OFFER_UNLISTED: 'OFFER_UNLISTED',
-  OFFER_PURCHASED: 'OFFER_PURCHASED',
-  SUBSCRIPTION_UPDATE: 'SUBSCRIPTION_UPDATE'
-};
-
-export type EventType = (typeof EventType)[keyof typeof EventType]
-
 
 export const PurchaseStatus: {
   INVALID: 'INVALID',
@@ -488,36 +399,6 @@ export class PrismaClient<
   get subscription(): Prisma.SubscriptionDelegate<GlobalReject>;
 
   /**
-   * `prisma.event`: Exposes CRUD operations for the **Event** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Events
-    * const events = await prisma.event.findMany()
-    * ```
-    */
-  get event(): Prisma.EventDelegate<GlobalReject>;
-
-  /**
-   * `prisma.indexedTransactionLog`: Exposes CRUD operations for the **IndexedTransactionLog** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more IndexedTransactionLogs
-    * const indexedTransactionLogs = await prisma.indexedTransactionLog.findMany()
-    * ```
-    */
-  get indexedTransactionLog(): Prisma.IndexedTransactionLogDelegate<GlobalReject>;
-
-  /**
-   * `prisma.indexTransactionRequest`: Exposes CRUD operations for the **IndexTransactionRequest** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more IndexTransactionRequests
-    * const indexTransactionRequests = await prisma.indexTransactionRequest.findMany()
-    * ```
-    */
-  get indexTransactionRequest(): Prisma.IndexTransactionRequestDelegate<GlobalReject>;
-
-  /**
    * `prisma.message`: Exposes CRUD operations for the **Message** model.
     * Example usage:
     * ```ts
@@ -526,16 +407,6 @@ export class PrismaClient<
     * ```
     */
   get message(): Prisma.MessageDelegate<GlobalReject>;
-
-  /**
-   * `prisma.indexedTransaction`: Exposes CRUD operations for the **IndexedTransaction** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more IndexedTransactions
-    * const indexedTransactions = await prisma.indexedTransaction.findMany()
-    * ```
-    */
-  get indexedTransaction(): Prisma.IndexedTransactionDelegate<GlobalReject>;
 
   /**
    * `prisma.delegatedChallenges`: Exposes CRUD operations for the **DelegatedChallenges** model.
@@ -586,6 +457,16 @@ export class PrismaClient<
     * ```
     */
   get tagType(): Prisma.TagTypeDelegate<GlobalReject>;
+
+  /**
+   * `prisma.transaction`: Exposes CRUD operations for the **Transaction** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Transactions
+    * const transactions = await prisma.transaction.findMany()
+    * ```
+    */
+  get transaction(): Prisma.TransactionDelegate<GlobalReject>;
 
   /**
    * `prisma.tag`: Exposes CRUD operations for the **Tag** model.
@@ -971,16 +852,13 @@ export namespace Prisma {
     RedeemInvitationRequest: 'RedeemInvitationRequest',
     Profile: 'Profile',
     Subscription: 'Subscription',
-    Event: 'Event',
-    IndexedTransactionLog: 'IndexedTransactionLog',
-    IndexTransactionRequest: 'IndexTransactionRequest',
     Message: 'Message',
-    IndexedTransaction: 'IndexedTransaction',
     DelegatedChallenges: 'DelegatedChallenges',
     Offer: 'Offer',
     Purchase: 'Purchase',
     TransactionJobs: 'TransactionJobs',
     TagType: 'TagType',
+    Transaction: 'Transaction',
     Tag: 'Tag'
   };
 
@@ -3313,13 +3191,11 @@ export namespace Prisma {
     pickedAt?: boolean
     invitationToRedeem?: boolean | InvitationArgs
     invitationToRedeemId?: boolean
-    inviteTransaction?: boolean | IndexedTransactionArgs
   }
 
   export type RedeemInvitationRequestInclude = {
     createdBy?: boolean | ProfileArgs
     invitationToRedeem?: boolean | InvitationArgs
-    inviteTransaction?: boolean | IndexedTransactionArgs
   }
 
   export type RedeemInvitationRequestGetPayload<
@@ -3336,9 +3212,7 @@ export namespace Prisma {
           P extends 'createdBy'
         ? ProfileGetPayload<S['include'][P]> :
         P extends 'invitationToRedeem'
-        ? InvitationGetPayload<S['include'][P]> :
-        P extends 'inviteTransaction'
-        ? IndexedTransactionGetPayload<S['include'][P]> | null : never
+        ? InvitationGetPayload<S['include'][P]> : never
   } 
     : 'select' extends U
     ? {
@@ -3347,9 +3221,7 @@ export namespace Prisma {
           P extends 'createdBy'
         ? ProfileGetPayload<S['select'][P]> :
         P extends 'invitationToRedeem'
-        ? InvitationGetPayload<S['select'][P]> :
-        P extends 'inviteTransaction'
-        ? IndexedTransactionGetPayload<S['select'][P]> | null : never
+        ? InvitationGetPayload<S['select'][P]> : never
   } 
     : RedeemInvitationRequest
   : RedeemInvitationRequest
@@ -3692,8 +3564,6 @@ export namespace Prisma {
     createdBy<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
 
     invitationToRedeem<T extends InvitationArgs = {}>(args?: Subset<T, InvitationArgs>): CheckSelect<T, Prisma__InvitationClient<Invitation | null >, Prisma__InvitationClient<InvitationGetPayload<T> | null >>;
-
-    inviteTransaction<T extends IndexedTransactionArgs = {}>(args?: Subset<T, IndexedTransactionArgs>): CheckSelect<T, Prisma__IndexedTransactionClient<IndexedTransaction | null >, Prisma__IndexedTransactionClient<IndexedTransactionGetPayload<T> | null >>;
 
     private get _document();
     /**
@@ -4349,10 +4219,7 @@ export namespace Prisma {
     tags?: boolean | TagFindManyArgs
     offers?: boolean | OfferFindManyArgs
     purchases?: boolean | PurchaseFindManyArgs
-    indexedTransactionRequests?: boolean | IndexTransactionRequestFindManyArgs
-    indexedTransactions?: boolean | IndexedTransactionFindManyArgs
     sentMessages?: boolean | MessageFindManyArgs
-    events?: boolean | EventFindManyArgs
     invitations?: boolean | InvitationFindManyArgs
     redeemInvitationRequests?: boolean | RedeemInvitationRequestFindManyArgs
     redeemedInvitations?: boolean | InvitationFindManyArgs
@@ -4366,10 +4233,7 @@ export namespace Prisma {
     tags?: boolean | TagFindManyArgs
     offers?: boolean | OfferFindManyArgs
     purchases?: boolean | PurchaseFindManyArgs
-    indexedTransactionRequests?: boolean | IndexTransactionRequestFindManyArgs
-    indexedTransactions?: boolean | IndexedTransactionFindManyArgs
     sentMessages?: boolean | MessageFindManyArgs
-    events?: boolean | EventFindManyArgs
     invitations?: boolean | InvitationFindManyArgs
     redeemInvitationRequests?: boolean | RedeemInvitationRequestFindManyArgs
     redeemedInvitations?: boolean | InvitationFindManyArgs
@@ -4397,14 +4261,8 @@ export namespace Prisma {
         ? Array < OfferGetPayload<S['include'][P]>>  :
         P extends 'purchases'
         ? Array < PurchaseGetPayload<S['include'][P]>>  :
-        P extends 'indexedTransactionRequests'
-        ? Array < IndexTransactionRequestGetPayload<S['include'][P]>>  :
-        P extends 'indexedTransactions'
-        ? Array < IndexedTransactionGetPayload<S['include'][P]>>  :
         P extends 'sentMessages'
         ? Array < MessageGetPayload<S['include'][P]>>  :
-        P extends 'events'
-        ? Array < EventGetPayload<S['include'][P]>>  :
         P extends 'invitations'
         ? Array < InvitationGetPayload<S['include'][P]>>  :
         P extends 'redeemInvitationRequests'
@@ -4430,14 +4288,8 @@ export namespace Prisma {
         ? Array < OfferGetPayload<S['select'][P]>>  :
         P extends 'purchases'
         ? Array < PurchaseGetPayload<S['select'][P]>>  :
-        P extends 'indexedTransactionRequests'
-        ? Array < IndexTransactionRequestGetPayload<S['select'][P]>>  :
-        P extends 'indexedTransactions'
-        ? Array < IndexedTransactionGetPayload<S['select'][P]>>  :
         P extends 'sentMessages'
         ? Array < MessageGetPayload<S['select'][P]>>  :
-        P extends 'events'
-        ? Array < EventGetPayload<S['select'][P]>>  :
         P extends 'invitations'
         ? Array < InvitationGetPayload<S['select'][P]>>  :
         P extends 'redeemInvitationRequests'
@@ -4797,13 +4649,7 @@ export namespace Prisma {
 
     purchases<T extends PurchaseFindManyArgs = {}>(args?: Subset<T, PurchaseFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Purchase>>, PrismaPromise<Array<PurchaseGetPayload<T>>>>;
 
-    indexedTransactionRequests<T extends IndexTransactionRequestFindManyArgs = {}>(args?: Subset<T, IndexTransactionRequestFindManyArgs>): CheckSelect<T, PrismaPromise<Array<IndexTransactionRequest>>, PrismaPromise<Array<IndexTransactionRequestGetPayload<T>>>>;
-
-    indexedTransactions<T extends IndexedTransactionFindManyArgs = {}>(args?: Subset<T, IndexedTransactionFindManyArgs>): CheckSelect<T, PrismaPromise<Array<IndexedTransaction>>, PrismaPromise<Array<IndexedTransactionGetPayload<T>>>>;
-
     sentMessages<T extends MessageFindManyArgs = {}>(args?: Subset<T, MessageFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Message>>, PrismaPromise<Array<MessageGetPayload<T>>>>;
-
-    events<T extends EventFindManyArgs = {}>(args?: Subset<T, EventFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Event>>, PrismaPromise<Array<EventGetPayload<T>>>>;
 
     invitations<T extends InvitationFindManyArgs = {}>(args?: Subset<T, InvitationFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Invitation>>, PrismaPromise<Array<InvitationGetPayload<T>>>>;
 
@@ -6068,2856 +5914,6 @@ export namespace Prisma {
 
 
   /**
-   * Model Event
-   */
-
-
-  export type AggregateEvent = {
-    _count: EventCountAggregateOutputType | null
-    count: EventCountAggregateOutputType | null
-    _avg: EventAvgAggregateOutputType | null
-    avg: EventAvgAggregateOutputType | null
-    _sum: EventSumAggregateOutputType | null
-    sum: EventSumAggregateOutputType | null
-    _min: EventMinAggregateOutputType | null
-    min: EventMinAggregateOutputType | null
-    _max: EventMaxAggregateOutputType | null
-    max: EventMaxAggregateOutputType | null
-  }
-
-  export type EventAvgAggregateOutputType = {
-    id: number | null
-    profileId: number | null
-    offerId: number | null
-  }
-
-  export type EventSumAggregateOutputType = {
-    id: number | null
-    profileId: number | null
-    offerId: number | null
-  }
-
-  export type EventMinAggregateOutputType = {
-    id: number | null
-    type: EventType | null
-    profileId: number | null
-    offerId: number | null
-    createdAt: Date | null
-    workerProcess: string | null
-    deliveredAt: Date | null
-    acknowledgedAt: Date | null
-    archivedAt: Date | null
-    data: string | null
-  }
-
-  export type EventMaxAggregateOutputType = {
-    id: number | null
-    type: EventType | null
-    profileId: number | null
-    offerId: number | null
-    createdAt: Date | null
-    workerProcess: string | null
-    deliveredAt: Date | null
-    acknowledgedAt: Date | null
-    archivedAt: Date | null
-    data: string | null
-  }
-
-  export type EventCountAggregateOutputType = {
-    id: number
-    type: number
-    profileId: number
-    offerId: number
-    createdAt: number
-    workerProcess: number
-    deliveredAt: number
-    acknowledgedAt: number
-    archivedAt: number
-    data: number
-    _all: number
-  }
-
-
-  export type EventAvgAggregateInputType = {
-    id?: true
-    profileId?: true
-    offerId?: true
-  }
-
-  export type EventSumAggregateInputType = {
-    id?: true
-    profileId?: true
-    offerId?: true
-  }
-
-  export type EventMinAggregateInputType = {
-    id?: true
-    type?: true
-    profileId?: true
-    offerId?: true
-    createdAt?: true
-    workerProcess?: true
-    deliveredAt?: true
-    acknowledgedAt?: true
-    archivedAt?: true
-    data?: true
-  }
-
-  export type EventMaxAggregateInputType = {
-    id?: true
-    type?: true
-    profileId?: true
-    offerId?: true
-    createdAt?: true
-    workerProcess?: true
-    deliveredAt?: true
-    acknowledgedAt?: true
-    archivedAt?: true
-    data?: true
-  }
-
-  export type EventCountAggregateInputType = {
-    id?: true
-    type?: true
-    profileId?: true
-    offerId?: true
-    createdAt?: true
-    workerProcess?: true
-    deliveredAt?: true
-    acknowledgedAt?: true
-    archivedAt?: true
-    data?: true
-    _all?: true
-  }
-
-  export type EventAggregateArgs = {
-    /**
-     * Filter which Event to aggregate.
-     * 
-    **/
-    where?: EventWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Events to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<EventOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     * 
-    **/
-    cursor?: EventWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Events from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Events.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned Events
-    **/
-    _count?: true | EventCountAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | EventCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: EventAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: EventAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: EventSumAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: EventSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: EventMinAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: EventMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: EventMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: EventMaxAggregateInputType
-  }
-
-  export type GetEventAggregateType<T extends EventAggregateArgs> = {
-        [P in keyof T & keyof AggregateEvent]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateEvent[P]>
-      : GetScalarType<T[P], AggregateEvent[P]>
-  }
-
-
-    
-    
-  export type EventGroupByArgs = {
-    where?: EventWhereInput
-    orderBy?: Enumerable<EventOrderByInput>
-    by: Array<EventScalarFieldEnum>
-    having?: EventScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: EventCountAggregateInputType | true
-    _avg?: EventAvgAggregateInputType
-    _sum?: EventSumAggregateInputType
-    _min?: EventMinAggregateInputType
-    _max?: EventMaxAggregateInputType
-  }
-
-
-  export type EventGroupByOutputType = {
-    id: number
-    type: EventType
-    profileId: number | null
-    offerId: number | null
-    createdAt: Date
-    workerProcess: string | null
-    deliveredAt: Date | null
-    acknowledgedAt: Date | null
-    archivedAt: Date | null
-    data: string
-    _count: EventCountAggregateOutputType | null
-    _avg: EventAvgAggregateOutputType | null
-    _sum: EventSumAggregateOutputType | null
-    _min: EventMinAggregateOutputType | null
-    _max: EventMaxAggregateOutputType | null
-  }
-
-  type GetEventGroupByPayload<T extends EventGroupByArgs> = Promise<
-    Array<
-      PickArray<EventGroupByOutputType, T['by']> & 
-        {
-          [P in ((keyof T) & (keyof EventGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], EventGroupByOutputType[P]> 
-            : GetScalarType<T[P], EventGroupByOutputType[P]>
-        }
-      > 
-    >
-
-
-  export type EventSelect = {
-    id?: boolean
-    type?: boolean
-    profile?: boolean | ProfileArgs
-    profileId?: boolean
-    offer?: boolean | OfferArgs
-    offerId?: boolean
-    createdAt?: boolean
-    workerProcess?: boolean
-    deliveredAt?: boolean
-    acknowledgedAt?: boolean
-    archivedAt?: boolean
-    data?: boolean
-  }
-
-  export type EventInclude = {
-    profile?: boolean | ProfileArgs
-    offer?: boolean | OfferArgs
-  }
-
-  export type EventGetPayload<
-    S extends boolean | null | undefined | EventArgs,
-    U = keyof S
-      > = S extends true
-        ? Event
-    : S extends undefined
-    ? never
-    : S extends EventArgs | EventFindManyArgs
-    ?'include' extends U
-    ? Event  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'profile'
-        ? ProfileGetPayload<S['include'][P]> | null :
-        P extends 'offer'
-        ? OfferGetPayload<S['include'][P]> | null : never
-  } 
-    : 'select' extends U
-    ? {
-    [P in TrueKeys<S['select']>]: P extends keyof Event ?Event [P]
-  : 
-          P extends 'profile'
-        ? ProfileGetPayload<S['select'][P]> | null :
-        P extends 'offer'
-        ? OfferGetPayload<S['select'][P]> | null : never
-  } 
-    : Event
-  : Event
-
-
-  type EventCountArgs = Merge<
-    Omit<EventFindManyArgs, 'select' | 'include'> & {
-      select?: EventCountAggregateInputType | true
-    }
-  >
-
-  export interface EventDelegate<GlobalRejectSettings> {
-    /**
-     * Find zero or one Event that matches the filter.
-     * @param {EventFindUniqueArgs} args - Arguments to find a Event
-     * @example
-     * // Get one Event
-     * const event = await prisma.event.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUnique<T extends EventFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, EventFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Event'> extends True ? CheckSelect<T, Prisma__EventClient<Event>, Prisma__EventClient<EventGetPayload<T>>> : CheckSelect<T, Prisma__EventClient<Event | null >, Prisma__EventClient<EventGetPayload<T> | null >>
-
-    /**
-     * Find the first Event that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventFindFirstArgs} args - Arguments to find a Event
-     * @example
-     * // Get one Event
-     * const event = await prisma.event.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirst<T extends EventFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, EventFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Event'> extends True ? CheckSelect<T, Prisma__EventClient<Event>, Prisma__EventClient<EventGetPayload<T>>> : CheckSelect<T, Prisma__EventClient<Event | null >, Prisma__EventClient<EventGetPayload<T> | null >>
-
-    /**
-     * Find zero or more Events that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventFindManyArgs=} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Events
-     * const events = await prisma.event.findMany()
-     * 
-     * // Get first 10 Events
-     * const events = await prisma.event.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const eventWithIdOnly = await prisma.event.findMany({ select: { id: true } })
-     * 
-    **/
-    findMany<T extends EventFindManyArgs>(
-      args?: SelectSubset<T, EventFindManyArgs>
-    ): CheckSelect<T, PrismaPromise<Array<Event>>, PrismaPromise<Array<EventGetPayload<T>>>>
-
-    /**
-     * Create a Event.
-     * @param {EventCreateArgs} args - Arguments to create a Event.
-     * @example
-     * // Create one Event
-     * const Event = await prisma.event.create({
-     *   data: {
-     *     // ... data to create a Event
-     *   }
-     * })
-     * 
-    **/
-    create<T extends EventCreateArgs>(
-      args: SelectSubset<T, EventCreateArgs>
-    ): CheckSelect<T, Prisma__EventClient<Event>, Prisma__EventClient<EventGetPayload<T>>>
-
-    /**
-     * Create many Events.
-     *     @param {EventCreateManyArgs} args - Arguments to create many Events.
-     *     @example
-     *     // Create many Events
-     *     const event = await prisma.event.createMany({
-     *       data: {
-     *         // ... provide data here
-     *       }
-     *     })
-     *     
-    **/
-    createMany<T extends EventCreateManyArgs>(
-      args?: SelectSubset<T, EventCreateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a Event.
-     * @param {EventDeleteArgs} args - Arguments to delete one Event.
-     * @example
-     * // Delete one Event
-     * const Event = await prisma.event.delete({
-     *   where: {
-     *     // ... filter to delete one Event
-     *   }
-     * })
-     * 
-    **/
-    delete<T extends EventDeleteArgs>(
-      args: SelectSubset<T, EventDeleteArgs>
-    ): CheckSelect<T, Prisma__EventClient<Event>, Prisma__EventClient<EventGetPayload<T>>>
-
-    /**
-     * Update one Event.
-     * @param {EventUpdateArgs} args - Arguments to update one Event.
-     * @example
-     * // Update one Event
-     * const event = await prisma.event.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    update<T extends EventUpdateArgs>(
-      args: SelectSubset<T, EventUpdateArgs>
-    ): CheckSelect<T, Prisma__EventClient<Event>, Prisma__EventClient<EventGetPayload<T>>>
-
-    /**
-     * Delete zero or more Events.
-     * @param {EventDeleteManyArgs} args - Arguments to filter Events to delete.
-     * @example
-     * // Delete a few Events
-     * const { count } = await prisma.event.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-    **/
-    deleteMany<T extends EventDeleteManyArgs>(
-      args?: SelectSubset<T, EventDeleteManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Events.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Events
-     * const event = await prisma.event.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    updateMany<T extends EventUpdateManyArgs>(
-      args: SelectSubset<T, EventUpdateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one Event.
-     * @param {EventUpsertArgs} args - Arguments to update or create a Event.
-     * @example
-     * // Update or create a Event
-     * const event = await prisma.event.upsert({
-     *   create: {
-     *     // ... data to create a Event
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Event we want to update
-     *   }
-     * })
-    **/
-    upsert<T extends EventUpsertArgs>(
-      args: SelectSubset<T, EventUpsertArgs>
-    ): CheckSelect<T, Prisma__EventClient<Event>, Prisma__EventClient<EventGetPayload<T>>>
-
-    /**
-     * Count the number of Events.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventCountArgs} args - Arguments to filter Events to count.
-     * @example
-     * // Count the number of Events
-     * const count = await prisma.event.count({
-     *   where: {
-     *     // ... the filter for the Events we want to count
-     *   }
-     * })
-    **/
-    count<T extends EventCountArgs>(
-      args?: Subset<T, EventCountArgs>,
-    ): PrismaPromise<
-      T extends _Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], EventCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Event.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends EventAggregateArgs>(args: Subset<T, EventAggregateArgs>): PrismaPromise<GetEventAggregateType<T>>
-
-    /**
-     * Group by Event.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {EventGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends EventGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: EventGroupByArgs['orderBy'] }
-        : { orderBy?: EventGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends TupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, EventGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEventGroupByPayload<T> : Promise<InputErrors>
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for Event.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export class Prisma__EventClient<T> implements PrismaPromise<T> {
-    [prisma]: true;
-    private readonly _dmmf;
-    private readonly _fetcher;
-    private readonly _queryType;
-    private readonly _rootField;
-    private readonly _clientMethod;
-    private readonly _args;
-    private readonly _dataPath;
-    private readonly _errorFormat;
-    private readonly _measurePerformance?;
-    private _isList;
-    private _callsite;
-    private _requestPromise?;
-    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
-
-    profile<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
-
-    offer<T extends OfferArgs = {}>(args?: Subset<T, OfferArgs>): CheckSelect<T, Prisma__OfferClient<Offer | null >, Prisma__OfferClient<OfferGetPayload<T> | null >>;
-
-    private get _document();
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
-  }
-
-  // Custom InputTypes
-
-  /**
-   * Event findUnique
-   */
-  export type EventFindUniqueArgs = {
-    /**
-     * Select specific fields to fetch from the Event
-     * 
-    **/
-    select?: EventSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: EventInclude | null
-    /**
-     * Throw an Error if a Event can't be found
-     * 
-    **/
-    rejectOnNotFound?: RejectOnNotFound
-    /**
-     * Filter, which Event to fetch.
-     * 
-    **/
-    where: EventWhereUniqueInput
-  }
-
-
-  /**
-   * Event findFirst
-   */
-  export type EventFindFirstArgs = {
-    /**
-     * Select specific fields to fetch from the Event
-     * 
-    **/
-    select?: EventSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: EventInclude | null
-    /**
-     * Throw an Error if a Event can't be found
-     * 
-    **/
-    rejectOnNotFound?: RejectOnNotFound
-    /**
-     * Filter, which Event to fetch.
-     * 
-    **/
-    where?: EventWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Events to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<EventOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Events.
-     * 
-    **/
-    cursor?: EventWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Events from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Events.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Events.
-     * 
-    **/
-    distinct?: Enumerable<EventScalarFieldEnum>
-  }
-
-
-  /**
-   * Event findMany
-   */
-  export type EventFindManyArgs = {
-    /**
-     * Select specific fields to fetch from the Event
-     * 
-    **/
-    select?: EventSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: EventInclude | null
-    /**
-     * Filter, which Events to fetch.
-     * 
-    **/
-    where?: EventWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Events to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<EventOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing Events.
-     * 
-    **/
-    cursor?: EventWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Events from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Events.
-     * 
-    **/
-    skip?: number
-    distinct?: Enumerable<EventScalarFieldEnum>
-  }
-
-
-  /**
-   * Event create
-   */
-  export type EventCreateArgs = {
-    /**
-     * Select specific fields to fetch from the Event
-     * 
-    **/
-    select?: EventSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: EventInclude | null
-    /**
-     * The data needed to create a Event.
-     * 
-    **/
-    data: XOR<EventCreateInput, EventUncheckedCreateInput>
-  }
-
-
-  /**
-   * Event createMany
-   */
-  export type EventCreateManyArgs = {
-    data: Enumerable<EventCreateManyInput>
-    skipDuplicates?: boolean
-  }
-
-
-  /**
-   * Event update
-   */
-  export type EventUpdateArgs = {
-    /**
-     * Select specific fields to fetch from the Event
-     * 
-    **/
-    select?: EventSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: EventInclude | null
-    /**
-     * The data needed to update a Event.
-     * 
-    **/
-    data: XOR<EventUpdateInput, EventUncheckedUpdateInput>
-    /**
-     * Choose, which Event to update.
-     * 
-    **/
-    where: EventWhereUniqueInput
-  }
-
-
-  /**
-   * Event updateMany
-   */
-  export type EventUpdateManyArgs = {
-    data: XOR<EventUpdateManyMutationInput, EventUncheckedUpdateManyInput>
-    where?: EventWhereInput
-  }
-
-
-  /**
-   * Event upsert
-   */
-  export type EventUpsertArgs = {
-    /**
-     * Select specific fields to fetch from the Event
-     * 
-    **/
-    select?: EventSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: EventInclude | null
-    /**
-     * The filter to search for the Event to update in case it exists.
-     * 
-    **/
-    where: EventWhereUniqueInput
-    /**
-     * In case the Event found by the `where` argument doesn't exist, create a new Event with this data.
-     * 
-    **/
-    create: XOR<EventCreateInput, EventUncheckedCreateInput>
-    /**
-     * In case the Event was found with the provided `where` argument, update it with this data.
-     * 
-    **/
-    update: XOR<EventUpdateInput, EventUncheckedUpdateInput>
-  }
-
-
-  /**
-   * Event delete
-   */
-  export type EventDeleteArgs = {
-    /**
-     * Select specific fields to fetch from the Event
-     * 
-    **/
-    select?: EventSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: EventInclude | null
-    /**
-     * Filter which Event to delete.
-     * 
-    **/
-    where: EventWhereUniqueInput
-  }
-
-
-  /**
-   * Event deleteMany
-   */
-  export type EventDeleteManyArgs = {
-    where?: EventWhereInput
-  }
-
-
-  /**
-   * Event without action
-   */
-  export type EventArgs = {
-    /**
-     * Select specific fields to fetch from the Event
-     * 
-    **/
-    select?: EventSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: EventInclude | null
-  }
-
-
-
-  /**
-   * Model IndexedTransactionLog
-   */
-
-
-  export type AggregateIndexedTransactionLog = {
-    _count: IndexedTransactionLogCountAggregateOutputType | null
-    count: IndexedTransactionLogCountAggregateOutputType | null
-    _avg: IndexedTransactionLogAvgAggregateOutputType | null
-    avg: IndexedTransactionLogAvgAggregateOutputType | null
-    _sum: IndexedTransactionLogSumAggregateOutputType | null
-    sum: IndexedTransactionLogSumAggregateOutputType | null
-    _min: IndexedTransactionLogMinAggregateOutputType | null
-    min: IndexedTransactionLogMinAggregateOutputType | null
-    _max: IndexedTransactionLogMaxAggregateOutputType | null
-    max: IndexedTransactionLogMaxAggregateOutputType | null
-  }
-
-  export type IndexedTransactionLogAvgAggregateOutputType = {
-    id: number | null
-    indexedTransactionId: number | null
-    logIndex: number | null
-  }
-
-  export type IndexedTransactionLogSumAggregateOutputType = {
-    id: number | null
-    indexedTransactionId: number | null
-    logIndex: number | null
-  }
-
-  export type IndexedTransactionLogMinAggregateOutputType = {
-    id: number | null
-    indexedTransactionId: number | null
-    address: string | null
-    data: string | null
-    logIndex: number | null
-  }
-
-  export type IndexedTransactionLogMaxAggregateOutputType = {
-    id: number | null
-    indexedTransactionId: number | null
-    address: string | null
-    data: string | null
-    logIndex: number | null
-  }
-
-  export type IndexedTransactionLogCountAggregateOutputType = {
-    id: number
-    indexedTransactionId: number
-    address: number
-    data: number
-    topics: number
-    logIndex: number
-    _all: number
-  }
-
-
-  export type IndexedTransactionLogAvgAggregateInputType = {
-    id?: true
-    indexedTransactionId?: true
-    logIndex?: true
-  }
-
-  export type IndexedTransactionLogSumAggregateInputType = {
-    id?: true
-    indexedTransactionId?: true
-    logIndex?: true
-  }
-
-  export type IndexedTransactionLogMinAggregateInputType = {
-    id?: true
-    indexedTransactionId?: true
-    address?: true
-    data?: true
-    logIndex?: true
-  }
-
-  export type IndexedTransactionLogMaxAggregateInputType = {
-    id?: true
-    indexedTransactionId?: true
-    address?: true
-    data?: true
-    logIndex?: true
-  }
-
-  export type IndexedTransactionLogCountAggregateInputType = {
-    id?: true
-    indexedTransactionId?: true
-    address?: true
-    data?: true
-    topics?: true
-    logIndex?: true
-    _all?: true
-  }
-
-  export type IndexedTransactionLogAggregateArgs = {
-    /**
-     * Filter which IndexedTransactionLog to aggregate.
-     * 
-    **/
-    where?: IndexedTransactionLogWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of IndexedTransactionLogs to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<IndexedTransactionLogOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     * 
-    **/
-    cursor?: IndexedTransactionLogWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` IndexedTransactionLogs from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` IndexedTransactionLogs.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned IndexedTransactionLogs
-    **/
-    _count?: true | IndexedTransactionLogCountAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | IndexedTransactionLogCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: IndexedTransactionLogAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: IndexedTransactionLogAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: IndexedTransactionLogSumAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: IndexedTransactionLogSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: IndexedTransactionLogMinAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: IndexedTransactionLogMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: IndexedTransactionLogMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: IndexedTransactionLogMaxAggregateInputType
-  }
-
-  export type GetIndexedTransactionLogAggregateType<T extends IndexedTransactionLogAggregateArgs> = {
-        [P in keyof T & keyof AggregateIndexedTransactionLog]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateIndexedTransactionLog[P]>
-      : GetScalarType<T[P], AggregateIndexedTransactionLog[P]>
-  }
-
-
-    
-    
-  export type IndexedTransactionLogGroupByArgs = {
-    where?: IndexedTransactionLogWhereInput
-    orderBy?: Enumerable<IndexedTransactionLogOrderByInput>
-    by: Array<IndexedTransactionLogScalarFieldEnum>
-    having?: IndexedTransactionLogScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: IndexedTransactionLogCountAggregateInputType | true
-    _avg?: IndexedTransactionLogAvgAggregateInputType
-    _sum?: IndexedTransactionLogSumAggregateInputType
-    _min?: IndexedTransactionLogMinAggregateInputType
-    _max?: IndexedTransactionLogMaxAggregateInputType
-  }
-
-
-  export type IndexedTransactionLogGroupByOutputType = {
-    id: number
-    indexedTransactionId: number
-    address: string
-    data: string | null
-    topics: string[]
-    logIndex: number
-    _count: IndexedTransactionLogCountAggregateOutputType | null
-    _avg: IndexedTransactionLogAvgAggregateOutputType | null
-    _sum: IndexedTransactionLogSumAggregateOutputType | null
-    _min: IndexedTransactionLogMinAggregateOutputType | null
-    _max: IndexedTransactionLogMaxAggregateOutputType | null
-  }
-
-  type GetIndexedTransactionLogGroupByPayload<T extends IndexedTransactionLogGroupByArgs> = Promise<
-    Array<
-      PickArray<IndexedTransactionLogGroupByOutputType, T['by']> & 
-        {
-          [P in ((keyof T) & (keyof IndexedTransactionLogGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], IndexedTransactionLogGroupByOutputType[P]> 
-            : GetScalarType<T[P], IndexedTransactionLogGroupByOutputType[P]>
-        }
-      > 
-    >
-
-
-  export type IndexedTransactionLogSelect = {
-    id?: boolean
-    indexedTransaction?: boolean | IndexedTransactionArgs
-    indexedTransactionId?: boolean
-    address?: boolean
-    data?: boolean
-    topics?: boolean
-    logIndex?: boolean
-  }
-
-  export type IndexedTransactionLogInclude = {
-    indexedTransaction?: boolean | IndexedTransactionArgs
-  }
-
-  export type IndexedTransactionLogGetPayload<
-    S extends boolean | null | undefined | IndexedTransactionLogArgs,
-    U = keyof S
-      > = S extends true
-        ? IndexedTransactionLog
-    : S extends undefined
-    ? never
-    : S extends IndexedTransactionLogArgs | IndexedTransactionLogFindManyArgs
-    ?'include' extends U
-    ? IndexedTransactionLog  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'indexedTransaction'
-        ? IndexedTransactionGetPayload<S['include'][P]> : never
-  } 
-    : 'select' extends U
-    ? {
-    [P in TrueKeys<S['select']>]: P extends keyof IndexedTransactionLog ?IndexedTransactionLog [P]
-  : 
-          P extends 'indexedTransaction'
-        ? IndexedTransactionGetPayload<S['select'][P]> : never
-  } 
-    : IndexedTransactionLog
-  : IndexedTransactionLog
-
-
-  type IndexedTransactionLogCountArgs = Merge<
-    Omit<IndexedTransactionLogFindManyArgs, 'select' | 'include'> & {
-      select?: IndexedTransactionLogCountAggregateInputType | true
-    }
-  >
-
-  export interface IndexedTransactionLogDelegate<GlobalRejectSettings> {
-    /**
-     * Find zero or one IndexedTransactionLog that matches the filter.
-     * @param {IndexedTransactionLogFindUniqueArgs} args - Arguments to find a IndexedTransactionLog
-     * @example
-     * // Get one IndexedTransactionLog
-     * const indexedTransactionLog = await prisma.indexedTransactionLog.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUnique<T extends IndexedTransactionLogFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, IndexedTransactionLogFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'IndexedTransactionLog'> extends True ? CheckSelect<T, Prisma__IndexedTransactionLogClient<IndexedTransactionLog>, Prisma__IndexedTransactionLogClient<IndexedTransactionLogGetPayload<T>>> : CheckSelect<T, Prisma__IndexedTransactionLogClient<IndexedTransactionLog | null >, Prisma__IndexedTransactionLogClient<IndexedTransactionLogGetPayload<T> | null >>
-
-    /**
-     * Find the first IndexedTransactionLog that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexedTransactionLogFindFirstArgs} args - Arguments to find a IndexedTransactionLog
-     * @example
-     * // Get one IndexedTransactionLog
-     * const indexedTransactionLog = await prisma.indexedTransactionLog.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirst<T extends IndexedTransactionLogFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, IndexedTransactionLogFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'IndexedTransactionLog'> extends True ? CheckSelect<T, Prisma__IndexedTransactionLogClient<IndexedTransactionLog>, Prisma__IndexedTransactionLogClient<IndexedTransactionLogGetPayload<T>>> : CheckSelect<T, Prisma__IndexedTransactionLogClient<IndexedTransactionLog | null >, Prisma__IndexedTransactionLogClient<IndexedTransactionLogGetPayload<T> | null >>
-
-    /**
-     * Find zero or more IndexedTransactionLogs that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexedTransactionLogFindManyArgs=} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all IndexedTransactionLogs
-     * const indexedTransactionLogs = await prisma.indexedTransactionLog.findMany()
-     * 
-     * // Get first 10 IndexedTransactionLogs
-     * const indexedTransactionLogs = await prisma.indexedTransactionLog.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const indexedTransactionLogWithIdOnly = await prisma.indexedTransactionLog.findMany({ select: { id: true } })
-     * 
-    **/
-    findMany<T extends IndexedTransactionLogFindManyArgs>(
-      args?: SelectSubset<T, IndexedTransactionLogFindManyArgs>
-    ): CheckSelect<T, PrismaPromise<Array<IndexedTransactionLog>>, PrismaPromise<Array<IndexedTransactionLogGetPayload<T>>>>
-
-    /**
-     * Create a IndexedTransactionLog.
-     * @param {IndexedTransactionLogCreateArgs} args - Arguments to create a IndexedTransactionLog.
-     * @example
-     * // Create one IndexedTransactionLog
-     * const IndexedTransactionLog = await prisma.indexedTransactionLog.create({
-     *   data: {
-     *     // ... data to create a IndexedTransactionLog
-     *   }
-     * })
-     * 
-    **/
-    create<T extends IndexedTransactionLogCreateArgs>(
-      args: SelectSubset<T, IndexedTransactionLogCreateArgs>
-    ): CheckSelect<T, Prisma__IndexedTransactionLogClient<IndexedTransactionLog>, Prisma__IndexedTransactionLogClient<IndexedTransactionLogGetPayload<T>>>
-
-    /**
-     * Create many IndexedTransactionLogs.
-     *     @param {IndexedTransactionLogCreateManyArgs} args - Arguments to create many IndexedTransactionLogs.
-     *     @example
-     *     // Create many IndexedTransactionLogs
-     *     const indexedTransactionLog = await prisma.indexedTransactionLog.createMany({
-     *       data: {
-     *         // ... provide data here
-     *       }
-     *     })
-     *     
-    **/
-    createMany<T extends IndexedTransactionLogCreateManyArgs>(
-      args?: SelectSubset<T, IndexedTransactionLogCreateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a IndexedTransactionLog.
-     * @param {IndexedTransactionLogDeleteArgs} args - Arguments to delete one IndexedTransactionLog.
-     * @example
-     * // Delete one IndexedTransactionLog
-     * const IndexedTransactionLog = await prisma.indexedTransactionLog.delete({
-     *   where: {
-     *     // ... filter to delete one IndexedTransactionLog
-     *   }
-     * })
-     * 
-    **/
-    delete<T extends IndexedTransactionLogDeleteArgs>(
-      args: SelectSubset<T, IndexedTransactionLogDeleteArgs>
-    ): CheckSelect<T, Prisma__IndexedTransactionLogClient<IndexedTransactionLog>, Prisma__IndexedTransactionLogClient<IndexedTransactionLogGetPayload<T>>>
-
-    /**
-     * Update one IndexedTransactionLog.
-     * @param {IndexedTransactionLogUpdateArgs} args - Arguments to update one IndexedTransactionLog.
-     * @example
-     * // Update one IndexedTransactionLog
-     * const indexedTransactionLog = await prisma.indexedTransactionLog.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    update<T extends IndexedTransactionLogUpdateArgs>(
-      args: SelectSubset<T, IndexedTransactionLogUpdateArgs>
-    ): CheckSelect<T, Prisma__IndexedTransactionLogClient<IndexedTransactionLog>, Prisma__IndexedTransactionLogClient<IndexedTransactionLogGetPayload<T>>>
-
-    /**
-     * Delete zero or more IndexedTransactionLogs.
-     * @param {IndexedTransactionLogDeleteManyArgs} args - Arguments to filter IndexedTransactionLogs to delete.
-     * @example
-     * // Delete a few IndexedTransactionLogs
-     * const { count } = await prisma.indexedTransactionLog.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-    **/
-    deleteMany<T extends IndexedTransactionLogDeleteManyArgs>(
-      args?: SelectSubset<T, IndexedTransactionLogDeleteManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more IndexedTransactionLogs.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexedTransactionLogUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many IndexedTransactionLogs
-     * const indexedTransactionLog = await prisma.indexedTransactionLog.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    updateMany<T extends IndexedTransactionLogUpdateManyArgs>(
-      args: SelectSubset<T, IndexedTransactionLogUpdateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one IndexedTransactionLog.
-     * @param {IndexedTransactionLogUpsertArgs} args - Arguments to update or create a IndexedTransactionLog.
-     * @example
-     * // Update or create a IndexedTransactionLog
-     * const indexedTransactionLog = await prisma.indexedTransactionLog.upsert({
-     *   create: {
-     *     // ... data to create a IndexedTransactionLog
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the IndexedTransactionLog we want to update
-     *   }
-     * })
-    **/
-    upsert<T extends IndexedTransactionLogUpsertArgs>(
-      args: SelectSubset<T, IndexedTransactionLogUpsertArgs>
-    ): CheckSelect<T, Prisma__IndexedTransactionLogClient<IndexedTransactionLog>, Prisma__IndexedTransactionLogClient<IndexedTransactionLogGetPayload<T>>>
-
-    /**
-     * Count the number of IndexedTransactionLogs.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexedTransactionLogCountArgs} args - Arguments to filter IndexedTransactionLogs to count.
-     * @example
-     * // Count the number of IndexedTransactionLogs
-     * const count = await prisma.indexedTransactionLog.count({
-     *   where: {
-     *     // ... the filter for the IndexedTransactionLogs we want to count
-     *   }
-     * })
-    **/
-    count<T extends IndexedTransactionLogCountArgs>(
-      args?: Subset<T, IndexedTransactionLogCountArgs>,
-    ): PrismaPromise<
-      T extends _Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], IndexedTransactionLogCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a IndexedTransactionLog.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexedTransactionLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends IndexedTransactionLogAggregateArgs>(args: Subset<T, IndexedTransactionLogAggregateArgs>): PrismaPromise<GetIndexedTransactionLogAggregateType<T>>
-
-    /**
-     * Group by IndexedTransactionLog.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexedTransactionLogGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends IndexedTransactionLogGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: IndexedTransactionLogGroupByArgs['orderBy'] }
-        : { orderBy?: IndexedTransactionLogGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends TupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, IndexedTransactionLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetIndexedTransactionLogGroupByPayload<T> : Promise<InputErrors>
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for IndexedTransactionLog.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export class Prisma__IndexedTransactionLogClient<T> implements PrismaPromise<T> {
-    [prisma]: true;
-    private readonly _dmmf;
-    private readonly _fetcher;
-    private readonly _queryType;
-    private readonly _rootField;
-    private readonly _clientMethod;
-    private readonly _args;
-    private readonly _dataPath;
-    private readonly _errorFormat;
-    private readonly _measurePerformance?;
-    private _isList;
-    private _callsite;
-    private _requestPromise?;
-    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
-
-    indexedTransaction<T extends IndexedTransactionArgs = {}>(args?: Subset<T, IndexedTransactionArgs>): CheckSelect<T, Prisma__IndexedTransactionClient<IndexedTransaction | null >, Prisma__IndexedTransactionClient<IndexedTransactionGetPayload<T> | null >>;
-
-    private get _document();
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
-  }
-
-  // Custom InputTypes
-
-  /**
-   * IndexedTransactionLog findUnique
-   */
-  export type IndexedTransactionLogFindUniqueArgs = {
-    /**
-     * Select specific fields to fetch from the IndexedTransactionLog
-     * 
-    **/
-    select?: IndexedTransactionLogSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexedTransactionLogInclude | null
-    /**
-     * Throw an Error if a IndexedTransactionLog can't be found
-     * 
-    **/
-    rejectOnNotFound?: RejectOnNotFound
-    /**
-     * Filter, which IndexedTransactionLog to fetch.
-     * 
-    **/
-    where: IndexedTransactionLogWhereUniqueInput
-  }
-
-
-  /**
-   * IndexedTransactionLog findFirst
-   */
-  export type IndexedTransactionLogFindFirstArgs = {
-    /**
-     * Select specific fields to fetch from the IndexedTransactionLog
-     * 
-    **/
-    select?: IndexedTransactionLogSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexedTransactionLogInclude | null
-    /**
-     * Throw an Error if a IndexedTransactionLog can't be found
-     * 
-    **/
-    rejectOnNotFound?: RejectOnNotFound
-    /**
-     * Filter, which IndexedTransactionLog to fetch.
-     * 
-    **/
-    where?: IndexedTransactionLogWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of IndexedTransactionLogs to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<IndexedTransactionLogOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for IndexedTransactionLogs.
-     * 
-    **/
-    cursor?: IndexedTransactionLogWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` IndexedTransactionLogs from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` IndexedTransactionLogs.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of IndexedTransactionLogs.
-     * 
-    **/
-    distinct?: Enumerable<IndexedTransactionLogScalarFieldEnum>
-  }
-
-
-  /**
-   * IndexedTransactionLog findMany
-   */
-  export type IndexedTransactionLogFindManyArgs = {
-    /**
-     * Select specific fields to fetch from the IndexedTransactionLog
-     * 
-    **/
-    select?: IndexedTransactionLogSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexedTransactionLogInclude | null
-    /**
-     * Filter, which IndexedTransactionLogs to fetch.
-     * 
-    **/
-    where?: IndexedTransactionLogWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of IndexedTransactionLogs to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<IndexedTransactionLogOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing IndexedTransactionLogs.
-     * 
-    **/
-    cursor?: IndexedTransactionLogWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` IndexedTransactionLogs from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` IndexedTransactionLogs.
-     * 
-    **/
-    skip?: number
-    distinct?: Enumerable<IndexedTransactionLogScalarFieldEnum>
-  }
-
-
-  /**
-   * IndexedTransactionLog create
-   */
-  export type IndexedTransactionLogCreateArgs = {
-    /**
-     * Select specific fields to fetch from the IndexedTransactionLog
-     * 
-    **/
-    select?: IndexedTransactionLogSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexedTransactionLogInclude | null
-    /**
-     * The data needed to create a IndexedTransactionLog.
-     * 
-    **/
-    data: XOR<IndexedTransactionLogCreateInput, IndexedTransactionLogUncheckedCreateInput>
-  }
-
-
-  /**
-   * IndexedTransactionLog createMany
-   */
-  export type IndexedTransactionLogCreateManyArgs = {
-    data: Enumerable<IndexedTransactionLogCreateManyInput>
-    skipDuplicates?: boolean
-  }
-
-
-  /**
-   * IndexedTransactionLog update
-   */
-  export type IndexedTransactionLogUpdateArgs = {
-    /**
-     * Select specific fields to fetch from the IndexedTransactionLog
-     * 
-    **/
-    select?: IndexedTransactionLogSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexedTransactionLogInclude | null
-    /**
-     * The data needed to update a IndexedTransactionLog.
-     * 
-    **/
-    data: XOR<IndexedTransactionLogUpdateInput, IndexedTransactionLogUncheckedUpdateInput>
-    /**
-     * Choose, which IndexedTransactionLog to update.
-     * 
-    **/
-    where: IndexedTransactionLogWhereUniqueInput
-  }
-
-
-  /**
-   * IndexedTransactionLog updateMany
-   */
-  export type IndexedTransactionLogUpdateManyArgs = {
-    data: XOR<IndexedTransactionLogUpdateManyMutationInput, IndexedTransactionLogUncheckedUpdateManyInput>
-    where?: IndexedTransactionLogWhereInput
-  }
-
-
-  /**
-   * IndexedTransactionLog upsert
-   */
-  export type IndexedTransactionLogUpsertArgs = {
-    /**
-     * Select specific fields to fetch from the IndexedTransactionLog
-     * 
-    **/
-    select?: IndexedTransactionLogSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexedTransactionLogInclude | null
-    /**
-     * The filter to search for the IndexedTransactionLog to update in case it exists.
-     * 
-    **/
-    where: IndexedTransactionLogWhereUniqueInput
-    /**
-     * In case the IndexedTransactionLog found by the `where` argument doesn't exist, create a new IndexedTransactionLog with this data.
-     * 
-    **/
-    create: XOR<IndexedTransactionLogCreateInput, IndexedTransactionLogUncheckedCreateInput>
-    /**
-     * In case the IndexedTransactionLog was found with the provided `where` argument, update it with this data.
-     * 
-    **/
-    update: XOR<IndexedTransactionLogUpdateInput, IndexedTransactionLogUncheckedUpdateInput>
-  }
-
-
-  /**
-   * IndexedTransactionLog delete
-   */
-  export type IndexedTransactionLogDeleteArgs = {
-    /**
-     * Select specific fields to fetch from the IndexedTransactionLog
-     * 
-    **/
-    select?: IndexedTransactionLogSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexedTransactionLogInclude | null
-    /**
-     * Filter which IndexedTransactionLog to delete.
-     * 
-    **/
-    where: IndexedTransactionLogWhereUniqueInput
-  }
-
-
-  /**
-   * IndexedTransactionLog deleteMany
-   */
-  export type IndexedTransactionLogDeleteManyArgs = {
-    where?: IndexedTransactionLogWhereInput
-  }
-
-
-  /**
-   * IndexedTransactionLog without action
-   */
-  export type IndexedTransactionLogArgs = {
-    /**
-     * Select specific fields to fetch from the IndexedTransactionLog
-     * 
-    **/
-    select?: IndexedTransactionLogSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexedTransactionLogInclude | null
-  }
-
-
-
-  /**
-   * Model IndexTransactionRequest
-   */
-
-
-  export type AggregateIndexTransactionRequest = {
-    _count: IndexTransactionRequestCountAggregateOutputType | null
-    count: IndexTransactionRequestCountAggregateOutputType | null
-    _avg: IndexTransactionRequestAvgAggregateOutputType | null
-    avg: IndexTransactionRequestAvgAggregateOutputType | null
-    _sum: IndexTransactionRequestSumAggregateOutputType | null
-    sum: IndexTransactionRequestSumAggregateOutputType | null
-    _min: IndexTransactionRequestMinAggregateOutputType | null
-    min: IndexTransactionRequestMinAggregateOutputType | null
-    _max: IndexTransactionRequestMaxAggregateOutputType | null
-    max: IndexTransactionRequestMaxAggregateOutputType | null
-  }
-
-  export type IndexTransactionRequestAvgAggregateOutputType = {
-    id: number | null
-    createdByProfileId: number | null
-    blockNumber: number | null
-    transactionIndex: number | null
-  }
-
-  export type IndexTransactionRequestSumAggregateOutputType = {
-    id: number | null
-    createdByProfileId: number | null
-    blockNumber: number | null
-    transactionIndex: number | null
-  }
-
-  export type IndexTransactionRequestMinAggregateOutputType = {
-    id: number | null
-    createdAt: Date | null
-    createdByProfileId: number | null
-    blockNumber: number | null
-    transactionIndex: number | null
-    transactionHash: string | null
-    workerProcess: string | null
-    pickedAt: Date | null
-  }
-
-  export type IndexTransactionRequestMaxAggregateOutputType = {
-    id: number | null
-    createdAt: Date | null
-    createdByProfileId: number | null
-    blockNumber: number | null
-    transactionIndex: number | null
-    transactionHash: string | null
-    workerProcess: string | null
-    pickedAt: Date | null
-  }
-
-  export type IndexTransactionRequestCountAggregateOutputType = {
-    id: number
-    createdAt: number
-    createdByProfileId: number
-    blockNumber: number
-    transactionIndex: number
-    transactionHash: number
-    workerProcess: number
-    pickedAt: number
-    _all: number
-  }
-
-
-  export type IndexTransactionRequestAvgAggregateInputType = {
-    id?: true
-    createdByProfileId?: true
-    blockNumber?: true
-    transactionIndex?: true
-  }
-
-  export type IndexTransactionRequestSumAggregateInputType = {
-    id?: true
-    createdByProfileId?: true
-    blockNumber?: true
-    transactionIndex?: true
-  }
-
-  export type IndexTransactionRequestMinAggregateInputType = {
-    id?: true
-    createdAt?: true
-    createdByProfileId?: true
-    blockNumber?: true
-    transactionIndex?: true
-    transactionHash?: true
-    workerProcess?: true
-    pickedAt?: true
-  }
-
-  export type IndexTransactionRequestMaxAggregateInputType = {
-    id?: true
-    createdAt?: true
-    createdByProfileId?: true
-    blockNumber?: true
-    transactionIndex?: true
-    transactionHash?: true
-    workerProcess?: true
-    pickedAt?: true
-  }
-
-  export type IndexTransactionRequestCountAggregateInputType = {
-    id?: true
-    createdAt?: true
-    createdByProfileId?: true
-    blockNumber?: true
-    transactionIndex?: true
-    transactionHash?: true
-    workerProcess?: true
-    pickedAt?: true
-    _all?: true
-  }
-
-  export type IndexTransactionRequestAggregateArgs = {
-    /**
-     * Filter which IndexTransactionRequest to aggregate.
-     * 
-    **/
-    where?: IndexTransactionRequestWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of IndexTransactionRequests to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<IndexTransactionRequestOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     * 
-    **/
-    cursor?: IndexTransactionRequestWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` IndexTransactionRequests from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` IndexTransactionRequests.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned IndexTransactionRequests
-    **/
-    _count?: true | IndexTransactionRequestCountAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | IndexTransactionRequestCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: IndexTransactionRequestAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: IndexTransactionRequestAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: IndexTransactionRequestSumAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: IndexTransactionRequestSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: IndexTransactionRequestMinAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: IndexTransactionRequestMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: IndexTransactionRequestMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: IndexTransactionRequestMaxAggregateInputType
-  }
-
-  export type GetIndexTransactionRequestAggregateType<T extends IndexTransactionRequestAggregateArgs> = {
-        [P in keyof T & keyof AggregateIndexTransactionRequest]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateIndexTransactionRequest[P]>
-      : GetScalarType<T[P], AggregateIndexTransactionRequest[P]>
-  }
-
-
-    
-    
-  export type IndexTransactionRequestGroupByArgs = {
-    where?: IndexTransactionRequestWhereInput
-    orderBy?: Enumerable<IndexTransactionRequestOrderByInput>
-    by: Array<IndexTransactionRequestScalarFieldEnum>
-    having?: IndexTransactionRequestScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: IndexTransactionRequestCountAggregateInputType | true
-    _avg?: IndexTransactionRequestAvgAggregateInputType
-    _sum?: IndexTransactionRequestSumAggregateInputType
-    _min?: IndexTransactionRequestMinAggregateInputType
-    _max?: IndexTransactionRequestMaxAggregateInputType
-  }
-
-
-  export type IndexTransactionRequestGroupByOutputType = {
-    id: number
-    createdAt: Date
-    createdByProfileId: number
-    blockNumber: number | null
-    transactionIndex: number | null
-    transactionHash: string
-    workerProcess: string | null
-    pickedAt: Date | null
-    _count: IndexTransactionRequestCountAggregateOutputType | null
-    _avg: IndexTransactionRequestAvgAggregateOutputType | null
-    _sum: IndexTransactionRequestSumAggregateOutputType | null
-    _min: IndexTransactionRequestMinAggregateOutputType | null
-    _max: IndexTransactionRequestMaxAggregateOutputType | null
-  }
-
-  type GetIndexTransactionRequestGroupByPayload<T extends IndexTransactionRequestGroupByArgs> = Promise<
-    Array<
-      PickArray<IndexTransactionRequestGroupByOutputType, T['by']> & 
-        {
-          [P in ((keyof T) & (keyof IndexTransactionRequestGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], IndexTransactionRequestGroupByOutputType[P]> 
-            : GetScalarType<T[P], IndexTransactionRequestGroupByOutputType[P]>
-        }
-      > 
-    >
-
-
-  export type IndexTransactionRequestSelect = {
-    id?: boolean
-    createdAt?: boolean
-    createdBy?: boolean | ProfileArgs
-    createdByProfileId?: boolean
-    blockNumber?: boolean
-    transactionIndex?: boolean
-    transactionHash?: boolean
-    workerProcess?: boolean
-    pickedAt?: boolean
-    indexedTransaction?: boolean | IndexedTransactionArgs
-    tags?: boolean | TagFindManyArgs
-  }
-
-  export type IndexTransactionRequestInclude = {
-    createdBy?: boolean | ProfileArgs
-    indexedTransaction?: boolean | IndexedTransactionArgs
-    tags?: boolean | TagFindManyArgs
-  }
-
-  export type IndexTransactionRequestGetPayload<
-    S extends boolean | null | undefined | IndexTransactionRequestArgs,
-    U = keyof S
-      > = S extends true
-        ? IndexTransactionRequest
-    : S extends undefined
-    ? never
-    : S extends IndexTransactionRequestArgs | IndexTransactionRequestFindManyArgs
-    ?'include' extends U
-    ? IndexTransactionRequest  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'createdBy'
-        ? ProfileGetPayload<S['include'][P]> :
-        P extends 'indexedTransaction'
-        ? IndexedTransactionGetPayload<S['include'][P]> | null :
-        P extends 'tags'
-        ? Array < TagGetPayload<S['include'][P]>>  : never
-  } 
-    : 'select' extends U
-    ? {
-    [P in TrueKeys<S['select']>]: P extends keyof IndexTransactionRequest ?IndexTransactionRequest [P]
-  : 
-          P extends 'createdBy'
-        ? ProfileGetPayload<S['select'][P]> :
-        P extends 'indexedTransaction'
-        ? IndexedTransactionGetPayload<S['select'][P]> | null :
-        P extends 'tags'
-        ? Array < TagGetPayload<S['select'][P]>>  : never
-  } 
-    : IndexTransactionRequest
-  : IndexTransactionRequest
-
-
-  type IndexTransactionRequestCountArgs = Merge<
-    Omit<IndexTransactionRequestFindManyArgs, 'select' | 'include'> & {
-      select?: IndexTransactionRequestCountAggregateInputType | true
-    }
-  >
-
-  export interface IndexTransactionRequestDelegate<GlobalRejectSettings> {
-    /**
-     * Find zero or one IndexTransactionRequest that matches the filter.
-     * @param {IndexTransactionRequestFindUniqueArgs} args - Arguments to find a IndexTransactionRequest
-     * @example
-     * // Get one IndexTransactionRequest
-     * const indexTransactionRequest = await prisma.indexTransactionRequest.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUnique<T extends IndexTransactionRequestFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, IndexTransactionRequestFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'IndexTransactionRequest'> extends True ? CheckSelect<T, Prisma__IndexTransactionRequestClient<IndexTransactionRequest>, Prisma__IndexTransactionRequestClient<IndexTransactionRequestGetPayload<T>>> : CheckSelect<T, Prisma__IndexTransactionRequestClient<IndexTransactionRequest | null >, Prisma__IndexTransactionRequestClient<IndexTransactionRequestGetPayload<T> | null >>
-
-    /**
-     * Find the first IndexTransactionRequest that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexTransactionRequestFindFirstArgs} args - Arguments to find a IndexTransactionRequest
-     * @example
-     * // Get one IndexTransactionRequest
-     * const indexTransactionRequest = await prisma.indexTransactionRequest.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirst<T extends IndexTransactionRequestFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, IndexTransactionRequestFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'IndexTransactionRequest'> extends True ? CheckSelect<T, Prisma__IndexTransactionRequestClient<IndexTransactionRequest>, Prisma__IndexTransactionRequestClient<IndexTransactionRequestGetPayload<T>>> : CheckSelect<T, Prisma__IndexTransactionRequestClient<IndexTransactionRequest | null >, Prisma__IndexTransactionRequestClient<IndexTransactionRequestGetPayload<T> | null >>
-
-    /**
-     * Find zero or more IndexTransactionRequests that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexTransactionRequestFindManyArgs=} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all IndexTransactionRequests
-     * const indexTransactionRequests = await prisma.indexTransactionRequest.findMany()
-     * 
-     * // Get first 10 IndexTransactionRequests
-     * const indexTransactionRequests = await prisma.indexTransactionRequest.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const indexTransactionRequestWithIdOnly = await prisma.indexTransactionRequest.findMany({ select: { id: true } })
-     * 
-    **/
-    findMany<T extends IndexTransactionRequestFindManyArgs>(
-      args?: SelectSubset<T, IndexTransactionRequestFindManyArgs>
-    ): CheckSelect<T, PrismaPromise<Array<IndexTransactionRequest>>, PrismaPromise<Array<IndexTransactionRequestGetPayload<T>>>>
-
-    /**
-     * Create a IndexTransactionRequest.
-     * @param {IndexTransactionRequestCreateArgs} args - Arguments to create a IndexTransactionRequest.
-     * @example
-     * // Create one IndexTransactionRequest
-     * const IndexTransactionRequest = await prisma.indexTransactionRequest.create({
-     *   data: {
-     *     // ... data to create a IndexTransactionRequest
-     *   }
-     * })
-     * 
-    **/
-    create<T extends IndexTransactionRequestCreateArgs>(
-      args: SelectSubset<T, IndexTransactionRequestCreateArgs>
-    ): CheckSelect<T, Prisma__IndexTransactionRequestClient<IndexTransactionRequest>, Prisma__IndexTransactionRequestClient<IndexTransactionRequestGetPayload<T>>>
-
-    /**
-     * Create many IndexTransactionRequests.
-     *     @param {IndexTransactionRequestCreateManyArgs} args - Arguments to create many IndexTransactionRequests.
-     *     @example
-     *     // Create many IndexTransactionRequests
-     *     const indexTransactionRequest = await prisma.indexTransactionRequest.createMany({
-     *       data: {
-     *         // ... provide data here
-     *       }
-     *     })
-     *     
-    **/
-    createMany<T extends IndexTransactionRequestCreateManyArgs>(
-      args?: SelectSubset<T, IndexTransactionRequestCreateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a IndexTransactionRequest.
-     * @param {IndexTransactionRequestDeleteArgs} args - Arguments to delete one IndexTransactionRequest.
-     * @example
-     * // Delete one IndexTransactionRequest
-     * const IndexTransactionRequest = await prisma.indexTransactionRequest.delete({
-     *   where: {
-     *     // ... filter to delete one IndexTransactionRequest
-     *   }
-     * })
-     * 
-    **/
-    delete<T extends IndexTransactionRequestDeleteArgs>(
-      args: SelectSubset<T, IndexTransactionRequestDeleteArgs>
-    ): CheckSelect<T, Prisma__IndexTransactionRequestClient<IndexTransactionRequest>, Prisma__IndexTransactionRequestClient<IndexTransactionRequestGetPayload<T>>>
-
-    /**
-     * Update one IndexTransactionRequest.
-     * @param {IndexTransactionRequestUpdateArgs} args - Arguments to update one IndexTransactionRequest.
-     * @example
-     * // Update one IndexTransactionRequest
-     * const indexTransactionRequest = await prisma.indexTransactionRequest.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    update<T extends IndexTransactionRequestUpdateArgs>(
-      args: SelectSubset<T, IndexTransactionRequestUpdateArgs>
-    ): CheckSelect<T, Prisma__IndexTransactionRequestClient<IndexTransactionRequest>, Prisma__IndexTransactionRequestClient<IndexTransactionRequestGetPayload<T>>>
-
-    /**
-     * Delete zero or more IndexTransactionRequests.
-     * @param {IndexTransactionRequestDeleteManyArgs} args - Arguments to filter IndexTransactionRequests to delete.
-     * @example
-     * // Delete a few IndexTransactionRequests
-     * const { count } = await prisma.indexTransactionRequest.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-    **/
-    deleteMany<T extends IndexTransactionRequestDeleteManyArgs>(
-      args?: SelectSubset<T, IndexTransactionRequestDeleteManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more IndexTransactionRequests.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexTransactionRequestUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many IndexTransactionRequests
-     * const indexTransactionRequest = await prisma.indexTransactionRequest.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    updateMany<T extends IndexTransactionRequestUpdateManyArgs>(
-      args: SelectSubset<T, IndexTransactionRequestUpdateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one IndexTransactionRequest.
-     * @param {IndexTransactionRequestUpsertArgs} args - Arguments to update or create a IndexTransactionRequest.
-     * @example
-     * // Update or create a IndexTransactionRequest
-     * const indexTransactionRequest = await prisma.indexTransactionRequest.upsert({
-     *   create: {
-     *     // ... data to create a IndexTransactionRequest
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the IndexTransactionRequest we want to update
-     *   }
-     * })
-    **/
-    upsert<T extends IndexTransactionRequestUpsertArgs>(
-      args: SelectSubset<T, IndexTransactionRequestUpsertArgs>
-    ): CheckSelect<T, Prisma__IndexTransactionRequestClient<IndexTransactionRequest>, Prisma__IndexTransactionRequestClient<IndexTransactionRequestGetPayload<T>>>
-
-    /**
-     * Count the number of IndexTransactionRequests.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexTransactionRequestCountArgs} args - Arguments to filter IndexTransactionRequests to count.
-     * @example
-     * // Count the number of IndexTransactionRequests
-     * const count = await prisma.indexTransactionRequest.count({
-     *   where: {
-     *     // ... the filter for the IndexTransactionRequests we want to count
-     *   }
-     * })
-    **/
-    count<T extends IndexTransactionRequestCountArgs>(
-      args?: Subset<T, IndexTransactionRequestCountArgs>,
-    ): PrismaPromise<
-      T extends _Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], IndexTransactionRequestCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a IndexTransactionRequest.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexTransactionRequestAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends IndexTransactionRequestAggregateArgs>(args: Subset<T, IndexTransactionRequestAggregateArgs>): PrismaPromise<GetIndexTransactionRequestAggregateType<T>>
-
-    /**
-     * Group by IndexTransactionRequest.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexTransactionRequestGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends IndexTransactionRequestGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: IndexTransactionRequestGroupByArgs['orderBy'] }
-        : { orderBy?: IndexTransactionRequestGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends TupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, IndexTransactionRequestGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetIndexTransactionRequestGroupByPayload<T> : Promise<InputErrors>
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for IndexTransactionRequest.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export class Prisma__IndexTransactionRequestClient<T> implements PrismaPromise<T> {
-    [prisma]: true;
-    private readonly _dmmf;
-    private readonly _fetcher;
-    private readonly _queryType;
-    private readonly _rootField;
-    private readonly _clientMethod;
-    private readonly _args;
-    private readonly _dataPath;
-    private readonly _errorFormat;
-    private readonly _measurePerformance?;
-    private _isList;
-    private _callsite;
-    private _requestPromise?;
-    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
-
-    createdBy<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
-
-    indexedTransaction<T extends IndexedTransactionArgs = {}>(args?: Subset<T, IndexedTransactionArgs>): CheckSelect<T, Prisma__IndexedTransactionClient<IndexedTransaction | null >, Prisma__IndexedTransactionClient<IndexedTransactionGetPayload<T> | null >>;
-
-    tags<T extends TagFindManyArgs = {}>(args?: Subset<T, TagFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Tag>>, PrismaPromise<Array<TagGetPayload<T>>>>;
-
-    private get _document();
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
-  }
-
-  // Custom InputTypes
-
-  /**
-   * IndexTransactionRequest findUnique
-   */
-  export type IndexTransactionRequestFindUniqueArgs = {
-    /**
-     * Select specific fields to fetch from the IndexTransactionRequest
-     * 
-    **/
-    select?: IndexTransactionRequestSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexTransactionRequestInclude | null
-    /**
-     * Throw an Error if a IndexTransactionRequest can't be found
-     * 
-    **/
-    rejectOnNotFound?: RejectOnNotFound
-    /**
-     * Filter, which IndexTransactionRequest to fetch.
-     * 
-    **/
-    where: IndexTransactionRequestWhereUniqueInput
-  }
-
-
-  /**
-   * IndexTransactionRequest findFirst
-   */
-  export type IndexTransactionRequestFindFirstArgs = {
-    /**
-     * Select specific fields to fetch from the IndexTransactionRequest
-     * 
-    **/
-    select?: IndexTransactionRequestSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexTransactionRequestInclude | null
-    /**
-     * Throw an Error if a IndexTransactionRequest can't be found
-     * 
-    **/
-    rejectOnNotFound?: RejectOnNotFound
-    /**
-     * Filter, which IndexTransactionRequest to fetch.
-     * 
-    **/
-    where?: IndexTransactionRequestWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of IndexTransactionRequests to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<IndexTransactionRequestOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for IndexTransactionRequests.
-     * 
-    **/
-    cursor?: IndexTransactionRequestWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` IndexTransactionRequests from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` IndexTransactionRequests.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of IndexTransactionRequests.
-     * 
-    **/
-    distinct?: Enumerable<IndexTransactionRequestScalarFieldEnum>
-  }
-
-
-  /**
-   * IndexTransactionRequest findMany
-   */
-  export type IndexTransactionRequestFindManyArgs = {
-    /**
-     * Select specific fields to fetch from the IndexTransactionRequest
-     * 
-    **/
-    select?: IndexTransactionRequestSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexTransactionRequestInclude | null
-    /**
-     * Filter, which IndexTransactionRequests to fetch.
-     * 
-    **/
-    where?: IndexTransactionRequestWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of IndexTransactionRequests to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<IndexTransactionRequestOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing IndexTransactionRequests.
-     * 
-    **/
-    cursor?: IndexTransactionRequestWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` IndexTransactionRequests from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` IndexTransactionRequests.
-     * 
-    **/
-    skip?: number
-    distinct?: Enumerable<IndexTransactionRequestScalarFieldEnum>
-  }
-
-
-  /**
-   * IndexTransactionRequest create
-   */
-  export type IndexTransactionRequestCreateArgs = {
-    /**
-     * Select specific fields to fetch from the IndexTransactionRequest
-     * 
-    **/
-    select?: IndexTransactionRequestSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexTransactionRequestInclude | null
-    /**
-     * The data needed to create a IndexTransactionRequest.
-     * 
-    **/
-    data: XOR<IndexTransactionRequestCreateInput, IndexTransactionRequestUncheckedCreateInput>
-  }
-
-
-  /**
-   * IndexTransactionRequest createMany
-   */
-  export type IndexTransactionRequestCreateManyArgs = {
-    data: Enumerable<IndexTransactionRequestCreateManyInput>
-    skipDuplicates?: boolean
-  }
-
-
-  /**
-   * IndexTransactionRequest update
-   */
-  export type IndexTransactionRequestUpdateArgs = {
-    /**
-     * Select specific fields to fetch from the IndexTransactionRequest
-     * 
-    **/
-    select?: IndexTransactionRequestSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexTransactionRequestInclude | null
-    /**
-     * The data needed to update a IndexTransactionRequest.
-     * 
-    **/
-    data: XOR<IndexTransactionRequestUpdateInput, IndexTransactionRequestUncheckedUpdateInput>
-    /**
-     * Choose, which IndexTransactionRequest to update.
-     * 
-    **/
-    where: IndexTransactionRequestWhereUniqueInput
-  }
-
-
-  /**
-   * IndexTransactionRequest updateMany
-   */
-  export type IndexTransactionRequestUpdateManyArgs = {
-    data: XOR<IndexTransactionRequestUpdateManyMutationInput, IndexTransactionRequestUncheckedUpdateManyInput>
-    where?: IndexTransactionRequestWhereInput
-  }
-
-
-  /**
-   * IndexTransactionRequest upsert
-   */
-  export type IndexTransactionRequestUpsertArgs = {
-    /**
-     * Select specific fields to fetch from the IndexTransactionRequest
-     * 
-    **/
-    select?: IndexTransactionRequestSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexTransactionRequestInclude | null
-    /**
-     * The filter to search for the IndexTransactionRequest to update in case it exists.
-     * 
-    **/
-    where: IndexTransactionRequestWhereUniqueInput
-    /**
-     * In case the IndexTransactionRequest found by the `where` argument doesn't exist, create a new IndexTransactionRequest with this data.
-     * 
-    **/
-    create: XOR<IndexTransactionRequestCreateInput, IndexTransactionRequestUncheckedCreateInput>
-    /**
-     * In case the IndexTransactionRequest was found with the provided `where` argument, update it with this data.
-     * 
-    **/
-    update: XOR<IndexTransactionRequestUpdateInput, IndexTransactionRequestUncheckedUpdateInput>
-  }
-
-
-  /**
-   * IndexTransactionRequest delete
-   */
-  export type IndexTransactionRequestDeleteArgs = {
-    /**
-     * Select specific fields to fetch from the IndexTransactionRequest
-     * 
-    **/
-    select?: IndexTransactionRequestSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexTransactionRequestInclude | null
-    /**
-     * Filter which IndexTransactionRequest to delete.
-     * 
-    **/
-    where: IndexTransactionRequestWhereUniqueInput
-  }
-
-
-  /**
-   * IndexTransactionRequest deleteMany
-   */
-  export type IndexTransactionRequestDeleteManyArgs = {
-    where?: IndexTransactionRequestWhereInput
-  }
-
-
-  /**
-   * IndexTransactionRequest without action
-   */
-  export type IndexTransactionRequestArgs = {
-    /**
-     * Select specific fields to fetch from the IndexTransactionRequest
-     * 
-    **/
-    select?: IndexTransactionRequestSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexTransactionRequestInclude | null
-  }
-
-
-
-  /**
    * Model Message
    */
 
@@ -9883,1120 +6879,6 @@ export namespace Prisma {
      * 
     **/
     include?: MessageInclude | null
-  }
-
-
-
-  /**
-   * Model IndexedTransaction
-   */
-
-
-  export type AggregateIndexedTransaction = {
-    _count: IndexedTransactionCountAggregateOutputType | null
-    count: IndexedTransactionCountAggregateOutputType | null
-    _avg: IndexedTransactionAvgAggregateOutputType | null
-    avg: IndexedTransactionAvgAggregateOutputType | null
-    _sum: IndexedTransactionSumAggregateOutputType | null
-    sum: IndexedTransactionSumAggregateOutputType | null
-    _min: IndexedTransactionMinAggregateOutputType | null
-    min: IndexedTransactionMinAggregateOutputType | null
-    _max: IndexedTransactionMaxAggregateOutputType | null
-    max: IndexedTransactionMaxAggregateOutputType | null
-  }
-
-  export type IndexedTransactionAvgAggregateOutputType = {
-    id: number | null
-    fromRequestId: number | null
-    fromRedeemInvitationRequestId: number | null
-    createdByProfileId: number | null
-    typeTagId: number | null
-    transactionIndex: number | null
-    blockNumber: number | null
-    confirmations: number | null
-  }
-
-  export type IndexedTransactionSumAggregateOutputType = {
-    id: number | null
-    fromRequestId: number | null
-    fromRedeemInvitationRequestId: number | null
-    createdByProfileId: number | null
-    typeTagId: number | null
-    transactionIndex: number | null
-    blockNumber: number | null
-    confirmations: number | null
-  }
-
-  export type IndexedTransactionMinAggregateOutputType = {
-    id: number | null
-    fromRequestId: number | null
-    fromRedeemInvitationRequestId: number | null
-    createdAt: Date | null
-    createdByProfileId: number | null
-    typeTagId: number | null
-    from: string | null
-    to: string | null
-    logicalFrom: string | null
-    logicalTo: string | null
-    contractAddress: string | null
-    transactionIndex: number | null
-    root: string | null
-    gasUsed: string | null
-    logsBloom: string | null
-    blockHash: string | null
-    transactionHash: string | null
-    blockNumber: number | null
-    confirmations: number | null
-    cumulativeGasUsed: string | null
-    status: string | null
-  }
-
-  export type IndexedTransactionMaxAggregateOutputType = {
-    id: number | null
-    fromRequestId: number | null
-    fromRedeemInvitationRequestId: number | null
-    createdAt: Date | null
-    createdByProfileId: number | null
-    typeTagId: number | null
-    from: string | null
-    to: string | null
-    logicalFrom: string | null
-    logicalTo: string | null
-    contractAddress: string | null
-    transactionIndex: number | null
-    root: string | null
-    gasUsed: string | null
-    logsBloom: string | null
-    blockHash: string | null
-    transactionHash: string | null
-    blockNumber: number | null
-    confirmations: number | null
-    cumulativeGasUsed: string | null
-    status: string | null
-  }
-
-  export type IndexedTransactionCountAggregateOutputType = {
-    id: number
-    fromRequestId: number
-    fromRedeemInvitationRequestId: number
-    createdAt: number
-    createdByProfileId: number
-    typeTagId: number
-    from: number
-    to: number
-    logicalFrom: number
-    logicalTo: number
-    contractAddress: number
-    transactionIndex: number
-    root: number
-    gasUsed: number
-    logsBloom: number
-    blockHash: number
-    transactionHash: number
-    blockNumber: number
-    confirmations: number
-    cumulativeGasUsed: number
-    status: number
-    _all: number
-  }
-
-
-  export type IndexedTransactionAvgAggregateInputType = {
-    id?: true
-    fromRequestId?: true
-    fromRedeemInvitationRequestId?: true
-    createdByProfileId?: true
-    typeTagId?: true
-    transactionIndex?: true
-    blockNumber?: true
-    confirmations?: true
-  }
-
-  export type IndexedTransactionSumAggregateInputType = {
-    id?: true
-    fromRequestId?: true
-    fromRedeemInvitationRequestId?: true
-    createdByProfileId?: true
-    typeTagId?: true
-    transactionIndex?: true
-    blockNumber?: true
-    confirmations?: true
-  }
-
-  export type IndexedTransactionMinAggregateInputType = {
-    id?: true
-    fromRequestId?: true
-    fromRedeemInvitationRequestId?: true
-    createdAt?: true
-    createdByProfileId?: true
-    typeTagId?: true
-    from?: true
-    to?: true
-    logicalFrom?: true
-    logicalTo?: true
-    contractAddress?: true
-    transactionIndex?: true
-    root?: true
-    gasUsed?: true
-    logsBloom?: true
-    blockHash?: true
-    transactionHash?: true
-    blockNumber?: true
-    confirmations?: true
-    cumulativeGasUsed?: true
-    status?: true
-  }
-
-  export type IndexedTransactionMaxAggregateInputType = {
-    id?: true
-    fromRequestId?: true
-    fromRedeemInvitationRequestId?: true
-    createdAt?: true
-    createdByProfileId?: true
-    typeTagId?: true
-    from?: true
-    to?: true
-    logicalFrom?: true
-    logicalTo?: true
-    contractAddress?: true
-    transactionIndex?: true
-    root?: true
-    gasUsed?: true
-    logsBloom?: true
-    blockHash?: true
-    transactionHash?: true
-    blockNumber?: true
-    confirmations?: true
-    cumulativeGasUsed?: true
-    status?: true
-  }
-
-  export type IndexedTransactionCountAggregateInputType = {
-    id?: true
-    fromRequestId?: true
-    fromRedeemInvitationRequestId?: true
-    createdAt?: true
-    createdByProfileId?: true
-    typeTagId?: true
-    from?: true
-    to?: true
-    logicalFrom?: true
-    logicalTo?: true
-    contractAddress?: true
-    transactionIndex?: true
-    root?: true
-    gasUsed?: true
-    logsBloom?: true
-    blockHash?: true
-    transactionHash?: true
-    blockNumber?: true
-    confirmations?: true
-    cumulativeGasUsed?: true
-    status?: true
-    _all?: true
-  }
-
-  export type IndexedTransactionAggregateArgs = {
-    /**
-     * Filter which IndexedTransaction to aggregate.
-     * 
-    **/
-    where?: IndexedTransactionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of IndexedTransactions to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<IndexedTransactionOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     * 
-    **/
-    cursor?: IndexedTransactionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` IndexedTransactions from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` IndexedTransactions.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned IndexedTransactions
-    **/
-    _count?: true | IndexedTransactionCountAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | IndexedTransactionCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: IndexedTransactionAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: IndexedTransactionAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: IndexedTransactionSumAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: IndexedTransactionSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: IndexedTransactionMinAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: IndexedTransactionMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: IndexedTransactionMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: IndexedTransactionMaxAggregateInputType
-  }
-
-  export type GetIndexedTransactionAggregateType<T extends IndexedTransactionAggregateArgs> = {
-        [P in keyof T & keyof AggregateIndexedTransaction]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateIndexedTransaction[P]>
-      : GetScalarType<T[P], AggregateIndexedTransaction[P]>
-  }
-
-
-    
-    
-  export type IndexedTransactionGroupByArgs = {
-    where?: IndexedTransactionWhereInput
-    orderBy?: Enumerable<IndexedTransactionOrderByInput>
-    by: Array<IndexedTransactionScalarFieldEnum>
-    having?: IndexedTransactionScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: IndexedTransactionCountAggregateInputType | true
-    _avg?: IndexedTransactionAvgAggregateInputType
-    _sum?: IndexedTransactionSumAggregateInputType
-    _min?: IndexedTransactionMinAggregateInputType
-    _max?: IndexedTransactionMaxAggregateInputType
-  }
-
-
-  export type IndexedTransactionGroupByOutputType = {
-    id: number
-    fromRequestId: number | null
-    fromRedeemInvitationRequestId: number | null
-    createdAt: Date
-    createdByProfileId: number
-    typeTagId: number | null
-    from: string
-    to: string
-    logicalFrom: string | null
-    logicalTo: string | null
-    contractAddress: string | null
-    transactionIndex: number
-    root: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations: number | null
-    cumulativeGasUsed: string
-    status: string | null
-    _count: IndexedTransactionCountAggregateOutputType | null
-    _avg: IndexedTransactionAvgAggregateOutputType | null
-    _sum: IndexedTransactionSumAggregateOutputType | null
-    _min: IndexedTransactionMinAggregateOutputType | null
-    _max: IndexedTransactionMaxAggregateOutputType | null
-  }
-
-  type GetIndexedTransactionGroupByPayload<T extends IndexedTransactionGroupByArgs> = Promise<
-    Array<
-      PickArray<IndexedTransactionGroupByOutputType, T['by']> & 
-        {
-          [P in ((keyof T) & (keyof IndexedTransactionGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], IndexedTransactionGroupByOutputType[P]> 
-            : GetScalarType<T[P], IndexedTransactionGroupByOutputType[P]>
-        }
-      > 
-    >
-
-
-  export type IndexedTransactionSelect = {
-    id?: boolean
-    fromRequest?: boolean | IndexTransactionRequestArgs
-    fromRequestId?: boolean
-    fromRedeemInvitationRequest?: boolean | RedeemInvitationRequestArgs
-    fromRedeemInvitationRequestId?: boolean
-    createdAt?: boolean
-    createdBy?: boolean | ProfileArgs
-    createdByProfileId?: boolean
-    typeTag?: boolean | TagArgs
-    typeTagId?: boolean
-    from?: boolean
-    to?: boolean
-    logicalFrom?: boolean
-    logicalTo?: boolean
-    contractAddress?: boolean
-    transactionIndex?: boolean
-    root?: boolean
-    gasUsed?: boolean
-    logsBloom?: boolean
-    blockHash?: boolean
-    transactionHash?: boolean
-    blockNumber?: boolean
-    confirmations?: boolean
-    cumulativeGasUsed?: boolean
-    status?: boolean
-    logs?: boolean | IndexedTransactionLogFindManyArgs
-    tags?: boolean | TagFindManyArgs
-    purchases?: boolean | PurchaseFindManyArgs
-  }
-
-  export type IndexedTransactionInclude = {
-    fromRequest?: boolean | IndexTransactionRequestArgs
-    fromRedeemInvitationRequest?: boolean | RedeemInvitationRequestArgs
-    createdBy?: boolean | ProfileArgs
-    typeTag?: boolean | TagArgs
-    logs?: boolean | IndexedTransactionLogFindManyArgs
-    tags?: boolean | TagFindManyArgs
-    purchases?: boolean | PurchaseFindManyArgs
-  }
-
-  export type IndexedTransactionGetPayload<
-    S extends boolean | null | undefined | IndexedTransactionArgs,
-    U = keyof S
-      > = S extends true
-        ? IndexedTransaction
-    : S extends undefined
-    ? never
-    : S extends IndexedTransactionArgs | IndexedTransactionFindManyArgs
-    ?'include' extends U
-    ? IndexedTransaction  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'fromRequest'
-        ? IndexTransactionRequestGetPayload<S['include'][P]> | null :
-        P extends 'fromRedeemInvitationRequest'
-        ? RedeemInvitationRequestGetPayload<S['include'][P]> | null :
-        P extends 'createdBy'
-        ? ProfileGetPayload<S['include'][P]> :
-        P extends 'typeTag'
-        ? TagGetPayload<S['include'][P]> | null :
-        P extends 'logs'
-        ? Array < IndexedTransactionLogGetPayload<S['include'][P]>>  :
-        P extends 'tags'
-        ? Array < TagGetPayload<S['include'][P]>>  :
-        P extends 'purchases'
-        ? Array < PurchaseGetPayload<S['include'][P]>>  : never
-  } 
-    : 'select' extends U
-    ? {
-    [P in TrueKeys<S['select']>]: P extends keyof IndexedTransaction ?IndexedTransaction [P]
-  : 
-          P extends 'fromRequest'
-        ? IndexTransactionRequestGetPayload<S['select'][P]> | null :
-        P extends 'fromRedeemInvitationRequest'
-        ? RedeemInvitationRequestGetPayload<S['select'][P]> | null :
-        P extends 'createdBy'
-        ? ProfileGetPayload<S['select'][P]> :
-        P extends 'typeTag'
-        ? TagGetPayload<S['select'][P]> | null :
-        P extends 'logs'
-        ? Array < IndexedTransactionLogGetPayload<S['select'][P]>>  :
-        P extends 'tags'
-        ? Array < TagGetPayload<S['select'][P]>>  :
-        P extends 'purchases'
-        ? Array < PurchaseGetPayload<S['select'][P]>>  : never
-  } 
-    : IndexedTransaction
-  : IndexedTransaction
-
-
-  type IndexedTransactionCountArgs = Merge<
-    Omit<IndexedTransactionFindManyArgs, 'select' | 'include'> & {
-      select?: IndexedTransactionCountAggregateInputType | true
-    }
-  >
-
-  export interface IndexedTransactionDelegate<GlobalRejectSettings> {
-    /**
-     * Find zero or one IndexedTransaction that matches the filter.
-     * @param {IndexedTransactionFindUniqueArgs} args - Arguments to find a IndexedTransaction
-     * @example
-     * // Get one IndexedTransaction
-     * const indexedTransaction = await prisma.indexedTransaction.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUnique<T extends IndexedTransactionFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, IndexedTransactionFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'IndexedTransaction'> extends True ? CheckSelect<T, Prisma__IndexedTransactionClient<IndexedTransaction>, Prisma__IndexedTransactionClient<IndexedTransactionGetPayload<T>>> : CheckSelect<T, Prisma__IndexedTransactionClient<IndexedTransaction | null >, Prisma__IndexedTransactionClient<IndexedTransactionGetPayload<T> | null >>
-
-    /**
-     * Find the first IndexedTransaction that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexedTransactionFindFirstArgs} args - Arguments to find a IndexedTransaction
-     * @example
-     * // Get one IndexedTransaction
-     * const indexedTransaction = await prisma.indexedTransaction.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirst<T extends IndexedTransactionFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, IndexedTransactionFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'IndexedTransaction'> extends True ? CheckSelect<T, Prisma__IndexedTransactionClient<IndexedTransaction>, Prisma__IndexedTransactionClient<IndexedTransactionGetPayload<T>>> : CheckSelect<T, Prisma__IndexedTransactionClient<IndexedTransaction | null >, Prisma__IndexedTransactionClient<IndexedTransactionGetPayload<T> | null >>
-
-    /**
-     * Find zero or more IndexedTransactions that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexedTransactionFindManyArgs=} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all IndexedTransactions
-     * const indexedTransactions = await prisma.indexedTransaction.findMany()
-     * 
-     * // Get first 10 IndexedTransactions
-     * const indexedTransactions = await prisma.indexedTransaction.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const indexedTransactionWithIdOnly = await prisma.indexedTransaction.findMany({ select: { id: true } })
-     * 
-    **/
-    findMany<T extends IndexedTransactionFindManyArgs>(
-      args?: SelectSubset<T, IndexedTransactionFindManyArgs>
-    ): CheckSelect<T, PrismaPromise<Array<IndexedTransaction>>, PrismaPromise<Array<IndexedTransactionGetPayload<T>>>>
-
-    /**
-     * Create a IndexedTransaction.
-     * @param {IndexedTransactionCreateArgs} args - Arguments to create a IndexedTransaction.
-     * @example
-     * // Create one IndexedTransaction
-     * const IndexedTransaction = await prisma.indexedTransaction.create({
-     *   data: {
-     *     // ... data to create a IndexedTransaction
-     *   }
-     * })
-     * 
-    **/
-    create<T extends IndexedTransactionCreateArgs>(
-      args: SelectSubset<T, IndexedTransactionCreateArgs>
-    ): CheckSelect<T, Prisma__IndexedTransactionClient<IndexedTransaction>, Prisma__IndexedTransactionClient<IndexedTransactionGetPayload<T>>>
-
-    /**
-     * Create many IndexedTransactions.
-     *     @param {IndexedTransactionCreateManyArgs} args - Arguments to create many IndexedTransactions.
-     *     @example
-     *     // Create many IndexedTransactions
-     *     const indexedTransaction = await prisma.indexedTransaction.createMany({
-     *       data: {
-     *         // ... provide data here
-     *       }
-     *     })
-     *     
-    **/
-    createMany<T extends IndexedTransactionCreateManyArgs>(
-      args?: SelectSubset<T, IndexedTransactionCreateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a IndexedTransaction.
-     * @param {IndexedTransactionDeleteArgs} args - Arguments to delete one IndexedTransaction.
-     * @example
-     * // Delete one IndexedTransaction
-     * const IndexedTransaction = await prisma.indexedTransaction.delete({
-     *   where: {
-     *     // ... filter to delete one IndexedTransaction
-     *   }
-     * })
-     * 
-    **/
-    delete<T extends IndexedTransactionDeleteArgs>(
-      args: SelectSubset<T, IndexedTransactionDeleteArgs>
-    ): CheckSelect<T, Prisma__IndexedTransactionClient<IndexedTransaction>, Prisma__IndexedTransactionClient<IndexedTransactionGetPayload<T>>>
-
-    /**
-     * Update one IndexedTransaction.
-     * @param {IndexedTransactionUpdateArgs} args - Arguments to update one IndexedTransaction.
-     * @example
-     * // Update one IndexedTransaction
-     * const indexedTransaction = await prisma.indexedTransaction.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    update<T extends IndexedTransactionUpdateArgs>(
-      args: SelectSubset<T, IndexedTransactionUpdateArgs>
-    ): CheckSelect<T, Prisma__IndexedTransactionClient<IndexedTransaction>, Prisma__IndexedTransactionClient<IndexedTransactionGetPayload<T>>>
-
-    /**
-     * Delete zero or more IndexedTransactions.
-     * @param {IndexedTransactionDeleteManyArgs} args - Arguments to filter IndexedTransactions to delete.
-     * @example
-     * // Delete a few IndexedTransactions
-     * const { count } = await prisma.indexedTransaction.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-    **/
-    deleteMany<T extends IndexedTransactionDeleteManyArgs>(
-      args?: SelectSubset<T, IndexedTransactionDeleteManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more IndexedTransactions.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexedTransactionUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many IndexedTransactions
-     * const indexedTransaction = await prisma.indexedTransaction.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    updateMany<T extends IndexedTransactionUpdateManyArgs>(
-      args: SelectSubset<T, IndexedTransactionUpdateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one IndexedTransaction.
-     * @param {IndexedTransactionUpsertArgs} args - Arguments to update or create a IndexedTransaction.
-     * @example
-     * // Update or create a IndexedTransaction
-     * const indexedTransaction = await prisma.indexedTransaction.upsert({
-     *   create: {
-     *     // ... data to create a IndexedTransaction
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the IndexedTransaction we want to update
-     *   }
-     * })
-    **/
-    upsert<T extends IndexedTransactionUpsertArgs>(
-      args: SelectSubset<T, IndexedTransactionUpsertArgs>
-    ): CheckSelect<T, Prisma__IndexedTransactionClient<IndexedTransaction>, Prisma__IndexedTransactionClient<IndexedTransactionGetPayload<T>>>
-
-    /**
-     * Count the number of IndexedTransactions.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexedTransactionCountArgs} args - Arguments to filter IndexedTransactions to count.
-     * @example
-     * // Count the number of IndexedTransactions
-     * const count = await prisma.indexedTransaction.count({
-     *   where: {
-     *     // ... the filter for the IndexedTransactions we want to count
-     *   }
-     * })
-    **/
-    count<T extends IndexedTransactionCountArgs>(
-      args?: Subset<T, IndexedTransactionCountArgs>,
-    ): PrismaPromise<
-      T extends _Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], IndexedTransactionCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a IndexedTransaction.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexedTransactionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends IndexedTransactionAggregateArgs>(args: Subset<T, IndexedTransactionAggregateArgs>): PrismaPromise<GetIndexedTransactionAggregateType<T>>
-
-    /**
-     * Group by IndexedTransaction.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {IndexedTransactionGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends IndexedTransactionGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: IndexedTransactionGroupByArgs['orderBy'] }
-        : { orderBy?: IndexedTransactionGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends TupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, IndexedTransactionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetIndexedTransactionGroupByPayload<T> : Promise<InputErrors>
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for IndexedTransaction.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export class Prisma__IndexedTransactionClient<T> implements PrismaPromise<T> {
-    [prisma]: true;
-    private readonly _dmmf;
-    private readonly _fetcher;
-    private readonly _queryType;
-    private readonly _rootField;
-    private readonly _clientMethod;
-    private readonly _args;
-    private readonly _dataPath;
-    private readonly _errorFormat;
-    private readonly _measurePerformance?;
-    private _isList;
-    private _callsite;
-    private _requestPromise?;
-    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
-
-    fromRequest<T extends IndexTransactionRequestArgs = {}>(args?: Subset<T, IndexTransactionRequestArgs>): CheckSelect<T, Prisma__IndexTransactionRequestClient<IndexTransactionRequest | null >, Prisma__IndexTransactionRequestClient<IndexTransactionRequestGetPayload<T> | null >>;
-
-    fromRedeemInvitationRequest<T extends RedeemInvitationRequestArgs = {}>(args?: Subset<T, RedeemInvitationRequestArgs>): CheckSelect<T, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequest | null >, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequestGetPayload<T> | null >>;
-
-    createdBy<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
-
-    typeTag<T extends TagArgs = {}>(args?: Subset<T, TagArgs>): CheckSelect<T, Prisma__TagClient<Tag | null >, Prisma__TagClient<TagGetPayload<T> | null >>;
-
-    logs<T extends IndexedTransactionLogFindManyArgs = {}>(args?: Subset<T, IndexedTransactionLogFindManyArgs>): CheckSelect<T, PrismaPromise<Array<IndexedTransactionLog>>, PrismaPromise<Array<IndexedTransactionLogGetPayload<T>>>>;
-
-    tags<T extends TagFindManyArgs = {}>(args?: Subset<T, TagFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Tag>>, PrismaPromise<Array<TagGetPayload<T>>>>;
-
-    purchases<T extends PurchaseFindManyArgs = {}>(args?: Subset<T, PurchaseFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Purchase>>, PrismaPromise<Array<PurchaseGetPayload<T>>>>;
-
-    private get _document();
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
-  }
-
-  // Custom InputTypes
-
-  /**
-   * IndexedTransaction findUnique
-   */
-  export type IndexedTransactionFindUniqueArgs = {
-    /**
-     * Select specific fields to fetch from the IndexedTransaction
-     * 
-    **/
-    select?: IndexedTransactionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexedTransactionInclude | null
-    /**
-     * Throw an Error if a IndexedTransaction can't be found
-     * 
-    **/
-    rejectOnNotFound?: RejectOnNotFound
-    /**
-     * Filter, which IndexedTransaction to fetch.
-     * 
-    **/
-    where: IndexedTransactionWhereUniqueInput
-  }
-
-
-  /**
-   * IndexedTransaction findFirst
-   */
-  export type IndexedTransactionFindFirstArgs = {
-    /**
-     * Select specific fields to fetch from the IndexedTransaction
-     * 
-    **/
-    select?: IndexedTransactionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexedTransactionInclude | null
-    /**
-     * Throw an Error if a IndexedTransaction can't be found
-     * 
-    **/
-    rejectOnNotFound?: RejectOnNotFound
-    /**
-     * Filter, which IndexedTransaction to fetch.
-     * 
-    **/
-    where?: IndexedTransactionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of IndexedTransactions to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<IndexedTransactionOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for IndexedTransactions.
-     * 
-    **/
-    cursor?: IndexedTransactionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` IndexedTransactions from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` IndexedTransactions.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of IndexedTransactions.
-     * 
-    **/
-    distinct?: Enumerable<IndexedTransactionScalarFieldEnum>
-  }
-
-
-  /**
-   * IndexedTransaction findMany
-   */
-  export type IndexedTransactionFindManyArgs = {
-    /**
-     * Select specific fields to fetch from the IndexedTransaction
-     * 
-    **/
-    select?: IndexedTransactionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexedTransactionInclude | null
-    /**
-     * Filter, which IndexedTransactions to fetch.
-     * 
-    **/
-    where?: IndexedTransactionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of IndexedTransactions to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<IndexedTransactionOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing IndexedTransactions.
-     * 
-    **/
-    cursor?: IndexedTransactionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` IndexedTransactions from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` IndexedTransactions.
-     * 
-    **/
-    skip?: number
-    distinct?: Enumerable<IndexedTransactionScalarFieldEnum>
-  }
-
-
-  /**
-   * IndexedTransaction create
-   */
-  export type IndexedTransactionCreateArgs = {
-    /**
-     * Select specific fields to fetch from the IndexedTransaction
-     * 
-    **/
-    select?: IndexedTransactionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexedTransactionInclude | null
-    /**
-     * The data needed to create a IndexedTransaction.
-     * 
-    **/
-    data: XOR<IndexedTransactionCreateInput, IndexedTransactionUncheckedCreateInput>
-  }
-
-
-  /**
-   * IndexedTransaction createMany
-   */
-  export type IndexedTransactionCreateManyArgs = {
-    data: Enumerable<IndexedTransactionCreateManyInput>
-    skipDuplicates?: boolean
-  }
-
-
-  /**
-   * IndexedTransaction update
-   */
-  export type IndexedTransactionUpdateArgs = {
-    /**
-     * Select specific fields to fetch from the IndexedTransaction
-     * 
-    **/
-    select?: IndexedTransactionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexedTransactionInclude | null
-    /**
-     * The data needed to update a IndexedTransaction.
-     * 
-    **/
-    data: XOR<IndexedTransactionUpdateInput, IndexedTransactionUncheckedUpdateInput>
-    /**
-     * Choose, which IndexedTransaction to update.
-     * 
-    **/
-    where: IndexedTransactionWhereUniqueInput
-  }
-
-
-  /**
-   * IndexedTransaction updateMany
-   */
-  export type IndexedTransactionUpdateManyArgs = {
-    data: XOR<IndexedTransactionUpdateManyMutationInput, IndexedTransactionUncheckedUpdateManyInput>
-    where?: IndexedTransactionWhereInput
-  }
-
-
-  /**
-   * IndexedTransaction upsert
-   */
-  export type IndexedTransactionUpsertArgs = {
-    /**
-     * Select specific fields to fetch from the IndexedTransaction
-     * 
-    **/
-    select?: IndexedTransactionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexedTransactionInclude | null
-    /**
-     * The filter to search for the IndexedTransaction to update in case it exists.
-     * 
-    **/
-    where: IndexedTransactionWhereUniqueInput
-    /**
-     * In case the IndexedTransaction found by the `where` argument doesn't exist, create a new IndexedTransaction with this data.
-     * 
-    **/
-    create: XOR<IndexedTransactionCreateInput, IndexedTransactionUncheckedCreateInput>
-    /**
-     * In case the IndexedTransaction was found with the provided `where` argument, update it with this data.
-     * 
-    **/
-    update: XOR<IndexedTransactionUpdateInput, IndexedTransactionUncheckedUpdateInput>
-  }
-
-
-  /**
-   * IndexedTransaction delete
-   */
-  export type IndexedTransactionDeleteArgs = {
-    /**
-     * Select specific fields to fetch from the IndexedTransaction
-     * 
-    **/
-    select?: IndexedTransactionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexedTransactionInclude | null
-    /**
-     * Filter which IndexedTransaction to delete.
-     * 
-    **/
-    where: IndexedTransactionWhereUniqueInput
-  }
-
-
-  /**
-   * IndexedTransaction deleteMany
-   */
-  export type IndexedTransactionDeleteManyArgs = {
-    where?: IndexedTransactionWhereInput
-  }
-
-
-  /**
-   * IndexedTransaction without action
-   */
-  export type IndexedTransactionArgs = {
-    /**
-     * Select specific fields to fetch from the IndexedTransaction
-     * 
-    **/
-    select?: IndexedTransactionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: IndexedTransactionInclude | null
   }
 
 
@@ -12231,7 +8113,6 @@ export namespace Prisma {
     maxUnits?: boolean
     deliveryTermsTag?: boolean | TagArgs
     deliveryTermsTagId?: boolean
-    events?: boolean | EventFindManyArgs
     subscribers?: boolean | SubscriptionFindManyArgs
   }
 
@@ -12241,7 +8122,6 @@ export namespace Prisma {
     categoryTag?: boolean | TagArgs
     unitTag?: boolean | TagArgs
     deliveryTermsTag?: boolean | TagArgs
-    events?: boolean | EventFindManyArgs
     subscribers?: boolean | SubscriptionFindManyArgs
   }
 
@@ -12266,8 +8146,6 @@ export namespace Prisma {
         ? TagGetPayload<S['include'][P]> :
         P extends 'deliveryTermsTag'
         ? TagGetPayload<S['include'][P]> :
-        P extends 'events'
-        ? Array < EventGetPayload<S['include'][P]>>  :
         P extends 'subscribers'
         ? Array < SubscriptionGetPayload<S['include'][P]>>  : never
   } 
@@ -12285,8 +8163,6 @@ export namespace Prisma {
         ? TagGetPayload<S['select'][P]> :
         P extends 'deliveryTermsTag'
         ? TagGetPayload<S['select'][P]> :
-        P extends 'events'
-        ? Array < EventGetPayload<S['select'][P]>>  :
         P extends 'subscribers'
         ? Array < SubscriptionGetPayload<S['select'][P]>>  : never
   } 
@@ -12638,8 +8514,6 @@ export namespace Prisma {
 
     deliveryTermsTag<T extends TagArgs = {}>(args?: Subset<T, TagArgs>): CheckSelect<T, Prisma__TagClient<Tag | null >, Prisma__TagClient<TagGetPayload<T> | null >>;
 
-    events<T extends EventFindManyArgs = {}>(args?: Subset<T, EventFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Event>>, PrismaPromise<Array<EventGetPayload<T>>>>;
-
     subscribers<T extends SubscriptionFindManyArgs = {}>(args?: Subset<T, SubscriptionFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Subscription>>, PrismaPromise<Array<SubscriptionGetPayload<T>>>>;
 
     private get _document();
@@ -12978,7 +8852,6 @@ export namespace Prisma {
     purchasedItemId: number | null
     purchasedUnits: number | null
     purchasedItemVat: number | null
-    indexedTransactionId: number | null
   }
 
   export type PurchaseSumAggregateOutputType = {
@@ -12987,7 +8860,6 @@ export namespace Prisma {
     purchasedItemId: number | null
     purchasedUnits: number | null
     purchasedItemVat: number | null
-    indexedTransactionId: number | null
   }
 
   export type PurchaseMinAggregateOutputType = {
@@ -13002,7 +8874,6 @@ export namespace Prisma {
     grandTotal: string | null
     purchasedItemVat: number | null
     status: PurchaseStatus | null
-    indexedTransactionId: number | null
   }
 
   export type PurchaseMaxAggregateOutputType = {
@@ -13017,7 +8888,6 @@ export namespace Prisma {
     grandTotal: string | null
     purchasedItemVat: number | null
     status: PurchaseStatus | null
-    indexedTransactionId: number | null
   }
 
   export type PurchaseCountAggregateOutputType = {
@@ -13032,7 +8902,6 @@ export namespace Prisma {
     grandTotal: number
     purchasedItemVat: number
     status: number
-    indexedTransactionId: number
     _all: number
   }
 
@@ -13043,7 +8912,6 @@ export namespace Prisma {
     purchasedItemId?: true
     purchasedUnits?: true
     purchasedItemVat?: true
-    indexedTransactionId?: true
   }
 
   export type PurchaseSumAggregateInputType = {
@@ -13052,7 +8920,6 @@ export namespace Prisma {
     purchasedItemId?: true
     purchasedUnits?: true
     purchasedItemVat?: true
-    indexedTransactionId?: true
   }
 
   export type PurchaseMinAggregateInputType = {
@@ -13067,7 +8934,6 @@ export namespace Prisma {
     grandTotal?: true
     purchasedItemVat?: true
     status?: true
-    indexedTransactionId?: true
   }
 
   export type PurchaseMaxAggregateInputType = {
@@ -13082,7 +8948,6 @@ export namespace Prisma {
     grandTotal?: true
     purchasedItemVat?: true
     status?: true
-    indexedTransactionId?: true
   }
 
   export type PurchaseCountAggregateInputType = {
@@ -13097,7 +8962,6 @@ export namespace Prisma {
     grandTotal?: true
     purchasedItemVat?: true
     status?: true
-    indexedTransactionId?: true
     _all?: true
   }
 
@@ -13225,7 +9089,6 @@ export namespace Prisma {
     grandTotal: string
     purchasedItemVat: number
     status: PurchaseStatus
-    indexedTransactionId: number
     _count: PurchaseCountAggregateOutputType | null
     _avg: PurchaseAvgAggregateOutputType | null
     _sum: PurchaseSumAggregateOutputType | null
@@ -13261,15 +9124,12 @@ export namespace Prisma {
     grandTotal?: boolean
     purchasedItemVat?: boolean
     status?: boolean
-    indexedTransaction?: boolean | IndexedTransactionArgs
-    indexedTransactionId?: boolean
     jobs?: boolean | TransactionJobsFindManyArgs
   }
 
   export type PurchaseInclude = {
     purchasedBy?: boolean | ProfileArgs
     purchasedItem?: boolean | OfferArgs
-    indexedTransaction?: boolean | IndexedTransactionArgs
     jobs?: boolean | TransactionJobsFindManyArgs
   }
 
@@ -13288,8 +9148,6 @@ export namespace Prisma {
         ? ProfileGetPayload<S['include'][P]> :
         P extends 'purchasedItem'
         ? OfferGetPayload<S['include'][P]> :
-        P extends 'indexedTransaction'
-        ? IndexedTransactionGetPayload<S['include'][P]> :
         P extends 'jobs'
         ? Array < TransactionJobsGetPayload<S['include'][P]>>  : never
   } 
@@ -13301,8 +9159,6 @@ export namespace Prisma {
         ? ProfileGetPayload<S['select'][P]> :
         P extends 'purchasedItem'
         ? OfferGetPayload<S['select'][P]> :
-        P extends 'indexedTransaction'
-        ? IndexedTransactionGetPayload<S['select'][P]> :
         P extends 'jobs'
         ? Array < TransactionJobsGetPayload<S['select'][P]>>  : never
   } 
@@ -13647,8 +9503,6 @@ export namespace Prisma {
     purchasedBy<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
 
     purchasedItem<T extends OfferArgs = {}>(args?: Subset<T, OfferArgs>): CheckSelect<T, Prisma__OfferClient<Offer | null >, Prisma__OfferClient<OfferGetPayload<T> | null >>;
-
-    indexedTransaction<T extends IndexedTransactionArgs = {}>(args?: Subset<T, IndexedTransactionArgs>): CheckSelect<T, Prisma__IndexedTransactionClient<IndexedTransaction | null >, Prisma__IndexedTransactionClient<IndexedTransactionGetPayload<T> | null >>;
 
     jobs<T extends TransactionJobsFindManyArgs = {}>(args?: Subset<T, TransactionJobsFindManyArgs>): CheckSelect<T, PrismaPromise<Array<TransactionJobs>>, PrismaPromise<Array<TransactionJobsGetPayload<T>>>>;
 
@@ -15713,6 +11567,840 @@ export namespace Prisma {
 
 
   /**
+   * Model Transaction
+   */
+
+
+  export type AggregateTransaction = {
+    _count: TransactionCountAggregateOutputType | null
+    count: TransactionCountAggregateOutputType | null
+    _min: TransactionMinAggregateOutputType | null
+    min: TransactionMinAggregateOutputType | null
+    _max: TransactionMaxAggregateOutputType | null
+    max: TransactionMaxAggregateOutputType | null
+  }
+
+  export type TransactionMinAggregateOutputType = {
+    transactionHash: string | null
+  }
+
+  export type TransactionMaxAggregateOutputType = {
+    transactionHash: string | null
+  }
+
+  export type TransactionCountAggregateOutputType = {
+    transactionHash: number
+    _all: number
+  }
+
+
+  export type TransactionMinAggregateInputType = {
+    transactionHash?: true
+  }
+
+  export type TransactionMaxAggregateInputType = {
+    transactionHash?: true
+  }
+
+  export type TransactionCountAggregateInputType = {
+    transactionHash?: true
+    _all?: true
+  }
+
+  export type TransactionAggregateArgs = {
+    /**
+     * Filter which Transaction to aggregate.
+     * 
+    **/
+    where?: TransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Transactions to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<TransactionOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     * 
+    **/
+    cursor?: TransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Transactions from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Transactions.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Transactions
+    **/
+    _count?: true | TransactionCountAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_count`
+    **/
+    count?: true | TransactionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TransactionMinAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_min`
+    **/
+    min?: TransactionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TransactionMaxAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_max`
+    **/
+    max?: TransactionMaxAggregateInputType
+  }
+
+  export type GetTransactionAggregateType<T extends TransactionAggregateArgs> = {
+        [P in keyof T & keyof AggregateTransaction]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTransaction[P]>
+      : GetScalarType<T[P], AggregateTransaction[P]>
+  }
+
+
+    
+    
+  export type TransactionGroupByArgs = {
+    where?: TransactionWhereInput
+    orderBy?: Enumerable<TransactionOrderByInput>
+    by: Array<TransactionScalarFieldEnum>
+    having?: TransactionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TransactionCountAggregateInputType | true
+    _min?: TransactionMinAggregateInputType
+    _max?: TransactionMaxAggregateInputType
+  }
+
+
+  export type TransactionGroupByOutputType = {
+    transactionHash: string
+    _count: TransactionCountAggregateOutputType | null
+    _min: TransactionMinAggregateOutputType | null
+    _max: TransactionMaxAggregateOutputType | null
+  }
+
+  type GetTransactionGroupByPayload<T extends TransactionGroupByArgs> = Promise<
+    Array<
+      PickArray<TransactionGroupByOutputType, T['by']> & 
+        {
+          [P in ((keyof T) & (keyof TransactionGroupByOutputType))]: P extends '_count' 
+            ? T[P] extends boolean 
+              ? number 
+              : GetScalarType<T[P], TransactionGroupByOutputType[P]> 
+            : GetScalarType<T[P], TransactionGroupByOutputType[P]>
+        }
+      > 
+    >
+
+
+  export type TransactionSelect = {
+    transactionHash?: boolean
+    tags?: boolean | TagFindManyArgs
+  }
+
+  export type TransactionInclude = {
+    tags?: boolean | TagFindManyArgs
+  }
+
+  export type TransactionGetPayload<
+    S extends boolean | null | undefined | TransactionArgs,
+    U = keyof S
+      > = S extends true
+        ? Transaction
+    : S extends undefined
+    ? never
+    : S extends TransactionArgs | TransactionFindManyArgs
+    ?'include' extends U
+    ? Transaction  & {
+    [P in TrueKeys<S['include']>]: 
+          P extends 'tags'
+        ? Array < TagGetPayload<S['include'][P]>>  : never
+  } 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]: P extends keyof Transaction ?Transaction [P]
+  : 
+          P extends 'tags'
+        ? Array < TagGetPayload<S['select'][P]>>  : never
+  } 
+    : Transaction
+  : Transaction
+
+
+  type TransactionCountArgs = Merge<
+    Omit<TransactionFindManyArgs, 'select' | 'include'> & {
+      select?: TransactionCountAggregateInputType | true
+    }
+  >
+
+  export interface TransactionDelegate<GlobalRejectSettings> {
+    /**
+     * Find zero or one Transaction that matches the filter.
+     * @param {TransactionFindUniqueArgs} args - Arguments to find a Transaction
+     * @example
+     * // Get one Transaction
+     * const transaction = await prisma.transaction.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends TransactionFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, TransactionFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Transaction'> extends True ? CheckSelect<T, Prisma__TransactionClient<Transaction>, Prisma__TransactionClient<TransactionGetPayload<T>>> : CheckSelect<T, Prisma__TransactionClient<Transaction | null >, Prisma__TransactionClient<TransactionGetPayload<T> | null >>
+
+    /**
+     * Find the first Transaction that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionFindFirstArgs} args - Arguments to find a Transaction
+     * @example
+     * // Get one Transaction
+     * const transaction = await prisma.transaction.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends TransactionFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, TransactionFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Transaction'> extends True ? CheckSelect<T, Prisma__TransactionClient<Transaction>, Prisma__TransactionClient<TransactionGetPayload<T>>> : CheckSelect<T, Prisma__TransactionClient<Transaction | null >, Prisma__TransactionClient<TransactionGetPayload<T> | null >>
+
+    /**
+     * Find zero or more Transactions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Transactions
+     * const transactions = await prisma.transaction.findMany()
+     * 
+     * // Get first 10 Transactions
+     * const transactions = await prisma.transaction.findMany({ take: 10 })
+     * 
+     * // Only select the `transactionHash`
+     * const transactionWithTransactionHashOnly = await prisma.transaction.findMany({ select: { transactionHash: true } })
+     * 
+    **/
+    findMany<T extends TransactionFindManyArgs>(
+      args?: SelectSubset<T, TransactionFindManyArgs>
+    ): CheckSelect<T, PrismaPromise<Array<Transaction>>, PrismaPromise<Array<TransactionGetPayload<T>>>>
+
+    /**
+     * Create a Transaction.
+     * @param {TransactionCreateArgs} args - Arguments to create a Transaction.
+     * @example
+     * // Create one Transaction
+     * const Transaction = await prisma.transaction.create({
+     *   data: {
+     *     // ... data to create a Transaction
+     *   }
+     * })
+     * 
+    **/
+    create<T extends TransactionCreateArgs>(
+      args: SelectSubset<T, TransactionCreateArgs>
+    ): CheckSelect<T, Prisma__TransactionClient<Transaction>, Prisma__TransactionClient<TransactionGetPayload<T>>>
+
+    /**
+     * Create many Transactions.
+     *     @param {TransactionCreateManyArgs} args - Arguments to create many Transactions.
+     *     @example
+     *     // Create many Transactions
+     *     const transaction = await prisma.transaction.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends TransactionCreateManyArgs>(
+      args?: SelectSubset<T, TransactionCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Transaction.
+     * @param {TransactionDeleteArgs} args - Arguments to delete one Transaction.
+     * @example
+     * // Delete one Transaction
+     * const Transaction = await prisma.transaction.delete({
+     *   where: {
+     *     // ... filter to delete one Transaction
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends TransactionDeleteArgs>(
+      args: SelectSubset<T, TransactionDeleteArgs>
+    ): CheckSelect<T, Prisma__TransactionClient<Transaction>, Prisma__TransactionClient<TransactionGetPayload<T>>>
+
+    /**
+     * Update one Transaction.
+     * @param {TransactionUpdateArgs} args - Arguments to update one Transaction.
+     * @example
+     * // Update one Transaction
+     * const transaction = await prisma.transaction.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends TransactionUpdateArgs>(
+      args: SelectSubset<T, TransactionUpdateArgs>
+    ): CheckSelect<T, Prisma__TransactionClient<Transaction>, Prisma__TransactionClient<TransactionGetPayload<T>>>
+
+    /**
+     * Delete zero or more Transactions.
+     * @param {TransactionDeleteManyArgs} args - Arguments to filter Transactions to delete.
+     * @example
+     * // Delete a few Transactions
+     * const { count } = await prisma.transaction.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends TransactionDeleteManyArgs>(
+      args?: SelectSubset<T, TransactionDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Transactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Transactions
+     * const transaction = await prisma.transaction.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends TransactionUpdateManyArgs>(
+      args: SelectSubset<T, TransactionUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Transaction.
+     * @param {TransactionUpsertArgs} args - Arguments to update or create a Transaction.
+     * @example
+     * // Update or create a Transaction
+     * const transaction = await prisma.transaction.upsert({
+     *   create: {
+     *     // ... data to create a Transaction
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Transaction we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends TransactionUpsertArgs>(
+      args: SelectSubset<T, TransactionUpsertArgs>
+    ): CheckSelect<T, Prisma__TransactionClient<Transaction>, Prisma__TransactionClient<TransactionGetPayload<T>>>
+
+    /**
+     * Count the number of Transactions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionCountArgs} args - Arguments to filter Transactions to count.
+     * @example
+     * // Count the number of Transactions
+     * const count = await prisma.transaction.count({
+     *   where: {
+     *     // ... the filter for the Transactions we want to count
+     *   }
+     * })
+    **/
+    count<T extends TransactionCountArgs>(
+      args?: Subset<T, TransactionCountArgs>,
+    ): PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TransactionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Transaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TransactionAggregateArgs>(args: Subset<T, TransactionAggregateArgs>): PrismaPromise<GetTransactionAggregateType<T>>
+
+    /**
+     * Group by Transaction.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TransactionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TransactionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TransactionGroupByArgs['orderBy'] }
+        : { orderBy?: TransactionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TransactionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTransactionGroupByPayload<T> : Promise<InputErrors>
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Transaction.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in 
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__TransactionClient<T> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+
+    tags<T extends TagFindManyArgs = {}>(args?: Subset<T, TagFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Tag>>, PrismaPromise<Array<TagGetPayload<T>>>>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+  // Custom InputTypes
+
+  /**
+   * Transaction findUnique
+   */
+  export type TransactionFindUniqueArgs = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     * 
+    **/
+    select?: TransactionSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: TransactionInclude | null
+    /**
+     * Throw an Error if a Transaction can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which Transaction to fetch.
+     * 
+    **/
+    where: TransactionWhereUniqueInput
+  }
+
+
+  /**
+   * Transaction findFirst
+   */
+  export type TransactionFindFirstArgs = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     * 
+    **/
+    select?: TransactionSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: TransactionInclude | null
+    /**
+     * Throw an Error if a Transaction can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which Transaction to fetch.
+     * 
+    **/
+    where?: TransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Transactions to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<TransactionOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Transactions.
+     * 
+    **/
+    cursor?: TransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Transactions from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Transactions.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Transactions.
+     * 
+    **/
+    distinct?: Enumerable<TransactionScalarFieldEnum>
+  }
+
+
+  /**
+   * Transaction findMany
+   */
+  export type TransactionFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     * 
+    **/
+    select?: TransactionSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: TransactionInclude | null
+    /**
+     * Filter, which Transactions to fetch.
+     * 
+    **/
+    where?: TransactionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Transactions to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<TransactionOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Transactions.
+     * 
+    **/
+    cursor?: TransactionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Transactions from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Transactions.
+     * 
+    **/
+    skip?: number
+    distinct?: Enumerable<TransactionScalarFieldEnum>
+  }
+
+
+  /**
+   * Transaction create
+   */
+  export type TransactionCreateArgs = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     * 
+    **/
+    select?: TransactionSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: TransactionInclude | null
+    /**
+     * The data needed to create a Transaction.
+     * 
+    **/
+    data: XOR<TransactionCreateInput, TransactionUncheckedCreateInput>
+  }
+
+
+  /**
+   * Transaction createMany
+   */
+  export type TransactionCreateManyArgs = {
+    data: Enumerable<TransactionCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * Transaction update
+   */
+  export type TransactionUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     * 
+    **/
+    select?: TransactionSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: TransactionInclude | null
+    /**
+     * The data needed to update a Transaction.
+     * 
+    **/
+    data: XOR<TransactionUpdateInput, TransactionUncheckedUpdateInput>
+    /**
+     * Choose, which Transaction to update.
+     * 
+    **/
+    where: TransactionWhereUniqueInput
+  }
+
+
+  /**
+   * Transaction updateMany
+   */
+  export type TransactionUpdateManyArgs = {
+    data: XOR<TransactionUpdateManyMutationInput, TransactionUncheckedUpdateManyInput>
+    where?: TransactionWhereInput
+  }
+
+
+  /**
+   * Transaction upsert
+   */
+  export type TransactionUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     * 
+    **/
+    select?: TransactionSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: TransactionInclude | null
+    /**
+     * The filter to search for the Transaction to update in case it exists.
+     * 
+    **/
+    where: TransactionWhereUniqueInput
+    /**
+     * In case the Transaction found by the `where` argument doesn't exist, create a new Transaction with this data.
+     * 
+    **/
+    create: XOR<TransactionCreateInput, TransactionUncheckedCreateInput>
+    /**
+     * In case the Transaction was found with the provided `where` argument, update it with this data.
+     * 
+    **/
+    update: XOR<TransactionUpdateInput, TransactionUncheckedUpdateInput>
+  }
+
+
+  /**
+   * Transaction delete
+   */
+  export type TransactionDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     * 
+    **/
+    select?: TransactionSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: TransactionInclude | null
+    /**
+     * Filter which Transaction to delete.
+     * 
+    **/
+    where: TransactionWhereUniqueInput
+  }
+
+
+  /**
+   * Transaction deleteMany
+   */
+  export type TransactionDeleteManyArgs = {
+    where?: TransactionWhereInput
+  }
+
+
+  /**
+   * Transaction without action
+   */
+  export type TransactionArgs = {
+    /**
+     * Select specific fields to fetch from the Transaction
+     * 
+    **/
+    select?: TransactionSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: TransactionInclude | null
+  }
+
+
+
+  /**
    * Model Tag
    */
 
@@ -15733,15 +12421,11 @@ export namespace Prisma {
   export type TagAvgAggregateOutputType = {
     id: number | null
     createdByProfileId: number | null
-    indexTransactionRequestId: number | null
-    indexedTransactionId: number | null
   }
 
   export type TagSumAggregateOutputType = {
     id: number | null
     createdByProfileId: number | null
-    indexTransactionRequestId: number | null
-    indexedTransactionId: number | null
   }
 
   export type TagMinAggregateOutputType = {
@@ -15749,10 +12433,9 @@ export namespace Prisma {
     createdAt: Date | null
     createdByProfileId: number | null
     isPrivate: boolean | null
+    transactionHash: string | null
     typeId: string | null
     value: string | null
-    indexTransactionRequestId: number | null
-    indexedTransactionId: number | null
   }
 
   export type TagMaxAggregateOutputType = {
@@ -15760,10 +12443,9 @@ export namespace Prisma {
     createdAt: Date | null
     createdByProfileId: number | null
     isPrivate: boolean | null
+    transactionHash: string | null
     typeId: string | null
     value: string | null
-    indexTransactionRequestId: number | null
-    indexedTransactionId: number | null
   }
 
   export type TagCountAggregateOutputType = {
@@ -15771,10 +12453,9 @@ export namespace Prisma {
     createdAt: number
     createdByProfileId: number
     isPrivate: number
+    transactionHash: number
     typeId: number
     value: number
-    indexTransactionRequestId: number
-    indexedTransactionId: number
     _all: number
   }
 
@@ -15782,15 +12463,11 @@ export namespace Prisma {
   export type TagAvgAggregateInputType = {
     id?: true
     createdByProfileId?: true
-    indexTransactionRequestId?: true
-    indexedTransactionId?: true
   }
 
   export type TagSumAggregateInputType = {
     id?: true
     createdByProfileId?: true
-    indexTransactionRequestId?: true
-    indexedTransactionId?: true
   }
 
   export type TagMinAggregateInputType = {
@@ -15798,10 +12475,9 @@ export namespace Prisma {
     createdAt?: true
     createdByProfileId?: true
     isPrivate?: true
+    transactionHash?: true
     typeId?: true
     value?: true
-    indexTransactionRequestId?: true
-    indexedTransactionId?: true
   }
 
   export type TagMaxAggregateInputType = {
@@ -15809,10 +12485,9 @@ export namespace Prisma {
     createdAt?: true
     createdByProfileId?: true
     isPrivate?: true
+    transactionHash?: true
     typeId?: true
     value?: true
-    indexTransactionRequestId?: true
-    indexedTransactionId?: true
   }
 
   export type TagCountAggregateInputType = {
@@ -15820,10 +12495,9 @@ export namespace Prisma {
     createdAt?: true
     createdByProfileId?: true
     isPrivate?: true
+    transactionHash?: true
     typeId?: true
     value?: true
-    indexTransactionRequestId?: true
-    indexedTransactionId?: true
     _all?: true
   }
 
@@ -15944,10 +12618,9 @@ export namespace Prisma {
     createdAt: Date
     createdByProfileId: number
     isPrivate: boolean
+    transactionHash: string | null
     typeId: string
     value: string | null
-    indexTransactionRequestId: number | null
-    indexedTransactionId: number | null
     _count: TagCountAggregateOutputType | null
     _avg: TagAvgAggregateOutputType | null
     _sum: TagSumAggregateOutputType | null
@@ -15975,30 +12648,25 @@ export namespace Prisma {
     createdBy?: boolean | ProfileArgs
     createdByProfileId?: boolean
     isPrivate?: boolean
+    transaction?: boolean | TransactionArgs
+    transactionHash?: boolean
     type?: boolean | TagTypeArgs
     typeId?: boolean
     value?: boolean
     offerCategory?: boolean | OfferFindManyArgs
     offerUnit?: boolean | OfferFindManyArgs
     offerDeliveryTerms?: boolean | OfferFindManyArgs
-    indexedTransactionType?: boolean | IndexedTransactionFindManyArgs
     messageType?: boolean | MessageFindManyArgs
-    indexTransactionRequest?: boolean | IndexTransactionRequestArgs
-    indexTransactionRequestId?: boolean
-    indexedTransaction?: boolean | IndexedTransactionArgs
-    indexedTransactionId?: boolean
   }
 
   export type TagInclude = {
     createdBy?: boolean | ProfileArgs
+    transaction?: boolean | TransactionArgs
     type?: boolean | TagTypeArgs
     offerCategory?: boolean | OfferFindManyArgs
     offerUnit?: boolean | OfferFindManyArgs
     offerDeliveryTerms?: boolean | OfferFindManyArgs
-    indexedTransactionType?: boolean | IndexedTransactionFindManyArgs
     messageType?: boolean | MessageFindManyArgs
-    indexTransactionRequest?: boolean | IndexTransactionRequestArgs
-    indexedTransaction?: boolean | IndexedTransactionArgs
   }
 
   export type TagGetPayload<
@@ -16014,6 +12682,8 @@ export namespace Prisma {
     [P in TrueKeys<S['include']>]: 
           P extends 'createdBy'
         ? ProfileGetPayload<S['include'][P]> :
+        P extends 'transaction'
+        ? TransactionGetPayload<S['include'][P]> | null :
         P extends 'type'
         ? TagTypeGetPayload<S['include'][P]> :
         P extends 'offerCategory'
@@ -16022,14 +12692,8 @@ export namespace Prisma {
         ? Array < OfferGetPayload<S['include'][P]>>  :
         P extends 'offerDeliveryTerms'
         ? Array < OfferGetPayload<S['include'][P]>>  :
-        P extends 'indexedTransactionType'
-        ? Array < IndexedTransactionGetPayload<S['include'][P]>>  :
         P extends 'messageType'
-        ? Array < MessageGetPayload<S['include'][P]>>  :
-        P extends 'indexTransactionRequest'
-        ? IndexTransactionRequestGetPayload<S['include'][P]> | null :
-        P extends 'indexedTransaction'
-        ? IndexedTransactionGetPayload<S['include'][P]> | null : never
+        ? Array < MessageGetPayload<S['include'][P]>>  : never
   } 
     : 'select' extends U
     ? {
@@ -16037,6 +12701,8 @@ export namespace Prisma {
   : 
           P extends 'createdBy'
         ? ProfileGetPayload<S['select'][P]> :
+        P extends 'transaction'
+        ? TransactionGetPayload<S['select'][P]> | null :
         P extends 'type'
         ? TagTypeGetPayload<S['select'][P]> :
         P extends 'offerCategory'
@@ -16045,14 +12711,8 @@ export namespace Prisma {
         ? Array < OfferGetPayload<S['select'][P]>>  :
         P extends 'offerDeliveryTerms'
         ? Array < OfferGetPayload<S['select'][P]>>  :
-        P extends 'indexedTransactionType'
-        ? Array < IndexedTransactionGetPayload<S['select'][P]>>  :
         P extends 'messageType'
-        ? Array < MessageGetPayload<S['select'][P]>>  :
-        P extends 'indexTransactionRequest'
-        ? IndexTransactionRequestGetPayload<S['select'][P]> | null :
-        P extends 'indexedTransaction'
-        ? IndexedTransactionGetPayload<S['select'][P]> | null : never
+        ? Array < MessageGetPayload<S['select'][P]>>  : never
   } 
     : Tag
   : Tag
@@ -16394,6 +13054,8 @@ export namespace Prisma {
 
     createdBy<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
 
+    transaction<T extends TransactionArgs = {}>(args?: Subset<T, TransactionArgs>): CheckSelect<T, Prisma__TransactionClient<Transaction | null >, Prisma__TransactionClient<TransactionGetPayload<T> | null >>;
+
     type<T extends TagTypeArgs = {}>(args?: Subset<T, TagTypeArgs>): CheckSelect<T, Prisma__TagTypeClient<TagType | null >, Prisma__TagTypeClient<TagTypeGetPayload<T> | null >>;
 
     offerCategory<T extends OfferFindManyArgs = {}>(args?: Subset<T, OfferFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Offer>>, PrismaPromise<Array<OfferGetPayload<T>>>>;
@@ -16402,13 +13064,7 @@ export namespace Prisma {
 
     offerDeliveryTerms<T extends OfferFindManyArgs = {}>(args?: Subset<T, OfferFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Offer>>, PrismaPromise<Array<OfferGetPayload<T>>>>;
 
-    indexedTransactionType<T extends IndexedTransactionFindManyArgs = {}>(args?: Subset<T, IndexedTransactionFindManyArgs>): CheckSelect<T, PrismaPromise<Array<IndexedTransaction>>, PrismaPromise<Array<IndexedTransactionGetPayload<T>>>>;
-
     messageType<T extends MessageFindManyArgs = {}>(args?: Subset<T, MessageFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Message>>, PrismaPromise<Array<MessageGetPayload<T>>>>;
-
-    indexTransactionRequest<T extends IndexTransactionRequestArgs = {}>(args?: Subset<T, IndexTransactionRequestArgs>): CheckSelect<T, Prisma__IndexTransactionRequestClient<IndexTransactionRequest | null >, Prisma__IndexTransactionRequestClient<IndexTransactionRequestGetPayload<T> | null >>;
-
-    indexedTransaction<T extends IndexedTransactionArgs = {}>(args?: Subset<T, IndexedTransactionArgs>): CheckSelect<T, Prisma__IndexedTransactionClient<IndexedTransaction | null >, Prisma__IndexedTransactionClient<IndexedTransactionGetPayload<T> | null >>;
 
     private get _document();
     /**
@@ -16806,48 +13462,6 @@ export namespace Prisma {
   export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
 
 
-  export const EventScalarFieldEnum: {
-    id: 'id',
-    type: 'type',
-    profileId: 'profileId',
-    offerId: 'offerId',
-    createdAt: 'createdAt',
-    workerProcess: 'workerProcess',
-    deliveredAt: 'deliveredAt',
-    acknowledgedAt: 'acknowledgedAt',
-    archivedAt: 'archivedAt',
-    data: 'data'
-  };
-
-  export type EventScalarFieldEnum = (typeof EventScalarFieldEnum)[keyof typeof EventScalarFieldEnum]
-
-
-  export const IndexedTransactionLogScalarFieldEnum: {
-    id: 'id',
-    indexedTransactionId: 'indexedTransactionId',
-    address: 'address',
-    data: 'data',
-    topics: 'topics',
-    logIndex: 'logIndex'
-  };
-
-  export type IndexedTransactionLogScalarFieldEnum = (typeof IndexedTransactionLogScalarFieldEnum)[keyof typeof IndexedTransactionLogScalarFieldEnum]
-
-
-  export const IndexTransactionRequestScalarFieldEnum: {
-    id: 'id',
-    createdAt: 'createdAt',
-    createdByProfileId: 'createdByProfileId',
-    blockNumber: 'blockNumber',
-    transactionIndex: 'transactionIndex',
-    transactionHash: 'transactionHash',
-    workerProcess: 'workerProcess',
-    pickedAt: 'pickedAt'
-  };
-
-  export type IndexTransactionRequestScalarFieldEnum = (typeof IndexTransactionRequestScalarFieldEnum)[keyof typeof IndexTransactionRequestScalarFieldEnum]
-
-
   export const MessageScalarFieldEnum: {
     id: 'id',
     createdAt: 'createdAt',
@@ -16862,33 +13476,6 @@ export namespace Prisma {
   };
 
   export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
-
-
-  export const IndexedTransactionScalarFieldEnum: {
-    id: 'id',
-    fromRequestId: 'fromRequestId',
-    fromRedeemInvitationRequestId: 'fromRedeemInvitationRequestId',
-    createdAt: 'createdAt',
-    createdByProfileId: 'createdByProfileId',
-    typeTagId: 'typeTagId',
-    from: 'from',
-    to: 'to',
-    logicalFrom: 'logicalFrom',
-    logicalTo: 'logicalTo',
-    contractAddress: 'contractAddress',
-    transactionIndex: 'transactionIndex',
-    root: 'root',
-    gasUsed: 'gasUsed',
-    logsBloom: 'logsBloom',
-    blockHash: 'blockHash',
-    transactionHash: 'transactionHash',
-    blockNumber: 'blockNumber',
-    confirmations: 'confirmations',
-    cumulativeGasUsed: 'cumulativeGasUsed',
-    status: 'status'
-  };
-
-  export type IndexedTransactionScalarFieldEnum = (typeof IndexedTransactionScalarFieldEnum)[keyof typeof IndexedTransactionScalarFieldEnum]
 
 
   export const DelegatedChallengesScalarFieldEnum: {
@@ -16938,8 +13525,7 @@ export namespace Prisma {
     purchasedUnits: 'purchasedUnits',
     grandTotal: 'grandTotal',
     purchasedItemVat: 'purchasedItemVat',
-    status: 'status',
-    indexedTransactionId: 'indexedTransactionId'
+    status: 'status'
   };
 
   export type PurchaseScalarFieldEnum = (typeof PurchaseScalarFieldEnum)[keyof typeof PurchaseScalarFieldEnum]
@@ -16963,15 +13549,21 @@ export namespace Prisma {
   export type TagTypeScalarFieldEnum = (typeof TagTypeScalarFieldEnum)[keyof typeof TagTypeScalarFieldEnum]
 
 
+  export const TransactionScalarFieldEnum: {
+    transactionHash: 'transactionHash'
+  };
+
+  export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum]
+
+
   export const TagScalarFieldEnum: {
     id: 'id',
     createdAt: 'createdAt',
     createdByProfileId: 'createdByProfileId',
     isPrivate: 'isPrivate',
+    transactionHash: 'transactionHash',
     typeId: 'typeId',
-    value: 'value',
-    indexTransactionRequestId: 'indexTransactionRequestId',
-    indexedTransactionId: 'indexedTransactionId'
+    value: 'value'
   };
 
   export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
@@ -17107,7 +13699,6 @@ export namespace Prisma {
     pickedAt?: DateTimeNullableFilter | Date | string | null
     invitationToRedeem?: XOR<InvitationRelationFilter, InvitationWhereInput>
     invitationToRedeemId?: IntFilter | number
-    inviteTransaction?: XOR<IndexedTransactionRelationFilter, IndexedTransactionWhereInput> | null
   }
 
   export type RedeemInvitationRequestOrderByInput = {
@@ -17161,10 +13752,7 @@ export namespace Prisma {
     tags?: TagListRelationFilter
     offers?: OfferListRelationFilter
     purchases?: PurchaseListRelationFilter
-    indexedTransactionRequests?: IndexTransactionRequestListRelationFilter
-    indexedTransactions?: IndexedTransactionListRelationFilter
     sentMessages?: MessageListRelationFilter
-    events?: EventListRelationFilter
     invitations?: InvitationListRelationFilter
     redeemInvitationRequests?: RedeemInvitationRequestListRelationFilter
     redeemedInvitations?: InvitationListRelationFilter
@@ -17260,141 +13848,6 @@ export namespace Prisma {
     subscribingToProfileId?: IntNullableWithAggregatesFilter | number | null
   }
 
-  export type EventWhereInput = {
-    AND?: Enumerable<EventWhereInput>
-    OR?: Enumerable<EventWhereInput>
-    NOT?: Enumerable<EventWhereInput>
-    id?: IntFilter | number
-    type?: EnumEventTypeFilter | EventType
-    profile?: XOR<ProfileRelationFilter, ProfileWhereInput> | null
-    profileId?: IntNullableFilter | number | null
-    offer?: XOR<OfferRelationFilter, OfferWhereInput> | null
-    offerId?: IntNullableFilter | number | null
-    createdAt?: DateTimeFilter | Date | string
-    workerProcess?: StringNullableFilter | string | null
-    deliveredAt?: DateTimeNullableFilter | Date | string | null
-    acknowledgedAt?: DateTimeNullableFilter | Date | string | null
-    archivedAt?: DateTimeNullableFilter | Date | string | null
-    data?: StringFilter | string
-  }
-
-  export type EventOrderByInput = {
-    id?: SortOrder
-    type?: SortOrder
-    profileId?: SortOrder
-    offerId?: SortOrder
-    createdAt?: SortOrder
-    workerProcess?: SortOrder
-    deliveredAt?: SortOrder
-    acknowledgedAt?: SortOrder
-    archivedAt?: SortOrder
-    data?: SortOrder
-  }
-
-  export type EventWhereUniqueInput = {
-    id?: number
-  }
-
-  export type EventScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<EventScalarWhereWithAggregatesInput>
-    OR?: Enumerable<EventScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<EventScalarWhereWithAggregatesInput>
-    id?: IntWithAggregatesFilter | number
-    type?: EnumEventTypeWithAggregatesFilter | EventType
-    profileId?: IntNullableWithAggregatesFilter | number | null
-    offerId?: IntNullableWithAggregatesFilter | number | null
-    createdAt?: DateTimeWithAggregatesFilter | Date | string
-    workerProcess?: StringNullableWithAggregatesFilter | string | null
-    deliveredAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
-    acknowledgedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
-    archivedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
-    data?: StringWithAggregatesFilter | string
-  }
-
-  export type IndexedTransactionLogWhereInput = {
-    AND?: Enumerable<IndexedTransactionLogWhereInput>
-    OR?: Enumerable<IndexedTransactionLogWhereInput>
-    NOT?: Enumerable<IndexedTransactionLogWhereInput>
-    id?: IntFilter | number
-    indexedTransaction?: XOR<IndexedTransactionRelationFilter, IndexedTransactionWhereInput>
-    indexedTransactionId?: IntFilter | number
-    address?: StringFilter | string
-    data?: StringNullableFilter | string | null
-    topics?: StringNullableListFilter
-    logIndex?: IntFilter | number
-  }
-
-  export type IndexedTransactionLogOrderByInput = {
-    id?: SortOrder
-    indexedTransactionId?: SortOrder
-    address?: SortOrder
-    data?: SortOrder
-    topics?: SortOrder
-    logIndex?: SortOrder
-  }
-
-  export type IndexedTransactionLogWhereUniqueInput = {
-    id?: number
-  }
-
-  export type IndexedTransactionLogScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<IndexedTransactionLogScalarWhereWithAggregatesInput>
-    OR?: Enumerable<IndexedTransactionLogScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<IndexedTransactionLogScalarWhereWithAggregatesInput>
-    id?: IntWithAggregatesFilter | number
-    indexedTransactionId?: IntWithAggregatesFilter | number
-    address?: StringWithAggregatesFilter | string
-    data?: StringNullableWithAggregatesFilter | string | null
-    topics?: StringNullableListFilter
-    logIndex?: IntWithAggregatesFilter | number
-  }
-
-  export type IndexTransactionRequestWhereInput = {
-    AND?: Enumerable<IndexTransactionRequestWhereInput>
-    OR?: Enumerable<IndexTransactionRequestWhereInput>
-    NOT?: Enumerable<IndexTransactionRequestWhereInput>
-    id?: IntFilter | number
-    createdAt?: DateTimeFilter | Date | string
-    createdBy?: XOR<ProfileRelationFilter, ProfileWhereInput>
-    createdByProfileId?: IntFilter | number
-    blockNumber?: IntNullableFilter | number | null
-    transactionIndex?: IntNullableFilter | number | null
-    transactionHash?: StringFilter | string
-    workerProcess?: StringNullableFilter | string | null
-    pickedAt?: DateTimeNullableFilter | Date | string | null
-    indexedTransaction?: XOR<IndexedTransactionRelationFilter, IndexedTransactionWhereInput> | null
-    tags?: TagListRelationFilter
-  }
-
-  export type IndexTransactionRequestOrderByInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    createdByProfileId?: SortOrder
-    blockNumber?: SortOrder
-    transactionIndex?: SortOrder
-    transactionHash?: SortOrder
-    workerProcess?: SortOrder
-    pickedAt?: SortOrder
-  }
-
-  export type IndexTransactionRequestWhereUniqueInput = {
-    id?: number
-  }
-
-  export type IndexTransactionRequestScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<IndexTransactionRequestScalarWhereWithAggregatesInput>
-    OR?: Enumerable<IndexTransactionRequestScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<IndexTransactionRequestScalarWhereWithAggregatesInput>
-    id?: IntWithAggregatesFilter | number
-    createdAt?: DateTimeWithAggregatesFilter | Date | string
-    createdByProfileId?: IntWithAggregatesFilter | number
-    blockNumber?: IntNullableWithAggregatesFilter | number | null
-    transactionIndex?: IntNullableWithAggregatesFilter | number | null
-    transactionHash?: StringWithAggregatesFilter | string
-    workerProcess?: StringNullableWithAggregatesFilter | string | null
-    pickedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
-  }
-
   export type MessageWhereInput = {
     AND?: Enumerable<MessageWhereInput>
     OR?: Enumerable<MessageWhereInput>
@@ -17444,95 +13897,6 @@ export namespace Prisma {
     chainEventType?: StringNullableWithAggregatesFilter | string | null
     chainEventId?: BigIntNullableWithAggregatesFilter | bigint | number | null
     content?: StringWithAggregatesFilter | string
-  }
-
-  export type IndexedTransactionWhereInput = {
-    AND?: Enumerable<IndexedTransactionWhereInput>
-    OR?: Enumerable<IndexedTransactionWhereInput>
-    NOT?: Enumerable<IndexedTransactionWhereInput>
-    id?: IntFilter | number
-    fromRequest?: XOR<IndexTransactionRequestRelationFilter, IndexTransactionRequestWhereInput> | null
-    fromRequestId?: IntNullableFilter | number | null
-    fromRedeemInvitationRequest?: XOR<RedeemInvitationRequestRelationFilter, RedeemInvitationRequestWhereInput> | null
-    fromRedeemInvitationRequestId?: IntNullableFilter | number | null
-    createdAt?: DateTimeFilter | Date | string
-    createdBy?: XOR<ProfileRelationFilter, ProfileWhereInput>
-    createdByProfileId?: IntFilter | number
-    typeTag?: XOR<TagRelationFilter, TagWhereInput> | null
-    typeTagId?: IntNullableFilter | number | null
-    from?: StringFilter | string
-    to?: StringFilter | string
-    logicalFrom?: StringNullableFilter | string | null
-    logicalTo?: StringNullableFilter | string | null
-    contractAddress?: StringNullableFilter | string | null
-    transactionIndex?: IntFilter | number
-    root?: StringNullableFilter | string | null
-    gasUsed?: StringFilter | string
-    logsBloom?: StringFilter | string
-    blockHash?: StringFilter | string
-    transactionHash?: StringFilter | string
-    blockNumber?: IntFilter | number
-    confirmations?: IntNullableFilter | number | null
-    cumulativeGasUsed?: StringFilter | string
-    status?: StringNullableFilter | string | null
-    logs?: IndexedTransactionLogListRelationFilter
-    tags?: TagListRelationFilter
-    purchases?: PurchaseListRelationFilter
-  }
-
-  export type IndexedTransactionOrderByInput = {
-    id?: SortOrder
-    fromRequestId?: SortOrder
-    fromRedeemInvitationRequestId?: SortOrder
-    createdAt?: SortOrder
-    createdByProfileId?: SortOrder
-    typeTagId?: SortOrder
-    from?: SortOrder
-    to?: SortOrder
-    logicalFrom?: SortOrder
-    logicalTo?: SortOrder
-    contractAddress?: SortOrder
-    transactionIndex?: SortOrder
-    root?: SortOrder
-    gasUsed?: SortOrder
-    logsBloom?: SortOrder
-    blockHash?: SortOrder
-    transactionHash?: SortOrder
-    blockNumber?: SortOrder
-    confirmations?: SortOrder
-    cumulativeGasUsed?: SortOrder
-    status?: SortOrder
-  }
-
-  export type IndexedTransactionWhereUniqueInput = {
-    id?: number
-  }
-
-  export type IndexedTransactionScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<IndexedTransactionScalarWhereWithAggregatesInput>
-    OR?: Enumerable<IndexedTransactionScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<IndexedTransactionScalarWhereWithAggregatesInput>
-    id?: IntWithAggregatesFilter | number
-    fromRequestId?: IntNullableWithAggregatesFilter | number | null
-    fromRedeemInvitationRequestId?: IntNullableWithAggregatesFilter | number | null
-    createdAt?: DateTimeWithAggregatesFilter | Date | string
-    createdByProfileId?: IntWithAggregatesFilter | number
-    typeTagId?: IntNullableWithAggregatesFilter | number | null
-    from?: StringWithAggregatesFilter | string
-    to?: StringWithAggregatesFilter | string
-    logicalFrom?: StringNullableWithAggregatesFilter | string | null
-    logicalTo?: StringNullableWithAggregatesFilter | string | null
-    contractAddress?: StringNullableWithAggregatesFilter | string | null
-    transactionIndex?: IntWithAggregatesFilter | number
-    root?: StringNullableWithAggregatesFilter | string | null
-    gasUsed?: StringWithAggregatesFilter | string
-    logsBloom?: StringWithAggregatesFilter | string
-    blockHash?: StringWithAggregatesFilter | string
-    transactionHash?: StringWithAggregatesFilter | string
-    blockNumber?: IntWithAggregatesFilter | number
-    confirmations?: IntNullableWithAggregatesFilter | number | null
-    cumulativeGasUsed?: StringWithAggregatesFilter | string
-    status?: StringNullableWithAggregatesFilter | string | null
   }
 
   export type DelegatedChallengesWhereInput = {
@@ -17608,7 +13972,6 @@ export namespace Prisma {
     maxUnits?: IntNullableFilter | number | null
     deliveryTermsTag?: XOR<TagRelationFilter, TagWhereInput>
     deliveryTermsTagId?: IntFilter | number
-    events?: EventListRelationFilter
     subscribers?: SubscriptionListRelationFilter
   }
 
@@ -17670,8 +14033,6 @@ export namespace Prisma {
     grandTotal?: StringFilter | string
     purchasedItemVat?: IntFilter | number
     status?: EnumPurchaseStatusFilter | PurchaseStatus
-    indexedTransaction?: XOR<IndexedTransactionRelationFilter, IndexedTransactionWhereInput>
-    indexedTransactionId?: IntFilter | number
     jobs?: TransactionJobsListRelationFilter
   }
 
@@ -17687,7 +14048,6 @@ export namespace Prisma {
     grandTotal?: SortOrder
     purchasedItemVat?: SortOrder
     status?: SortOrder
-    indexedTransactionId?: SortOrder
   }
 
   export type PurchaseWhereUniqueInput = {
@@ -17709,7 +14069,6 @@ export namespace Prisma {
     grandTotal?: StringWithAggregatesFilter | string
     purchasedItemVat?: IntWithAggregatesFilter | number
     status?: EnumPurchaseStatusWithAggregatesFilter | PurchaseStatus
-    indexedTransactionId?: IntWithAggregatesFilter | number
   }
 
   export type TransactionJobsWhereInput = {
@@ -17770,6 +14129,29 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter | string
   }
 
+  export type TransactionWhereInput = {
+    AND?: Enumerable<TransactionWhereInput>
+    OR?: Enumerable<TransactionWhereInput>
+    NOT?: Enumerable<TransactionWhereInput>
+    transactionHash?: StringFilter | string
+    tags?: TagListRelationFilter
+  }
+
+  export type TransactionOrderByInput = {
+    transactionHash?: SortOrder
+  }
+
+  export type TransactionWhereUniqueInput = {
+    transactionHash?: string
+  }
+
+  export type TransactionScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<TransactionScalarWhereWithAggregatesInput>
+    OR?: Enumerable<TransactionScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<TransactionScalarWhereWithAggregatesInput>
+    transactionHash?: StringWithAggregatesFilter | string
+  }
+
   export type TagWhereInput = {
     AND?: Enumerable<TagWhereInput>
     OR?: Enumerable<TagWhereInput>
@@ -17779,18 +14161,15 @@ export namespace Prisma {
     createdBy?: XOR<ProfileRelationFilter, ProfileWhereInput>
     createdByProfileId?: IntFilter | number
     isPrivate?: BoolFilter | boolean
+    transaction?: XOR<TransactionRelationFilter, TransactionWhereInput> | null
+    transactionHash?: StringNullableFilter | string | null
     type?: XOR<TagTypeRelationFilter, TagTypeWhereInput>
     typeId?: StringFilter | string
     value?: StringNullableFilter | string | null
     offerCategory?: OfferListRelationFilter
     offerUnit?: OfferListRelationFilter
     offerDeliveryTerms?: OfferListRelationFilter
-    indexedTransactionType?: IndexedTransactionListRelationFilter
     messageType?: MessageListRelationFilter
-    indexTransactionRequest?: XOR<IndexTransactionRequestRelationFilter, IndexTransactionRequestWhereInput> | null
-    indexTransactionRequestId?: IntNullableFilter | number | null
-    indexedTransaction?: XOR<IndexedTransactionRelationFilter, IndexedTransactionWhereInput> | null
-    indexedTransactionId?: IntNullableFilter | number | null
   }
 
   export type TagOrderByInput = {
@@ -17798,10 +14177,9 @@ export namespace Prisma {
     createdAt?: SortOrder
     createdByProfileId?: SortOrder
     isPrivate?: SortOrder
+    transactionHash?: SortOrder
     typeId?: SortOrder
     value?: SortOrder
-    indexTransactionRequestId?: SortOrder
-    indexedTransactionId?: SortOrder
   }
 
   export type TagWhereUniqueInput = {
@@ -17816,10 +14194,9 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     createdByProfileId?: IntWithAggregatesFilter | number
     isPrivate?: BoolWithAggregatesFilter | boolean
+    transactionHash?: StringNullableWithAggregatesFilter | string | null
     typeId?: StringWithAggregatesFilter | string
     value?: StringNullableWithAggregatesFilter | string | null
-    indexTransactionRequestId?: IntNullableWithAggregatesFilter | number | null
-    indexedTransactionId?: IntNullableWithAggregatesFilter | number | null
   }
 
   export type SessionCreateInput = {
@@ -17993,7 +14370,6 @@ export namespace Prisma {
     pickedAt?: Date | string | null
     createdBy: ProfileCreateNestedOneWithoutRedeemInvitationRequestsInput
     invitationToRedeem: InvitationCreateNestedOneWithoutIndexedTransactionsInput
-    inviteTransaction?: IndexedTransactionCreateNestedOneWithoutFromRedeemInvitationRequestInput
   }
 
   export type RedeemInvitationRequestUncheckedCreateInput = {
@@ -18003,7 +14379,6 @@ export namespace Prisma {
     workerProcess?: string | null
     pickedAt?: Date | string | null
     invitationToRedeemId: number
-    inviteTransaction?: IndexedTransactionUncheckedCreateNestedOneWithoutFromRedeemInvitationRequestInput
   }
 
   export type RedeemInvitationRequestUpdateInput = {
@@ -18012,7 +14387,6 @@ export namespace Prisma {
     pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutRedeemInvitationRequestsInput
     invitationToRedeem?: InvitationUpdateOneRequiredWithoutIndexedTransactionsInput
-    inviteTransaction?: IndexedTransactionUpdateOneWithoutFromRedeemInvitationRequestInput
   }
 
   export type RedeemInvitationRequestUncheckedUpdateInput = {
@@ -18022,7 +14396,6 @@ export namespace Prisma {
     workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
     pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     invitationToRedeemId?: IntFieldUpdateOperationsInput | number
-    inviteTransaction?: IndexedTransactionUncheckedUpdateOneWithoutFromRedeemInvitationRequestInput
   }
 
   export type RedeemInvitationRequestCreateManyInput = {
@@ -18071,10 +14444,7 @@ export namespace Prisma {
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
-    events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
@@ -18106,10 +14476,7 @@ export namespace Prisma {
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
-    events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
@@ -18140,10 +14507,7 @@ export namespace Prisma {
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUpdateManyWithoutCreatedByInput
-    events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
@@ -18175,10 +14539,7 @@ export namespace Prisma {
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
-    events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
@@ -18305,232 +14666,6 @@ export namespace Prisma {
     subscribingToProfileId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
-  export type EventCreateInput = {
-    type: EventType
-    createdAt: Date | string
-    workerProcess?: string | null
-    deliveredAt?: Date | string | null
-    acknowledgedAt?: Date | string | null
-    archivedAt?: Date | string | null
-    data: string
-    profile?: ProfileCreateNestedOneWithoutEventsInput
-    offer?: OfferCreateNestedOneWithoutEventsInput
-  }
-
-  export type EventUncheckedCreateInput = {
-    id?: number
-    type: EventType
-    profileId?: number | null
-    offerId?: number | null
-    createdAt: Date | string
-    workerProcess?: string | null
-    deliveredAt?: Date | string | null
-    acknowledgedAt?: Date | string | null
-    archivedAt?: Date | string | null
-    data: string
-  }
-
-  export type EventUpdateInput = {
-    type?: EnumEventTypeFieldUpdateOperationsInput | EventType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    data?: StringFieldUpdateOperationsInput | string
-    profile?: ProfileUpdateOneWithoutEventsInput
-    offer?: OfferUpdateOneWithoutEventsInput
-  }
-
-  export type EventUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    type?: EnumEventTypeFieldUpdateOperationsInput | EventType
-    profileId?: NullableIntFieldUpdateOperationsInput | number | null
-    offerId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    data?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type EventCreateManyInput = {
-    id?: number
-    type: EventType
-    profileId?: number | null
-    offerId?: number | null
-    createdAt: Date | string
-    workerProcess?: string | null
-    deliveredAt?: Date | string | null
-    acknowledgedAt?: Date | string | null
-    archivedAt?: Date | string | null
-    data: string
-  }
-
-  export type EventUpdateManyMutationInput = {
-    type?: EnumEventTypeFieldUpdateOperationsInput | EventType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    data?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type EventUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    type?: EnumEventTypeFieldUpdateOperationsInput | EventType
-    profileId?: NullableIntFieldUpdateOperationsInput | number | null
-    offerId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    data?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type IndexedTransactionLogCreateInput = {
-    address: string
-    data?: string | null
-    logIndex: number
-    topics?: IndexedTransactionLogCreatetopicsInput | Enumerable<string>
-    indexedTransaction: IndexedTransactionCreateNestedOneWithoutLogsInput
-  }
-
-  export type IndexedTransactionLogUncheckedCreateInput = {
-    id?: number
-    indexedTransactionId: number
-    address: string
-    data?: string | null
-    logIndex: number
-    topics?: IndexedTransactionLogCreatetopicsInput | Enumerable<string>
-  }
-
-  export type IndexedTransactionLogUpdateInput = {
-    address?: StringFieldUpdateOperationsInput | string
-    data?: NullableStringFieldUpdateOperationsInput | string | null
-    logIndex?: IntFieldUpdateOperationsInput | number
-    topics?: IndexedTransactionLogUpdatetopicsInput | Enumerable<string>
-    indexedTransaction?: IndexedTransactionUpdateOneRequiredWithoutLogsInput
-  }
-
-  export type IndexedTransactionLogUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    indexedTransactionId?: IntFieldUpdateOperationsInput | number
-    address?: StringFieldUpdateOperationsInput | string
-    data?: NullableStringFieldUpdateOperationsInput | string | null
-    logIndex?: IntFieldUpdateOperationsInput | number
-    topics?: IndexedTransactionLogUpdatetopicsInput | Enumerable<string>
-  }
-
-  export type IndexedTransactionLogCreateManyInput = {
-    id?: number
-    indexedTransactionId: number
-    address: string
-    data?: string | null
-    logIndex: number
-    topics?: IndexedTransactionLogCreateManytopicsInput | Enumerable<string>
-  }
-
-  export type IndexedTransactionLogUpdateManyMutationInput = {
-    address?: StringFieldUpdateOperationsInput | string
-    data?: NullableStringFieldUpdateOperationsInput | string | null
-    logIndex?: IntFieldUpdateOperationsInput | number
-    topics?: IndexedTransactionLogUpdatetopicsInput | Enumerable<string>
-  }
-
-  export type IndexedTransactionLogUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    indexedTransactionId?: IntFieldUpdateOperationsInput | number
-    address?: StringFieldUpdateOperationsInput | string
-    data?: NullableStringFieldUpdateOperationsInput | string | null
-    logIndex?: IntFieldUpdateOperationsInput | number
-    topics?: IndexedTransactionLogUpdatetopicsInput | Enumerable<string>
-  }
-
-  export type IndexTransactionRequestCreateInput = {
-    createdAt: Date | string
-    blockNumber?: number | null
-    transactionIndex?: number | null
-    transactionHash: string
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-    createdBy: ProfileCreateNestedOneWithoutIndexedTransactionRequestsInput
-    indexedTransaction?: IndexedTransactionCreateNestedOneWithoutFromRequestInput
-    tags?: TagCreateNestedManyWithoutIndexTransactionRequestInput
-  }
-
-  export type IndexTransactionRequestUncheckedCreateInput = {
-    id?: number
-    createdAt: Date | string
-    createdByProfileId: number
-    blockNumber?: number | null
-    transactionIndex?: number | null
-    transactionHash: string
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-    indexedTransaction?: IndexedTransactionUncheckedCreateNestedOneWithoutFromRequestInput
-    tags?: TagUncheckedCreateNestedManyWithoutIndexTransactionRequestInput
-  }
-
-  export type IndexTransactionRequestUpdateInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blockNumber?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionIndex?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdBy?: ProfileUpdateOneRequiredWithoutIndexedTransactionRequestsInput
-    indexedTransaction?: IndexedTransactionUpdateOneWithoutFromRequestInput
-    tags?: TagUpdateManyWithoutIndexTransactionRequestInput
-  }
-
-  export type IndexTransactionRequestUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    blockNumber?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionIndex?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    indexedTransaction?: IndexedTransactionUncheckedUpdateOneWithoutFromRequestInput
-    tags?: TagUncheckedUpdateManyWithoutIndexTransactionRequestInput
-  }
-
-  export type IndexTransactionRequestCreateManyInput = {
-    id?: number
-    createdAt: Date | string
-    createdByProfileId: number
-    blockNumber?: number | null
-    transactionIndex?: number | null
-    transactionHash: string
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-  }
-
-  export type IndexTransactionRequestUpdateManyMutationInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blockNumber?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionIndex?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type IndexTransactionRequestUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    blockNumber?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionIndex?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
   export type MessageCreateInput = {
     createdAt: Date | string
     lastUpdateAt: Date | string
@@ -18615,179 +14750,6 @@ export namespace Prisma {
     chainEventType?: NullableStringFieldUpdateOperationsInput | string | null
     chainEventId?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     content?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type IndexedTransactionCreateInput = {
-    createdAt: Date | string
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-    fromRequest?: IndexTransactionRequestCreateNestedOneWithoutIndexedTransactionInput
-    fromRedeemInvitationRequest?: RedeemInvitationRequestCreateNestedOneWithoutInviteTransactionInput
-    createdBy: ProfileCreateNestedOneWithoutIndexedTransactionsInput
-    typeTag?: TagCreateNestedOneWithoutIndexedTransactionTypeInput
-    logs?: IndexedTransactionLogCreateNestedManyWithoutIndexedTransactionInput
-    tags?: TagCreateNestedManyWithoutIndexedTransactionInput
-    purchases?: PurchaseCreateNestedManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedCreateInput = {
-    id?: number
-    fromRequestId?: number | null
-    fromRedeemInvitationRequestId?: number | null
-    createdAt: Date | string
-    createdByProfileId: number
-    typeTagId?: number | null
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-    logs?: IndexedTransactionLogUncheckedCreateNestedManyWithoutIndexedTransactionInput
-    tags?: TagUncheckedCreateNestedManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUncheckedCreateNestedManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUpdateInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    fromRequest?: IndexTransactionRequestUpdateOneWithoutIndexedTransactionInput
-    fromRedeemInvitationRequest?: RedeemInvitationRequestUpdateOneWithoutInviteTransactionInput
-    createdBy?: ProfileUpdateOneRequiredWithoutIndexedTransactionsInput
-    typeTag?: TagUpdateOneWithoutIndexedTransactionTypeInput
-    logs?: IndexedTransactionLogUpdateManyWithoutIndexedTransactionInput
-    tags?: TagUpdateManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUpdateManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    fromRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    fromRedeemInvitationRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    typeTagId?: NullableIntFieldUpdateOperationsInput | number | null
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    logs?: IndexedTransactionLogUncheckedUpdateManyWithoutIndexedTransactionInput
-    tags?: TagUncheckedUpdateManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUncheckedUpdateManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionCreateManyInput = {
-    id?: number
-    fromRequestId?: number | null
-    fromRedeemInvitationRequestId?: number | null
-    createdAt: Date | string
-    createdByProfileId: number
-    typeTagId?: number | null
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-  }
-
-  export type IndexedTransactionUpdateManyMutationInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type IndexedTransactionUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    fromRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    fromRedeemInvitationRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    typeTagId?: NullableIntFieldUpdateOperationsInput | number | null
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type DelegatedChallengesCreateInput = {
@@ -18893,7 +14855,6 @@ export namespace Prisma {
     categoryTag: TagCreateNestedOneWithoutOfferCategoryInput
     unitTag: TagCreateNestedOneWithoutOfferUnitInput
     deliveryTermsTag: TagCreateNestedOneWithoutOfferDeliveryTermsInput
-    events?: EventCreateNestedManyWithoutOfferInput
     subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToOfferInput
   }
 
@@ -18913,7 +14874,6 @@ export namespace Prisma {
     maxUnits?: number | null
     deliveryTermsTagId: number
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedItemInput
-    events?: EventUncheckedCreateNestedManyWithoutOfferInput
     subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToOfferInput
   }
 
@@ -18932,7 +14892,6 @@ export namespace Prisma {
     categoryTag?: TagUpdateOneRequiredWithoutOfferCategoryInput
     unitTag?: TagUpdateOneRequiredWithoutOfferUnitInput
     deliveryTermsTag?: TagUpdateOneRequiredWithoutOfferDeliveryTermsInput
-    events?: EventUpdateManyWithoutOfferInput
     subscribers?: SubscriptionUpdateManyWithoutSubscribingToOfferInput
   }
 
@@ -18952,7 +14911,6 @@ export namespace Prisma {
     maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
     deliveryTermsTagId?: IntFieldUpdateOperationsInput | number
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedItemInput
-    events?: EventUncheckedUpdateManyWithoutOfferInput
     subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToOfferInput
   }
 
@@ -19013,7 +14971,6 @@ export namespace Prisma {
     status: PurchaseStatus
     purchasedBy: ProfileCreateNestedOneWithoutPurchasesInput
     purchasedItem: OfferCreateNestedOneWithoutPurchasesInput
-    indexedTransaction: IndexedTransactionCreateNestedOneWithoutPurchasesInput
     jobs?: TransactionJobsCreateNestedManyWithoutPurchaseInput
   }
 
@@ -19029,7 +14986,6 @@ export namespace Prisma {
     grandTotal: string
     purchasedItemVat: number
     status: PurchaseStatus
-    indexedTransactionId: number
     jobs?: TransactionJobsUncheckedCreateNestedManyWithoutPurchaseInput
   }
 
@@ -19044,7 +15000,6 @@ export namespace Prisma {
     status?: EnumPurchaseStatusFieldUpdateOperationsInput | PurchaseStatus
     purchasedBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
     purchasedItem?: OfferUpdateOneRequiredWithoutPurchasesInput
-    indexedTransaction?: IndexedTransactionUpdateOneRequiredWithoutPurchasesInput
     jobs?: TransactionJobsUpdateManyWithoutPurchaseInput
   }
 
@@ -19060,7 +15015,6 @@ export namespace Prisma {
     grandTotal?: StringFieldUpdateOperationsInput | string
     purchasedItemVat?: IntFieldUpdateOperationsInput | number
     status?: EnumPurchaseStatusFieldUpdateOperationsInput | PurchaseStatus
-    indexedTransactionId?: IntFieldUpdateOperationsInput | number
     jobs?: TransactionJobsUncheckedUpdateManyWithoutPurchaseInput
   }
 
@@ -19076,7 +15030,6 @@ export namespace Prisma {
     grandTotal: string
     purchasedItemVat: number
     status: PurchaseStatus
-    indexedTransactionId: number
   }
 
   export type PurchaseUpdateManyMutationInput = {
@@ -19102,7 +15055,6 @@ export namespace Prisma {
     grandTotal?: StringFieldUpdateOperationsInput | string
     purchasedItemVat?: IntFieldUpdateOperationsInput | number
     status?: EnumPurchaseStatusFieldUpdateOperationsInput | PurchaseStatus
-    indexedTransactionId?: IntFieldUpdateOperationsInput | number
   }
 
   export type TransactionJobsCreateInput = {
@@ -19189,19 +15141,49 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
   }
 
+  export type TransactionCreateInput = {
+    transactionHash: string
+    tags?: TagCreateNestedManyWithoutTransactionInput
+  }
+
+  export type TransactionUncheckedCreateInput = {
+    transactionHash: string
+    tags?: TagUncheckedCreateNestedManyWithoutTransactionInput
+  }
+
+  export type TransactionUpdateInput = {
+    transactionHash?: StringFieldUpdateOperationsInput | string
+    tags?: TagUpdateManyWithoutTransactionInput
+  }
+
+  export type TransactionUncheckedUpdateInput = {
+    transactionHash?: StringFieldUpdateOperationsInput | string
+    tags?: TagUncheckedUpdateManyWithoutTransactionInput
+  }
+
+  export type TransactionCreateManyInput = {
+    transactionHash: string
+  }
+
+  export type TransactionUpdateManyMutationInput = {
+    transactionHash?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TransactionUncheckedUpdateManyInput = {
+    transactionHash?: StringFieldUpdateOperationsInput | string
+  }
+
   export type TagCreateInput = {
     createdAt: Date | string
     isPrivate: boolean
     value?: string | null
     createdBy: ProfileCreateNestedOneWithoutTagsInput
+    transaction?: TransactionCreateNestedOneWithoutTagsInput
     type: TagTypeCreateNestedOneWithoutTagsInput
     offerCategory?: OfferCreateNestedManyWithoutCategoryTagInput
     offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
     messageType?: MessageCreateNestedManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
-    indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
   }
 
   export type TagUncheckedCreateInput = {
@@ -19209,14 +15191,12 @@ export namespace Prisma {
     createdAt: Date | string
     createdByProfileId: number
     isPrivate: boolean
+    transactionHash?: string | null
     typeId: string
     value?: string | null
-    indexTransactionRequestId?: number | null
-    indexedTransactionId?: number | null
     offerCategory?: OfferUncheckedCreateNestedManyWithoutCategoryTagInput
     offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
     messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
   }
 
@@ -19225,14 +15205,12 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     value?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
+    transaction?: TransactionUpdateOneWithoutTagsInput
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
     offerCategory?: OfferUpdateManyWithoutCategoryTagInput
     offerUnit?: OfferUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
     messageType?: MessageUpdateManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
-    indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
   }
 
   export type TagUncheckedUpdateInput = {
@@ -19240,14 +15218,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
     value?: NullableStringFieldUpdateOperationsInput | string | null
-    indexTransactionRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    indexedTransactionId?: NullableIntFieldUpdateOperationsInput | number | null
     offerCategory?: OfferUncheckedUpdateManyWithoutCategoryTagInput
     offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
     messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
   }
 
@@ -19256,10 +15232,9 @@ export namespace Prisma {
     createdAt: Date | string
     createdByProfileId: number
     isPrivate: boolean
+    transactionHash?: string | null
     typeId: string
     value?: string | null
-    indexTransactionRequestId?: number | null
-    indexedTransactionId?: number | null
   }
 
   export type TagUpdateManyMutationInput = {
@@ -19273,10 +15248,9 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
     value?: NullableStringFieldUpdateOperationsInput | string | null
-    indexTransactionRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    indexedTransactionId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type StringFilter = {
@@ -19575,11 +15549,6 @@ export namespace Prisma {
     isNot?: InvitationWhereInput
   }
 
-  export type IndexedTransactionRelationFilter = {
-    is?: IndexedTransactionWhereInput | null
-    isNot?: IndexedTransactionWhereInput | null
-  }
-
   export type BoolNullableFilter = {
     equals?: boolean | null
     not?: NestedBoolNullableFilter | boolean | null
@@ -19609,28 +15578,10 @@ export namespace Prisma {
     none?: PurchaseWhereInput
   }
 
-  export type IndexTransactionRequestListRelationFilter = {
-    every?: IndexTransactionRequestWhereInput
-    some?: IndexTransactionRequestWhereInput
-    none?: IndexTransactionRequestWhereInput
-  }
-
-  export type IndexedTransactionListRelationFilter = {
-    every?: IndexedTransactionWhereInput
-    some?: IndexedTransactionWhereInput
-    none?: IndexedTransactionWhereInput
-  }
-
   export type MessageListRelationFilter = {
     every?: MessageWhereInput
     some?: MessageWhereInput
     none?: MessageWhereInput
-  }
-
-  export type EventListRelationFilter = {
-    every?: EventWhereInput
-    some?: EventWhereInput
-    none?: EventWhereInput
   }
 
   export type InvitationListRelationFilter = {
@@ -19673,49 +15624,9 @@ export namespace Prisma {
     isNot?: OfferWhereInput
   }
 
-  export type EnumEventTypeFilter = {
-    equals?: EventType
-    in?: Enumerable<EventType>
-    notIn?: Enumerable<EventType>
-    not?: NestedEnumEventTypeFilter | EventType
-  }
-
-  export type EnumEventTypeWithAggregatesFilter = {
-    equals?: EventType
-    in?: Enumerable<EventType>
-    notIn?: Enumerable<EventType>
-    not?: NestedEnumEventTypeWithAggregatesFilter | EventType
-    _count?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntFilter
-    _min?: NestedEnumEventTypeFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedEnumEventTypeFilter
-    _max?: NestedEnumEventTypeFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedEnumEventTypeFilter
-  }
-
-  export type StringNullableListFilter = {
-    equals?: Enumerable<string> | null
-    has?: string | null
-    hasEvery?: Enumerable<string>
-    hasSome?: Enumerable<string>
-    isEmpty?: boolean
-  }
-
   export type TagRelationFilter = {
-    is?: TagWhereInput | null
-    isNot?: TagWhereInput | null
+    is?: TagWhereInput
+    isNot?: TagWhereInput
   }
 
   export type BigIntNullableFilter = {
@@ -19770,22 +15681,6 @@ export namespace Prisma {
     max?: NestedBigIntNullableFilter
   }
 
-  export type IndexTransactionRequestRelationFilter = {
-    is?: IndexTransactionRequestWhereInput | null
-    isNot?: IndexTransactionRequestWhereInput | null
-  }
-
-  export type RedeemInvitationRequestRelationFilter = {
-    is?: RedeemInvitationRequestWhereInput | null
-    isNot?: RedeemInvitationRequestWhereInput | null
-  }
-
-  export type IndexedTransactionLogListRelationFilter = {
-    every?: IndexedTransactionLogWhereInput
-    some?: IndexedTransactionLogWhereInput
-    none?: IndexedTransactionLogWhereInput
-  }
-
   export type EnumPurchaseStatusFilter = {
     equals?: PurchaseStatus
     in?: Enumerable<PurchaseStatus>
@@ -19832,6 +15727,11 @@ export namespace Prisma {
   export type BoolFilter = {
     equals?: boolean
     not?: NestedBoolFilter | boolean
+  }
+
+  export type TransactionRelationFilter = {
+    is?: TransactionWhereInput | null
+    isNot?: TransactionWhereInput | null
   }
 
   export type TagTypeRelationFilter = {
@@ -20010,18 +15910,6 @@ export namespace Prisma {
     connect?: InvitationWhereUniqueInput
   }
 
-  export type IndexedTransactionCreateNestedOneWithoutFromRedeemInvitationRequestInput = {
-    create?: XOR<IndexedTransactionCreateWithoutFromRedeemInvitationRequestInput, IndexedTransactionUncheckedCreateWithoutFromRedeemInvitationRequestInput>
-    connectOrCreate?: IndexedTransactionCreateOrConnectWithoutFromRedeemInvitationRequestInput
-    connect?: IndexedTransactionWhereUniqueInput
-  }
-
-  export type IndexedTransactionUncheckedCreateNestedOneWithoutFromRedeemInvitationRequestInput = {
-    create?: XOR<IndexedTransactionCreateWithoutFromRedeemInvitationRequestInput, IndexedTransactionUncheckedCreateWithoutFromRedeemInvitationRequestInput>
-    connectOrCreate?: IndexedTransactionCreateOrConnectWithoutFromRedeemInvitationRequestInput
-    connect?: IndexedTransactionWhereUniqueInput
-  }
-
   export type ProfileUpdateOneRequiredWithoutRedeemInvitationRequestsInput = {
     create?: XOR<ProfileCreateWithoutRedeemInvitationRequestsInput, ProfileUncheckedCreateWithoutRedeemInvitationRequestsInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutRedeemInvitationRequestsInput
@@ -20036,26 +15924,6 @@ export namespace Prisma {
     upsert?: InvitationUpsertWithoutIndexedTransactionsInput
     connect?: InvitationWhereUniqueInput
     update?: XOR<InvitationUpdateWithoutIndexedTransactionsInput, InvitationUncheckedUpdateWithoutIndexedTransactionsInput>
-  }
-
-  export type IndexedTransactionUpdateOneWithoutFromRedeemInvitationRequestInput = {
-    create?: XOR<IndexedTransactionCreateWithoutFromRedeemInvitationRequestInput, IndexedTransactionUncheckedCreateWithoutFromRedeemInvitationRequestInput>
-    connectOrCreate?: IndexedTransactionCreateOrConnectWithoutFromRedeemInvitationRequestInput
-    upsert?: IndexedTransactionUpsertWithoutFromRedeemInvitationRequestInput
-    connect?: IndexedTransactionWhereUniqueInput
-    disconnect?: boolean
-    delete?: boolean
-    update?: XOR<IndexedTransactionUpdateWithoutFromRedeemInvitationRequestInput, IndexedTransactionUncheckedUpdateWithoutFromRedeemInvitationRequestInput>
-  }
-
-  export type IndexedTransactionUncheckedUpdateOneWithoutFromRedeemInvitationRequestInput = {
-    create?: XOR<IndexedTransactionCreateWithoutFromRedeemInvitationRequestInput, IndexedTransactionUncheckedCreateWithoutFromRedeemInvitationRequestInput>
-    connectOrCreate?: IndexedTransactionCreateOrConnectWithoutFromRedeemInvitationRequestInput
-    upsert?: IndexedTransactionUpsertWithoutFromRedeemInvitationRequestInput
-    connect?: IndexedTransactionWhereUniqueInput
-    disconnect?: boolean
-    delete?: boolean
-    update?: XOR<IndexedTransactionUpdateWithoutFromRedeemInvitationRequestInput, IndexedTransactionUncheckedUpdateWithoutFromRedeemInvitationRequestInput>
   }
 
   export type SessionCreateNestedManyWithoutProfileInput = {
@@ -20086,32 +15954,11 @@ export namespace Prisma {
     connect?: Enumerable<PurchaseWhereUniqueInput>
   }
 
-  export type IndexTransactionRequestCreateNestedManyWithoutCreatedByInput = {
-    create?: XOR<Enumerable<IndexTransactionRequestCreateWithoutCreatedByInput>, Enumerable<IndexTransactionRequestUncheckedCreateWithoutCreatedByInput>>
-    connectOrCreate?: Enumerable<IndexTransactionRequestCreateOrConnectWithoutCreatedByInput>
-    createMany?: IndexTransactionRequestCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<IndexTransactionRequestWhereUniqueInput>
-  }
-
-  export type IndexedTransactionCreateNestedManyWithoutCreatedByInput = {
-    create?: XOR<Enumerable<IndexedTransactionCreateWithoutCreatedByInput>, Enumerable<IndexedTransactionUncheckedCreateWithoutCreatedByInput>>
-    connectOrCreate?: Enumerable<IndexedTransactionCreateOrConnectWithoutCreatedByInput>
-    createMany?: IndexedTransactionCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<IndexedTransactionWhereUniqueInput>
-  }
-
   export type MessageCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<Enumerable<MessageCreateWithoutCreatedByInput>, Enumerable<MessageUncheckedCreateWithoutCreatedByInput>>
     connectOrCreate?: Enumerable<MessageCreateOrConnectWithoutCreatedByInput>
     createMany?: MessageCreateManyCreatedByInputEnvelope
     connect?: Enumerable<MessageWhereUniqueInput>
-  }
-
-  export type EventCreateNestedManyWithoutProfileInput = {
-    create?: XOR<Enumerable<EventCreateWithoutProfileInput>, Enumerable<EventUncheckedCreateWithoutProfileInput>>
-    connectOrCreate?: Enumerable<EventCreateOrConnectWithoutProfileInput>
-    createMany?: EventCreateManyProfileInputEnvelope
-    connect?: Enumerable<EventWhereUniqueInput>
   }
 
   export type InvitationCreateNestedManyWithoutCreatedByInput = {
@@ -20184,32 +16031,11 @@ export namespace Prisma {
     connect?: Enumerable<PurchaseWhereUniqueInput>
   }
 
-  export type IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput = {
-    create?: XOR<Enumerable<IndexTransactionRequestCreateWithoutCreatedByInput>, Enumerable<IndexTransactionRequestUncheckedCreateWithoutCreatedByInput>>
-    connectOrCreate?: Enumerable<IndexTransactionRequestCreateOrConnectWithoutCreatedByInput>
-    createMany?: IndexTransactionRequestCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<IndexTransactionRequestWhereUniqueInput>
-  }
-
-  export type IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput = {
-    create?: XOR<Enumerable<IndexedTransactionCreateWithoutCreatedByInput>, Enumerable<IndexedTransactionUncheckedCreateWithoutCreatedByInput>>
-    connectOrCreate?: Enumerable<IndexedTransactionCreateOrConnectWithoutCreatedByInput>
-    createMany?: IndexedTransactionCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<IndexedTransactionWhereUniqueInput>
-  }
-
   export type MessageUncheckedCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<Enumerable<MessageCreateWithoutCreatedByInput>, Enumerable<MessageUncheckedCreateWithoutCreatedByInput>>
     connectOrCreate?: Enumerable<MessageCreateOrConnectWithoutCreatedByInput>
     createMany?: MessageCreateManyCreatedByInputEnvelope
     connect?: Enumerable<MessageWhereUniqueInput>
-  }
-
-  export type EventUncheckedCreateNestedManyWithoutProfileInput = {
-    create?: XOR<Enumerable<EventCreateWithoutProfileInput>, Enumerable<EventUncheckedCreateWithoutProfileInput>>
-    connectOrCreate?: Enumerable<EventCreateOrConnectWithoutProfileInput>
-    createMany?: EventCreateManyProfileInputEnvelope
-    connect?: Enumerable<EventWhereUniqueInput>
   }
 
   export type InvitationUncheckedCreateNestedManyWithoutCreatedByInput = {
@@ -20314,34 +16140,6 @@ export namespace Prisma {
     deleteMany?: Enumerable<PurchaseScalarWhereInput>
   }
 
-  export type IndexTransactionRequestUpdateManyWithoutCreatedByInput = {
-    create?: XOR<Enumerable<IndexTransactionRequestCreateWithoutCreatedByInput>, Enumerable<IndexTransactionRequestUncheckedCreateWithoutCreatedByInput>>
-    connectOrCreate?: Enumerable<IndexTransactionRequestCreateOrConnectWithoutCreatedByInput>
-    upsert?: Enumerable<IndexTransactionRequestUpsertWithWhereUniqueWithoutCreatedByInput>
-    createMany?: IndexTransactionRequestCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<IndexTransactionRequestWhereUniqueInput>
-    set?: Enumerable<IndexTransactionRequestWhereUniqueInput>
-    disconnect?: Enumerable<IndexTransactionRequestWhereUniqueInput>
-    delete?: Enumerable<IndexTransactionRequestWhereUniqueInput>
-    update?: Enumerable<IndexTransactionRequestUpdateWithWhereUniqueWithoutCreatedByInput>
-    updateMany?: Enumerable<IndexTransactionRequestUpdateManyWithWhereWithoutCreatedByInput>
-    deleteMany?: Enumerable<IndexTransactionRequestScalarWhereInput>
-  }
-
-  export type IndexedTransactionUpdateManyWithoutCreatedByInput = {
-    create?: XOR<Enumerable<IndexedTransactionCreateWithoutCreatedByInput>, Enumerable<IndexedTransactionUncheckedCreateWithoutCreatedByInput>>
-    connectOrCreate?: Enumerable<IndexedTransactionCreateOrConnectWithoutCreatedByInput>
-    upsert?: Enumerable<IndexedTransactionUpsertWithWhereUniqueWithoutCreatedByInput>
-    createMany?: IndexedTransactionCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<IndexedTransactionWhereUniqueInput>
-    set?: Enumerable<IndexedTransactionWhereUniqueInput>
-    disconnect?: Enumerable<IndexedTransactionWhereUniqueInput>
-    delete?: Enumerable<IndexedTransactionWhereUniqueInput>
-    update?: Enumerable<IndexedTransactionUpdateWithWhereUniqueWithoutCreatedByInput>
-    updateMany?: Enumerable<IndexedTransactionUpdateManyWithWhereWithoutCreatedByInput>
-    deleteMany?: Enumerable<IndexedTransactionScalarWhereInput>
-  }
-
   export type MessageUpdateManyWithoutCreatedByInput = {
     create?: XOR<Enumerable<MessageCreateWithoutCreatedByInput>, Enumerable<MessageUncheckedCreateWithoutCreatedByInput>>
     connectOrCreate?: Enumerable<MessageCreateOrConnectWithoutCreatedByInput>
@@ -20354,20 +16152,6 @@ export namespace Prisma {
     update?: Enumerable<MessageUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<MessageUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<MessageScalarWhereInput>
-  }
-
-  export type EventUpdateManyWithoutProfileInput = {
-    create?: XOR<Enumerable<EventCreateWithoutProfileInput>, Enumerable<EventUncheckedCreateWithoutProfileInput>>
-    connectOrCreate?: Enumerable<EventCreateOrConnectWithoutProfileInput>
-    upsert?: Enumerable<EventUpsertWithWhereUniqueWithoutProfileInput>
-    createMany?: EventCreateManyProfileInputEnvelope
-    connect?: Enumerable<EventWhereUniqueInput>
-    set?: Enumerable<EventWhereUniqueInput>
-    disconnect?: Enumerable<EventWhereUniqueInput>
-    delete?: Enumerable<EventWhereUniqueInput>
-    update?: Enumerable<EventUpdateWithWhereUniqueWithoutProfileInput>
-    updateMany?: Enumerable<EventUpdateManyWithWhereWithoutProfileInput>
-    deleteMany?: Enumerable<EventScalarWhereInput>
   }
 
   export type InvitationUpdateManyWithoutCreatedByInput = {
@@ -20510,34 +16294,6 @@ export namespace Prisma {
     deleteMany?: Enumerable<PurchaseScalarWhereInput>
   }
 
-  export type IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput = {
-    create?: XOR<Enumerable<IndexTransactionRequestCreateWithoutCreatedByInput>, Enumerable<IndexTransactionRequestUncheckedCreateWithoutCreatedByInput>>
-    connectOrCreate?: Enumerable<IndexTransactionRequestCreateOrConnectWithoutCreatedByInput>
-    upsert?: Enumerable<IndexTransactionRequestUpsertWithWhereUniqueWithoutCreatedByInput>
-    createMany?: IndexTransactionRequestCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<IndexTransactionRequestWhereUniqueInput>
-    set?: Enumerable<IndexTransactionRequestWhereUniqueInput>
-    disconnect?: Enumerable<IndexTransactionRequestWhereUniqueInput>
-    delete?: Enumerable<IndexTransactionRequestWhereUniqueInput>
-    update?: Enumerable<IndexTransactionRequestUpdateWithWhereUniqueWithoutCreatedByInput>
-    updateMany?: Enumerable<IndexTransactionRequestUpdateManyWithWhereWithoutCreatedByInput>
-    deleteMany?: Enumerable<IndexTransactionRequestScalarWhereInput>
-  }
-
-  export type IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput = {
-    create?: XOR<Enumerable<IndexedTransactionCreateWithoutCreatedByInput>, Enumerable<IndexedTransactionUncheckedCreateWithoutCreatedByInput>>
-    connectOrCreate?: Enumerable<IndexedTransactionCreateOrConnectWithoutCreatedByInput>
-    upsert?: Enumerable<IndexedTransactionUpsertWithWhereUniqueWithoutCreatedByInput>
-    createMany?: IndexedTransactionCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<IndexedTransactionWhereUniqueInput>
-    set?: Enumerable<IndexedTransactionWhereUniqueInput>
-    disconnect?: Enumerable<IndexedTransactionWhereUniqueInput>
-    delete?: Enumerable<IndexedTransactionWhereUniqueInput>
-    update?: Enumerable<IndexedTransactionUpdateWithWhereUniqueWithoutCreatedByInput>
-    updateMany?: Enumerable<IndexedTransactionUpdateManyWithWhereWithoutCreatedByInput>
-    deleteMany?: Enumerable<IndexedTransactionScalarWhereInput>
-  }
-
   export type MessageUncheckedUpdateManyWithoutCreatedByInput = {
     create?: XOR<Enumerable<MessageCreateWithoutCreatedByInput>, Enumerable<MessageUncheckedCreateWithoutCreatedByInput>>
     connectOrCreate?: Enumerable<MessageCreateOrConnectWithoutCreatedByInput>
@@ -20550,20 +16306,6 @@ export namespace Prisma {
     update?: Enumerable<MessageUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<MessageUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<MessageScalarWhereInput>
-  }
-
-  export type EventUncheckedUpdateManyWithoutProfileInput = {
-    create?: XOR<Enumerable<EventCreateWithoutProfileInput>, Enumerable<EventUncheckedCreateWithoutProfileInput>>
-    connectOrCreate?: Enumerable<EventCreateOrConnectWithoutProfileInput>
-    upsert?: Enumerable<EventUpsertWithWhereUniqueWithoutProfileInput>
-    createMany?: EventCreateManyProfileInputEnvelope
-    connect?: Enumerable<EventWhereUniqueInput>
-    set?: Enumerable<EventWhereUniqueInput>
-    disconnect?: Enumerable<EventWhereUniqueInput>
-    delete?: Enumerable<EventWhereUniqueInput>
-    update?: Enumerable<EventUpdateWithWhereUniqueWithoutProfileInput>
-    updateMany?: Enumerable<EventUpdateManyWithWhereWithoutProfileInput>
-    deleteMany?: Enumerable<EventScalarWhereInput>
   }
 
   export type InvitationUncheckedUpdateManyWithoutCreatedByInput = {
@@ -20696,157 +16438,6 @@ export namespace Prisma {
     update?: XOR<ProfileUpdateWithoutSubscribersInput, ProfileUncheckedUpdateWithoutSubscribersInput>
   }
 
-  export type ProfileCreateNestedOneWithoutEventsInput = {
-    create?: XOR<ProfileCreateWithoutEventsInput, ProfileUncheckedCreateWithoutEventsInput>
-    connectOrCreate?: ProfileCreateOrConnectWithoutEventsInput
-    connect?: ProfileWhereUniqueInput
-  }
-
-  export type OfferCreateNestedOneWithoutEventsInput = {
-    create?: XOR<OfferCreateWithoutEventsInput, OfferUncheckedCreateWithoutEventsInput>
-    connectOrCreate?: OfferCreateOrConnectWithoutEventsInput
-    connect?: OfferWhereUniqueInput
-  }
-
-  export type EnumEventTypeFieldUpdateOperationsInput = {
-    set?: EventType
-  }
-
-  export type ProfileUpdateOneWithoutEventsInput = {
-    create?: XOR<ProfileCreateWithoutEventsInput, ProfileUncheckedCreateWithoutEventsInput>
-    connectOrCreate?: ProfileCreateOrConnectWithoutEventsInput
-    upsert?: ProfileUpsertWithoutEventsInput
-    connect?: ProfileWhereUniqueInput
-    disconnect?: boolean
-    delete?: boolean
-    update?: XOR<ProfileUpdateWithoutEventsInput, ProfileUncheckedUpdateWithoutEventsInput>
-  }
-
-  export type OfferUpdateOneWithoutEventsInput = {
-    create?: XOR<OfferCreateWithoutEventsInput, OfferUncheckedCreateWithoutEventsInput>
-    connectOrCreate?: OfferCreateOrConnectWithoutEventsInput
-    upsert?: OfferUpsertWithoutEventsInput
-    connect?: OfferWhereUniqueInput
-    disconnect?: boolean
-    delete?: boolean
-    update?: XOR<OfferUpdateWithoutEventsInput, OfferUncheckedUpdateWithoutEventsInput>
-  }
-
-  export type IndexedTransactionLogCreatetopicsInput = {
-    set: Enumerable<string>
-  }
-
-  export type IndexedTransactionCreateNestedOneWithoutLogsInput = {
-    create?: XOR<IndexedTransactionCreateWithoutLogsInput, IndexedTransactionUncheckedCreateWithoutLogsInput>
-    connectOrCreate?: IndexedTransactionCreateOrConnectWithoutLogsInput
-    connect?: IndexedTransactionWhereUniqueInput
-  }
-
-  export type IndexedTransactionLogUpdatetopicsInput = {
-    set?: Enumerable<string>
-    push?: string | Enumerable<string>
-  }
-
-  export type IndexedTransactionUpdateOneRequiredWithoutLogsInput = {
-    create?: XOR<IndexedTransactionCreateWithoutLogsInput, IndexedTransactionUncheckedCreateWithoutLogsInput>
-    connectOrCreate?: IndexedTransactionCreateOrConnectWithoutLogsInput
-    upsert?: IndexedTransactionUpsertWithoutLogsInput
-    connect?: IndexedTransactionWhereUniqueInput
-    update?: XOR<IndexedTransactionUpdateWithoutLogsInput, IndexedTransactionUncheckedUpdateWithoutLogsInput>
-  }
-
-  export type IndexedTransactionLogCreateManytopicsInput = {
-    set: Enumerable<string>
-  }
-
-  export type ProfileCreateNestedOneWithoutIndexedTransactionRequestsInput = {
-    create?: XOR<ProfileCreateWithoutIndexedTransactionRequestsInput, ProfileUncheckedCreateWithoutIndexedTransactionRequestsInput>
-    connectOrCreate?: ProfileCreateOrConnectWithoutIndexedTransactionRequestsInput
-    connect?: ProfileWhereUniqueInput
-  }
-
-  export type IndexedTransactionCreateNestedOneWithoutFromRequestInput = {
-    create?: XOR<IndexedTransactionCreateWithoutFromRequestInput, IndexedTransactionUncheckedCreateWithoutFromRequestInput>
-    connectOrCreate?: IndexedTransactionCreateOrConnectWithoutFromRequestInput
-    connect?: IndexedTransactionWhereUniqueInput
-  }
-
-  export type TagCreateNestedManyWithoutIndexTransactionRequestInput = {
-    create?: XOR<Enumerable<TagCreateWithoutIndexTransactionRequestInput>, Enumerable<TagUncheckedCreateWithoutIndexTransactionRequestInput>>
-    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutIndexTransactionRequestInput>
-    createMany?: TagCreateManyIndexTransactionRequestInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
-  }
-
-  export type IndexedTransactionUncheckedCreateNestedOneWithoutFromRequestInput = {
-    create?: XOR<IndexedTransactionCreateWithoutFromRequestInput, IndexedTransactionUncheckedCreateWithoutFromRequestInput>
-    connectOrCreate?: IndexedTransactionCreateOrConnectWithoutFromRequestInput
-    connect?: IndexedTransactionWhereUniqueInput
-  }
-
-  export type TagUncheckedCreateNestedManyWithoutIndexTransactionRequestInput = {
-    create?: XOR<Enumerable<TagCreateWithoutIndexTransactionRequestInput>, Enumerable<TagUncheckedCreateWithoutIndexTransactionRequestInput>>
-    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutIndexTransactionRequestInput>
-    createMany?: TagCreateManyIndexTransactionRequestInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
-  }
-
-  export type ProfileUpdateOneRequiredWithoutIndexedTransactionRequestsInput = {
-    create?: XOR<ProfileCreateWithoutIndexedTransactionRequestsInput, ProfileUncheckedCreateWithoutIndexedTransactionRequestsInput>
-    connectOrCreate?: ProfileCreateOrConnectWithoutIndexedTransactionRequestsInput
-    upsert?: ProfileUpsertWithoutIndexedTransactionRequestsInput
-    connect?: ProfileWhereUniqueInput
-    update?: XOR<ProfileUpdateWithoutIndexedTransactionRequestsInput, ProfileUncheckedUpdateWithoutIndexedTransactionRequestsInput>
-  }
-
-  export type IndexedTransactionUpdateOneWithoutFromRequestInput = {
-    create?: XOR<IndexedTransactionCreateWithoutFromRequestInput, IndexedTransactionUncheckedCreateWithoutFromRequestInput>
-    connectOrCreate?: IndexedTransactionCreateOrConnectWithoutFromRequestInput
-    upsert?: IndexedTransactionUpsertWithoutFromRequestInput
-    connect?: IndexedTransactionWhereUniqueInput
-    disconnect?: boolean
-    delete?: boolean
-    update?: XOR<IndexedTransactionUpdateWithoutFromRequestInput, IndexedTransactionUncheckedUpdateWithoutFromRequestInput>
-  }
-
-  export type TagUpdateManyWithoutIndexTransactionRequestInput = {
-    create?: XOR<Enumerable<TagCreateWithoutIndexTransactionRequestInput>, Enumerable<TagUncheckedCreateWithoutIndexTransactionRequestInput>>
-    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutIndexTransactionRequestInput>
-    upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutIndexTransactionRequestInput>
-    createMany?: TagCreateManyIndexTransactionRequestInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
-    set?: Enumerable<TagWhereUniqueInput>
-    disconnect?: Enumerable<TagWhereUniqueInput>
-    delete?: Enumerable<TagWhereUniqueInput>
-    update?: Enumerable<TagUpdateWithWhereUniqueWithoutIndexTransactionRequestInput>
-    updateMany?: Enumerable<TagUpdateManyWithWhereWithoutIndexTransactionRequestInput>
-    deleteMany?: Enumerable<TagScalarWhereInput>
-  }
-
-  export type IndexedTransactionUncheckedUpdateOneWithoutFromRequestInput = {
-    create?: XOR<IndexedTransactionCreateWithoutFromRequestInput, IndexedTransactionUncheckedCreateWithoutFromRequestInput>
-    connectOrCreate?: IndexedTransactionCreateOrConnectWithoutFromRequestInput
-    upsert?: IndexedTransactionUpsertWithoutFromRequestInput
-    connect?: IndexedTransactionWhereUniqueInput
-    disconnect?: boolean
-    delete?: boolean
-    update?: XOR<IndexedTransactionUpdateWithoutFromRequestInput, IndexedTransactionUncheckedUpdateWithoutFromRequestInput>
-  }
-
-  export type TagUncheckedUpdateManyWithoutIndexTransactionRequestInput = {
-    create?: XOR<Enumerable<TagCreateWithoutIndexTransactionRequestInput>, Enumerable<TagUncheckedCreateWithoutIndexTransactionRequestInput>>
-    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutIndexTransactionRequestInput>
-    upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutIndexTransactionRequestInput>
-    createMany?: TagCreateManyIndexTransactionRequestInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
-    set?: Enumerable<TagWhereUniqueInput>
-    disconnect?: Enumerable<TagWhereUniqueInput>
-    delete?: Enumerable<TagWhereUniqueInput>
-    update?: Enumerable<TagUpdateWithWhereUniqueWithoutIndexTransactionRequestInput>
-    updateMany?: Enumerable<TagUpdateManyWithWhereWithoutIndexTransactionRequestInput>
-    deleteMany?: Enumerable<TagScalarWhereInput>
-  }
-
   export type ProfileCreateNestedOneWithoutSentMessagesInput = {
     create?: XOR<ProfileCreateWithoutSentMessagesInput, ProfileUncheckedCreateWithoutSentMessagesInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutSentMessagesInput
@@ -20885,194 +16476,6 @@ export namespace Prisma {
     update?: XOR<TagUpdateWithoutMessageTypeInput, TagUncheckedUpdateWithoutMessageTypeInput>
   }
 
-  export type IndexTransactionRequestCreateNestedOneWithoutIndexedTransactionInput = {
-    create?: XOR<IndexTransactionRequestCreateWithoutIndexedTransactionInput, IndexTransactionRequestUncheckedCreateWithoutIndexedTransactionInput>
-    connectOrCreate?: IndexTransactionRequestCreateOrConnectWithoutIndexedTransactionInput
-    connect?: IndexTransactionRequestWhereUniqueInput
-  }
-
-  export type RedeemInvitationRequestCreateNestedOneWithoutInviteTransactionInput = {
-    create?: XOR<RedeemInvitationRequestCreateWithoutInviteTransactionInput, RedeemInvitationRequestUncheckedCreateWithoutInviteTransactionInput>
-    connectOrCreate?: RedeemInvitationRequestCreateOrConnectWithoutInviteTransactionInput
-    connect?: RedeemInvitationRequestWhereUniqueInput
-  }
-
-  export type ProfileCreateNestedOneWithoutIndexedTransactionsInput = {
-    create?: XOR<ProfileCreateWithoutIndexedTransactionsInput, ProfileUncheckedCreateWithoutIndexedTransactionsInput>
-    connectOrCreate?: ProfileCreateOrConnectWithoutIndexedTransactionsInput
-    connect?: ProfileWhereUniqueInput
-  }
-
-  export type TagCreateNestedOneWithoutIndexedTransactionTypeInput = {
-    create?: XOR<TagCreateWithoutIndexedTransactionTypeInput, TagUncheckedCreateWithoutIndexedTransactionTypeInput>
-    connectOrCreate?: TagCreateOrConnectWithoutIndexedTransactionTypeInput
-    connect?: TagWhereUniqueInput
-  }
-
-  export type IndexedTransactionLogCreateNestedManyWithoutIndexedTransactionInput = {
-    create?: XOR<Enumerable<IndexedTransactionLogCreateWithoutIndexedTransactionInput>, Enumerable<IndexedTransactionLogUncheckedCreateWithoutIndexedTransactionInput>>
-    connectOrCreate?: Enumerable<IndexedTransactionLogCreateOrConnectWithoutIndexedTransactionInput>
-    createMany?: IndexedTransactionLogCreateManyIndexedTransactionInputEnvelope
-    connect?: Enumerable<IndexedTransactionLogWhereUniqueInput>
-  }
-
-  export type TagCreateNestedManyWithoutIndexedTransactionInput = {
-    create?: XOR<Enumerable<TagCreateWithoutIndexedTransactionInput>, Enumerable<TagUncheckedCreateWithoutIndexedTransactionInput>>
-    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutIndexedTransactionInput>
-    createMany?: TagCreateManyIndexedTransactionInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
-  }
-
-  export type PurchaseCreateNestedManyWithoutIndexedTransactionInput = {
-    create?: XOR<Enumerable<PurchaseCreateWithoutIndexedTransactionInput>, Enumerable<PurchaseUncheckedCreateWithoutIndexedTransactionInput>>
-    connectOrCreate?: Enumerable<PurchaseCreateOrConnectWithoutIndexedTransactionInput>
-    createMany?: PurchaseCreateManyIndexedTransactionInputEnvelope
-    connect?: Enumerable<PurchaseWhereUniqueInput>
-  }
-
-  export type IndexedTransactionLogUncheckedCreateNestedManyWithoutIndexedTransactionInput = {
-    create?: XOR<Enumerable<IndexedTransactionLogCreateWithoutIndexedTransactionInput>, Enumerable<IndexedTransactionLogUncheckedCreateWithoutIndexedTransactionInput>>
-    connectOrCreate?: Enumerable<IndexedTransactionLogCreateOrConnectWithoutIndexedTransactionInput>
-    createMany?: IndexedTransactionLogCreateManyIndexedTransactionInputEnvelope
-    connect?: Enumerable<IndexedTransactionLogWhereUniqueInput>
-  }
-
-  export type TagUncheckedCreateNestedManyWithoutIndexedTransactionInput = {
-    create?: XOR<Enumerable<TagCreateWithoutIndexedTransactionInput>, Enumerable<TagUncheckedCreateWithoutIndexedTransactionInput>>
-    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutIndexedTransactionInput>
-    createMany?: TagCreateManyIndexedTransactionInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
-  }
-
-  export type PurchaseUncheckedCreateNestedManyWithoutIndexedTransactionInput = {
-    create?: XOR<Enumerable<PurchaseCreateWithoutIndexedTransactionInput>, Enumerable<PurchaseUncheckedCreateWithoutIndexedTransactionInput>>
-    connectOrCreate?: Enumerable<PurchaseCreateOrConnectWithoutIndexedTransactionInput>
-    createMany?: PurchaseCreateManyIndexedTransactionInputEnvelope
-    connect?: Enumerable<PurchaseWhereUniqueInput>
-  }
-
-  export type IndexTransactionRequestUpdateOneWithoutIndexedTransactionInput = {
-    create?: XOR<IndexTransactionRequestCreateWithoutIndexedTransactionInput, IndexTransactionRequestUncheckedCreateWithoutIndexedTransactionInput>
-    connectOrCreate?: IndexTransactionRequestCreateOrConnectWithoutIndexedTransactionInput
-    upsert?: IndexTransactionRequestUpsertWithoutIndexedTransactionInput
-    connect?: IndexTransactionRequestWhereUniqueInput
-    disconnect?: boolean
-    delete?: boolean
-    update?: XOR<IndexTransactionRequestUpdateWithoutIndexedTransactionInput, IndexTransactionRequestUncheckedUpdateWithoutIndexedTransactionInput>
-  }
-
-  export type RedeemInvitationRequestUpdateOneWithoutInviteTransactionInput = {
-    create?: XOR<RedeemInvitationRequestCreateWithoutInviteTransactionInput, RedeemInvitationRequestUncheckedCreateWithoutInviteTransactionInput>
-    connectOrCreate?: RedeemInvitationRequestCreateOrConnectWithoutInviteTransactionInput
-    upsert?: RedeemInvitationRequestUpsertWithoutInviteTransactionInput
-    connect?: RedeemInvitationRequestWhereUniqueInput
-    disconnect?: boolean
-    delete?: boolean
-    update?: XOR<RedeemInvitationRequestUpdateWithoutInviteTransactionInput, RedeemInvitationRequestUncheckedUpdateWithoutInviteTransactionInput>
-  }
-
-  export type ProfileUpdateOneRequiredWithoutIndexedTransactionsInput = {
-    create?: XOR<ProfileCreateWithoutIndexedTransactionsInput, ProfileUncheckedCreateWithoutIndexedTransactionsInput>
-    connectOrCreate?: ProfileCreateOrConnectWithoutIndexedTransactionsInput
-    upsert?: ProfileUpsertWithoutIndexedTransactionsInput
-    connect?: ProfileWhereUniqueInput
-    update?: XOR<ProfileUpdateWithoutIndexedTransactionsInput, ProfileUncheckedUpdateWithoutIndexedTransactionsInput>
-  }
-
-  export type TagUpdateOneWithoutIndexedTransactionTypeInput = {
-    create?: XOR<TagCreateWithoutIndexedTransactionTypeInput, TagUncheckedCreateWithoutIndexedTransactionTypeInput>
-    connectOrCreate?: TagCreateOrConnectWithoutIndexedTransactionTypeInput
-    upsert?: TagUpsertWithoutIndexedTransactionTypeInput
-    connect?: TagWhereUniqueInput
-    disconnect?: boolean
-    delete?: boolean
-    update?: XOR<TagUpdateWithoutIndexedTransactionTypeInput, TagUncheckedUpdateWithoutIndexedTransactionTypeInput>
-  }
-
-  export type IndexedTransactionLogUpdateManyWithoutIndexedTransactionInput = {
-    create?: XOR<Enumerable<IndexedTransactionLogCreateWithoutIndexedTransactionInput>, Enumerable<IndexedTransactionLogUncheckedCreateWithoutIndexedTransactionInput>>
-    connectOrCreate?: Enumerable<IndexedTransactionLogCreateOrConnectWithoutIndexedTransactionInput>
-    upsert?: Enumerable<IndexedTransactionLogUpsertWithWhereUniqueWithoutIndexedTransactionInput>
-    createMany?: IndexedTransactionLogCreateManyIndexedTransactionInputEnvelope
-    connect?: Enumerable<IndexedTransactionLogWhereUniqueInput>
-    set?: Enumerable<IndexedTransactionLogWhereUniqueInput>
-    disconnect?: Enumerable<IndexedTransactionLogWhereUniqueInput>
-    delete?: Enumerable<IndexedTransactionLogWhereUniqueInput>
-    update?: Enumerable<IndexedTransactionLogUpdateWithWhereUniqueWithoutIndexedTransactionInput>
-    updateMany?: Enumerable<IndexedTransactionLogUpdateManyWithWhereWithoutIndexedTransactionInput>
-    deleteMany?: Enumerable<IndexedTransactionLogScalarWhereInput>
-  }
-
-  export type TagUpdateManyWithoutIndexedTransactionInput = {
-    create?: XOR<Enumerable<TagCreateWithoutIndexedTransactionInput>, Enumerable<TagUncheckedCreateWithoutIndexedTransactionInput>>
-    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutIndexedTransactionInput>
-    upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutIndexedTransactionInput>
-    createMany?: TagCreateManyIndexedTransactionInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
-    set?: Enumerable<TagWhereUniqueInput>
-    disconnect?: Enumerable<TagWhereUniqueInput>
-    delete?: Enumerable<TagWhereUniqueInput>
-    update?: Enumerable<TagUpdateWithWhereUniqueWithoutIndexedTransactionInput>
-    updateMany?: Enumerable<TagUpdateManyWithWhereWithoutIndexedTransactionInput>
-    deleteMany?: Enumerable<TagScalarWhereInput>
-  }
-
-  export type PurchaseUpdateManyWithoutIndexedTransactionInput = {
-    create?: XOR<Enumerable<PurchaseCreateWithoutIndexedTransactionInput>, Enumerable<PurchaseUncheckedCreateWithoutIndexedTransactionInput>>
-    connectOrCreate?: Enumerable<PurchaseCreateOrConnectWithoutIndexedTransactionInput>
-    upsert?: Enumerable<PurchaseUpsertWithWhereUniqueWithoutIndexedTransactionInput>
-    createMany?: PurchaseCreateManyIndexedTransactionInputEnvelope
-    connect?: Enumerable<PurchaseWhereUniqueInput>
-    set?: Enumerable<PurchaseWhereUniqueInput>
-    disconnect?: Enumerable<PurchaseWhereUniqueInput>
-    delete?: Enumerable<PurchaseWhereUniqueInput>
-    update?: Enumerable<PurchaseUpdateWithWhereUniqueWithoutIndexedTransactionInput>
-    updateMany?: Enumerable<PurchaseUpdateManyWithWhereWithoutIndexedTransactionInput>
-    deleteMany?: Enumerable<PurchaseScalarWhereInput>
-  }
-
-  export type IndexedTransactionLogUncheckedUpdateManyWithoutIndexedTransactionInput = {
-    create?: XOR<Enumerable<IndexedTransactionLogCreateWithoutIndexedTransactionInput>, Enumerable<IndexedTransactionLogUncheckedCreateWithoutIndexedTransactionInput>>
-    connectOrCreate?: Enumerable<IndexedTransactionLogCreateOrConnectWithoutIndexedTransactionInput>
-    upsert?: Enumerable<IndexedTransactionLogUpsertWithWhereUniqueWithoutIndexedTransactionInput>
-    createMany?: IndexedTransactionLogCreateManyIndexedTransactionInputEnvelope
-    connect?: Enumerable<IndexedTransactionLogWhereUniqueInput>
-    set?: Enumerable<IndexedTransactionLogWhereUniqueInput>
-    disconnect?: Enumerable<IndexedTransactionLogWhereUniqueInput>
-    delete?: Enumerable<IndexedTransactionLogWhereUniqueInput>
-    update?: Enumerable<IndexedTransactionLogUpdateWithWhereUniqueWithoutIndexedTransactionInput>
-    updateMany?: Enumerable<IndexedTransactionLogUpdateManyWithWhereWithoutIndexedTransactionInput>
-    deleteMany?: Enumerable<IndexedTransactionLogScalarWhereInput>
-  }
-
-  export type TagUncheckedUpdateManyWithoutIndexedTransactionInput = {
-    create?: XOR<Enumerable<TagCreateWithoutIndexedTransactionInput>, Enumerable<TagUncheckedCreateWithoutIndexedTransactionInput>>
-    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutIndexedTransactionInput>
-    upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutIndexedTransactionInput>
-    createMany?: TagCreateManyIndexedTransactionInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
-    set?: Enumerable<TagWhereUniqueInput>
-    disconnect?: Enumerable<TagWhereUniqueInput>
-    delete?: Enumerable<TagWhereUniqueInput>
-    update?: Enumerable<TagUpdateWithWhereUniqueWithoutIndexedTransactionInput>
-    updateMany?: Enumerable<TagUpdateManyWithWhereWithoutIndexedTransactionInput>
-    deleteMany?: Enumerable<TagScalarWhereInput>
-  }
-
-  export type PurchaseUncheckedUpdateManyWithoutIndexedTransactionInput = {
-    create?: XOR<Enumerable<PurchaseCreateWithoutIndexedTransactionInput>, Enumerable<PurchaseUncheckedCreateWithoutIndexedTransactionInput>>
-    connectOrCreate?: Enumerable<PurchaseCreateOrConnectWithoutIndexedTransactionInput>
-    upsert?: Enumerable<PurchaseUpsertWithWhereUniqueWithoutIndexedTransactionInput>
-    createMany?: PurchaseCreateManyIndexedTransactionInputEnvelope
-    connect?: Enumerable<PurchaseWhereUniqueInput>
-    set?: Enumerable<PurchaseWhereUniqueInput>
-    disconnect?: Enumerable<PurchaseWhereUniqueInput>
-    delete?: Enumerable<PurchaseWhereUniqueInput>
-    update?: Enumerable<PurchaseUpdateWithWhereUniqueWithoutIndexedTransactionInput>
-    updateMany?: Enumerable<PurchaseUpdateManyWithWhereWithoutIndexedTransactionInput>
-    deleteMany?: Enumerable<PurchaseScalarWhereInput>
-  }
-
   export type ProfileCreateNestedOneWithoutOffersInput = {
     create?: XOR<ProfileCreateWithoutOffersInput, ProfileUncheckedCreateWithoutOffersInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutOffersInput
@@ -21104,13 +16507,6 @@ export namespace Prisma {
     connect?: TagWhereUniqueInput
   }
 
-  export type EventCreateNestedManyWithoutOfferInput = {
-    create?: XOR<Enumerable<EventCreateWithoutOfferInput>, Enumerable<EventUncheckedCreateWithoutOfferInput>>
-    connectOrCreate?: Enumerable<EventCreateOrConnectWithoutOfferInput>
-    createMany?: EventCreateManyOfferInputEnvelope
-    connect?: Enumerable<EventWhereUniqueInput>
-  }
-
   export type SubscriptionCreateNestedManyWithoutSubscribingToOfferInput = {
     create?: XOR<Enumerable<SubscriptionCreateWithoutSubscribingToOfferInput>, Enumerable<SubscriptionUncheckedCreateWithoutSubscribingToOfferInput>>
     connectOrCreate?: Enumerable<SubscriptionCreateOrConnectWithoutSubscribingToOfferInput>
@@ -21123,13 +16519,6 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<PurchaseCreateOrConnectWithoutPurchasedItemInput>
     createMany?: PurchaseCreateManyPurchasedItemInputEnvelope
     connect?: Enumerable<PurchaseWhereUniqueInput>
-  }
-
-  export type EventUncheckedCreateNestedManyWithoutOfferInput = {
-    create?: XOR<Enumerable<EventCreateWithoutOfferInput>, Enumerable<EventUncheckedCreateWithoutOfferInput>>
-    connectOrCreate?: Enumerable<EventCreateOrConnectWithoutOfferInput>
-    createMany?: EventCreateManyOfferInputEnvelope
-    connect?: Enumerable<EventWhereUniqueInput>
   }
 
   export type SubscriptionUncheckedCreateNestedManyWithoutSubscribingToOfferInput = {
@@ -21185,20 +16574,6 @@ export namespace Prisma {
     update?: XOR<TagUpdateWithoutOfferDeliveryTermsInput, TagUncheckedUpdateWithoutOfferDeliveryTermsInput>
   }
 
-  export type EventUpdateManyWithoutOfferInput = {
-    create?: XOR<Enumerable<EventCreateWithoutOfferInput>, Enumerable<EventUncheckedCreateWithoutOfferInput>>
-    connectOrCreate?: Enumerable<EventCreateOrConnectWithoutOfferInput>
-    upsert?: Enumerable<EventUpsertWithWhereUniqueWithoutOfferInput>
-    createMany?: EventCreateManyOfferInputEnvelope
-    connect?: Enumerable<EventWhereUniqueInput>
-    set?: Enumerable<EventWhereUniqueInput>
-    disconnect?: Enumerable<EventWhereUniqueInput>
-    delete?: Enumerable<EventWhereUniqueInput>
-    update?: Enumerable<EventUpdateWithWhereUniqueWithoutOfferInput>
-    updateMany?: Enumerable<EventUpdateManyWithWhereWithoutOfferInput>
-    deleteMany?: Enumerable<EventScalarWhereInput>
-  }
-
   export type SubscriptionUpdateManyWithoutSubscribingToOfferInput = {
     create?: XOR<Enumerable<SubscriptionCreateWithoutSubscribingToOfferInput>, Enumerable<SubscriptionUncheckedCreateWithoutSubscribingToOfferInput>>
     connectOrCreate?: Enumerable<SubscriptionCreateOrConnectWithoutSubscribingToOfferInput>
@@ -21227,20 +16602,6 @@ export namespace Prisma {
     deleteMany?: Enumerable<PurchaseScalarWhereInput>
   }
 
-  export type EventUncheckedUpdateManyWithoutOfferInput = {
-    create?: XOR<Enumerable<EventCreateWithoutOfferInput>, Enumerable<EventUncheckedCreateWithoutOfferInput>>
-    connectOrCreate?: Enumerable<EventCreateOrConnectWithoutOfferInput>
-    upsert?: Enumerable<EventUpsertWithWhereUniqueWithoutOfferInput>
-    createMany?: EventCreateManyOfferInputEnvelope
-    connect?: Enumerable<EventWhereUniqueInput>
-    set?: Enumerable<EventWhereUniqueInput>
-    disconnect?: Enumerable<EventWhereUniqueInput>
-    delete?: Enumerable<EventWhereUniqueInput>
-    update?: Enumerable<EventUpdateWithWhereUniqueWithoutOfferInput>
-    updateMany?: Enumerable<EventUpdateManyWithWhereWithoutOfferInput>
-    deleteMany?: Enumerable<EventScalarWhereInput>
-  }
-
   export type SubscriptionUncheckedUpdateManyWithoutSubscribingToOfferInput = {
     create?: XOR<Enumerable<SubscriptionCreateWithoutSubscribingToOfferInput>, Enumerable<SubscriptionUncheckedCreateWithoutSubscribingToOfferInput>>
     connectOrCreate?: Enumerable<SubscriptionCreateOrConnectWithoutSubscribingToOfferInput>
@@ -21265,12 +16626,6 @@ export namespace Prisma {
     create?: XOR<OfferCreateWithoutPurchasesInput, OfferUncheckedCreateWithoutPurchasesInput>
     connectOrCreate?: OfferCreateOrConnectWithoutPurchasesInput
     connect?: OfferWhereUniqueInput
-  }
-
-  export type IndexedTransactionCreateNestedOneWithoutPurchasesInput = {
-    create?: XOR<IndexedTransactionCreateWithoutPurchasesInput, IndexedTransactionUncheckedCreateWithoutPurchasesInput>
-    connectOrCreate?: IndexedTransactionCreateOrConnectWithoutPurchasesInput
-    connect?: IndexedTransactionWhereUniqueInput
   }
 
   export type TransactionJobsCreateNestedManyWithoutPurchaseInput = {
@@ -21305,14 +16660,6 @@ export namespace Prisma {
     upsert?: OfferUpsertWithoutPurchasesInput
     connect?: OfferWhereUniqueInput
     update?: XOR<OfferUpdateWithoutPurchasesInput, OfferUncheckedUpdateWithoutPurchasesInput>
-  }
-
-  export type IndexedTransactionUpdateOneRequiredWithoutPurchasesInput = {
-    create?: XOR<IndexedTransactionCreateWithoutPurchasesInput, IndexedTransactionUncheckedCreateWithoutPurchasesInput>
-    connectOrCreate?: IndexedTransactionCreateOrConnectWithoutPurchasesInput
-    upsert?: IndexedTransactionUpsertWithoutPurchasesInput
-    connect?: IndexedTransactionWhereUniqueInput
-    update?: XOR<IndexedTransactionUpdateWithoutPurchasesInput, IndexedTransactionUncheckedUpdateWithoutPurchasesInput>
   }
 
   export type TransactionJobsUpdateManyWithoutPurchaseInput = {
@@ -21399,10 +16746,58 @@ export namespace Prisma {
     deleteMany?: Enumerable<TagScalarWhereInput>
   }
 
+  export type TagCreateNestedManyWithoutTransactionInput = {
+    create?: XOR<Enumerable<TagCreateWithoutTransactionInput>, Enumerable<TagUncheckedCreateWithoutTransactionInput>>
+    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutTransactionInput>
+    createMany?: TagCreateManyTransactionInputEnvelope
+    connect?: Enumerable<TagWhereUniqueInput>
+  }
+
+  export type TagUncheckedCreateNestedManyWithoutTransactionInput = {
+    create?: XOR<Enumerable<TagCreateWithoutTransactionInput>, Enumerable<TagUncheckedCreateWithoutTransactionInput>>
+    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutTransactionInput>
+    createMany?: TagCreateManyTransactionInputEnvelope
+    connect?: Enumerable<TagWhereUniqueInput>
+  }
+
+  export type TagUpdateManyWithoutTransactionInput = {
+    create?: XOR<Enumerable<TagCreateWithoutTransactionInput>, Enumerable<TagUncheckedCreateWithoutTransactionInput>>
+    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutTransactionInput>
+    upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutTransactionInput>
+    createMany?: TagCreateManyTransactionInputEnvelope
+    connect?: Enumerable<TagWhereUniqueInput>
+    set?: Enumerable<TagWhereUniqueInput>
+    disconnect?: Enumerable<TagWhereUniqueInput>
+    delete?: Enumerable<TagWhereUniqueInput>
+    update?: Enumerable<TagUpdateWithWhereUniqueWithoutTransactionInput>
+    updateMany?: Enumerable<TagUpdateManyWithWhereWithoutTransactionInput>
+    deleteMany?: Enumerable<TagScalarWhereInput>
+  }
+
+  export type TagUncheckedUpdateManyWithoutTransactionInput = {
+    create?: XOR<Enumerable<TagCreateWithoutTransactionInput>, Enumerable<TagUncheckedCreateWithoutTransactionInput>>
+    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutTransactionInput>
+    upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutTransactionInput>
+    createMany?: TagCreateManyTransactionInputEnvelope
+    connect?: Enumerable<TagWhereUniqueInput>
+    set?: Enumerable<TagWhereUniqueInput>
+    disconnect?: Enumerable<TagWhereUniqueInput>
+    delete?: Enumerable<TagWhereUniqueInput>
+    update?: Enumerable<TagUpdateWithWhereUniqueWithoutTransactionInput>
+    updateMany?: Enumerable<TagUpdateManyWithWhereWithoutTransactionInput>
+    deleteMany?: Enumerable<TagScalarWhereInput>
+  }
+
   export type ProfileCreateNestedOneWithoutTagsInput = {
     create?: XOR<ProfileCreateWithoutTagsInput, ProfileUncheckedCreateWithoutTagsInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutTagsInput
     connect?: ProfileWhereUniqueInput
+  }
+
+  export type TransactionCreateNestedOneWithoutTagsInput = {
+    create?: XOR<TransactionCreateWithoutTagsInput, TransactionUncheckedCreateWithoutTagsInput>
+    connectOrCreate?: TransactionCreateOrConnectWithoutTagsInput
+    connect?: TransactionWhereUniqueInput
   }
 
   export type TagTypeCreateNestedOneWithoutTagsInput = {
@@ -21432,30 +16827,11 @@ export namespace Prisma {
     connect?: Enumerable<OfferWhereUniqueInput>
   }
 
-  export type IndexedTransactionCreateNestedManyWithoutTypeTagInput = {
-    create?: XOR<Enumerable<IndexedTransactionCreateWithoutTypeTagInput>, Enumerable<IndexedTransactionUncheckedCreateWithoutTypeTagInput>>
-    connectOrCreate?: Enumerable<IndexedTransactionCreateOrConnectWithoutTypeTagInput>
-    createMany?: IndexedTransactionCreateManyTypeTagInputEnvelope
-    connect?: Enumerable<IndexedTransactionWhereUniqueInput>
-  }
-
   export type MessageCreateNestedManyWithoutTypeTagInput = {
     create?: XOR<Enumerable<MessageCreateWithoutTypeTagInput>, Enumerable<MessageUncheckedCreateWithoutTypeTagInput>>
     connectOrCreate?: Enumerable<MessageCreateOrConnectWithoutTypeTagInput>
     createMany?: MessageCreateManyTypeTagInputEnvelope
     connect?: Enumerable<MessageWhereUniqueInput>
-  }
-
-  export type IndexTransactionRequestCreateNestedOneWithoutTagsInput = {
-    create?: XOR<IndexTransactionRequestCreateWithoutTagsInput, IndexTransactionRequestUncheckedCreateWithoutTagsInput>
-    connectOrCreate?: IndexTransactionRequestCreateOrConnectWithoutTagsInput
-    connect?: IndexTransactionRequestWhereUniqueInput
-  }
-
-  export type IndexedTransactionCreateNestedOneWithoutTagsInput = {
-    create?: XOR<IndexedTransactionCreateWithoutTagsInput, IndexedTransactionUncheckedCreateWithoutTagsInput>
-    connectOrCreate?: IndexedTransactionCreateOrConnectWithoutTagsInput
-    connect?: IndexedTransactionWhereUniqueInput
   }
 
   export type OfferUncheckedCreateNestedManyWithoutCategoryTagInput = {
@@ -21479,13 +16855,6 @@ export namespace Prisma {
     connect?: Enumerable<OfferWhereUniqueInput>
   }
 
-  export type IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput = {
-    create?: XOR<Enumerable<IndexedTransactionCreateWithoutTypeTagInput>, Enumerable<IndexedTransactionUncheckedCreateWithoutTypeTagInput>>
-    connectOrCreate?: Enumerable<IndexedTransactionCreateOrConnectWithoutTypeTagInput>
-    createMany?: IndexedTransactionCreateManyTypeTagInputEnvelope
-    connect?: Enumerable<IndexedTransactionWhereUniqueInput>
-  }
-
   export type MessageUncheckedCreateNestedManyWithoutTypeTagInput = {
     create?: XOR<Enumerable<MessageCreateWithoutTypeTagInput>, Enumerable<MessageUncheckedCreateWithoutTypeTagInput>>
     connectOrCreate?: Enumerable<MessageCreateOrConnectWithoutTypeTagInput>
@@ -21503,6 +16872,16 @@ export namespace Prisma {
     upsert?: ProfileUpsertWithoutTagsInput
     connect?: ProfileWhereUniqueInput
     update?: XOR<ProfileUpdateWithoutTagsInput, ProfileUncheckedUpdateWithoutTagsInput>
+  }
+
+  export type TransactionUpdateOneWithoutTagsInput = {
+    create?: XOR<TransactionCreateWithoutTagsInput, TransactionUncheckedCreateWithoutTagsInput>
+    connectOrCreate?: TransactionCreateOrConnectWithoutTagsInput
+    upsert?: TransactionUpsertWithoutTagsInput
+    connect?: TransactionWhereUniqueInput
+    disconnect?: boolean
+    delete?: boolean
+    update?: XOR<TransactionUpdateWithoutTagsInput, TransactionUncheckedUpdateWithoutTagsInput>
   }
 
   export type TagTypeUpdateOneRequiredWithoutTagsInput = {
@@ -21555,20 +16934,6 @@ export namespace Prisma {
     deleteMany?: Enumerable<OfferScalarWhereInput>
   }
 
-  export type IndexedTransactionUpdateManyWithoutTypeTagInput = {
-    create?: XOR<Enumerable<IndexedTransactionCreateWithoutTypeTagInput>, Enumerable<IndexedTransactionUncheckedCreateWithoutTypeTagInput>>
-    connectOrCreate?: Enumerable<IndexedTransactionCreateOrConnectWithoutTypeTagInput>
-    upsert?: Enumerable<IndexedTransactionUpsertWithWhereUniqueWithoutTypeTagInput>
-    createMany?: IndexedTransactionCreateManyTypeTagInputEnvelope
-    connect?: Enumerable<IndexedTransactionWhereUniqueInput>
-    set?: Enumerable<IndexedTransactionWhereUniqueInput>
-    disconnect?: Enumerable<IndexedTransactionWhereUniqueInput>
-    delete?: Enumerable<IndexedTransactionWhereUniqueInput>
-    update?: Enumerable<IndexedTransactionUpdateWithWhereUniqueWithoutTypeTagInput>
-    updateMany?: Enumerable<IndexedTransactionUpdateManyWithWhereWithoutTypeTagInput>
-    deleteMany?: Enumerable<IndexedTransactionScalarWhereInput>
-  }
-
   export type MessageUpdateManyWithoutTypeTagInput = {
     create?: XOR<Enumerable<MessageCreateWithoutTypeTagInput>, Enumerable<MessageUncheckedCreateWithoutTypeTagInput>>
     connectOrCreate?: Enumerable<MessageCreateOrConnectWithoutTypeTagInput>
@@ -21581,26 +16946,6 @@ export namespace Prisma {
     update?: Enumerable<MessageUpdateWithWhereUniqueWithoutTypeTagInput>
     updateMany?: Enumerable<MessageUpdateManyWithWhereWithoutTypeTagInput>
     deleteMany?: Enumerable<MessageScalarWhereInput>
-  }
-
-  export type IndexTransactionRequestUpdateOneWithoutTagsInput = {
-    create?: XOR<IndexTransactionRequestCreateWithoutTagsInput, IndexTransactionRequestUncheckedCreateWithoutTagsInput>
-    connectOrCreate?: IndexTransactionRequestCreateOrConnectWithoutTagsInput
-    upsert?: IndexTransactionRequestUpsertWithoutTagsInput
-    connect?: IndexTransactionRequestWhereUniqueInput
-    disconnect?: boolean
-    delete?: boolean
-    update?: XOR<IndexTransactionRequestUpdateWithoutTagsInput, IndexTransactionRequestUncheckedUpdateWithoutTagsInput>
-  }
-
-  export type IndexedTransactionUpdateOneWithoutTagsInput = {
-    create?: XOR<IndexedTransactionCreateWithoutTagsInput, IndexedTransactionUncheckedCreateWithoutTagsInput>
-    connectOrCreate?: IndexedTransactionCreateOrConnectWithoutTagsInput
-    upsert?: IndexedTransactionUpsertWithoutTagsInput
-    connect?: IndexedTransactionWhereUniqueInput
-    disconnect?: boolean
-    delete?: boolean
-    update?: XOR<IndexedTransactionUpdateWithoutTagsInput, IndexedTransactionUncheckedUpdateWithoutTagsInput>
   }
 
   export type OfferUncheckedUpdateManyWithoutCategoryTagInput = {
@@ -21643,20 +16988,6 @@ export namespace Prisma {
     update?: Enumerable<OfferUpdateWithWhereUniqueWithoutDeliveryTermsTagInput>
     updateMany?: Enumerable<OfferUpdateManyWithWhereWithoutDeliveryTermsTagInput>
     deleteMany?: Enumerable<OfferScalarWhereInput>
-  }
-
-  export type IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput = {
-    create?: XOR<Enumerable<IndexedTransactionCreateWithoutTypeTagInput>, Enumerable<IndexedTransactionUncheckedCreateWithoutTypeTagInput>>
-    connectOrCreate?: Enumerable<IndexedTransactionCreateOrConnectWithoutTypeTagInput>
-    upsert?: Enumerable<IndexedTransactionUpsertWithWhereUniqueWithoutTypeTagInput>
-    createMany?: IndexedTransactionCreateManyTypeTagInputEnvelope
-    connect?: Enumerable<IndexedTransactionWhereUniqueInput>
-    set?: Enumerable<IndexedTransactionWhereUniqueInput>
-    disconnect?: Enumerable<IndexedTransactionWhereUniqueInput>
-    delete?: Enumerable<IndexedTransactionWhereUniqueInput>
-    update?: Enumerable<IndexedTransactionUpdateWithWhereUniqueWithoutTypeTagInput>
-    updateMany?: Enumerable<IndexedTransactionUpdateManyWithWhereWithoutTypeTagInput>
-    deleteMany?: Enumerable<IndexedTransactionScalarWhereInput>
   }
 
   export type MessageUncheckedUpdateManyWithoutTypeTagInput = {
@@ -21999,38 +17330,6 @@ export namespace Prisma {
     max?: NestedBoolNullableFilter
   }
 
-  export type NestedEnumEventTypeFilter = {
-    equals?: EventType
-    in?: Enumerable<EventType>
-    notIn?: Enumerable<EventType>
-    not?: NestedEnumEventTypeFilter | EventType
-  }
-
-  export type NestedEnumEventTypeWithAggregatesFilter = {
-    equals?: EventType
-    in?: Enumerable<EventType>
-    notIn?: Enumerable<EventType>
-    not?: NestedEnumEventTypeWithAggregatesFilter | EventType
-    _count?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntFilter
-    _min?: NestedEnumEventTypeFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedEnumEventTypeFilter
-    _max?: NestedEnumEventTypeFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedEnumEventTypeFilter
-  }
-
   export type NestedBigIntNullableFilter = {
     equals?: bigint | number | null
     in?: Enumerable<bigint> | Enumerable<number> | null
@@ -22164,10 +17463,7 @@ export namespace Prisma {
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
-    events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
@@ -22198,10 +17494,7 @@ export namespace Prisma {
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
-    events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
@@ -22241,10 +17534,7 @@ export namespace Prisma {
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUpdateManyWithoutCreatedByInput
-    events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
@@ -22275,10 +17565,7 @@ export namespace Prisma {
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
-    events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
@@ -22309,10 +17596,7 @@ export namespace Prisma {
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
-    events?: EventCreateNestedManyWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
@@ -22343,10 +17627,7 @@ export namespace Prisma {
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
-    events?: EventUncheckedCreateNestedManyWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
@@ -22381,10 +17662,7 @@ export namespace Prisma {
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
-    events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
@@ -22415,10 +17693,7 @@ export namespace Prisma {
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
-    events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
@@ -22453,10 +17728,7 @@ export namespace Prisma {
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
-    events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
@@ -22487,10 +17759,7 @@ export namespace Prisma {
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
-    events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
@@ -22508,7 +17777,6 @@ export namespace Prisma {
     workerProcess?: string | null
     pickedAt?: Date | string | null
     createdBy: ProfileCreateNestedOneWithoutRedeemInvitationRequestsInput
-    inviteTransaction?: IndexedTransactionCreateNestedOneWithoutFromRedeemInvitationRequestInput
   }
 
   export type RedeemInvitationRequestUncheckedCreateWithoutInvitationToRedeemInput = {
@@ -22517,7 +17785,6 @@ export namespace Prisma {
     createdByProfileId: number
     workerProcess?: string | null
     pickedAt?: Date | string | null
-    inviteTransaction?: IndexedTransactionUncheckedCreateNestedOneWithoutFromRedeemInvitationRequestInput
   }
 
   export type RedeemInvitationRequestCreateOrConnectWithoutInvitationToRedeemInput = {
@@ -22557,10 +17824,7 @@ export namespace Prisma {
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUpdateManyWithoutCreatedByInput
-    events?: EventUpdateManyWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
@@ -22591,10 +17855,7 @@ export namespace Prisma {
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
-    events?: EventUncheckedUpdateManyWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
@@ -22629,10 +17890,7 @@ export namespace Prisma {
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUpdateManyWithoutCreatedByInput
-    events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
@@ -22663,10 +17921,7 @@ export namespace Prisma {
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
-    events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
@@ -22701,10 +17956,7 @@ export namespace Prisma {
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUpdateManyWithoutCreatedByInput
-    events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
@@ -22735,10 +17987,7 @@ export namespace Prisma {
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
-    events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
@@ -22796,10 +18045,7 @@ export namespace Prisma {
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
-    events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
@@ -22830,10 +18076,7 @@ export namespace Prisma {
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
-    events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
@@ -22874,62 +18117,6 @@ export namespace Prisma {
     create: XOR<InvitationCreateWithoutIndexedTransactionsInput, InvitationUncheckedCreateWithoutIndexedTransactionsInput>
   }
 
-  export type IndexedTransactionCreateWithoutFromRedeemInvitationRequestInput = {
-    createdAt: Date | string
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-    fromRequest?: IndexTransactionRequestCreateNestedOneWithoutIndexedTransactionInput
-    createdBy: ProfileCreateNestedOneWithoutIndexedTransactionsInput
-    typeTag?: TagCreateNestedOneWithoutIndexedTransactionTypeInput
-    logs?: IndexedTransactionLogCreateNestedManyWithoutIndexedTransactionInput
-    tags?: TagCreateNestedManyWithoutIndexedTransactionInput
-    purchases?: PurchaseCreateNestedManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedCreateWithoutFromRedeemInvitationRequestInput = {
-    id?: number
-    fromRequestId?: number | null
-    createdAt: Date | string
-    createdByProfileId: number
-    typeTagId?: number | null
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-    logs?: IndexedTransactionLogUncheckedCreateNestedManyWithoutIndexedTransactionInput
-    tags?: TagUncheckedCreateNestedManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUncheckedCreateNestedManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionCreateOrConnectWithoutFromRedeemInvitationRequestInput = {
-    where: IndexedTransactionWhereUniqueInput
-    create: XOR<IndexedTransactionCreateWithoutFromRedeemInvitationRequestInput, IndexedTransactionUncheckedCreateWithoutFromRedeemInvitationRequestInput>
-  }
-
   export type ProfileUpsertWithoutRedeemInvitationRequestsInput = {
     update: XOR<ProfileUpdateWithoutRedeemInvitationRequestsInput, ProfileUncheckedUpdateWithoutRedeemInvitationRequestsInput>
     create: XOR<ProfileCreateWithoutRedeemInvitationRequestsInput, ProfileUncheckedCreateWithoutRedeemInvitationRequestsInput>
@@ -22957,10 +18144,7 @@ export namespace Prisma {
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUpdateManyWithoutCreatedByInput
-    events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
@@ -22991,10 +18175,7 @@ export namespace Prisma {
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
-    events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
@@ -23028,62 +18209,6 @@ export namespace Prisma {
     redeemedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     key?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type IndexedTransactionUpsertWithoutFromRedeemInvitationRequestInput = {
-    update: XOR<IndexedTransactionUpdateWithoutFromRedeemInvitationRequestInput, IndexedTransactionUncheckedUpdateWithoutFromRedeemInvitationRequestInput>
-    create: XOR<IndexedTransactionCreateWithoutFromRedeemInvitationRequestInput, IndexedTransactionUncheckedCreateWithoutFromRedeemInvitationRequestInput>
-  }
-
-  export type IndexedTransactionUpdateWithoutFromRedeemInvitationRequestInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    fromRequest?: IndexTransactionRequestUpdateOneWithoutIndexedTransactionInput
-    createdBy?: ProfileUpdateOneRequiredWithoutIndexedTransactionsInput
-    typeTag?: TagUpdateOneWithoutIndexedTransactionTypeInput
-    logs?: IndexedTransactionLogUpdateManyWithoutIndexedTransactionInput
-    tags?: TagUpdateManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUpdateManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedUpdateWithoutFromRedeemInvitationRequestInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    fromRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    typeTagId?: NullableIntFieldUpdateOperationsInput | number | null
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    logs?: IndexedTransactionLogUncheckedUpdateManyWithoutIndexedTransactionInput
-    tags?: TagUncheckedUpdateManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUncheckedUpdateManyWithoutIndexedTransactionInput
   }
 
   export type SessionCreateWithoutProfileInput = {
@@ -23122,28 +18247,24 @@ export namespace Prisma {
     createdAt: Date | string
     isPrivate: boolean
     value?: string | null
+    transaction?: TransactionCreateNestedOneWithoutTagsInput
     type: TagTypeCreateNestedOneWithoutTagsInput
     offerCategory?: OfferCreateNestedManyWithoutCategoryTagInput
     offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
     messageType?: MessageCreateNestedManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
-    indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
   }
 
   export type TagUncheckedCreateWithoutCreatedByInput = {
     id?: number
     createdAt: Date | string
     isPrivate: boolean
+    transactionHash?: string | null
     typeId: string
     value?: string | null
-    indexTransactionRequestId?: number | null
-    indexedTransactionId?: number | null
     offerCategory?: OfferUncheckedCreateNestedManyWithoutCategoryTagInput
     offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
     messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
   }
 
@@ -23171,7 +18292,6 @@ export namespace Prisma {
     categoryTag: TagCreateNestedOneWithoutOfferCategoryInput
     unitTag: TagCreateNestedOneWithoutOfferUnitInput
     deliveryTermsTag: TagCreateNestedOneWithoutOfferDeliveryTermsInput
-    events?: EventCreateNestedManyWithoutOfferInput
     subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToOfferInput
   }
 
@@ -23190,7 +18310,6 @@ export namespace Prisma {
     maxUnits?: number | null
     deliveryTermsTagId: number
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedItemInput
-    events?: EventUncheckedCreateNestedManyWithoutOfferInput
     subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToOfferInput
   }
 
@@ -23214,7 +18333,6 @@ export namespace Prisma {
     purchasedItemVat: number
     status: PurchaseStatus
     purchasedItem: OfferCreateNestedOneWithoutPurchasesInput
-    indexedTransaction: IndexedTransactionCreateNestedOneWithoutPurchasesInput
     jobs?: TransactionJobsCreateNestedManyWithoutPurchaseInput
   }
 
@@ -23229,7 +18347,6 @@ export namespace Prisma {
     grandTotal: string
     purchasedItemVat: number
     status: PurchaseStatus
-    indexedTransactionId: number
     jobs?: TransactionJobsUncheckedCreateNestedManyWithoutPurchaseInput
   }
 
@@ -23240,100 +18357,6 @@ export namespace Prisma {
 
   export type PurchaseCreateManyPurchasedByInputEnvelope = {
     data: Enumerable<PurchaseCreateManyPurchasedByInput>
-    skipDuplicates?: boolean
-  }
-
-  export type IndexTransactionRequestCreateWithoutCreatedByInput = {
-    createdAt: Date | string
-    blockNumber?: number | null
-    transactionIndex?: number | null
-    transactionHash: string
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-    indexedTransaction?: IndexedTransactionCreateNestedOneWithoutFromRequestInput
-    tags?: TagCreateNestedManyWithoutIndexTransactionRequestInput
-  }
-
-  export type IndexTransactionRequestUncheckedCreateWithoutCreatedByInput = {
-    id?: number
-    createdAt: Date | string
-    blockNumber?: number | null
-    transactionIndex?: number | null
-    transactionHash: string
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-    indexedTransaction?: IndexedTransactionUncheckedCreateNestedOneWithoutFromRequestInput
-    tags?: TagUncheckedCreateNestedManyWithoutIndexTransactionRequestInput
-  }
-
-  export type IndexTransactionRequestCreateOrConnectWithoutCreatedByInput = {
-    where: IndexTransactionRequestWhereUniqueInput
-    create: XOR<IndexTransactionRequestCreateWithoutCreatedByInput, IndexTransactionRequestUncheckedCreateWithoutCreatedByInput>
-  }
-
-  export type IndexTransactionRequestCreateManyCreatedByInputEnvelope = {
-    data: Enumerable<IndexTransactionRequestCreateManyCreatedByInput>
-    skipDuplicates?: boolean
-  }
-
-  export type IndexedTransactionCreateWithoutCreatedByInput = {
-    createdAt: Date | string
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-    fromRequest?: IndexTransactionRequestCreateNestedOneWithoutIndexedTransactionInput
-    fromRedeemInvitationRequest?: RedeemInvitationRequestCreateNestedOneWithoutInviteTransactionInput
-    typeTag?: TagCreateNestedOneWithoutIndexedTransactionTypeInput
-    logs?: IndexedTransactionLogCreateNestedManyWithoutIndexedTransactionInput
-    tags?: TagCreateNestedManyWithoutIndexedTransactionInput
-    purchases?: PurchaseCreateNestedManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedCreateWithoutCreatedByInput = {
-    id?: number
-    fromRequestId?: number | null
-    fromRedeemInvitationRequestId?: number | null
-    createdAt: Date | string
-    typeTagId?: number | null
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-    logs?: IndexedTransactionLogUncheckedCreateNestedManyWithoutIndexedTransactionInput
-    tags?: TagUncheckedCreateNestedManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUncheckedCreateNestedManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionCreateOrConnectWithoutCreatedByInput = {
-    where: IndexedTransactionWhereUniqueInput
-    create: XOR<IndexedTransactionCreateWithoutCreatedByInput, IndexedTransactionUncheckedCreateWithoutCreatedByInput>
-  }
-
-  export type IndexedTransactionCreateManyCreatedByInputEnvelope = {
-    data: Enumerable<IndexedTransactionCreateManyCreatedByInput>
     skipDuplicates?: boolean
   }
 
@@ -23367,39 +18390,6 @@ export namespace Prisma {
 
   export type MessageCreateManyCreatedByInputEnvelope = {
     data: Enumerable<MessageCreateManyCreatedByInput>
-    skipDuplicates?: boolean
-  }
-
-  export type EventCreateWithoutProfileInput = {
-    type: EventType
-    createdAt: Date | string
-    workerProcess?: string | null
-    deliveredAt?: Date | string | null
-    acknowledgedAt?: Date | string | null
-    archivedAt?: Date | string | null
-    data: string
-    offer?: OfferCreateNestedOneWithoutEventsInput
-  }
-
-  export type EventUncheckedCreateWithoutProfileInput = {
-    id?: number
-    type: EventType
-    offerId?: number | null
-    createdAt: Date | string
-    workerProcess?: string | null
-    deliveredAt?: Date | string | null
-    acknowledgedAt?: Date | string | null
-    archivedAt?: Date | string | null
-    data: string
-  }
-
-  export type EventCreateOrConnectWithoutProfileInput = {
-    where: EventWhereUniqueInput
-    create: XOR<EventCreateWithoutProfileInput, EventUncheckedCreateWithoutProfileInput>
-  }
-
-  export type EventCreateManyProfileInputEnvelope = {
-    data: Enumerable<EventCreateManyProfileInput>
     skipDuplicates?: boolean
   }
 
@@ -23441,7 +18431,6 @@ export namespace Prisma {
     workerProcess?: string | null
     pickedAt?: Date | string | null
     invitationToRedeem: InvitationCreateNestedOneWithoutIndexedTransactionsInput
-    inviteTransaction?: IndexedTransactionCreateNestedOneWithoutFromRedeemInvitationRequestInput
   }
 
   export type RedeemInvitationRequestUncheckedCreateWithoutCreatedByInput = {
@@ -23450,7 +18439,6 @@ export namespace Prisma {
     workerProcess?: string | null
     pickedAt?: Date | string | null
     invitationToRedeemId: number
-    inviteTransaction?: IndexedTransactionUncheckedCreateNestedOneWithoutFromRedeemInvitationRequestInput
   }
 
   export type RedeemInvitationRequestCreateOrConnectWithoutCreatedByInput = {
@@ -23634,10 +18622,9 @@ export namespace Prisma {
     createdAt?: DateTimeFilter | Date | string
     createdByProfileId?: IntFilter | number
     isPrivate?: BoolFilter | boolean
+    transactionHash?: StringNullableFilter | string | null
     typeId?: StringFilter | string
     value?: StringNullableFilter | string | null
-    indexTransactionRequestId?: IntNullableFilter | number | null
-    indexedTransactionId?: IntNullableFilter | number | null
   }
 
   export type OfferUpsertWithWhereUniqueWithoutCreatedByInput = {
@@ -23707,80 +18694,6 @@ export namespace Prisma {
     grandTotal?: StringFilter | string
     purchasedItemVat?: IntFilter | number
     status?: EnumPurchaseStatusFilter | PurchaseStatus
-    indexedTransactionId?: IntFilter | number
-  }
-
-  export type IndexTransactionRequestUpsertWithWhereUniqueWithoutCreatedByInput = {
-    where: IndexTransactionRequestWhereUniqueInput
-    update: XOR<IndexTransactionRequestUpdateWithoutCreatedByInput, IndexTransactionRequestUncheckedUpdateWithoutCreatedByInput>
-    create: XOR<IndexTransactionRequestCreateWithoutCreatedByInput, IndexTransactionRequestUncheckedCreateWithoutCreatedByInput>
-  }
-
-  export type IndexTransactionRequestUpdateWithWhereUniqueWithoutCreatedByInput = {
-    where: IndexTransactionRequestWhereUniqueInput
-    data: XOR<IndexTransactionRequestUpdateWithoutCreatedByInput, IndexTransactionRequestUncheckedUpdateWithoutCreatedByInput>
-  }
-
-  export type IndexTransactionRequestUpdateManyWithWhereWithoutCreatedByInput = {
-    where: IndexTransactionRequestScalarWhereInput
-    data: XOR<IndexTransactionRequestUpdateManyMutationInput, IndexTransactionRequestUncheckedUpdateManyWithoutIndexedTransactionRequestsInput>
-  }
-
-  export type IndexTransactionRequestScalarWhereInput = {
-    AND?: Enumerable<IndexTransactionRequestScalarWhereInput>
-    OR?: Enumerable<IndexTransactionRequestScalarWhereInput>
-    NOT?: Enumerable<IndexTransactionRequestScalarWhereInput>
-    id?: IntFilter | number
-    createdAt?: DateTimeFilter | Date | string
-    createdByProfileId?: IntFilter | number
-    blockNumber?: IntNullableFilter | number | null
-    transactionIndex?: IntNullableFilter | number | null
-    transactionHash?: StringFilter | string
-    workerProcess?: StringNullableFilter | string | null
-    pickedAt?: DateTimeNullableFilter | Date | string | null
-  }
-
-  export type IndexedTransactionUpsertWithWhereUniqueWithoutCreatedByInput = {
-    where: IndexedTransactionWhereUniqueInput
-    update: XOR<IndexedTransactionUpdateWithoutCreatedByInput, IndexedTransactionUncheckedUpdateWithoutCreatedByInput>
-    create: XOR<IndexedTransactionCreateWithoutCreatedByInput, IndexedTransactionUncheckedCreateWithoutCreatedByInput>
-  }
-
-  export type IndexedTransactionUpdateWithWhereUniqueWithoutCreatedByInput = {
-    where: IndexedTransactionWhereUniqueInput
-    data: XOR<IndexedTransactionUpdateWithoutCreatedByInput, IndexedTransactionUncheckedUpdateWithoutCreatedByInput>
-  }
-
-  export type IndexedTransactionUpdateManyWithWhereWithoutCreatedByInput = {
-    where: IndexedTransactionScalarWhereInput
-    data: XOR<IndexedTransactionUpdateManyMutationInput, IndexedTransactionUncheckedUpdateManyWithoutIndexedTransactionsInput>
-  }
-
-  export type IndexedTransactionScalarWhereInput = {
-    AND?: Enumerable<IndexedTransactionScalarWhereInput>
-    OR?: Enumerable<IndexedTransactionScalarWhereInput>
-    NOT?: Enumerable<IndexedTransactionScalarWhereInput>
-    id?: IntFilter | number
-    fromRequestId?: IntNullableFilter | number | null
-    fromRedeemInvitationRequestId?: IntNullableFilter | number | null
-    createdAt?: DateTimeFilter | Date | string
-    createdByProfileId?: IntFilter | number
-    typeTagId?: IntNullableFilter | number | null
-    from?: StringFilter | string
-    to?: StringFilter | string
-    logicalFrom?: StringNullableFilter | string | null
-    logicalTo?: StringNullableFilter | string | null
-    contractAddress?: StringNullableFilter | string | null
-    transactionIndex?: IntFilter | number
-    root?: StringNullableFilter | string | null
-    gasUsed?: StringFilter | string
-    logsBloom?: StringFilter | string
-    blockHash?: StringFilter | string
-    transactionHash?: StringFilter | string
-    blockNumber?: IntFilter | number
-    confirmations?: IntNullableFilter | number | null
-    cumulativeGasUsed?: StringFilter | string
-    status?: StringNullableFilter | string | null
   }
 
   export type MessageUpsertWithWhereUniqueWithoutCreatedByInput = {
@@ -23813,38 +18726,6 @@ export namespace Prisma {
     chainEventType?: StringNullableFilter | string | null
     chainEventId?: BigIntNullableFilter | bigint | number | null
     content?: StringFilter | string
-  }
-
-  export type EventUpsertWithWhereUniqueWithoutProfileInput = {
-    where: EventWhereUniqueInput
-    update: XOR<EventUpdateWithoutProfileInput, EventUncheckedUpdateWithoutProfileInput>
-    create: XOR<EventCreateWithoutProfileInput, EventUncheckedCreateWithoutProfileInput>
-  }
-
-  export type EventUpdateWithWhereUniqueWithoutProfileInput = {
-    where: EventWhereUniqueInput
-    data: XOR<EventUpdateWithoutProfileInput, EventUncheckedUpdateWithoutProfileInput>
-  }
-
-  export type EventUpdateManyWithWhereWithoutProfileInput = {
-    where: EventScalarWhereInput
-    data: XOR<EventUpdateManyMutationInput, EventUncheckedUpdateManyWithoutEventsInput>
-  }
-
-  export type EventScalarWhereInput = {
-    AND?: Enumerable<EventScalarWhereInput>
-    OR?: Enumerable<EventScalarWhereInput>
-    NOT?: Enumerable<EventScalarWhereInput>
-    id?: IntFilter | number
-    type?: EnumEventTypeFilter | EventType
-    profileId?: IntNullableFilter | number | null
-    offerId?: IntNullableFilter | number | null
-    createdAt?: DateTimeFilter | Date | string
-    workerProcess?: StringNullableFilter | string | null
-    deliveredAt?: DateTimeNullableFilter | Date | string | null
-    acknowledgedAt?: DateTimeNullableFilter | Date | string | null
-    archivedAt?: DateTimeNullableFilter | Date | string | null
-    data?: StringFilter | string
   }
 
   export type InvitationUpsertWithWhereUniqueWithoutCreatedByInput = {
@@ -23991,10 +18872,7 @@ export namespace Prisma {
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
-    events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
@@ -24025,10 +18903,7 @@ export namespace Prisma {
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
-    events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
@@ -24056,7 +18931,6 @@ export namespace Prisma {
     categoryTag: TagCreateNestedOneWithoutOfferCategoryInput
     unitTag: TagCreateNestedOneWithoutOfferUnitInput
     deliveryTermsTag: TagCreateNestedOneWithoutOfferDeliveryTermsInput
-    events?: EventCreateNestedManyWithoutOfferInput
   }
 
   export type OfferUncheckedCreateWithoutSubscribersInput = {
@@ -24075,7 +18949,6 @@ export namespace Prisma {
     maxUnits?: number | null
     deliveryTermsTagId: number
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedItemInput
-    events?: EventUncheckedCreateNestedManyWithoutOfferInput
   }
 
   export type OfferCreateOrConnectWithoutSubscribersInput = {
@@ -24105,10 +18978,7 @@ export namespace Prisma {
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
-    events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
@@ -24139,10 +19009,7 @@ export namespace Prisma {
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
-    events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
@@ -24182,10 +19049,7 @@ export namespace Prisma {
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUpdateManyWithoutCreatedByInput
-    events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
@@ -24216,10 +19080,7 @@ export namespace Prisma {
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
-    events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
@@ -24247,7 +19108,6 @@ export namespace Prisma {
     categoryTag?: TagUpdateOneRequiredWithoutOfferCategoryInput
     unitTag?: TagUpdateOneRequiredWithoutOfferUnitInput
     deliveryTermsTag?: TagUpdateOneRequiredWithoutOfferDeliveryTermsInput
-    events?: EventUpdateManyWithoutOfferInput
   }
 
   export type OfferUncheckedUpdateWithoutSubscribersInput = {
@@ -24266,7 +19126,6 @@ export namespace Prisma {
     maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
     deliveryTermsTagId?: IntFieldUpdateOperationsInput | number
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedItemInput
-    events?: EventUncheckedUpdateManyWithoutOfferInput
   }
 
   export type ProfileUpsertWithoutSubscribersInput = {
@@ -24296,10 +19155,7 @@ export namespace Prisma {
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUpdateManyWithoutCreatedByInput
-    events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
@@ -24330,666 +19186,12 @@ export namespace Prisma {
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
-    sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
-    events?: EventUncheckedUpdateManyWithoutProfileInput
-    invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
-  }
-
-  export type ProfileCreateWithoutEventsInput = {
-    lastUpdateAt?: Date | string
-    emailAddress: string
-    status?: string | null
-    circlesAddress?: string | null
-    circlesSafeOwner?: string | null
-    circlesTokenAddress?: string | null
-    firstName: string
-    lastName?: string | null
-    avatarUrl?: string | null
-    avatarCid?: string | null
-    avatarMimeType?: string | null
-    dream?: string | null
-    country?: string | null
-    newsletter?: boolean | null
-    cityGeonameid?: number | null
-    verifySafeChallenge?: string | null
-    newSafeAddress?: string | null
-    sessions?: SessionCreateNestedManyWithoutProfileInput
-    tags?: TagCreateNestedManyWithoutCreatedByInput
-    offers?: OfferCreateNestedManyWithoutCreatedByInput
-    purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
-    sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
-    invitations?: InvitationCreateNestedManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionCreateNestedManyWithoutSubscriberInput
-  }
-
-  export type ProfileUncheckedCreateWithoutEventsInput = {
-    id?: number
-    lastUpdateAt?: Date | string
-    emailAddress: string
-    status?: string | null
-    circlesAddress?: string | null
-    circlesSafeOwner?: string | null
-    circlesTokenAddress?: string | null
-    firstName: string
-    lastName?: string | null
-    avatarUrl?: string | null
-    avatarCid?: string | null
-    avatarMimeType?: string | null
-    dream?: string | null
-    country?: string | null
-    newsletter?: boolean | null
-    cityGeonameid?: number | null
-    verifySafeChallenge?: string | null
-    newSafeAddress?: string | null
-    sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
-    tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
-    offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
-    purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
-    sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
-    invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutSubscriberInput
-  }
-
-  export type ProfileCreateOrConnectWithoutEventsInput = {
-    where: ProfileWhereUniqueInput
-    create: XOR<ProfileCreateWithoutEventsInput, ProfileUncheckedCreateWithoutEventsInput>
-  }
-
-  export type OfferCreateWithoutEventsInput = {
-    publishedAt: Date | string
-    unlistedAt?: Date | string | null
-    title: string
-    pictureUrl?: string | null
-    pictureMimeType?: string | null
-    description?: string | null
-    geonameid: number
-    pricePerUnit: string
-    maxUnits?: number | null
-    createdBy: ProfileCreateNestedOneWithoutOffersInput
-    purchases?: PurchaseCreateNestedManyWithoutPurchasedItemInput
-    categoryTag: TagCreateNestedOneWithoutOfferCategoryInput
-    unitTag: TagCreateNestedOneWithoutOfferUnitInput
-    deliveryTermsTag: TagCreateNestedOneWithoutOfferDeliveryTermsInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToOfferInput
-  }
-
-  export type OfferUncheckedCreateWithoutEventsInput = {
-    id?: number
-    createdByProfileId: number
-    publishedAt: Date | string
-    unlistedAt?: Date | string | null
-    title: string
-    pictureUrl?: string | null
-    pictureMimeType?: string | null
-    description?: string | null
-    categoryTagId: number
-    geonameid: number
-    pricePerUnit: string
-    unitTagId: number
-    maxUnits?: number | null
-    deliveryTermsTagId: number
-    purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedItemInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToOfferInput
-  }
-
-  export type OfferCreateOrConnectWithoutEventsInput = {
-    where: OfferWhereUniqueInput
-    create: XOR<OfferCreateWithoutEventsInput, OfferUncheckedCreateWithoutEventsInput>
-  }
-
-  export type ProfileUpsertWithoutEventsInput = {
-    update: XOR<ProfileUpdateWithoutEventsInput, ProfileUncheckedUpdateWithoutEventsInput>
-    create: XOR<ProfileCreateWithoutEventsInput, ProfileUncheckedCreateWithoutEventsInput>
-  }
-
-  export type ProfileUpdateWithoutEventsInput = {
-    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    dream?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
-    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
-    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    sessions?: SessionUpdateManyWithoutProfileInput
-    tags?: TagUpdateManyWithoutCreatedByInput
-    offers?: OfferUpdateManyWithoutCreatedByInput
-    purchases?: PurchaseUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
-    sentMessages?: MessageUpdateManyWithoutCreatedByInput
-    invitations?: InvitationUpdateManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUpdateManyWithoutSubscriberInput
-  }
-
-  export type ProfileUncheckedUpdateWithoutEventsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    dream?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
-    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
-    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    sessions?: SessionUncheckedUpdateManyWithoutProfileInput
-    tags?: TagUncheckedUpdateManyWithoutCreatedByInput
-    offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
-    purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
-  }
-
-  export type OfferUpsertWithoutEventsInput = {
-    update: XOR<OfferUpdateWithoutEventsInput, OfferUncheckedUpdateWithoutEventsInput>
-    create: XOR<OfferCreateWithoutEventsInput, OfferUncheckedCreateWithoutEventsInput>
-  }
-
-  export type OfferUpdateWithoutEventsInput = {
-    publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    title?: StringFieldUpdateOperationsInput | string
-    pictureUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    geonameid?: IntFieldUpdateOperationsInput | number
-    pricePerUnit?: StringFieldUpdateOperationsInput | string
-    maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
-    createdBy?: ProfileUpdateOneRequiredWithoutOffersInput
-    purchases?: PurchaseUpdateManyWithoutPurchasedItemInput
-    categoryTag?: TagUpdateOneRequiredWithoutOfferCategoryInput
-    unitTag?: TagUpdateOneRequiredWithoutOfferUnitInput
-    deliveryTermsTag?: TagUpdateOneRequiredWithoutOfferDeliveryTermsInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToOfferInput
-  }
-
-  export type OfferUncheckedUpdateWithoutEventsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    title?: StringFieldUpdateOperationsInput | string
-    pictureUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    categoryTagId?: IntFieldUpdateOperationsInput | number
-    geonameid?: IntFieldUpdateOperationsInput | number
-    pricePerUnit?: StringFieldUpdateOperationsInput | string
-    unitTagId?: IntFieldUpdateOperationsInput | number
-    maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
-    deliveryTermsTagId?: IntFieldUpdateOperationsInput | number
-    purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedItemInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToOfferInput
-  }
-
-  export type IndexedTransactionCreateWithoutLogsInput = {
-    createdAt: Date | string
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-    fromRequest?: IndexTransactionRequestCreateNestedOneWithoutIndexedTransactionInput
-    fromRedeemInvitationRequest?: RedeemInvitationRequestCreateNestedOneWithoutInviteTransactionInput
-    createdBy: ProfileCreateNestedOneWithoutIndexedTransactionsInput
-    typeTag?: TagCreateNestedOneWithoutIndexedTransactionTypeInput
-    tags?: TagCreateNestedManyWithoutIndexedTransactionInput
-    purchases?: PurchaseCreateNestedManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedCreateWithoutLogsInput = {
-    id?: number
-    fromRequestId?: number | null
-    fromRedeemInvitationRequestId?: number | null
-    createdAt: Date | string
-    createdByProfileId: number
-    typeTagId?: number | null
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-    tags?: TagUncheckedCreateNestedManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUncheckedCreateNestedManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionCreateOrConnectWithoutLogsInput = {
-    where: IndexedTransactionWhereUniqueInput
-    create: XOR<IndexedTransactionCreateWithoutLogsInput, IndexedTransactionUncheckedCreateWithoutLogsInput>
-  }
-
-  export type IndexedTransactionUpsertWithoutLogsInput = {
-    update: XOR<IndexedTransactionUpdateWithoutLogsInput, IndexedTransactionUncheckedUpdateWithoutLogsInput>
-    create: XOR<IndexedTransactionCreateWithoutLogsInput, IndexedTransactionUncheckedCreateWithoutLogsInput>
-  }
-
-  export type IndexedTransactionUpdateWithoutLogsInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    fromRequest?: IndexTransactionRequestUpdateOneWithoutIndexedTransactionInput
-    fromRedeemInvitationRequest?: RedeemInvitationRequestUpdateOneWithoutInviteTransactionInput
-    createdBy?: ProfileUpdateOneRequiredWithoutIndexedTransactionsInput
-    typeTag?: TagUpdateOneWithoutIndexedTransactionTypeInput
-    tags?: TagUpdateManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUpdateManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedUpdateWithoutLogsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    fromRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    fromRedeemInvitationRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    typeTagId?: NullableIntFieldUpdateOperationsInput | number | null
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    tags?: TagUncheckedUpdateManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUncheckedUpdateManyWithoutIndexedTransactionInput
-  }
-
-  export type ProfileCreateWithoutIndexedTransactionRequestsInput = {
-    lastUpdateAt?: Date | string
-    emailAddress: string
-    status?: string | null
-    circlesAddress?: string | null
-    circlesSafeOwner?: string | null
-    circlesTokenAddress?: string | null
-    firstName: string
-    lastName?: string | null
-    avatarUrl?: string | null
-    avatarCid?: string | null
-    avatarMimeType?: string | null
-    dream?: string | null
-    country?: string | null
-    newsletter?: boolean | null
-    cityGeonameid?: number | null
-    verifySafeChallenge?: string | null
-    newSafeAddress?: string | null
-    sessions?: SessionCreateNestedManyWithoutProfileInput
-    tags?: TagCreateNestedManyWithoutCreatedByInput
-    offers?: OfferCreateNestedManyWithoutCreatedByInput
-    purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
-    indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
-    sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
-    events?: EventCreateNestedManyWithoutProfileInput
-    invitations?: InvitationCreateNestedManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionCreateNestedManyWithoutSubscriberInput
-  }
-
-  export type ProfileUncheckedCreateWithoutIndexedTransactionRequestsInput = {
-    id?: number
-    lastUpdateAt?: Date | string
-    emailAddress: string
-    status?: string | null
-    circlesAddress?: string | null
-    circlesSafeOwner?: string | null
-    circlesTokenAddress?: string | null
-    firstName: string
-    lastName?: string | null
-    avatarUrl?: string | null
-    avatarCid?: string | null
-    avatarMimeType?: string | null
-    dream?: string | null
-    country?: string | null
-    newsletter?: boolean | null
-    cityGeonameid?: number | null
-    verifySafeChallenge?: string | null
-    newSafeAddress?: string | null
-    sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
-    tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
-    offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
-    purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
-    indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
-    sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
-    events?: EventUncheckedCreateNestedManyWithoutProfileInput
-    invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutSubscriberInput
-  }
-
-  export type ProfileCreateOrConnectWithoutIndexedTransactionRequestsInput = {
-    where: ProfileWhereUniqueInput
-    create: XOR<ProfileCreateWithoutIndexedTransactionRequestsInput, ProfileUncheckedCreateWithoutIndexedTransactionRequestsInput>
-  }
-
-  export type IndexedTransactionCreateWithoutFromRequestInput = {
-    createdAt: Date | string
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-    fromRedeemInvitationRequest?: RedeemInvitationRequestCreateNestedOneWithoutInviteTransactionInput
-    createdBy: ProfileCreateNestedOneWithoutIndexedTransactionsInput
-    typeTag?: TagCreateNestedOneWithoutIndexedTransactionTypeInput
-    logs?: IndexedTransactionLogCreateNestedManyWithoutIndexedTransactionInput
-    tags?: TagCreateNestedManyWithoutIndexedTransactionInput
-    purchases?: PurchaseCreateNestedManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedCreateWithoutFromRequestInput = {
-    id?: number
-    fromRedeemInvitationRequestId?: number | null
-    createdAt: Date | string
-    createdByProfileId: number
-    typeTagId?: number | null
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-    logs?: IndexedTransactionLogUncheckedCreateNestedManyWithoutIndexedTransactionInput
-    tags?: TagUncheckedCreateNestedManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUncheckedCreateNestedManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionCreateOrConnectWithoutFromRequestInput = {
-    where: IndexedTransactionWhereUniqueInput
-    create: XOR<IndexedTransactionCreateWithoutFromRequestInput, IndexedTransactionUncheckedCreateWithoutFromRequestInput>
-  }
-
-  export type TagCreateWithoutIndexTransactionRequestInput = {
-    createdAt: Date | string
-    isPrivate: boolean
-    value?: string | null
-    createdBy: ProfileCreateNestedOneWithoutTagsInput
-    type: TagTypeCreateNestedOneWithoutTagsInput
-    offerCategory?: OfferCreateNestedManyWithoutCategoryTagInput
-    offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
-    offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
-    messageType?: MessageCreateNestedManyWithoutTypeTagInput
-    indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
-  }
-
-  export type TagUncheckedCreateWithoutIndexTransactionRequestInput = {
-    id?: number
-    createdAt: Date | string
-    createdByProfileId: number
-    isPrivate: boolean
-    typeId: string
-    value?: string | null
-    indexedTransactionId?: number | null
-    offerCategory?: OfferUncheckedCreateNestedManyWithoutCategoryTagInput
-    offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
-    offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
-    messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
-  }
-
-  export type TagCreateOrConnectWithoutIndexTransactionRequestInput = {
-    where: TagWhereUniqueInput
-    create: XOR<TagCreateWithoutIndexTransactionRequestInput, TagUncheckedCreateWithoutIndexTransactionRequestInput>
-  }
-
-  export type TagCreateManyIndexTransactionRequestInputEnvelope = {
-    data: Enumerable<TagCreateManyIndexTransactionRequestInput>
-    skipDuplicates?: boolean
-  }
-
-  export type ProfileUpsertWithoutIndexedTransactionRequestsInput = {
-    update: XOR<ProfileUpdateWithoutIndexedTransactionRequestsInput, ProfileUncheckedUpdateWithoutIndexedTransactionRequestsInput>
-    create: XOR<ProfileCreateWithoutIndexedTransactionRequestsInput, ProfileUncheckedCreateWithoutIndexedTransactionRequestsInput>
-  }
-
-  export type ProfileUpdateWithoutIndexedTransactionRequestsInput = {
-    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    dream?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
-    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
-    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    sessions?: SessionUpdateManyWithoutProfileInput
-    tags?: TagUpdateManyWithoutCreatedByInput
-    offers?: OfferUpdateManyWithoutCreatedByInput
-    purchases?: PurchaseUpdateManyWithoutPurchasedByInput
-    indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
-    sentMessages?: MessageUpdateManyWithoutCreatedByInput
-    events?: EventUpdateManyWithoutProfileInput
-    invitations?: InvitationUpdateManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUpdateManyWithoutSubscriberInput
-  }
-
-  export type ProfileUncheckedUpdateWithoutIndexedTransactionRequestsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    dream?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
-    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
-    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    sessions?: SessionUncheckedUpdateManyWithoutProfileInput
-    tags?: TagUncheckedUpdateManyWithoutCreatedByInput
-    offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
-    purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
-    indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
-    sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
-    events?: EventUncheckedUpdateManyWithoutProfileInput
-    invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
-  }
-
-  export type IndexedTransactionUpsertWithoutFromRequestInput = {
-    update: XOR<IndexedTransactionUpdateWithoutFromRequestInput, IndexedTransactionUncheckedUpdateWithoutFromRequestInput>
-    create: XOR<IndexedTransactionCreateWithoutFromRequestInput, IndexedTransactionUncheckedCreateWithoutFromRequestInput>
-  }
-
-  export type IndexedTransactionUpdateWithoutFromRequestInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    fromRedeemInvitationRequest?: RedeemInvitationRequestUpdateOneWithoutInviteTransactionInput
-    createdBy?: ProfileUpdateOneRequiredWithoutIndexedTransactionsInput
-    typeTag?: TagUpdateOneWithoutIndexedTransactionTypeInput
-    logs?: IndexedTransactionLogUpdateManyWithoutIndexedTransactionInput
-    tags?: TagUpdateManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUpdateManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedUpdateWithoutFromRequestInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    fromRedeemInvitationRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    typeTagId?: NullableIntFieldUpdateOperationsInput | number | null
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    logs?: IndexedTransactionLogUncheckedUpdateManyWithoutIndexedTransactionInput
-    tags?: TagUncheckedUpdateManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUncheckedUpdateManyWithoutIndexedTransactionInput
-  }
-
-  export type TagUpsertWithWhereUniqueWithoutIndexTransactionRequestInput = {
-    where: TagWhereUniqueInput
-    update: XOR<TagUpdateWithoutIndexTransactionRequestInput, TagUncheckedUpdateWithoutIndexTransactionRequestInput>
-    create: XOR<TagCreateWithoutIndexTransactionRequestInput, TagUncheckedCreateWithoutIndexTransactionRequestInput>
-  }
-
-  export type TagUpdateWithWhereUniqueWithoutIndexTransactionRequestInput = {
-    where: TagWhereUniqueInput
-    data: XOR<TagUpdateWithoutIndexTransactionRequestInput, TagUncheckedUpdateWithoutIndexTransactionRequestInput>
-  }
-
-  export type TagUpdateManyWithWhereWithoutIndexTransactionRequestInput = {
-    where: TagScalarWhereInput
-    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyWithoutTagsInput>
   }
 
   export type ProfileCreateWithoutSentMessagesInput = {
@@ -25014,9 +19216,6 @@ export namespace Prisma {
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
-    events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
@@ -25048,9 +19247,6 @@ export namespace Prisma {
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
-    events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
@@ -25069,13 +19265,11 @@ export namespace Prisma {
     isPrivate: boolean
     value?: string | null
     createdBy: ProfileCreateNestedOneWithoutTagsInput
+    transaction?: TransactionCreateNestedOneWithoutTagsInput
     type: TagTypeCreateNestedOneWithoutTagsInput
     offerCategory?: OfferCreateNestedManyWithoutCategoryTagInput
     offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
-    indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
   }
 
   export type TagUncheckedCreateWithoutMessageTypeInput = {
@@ -25083,14 +19277,12 @@ export namespace Prisma {
     createdAt: Date | string
     createdByProfileId: number
     isPrivate: boolean
+    transactionHash?: string | null
     typeId: string
     value?: string | null
-    indexTransactionRequestId?: number | null
-    indexedTransactionId?: number | null
     offerCategory?: OfferUncheckedCreateNestedManyWithoutCategoryTagInput
     offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
   }
 
   export type TagCreateOrConnectWithoutMessageTypeInput = {
@@ -25125,9 +19317,6 @@ export namespace Prisma {
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
-    events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
@@ -25159,9 +19348,6 @@ export namespace Prisma {
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
-    events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
@@ -25180,13 +19366,11 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     value?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
+    transaction?: TransactionUpdateOneWithoutTagsInput
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
     offerCategory?: OfferUpdateManyWithoutCategoryTagInput
     offerUnit?: OfferUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
-    indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
   }
 
   export type TagUncheckedUpdateWithoutMessageTypeInput = {
@@ -25194,489 +19378,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
     value?: NullableStringFieldUpdateOperationsInput | string | null
-    indexTransactionRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    indexedTransactionId?: NullableIntFieldUpdateOperationsInput | number | null
     offerCategory?: OfferUncheckedUpdateManyWithoutCategoryTagInput
     offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
-  }
-
-  export type IndexTransactionRequestCreateWithoutIndexedTransactionInput = {
-    createdAt: Date | string
-    blockNumber?: number | null
-    transactionIndex?: number | null
-    transactionHash: string
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-    createdBy: ProfileCreateNestedOneWithoutIndexedTransactionRequestsInput
-    tags?: TagCreateNestedManyWithoutIndexTransactionRequestInput
-  }
-
-  export type IndexTransactionRequestUncheckedCreateWithoutIndexedTransactionInput = {
-    id?: number
-    createdAt: Date | string
-    createdByProfileId: number
-    blockNumber?: number | null
-    transactionIndex?: number | null
-    transactionHash: string
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-    tags?: TagUncheckedCreateNestedManyWithoutIndexTransactionRequestInput
-  }
-
-  export type IndexTransactionRequestCreateOrConnectWithoutIndexedTransactionInput = {
-    where: IndexTransactionRequestWhereUniqueInput
-    create: XOR<IndexTransactionRequestCreateWithoutIndexedTransactionInput, IndexTransactionRequestUncheckedCreateWithoutIndexedTransactionInput>
-  }
-
-  export type RedeemInvitationRequestCreateWithoutInviteTransactionInput = {
-    createdAt: Date | string
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-    createdBy: ProfileCreateNestedOneWithoutRedeemInvitationRequestsInput
-    invitationToRedeem: InvitationCreateNestedOneWithoutIndexedTransactionsInput
-  }
-
-  export type RedeemInvitationRequestUncheckedCreateWithoutInviteTransactionInput = {
-    id?: number
-    createdAt: Date | string
-    createdByProfileId: number
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-    invitationToRedeemId: number
-  }
-
-  export type RedeemInvitationRequestCreateOrConnectWithoutInviteTransactionInput = {
-    where: RedeemInvitationRequestWhereUniqueInput
-    create: XOR<RedeemInvitationRequestCreateWithoutInviteTransactionInput, RedeemInvitationRequestUncheckedCreateWithoutInviteTransactionInput>
-  }
-
-  export type ProfileCreateWithoutIndexedTransactionsInput = {
-    lastUpdateAt?: Date | string
-    emailAddress: string
-    status?: string | null
-    circlesAddress?: string | null
-    circlesSafeOwner?: string | null
-    circlesTokenAddress?: string | null
-    firstName: string
-    lastName?: string | null
-    avatarUrl?: string | null
-    avatarCid?: string | null
-    avatarMimeType?: string | null
-    dream?: string | null
-    country?: string | null
-    newsletter?: boolean | null
-    cityGeonameid?: number | null
-    verifySafeChallenge?: string | null
-    newSafeAddress?: string | null
-    sessions?: SessionCreateNestedManyWithoutProfileInput
-    tags?: TagCreateNestedManyWithoutCreatedByInput
-    offers?: OfferCreateNestedManyWithoutCreatedByInput
-    purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
-    sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
-    events?: EventCreateNestedManyWithoutProfileInput
-    invitations?: InvitationCreateNestedManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionCreateNestedManyWithoutSubscriberInput
-  }
-
-  export type ProfileUncheckedCreateWithoutIndexedTransactionsInput = {
-    id?: number
-    lastUpdateAt?: Date | string
-    emailAddress: string
-    status?: string | null
-    circlesAddress?: string | null
-    circlesSafeOwner?: string | null
-    circlesTokenAddress?: string | null
-    firstName: string
-    lastName?: string | null
-    avatarUrl?: string | null
-    avatarCid?: string | null
-    avatarMimeType?: string | null
-    dream?: string | null
-    country?: string | null
-    newsletter?: boolean | null
-    cityGeonameid?: number | null
-    verifySafeChallenge?: string | null
-    newSafeAddress?: string | null
-    sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
-    tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
-    offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
-    purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
-    events?: EventUncheckedCreateNestedManyWithoutProfileInput
-    invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutSubscriberInput
-  }
-
-  export type ProfileCreateOrConnectWithoutIndexedTransactionsInput = {
-    where: ProfileWhereUniqueInput
-    create: XOR<ProfileCreateWithoutIndexedTransactionsInput, ProfileUncheckedCreateWithoutIndexedTransactionsInput>
-  }
-
-  export type TagCreateWithoutIndexedTransactionTypeInput = {
-    createdAt: Date | string
-    isPrivate: boolean
-    value?: string | null
-    createdBy: ProfileCreateNestedOneWithoutTagsInput
-    type: TagTypeCreateNestedOneWithoutTagsInput
-    offerCategory?: OfferCreateNestedManyWithoutCategoryTagInput
-    offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
-    offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
-    messageType?: MessageCreateNestedManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
-    indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
-  }
-
-  export type TagUncheckedCreateWithoutIndexedTransactionTypeInput = {
-    id?: number
-    createdAt: Date | string
-    createdByProfileId: number
-    isPrivate: boolean
-    typeId: string
-    value?: string | null
-    indexTransactionRequestId?: number | null
-    indexedTransactionId?: number | null
-    offerCategory?: OfferUncheckedCreateNestedManyWithoutCategoryTagInput
-    offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
-    offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
-    messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
-  }
-
-  export type TagCreateOrConnectWithoutIndexedTransactionTypeInput = {
-    where: TagWhereUniqueInput
-    create: XOR<TagCreateWithoutIndexedTransactionTypeInput, TagUncheckedCreateWithoutIndexedTransactionTypeInput>
-  }
-
-  export type IndexedTransactionLogCreateWithoutIndexedTransactionInput = {
-    address: string
-    data?: string | null
-    logIndex: number
-    topics?: IndexedTransactionLogCreatetopicsInput | Enumerable<string>
-  }
-
-  export type IndexedTransactionLogUncheckedCreateWithoutIndexedTransactionInput = {
-    id?: number
-    address: string
-    data?: string | null
-    logIndex: number
-    topics?: IndexedTransactionLogCreatetopicsInput | Enumerable<string>
-  }
-
-  export type IndexedTransactionLogCreateOrConnectWithoutIndexedTransactionInput = {
-    where: IndexedTransactionLogWhereUniqueInput
-    create: XOR<IndexedTransactionLogCreateWithoutIndexedTransactionInput, IndexedTransactionLogUncheckedCreateWithoutIndexedTransactionInput>
-  }
-
-  export type IndexedTransactionLogCreateManyIndexedTransactionInputEnvelope = {
-    data: Enumerable<IndexedTransactionLogCreateManyIndexedTransactionInput>
-    skipDuplicates?: boolean
-  }
-
-  export type TagCreateWithoutIndexedTransactionInput = {
-    createdAt: Date | string
-    isPrivate: boolean
-    value?: string | null
-    createdBy: ProfileCreateNestedOneWithoutTagsInput
-    type: TagTypeCreateNestedOneWithoutTagsInput
-    offerCategory?: OfferCreateNestedManyWithoutCategoryTagInput
-    offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
-    offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
-    messageType?: MessageCreateNestedManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
-  }
-
-  export type TagUncheckedCreateWithoutIndexedTransactionInput = {
-    id?: number
-    createdAt: Date | string
-    createdByProfileId: number
-    isPrivate: boolean
-    typeId: string
-    value?: string | null
-    indexTransactionRequestId?: number | null
-    offerCategory?: OfferUncheckedCreateNestedManyWithoutCategoryTagInput
-    offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
-    offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
-    messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
-  }
-
-  export type TagCreateOrConnectWithoutIndexedTransactionInput = {
-    where: TagWhereUniqueInput
-    create: XOR<TagCreateWithoutIndexedTransactionInput, TagUncheckedCreateWithoutIndexedTransactionInput>
-  }
-
-  export type TagCreateManyIndexedTransactionInputEnvelope = {
-    data: Enumerable<TagCreateManyIndexedTransactionInput>
-    skipDuplicates?: boolean
-  }
-
-  export type PurchaseCreateWithoutIndexedTransactionInput = {
-    purchasedAt: Date | string
-    purchasedProvenAt?: Date | string | null
-    purchasedItemTitle: string
-    pricePerUnit: string
-    purchasedUnits: number
-    grandTotal: string
-    purchasedItemVat: number
-    status: PurchaseStatus
-    purchasedBy: ProfileCreateNestedOneWithoutPurchasesInput
-    purchasedItem: OfferCreateNestedOneWithoutPurchasesInput
-    jobs?: TransactionJobsCreateNestedManyWithoutPurchaseInput
-  }
-
-  export type PurchaseUncheckedCreateWithoutIndexedTransactionInput = {
-    id?: number
-    purchasedByProfileId: number
-    purchasedAt: Date | string
-    purchasedProvenAt?: Date | string | null
-    purchasedItemId: number
-    purchasedItemTitle: string
-    pricePerUnit: string
-    purchasedUnits: number
-    grandTotal: string
-    purchasedItemVat: number
-    status: PurchaseStatus
-    jobs?: TransactionJobsUncheckedCreateNestedManyWithoutPurchaseInput
-  }
-
-  export type PurchaseCreateOrConnectWithoutIndexedTransactionInput = {
-    where: PurchaseWhereUniqueInput
-    create: XOR<PurchaseCreateWithoutIndexedTransactionInput, PurchaseUncheckedCreateWithoutIndexedTransactionInput>
-  }
-
-  export type PurchaseCreateManyIndexedTransactionInputEnvelope = {
-    data: Enumerable<PurchaseCreateManyIndexedTransactionInput>
-    skipDuplicates?: boolean
-  }
-
-  export type IndexTransactionRequestUpsertWithoutIndexedTransactionInput = {
-    update: XOR<IndexTransactionRequestUpdateWithoutIndexedTransactionInput, IndexTransactionRequestUncheckedUpdateWithoutIndexedTransactionInput>
-    create: XOR<IndexTransactionRequestCreateWithoutIndexedTransactionInput, IndexTransactionRequestUncheckedCreateWithoutIndexedTransactionInput>
-  }
-
-  export type IndexTransactionRequestUpdateWithoutIndexedTransactionInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blockNumber?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionIndex?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdBy?: ProfileUpdateOneRequiredWithoutIndexedTransactionRequestsInput
-    tags?: TagUpdateManyWithoutIndexTransactionRequestInput
-  }
-
-  export type IndexTransactionRequestUncheckedUpdateWithoutIndexedTransactionInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    blockNumber?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionIndex?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    tags?: TagUncheckedUpdateManyWithoutIndexTransactionRequestInput
-  }
-
-  export type RedeemInvitationRequestUpsertWithoutInviteTransactionInput = {
-    update: XOR<RedeemInvitationRequestUpdateWithoutInviteTransactionInput, RedeemInvitationRequestUncheckedUpdateWithoutInviteTransactionInput>
-    create: XOR<RedeemInvitationRequestCreateWithoutInviteTransactionInput, RedeemInvitationRequestUncheckedCreateWithoutInviteTransactionInput>
-  }
-
-  export type RedeemInvitationRequestUpdateWithoutInviteTransactionInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdBy?: ProfileUpdateOneRequiredWithoutRedeemInvitationRequestsInput
-    invitationToRedeem?: InvitationUpdateOneRequiredWithoutIndexedTransactionsInput
-  }
-
-  export type RedeemInvitationRequestUncheckedUpdateWithoutInviteTransactionInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    invitationToRedeemId?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type ProfileUpsertWithoutIndexedTransactionsInput = {
-    update: XOR<ProfileUpdateWithoutIndexedTransactionsInput, ProfileUncheckedUpdateWithoutIndexedTransactionsInput>
-    create: XOR<ProfileCreateWithoutIndexedTransactionsInput, ProfileUncheckedCreateWithoutIndexedTransactionsInput>
-  }
-
-  export type ProfileUpdateWithoutIndexedTransactionsInput = {
-    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    dream?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
-    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
-    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    sessions?: SessionUpdateManyWithoutProfileInput
-    tags?: TagUpdateManyWithoutCreatedByInput
-    offers?: OfferUpdateManyWithoutCreatedByInput
-    purchases?: PurchaseUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
-    sentMessages?: MessageUpdateManyWithoutCreatedByInput
-    events?: EventUpdateManyWithoutProfileInput
-    invitations?: InvitationUpdateManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUpdateManyWithoutSubscriberInput
-  }
-
-  export type ProfileUncheckedUpdateWithoutIndexedTransactionsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    dream?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
-    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
-    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    sessions?: SessionUncheckedUpdateManyWithoutProfileInput
-    tags?: TagUncheckedUpdateManyWithoutCreatedByInput
-    offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
-    purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
-    sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
-    events?: EventUncheckedUpdateManyWithoutProfileInput
-    invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
-  }
-
-  export type TagUpsertWithoutIndexedTransactionTypeInput = {
-    update: XOR<TagUpdateWithoutIndexedTransactionTypeInput, TagUncheckedUpdateWithoutIndexedTransactionTypeInput>
-    create: XOR<TagCreateWithoutIndexedTransactionTypeInput, TagUncheckedCreateWithoutIndexedTransactionTypeInput>
-  }
-
-  export type TagUpdateWithoutIndexedTransactionTypeInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    value?: NullableStringFieldUpdateOperationsInput | string | null
-    createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
-    type?: TagTypeUpdateOneRequiredWithoutTagsInput
-    offerCategory?: OfferUpdateManyWithoutCategoryTagInput
-    offerUnit?: OfferUpdateManyWithoutUnitTagInput
-    offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
-    messageType?: MessageUpdateManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
-    indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
-  }
-
-  export type TagUncheckedUpdateWithoutIndexedTransactionTypeInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    typeId?: StringFieldUpdateOperationsInput | string
-    value?: NullableStringFieldUpdateOperationsInput | string | null
-    indexTransactionRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    indexedTransactionId?: NullableIntFieldUpdateOperationsInput | number | null
-    offerCategory?: OfferUncheckedUpdateManyWithoutCategoryTagInput
-    offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
-    offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
-    messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
-  }
-
-  export type IndexedTransactionLogUpsertWithWhereUniqueWithoutIndexedTransactionInput = {
-    where: IndexedTransactionLogWhereUniqueInput
-    update: XOR<IndexedTransactionLogUpdateWithoutIndexedTransactionInput, IndexedTransactionLogUncheckedUpdateWithoutIndexedTransactionInput>
-    create: XOR<IndexedTransactionLogCreateWithoutIndexedTransactionInput, IndexedTransactionLogUncheckedCreateWithoutIndexedTransactionInput>
-  }
-
-  export type IndexedTransactionLogUpdateWithWhereUniqueWithoutIndexedTransactionInput = {
-    where: IndexedTransactionLogWhereUniqueInput
-    data: XOR<IndexedTransactionLogUpdateWithoutIndexedTransactionInput, IndexedTransactionLogUncheckedUpdateWithoutIndexedTransactionInput>
-  }
-
-  export type IndexedTransactionLogUpdateManyWithWhereWithoutIndexedTransactionInput = {
-    where: IndexedTransactionLogScalarWhereInput
-    data: XOR<IndexedTransactionLogUpdateManyMutationInput, IndexedTransactionLogUncheckedUpdateManyWithoutLogsInput>
-  }
-
-  export type IndexedTransactionLogScalarWhereInput = {
-    AND?: Enumerable<IndexedTransactionLogScalarWhereInput>
-    OR?: Enumerable<IndexedTransactionLogScalarWhereInput>
-    NOT?: Enumerable<IndexedTransactionLogScalarWhereInput>
-    id?: IntFilter | number
-    indexedTransactionId?: IntFilter | number
-    address?: StringFilter | string
-    data?: StringNullableFilter | string | null
-    topics?: StringNullableListFilter
-    logIndex?: IntFilter | number
-  }
-
-  export type TagUpsertWithWhereUniqueWithoutIndexedTransactionInput = {
-    where: TagWhereUniqueInput
-    update: XOR<TagUpdateWithoutIndexedTransactionInput, TagUncheckedUpdateWithoutIndexedTransactionInput>
-    create: XOR<TagCreateWithoutIndexedTransactionInput, TagUncheckedCreateWithoutIndexedTransactionInput>
-  }
-
-  export type TagUpdateWithWhereUniqueWithoutIndexedTransactionInput = {
-    where: TagWhereUniqueInput
-    data: XOR<TagUpdateWithoutIndexedTransactionInput, TagUncheckedUpdateWithoutIndexedTransactionInput>
-  }
-
-  export type TagUpdateManyWithWhereWithoutIndexedTransactionInput = {
-    where: TagScalarWhereInput
-    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyWithoutTagsInput>
-  }
-
-  export type PurchaseUpsertWithWhereUniqueWithoutIndexedTransactionInput = {
-    where: PurchaseWhereUniqueInput
-    update: XOR<PurchaseUpdateWithoutIndexedTransactionInput, PurchaseUncheckedUpdateWithoutIndexedTransactionInput>
-    create: XOR<PurchaseCreateWithoutIndexedTransactionInput, PurchaseUncheckedCreateWithoutIndexedTransactionInput>
-  }
-
-  export type PurchaseUpdateWithWhereUniqueWithoutIndexedTransactionInput = {
-    where: PurchaseWhereUniqueInput
-    data: XOR<PurchaseUpdateWithoutIndexedTransactionInput, PurchaseUncheckedUpdateWithoutIndexedTransactionInput>
-  }
-
-  export type PurchaseUpdateManyWithWhereWithoutIndexedTransactionInput = {
-    where: PurchaseScalarWhereInput
-    data: XOR<PurchaseUpdateManyMutationInput, PurchaseUncheckedUpdateManyWithoutPurchasesInput>
   }
 
   export type ProfileCreateWithoutOffersInput = {
@@ -25700,10 +19407,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
-    events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
@@ -25734,10 +19438,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
-    events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
@@ -25761,7 +19462,6 @@ export namespace Prisma {
     purchasedItemVat: number
     status: PurchaseStatus
     purchasedBy: ProfileCreateNestedOneWithoutPurchasesInput
-    indexedTransaction: IndexedTransactionCreateNestedOneWithoutPurchasesInput
     jobs?: TransactionJobsCreateNestedManyWithoutPurchaseInput
   }
 
@@ -25776,7 +19476,6 @@ export namespace Prisma {
     grandTotal: string
     purchasedItemVat: number
     status: PurchaseStatus
-    indexedTransactionId: number
     jobs?: TransactionJobsUncheckedCreateNestedManyWithoutPurchaseInput
   }
 
@@ -25795,13 +19494,11 @@ export namespace Prisma {
     isPrivate: boolean
     value?: string | null
     createdBy: ProfileCreateNestedOneWithoutTagsInput
+    transaction?: TransactionCreateNestedOneWithoutTagsInput
     type: TagTypeCreateNestedOneWithoutTagsInput
     offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
     messageType?: MessageCreateNestedManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
-    indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
   }
 
   export type TagUncheckedCreateWithoutOfferCategoryInput = {
@@ -25809,13 +19506,11 @@ export namespace Prisma {
     createdAt: Date | string
     createdByProfileId: number
     isPrivate: boolean
+    transactionHash?: string | null
     typeId: string
     value?: string | null
-    indexTransactionRequestId?: number | null
-    indexedTransactionId?: number | null
     offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
     messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
   }
 
@@ -25829,13 +19524,11 @@ export namespace Prisma {
     isPrivate: boolean
     value?: string | null
     createdBy: ProfileCreateNestedOneWithoutTagsInput
+    transaction?: TransactionCreateNestedOneWithoutTagsInput
     type: TagTypeCreateNestedOneWithoutTagsInput
     offerCategory?: OfferCreateNestedManyWithoutCategoryTagInput
     offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
     messageType?: MessageCreateNestedManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
-    indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
   }
 
   export type TagUncheckedCreateWithoutOfferUnitInput = {
@@ -25843,13 +19536,11 @@ export namespace Prisma {
     createdAt: Date | string
     createdByProfileId: number
     isPrivate: boolean
+    transactionHash?: string | null
     typeId: string
     value?: string | null
-    indexTransactionRequestId?: number | null
-    indexedTransactionId?: number | null
     offerCategory?: OfferUncheckedCreateNestedManyWithoutCategoryTagInput
     offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
     messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
   }
 
@@ -25863,13 +19554,11 @@ export namespace Prisma {
     isPrivate: boolean
     value?: string | null
     createdBy: ProfileCreateNestedOneWithoutTagsInput
+    transaction?: TransactionCreateNestedOneWithoutTagsInput
     type: TagTypeCreateNestedOneWithoutTagsInput
     offerCategory?: OfferCreateNestedManyWithoutCategoryTagInput
     offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
-    indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
     messageType?: MessageCreateNestedManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
-    indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
   }
 
   export type TagUncheckedCreateWithoutOfferDeliveryTermsInput = {
@@ -25877,52 +19566,17 @@ export namespace Prisma {
     createdAt: Date | string
     createdByProfileId: number
     isPrivate: boolean
+    transactionHash?: string | null
     typeId: string
     value?: string | null
-    indexTransactionRequestId?: number | null
-    indexedTransactionId?: number | null
     offerCategory?: OfferUncheckedCreateNestedManyWithoutCategoryTagInput
     offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
     messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
   }
 
   export type TagCreateOrConnectWithoutOfferDeliveryTermsInput = {
     where: TagWhereUniqueInput
     create: XOR<TagCreateWithoutOfferDeliveryTermsInput, TagUncheckedCreateWithoutOfferDeliveryTermsInput>
-  }
-
-  export type EventCreateWithoutOfferInput = {
-    type: EventType
-    createdAt: Date | string
-    workerProcess?: string | null
-    deliveredAt?: Date | string | null
-    acknowledgedAt?: Date | string | null
-    archivedAt?: Date | string | null
-    data: string
-    profile?: ProfileCreateNestedOneWithoutEventsInput
-  }
-
-  export type EventUncheckedCreateWithoutOfferInput = {
-    id?: number
-    type: EventType
-    profileId?: number | null
-    createdAt: Date | string
-    workerProcess?: string | null
-    deliveredAt?: Date | string | null
-    acknowledgedAt?: Date | string | null
-    archivedAt?: Date | string | null
-    data: string
-  }
-
-  export type EventCreateOrConnectWithoutOfferInput = {
-    where: EventWhereUniqueInput
-    create: XOR<EventCreateWithoutOfferInput, EventUncheckedCreateWithoutOfferInput>
-  }
-
-  export type EventCreateManyOfferInputEnvelope = {
-    data: Enumerable<EventCreateManyOfferInput>
-    skipDuplicates?: boolean
   }
 
   export type SubscriptionCreateWithoutSubscribingToOfferInput = {
@@ -25976,10 +19630,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUpdateManyWithoutCreatedByInput
-    events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
@@ -26010,10 +19661,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
-    events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
@@ -26048,13 +19696,11 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     value?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
+    transaction?: TransactionUpdateOneWithoutTagsInput
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
     offerUnit?: OfferUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
     messageType?: MessageUpdateManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
-    indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
   }
 
   export type TagUncheckedUpdateWithoutOfferCategoryInput = {
@@ -26062,13 +19708,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
     value?: NullableStringFieldUpdateOperationsInput | string | null
-    indexTransactionRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    indexedTransactionId?: NullableIntFieldUpdateOperationsInput | number | null
     offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
     messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
   }
 
@@ -26082,13 +19726,11 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     value?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
+    transaction?: TransactionUpdateOneWithoutTagsInput
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
     offerCategory?: OfferUpdateManyWithoutCategoryTagInput
     offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
     messageType?: MessageUpdateManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
-    indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
   }
 
   export type TagUncheckedUpdateWithoutOfferUnitInput = {
@@ -26096,13 +19738,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
     value?: NullableStringFieldUpdateOperationsInput | string | null
-    indexTransactionRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    indexedTransactionId?: NullableIntFieldUpdateOperationsInput | number | null
     offerCategory?: OfferUncheckedUpdateManyWithoutCategoryTagInput
     offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
     messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
   }
 
@@ -26116,13 +19756,11 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     value?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
+    transaction?: TransactionUpdateOneWithoutTagsInput
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
     offerCategory?: OfferUpdateManyWithoutCategoryTagInput
     offerUnit?: OfferUpdateManyWithoutUnitTagInput
-    indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
     messageType?: MessageUpdateManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
-    indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
   }
 
   export type TagUncheckedUpdateWithoutOfferDeliveryTermsInput = {
@@ -26130,30 +19768,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
     value?: NullableStringFieldUpdateOperationsInput | string | null
-    indexTransactionRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    indexedTransactionId?: NullableIntFieldUpdateOperationsInput | number | null
     offerCategory?: OfferUncheckedUpdateManyWithoutCategoryTagInput
     offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
     messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
-  }
-
-  export type EventUpsertWithWhereUniqueWithoutOfferInput = {
-    where: EventWhereUniqueInput
-    update: XOR<EventUpdateWithoutOfferInput, EventUncheckedUpdateWithoutOfferInput>
-    create: XOR<EventCreateWithoutOfferInput, EventUncheckedCreateWithoutOfferInput>
-  }
-
-  export type EventUpdateWithWhereUniqueWithoutOfferInput = {
-    where: EventWhereUniqueInput
-    data: XOR<EventUpdateWithoutOfferInput, EventUncheckedUpdateWithoutOfferInput>
-  }
-
-  export type EventUpdateManyWithWhereWithoutOfferInput = {
-    where: EventScalarWhereInput
-    data: XOR<EventUpdateManyMutationInput, EventUncheckedUpdateManyWithoutEventsInput>
   }
 
   export type SubscriptionUpsertWithWhereUniqueWithoutSubscribingToOfferInput = {
@@ -26193,10 +19813,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
-    indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
-    events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
@@ -26227,10 +19844,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
-    events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
@@ -26258,7 +19872,6 @@ export namespace Prisma {
     categoryTag: TagCreateNestedOneWithoutOfferCategoryInput
     unitTag: TagCreateNestedOneWithoutOfferUnitInput
     deliveryTermsTag: TagCreateNestedOneWithoutOfferDeliveryTermsInput
-    events?: EventCreateNestedManyWithoutOfferInput
     subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToOfferInput
   }
 
@@ -26277,69 +19890,12 @@ export namespace Prisma {
     unitTagId: number
     maxUnits?: number | null
     deliveryTermsTagId: number
-    events?: EventUncheckedCreateNestedManyWithoutOfferInput
     subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToOfferInput
   }
 
   export type OfferCreateOrConnectWithoutPurchasesInput = {
     where: OfferWhereUniqueInput
     create: XOR<OfferCreateWithoutPurchasesInput, OfferUncheckedCreateWithoutPurchasesInput>
-  }
-
-  export type IndexedTransactionCreateWithoutPurchasesInput = {
-    createdAt: Date | string
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-    fromRequest?: IndexTransactionRequestCreateNestedOneWithoutIndexedTransactionInput
-    fromRedeemInvitationRequest?: RedeemInvitationRequestCreateNestedOneWithoutInviteTransactionInput
-    createdBy: ProfileCreateNestedOneWithoutIndexedTransactionsInput
-    typeTag?: TagCreateNestedOneWithoutIndexedTransactionTypeInput
-    logs?: IndexedTransactionLogCreateNestedManyWithoutIndexedTransactionInput
-    tags?: TagCreateNestedManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedCreateWithoutPurchasesInput = {
-    id?: number
-    fromRequestId?: number | null
-    fromRedeemInvitationRequestId?: number | null
-    createdAt: Date | string
-    createdByProfileId: number
-    typeTagId?: number | null
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-    logs?: IndexedTransactionLogUncheckedCreateNestedManyWithoutIndexedTransactionInput
-    tags?: TagUncheckedCreateNestedManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionCreateOrConnectWithoutPurchasesInput = {
-    where: IndexedTransactionWhereUniqueInput
-    create: XOR<IndexedTransactionCreateWithoutPurchasesInput, IndexedTransactionUncheckedCreateWithoutPurchasesInput>
   }
 
   export type TransactionJobsCreateWithoutPurchaseInput = {
@@ -26391,10 +19947,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUpdateManyWithoutCreatedByInput
-    events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
@@ -26425,10 +19978,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
-    events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
@@ -26456,7 +20006,6 @@ export namespace Prisma {
     categoryTag?: TagUpdateOneRequiredWithoutOfferCategoryInput
     unitTag?: TagUpdateOneRequiredWithoutOfferUnitInput
     deliveryTermsTag?: TagUpdateOneRequiredWithoutOfferDeliveryTermsInput
-    events?: EventUpdateManyWithoutOfferInput
     subscribers?: SubscriptionUpdateManyWithoutSubscribingToOfferInput
   }
 
@@ -26475,64 +20024,7 @@ export namespace Prisma {
     unitTagId?: IntFieldUpdateOperationsInput | number
     maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
     deliveryTermsTagId?: IntFieldUpdateOperationsInput | number
-    events?: EventUncheckedUpdateManyWithoutOfferInput
     subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToOfferInput
-  }
-
-  export type IndexedTransactionUpsertWithoutPurchasesInput = {
-    update: XOR<IndexedTransactionUpdateWithoutPurchasesInput, IndexedTransactionUncheckedUpdateWithoutPurchasesInput>
-    create: XOR<IndexedTransactionCreateWithoutPurchasesInput, IndexedTransactionUncheckedCreateWithoutPurchasesInput>
-  }
-
-  export type IndexedTransactionUpdateWithoutPurchasesInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    fromRequest?: IndexTransactionRequestUpdateOneWithoutIndexedTransactionInput
-    fromRedeemInvitationRequest?: RedeemInvitationRequestUpdateOneWithoutInviteTransactionInput
-    createdBy?: ProfileUpdateOneRequiredWithoutIndexedTransactionsInput
-    typeTag?: TagUpdateOneWithoutIndexedTransactionTypeInput
-    logs?: IndexedTransactionLogUpdateManyWithoutIndexedTransactionInput
-    tags?: TagUpdateManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedUpdateWithoutPurchasesInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    fromRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    fromRedeemInvitationRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    typeTagId?: NullableIntFieldUpdateOperationsInput | number | null
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    logs?: IndexedTransactionLogUncheckedUpdateManyWithoutIndexedTransactionInput
-    tags?: TagUncheckedUpdateManyWithoutIndexedTransactionInput
   }
 
   export type TransactionJobsUpsertWithWhereUniqueWithoutPurchaseInput = {
@@ -26573,7 +20065,6 @@ export namespace Prisma {
     status: PurchaseStatus
     purchasedBy: ProfileCreateNestedOneWithoutPurchasesInput
     purchasedItem: OfferCreateNestedOneWithoutPurchasesInput
-    indexedTransaction: IndexedTransactionCreateNestedOneWithoutPurchasesInput
   }
 
   export type PurchaseUncheckedCreateWithoutJobsInput = {
@@ -26588,7 +20079,6 @@ export namespace Prisma {
     grandTotal: string
     purchasedItemVat: number
     status: PurchaseStatus
-    indexedTransactionId: number
   }
 
   export type PurchaseCreateOrConnectWithoutJobsInput = {
@@ -26612,7 +20102,6 @@ export namespace Prisma {
     status?: EnumPurchaseStatusFieldUpdateOperationsInput | PurchaseStatus
     purchasedBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
     purchasedItem?: OfferUpdateOneRequiredWithoutPurchasesInput
-    indexedTransaction?: IndexedTransactionUpdateOneRequiredWithoutPurchasesInput
   }
 
   export type PurchaseUncheckedUpdateWithoutJobsInput = {
@@ -26627,7 +20116,6 @@ export namespace Prisma {
     grandTotal?: StringFieldUpdateOperationsInput | string
     purchasedItemVat?: IntFieldUpdateOperationsInput | number
     status?: EnumPurchaseStatusFieldUpdateOperationsInput | PurchaseStatus
-    indexedTransactionId?: IntFieldUpdateOperationsInput | number
   }
 
   export type TagCreateWithoutTypeInput = {
@@ -26635,13 +20123,11 @@ export namespace Prisma {
     isPrivate: boolean
     value?: string | null
     createdBy: ProfileCreateNestedOneWithoutTagsInput
+    transaction?: TransactionCreateNestedOneWithoutTagsInput
     offerCategory?: OfferCreateNestedManyWithoutCategoryTagInput
     offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionCreateNestedManyWithoutTypeTagInput
     messageType?: MessageCreateNestedManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestCreateNestedOneWithoutTagsInput
-    indexedTransaction?: IndexedTransactionCreateNestedOneWithoutTagsInput
   }
 
   export type TagUncheckedCreateWithoutTypeInput = {
@@ -26649,13 +20135,11 @@ export namespace Prisma {
     createdAt: Date | string
     createdByProfileId: number
     isPrivate: boolean
+    transactionHash?: string | null
     value?: string | null
-    indexTransactionRequestId?: number | null
-    indexedTransactionId?: number | null
     offerCategory?: OfferUncheckedCreateNestedManyWithoutCategoryTagInput
     offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedCreateNestedManyWithoutTypeTagInput
     messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
   }
 
@@ -26685,6 +20169,57 @@ export namespace Prisma {
     data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyWithoutTagsInput>
   }
 
+  export type TagCreateWithoutTransactionInput = {
+    createdAt: Date | string
+    isPrivate: boolean
+    value?: string | null
+    createdBy: ProfileCreateNestedOneWithoutTagsInput
+    type: TagTypeCreateNestedOneWithoutTagsInput
+    offerCategory?: OfferCreateNestedManyWithoutCategoryTagInput
+    offerUnit?: OfferCreateNestedManyWithoutUnitTagInput
+    offerDeliveryTerms?: OfferCreateNestedManyWithoutDeliveryTermsTagInput
+    messageType?: MessageCreateNestedManyWithoutTypeTagInput
+  }
+
+  export type TagUncheckedCreateWithoutTransactionInput = {
+    id?: number
+    createdAt: Date | string
+    createdByProfileId: number
+    isPrivate: boolean
+    typeId: string
+    value?: string | null
+    offerCategory?: OfferUncheckedCreateNestedManyWithoutCategoryTagInput
+    offerUnit?: OfferUncheckedCreateNestedManyWithoutUnitTagInput
+    offerDeliveryTerms?: OfferUncheckedCreateNestedManyWithoutDeliveryTermsTagInput
+    messageType?: MessageUncheckedCreateNestedManyWithoutTypeTagInput
+  }
+
+  export type TagCreateOrConnectWithoutTransactionInput = {
+    where: TagWhereUniqueInput
+    create: XOR<TagCreateWithoutTransactionInput, TagUncheckedCreateWithoutTransactionInput>
+  }
+
+  export type TagCreateManyTransactionInputEnvelope = {
+    data: Enumerable<TagCreateManyTransactionInput>
+    skipDuplicates?: boolean
+  }
+
+  export type TagUpsertWithWhereUniqueWithoutTransactionInput = {
+    where: TagWhereUniqueInput
+    update: XOR<TagUpdateWithoutTransactionInput, TagUncheckedUpdateWithoutTransactionInput>
+    create: XOR<TagCreateWithoutTransactionInput, TagUncheckedCreateWithoutTransactionInput>
+  }
+
+  export type TagUpdateWithWhereUniqueWithoutTransactionInput = {
+    where: TagWhereUniqueInput
+    data: XOR<TagUpdateWithoutTransactionInput, TagUncheckedUpdateWithoutTransactionInput>
+  }
+
+  export type TagUpdateManyWithWhereWithoutTransactionInput = {
+    where: TagScalarWhereInput
+    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyWithoutTagsInput>
+  }
+
   export type ProfileCreateWithoutTagsInput = {
     lastUpdateAt?: Date | string
     emailAddress: string
@@ -26706,10 +20241,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutProfileInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageCreateNestedManyWithoutCreatedByInput
-    events?: EventCreateNestedManyWithoutProfileInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
@@ -26740,10 +20272,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedCreateNestedManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedCreateNestedManyWithoutCreatedByInput
-    events?: EventUncheckedCreateNestedManyWithoutProfileInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
@@ -26755,6 +20284,19 @@ export namespace Prisma {
   export type ProfileCreateOrConnectWithoutTagsInput = {
     where: ProfileWhereUniqueInput
     create: XOR<ProfileCreateWithoutTagsInput, ProfileUncheckedCreateWithoutTagsInput>
+  }
+
+  export type TransactionCreateWithoutTagsInput = {
+    transactionHash: string
+  }
+
+  export type TransactionUncheckedCreateWithoutTagsInput = {
+    transactionHash: string
+  }
+
+  export type TransactionCreateOrConnectWithoutTagsInput = {
+    where: TransactionWhereUniqueInput
+    create: XOR<TransactionCreateWithoutTagsInput, TransactionUncheckedCreateWithoutTagsInput>
   }
 
   export type TagTypeCreateWithoutTagsInput = {
@@ -26784,7 +20326,6 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutPurchasedItemInput
     unitTag: TagCreateNestedOneWithoutOfferUnitInput
     deliveryTermsTag: TagCreateNestedOneWithoutOfferDeliveryTermsInput
-    events?: EventCreateNestedManyWithoutOfferInput
     subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToOfferInput
   }
 
@@ -26803,7 +20344,6 @@ export namespace Prisma {
     maxUnits?: number | null
     deliveryTermsTagId: number
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedItemInput
-    events?: EventUncheckedCreateNestedManyWithoutOfferInput
     subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToOfferInput
   }
 
@@ -26831,7 +20371,6 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutPurchasedItemInput
     categoryTag: TagCreateNestedOneWithoutOfferCategoryInput
     deliveryTermsTag: TagCreateNestedOneWithoutOfferDeliveryTermsInput
-    events?: EventCreateNestedManyWithoutOfferInput
     subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToOfferInput
   }
 
@@ -26850,7 +20389,6 @@ export namespace Prisma {
     maxUnits?: number | null
     deliveryTermsTagId: number
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedItemInput
-    events?: EventUncheckedCreateNestedManyWithoutOfferInput
     subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToOfferInput
   }
 
@@ -26878,7 +20416,6 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutPurchasedItemInput
     categoryTag: TagCreateNestedOneWithoutOfferCategoryInput
     unitTag: TagCreateNestedOneWithoutOfferUnitInput
-    events?: EventCreateNestedManyWithoutOfferInput
     subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToOfferInput
   }
 
@@ -26897,7 +20434,6 @@ export namespace Prisma {
     unitTagId: number
     maxUnits?: number | null
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedItemInput
-    events?: EventUncheckedCreateNestedManyWithoutOfferInput
     subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToOfferInput
   }
 
@@ -26908,67 +20444,6 @@ export namespace Prisma {
 
   export type OfferCreateManyDeliveryTermsTagInputEnvelope = {
     data: Enumerable<OfferCreateManyDeliveryTermsTagInput>
-    skipDuplicates?: boolean
-  }
-
-  export type IndexedTransactionCreateWithoutTypeTagInput = {
-    createdAt: Date | string
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-    fromRequest?: IndexTransactionRequestCreateNestedOneWithoutIndexedTransactionInput
-    fromRedeemInvitationRequest?: RedeemInvitationRequestCreateNestedOneWithoutInviteTransactionInput
-    createdBy: ProfileCreateNestedOneWithoutIndexedTransactionsInput
-    logs?: IndexedTransactionLogCreateNestedManyWithoutIndexedTransactionInput
-    tags?: TagCreateNestedManyWithoutIndexedTransactionInput
-    purchases?: PurchaseCreateNestedManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedCreateWithoutTypeTagInput = {
-    id?: number
-    fromRequestId?: number | null
-    fromRedeemInvitationRequestId?: number | null
-    createdAt: Date | string
-    createdByProfileId: number
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-    logs?: IndexedTransactionLogUncheckedCreateNestedManyWithoutIndexedTransactionInput
-    tags?: TagUncheckedCreateNestedManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUncheckedCreateNestedManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionCreateOrConnectWithoutTypeTagInput = {
-    where: IndexedTransactionWhereUniqueInput
-    create: XOR<IndexedTransactionCreateWithoutTypeTagInput, IndexedTransactionUncheckedCreateWithoutTypeTagInput>
-  }
-
-  export type IndexedTransactionCreateManyTypeTagInputEnvelope = {
-    data: Enumerable<IndexedTransactionCreateManyTypeTagInput>
     skipDuplicates?: boolean
   }
 
@@ -27005,90 +20480,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type IndexTransactionRequestCreateWithoutTagsInput = {
-    createdAt: Date | string
-    blockNumber?: number | null
-    transactionIndex?: number | null
-    transactionHash: string
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-    createdBy: ProfileCreateNestedOneWithoutIndexedTransactionRequestsInput
-    indexedTransaction?: IndexedTransactionCreateNestedOneWithoutFromRequestInput
-  }
-
-  export type IndexTransactionRequestUncheckedCreateWithoutTagsInput = {
-    id?: number
-    createdAt: Date | string
-    createdByProfileId: number
-    blockNumber?: number | null
-    transactionIndex?: number | null
-    transactionHash: string
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-    indexedTransaction?: IndexedTransactionUncheckedCreateNestedOneWithoutFromRequestInput
-  }
-
-  export type IndexTransactionRequestCreateOrConnectWithoutTagsInput = {
-    where: IndexTransactionRequestWhereUniqueInput
-    create: XOR<IndexTransactionRequestCreateWithoutTagsInput, IndexTransactionRequestUncheckedCreateWithoutTagsInput>
-  }
-
-  export type IndexedTransactionCreateWithoutTagsInput = {
-    createdAt: Date | string
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-    fromRequest?: IndexTransactionRequestCreateNestedOneWithoutIndexedTransactionInput
-    fromRedeemInvitationRequest?: RedeemInvitationRequestCreateNestedOneWithoutInviteTransactionInput
-    createdBy: ProfileCreateNestedOneWithoutIndexedTransactionsInput
-    typeTag?: TagCreateNestedOneWithoutIndexedTransactionTypeInput
-    logs?: IndexedTransactionLogCreateNestedManyWithoutIndexedTransactionInput
-    purchases?: PurchaseCreateNestedManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedCreateWithoutTagsInput = {
-    id?: number
-    fromRequestId?: number | null
-    fromRedeemInvitationRequestId?: number | null
-    createdAt: Date | string
-    createdByProfileId: number
-    typeTagId?: number | null
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-    logs?: IndexedTransactionLogUncheckedCreateNestedManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUncheckedCreateNestedManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionCreateOrConnectWithoutTagsInput = {
-    where: IndexedTransactionWhereUniqueInput
-    create: XOR<IndexedTransactionCreateWithoutTagsInput, IndexedTransactionUncheckedCreateWithoutTagsInput>
-  }
-
   export type ProfileUpsertWithoutTagsInput = {
     update: XOR<ProfileUpdateWithoutTagsInput, ProfileUncheckedUpdateWithoutTagsInput>
     create: XOR<ProfileCreateWithoutTagsInput, ProfileUncheckedCreateWithoutTagsInput>
@@ -27115,10 +20506,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutProfileInput
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUpdateManyWithoutCreatedByInput
-    events?: EventUpdateManyWithoutProfileInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
@@ -27149,16 +20537,26 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
-    indexedTransactionRequests?: IndexTransactionRequestUncheckedUpdateManyWithoutCreatedByInput
-    indexedTransactions?: IndexedTransactionUncheckedUpdateManyWithoutCreatedByInput
     sentMessages?: MessageUncheckedUpdateManyWithoutCreatedByInput
-    events?: EventUncheckedUpdateManyWithoutProfileInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
     subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
+  }
+
+  export type TransactionUpsertWithoutTagsInput = {
+    update: XOR<TransactionUpdateWithoutTagsInput, TransactionUncheckedUpdateWithoutTagsInput>
+    create: XOR<TransactionCreateWithoutTagsInput, TransactionUncheckedCreateWithoutTagsInput>
+  }
+
+  export type TransactionUpdateWithoutTagsInput = {
+    transactionHash?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TransactionUncheckedUpdateWithoutTagsInput = {
+    transactionHash?: StringFieldUpdateOperationsInput | string
   }
 
   export type TagTypeUpsertWithoutTagsInput = {
@@ -27222,22 +20620,6 @@ export namespace Prisma {
     data: XOR<OfferUpdateManyMutationInput, OfferUncheckedUpdateManyWithoutOfferDeliveryTermsInput>
   }
 
-  export type IndexedTransactionUpsertWithWhereUniqueWithoutTypeTagInput = {
-    where: IndexedTransactionWhereUniqueInput
-    update: XOR<IndexedTransactionUpdateWithoutTypeTagInput, IndexedTransactionUncheckedUpdateWithoutTypeTagInput>
-    create: XOR<IndexedTransactionCreateWithoutTypeTagInput, IndexedTransactionUncheckedCreateWithoutTypeTagInput>
-  }
-
-  export type IndexedTransactionUpdateWithWhereUniqueWithoutTypeTagInput = {
-    where: IndexedTransactionWhereUniqueInput
-    data: XOR<IndexedTransactionUpdateWithoutTypeTagInput, IndexedTransactionUncheckedUpdateWithoutTypeTagInput>
-  }
-
-  export type IndexedTransactionUpdateManyWithWhereWithoutTypeTagInput = {
-    where: IndexedTransactionScalarWhereInput
-    data: XOR<IndexedTransactionUpdateManyMutationInput, IndexedTransactionUncheckedUpdateManyWithoutIndexedTransactionTypeInput>
-  }
-
   export type MessageUpsertWithWhereUniqueWithoutTypeTagInput = {
     where: MessageWhereUniqueInput
     update: XOR<MessageUpdateWithoutTypeTagInput, MessageUncheckedUpdateWithoutTypeTagInput>
@@ -27254,90 +20636,6 @@ export namespace Prisma {
     data: XOR<MessageUpdateManyMutationInput, MessageUncheckedUpdateManyWithoutMessageTypeInput>
   }
 
-  export type IndexTransactionRequestUpsertWithoutTagsInput = {
-    update: XOR<IndexTransactionRequestUpdateWithoutTagsInput, IndexTransactionRequestUncheckedUpdateWithoutTagsInput>
-    create: XOR<IndexTransactionRequestCreateWithoutTagsInput, IndexTransactionRequestUncheckedCreateWithoutTagsInput>
-  }
-
-  export type IndexTransactionRequestUpdateWithoutTagsInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blockNumber?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionIndex?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdBy?: ProfileUpdateOneRequiredWithoutIndexedTransactionRequestsInput
-    indexedTransaction?: IndexedTransactionUpdateOneWithoutFromRequestInput
-  }
-
-  export type IndexTransactionRequestUncheckedUpdateWithoutTagsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    blockNumber?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionIndex?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    indexedTransaction?: IndexedTransactionUncheckedUpdateOneWithoutFromRequestInput
-  }
-
-  export type IndexedTransactionUpsertWithoutTagsInput = {
-    update: XOR<IndexedTransactionUpdateWithoutTagsInput, IndexedTransactionUncheckedUpdateWithoutTagsInput>
-    create: XOR<IndexedTransactionCreateWithoutTagsInput, IndexedTransactionUncheckedCreateWithoutTagsInput>
-  }
-
-  export type IndexedTransactionUpdateWithoutTagsInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    fromRequest?: IndexTransactionRequestUpdateOneWithoutIndexedTransactionInput
-    fromRedeemInvitationRequest?: RedeemInvitationRequestUpdateOneWithoutInviteTransactionInput
-    createdBy?: ProfileUpdateOneRequiredWithoutIndexedTransactionsInput
-    typeTag?: TagUpdateOneWithoutIndexedTransactionTypeInput
-    logs?: IndexedTransactionLogUpdateManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUpdateManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedUpdateWithoutTagsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    fromRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    fromRedeemInvitationRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    typeTagId?: NullableIntFieldUpdateOperationsInput | number | null
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    logs?: IndexedTransactionLogUncheckedUpdateManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUncheckedUpdateManyWithoutIndexedTransactionInput
-  }
-
   export type RedeemInvitationRequestCreateManyInvitationToRedeemInput = {
     id?: number
     createdAt: Date | string
@@ -27351,7 +20649,6 @@ export namespace Prisma {
     workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
     pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutRedeemInvitationRequestsInput
-    inviteTransaction?: IndexedTransactionUpdateOneWithoutFromRedeemInvitationRequestInput
   }
 
   export type RedeemInvitationRequestUncheckedUpdateWithoutInvitationToRedeemInput = {
@@ -27360,7 +20657,6 @@ export namespace Prisma {
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
     pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    inviteTransaction?: IndexedTransactionUncheckedUpdateOneWithoutFromRedeemInvitationRequestInput
   }
 
   export type RedeemInvitationRequestUncheckedUpdateManyWithoutIndexedTransactionsInput = {
@@ -27386,10 +20682,9 @@ export namespace Prisma {
     id?: number
     createdAt: Date | string
     isPrivate: boolean
+    transactionHash?: string | null
     typeId: string
     value?: string | null
-    indexTransactionRequestId?: number | null
-    indexedTransactionId?: number | null
   }
 
   export type OfferCreateManyCreatedByInput = {
@@ -27419,40 +20714,6 @@ export namespace Prisma {
     grandTotal: string
     purchasedItemVat: number
     status: PurchaseStatus
-    indexedTransactionId: number
-  }
-
-  export type IndexTransactionRequestCreateManyCreatedByInput = {
-    id?: number
-    createdAt: Date | string
-    blockNumber?: number | null
-    transactionIndex?: number | null
-    transactionHash: string
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-  }
-
-  export type IndexedTransactionCreateManyCreatedByInput = {
-    id?: number
-    fromRequestId?: number | null
-    fromRedeemInvitationRequestId?: number | null
-    createdAt: Date | string
-    typeTagId?: number | null
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
   }
 
   export type MessageCreateManyCreatedByInput = {
@@ -27465,18 +20726,6 @@ export namespace Prisma {
     chainEventType?: string | null
     chainEventId?: bigint | number | null
     content: string
-  }
-
-  export type EventCreateManyProfileInput = {
-    id?: number
-    type: EventType
-    offerId?: number | null
-    createdAt: Date | string
-    workerProcess?: string | null
-    deliveredAt?: Date | string | null
-    acknowledgedAt?: Date | string | null
-    archivedAt?: Date | string | null
-    data: string
   }
 
   export type InvitationCreateManyCreatedByInput = {
@@ -27571,28 +20820,24 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     value?: NullableStringFieldUpdateOperationsInput | string | null
+    transaction?: TransactionUpdateOneWithoutTagsInput
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
     offerCategory?: OfferUpdateManyWithoutCategoryTagInput
     offerUnit?: OfferUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
     messageType?: MessageUpdateManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
-    indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
   }
 
   export type TagUncheckedUpdateWithoutCreatedByInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
     value?: NullableStringFieldUpdateOperationsInput | string | null
-    indexTransactionRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    indexedTransactionId?: NullableIntFieldUpdateOperationsInput | number | null
     offerCategory?: OfferUncheckedUpdateManyWithoutCategoryTagInput
     offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
     messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
   }
 
@@ -27600,10 +20845,9 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
     value?: NullableStringFieldUpdateOperationsInput | string | null
-    indexTransactionRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    indexedTransactionId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type OfferUpdateWithoutCreatedByInput = {
@@ -27620,7 +20864,6 @@ export namespace Prisma {
     categoryTag?: TagUpdateOneRequiredWithoutOfferCategoryInput
     unitTag?: TagUpdateOneRequiredWithoutOfferUnitInput
     deliveryTermsTag?: TagUpdateOneRequiredWithoutOfferDeliveryTermsInput
-    events?: EventUpdateManyWithoutOfferInput
     subscribers?: SubscriptionUpdateManyWithoutSubscribingToOfferInput
   }
 
@@ -27639,7 +20882,6 @@ export namespace Prisma {
     maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
     deliveryTermsTagId?: IntFieldUpdateOperationsInput | number
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedItemInput
-    events?: EventUncheckedUpdateManyWithoutOfferInput
     subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToOfferInput
   }
 
@@ -27669,7 +20911,6 @@ export namespace Prisma {
     purchasedItemVat?: IntFieldUpdateOperationsInput | number
     status?: EnumPurchaseStatusFieldUpdateOperationsInput | PurchaseStatus
     purchasedItem?: OfferUpdateOneRequiredWithoutPurchasesInput
-    indexedTransaction?: IndexedTransactionUpdateOneRequiredWithoutPurchasesInput
     jobs?: TransactionJobsUpdateManyWithoutPurchaseInput
   }
 
@@ -27684,7 +20925,6 @@ export namespace Prisma {
     grandTotal?: StringFieldUpdateOperationsInput | string
     purchasedItemVat?: IntFieldUpdateOperationsInput | number
     status?: EnumPurchaseStatusFieldUpdateOperationsInput | PurchaseStatus
-    indexedTransactionId?: IntFieldUpdateOperationsInput | number
     jobs?: TransactionJobsUncheckedUpdateManyWithoutPurchaseInput
   }
 
@@ -27699,114 +20939,6 @@ export namespace Prisma {
     grandTotal?: StringFieldUpdateOperationsInput | string
     purchasedItemVat?: IntFieldUpdateOperationsInput | number
     status?: EnumPurchaseStatusFieldUpdateOperationsInput | PurchaseStatus
-    indexedTransactionId?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type IndexTransactionRequestUpdateWithoutCreatedByInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blockNumber?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionIndex?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    indexedTransaction?: IndexedTransactionUpdateOneWithoutFromRequestInput
-    tags?: TagUpdateManyWithoutIndexTransactionRequestInput
-  }
-
-  export type IndexTransactionRequestUncheckedUpdateWithoutCreatedByInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blockNumber?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionIndex?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    indexedTransaction?: IndexedTransactionUncheckedUpdateOneWithoutFromRequestInput
-    tags?: TagUncheckedUpdateManyWithoutIndexTransactionRequestInput
-  }
-
-  export type IndexTransactionRequestUncheckedUpdateManyWithoutIndexedTransactionRequestsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    blockNumber?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionIndex?: NullableIntFieldUpdateOperationsInput | number | null
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type IndexedTransactionUpdateWithoutCreatedByInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    fromRequest?: IndexTransactionRequestUpdateOneWithoutIndexedTransactionInput
-    fromRedeemInvitationRequest?: RedeemInvitationRequestUpdateOneWithoutInviteTransactionInput
-    typeTag?: TagUpdateOneWithoutIndexedTransactionTypeInput
-    logs?: IndexedTransactionLogUpdateManyWithoutIndexedTransactionInput
-    tags?: TagUpdateManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUpdateManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedUpdateWithoutCreatedByInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    fromRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    fromRedeemInvitationRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    typeTagId?: NullableIntFieldUpdateOperationsInput | number | null
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    logs?: IndexedTransactionLogUncheckedUpdateManyWithoutIndexedTransactionInput
-    tags?: TagUncheckedUpdateManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUncheckedUpdateManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedUpdateManyWithoutIndexedTransactionsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    fromRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    fromRedeemInvitationRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    typeTagId?: NullableIntFieldUpdateOperationsInput | number | null
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MessageUpdateWithoutCreatedByInput = {
@@ -27842,41 +20974,6 @@ export namespace Prisma {
     chainEventType?: NullableStringFieldUpdateOperationsInput | string | null
     chainEventId?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
     content?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type EventUpdateWithoutProfileInput = {
-    type?: EnumEventTypeFieldUpdateOperationsInput | EventType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    data?: StringFieldUpdateOperationsInput | string
-    offer?: OfferUpdateOneWithoutEventsInput
-  }
-
-  export type EventUncheckedUpdateWithoutProfileInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    type?: EnumEventTypeFieldUpdateOperationsInput | EventType
-    offerId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    data?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type EventUncheckedUpdateManyWithoutEventsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    type?: EnumEventTypeFieldUpdateOperationsInput | EventType
-    offerId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    data?: StringFieldUpdateOperationsInput | string
   }
 
   export type InvitationUpdateWithoutCreatedByInput = {
@@ -27918,7 +21015,6 @@ export namespace Prisma {
     workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
     pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     invitationToRedeem?: InvitationUpdateOneRequiredWithoutIndexedTransactionsInput
-    inviteTransaction?: IndexedTransactionUpdateOneWithoutFromRedeemInvitationRequestInput
   }
 
   export type RedeemInvitationRequestUncheckedUpdateWithoutCreatedByInput = {
@@ -27927,7 +21023,6 @@ export namespace Prisma {
     workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
     pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     invitationToRedeemId?: IntFieldUpdateOperationsInput | number
-    inviteTransaction?: IndexedTransactionUncheckedUpdateOneWithoutFromRedeemInvitationRequestInput
   }
 
   export type RedeemInvitationRequestUncheckedUpdateManyWithoutRedeemInvitationRequestsInput = {
@@ -28050,158 +21145,6 @@ export namespace Prisma {
     subscribingToProfileId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
-  export type TagCreateManyIndexTransactionRequestInput = {
-    id?: number
-    createdAt: Date | string
-    createdByProfileId: number
-    isPrivate: boolean
-    typeId: string
-    value?: string | null
-    indexedTransactionId?: number | null
-  }
-
-  export type TagUpdateWithoutIndexTransactionRequestInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    value?: NullableStringFieldUpdateOperationsInput | string | null
-    createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
-    type?: TagTypeUpdateOneRequiredWithoutTagsInput
-    offerCategory?: OfferUpdateManyWithoutCategoryTagInput
-    offerUnit?: OfferUpdateManyWithoutUnitTagInput
-    offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
-    messageType?: MessageUpdateManyWithoutTypeTagInput
-    indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
-  }
-
-  export type TagUncheckedUpdateWithoutIndexTransactionRequestInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    typeId?: StringFieldUpdateOperationsInput | string
-    value?: NullableStringFieldUpdateOperationsInput | string | null
-    indexedTransactionId?: NullableIntFieldUpdateOperationsInput | number | null
-    offerCategory?: OfferUncheckedUpdateManyWithoutCategoryTagInput
-    offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
-    offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
-    messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
-  }
-
-  export type IndexedTransactionLogCreateManyIndexedTransactionInput = {
-    id?: number
-    address: string
-    data?: string | null
-    logIndex: number
-    topics?: IndexedTransactionLogCreateManytopicsInput | Enumerable<string>
-  }
-
-  export type TagCreateManyIndexedTransactionInput = {
-    id?: number
-    createdAt: Date | string
-    createdByProfileId: number
-    isPrivate: boolean
-    typeId: string
-    value?: string | null
-    indexTransactionRequestId?: number | null
-  }
-
-  export type PurchaseCreateManyIndexedTransactionInput = {
-    id?: number
-    purchasedByProfileId: number
-    purchasedAt: Date | string
-    purchasedProvenAt?: Date | string | null
-    purchasedItemId: number
-    purchasedItemTitle: string
-    pricePerUnit: string
-    purchasedUnits: number
-    grandTotal: string
-    purchasedItemVat: number
-    status: PurchaseStatus
-  }
-
-  export type IndexedTransactionLogUpdateWithoutIndexedTransactionInput = {
-    address?: StringFieldUpdateOperationsInput | string
-    data?: NullableStringFieldUpdateOperationsInput | string | null
-    logIndex?: IntFieldUpdateOperationsInput | number
-    topics?: IndexedTransactionLogUpdatetopicsInput | Enumerable<string>
-  }
-
-  export type IndexedTransactionLogUncheckedUpdateWithoutIndexedTransactionInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    address?: StringFieldUpdateOperationsInput | string
-    data?: NullableStringFieldUpdateOperationsInput | string | null
-    logIndex?: IntFieldUpdateOperationsInput | number
-    topics?: IndexedTransactionLogUpdatetopicsInput | Enumerable<string>
-  }
-
-  export type IndexedTransactionLogUncheckedUpdateManyWithoutLogsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    address?: StringFieldUpdateOperationsInput | string
-    data?: NullableStringFieldUpdateOperationsInput | string | null
-    logIndex?: IntFieldUpdateOperationsInput | number
-    topics?: IndexedTransactionLogUpdatetopicsInput | Enumerable<string>
-  }
-
-  export type TagUpdateWithoutIndexedTransactionInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    value?: NullableStringFieldUpdateOperationsInput | string | null
-    createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
-    type?: TagTypeUpdateOneRequiredWithoutTagsInput
-    offerCategory?: OfferUpdateManyWithoutCategoryTagInput
-    offerUnit?: OfferUpdateManyWithoutUnitTagInput
-    offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
-    messageType?: MessageUpdateManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
-  }
-
-  export type TagUncheckedUpdateWithoutIndexedTransactionInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    typeId?: StringFieldUpdateOperationsInput | string
-    value?: NullableStringFieldUpdateOperationsInput | string | null
-    indexTransactionRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    offerCategory?: OfferUncheckedUpdateManyWithoutCategoryTagInput
-    offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
-    offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
-    messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
-  }
-
-  export type PurchaseUpdateWithoutIndexedTransactionInput = {
-    purchasedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    purchasedProvenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    purchasedItemTitle?: StringFieldUpdateOperationsInput | string
-    pricePerUnit?: StringFieldUpdateOperationsInput | string
-    purchasedUnits?: IntFieldUpdateOperationsInput | number
-    grandTotal?: StringFieldUpdateOperationsInput | string
-    purchasedItemVat?: IntFieldUpdateOperationsInput | number
-    status?: EnumPurchaseStatusFieldUpdateOperationsInput | PurchaseStatus
-    purchasedBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
-    purchasedItem?: OfferUpdateOneRequiredWithoutPurchasesInput
-    jobs?: TransactionJobsUpdateManyWithoutPurchaseInput
-  }
-
-  export type PurchaseUncheckedUpdateWithoutIndexedTransactionInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    purchasedByProfileId?: IntFieldUpdateOperationsInput | number
-    purchasedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    purchasedProvenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    purchasedItemId?: IntFieldUpdateOperationsInput | number
-    purchasedItemTitle?: StringFieldUpdateOperationsInput | string
-    pricePerUnit?: StringFieldUpdateOperationsInput | string
-    purchasedUnits?: IntFieldUpdateOperationsInput | number
-    grandTotal?: StringFieldUpdateOperationsInput | string
-    purchasedItemVat?: IntFieldUpdateOperationsInput | number
-    status?: EnumPurchaseStatusFieldUpdateOperationsInput | PurchaseStatus
-    jobs?: TransactionJobsUncheckedUpdateManyWithoutPurchaseInput
-  }
-
   export type PurchaseCreateManyPurchasedItemInput = {
     id?: number
     purchasedByProfileId: number
@@ -28213,19 +21156,6 @@ export namespace Prisma {
     grandTotal: string
     purchasedItemVat: number
     status: PurchaseStatus
-    indexedTransactionId: number
-  }
-
-  export type EventCreateManyOfferInput = {
-    id?: number
-    type: EventType
-    profileId?: number | null
-    createdAt: Date | string
-    workerProcess?: string | null
-    deliveredAt?: Date | string | null
-    acknowledgedAt?: Date | string | null
-    archivedAt?: Date | string | null
-    data: string
   }
 
   export type SubscriptionCreateManySubscribingToOfferInput = {
@@ -28245,7 +21175,6 @@ export namespace Prisma {
     purchasedItemVat?: IntFieldUpdateOperationsInput | number
     status?: EnumPurchaseStatusFieldUpdateOperationsInput | PurchaseStatus
     purchasedBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
-    indexedTransaction?: IndexedTransactionUpdateOneRequiredWithoutPurchasesInput
     jobs?: TransactionJobsUpdateManyWithoutPurchaseInput
   }
 
@@ -28260,31 +21189,7 @@ export namespace Prisma {
     grandTotal?: StringFieldUpdateOperationsInput | string
     purchasedItemVat?: IntFieldUpdateOperationsInput | number
     status?: EnumPurchaseStatusFieldUpdateOperationsInput | PurchaseStatus
-    indexedTransactionId?: IntFieldUpdateOperationsInput | number
     jobs?: TransactionJobsUncheckedUpdateManyWithoutPurchaseInput
-  }
-
-  export type EventUpdateWithoutOfferInput = {
-    type?: EnumEventTypeFieldUpdateOperationsInput | EventType
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    data?: StringFieldUpdateOperationsInput | string
-    profile?: ProfileUpdateOneWithoutEventsInput
-  }
-
-  export type EventUncheckedUpdateWithoutOfferInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    type?: EnumEventTypeFieldUpdateOperationsInput | EventType
-    profileId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    data?: StringFieldUpdateOperationsInput | string
   }
 
   export type SubscriptionUpdateWithoutSubscribingToOfferInput = {
@@ -28334,9 +21239,8 @@ export namespace Prisma {
     createdAt: Date | string
     createdByProfileId: number
     isPrivate: boolean
+    transactionHash?: string | null
     value?: string | null
-    indexTransactionRequestId?: number | null
-    indexedTransactionId?: number | null
   }
 
   export type TagUpdateWithoutTypeInput = {
@@ -28344,13 +21248,11 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     value?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
+    transaction?: TransactionUpdateOneWithoutTagsInput
     offerCategory?: OfferUpdateManyWithoutCategoryTagInput
     offerUnit?: OfferUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUpdateManyWithoutTypeTagInput
     messageType?: MessageUpdateManyWithoutTypeTagInput
-    indexTransactionRequest?: IndexTransactionRequestUpdateOneWithoutTagsInput
-    indexedTransaction?: IndexedTransactionUpdateOneWithoutTagsInput
   }
 
   export type TagUncheckedUpdateWithoutTypeInput = {
@@ -28358,13 +21260,45 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     value?: NullableStringFieldUpdateOperationsInput | string | null
-    indexTransactionRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    indexedTransactionId?: NullableIntFieldUpdateOperationsInput | number | null
     offerCategory?: OfferUncheckedUpdateManyWithoutCategoryTagInput
     offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
     offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
-    indexedTransactionType?: IndexedTransactionUncheckedUpdateManyWithoutTypeTagInput
+    messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
+  }
+
+  export type TagCreateManyTransactionInput = {
+    id?: number
+    createdAt: Date | string
+    createdByProfileId: number
+    isPrivate: boolean
+    typeId: string
+    value?: string | null
+  }
+
+  export type TagUpdateWithoutTransactionInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    value?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
+    type?: TagTypeUpdateOneRequiredWithoutTagsInput
+    offerCategory?: OfferUpdateManyWithoutCategoryTagInput
+    offerUnit?: OfferUpdateManyWithoutUnitTagInput
+    offerDeliveryTerms?: OfferUpdateManyWithoutDeliveryTermsTagInput
+    messageType?: MessageUpdateManyWithoutTypeTagInput
+  }
+
+  export type TagUncheckedUpdateWithoutTransactionInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    typeId?: StringFieldUpdateOperationsInput | string
+    value?: NullableStringFieldUpdateOperationsInput | string | null
+    offerCategory?: OfferUncheckedUpdateManyWithoutCategoryTagInput
+    offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
+    offerDeliveryTerms?: OfferUncheckedUpdateManyWithoutDeliveryTermsTagInput
     messageType?: MessageUncheckedUpdateManyWithoutTypeTagInput
   }
 
@@ -28416,29 +21350,6 @@ export namespace Prisma {
     maxUnits?: number | null
   }
 
-  export type IndexedTransactionCreateManyTypeTagInput = {
-    id?: number
-    fromRequestId?: number | null
-    fromRedeemInvitationRequestId?: number | null
-    createdAt: Date | string
-    createdByProfileId: number
-    from: string
-    to: string
-    logicalFrom?: string | null
-    logicalTo?: string | null
-    contractAddress?: string | null
-    transactionIndex: number
-    root?: string | null
-    gasUsed: string
-    logsBloom: string
-    blockHash: string
-    transactionHash: string
-    blockNumber: number
-    confirmations?: number | null
-    cumulativeGasUsed: string
-    status?: string | null
-  }
-
   export type MessageCreateManyTypeTagInput = {
     id?: number
     createdAt: Date | string
@@ -28465,7 +21376,6 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutPurchasedItemInput
     unitTag?: TagUpdateOneRequiredWithoutOfferUnitInput
     deliveryTermsTag?: TagUpdateOneRequiredWithoutOfferDeliveryTermsInput
-    events?: EventUpdateManyWithoutOfferInput
     subscribers?: SubscriptionUpdateManyWithoutSubscribingToOfferInput
   }
 
@@ -28484,7 +21394,6 @@ export namespace Prisma {
     maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
     deliveryTermsTagId?: IntFieldUpdateOperationsInput | number
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedItemInput
-    events?: EventUncheckedUpdateManyWithoutOfferInput
     subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToOfferInput
   }
 
@@ -28518,7 +21427,6 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutPurchasedItemInput
     categoryTag?: TagUpdateOneRequiredWithoutOfferCategoryInput
     deliveryTermsTag?: TagUpdateOneRequiredWithoutOfferDeliveryTermsInput
-    events?: EventUpdateManyWithoutOfferInput
     subscribers?: SubscriptionUpdateManyWithoutSubscribingToOfferInput
   }
 
@@ -28537,7 +21445,6 @@ export namespace Prisma {
     maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
     deliveryTermsTagId?: IntFieldUpdateOperationsInput | number
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedItemInput
-    events?: EventUncheckedUpdateManyWithoutOfferInput
     subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToOfferInput
   }
 
@@ -28571,7 +21478,6 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutPurchasedItemInput
     categoryTag?: TagUpdateOneRequiredWithoutOfferCategoryInput
     unitTag?: TagUpdateOneRequiredWithoutOfferUnitInput
-    events?: EventUpdateManyWithoutOfferInput
     subscribers?: SubscriptionUpdateManyWithoutSubscribingToOfferInput
   }
 
@@ -28590,7 +21496,6 @@ export namespace Prisma {
     unitTagId?: IntFieldUpdateOperationsInput | number
     maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedItemInput
-    events?: EventUncheckedUpdateManyWithoutOfferInput
     subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToOfferInput
   }
 
@@ -28608,80 +21513,6 @@ export namespace Prisma {
     pricePerUnit?: StringFieldUpdateOperationsInput | string
     unitTagId?: IntFieldUpdateOperationsInput | number
     maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
-  }
-
-  export type IndexedTransactionUpdateWithoutTypeTagInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    fromRequest?: IndexTransactionRequestUpdateOneWithoutIndexedTransactionInput
-    fromRedeemInvitationRequest?: RedeemInvitationRequestUpdateOneWithoutInviteTransactionInput
-    createdBy?: ProfileUpdateOneRequiredWithoutIndexedTransactionsInput
-    logs?: IndexedTransactionLogUpdateManyWithoutIndexedTransactionInput
-    tags?: TagUpdateManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUpdateManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedUpdateWithoutTypeTagInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    fromRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    fromRedeemInvitationRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    logs?: IndexedTransactionLogUncheckedUpdateManyWithoutIndexedTransactionInput
-    tags?: TagUncheckedUpdateManyWithoutIndexedTransactionInput
-    purchases?: PurchaseUncheckedUpdateManyWithoutIndexedTransactionInput
-  }
-
-  export type IndexedTransactionUncheckedUpdateManyWithoutIndexedTransactionTypeInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    fromRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    fromRedeemInvitationRequestId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    logicalFrom?: NullableStringFieldUpdateOperationsInput | string | null
-    logicalTo?: NullableStringFieldUpdateOperationsInput | string | null
-    contractAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    transactionIndex?: IntFieldUpdateOperationsInput | number
-    root?: NullableStringFieldUpdateOperationsInput | string | null
-    gasUsed?: StringFieldUpdateOperationsInput | string
-    logsBloom?: StringFieldUpdateOperationsInput | string
-    blockHash?: StringFieldUpdateOperationsInput | string
-    transactionHash?: StringFieldUpdateOperationsInput | string
-    blockNumber?: IntFieldUpdateOperationsInput | number
-    confirmations?: NullableIntFieldUpdateOperationsInput | number | null
-    cumulativeGasUsed?: StringFieldUpdateOperationsInput | string
-    status?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MessageUpdateWithoutTypeTagInput = {

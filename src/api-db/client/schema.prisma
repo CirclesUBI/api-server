@@ -60,8 +60,6 @@ model RedeemInvitationRequest {
 
   invitationToRedeem Invitation @relation(name: "RedeemInvitationRequest_InvitationToRedeem", fields: [invitationToRedeemId], references: [id])
   invitationToRedeemId Int
-
-  inviteTransaction IndexedTransaction? @relation(name: "RedeemInvitationRequest_InviteTransaction")
 }
 
 model Profile {
@@ -93,11 +91,7 @@ model Profile {
     tags Tag[]  @relation(name: "Tag_CreatedBy")
     offers Offer[]  @relation(name: "Offer_CreatedBy")
     purchases Purchase[]  @relation(name: "Purchase_CreatedBy")
-    indexedTransactionRequests IndexTransactionRequest[]  @relation(name: "IndexTransactionRequest_CreatedBy")
-    indexedTransactions IndexedTransaction[]  @relation(name: "IndexedTransaction_CreatedBy")
     sentMessages Message[] @relation(name: "Message_CreatedBy")
-
-    events Event[]  @relation(name: "Profile_Events")
 
     invitations Invitation[]  @relation(name: "Invitation_CreatedBy")
     redeemInvitationRequests RedeemInvitationRequest[] @relation(name: "RedeemInvitationRequest_CreatedBy")
@@ -123,87 +117,6 @@ model Subscription {
     subscribingToProfileId Int?
 }
 
-enum EventType {
-    //
-    // PERSONAL EVENTS
-    //
-    PROFILE_INCOMING_UBI
-
-    PROFILE_INCOMING_CIRCLES_TRANSACTION
-    PROFILE_OUTGOING_CIRCLES_TRANSACTION
-
-    PROFILE_INCOMING_XDAI_TRANSACTION
-    PROFILE_OUTGOING_XDAI_TRANSACTION
-
-    PROFILE_INCOMING_TRUST
-    PROFILE_OUTGOING_TRUST
-
-    PROFILE_INCOMING_TRUST_REVOKED
-    PROFILE_OUTGOING_TRUST_REVOKED
-
-    PROFILE_INCOMING_MESSAGE
-    PROFILE_OUTGOING_MESSAGE
-
-    //
-    // PUBLIC (SUBSCRIBABLE) EVENTS
-    //
-    PROFILE_CREATED_OFFER
-
-    OFFER_UPDATED
-    OFFER_UNLISTED
-    OFFER_PURCHASED
-
-    SUBSCRIPTION_UPDATE // Is used as a "proxy" event type
-}
-
-model Event {
-    id Int @id @default(autoincrement())
-    type EventType
-
-    profile Profile? @relation(name: "Profile_Events", fields: [profileId], references: [id])
-    profileId Int?
-
-    offer Offer? @relation(name: "Offer_Events", fields: [offerId], references: [id])
-    offerId Int?
-
-    createdAt DateTime
-
-    workerProcess String? // Contains the id of the worker process which picked the task (or null if not yet picked)
-    deliveredAt DateTime?
-
-    acknowledgedAt DateTime?
-    archivedAt DateTime?
-    data String
-}
-
-model IndexedTransactionLog {
-    id Int @id @default(autoincrement())
-    indexedTransaction IndexedTransaction  @relation(name:"IndexedTransaction_Logs", fields: [indexedTransactionId], references: [id])
-    indexedTransactionId Int
-    address String
-    data String?
-    topics String[]
-    logIndex Int
-}
-
-model IndexTransactionRequest {
-    id Int @id @default(autoincrement())
-
-    createdAt DateTime
-    createdBy Profile @relation(name: "IndexTransactionRequest_CreatedBy", fields: [createdByProfileId], references: [id])
-    createdByProfileId Int
-
-    blockNumber Int?
-    transactionIndex Int?
-    transactionHash String
-
-    workerProcess String? // Contains the id of the worker process which picked the task (or null if not yet picked)
-    pickedAt DateTime?
-
-    indexedTransaction IndexedTransaction? @relation(name: "IndexTransaction_FromRequest")
-    tags Tag[] @relation(name:"IndexTransactionRequest_Tags")
-}
-
 model Message {
     id Int @id @default(autoincrement())
 
@@ -224,45 +137,6 @@ model Message {
     chainEventId BigInt?      // The primary key value for the table which corresponds with the chainEventType.
 
     content String
-}
-
-model IndexedTransaction {
-    id Int @id @default(autoincrement())
-
-    fromRequest IndexTransactionRequest? @relation(name: "IndexTransaction_FromRequest", fields: [fromRequestId], references: [id])
-    fromRequestId Int?
-
-    fromRedeemInvitationRequest RedeemInvitationRequest? @relation(name: "RedeemInvitationRequest_InviteTransaction", fields: [fromRedeemInvitationRequestId], references: [id])
-    fromRedeemInvitationRequestId Int?
-
-    createdAt DateTime
-    createdBy Profile @relation(name: "IndexedTransaction_CreatedBy", fields: [createdByProfileId], references: [id])
-    createdByProfileId Int
-
-    typeTag Tag? @relation(name: "IndexedTransaction_TypeTag", fields: [typeTagId], references: [id])
-    typeTagId Int?
-
-    from String
-    to String
-
-    logicalFrom String?
-    logicalTo String?
-
-    contractAddress String?
-    transactionIndex Int
-    root String?
-    gasUsed String
-    logsBloom String
-    blockHash String
-    transactionHash String
-    blockNumber Int
-    confirmations Int?
-    cumulativeGasUsed String
-    status String?
-
-    logs IndexedTransactionLog[] @relation(name:"IndexedTransaction_Logs")
-    tags Tag[] @relation(name:"IndexedTransaction_Tags")
-    purchases Purchase[] @relation(name:"Purchase_IndexedTransaction")
 }
 
 model DelegatedChallenges {
@@ -310,7 +184,6 @@ model Offer {
     deliveryTermsTag Tag @relation(name: "Offer_DeliveryTermsTag", fields: [deliveryTermsTagId], references: [id])
     deliveryTermsTagId Int
 
-    events Event[]  @relation(name: "Offer_Events")
     subscribers Subscription[] @relation(name: "Subscription_SubscribingToOffer")
 }
 
@@ -333,9 +206,6 @@ model Purchase {
 
     status PurchaseStatus
 
-    indexedTransaction IndexedTransaction @relation(name: "Purchase_IndexedTransaction", fields: [indexedTransactionId], references: [id])
-    indexedTransactionId Int
-
     jobs TransactionJobs[] @relation(name: "TransactionJobs_Purchase")
 }
 
@@ -354,6 +224,11 @@ model TagType {
     tags Tag[] @relation(name: "Tag_TagType")
 }
 
+model Transaction {
+    transactionHash String @unique @id
+    tags Tag[] @relation(name: "Transaction_Tag")
+}
+
 model Tag {
     id Int @id @default(autoincrement())
 
@@ -363,6 +238,9 @@ model Tag {
 
     isPrivate Boolean
 
+    transaction Transaction? @relation(name: "Transaction_Tag", fields: [transactionHash], references: [transactionHash])
+    transactionHash String?
+
     type TagType @relation(name: "Tag_TagType", fields: [typeId], references: [id])
     typeId String
 
@@ -371,13 +249,7 @@ model Tag {
     offerCategory Offer[] @relation(name: "Offer_CategoryTag")
     offerUnit Offer[] @relation(name: "Offer_UnitTag")
     offerDeliveryTerms Offer[] @relation(name: "Offer_DeliveryTermsTag")
-    indexedTransactionType IndexedTransaction[] @relation(name: "IndexedTransaction_TypeTag")
     messageType Message[] @relation(name: "Message_TypeTag")
-
-    indexTransactionRequest IndexTransactionRequest? @relation(name: "IndexTransactionRequest_Tags", fields: [indexTransactionRequestId], references: [id])
-    indexTransactionRequestId Int?
-    indexedTransaction IndexedTransaction? @relation(name: "IndexedTransaction_Tags", fields: [indexedTransactionId], references: [id])
-    indexedTransactionId Int?
 }
 
 enum PurchaseStatus {

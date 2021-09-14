@@ -132,39 +132,6 @@ exports.Prisma.SubscriptionScalarFieldEnum = makeEnum({
   subscribingToProfileId: 'subscribingToProfileId'
 });
 
-exports.Prisma.EventScalarFieldEnum = makeEnum({
-  id: 'id',
-  type: 'type',
-  profileId: 'profileId',
-  offerId: 'offerId',
-  createdAt: 'createdAt',
-  workerProcess: 'workerProcess',
-  deliveredAt: 'deliveredAt',
-  acknowledgedAt: 'acknowledgedAt',
-  archivedAt: 'archivedAt',
-  data: 'data'
-});
-
-exports.Prisma.IndexedTransactionLogScalarFieldEnum = makeEnum({
-  id: 'id',
-  indexedTransactionId: 'indexedTransactionId',
-  address: 'address',
-  data: 'data',
-  topics: 'topics',
-  logIndex: 'logIndex'
-});
-
-exports.Prisma.IndexTransactionRequestScalarFieldEnum = makeEnum({
-  id: 'id',
-  createdAt: 'createdAt',
-  createdByProfileId: 'createdByProfileId',
-  blockNumber: 'blockNumber',
-  transactionIndex: 'transactionIndex',
-  transactionHash: 'transactionHash',
-  workerProcess: 'workerProcess',
-  pickedAt: 'pickedAt'
-});
-
 exports.Prisma.MessageScalarFieldEnum = makeEnum({
   id: 'id',
   createdAt: 'createdAt',
@@ -176,30 +143,6 @@ exports.Prisma.MessageScalarFieldEnum = makeEnum({
   chainEventType: 'chainEventType',
   chainEventId: 'chainEventId',
   content: 'content'
-});
-
-exports.Prisma.IndexedTransactionScalarFieldEnum = makeEnum({
-  id: 'id',
-  fromRequestId: 'fromRequestId',
-  fromRedeemInvitationRequestId: 'fromRedeemInvitationRequestId',
-  createdAt: 'createdAt',
-  createdByProfileId: 'createdByProfileId',
-  typeTagId: 'typeTagId',
-  from: 'from',
-  to: 'to',
-  logicalFrom: 'logicalFrom',
-  logicalTo: 'logicalTo',
-  contractAddress: 'contractAddress',
-  transactionIndex: 'transactionIndex',
-  root: 'root',
-  gasUsed: 'gasUsed',
-  logsBloom: 'logsBloom',
-  blockHash: 'blockHash',
-  transactionHash: 'transactionHash',
-  blockNumber: 'blockNumber',
-  confirmations: 'confirmations',
-  cumulativeGasUsed: 'cumulativeGasUsed',
-  status: 'status'
 });
 
 exports.Prisma.DelegatedChallengesScalarFieldEnum = makeEnum({
@@ -243,8 +186,7 @@ exports.Prisma.PurchaseScalarFieldEnum = makeEnum({
   purchasedUnits: 'purchasedUnits',
   grandTotal: 'grandTotal',
   purchasedItemVat: 'purchasedItemVat',
-  status: 'status',
-  indexedTransactionId: 'indexedTransactionId'
+  status: 'status'
 });
 
 exports.Prisma.TransactionJobsScalarFieldEnum = makeEnum({
@@ -259,15 +201,18 @@ exports.Prisma.TagTypeScalarFieldEnum = makeEnum({
   id: 'id'
 });
 
+exports.Prisma.TransactionScalarFieldEnum = makeEnum({
+  transactionHash: 'transactionHash'
+});
+
 exports.Prisma.TagScalarFieldEnum = makeEnum({
   id: 'id',
   createdAt: 'createdAt',
   createdByProfileId: 'createdByProfileId',
   isPrivate: 'isPrivate',
+  transactionHash: 'transactionHash',
   typeId: 'typeId',
-  value: 'value',
-  indexTransactionRequestId: 'indexTransactionRequestId',
-  indexedTransactionId: 'indexedTransactionId'
+  value: 'value'
 });
 
 exports.Prisma.SortOrder = makeEnum({
@@ -279,25 +224,6 @@ exports.Prisma.QueryMode = makeEnum({
   default: 'default',
   insensitive: 'insensitive'
 });
-exports.EventType = makeEnum({
-  PROFILE_INCOMING_UBI: 'PROFILE_INCOMING_UBI',
-  PROFILE_INCOMING_CIRCLES_TRANSACTION: 'PROFILE_INCOMING_CIRCLES_TRANSACTION',
-  PROFILE_OUTGOING_CIRCLES_TRANSACTION: 'PROFILE_OUTGOING_CIRCLES_TRANSACTION',
-  PROFILE_INCOMING_XDAI_TRANSACTION: 'PROFILE_INCOMING_XDAI_TRANSACTION',
-  PROFILE_OUTGOING_XDAI_TRANSACTION: 'PROFILE_OUTGOING_XDAI_TRANSACTION',
-  PROFILE_INCOMING_TRUST: 'PROFILE_INCOMING_TRUST',
-  PROFILE_OUTGOING_TRUST: 'PROFILE_OUTGOING_TRUST',
-  PROFILE_INCOMING_TRUST_REVOKED: 'PROFILE_INCOMING_TRUST_REVOKED',
-  PROFILE_OUTGOING_TRUST_REVOKED: 'PROFILE_OUTGOING_TRUST_REVOKED',
-  PROFILE_INCOMING_MESSAGE: 'PROFILE_INCOMING_MESSAGE',
-  PROFILE_OUTGOING_MESSAGE: 'PROFILE_OUTGOING_MESSAGE',
-  PROFILE_CREATED_OFFER: 'PROFILE_CREATED_OFFER',
-  OFFER_UPDATED: 'OFFER_UPDATED',
-  OFFER_UNLISTED: 'OFFER_UNLISTED',
-  OFFER_PURCHASED: 'OFFER_PURCHASED',
-  SUBSCRIPTION_UPDATE: 'SUBSCRIPTION_UPDATE'
-});
-
 exports.PurchaseStatus = makeEnum({
   INVALID: 'INVALID',
   ITEM_LOCKED: 'ITEM_LOCKED',
@@ -310,16 +236,13 @@ exports.Prisma.ModelName = makeEnum({
   RedeemInvitationRequest: 'RedeemInvitationRequest',
   Profile: 'Profile',
   Subscription: 'Subscription',
-  Event: 'Event',
-  IndexedTransactionLog: 'IndexedTransactionLog',
-  IndexTransactionRequest: 'IndexTransactionRequest',
   Message: 'Message',
-  IndexedTransaction: 'IndexedTransaction',
   DelegatedChallenges: 'DelegatedChallenges',
   Offer: 'Offer',
   Purchase: 'Purchase',
   TransactionJobs: 'TransactionJobs',
   TagType: 'TagType',
+  Transaction: 'Transaction',
   Tag: 'Tag'
 });
 

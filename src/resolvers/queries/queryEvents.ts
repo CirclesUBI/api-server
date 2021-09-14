@@ -4,10 +4,10 @@ import {
   ProfileEvent,
   QueryEventByTransactionHashArgs,
   QueryEventsArgs,
-  RequireFields
+  RequireFields, Tag
 } from "../../types";
 import {Pool} from "pg";
-import {PrismaClient} from "../../api-db/client";
+import {PrismaClient, Transaction} from "../../api-db/client";
 import {profilesBySafeAddress, ProfilesBySafeAddressLookup} from "./profiles";
 import {getPool} from "../resolvers";
 
@@ -116,10 +116,12 @@ export function events(prisma:PrismaClient, externalPool?:Pool) {
       };
 
       const allSafeAddressesDict: { [safeAddress: string]: any } = {};
+      const allTransactionHashesDict: {[transactionHash: string]: any} = {};
       timeline.rows
         .filter((o: ProfileEvent) => classify(o) != null)
         .forEach((o: ProfileEvent) => {
           const payload = o.payload;
+          allTransactionHashesDict[o.transaction_hash] = null;
           if (!payload || !payload.__typename) {
             return;
           }
@@ -160,6 +162,28 @@ export function events(prisma:PrismaClient, externalPool?:Pool) {
 
       const allSafeAddressesArr = Object.keys(allSafeAddressesDict)
         .map(o => o.toLowerCase());
+
+      const allTransactionHashesArr = Object.keys(allTransactionHashesDict)
+        .map(o => o.toLowerCase());
+
+      const tags = await prisma.transaction.findMany({
+        where: {
+          transactionHash: {
+            in: allTransactionHashesArr
+          },
+          tags: {
+            some: {}
+          }
+        },
+        include: {
+          tags: true
+        }
+      });
+
+      const tagsByTransactionHash:{[transactionHash:string]:Tag[]} = {};
+      tags.forEach(anchor => {
+        tagsByTransactionHash[anchor.transactionHash] = anchor.tags;
+      });
 
       const profilesBySafeAddressResolver = profilesBySafeAddress(prisma);
       const profiles = await profilesBySafeAddressResolver(null, {safeAddresses: allSafeAddressesArr}, context);
@@ -228,7 +252,8 @@ export function events(prisma:PrismaClient, externalPool?:Pool) {
             payload: {
               __typename: classify(o),
               ...o.payload
-            }
+            },
+            tags: tagsByTransactionHash[o.transaction_hash]
           }
         });
     } finally {

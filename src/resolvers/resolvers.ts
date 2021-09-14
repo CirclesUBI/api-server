@@ -1,7 +1,7 @@
 import {myProfile, profilesById, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
-import {ProfileEvent, Resolvers} from "../types";
+import {MutationTagTransactionArgs, ProfileEvent, RequireFields, Resolvers} from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
 import {sessionInfo} from "./queries/sessionInfo";
@@ -39,6 +39,7 @@ import {InitDb} from "../initDb";
 import {Pool, PoolConfig} from "pg";
 import {contact} from "./queries/contact";
 import {commonTrust} from "./queries/commonTrust";
+import {balancesByAsset} from "./queries/balancesByAsset";
 
 export function getPool() {
   return new Pool(<PoolConfig>{
@@ -74,7 +75,6 @@ export const resolvers: Resolvers = {
     whoami: whoami,
     cities: cities,
     claimedInvitation: claimedInvitation,
-    //profiles: profiles(prisma_api_ro),
     myProfile: myProfile(prisma_api_rw),
     profilesById: profilesById(prisma_api_ro),
     profilesBySafeAddress: profilesBySafeAddress(prisma_api_ro),
@@ -87,6 +87,7 @@ export const resolvers: Resolvers = {
     events: events(prisma_api_ro),
     eventByTransactionHash: events(prisma_api_ro),
     balance: balance(),
+    balancesByAsset: balancesByAsset(prisma_api_ro),
     trustRelations: trustRelations(prisma_api_ro),
     contacts: contacts(prisma_api_ro),
     contact: contact(prisma_api_ro),
@@ -153,6 +154,50 @@ export const resolvers: Resolvers = {
     requestUpdateSafe: requestUpdateSafe(prisma_api_rw),
     updateSafe: updateSafe(prisma_api_rw),
     upsertTag: upsertTag(prisma_api_ro, prisma_api_rw),
+    tagTransaction: async (parent:any, args: MutationTagTransactionArgs, context:Context) => {
+      const prisma = prisma_api_rw;
+
+      const session = await context.verifySession();
+      if (!session.profileId) {
+        return {
+          success: false,
+          errorMessage: "Create a profile first."
+        }
+      }
+      const profile = await prisma.profile.findUnique({
+        where: {
+          id: session.profileId
+        }
+      });
+      if (!profile)
+      {
+        throw new Error(`Couldn't find a profile with id ${session.profileId}`);
+      }
+
+      // 1. Check if the transaction anchor entry already exists
+      let transaction = await prisma.transaction.findUnique({where: {transactionHash: args.transactionHash}});
+      if (!transaction?.transactionHash) {
+        // 1.1 If not create it
+        await prisma.transaction.create({data: {transactionHash: args.transactionHash}});
+      }
+
+      // 2. Create the tag
+      const tag = await prisma.tag.create({
+        data: {
+          createdByProfileId: profile.id,
+          transactionHash: args.transactionHash,
+          typeId: args.tag.typeId,
+          value: args.tag.value,
+          createdAt: new Date(),
+          isPrivate: false
+        }
+      });
+
+      return {
+        success: true,
+        tag: tag
+      }
+    },
     sendMessage: async (parent, args, context) => {
       const session = await context.verifySession();
       const typeTag = await prisma_api_ro.tag.findMany({
@@ -197,8 +242,6 @@ export const resolvers: Resolvers = {
         if (!claimedInvitation) {
             throw new Error(`No claimed invitation for profile ${session.profileId}`);
         }
-
-
 
         throw new Error(`Not implemented`);
     }

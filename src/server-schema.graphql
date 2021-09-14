@@ -405,6 +405,7 @@ type ProfileEvent {
     direction: String!
     value: String!
     payload: EventPayload
+    tags: [Tag!]
 }
 
 type RedeemInvitationRequest {
@@ -485,6 +486,19 @@ type CommonTrust {
     profile: Profile
 }
 
+type AssetBalance {
+    token_address: String!
+    token_owner_address: String!
+    token_owner_profile: Profile
+    token_balance: String!
+}
+
+type TagTransactionResult {
+    success: Boolean!
+    error: String
+    tag: Tag
+}
+
 type Mutation
 {
     exchangeToken : ExchangeTokenResponse!
@@ -508,7 +522,8 @@ type Mutation
     claimInvitation(code:String!): ClaimInvitationResult!
     redeemClaimedInvitation: RedeemClaimedInvitationResult!
 
-    sendMessage(toSafeAddress:String! type: String! content: String!) : SendMessageResult
+    tagTransaction(transactionHash: String! tag:CreateTagInput!) : TagTransactionResult!
+    sendMessage(toSafeAddress:String! type: String! content: String!) : SendMessageResult!
 }
 
 type Query
@@ -533,7 +548,8 @@ type Query
     chatHistory(safeAddress:String! contactSafeAddress:String!):[ProfileEvent!]!
     eventByTransactionHash(safeAddress:String! transactionHash: String! types:[String!]):[ProfileEvent!]!
     balance(safeAddress:String!) : String!
-    trustRelations(safeAddress:String!):[TrustRelation!]!
+    balancesByAsset(safeAddress:String!) : [AssetBalance!]!
+    trustRelations(safeAddress:String!) : [TrustRelation!]!
     myProfile: Profile
     profilesById(ids:[Int!]!) : [Profile!]!
     profilesBySafeAddress(safeAddresses:[String!]!) : [Profile!]!

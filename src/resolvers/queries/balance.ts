@@ -1,5 +1,4 @@
 import {Context} from "../../context";
-import {Pool} from "pg";
 import {getPool} from "../resolvers";
 
 export function balance() {
