@@ -64,6 +64,9 @@ export function contact(prisma:PrismaClient) {
       profiles.filter(o => o.circlesAddress)
         .forEach(o => _profilesBySafeAddress[<string>o.circlesAddress] = o);
 
+      // TODO: Get the last relevant event for "args.safeAddress"
+
+
       const contacts = contactsQueryResult.rows.map((o: any) => {
         return <Contact>{
           safeAddress: args.safeAddress,

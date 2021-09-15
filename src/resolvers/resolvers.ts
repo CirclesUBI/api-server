@@ -77,7 +77,7 @@ export const resolvers: Resolvers = {
     claimedInvitation: claimedInvitation,
     myProfile: myProfile(prisma_api_rw),
     profilesById: profilesById(prisma_api_ro),
-    profilesBySafeAddress: profilesBySafeAddress(prisma_api_ro),
+    profilesBySafeAddress: profilesBySafeAddress(prisma_api_ro, true),
     search: search(prisma_api_ro),
     version: version(packageJson),
     offers: offers(prisma_api_ro),
@@ -89,7 +89,7 @@ export const resolvers: Resolvers = {
     balance: balance(),
     balancesByAsset: balancesByAsset(prisma_api_ro),
     trustRelations: trustRelations(prisma_api_ro),
-    contacts: contacts(prisma_api_ro),
+    contacts: contacts(prisma_api_ro, true),
     contact: contact(prisma_api_ro),
     chatHistory: chatHistory(prisma_api_ro),
     commonTrust: commonTrust(prisma_api_ro)
@@ -161,7 +161,7 @@ export const resolvers: Resolvers = {
       if (!session.profileId) {
         return {
           success: false,
-          errorMessage: "Create a profile first."
+          errorMessage: "You must have a complete profile to use this function."
         }
       }
       const profile = await prisma.profile.findUnique({

@@ -15,10 +15,10 @@ export function requestUpdateSafe(prisma:PrismaClient) {
             context.logger?.warning([{
                 key: `call`,
                 value: `/resolvers/mutation/requestUpdateSafe.ts/requestUpdateSafe(prisma:PrismaClient)/async (parent: any, args: any, context: Context)`
-            }], `Create a profile first.`);
+            }], `You must have a complete profile to use this function.`);
             return {
                 success: false,
-                errorMessage: "Create a profile first."
+                errorMessage: "You must have a complete profile to use this function."
             }
         }
 

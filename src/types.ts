@@ -84,6 +84,7 @@ export type Contact = {
   contactAddressProfile?: Maybe<Profile>;
   trustsYou?: Maybe<Scalars['Int']>;
   youTrust?: Maybe<Scalars['Int']>;
+  lastEvent?: Maybe<ProfileEvent>;
 };
 
 export type CountryStats = {
@@ -413,6 +414,9 @@ export type Profile = {
   cityGeonameid?: Maybe<Scalars['Int']>;
   city?: Maybe<City>;
   offers?: Maybe<Array<Offer>>;
+  trustsYou?: Maybe<Scalars['Int']>;
+  youTrust?: Maybe<Scalars['Int']>;
+  lastEvent?: Maybe<ProfileEvent>;
 };
 
 export type ProfileEvent = {
@@ -428,6 +432,7 @@ export type ProfileEvent = {
   direction: Scalars['String'];
   value: Scalars['String'];
   payload?: Maybe<EventPayload>;
+  tags?: Maybe<Array<Tag>>;
 };
 
 export type ProvePaymentResult = {
@@ -1056,6 +1061,7 @@ export type ContactResolvers<ContextType = any, ParentType extends ResolversPare
   contactAddressProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   trustsYou?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   youTrust?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  lastEvent?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1284,6 +1290,9 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   cityGeonameid?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
   offers?: Resolver<Maybe<Array<ResolversTypes['Offer']>>, ParentType, ContextType>;
+  trustsYou?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  youTrust?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  lastEvent?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1299,6 +1308,7 @@ export type ProfileEventResolvers<ContextType = any, ParentType extends Resolver
   direction?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   payload?: Resolver<Maybe<ResolversTypes['EventPayload']>, ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

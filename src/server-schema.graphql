@@ -19,6 +19,9 @@ type Profile {
     cityGeonameid:Int
     city: City
     offers: [Offer!]
+    trustsYou: Int # The trust relative to the safeAddress
+    youTrust: Int # The trust relative to the safeAddress
+    lastEvent: ProfileEvent # The last event that concerns the safeAddress
 }
 
 input QueryUniqueProfileInput
@@ -475,8 +478,9 @@ type Contact {
     safeAddressProfile:Profile
     contactAddress:String!
     contactAddressProfile:Profile
-    trustsYou: Int
-    youTrust: Int
+    trustsYou: Int # The trust relative to the safeAddress
+    youTrust: Int # The trust relative to the safeAddress
+    lastEvent: ProfileEvent # The last event that concerns the safeAddress
 }
 
 type CommonTrust {

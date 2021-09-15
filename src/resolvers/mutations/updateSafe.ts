@@ -17,7 +17,7 @@ export function updateSafe(prisma:PrismaClient) {
         if (!session.profileId) {
             return {
                 success: false,
-                errorMessage: "Create a profile first."
+                errorMessage: "You must have a complete profile to use this function."
             };
         }
         const currentProfile = await prisma_api_ro.profile.findUnique({where: {id: session.profileId}});
