@@ -1,7 +1,7 @@
 import {myProfile, profilesById, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
-import {MutationTagTransactionArgs, ProfileEvent, RequireFields, Resolvers} from "../types";
+import {ChatMessage, MutationTagTransactionArgs, ProfileEvent, Resolvers} from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
 import {sessionInfo} from "./queries/sessionInfo";
@@ -40,10 +40,22 @@ import {Pool, PoolConfig} from "pg";
 import {contact} from "./queries/contact";
 import {commonTrust} from "./queries/commonTrust";
 import {balancesByAsset} from "./queries/balancesByAsset";
+import {sendMessage} from "./mutations/sendMessage";
+import {tagTransaction} from "./mutations/tagTransaction";
+
+let cert:string;
 
 export function getPool() {
+  if (!cert) {
+    const fs = require('fs');
+    cert = fs.readFileSync("/home/daniel/src/circles-world/api-server/ca-certificate.crt", "ascii");
+  }
   return new Pool(<PoolConfig>{
-    connectionString: process.env.BLOCKCHAIN_INDEX_DB_CONNECTION_STRING
+    connectionString: process.env.BLOCKCHAIN_INDEX_DB_CONNECTION_STRING,
+    ssl: {
+      rejectUnauthorized: false,
+      // ca: cert
+    }
   });
 }
 
@@ -154,78 +166,8 @@ export const resolvers: Resolvers = {
     requestUpdateSafe: requestUpdateSafe(prisma_api_rw),
     updateSafe: updateSafe(prisma_api_rw),
     upsertTag: upsertTag(prisma_api_ro, prisma_api_rw),
-    tagTransaction: async (parent:any, args: MutationTagTransactionArgs, context:Context) => {
-      const prisma = prisma_api_rw;
-
-      const session = await context.verifySession();
-      if (!session.profileId) {
-        return {
-          success: false,
-          errorMessage: "You must have a complete profile to use this function."
-        }
-      }
-      const profile = await prisma.profile.findUnique({
-        where: {
-          id: session.profileId
-        }
-      });
-      if (!profile)
-      {
-        throw new Error(`Couldn't find a profile with id ${session.profileId}`);
-      }
-
-      // 1. Check if the transaction anchor entry already exists
-      let transaction = await prisma.transaction.findUnique({where: {transactionHash: args.transactionHash}});
-      if (!transaction?.transactionHash) {
-        // 1.1 If not create it
-        await prisma.transaction.create({data: {transactionHash: args.transactionHash}});
-      }
-
-      // 2. Create the tag
-      const tag = await prisma.tag.create({
-        data: {
-          createdByProfileId: profile.id,
-          transactionHash: args.transactionHash,
-          typeId: args.tag.typeId,
-          value: args.tag.value,
-          createdAt: new Date(),
-          isPrivate: false
-        }
-      });
-
-      return {
-        success: true,
-        tag: tag
-      }
-    },
-    sendMessage: async (parent, args, context) => {
-      const session = await context.verifySession();
-      const typeTag = await prisma_api_ro.tag.findMany({
-        where: {
-          typeId: InitDb.Type_Tag,
-          value: args.type
-        }
-      });
-      if (typeTag.length != 1) {
-        return {
-          success: false,
-          error: `Couldn't find a type tag (${InitDb.Type_Tag}) with value '${args.type}'`
-        };
-      }
-      const message = await prisma_api_rw.message.create({
-        data: {
-          createdByProfileId: session.profileId,
-          typeTagId: typeTag[0].id,
-          createdAt: new Date(),
-          lastUpdateAt: new Date(),
-          toSafeAddress: args.toSafeAddress,
-          content: args.content
-        }
-      });
-      return {
-        success: true
-      };
-    }
+    tagTransaction: tagTransaction(prisma_api_rw),
+    sendMessage: sendMessage(prisma_api_rw)
 
     // requestIndexTransaction: requestIndexTransaction(prisma_api_rw),
     // acknowledge: acknowledge(prisma_api_rw),

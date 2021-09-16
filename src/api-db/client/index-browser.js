@@ -132,17 +132,12 @@ exports.Prisma.SubscriptionScalarFieldEnum = makeEnum({
   subscribingToProfileId: 'subscribingToProfileId'
 });
 
-exports.Prisma.MessageScalarFieldEnum = makeEnum({
+exports.Prisma.ChatMessageScalarFieldEnum = makeEnum({
   id: 'id',
   createdAt: 'createdAt',
-  createdByProfileId: 'createdByProfileId',
-  lastUpdateAt: 'lastUpdateAt',
-  typeTagId: 'typeTagId',
-  toSafeAddress: 'toSafeAddress',
-  transactionHash: 'transactionHash',
-  chainEventType: 'chainEventType',
-  chainEventId: 'chainEventId',
-  content: 'content'
+  from: 'from',
+  to: 'to',
+  text: 'text'
 });
 
 exports.Prisma.DelegatedChallengesScalarFieldEnum = makeEnum({
@@ -212,6 +207,7 @@ exports.Prisma.TagScalarFieldEnum = makeEnum({
   isPrivate: 'isPrivate',
   transactionHash: 'transactionHash',
   typeId: 'typeId',
+  chatMessageId: 'chatMessageId',
   value: 'value'
 });
 
@@ -236,7 +232,7 @@ exports.Prisma.ModelName = makeEnum({
   RedeemInvitationRequest: 'RedeemInvitationRequest',
   Profile: 'Profile',
   Subscription: 'Subscription',
-  Message: 'Message',
+  ChatMessage: 'ChatMessage',
   DelegatedChallenges: 'DelegatedChallenges',
   Offer: 'Offer',
   Purchase: 'Purchase',

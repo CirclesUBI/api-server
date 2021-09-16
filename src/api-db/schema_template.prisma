@@ -91,7 +91,6 @@ model Profile {
     tags Tag[]  @relation(name: "Tag_CreatedBy")
     offers Offer[]  @relation(name: "Offer_CreatedBy")
     purchases Purchase[]  @relation(name: "Purchase_CreatedBy")
-    sentMessages Message[] @relation(name: "Message_CreatedBy")
 
     invitations Invitation[]  @relation(name: "Invitation_CreatedBy")
     redeemInvitationRequests RedeemInvitationRequest[] @relation(name: "RedeemInvitationRequest_CreatedBy")
@@ -117,26 +116,16 @@ model Subscription {
     subscribingToProfileId Int?
 }
 
-model Message {
+model ChatMessage {
     id Int @id @default(autoincrement())
 
     createdAt DateTime
-    createdBy Profile @relation(name: "Message_CreatedBy", fields: [createdByProfileId], references: [id])
-    createdByProfileId Int
 
-    lastUpdateAt DateTime
+    from String
+    to String
+    text String
 
-    typeTag Tag? @relation(name: "Message_TypeTag", fields: [typeTagId], references: [id])
-    typeTagId Int?
-
-    toSafeAddress String // A message must always have a recipient safe address. Optionally it can be
-                         // attached to a transaction.
-
-    transactionHash String?   // A message can be attached to a transaction or
-    chainEventType String?    // indexed blockchain event (crc_hub_transfer etc.).
-    chainEventId BigInt?      // The primary key value for the table which corresponds with the chainEventType.
-
-    content String
+    tags Tag[] @relation(name: "ChatMessage_Tags")
 }
 
 model DelegatedChallenges {
@@ -244,12 +233,14 @@ model Tag {
     type TagType @relation(name: "Tag_TagType", fields: [typeId], references: [id])
     typeId String
 
+    chatMessage ChatMessage? @relation(name: "ChatMessage_Tags", fields: [chatMessageId], references: [id])
+    chatMessageId Int?
+
     value String?
 
     offerCategory Offer[] @relation(name: "Offer_CategoryTag")
     offerUnit Offer[] @relation(name: "Offer_UnitTag")
     offerDeliveryTerms Offer[] @relation(name: "Offer_DeliveryTermsTag")
-    messageType Message[] @relation(name: "Message_TypeTag")
 }
 
 enum PurchaseStatus {

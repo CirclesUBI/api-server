@@ -320,7 +320,7 @@ input QueryTagsInput {
 
 interface IEventPayload {
     id: Int!
-    transaction_id: Int!
+    transaction_id: Int
 }
 type CrcSignup implements IEventPayload {
     id: Int!
@@ -388,6 +388,16 @@ type GnosisSafeEthTransfer implements IEventPayload {
     value: String!
 }
 
+type ChatMessage implements IEventPayload {
+    id: Int!
+    transaction_id: Int
+    from: String!
+    from_profile: Profile
+    to: String!
+    to_profile: Profile
+    text: String!
+}
+
 union EventPayload = CrcSignup
     | CrcTrust
     | CrcTokenTransfer
@@ -395,18 +405,19 @@ union EventPayload = CrcSignup
     | CrcMinting
     | EthTransfer
     | GnosisSafeEthTransfer
+    | ChatMessage
 
 type ProfileEvent {
     id: Int!
     timestamp: String!
-    block_number: Int!
-    transaction_index: Int!
-    transaction_hash: String!
+    block_number: Int
+    transaction_index: Int
+    transaction_hash: String
     type: String!
     safe_address: String!
     safe_address_profile: Profile
     direction: String!
-    value: String!
+    value: String
     payload: EventPayload
     tags: [Tag!]
 }

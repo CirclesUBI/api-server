@@ -19,6 +19,10 @@ export function balance() {
             }
 
             return balanceResult.rows[0].balance;
+        } catch (e) {
+            const e2 = new Error(e.message + e.stackTrace);
+            console.log(e2);
+            throw e2;
         } finally {
             await pool.end();
         }

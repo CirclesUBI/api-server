@@ -21,7 +21,7 @@ export function events(prisma:PrismaClient, externalPool?:Pool) {
     const pool = externalPool ?? getPool();
     try {
       //const maxPageSizeInBlocks = 518400; // ~ 30 days
-      const maxPageSizeInBlocks = 518400 * 12; // ~ 30 days
+      const maxPageSizeInBlocks = 518400; // ~ 30 days
       const safeAddress: string = args.safeAddress.toLowerCase();
       const transactionHash: Maybe<string> = (<any>args).transactionHash ?? null;
       const types: Maybe<string[]> = args.types ?? null;
@@ -85,7 +85,10 @@ export function events(prisma:PrismaClient, externalPool?:Pool) {
                                      ${whereBlock}
                                  order by timestamp desc;`;
 
-      const transactionsQueryParameters = [safeAddress?.toLowerCase() ?? "", selectedTypes, transactionHash ?? ""];
+      const transactionsQueryParameters = [
+        safeAddress?.toLowerCase() ?? "",
+        selectedTypes,
+        transactionHash ?? ""];
       const timeline = await pool.query(transactionsQuery, transactionsQueryParameters);
       const classify = (row: any) => {
         switch (row.type) {
@@ -121,6 +124,9 @@ export function events(prisma:PrismaClient, externalPool?:Pool) {
         .filter((o: ProfileEvent) => classify(o) != null)
         .forEach((o: ProfileEvent) => {
           const payload = o.payload;
+          if (!o.transaction_hash) {
+            return;
+          }
           allTransactionHashesDict[o.transaction_hash] = null;
           if (!payload || !payload.__typename) {
             return;

@@ -23,6 +23,11 @@ if (!process.env.CORS_ORIGNS) {
 const corsOrigins = process.env.CORS_ORIGNS.split(";").map(o => o.trim());
 const activeWsClients = [];
 
+const errorLogger = {
+    async didEncounterErrors(requestContext: any) {
+        console.log(requestContext);
+    },
+};
 
 export class Main {
 
@@ -49,7 +54,8 @@ export class Main {
                     };
                 }
             },
-            ApolloServerPluginLandingPageGraphQLPlayground()],
+            ApolloServerPluginLandingPageGraphQLPlayground(),
+            errorLogger],
         });
 
         await server.start();

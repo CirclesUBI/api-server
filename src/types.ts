@@ -22,6 +22,17 @@ export type AssetBalance = {
   token_balance: Scalars['String'];
 };
 
+export type ChatMessage = IEventPayload & {
+  __typename?: 'ChatMessage';
+  id: Scalars['Int'];
+  transaction_id?: Maybe<Scalars['Int']>;
+  from: Scalars['String'];
+  from_profile?: Maybe<Profile>;
+  to: Scalars['String'];
+  to_profile?: Maybe<Profile>;
+  text: Scalars['String'];
+};
+
 export type City = ICity & {
   __typename?: 'City';
   geonameid: Scalars['Int'];
@@ -202,7 +213,7 @@ export type EthTransfer = IEventPayload & {
   value: Scalars['String'];
 };
 
-export type EventPayload = CrcSignup | CrcTrust | CrcTokenTransfer | CrcHubTransfer | CrcMinting | EthTransfer | GnosisSafeEthTransfer;
+export type EventPayload = CrcSignup | CrcTrust | CrcTokenTransfer | CrcHubTransfer | CrcMinting | EthTransfer | GnosisSafeEthTransfer | ChatMessage;
 
 export type ExchangeTokenResponse = {
   __typename?: 'ExchangeTokenResponse';
@@ -239,7 +250,7 @@ export type ICity = {
 
 export type IEventPayload = {
   id: Scalars['Int'];
-  transaction_id: Scalars['Int'];
+  transaction_id?: Maybe<Scalars['Int']>;
 };
 
 export type LockOfferInput = {
@@ -423,14 +434,14 @@ export type ProfileEvent = {
   __typename?: 'ProfileEvent';
   id: Scalars['Int'];
   timestamp: Scalars['String'];
-  block_number: Scalars['Int'];
-  transaction_index: Scalars['Int'];
-  transaction_hash: Scalars['String'];
+  block_number?: Maybe<Scalars['Int']>;
+  transaction_index?: Maybe<Scalars['Int']>;
+  transaction_hash?: Maybe<Scalars['String']>;
   type: Scalars['String'];
   safe_address: Scalars['String'];
   safe_address_profile?: Maybe<Profile>;
   direction: Scalars['String'];
-  value: Scalars['String'];
+  value?: Maybe<Scalars['String']>;
   payload?: Maybe<EventPayload>;
   tags?: Maybe<Array<Tag>>;
 };
@@ -848,8 +859,9 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = ResolversObject<{
   AssetBalance: ResolverTypeWrapper<AssetBalance>;
   String: ResolverTypeWrapper<Scalars['String']>;
-  City: ResolverTypeWrapper<City>;
+  ChatMessage: ResolverTypeWrapper<ChatMessage>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  City: ResolverTypeWrapper<City>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   CityStats: ResolverTypeWrapper<CityStats>;
   ClaimInvitationResult: ResolverTypeWrapper<ClaimInvitationResult>;
@@ -871,12 +883,12 @@ export type ResolversTypes = ResolversObject<{
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
   EthTransfer: ResolverTypeWrapper<EthTransfer>;
-  EventPayload: ResolversTypes['CrcSignup'] | ResolversTypes['CrcTrust'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'];
+  EventPayload: ResolversTypes['CrcSignup'] | ResolversTypes['CrcTrust'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'] | ResolversTypes['ChatMessage'];
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
   GnosisSafeEthTransfer: ResolverTypeWrapper<GnosisSafeEthTransfer>;
   Goal: ResolverTypeWrapper<Goal>;
   ICity: ResolversTypes['City'] | ResolversTypes['CityStats'];
-  IEventPayload: ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['CrcSignup'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcTrust'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'];
+  IEventPayload: ResolversTypes['ChatMessage'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['CrcSignup'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcTrust'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'];
   LockOfferInput: LockOfferInput;
   LockOfferResult: ResolverTypeWrapper<LockOfferResult>;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
@@ -923,8 +935,9 @@ export type ResolversTypes = ResolversObject<{
 export type ResolversParentTypes = ResolversObject<{
   AssetBalance: AssetBalance;
   String: Scalars['String'];
-  City: City;
+  ChatMessage: ChatMessage;
   Int: Scalars['Int'];
+  City: City;
   Float: Scalars['Float'];
   CityStats: CityStats;
   ClaimInvitationResult: ClaimInvitationResult;
@@ -946,12 +959,12 @@ export type ResolversParentTypes = ResolversObject<{
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: DepositChallengeResponse;
   EthTransfer: EthTransfer;
-  EventPayload: ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'];
+  EventPayload: ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'] | ResolversParentTypes['ChatMessage'];
   ExchangeTokenResponse: ExchangeTokenResponse;
   GnosisSafeEthTransfer: GnosisSafeEthTransfer;
   Goal: Goal;
   ICity: ResolversParentTypes['City'] | ResolversParentTypes['CityStats'];
-  IEventPayload: ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'];
+  IEventPayload: ResolversParentTypes['ChatMessage'] | ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'];
   LockOfferInput: LockOfferInput;
   LockOfferResult: LockOfferResult;
   LogoutResponse: LogoutResponse;
@@ -997,6 +1010,17 @@ export type AssetBalanceResolvers<ContextType = any, ParentType extends Resolver
   token_owner_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   token_owner_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   token_balance?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ChatMessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['ChatMessage'] = ResolversParentTypes['ChatMessage']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  from_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  to_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  text?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1172,7 +1196,7 @@ export type EthTransferResolvers<ContextType = any, ParentType extends Resolvers
 }>;
 
 export type EventPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['EventPayload'] = ResolversParentTypes['EventPayload']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'CrcSignup' | 'CrcTrust' | 'CrcTokenTransfer' | 'CrcHubTransfer' | 'CrcMinting' | 'EthTransfer' | 'GnosisSafeEthTransfer', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'CrcSignup' | 'CrcTrust' | 'CrcTokenTransfer' | 'CrcHubTransfer' | 'CrcMinting' | 'EthTransfer' | 'GnosisSafeEthTransfer' | 'ChatMessage', ParentType, ContextType>;
 }>;
 
 export type ExchangeTokenResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['ExchangeTokenResponse'] = ResolversParentTypes['ExchangeTokenResponse']> = ResolversObject<{
@@ -1210,9 +1234,9 @@ export type ICityResolvers<ContextType = any, ParentType extends ResolversParent
 }>;
 
 export type IEventPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['IEventPayload'] = ResolversParentTypes['IEventPayload']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'CrcHubTransfer' | 'CrcMinting' | 'CrcSignup' | 'CrcTokenTransfer' | 'CrcTrust' | 'EthTransfer' | 'GnosisSafeEthTransfer', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ChatMessage' | 'CrcHubTransfer' | 'CrcMinting' | 'CrcSignup' | 'CrcTokenTransfer' | 'CrcTrust' | 'EthTransfer' | 'GnosisSafeEthTransfer', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  transaction_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
 }>;
 
 export type LockOfferResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['LockOfferResult'] = ResolversParentTypes['LockOfferResult']> = ResolversObject<{
@@ -1299,14 +1323,14 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
 export type ProfileEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProfileEvent'] = ResolversParentTypes['ProfileEvent']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  block_number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  transaction_index?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  transaction_hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  block_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  transaction_index?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   safe_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   safe_address_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   direction?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   payload?: Resolver<Maybe<ResolversTypes['EventPayload']>, ParentType, ContextType>;
   tags?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1451,6 +1475,7 @@ export type VersionResolvers<ContextType = any, ParentType extends ResolversPare
 
 export type Resolvers<ContextType = any> = ResolversObject<{
   AssetBalance?: AssetBalanceResolvers<ContextType>;
+  ChatMessage?: ChatMessageResolvers<ContextType>;
   City?: CityResolvers<ContextType>;
   CityStats?: CityStatsResolvers<ContextType>;
   ClaimInvitationResult?: ClaimInvitationResultResolvers<ContextType>;
