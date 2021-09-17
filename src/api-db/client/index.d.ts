@@ -78,6 +78,7 @@ export type Profile = {
   country: string | null
   newsletter: boolean | null
   cityGeonameid: number | null
+  lastAcknowledged: Date | null
   verifySafeChallenge: string | null
   newSafeAddress: string | null
 }
@@ -3918,6 +3919,7 @@ export namespace Prisma {
     country: string | null
     newsletter: boolean | null
     cityGeonameid: number | null
+    lastAcknowledged: Date | null
     verifySafeChallenge: string | null
     newSafeAddress: string | null
   }
@@ -3939,6 +3941,7 @@ export namespace Prisma {
     country: string | null
     newsletter: boolean | null
     cityGeonameid: number | null
+    lastAcknowledged: Date | null
     verifySafeChallenge: string | null
     newSafeAddress: string | null
   }
@@ -3960,6 +3963,7 @@ export namespace Prisma {
     country: number
     newsletter: number
     cityGeonameid: number
+    lastAcknowledged: number
     verifySafeChallenge: number
     newSafeAddress: number
     _all: number
@@ -3993,6 +3997,7 @@ export namespace Prisma {
     country?: true
     newsletter?: true
     cityGeonameid?: true
+    lastAcknowledged?: true
     verifySafeChallenge?: true
     newSafeAddress?: true
   }
@@ -4014,6 +4019,7 @@ export namespace Prisma {
     country?: true
     newsletter?: true
     cityGeonameid?: true
+    lastAcknowledged?: true
     verifySafeChallenge?: true
     newSafeAddress?: true
   }
@@ -4035,6 +4041,7 @@ export namespace Prisma {
     country?: true
     newsletter?: true
     cityGeonameid?: true
+    lastAcknowledged?: true
     verifySafeChallenge?: true
     newSafeAddress?: true
     _all?: true
@@ -4169,6 +4176,7 @@ export namespace Prisma {
     country: string | null
     newsletter: boolean | null
     cityGeonameid: number | null
+    lastAcknowledged: Date | null
     verifySafeChallenge: string | null
     newSafeAddress: string | null
     _count: ProfileCountAggregateOutputType | null
@@ -4209,6 +4217,7 @@ export namespace Prisma {
     country?: boolean
     newsletter?: boolean
     cityGeonameid?: boolean
+    lastAcknowledged?: boolean
     verifySafeChallenge?: boolean
     newSafeAddress?: boolean
     sessions?: boolean | SessionFindManyArgs
@@ -13384,6 +13393,7 @@ export namespace Prisma {
     country: 'country',
     newsletter: 'newsletter',
     cityGeonameid: 'cityGeonameid',
+    lastAcknowledged: 'lastAcknowledged',
     verifySafeChallenge: 'verifySafeChallenge',
     newSafeAddress: 'newSafeAddress'
   };
@@ -13682,6 +13692,7 @@ export namespace Prisma {
     country?: StringNullableFilter | string | null
     newsletter?: BoolNullableFilter | boolean | null
     cityGeonameid?: IntNullableFilter | number | null
+    lastAcknowledged?: DateTimeNullableFilter | Date | string | null
     verifySafeChallenge?: StringNullableFilter | string | null
     newSafeAddress?: StringNullableFilter | string | null
     sessions?: SessionListRelationFilter
@@ -13713,6 +13724,7 @@ export namespace Prisma {
     country?: SortOrder
     newsletter?: SortOrder
     cityGeonameid?: SortOrder
+    lastAcknowledged?: SortOrder
     verifySafeChallenge?: SortOrder
     newSafeAddress?: SortOrder
   }
@@ -13742,6 +13754,7 @@ export namespace Prisma {
     country?: StringNullableWithAggregatesFilter | string | null
     newsletter?: BoolNullableWithAggregatesFilter | boolean | null
     cityGeonameid?: IntNullableWithAggregatesFilter | number | null
+    lastAcknowledged?: DateTimeNullableWithAggregatesFilter | Date | string | null
     verifySafeChallenge?: StringNullableWithAggregatesFilter | string | null
     newSafeAddress?: StringNullableWithAggregatesFilter | string | null
   }
@@ -14360,6 +14373,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -14391,6 +14405,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -14421,6 +14436,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -14452,6 +14468,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -14483,6 +14500,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
   }
@@ -14503,6 +14521,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -14524,6 +14543,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -17180,6 +17200,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     tags?: TagCreateNestedManyWithoutCreatedByInput
@@ -17210,6 +17231,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
@@ -17249,6 +17271,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: TagUpdateManyWithoutCreatedByInput
@@ -17279,6 +17302,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
@@ -17308,6 +17332,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -17338,6 +17363,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -17372,6 +17398,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -17402,6 +17429,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -17436,6 +17464,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -17466,6 +17495,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -17530,6 +17560,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -17560,6 +17591,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -17594,6 +17626,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -17624,6 +17657,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -17658,6 +17692,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -17688,6 +17723,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -17745,6 +17781,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -17775,6 +17812,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -17842,6 +17880,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -17872,6 +17911,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -18504,6 +18544,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -18534,6 +18575,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -18608,6 +18650,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -18638,6 +18681,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -18677,6 +18721,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -18707,6 +18752,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -18781,6 +18827,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -18811,6 +18858,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -18891,6 +18939,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -18921,6 +18970,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -19112,6 +19162,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -19142,6 +19193,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -19293,6 +19345,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -19323,6 +19376,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -19425,6 +19479,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -19455,6 +19510,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -19717,6 +19773,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -19747,6 +19804,7 @@ export namespace Prisma {
     country?: string | null
     newsletter?: boolean | null
     cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -19967,6 +20025,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -19997,6 +20056,7 @@ export namespace Prisma {
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput

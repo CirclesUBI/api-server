@@ -83,6 +83,8 @@ model Profile {
     newsletter Boolean?
     cityGeonameid Int?
 
+    lastAcknowledged DateTime?
+
     verifySafeChallenge String?
     newSafeAddress String?
 

@@ -120,6 +120,7 @@ exports.Prisma.ProfileScalarFieldEnum = makeEnum({
   country: 'country',
   newsletter: 'newsletter',
   cityGeonameid: 'cityGeonameid',
+  lastAcknowledged: 'lastAcknowledged',
   verifySafeChallenge: 'verifySafeChallenge',
   newSafeAddress: 'newSafeAddress'
 });
