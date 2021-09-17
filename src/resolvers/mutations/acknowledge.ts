@@ -1,37 +1,22 @@
-export const empty = true;
-/*
-import {ProfileEvent} from "../../types";
 import {Context} from "../../context";
 import {PrismaClient} from "../../api-db/client";
 
 export function acknowledge(prisma_api_rw:PrismaClient) {
-    return async (parent:any, args:{eventId:number}, context:Context) => {
-        context.logger?.info([{
-            key: `call`,
-            value: `/resolvers/mutation/acknowledge.ts/acknowledge(prisma_api_ro:PrismaClient, prisma_api_rw:PrismaClient)/async (parent:any, args:{id:${args.eventId}, context:Context)`
-        }]);
+    return async (parent:any, args:{until:string}, context:Context) => {
         const session = await context.verifySession();
-        const now = new Date();
-
-        await prisma_api_rw.event.updateMany({
-            where: {
-                id: args.eventId,
-                profileId: session.profileId,
-                acknowledgedAt: null
-            },
-            data: {
-                acknowledgedAt: now
-            }
-        });
-
-        const e = await prisma_api_rw.event.findUnique({where:{id: args.eventId}});
-        if (!e) {
-            throw new Error(`Couldn't find the recently updated event with id ${args.eventId}. This is WTF?! :// sdg`)
+        if (!session.profileId)
+        {
+          throw new Error(`You need a profile to use this function.`)
         }
-        return <ProfileEvent>{
-            ...e,
-            id: e.id,
-            createdAt: e.createdAt.toJSON(),
-        };
+        const until = new Date(args.until);
+        await prisma_api_rw.profile.update({
+          where: {
+            id: session.profileId
+          },
+          data: {
+            lastAcknowledged: until
+          }
+        });
+        return true;
     }
-}*/
+}

@@ -1,7 +1,7 @@
 import {myProfile, profilesById, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
-import {ChatMessage, MutationTagTransactionArgs, ProfileEvent, Resolvers} from "../types";
+import {ProfileEvent, Resolvers} from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
 import {sessionInfo} from "./queries/sessionInfo";
@@ -35,13 +35,14 @@ import {balance} from "./queries/balance";
 import {trustRelations} from "./queries/trustRelations";
 import {contacts} from "./queries/contacts";
 import {chatHistory} from "./queries/chatHistory";
-import {InitDb} from "../initDb";
 import {Pool, PoolConfig} from "pg";
 import {contact} from "./queries/contact";
 import {commonTrust} from "./queries/commonTrust";
 import {balancesByAsset} from "./queries/balancesByAsset";
 import {sendMessage} from "./mutations/sendMessage";
 import {tagTransaction} from "./mutations/tagTransaction";
+import {acknowledge} from "./mutations/acknowledge";
+import {inbox} from "./queries/inbox";
 
 let cert:string;
 
@@ -104,7 +105,8 @@ export const resolvers: Resolvers = {
     contacts: contacts(prisma_api_ro, true),
     contact: contact(prisma_api_ro),
     chatHistory: chatHistory(prisma_api_ro),
-    commonTrust: commonTrust(prisma_api_ro)
+    commonTrust: commonTrust(prisma_api_ro),
+    inbox: inbox(prisma_api_ro)
 
     // transactions: transactions(prisma_api_ro),
     // events: events(prisma_api_ro),
@@ -167,10 +169,8 @@ export const resolvers: Resolvers = {
     updateSafe: updateSafe(prisma_api_rw),
     upsertTag: upsertTag(prisma_api_ro, prisma_api_rw),
     tagTransaction: tagTransaction(prisma_api_rw),
-    sendMessage: sendMessage(prisma_api_rw)
-
-    // requestIndexTransaction: requestIndexTransaction(prisma_api_rw),
-    // acknowledge: acknowledge(prisma_api_rw),
+    sendMessage: sendMessage(prisma_api_rw),
+    acknowledge: acknowledge(prisma_api_rw)
     /*
     claimInvitation: claimInvitation(prisma_api_rw),
     redeemClaimedInvitation: async (parent, args, context) => {

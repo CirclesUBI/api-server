@@ -530,7 +530,7 @@ type Mutation
     provePayment(data:PaymentProof!):ProvePaymentResult!
     upsertTag(data:UpsertTagInput!):Tag!
 
-    acknowledge(eventId:Int!): ProfileEvent!
+    acknowledge(until:String!): Boolean!
 
     # Creates an invitation and gives it a name
     createInvitation(for:String!) : CreateInvitationResult!
@@ -538,7 +538,7 @@ type Mutation
     redeemClaimedInvitation: RedeemClaimedInvitationResult!
 
     tagTransaction(transactionHash: String! tag:CreateTagInput!) : TagTransactionResult!
-    sendMessage(toSafeAddress:String! type: String! content: String!) : SendMessageResult!
+    sendMessage(toSafeAddress:String! content: String!) : SendMessageResult!
 }
 
 type Query
@@ -566,6 +566,7 @@ type Query
     balancesByAsset(safeAddress:String!) : [AssetBalance!]!
     trustRelations(safeAddress:String!) : [TrustRelation!]!
     myProfile: Profile
+    inbox: [ProfileEvent!]!
     profilesById(ids:[Int!]!) : [Profile!]!
     profilesBySafeAddress(safeAddresses:[String!]!) : [Profile!]!
 

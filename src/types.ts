@@ -284,7 +284,7 @@ export type Mutation = {
   lockOffer: LockOfferResult;
   provePayment: ProvePaymentResult;
   upsertTag: Tag;
-  acknowledge: ProfileEvent;
+  acknowledge: Scalars['Boolean'];
   createInvitation: CreateInvitationResult;
   claimInvitation: ClaimInvitationResult;
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
@@ -349,7 +349,7 @@ export type MutationUpsertTagArgs = {
 
 
 export type MutationAcknowledgeArgs = {
-  eventId: Scalars['Int'];
+  until: Scalars['String'];
 };
 
 
@@ -371,7 +371,6 @@ export type MutationTagTransactionArgs = {
 
 export type MutationSendMessageArgs = {
   toSafeAddress: Scalars['String'];
-  type: Scalars['String'];
   content: Scalars['String'];
 };
 
@@ -490,6 +489,7 @@ export type Query = {
   balancesByAsset: Array<AssetBalance>;
   trustRelations: Array<TrustRelation>;
   myProfile?: Maybe<Profile>;
+  inbox: Array<ProfileEvent>;
   profilesById: Array<Profile>;
   profilesBySafeAddress: Array<Profile>;
   search: Array<Profile>;
@@ -1265,12 +1265,12 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   lockOffer?: Resolver<ResolversTypes['LockOfferResult'], ParentType, ContextType, RequireFields<MutationLockOfferArgs, 'data'>>;
   provePayment?: Resolver<ResolversTypes['ProvePaymentResult'], ParentType, ContextType, RequireFields<MutationProvePaymentArgs, 'data'>>;
   upsertTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationUpsertTagArgs, 'data'>>;
-  acknowledge?: Resolver<ResolversTypes['ProfileEvent'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'eventId'>>;
+  acknowledge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'until'>>;
   createInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType, RequireFields<MutationCreateInvitationArgs, 'for'>>;
   claimInvitation?: Resolver<ResolversTypes['ClaimInvitationResult'], ParentType, ContextType, RequireFields<MutationClaimInvitationArgs, 'code'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
   tagTransaction?: Resolver<ResolversTypes['TagTransactionResult'], ParentType, ContextType, RequireFields<MutationTagTransactionArgs, 'transactionHash' | 'tag'>>;
-  sendMessage?: Resolver<ResolversTypes['SendMessageResult'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'toSafeAddress' | 'type' | 'content'>>;
+  sendMessage?: Resolver<ResolversTypes['SendMessageResult'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'toSafeAddress' | 'content'>>;
 }>;
 
 export type OfferResolvers<ContextType = any, ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']> = ResolversObject<{
@@ -1373,6 +1373,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   balancesByAsset?: Resolver<Array<ResolversTypes['AssetBalance']>, ParentType, ContextType, RequireFields<QueryBalancesByAssetArgs, 'safeAddress'>>;
   trustRelations?: Resolver<Array<ResolversTypes['TrustRelation']>, ParentType, ContextType, RequireFields<QueryTrustRelationsArgs, 'safeAddress'>>;
   myProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  inbox?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   profilesById?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesByIdArgs, 'ids'>>;
   profilesBySafeAddress?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesBySafeAddressArgs, 'safeAddresses'>>;
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;

@@ -1,8 +1,9 @@
 import {ChatMessage, SendMessageResult} from "../../types";
 import {Context} from "../../context";
 import {PrismaClient} from "../../api-db/client";
+import {profilesBySafeAddress} from "../queries/profiles";
 
-export function sendMessage(prisma_api_rw:PrismaClient) {
+export function sendMessage(prisma:PrismaClient) {
     return async (parent:any, args:{toSafeAddress:string, content:string}, context:Context) => {
       const session = await context.verifySession();
       if (!session.profileId) {
@@ -11,24 +12,32 @@ export function sendMessage(prisma_api_rw:PrismaClient) {
           errorMessage: "You must have a complete profile to use this function."
         }
       }
-      const profile = await prisma_api_rw.profile.findUnique({
+      const toSafeAddress = args.toSafeAddress.toLowerCase();
+      const fromProfile = await prisma.profile.findUnique({
         where: {id: session.profileId}
       });
-      if (!profile)
+      if (!fromProfile)
       {
         throw new Error(`Couldn't find a profile with id ${session.profileId}`);
       }
-      if (!profile.circlesAddress) {
+      if (!fromProfile.circlesAddress) {
         throw new Error(`You need a connected safe to use this feature.`);
       }
-      const message = await prisma_api_rw.chatMessage.create({
+      const toProfile = await prisma.profile.findFirst({
+        where: {circlesAddress: toSafeAddress}
+      });
+      if (!toProfile) {
+        throw new Error(`Couldn't find a profile for safe ${toSafeAddress}`);
+      }
+      const message = await prisma.chatMessage.create({
         data: {
           createdAt: new Date(),
-          from: profile.circlesAddress,
-          to: args.toSafeAddress,
+          from: fromProfile.circlesAddress,
+          to: toSafeAddress,
           text: args.content
         }
       });
+
       return <SendMessageResult>{
         event: {
           id: message.id,
@@ -36,11 +45,14 @@ export function sendMessage(prisma_api_rw:PrismaClient) {
           type: "chat_message",
           direction: "out",
           safe_address: message.from,
+          safe_address_profile: fromProfile,
           payload: <ChatMessage>{
             __typename: "ChatMessage",
             id: message.id,
             from: message.from,
+            from_profile: fromProfile,
             to: message.to,
+            to_profile: toProfile,
             text: message.text
           }
         },

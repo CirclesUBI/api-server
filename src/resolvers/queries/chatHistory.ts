@@ -3,6 +3,7 @@ import {events} from "./queryEvents";
 import {ChatMessage, ProfileEvent} from "../../types";
 import {PrismaClient} from "../../api-db/client";
 import {getPool} from "../resolvers";
+import {profilesBySafeAddress} from "./profiles";
 
 export function chatHistory(prisma:PrismaClient) {
     return async (parent:any, args:any, context:Context) => {
@@ -12,7 +13,10 @@ export function chatHistory(prisma:PrismaClient) {
         const contactSafeAddress = args.contactSafeAddress.toLowerCase();
 
         try {
-            const eventsResolver = events(prisma, pool);
+            const profilesResolver = profilesBySafeAddress(prisma, false);
+            const profilesPromise = profilesResolver(null, {safeAddresses:[safeAddress, contactSafeAddress]}, context);
+
+            const eventsResolver = events(prisma, pool, false);
             const safeEventsPromise = eventsResolver(undefined, {
                 safeAddress: safeAddress
             }, context);
@@ -21,8 +25,12 @@ export function chatHistory(prisma:PrismaClient) {
             }, context);
             const chatMessagesPromise = prisma.chatMessage.findMany({
                 where: {
-                    from: safeAddress,
-                    to: contactSafeAddress
+                    from: {
+                        in: [safeAddress, contactSafeAddress]
+                    },
+                    to: {
+                        in: [safeAddress, contactSafeAddress]
+                    }
                 },
                 orderBy: {
                     createdAt: "desc"
@@ -32,10 +40,13 @@ export function chatHistory(prisma:PrismaClient) {
             const eventPromiseResults = await Promise.all([
                 safeEventsPromise,
                 contactSafeEventsPromise,
-                chatMessagesPromise]);
+                chatMessagesPromise,
+                profilesPromise]);
 
             const safeEventsResult = eventPromiseResults[0];
             const contactEventsResult = eventPromiseResults[1];
+            const chatMessagesResult = eventPromiseResults[2];
+            const profilesResult = eventPromiseResults[3];
 
             const eventResults = safeEventsResult.concat(contactEventsResult);
             const eventResultsByTransactionHash: { [transactionHash: string]: ProfileEvent[] } = {};
@@ -71,30 +82,34 @@ export function chatHistory(prisma:PrismaClient) {
             })
             .filter(o => o !== undefined);
 
-            const chatMessagesResult = eventPromiseResults[2].map(o => {
+            const safeAddressProfile = profilesResult.find(o => o.circlesAddress == safeAddress);
+            const chatMessageProfileEvents = chatMessagesResult.map(o => {
                 return <ProfileEvent>{
-                    id: -1,
+                    id: o.id,
                     timestamp: o.createdAt.toJSON(),
                     type: "chat_message",
-                    direction: "out",
-                    safe_address: o.from,
+                    direction: safeAddress == o.from ? "out" : "in",
+                    safe_address: safeAddress,
+                    safe_address_profile: safeAddressProfile,
                     payload: <ChatMessage> {
                         __typename: "ChatMessage",
                         id: o.id,
                         from: o.from,
+                        from_profile: profilesResult.find(p => p.circlesAddress == o.from),
                         to: o.to,
+                        to_profile: profilesResult.find(p => p.circlesAddress == o.to),
                         text: o.text
                     }
                 };
             });
 
-            return allBlockchainEvents.concat(chatMessagesResult)
+            return allBlockchainEvents.concat(chatMessageProfileEvents)
               .sort((a, b) =>
                 a.timestamp > b.timestamp
                   ? 1
                   : (a.timestamp < b.timestamp
-                  ? -1
-                  : 0));
+                      ? -1
+                      : 0));
 
         } finally {
             await pool.end();

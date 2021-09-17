@@ -207,7 +207,7 @@ async function flush() {
     .then(json => {
       return json.data.map((o:any) => {
           return <Profile>{
-            id: o.id,
+            id: 0,
             firstName: o.username,
             lastName: "",
             circlesAddress: o.safeAddress.toLowerCase(),

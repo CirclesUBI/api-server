@@ -11,7 +11,7 @@ import {PrismaClient, Transaction} from "../../api-db/client";
 import {profilesBySafeAddress, ProfilesBySafeAddressLookup} from "./profiles";
 import {getPool} from "../resolvers";
 
-export function events(prisma:PrismaClient, externalPool?:Pool) {
+export function events(prisma:PrismaClient, externalPool?:Pool, enablePaging:boolean = true) {
   return async (
     parent: any,
     args: RequireFields<QueryEventsArgs, "safeAddress">
@@ -21,7 +21,7 @@ export function events(prisma:PrismaClient, externalPool?:Pool) {
     const pool = externalPool ?? getPool();
     try {
       //const maxPageSizeInBlocks = 518400; // ~ 30 days
-      const maxPageSizeInBlocks = 518400; // ~ 30 days
+      const maxPageSizeInBlocks = enablePaging ? 518400 : 518400 * 9999; // ~ 30 days
       const safeAddress: string = args.safeAddress.toLowerCase();
       const transactionHash: Maybe<string> = (<any>args).transactionHash ?? null;
       const types: Maybe<string[]> = args.types ?? null;
