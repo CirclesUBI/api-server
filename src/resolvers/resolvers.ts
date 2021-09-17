@@ -47,10 +47,12 @@ import {inbox} from "./queries/inbox";
 let cert:string;
 
 export function getPool() {
+  /*
   if (!cert) {
     const fs = require('fs');
     cert = fs.readFileSync("/home/daniel/src/circles-world/api-server/ca-certificate.crt", "ascii");
   }
+   */
   return new Pool(<PoolConfig>{
     connectionString: process.env.BLOCKCHAIN_INDEX_DB_CONNECTION_STRING,
     ssl: {
