@@ -29,10 +29,12 @@ model Session {
 
 model Invitation {
     id Int @id @default(autoincrement())
+
     createdBy Profile @relation(name: "Invitation_CreatedBy", fields: [createdByProfileId], references: [id])
     createdByProfileId Int
     createdAt DateTime
 
+    name String
     code String
 
     claimedBy Profile? @relation(name: "Invitation_ClaimedBy", fields: [claimedByProfileId], references: [id])
@@ -42,7 +44,9 @@ model Invitation {
     redeemedBy Profile? @relation(name: "Invitation_RedeemedBy", fields: [redeemedByProfileId], references: [id])
     redeemedByProfileId Int?
     redeemedAt DateTime?
+    redeemTxHash String?
 
+    address String
     key String
 
     indexedTransactions RedeemInvitationRequest[]  @relation(name: "RedeemInvitationRequest_InvitationToRedeem")
