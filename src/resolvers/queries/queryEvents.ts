@@ -68,8 +68,7 @@ export function events(prisma:PrismaClient, externalPool?:Pool, enablePaging:boo
         whereBlock = ` and block_number > (select max(number) from block) - ${maxPageSizeInBlocks} /* approx. one month */ `;
       }
 
-      const transactionsQuery = `select transaction_id
-                                      , timestamp
+      const transactionsQuery = `select timestamp
                                       , block_number
                                       , transaction_index
                                       , transaction_hash
@@ -78,7 +77,7 @@ export function events(prisma:PrismaClient, externalPool?:Pool, enablePaging:boo
                                       , direction
                                       , value
                                       , obj as payload
-                                 from crc_safe_timeline
+                                 from crc_safe_timeline_2
                                  where ((safe_address != '' and safe_address = lower($1)) or $1 = '')
                                    and type = ANY ($2)
                                    and (($3 != '' and transaction_hash = $3) or ($3 = ''))
@@ -121,6 +120,12 @@ export function events(prisma:PrismaClient, externalPool?:Pool, enablePaging:boo
       const allSafeAddressesDict: { [safeAddress: string]: any } = {};
       const allTransactionHashesDict: {[transactionHash: string]: any} = {};
       timeline.rows
+        .map(o => {
+          if (Array.isArray(o.payload)) {
+            o.payload = o.payload[0];
+          }
+          return o;
+        })
         .filter((o: ProfileEvent) => classify(o) != null)
         .forEach((o: ProfileEvent) => {
           const payload = o.payload;
@@ -245,7 +250,6 @@ export function events(prisma:PrismaClient, externalPool?:Pool, enablePaging:boo
         .map((o: any) => {
           return <ProfileEvent>{
             __typename: "ProfileEvent",
-            id: o.id,
             safe_address: o.safe_address,
             safe_address_profile: _profilesBySafeAddress[o.safe_address],
             type: o.type,

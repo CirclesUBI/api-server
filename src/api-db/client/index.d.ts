@@ -36,11 +36,14 @@ export type Invitation = {
   id: number
   createdByProfileId: number
   createdAt: Date
+  name: string
   code: string
   claimedByProfileId: number | null
   claimedAt: Date | null
   redeemedByProfileId: number | null
   redeemedAt: Date | null
+  redeemTxHash: string | null
+  address: string
   key: string
 }
 
@@ -1998,11 +2001,14 @@ export namespace Prisma {
     id: number | null
     createdByProfileId: number | null
     createdAt: Date | null
+    name: string | null
     code: string | null
     claimedByProfileId: number | null
     claimedAt: Date | null
     redeemedByProfileId: number | null
     redeemedAt: Date | null
+    redeemTxHash: string | null
+    address: string | null
     key: string | null
   }
 
@@ -2010,11 +2016,14 @@ export namespace Prisma {
     id: number | null
     createdByProfileId: number | null
     createdAt: Date | null
+    name: string | null
     code: string | null
     claimedByProfileId: number | null
     claimedAt: Date | null
     redeemedByProfileId: number | null
     redeemedAt: Date | null
+    redeemTxHash: string | null
+    address: string | null
     key: string | null
   }
 
@@ -2022,11 +2031,14 @@ export namespace Prisma {
     id: number
     createdByProfileId: number
     createdAt: number
+    name: number
     code: number
     claimedByProfileId: number
     claimedAt: number
     redeemedByProfileId: number
     redeemedAt: number
+    redeemTxHash: number
+    address: number
     key: number
     _all: number
   }
@@ -2050,11 +2062,14 @@ export namespace Prisma {
     id?: true
     createdByProfileId?: true
     createdAt?: true
+    name?: true
     code?: true
     claimedByProfileId?: true
     claimedAt?: true
     redeemedByProfileId?: true
     redeemedAt?: true
+    redeemTxHash?: true
+    address?: true
     key?: true
   }
 
@@ -2062,11 +2077,14 @@ export namespace Prisma {
     id?: true
     createdByProfileId?: true
     createdAt?: true
+    name?: true
     code?: true
     claimedByProfileId?: true
     claimedAt?: true
     redeemedByProfileId?: true
     redeemedAt?: true
+    redeemTxHash?: true
+    address?: true
     key?: true
   }
 
@@ -2074,11 +2092,14 @@ export namespace Prisma {
     id?: true
     createdByProfileId?: true
     createdAt?: true
+    name?: true
     code?: true
     claimedByProfileId?: true
     claimedAt?: true
     redeemedByProfileId?: true
     redeemedAt?: true
+    redeemTxHash?: true
+    address?: true
     key?: true
     _all?: true
   }
@@ -2199,11 +2220,14 @@ export namespace Prisma {
     id: number
     createdByProfileId: number
     createdAt: Date
+    name: string
     code: string
     claimedByProfileId: number | null
     claimedAt: Date | null
     redeemedByProfileId: number | null
     redeemedAt: Date | null
+    redeemTxHash: string | null
+    address: string
     key: string
     _count: InvitationCountAggregateOutputType | null
     _avg: InvitationAvgAggregateOutputType | null
@@ -2231,6 +2255,7 @@ export namespace Prisma {
     createdBy?: boolean | ProfileArgs
     createdByProfileId?: boolean
     createdAt?: boolean
+    name?: boolean
     code?: boolean
     claimedBy?: boolean | ProfileArgs
     claimedByProfileId?: boolean
@@ -2238,6 +2263,8 @@ export namespace Prisma {
     redeemedBy?: boolean | ProfileArgs
     redeemedByProfileId?: boolean
     redeemedAt?: boolean
+    redeemTxHash?: boolean
+    address?: boolean
     key?: boolean
     indexedTransactions?: boolean | RedeemInvitationRequestFindManyArgs
   }
@@ -13353,11 +13380,14 @@ export namespace Prisma {
     id: 'id',
     createdByProfileId: 'createdByProfileId',
     createdAt: 'createdAt',
+    name: 'name',
     code: 'code',
     claimedByProfileId: 'claimedByProfileId',
     claimedAt: 'claimedAt',
     redeemedByProfileId: 'redeemedByProfileId',
     redeemedAt: 'redeemedAt',
+    redeemTxHash: 'redeemTxHash',
+    address: 'address',
     key: 'key'
   };
 
@@ -13591,6 +13621,7 @@ export namespace Prisma {
     createdBy?: XOR<ProfileRelationFilter, ProfileWhereInput>
     createdByProfileId?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
+    name?: StringFilter | string
     code?: StringFilter | string
     claimedBy?: XOR<ProfileRelationFilter, ProfileWhereInput> | null
     claimedByProfileId?: IntNullableFilter | number | null
@@ -13598,6 +13629,8 @@ export namespace Prisma {
     redeemedBy?: XOR<ProfileRelationFilter, ProfileWhereInput> | null
     redeemedByProfileId?: IntNullableFilter | number | null
     redeemedAt?: DateTimeNullableFilter | Date | string | null
+    redeemTxHash?: StringNullableFilter | string | null
+    address?: StringFilter | string
     key?: StringFilter | string
     indexedTransactions?: RedeemInvitationRequestListRelationFilter
   }
@@ -13606,11 +13639,14 @@ export namespace Prisma {
     id?: SortOrder
     createdByProfileId?: SortOrder
     createdAt?: SortOrder
+    name?: SortOrder
     code?: SortOrder
     claimedByProfileId?: SortOrder
     claimedAt?: SortOrder
     redeemedByProfileId?: SortOrder
     redeemedAt?: SortOrder
+    redeemTxHash?: SortOrder
+    address?: SortOrder
     key?: SortOrder
   }
 
@@ -13625,11 +13661,14 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter | number
     createdByProfileId?: IntWithAggregatesFilter | number
     createdAt?: DateTimeWithAggregatesFilter | Date | string
+    name?: StringWithAggregatesFilter | string
     code?: StringWithAggregatesFilter | string
     claimedByProfileId?: IntNullableWithAggregatesFilter | number | null
     claimedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
     redeemedByProfileId?: IntNullableWithAggregatesFilter | number | null
     redeemedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
+    redeemTxHash?: StringNullableWithAggregatesFilter | string | null
+    address?: StringWithAggregatesFilter | string
     key?: StringWithAggregatesFilter | string
   }
 
@@ -14219,9 +14258,12 @@ export namespace Prisma {
 
   export type InvitationCreateInput = {
     createdAt: Date | string
+    name: string
     code: string
     claimedAt?: Date | string | null
     redeemedAt?: Date | string | null
+    redeemTxHash?: string | null
+    address: string
     key: string
     createdBy: ProfileCreateNestedOneWithoutInvitationsInput
     claimedBy?: ProfileCreateNestedOneWithoutClaimedInvitationsInput
@@ -14233,20 +14275,26 @@ export namespace Prisma {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    name: string
     code: string
     claimedByProfileId?: number | null
     claimedAt?: Date | string | null
     redeemedByProfileId?: number | null
     redeemedAt?: Date | string | null
+    redeemTxHash?: string | null
+    address: string
     key: string
     indexedTransactions?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutInvitationToRedeemInput
   }
 
   export type InvitationUpdateInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     createdBy?: ProfileUpdateOneRequiredWithoutInvitationsInput
     claimedBy?: ProfileUpdateOneWithoutClaimedInvitationsInput
@@ -14258,11 +14306,14 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     indexedTransactions?: RedeemInvitationRequestUncheckedUpdateManyWithoutInvitationToRedeemInput
   }
@@ -14271,19 +14322,25 @@ export namespace Prisma {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    name: string
     code: string
     claimedByProfileId?: number | null
     claimedAt?: Date | string | null
     redeemedByProfileId?: number | null
     redeemedAt?: Date | string | null
+    redeemTxHash?: string | null
+    address: string
     key: string
   }
 
   export type InvitationUpdateManyMutationInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
   }
 
@@ -14291,11 +14348,14 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
   }
 
@@ -17833,9 +17893,12 @@ export namespace Prisma {
 
   export type InvitationCreateWithoutIndexedTransactionsInput = {
     createdAt: Date | string
+    name: string
     code: string
     claimedAt?: Date | string | null
     redeemedAt?: Date | string | null
+    redeemTxHash?: string | null
+    address: string
     key: string
     createdBy: ProfileCreateNestedOneWithoutInvitationsInput
     claimedBy?: ProfileCreateNestedOneWithoutClaimedInvitationsInput
@@ -17846,11 +17909,14 @@ export namespace Prisma {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    name: string
     code: string
     claimedByProfileId?: number | null
     claimedAt?: Date | string | null
     redeemedByProfileId?: number | null
     redeemedAt?: Date | string | null
+    redeemTxHash?: string | null
+    address: string
     key: string
   }
 
@@ -17932,9 +17998,12 @@ export namespace Prisma {
 
   export type InvitationUpdateWithoutIndexedTransactionsInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     createdBy?: ProfileUpdateOneRequiredWithoutInvitationsInput
     claimedBy?: ProfileUpdateOneWithoutClaimedInvitationsInput
@@ -17945,11 +18014,14 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
   }
 
@@ -18104,9 +18176,12 @@ export namespace Prisma {
 
   export type InvitationCreateWithoutCreatedByInput = {
     createdAt: Date | string
+    name: string
     code: string
     claimedAt?: Date | string | null
     redeemedAt?: Date | string | null
+    redeemTxHash?: string | null
+    address: string
     key: string
     claimedBy?: ProfileCreateNestedOneWithoutClaimedInvitationsInput
     redeemedBy?: ProfileCreateNestedOneWithoutRedeemedInvitationsInput
@@ -18116,11 +18191,14 @@ export namespace Prisma {
   export type InvitationUncheckedCreateWithoutCreatedByInput = {
     id?: number
     createdAt: Date | string
+    name: string
     code: string
     claimedByProfileId?: number | null
     claimedAt?: Date | string | null
     redeemedByProfileId?: number | null
     redeemedAt?: Date | string | null
+    redeemTxHash?: string | null
+    address: string
     key: string
     indexedTransactions?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutInvitationToRedeemInput
   }
@@ -18162,9 +18240,12 @@ export namespace Prisma {
 
   export type InvitationCreateWithoutRedeemedByInput = {
     createdAt: Date | string
+    name: string
     code: string
     claimedAt?: Date | string | null
     redeemedAt?: Date | string | null
+    redeemTxHash?: string | null
+    address: string
     key: string
     createdBy: ProfileCreateNestedOneWithoutInvitationsInput
     claimedBy?: ProfileCreateNestedOneWithoutClaimedInvitationsInput
@@ -18175,10 +18256,13 @@ export namespace Prisma {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    name: string
     code: string
     claimedByProfileId?: number | null
     claimedAt?: Date | string | null
     redeemedAt?: Date | string | null
+    redeemTxHash?: string | null
+    address: string
     key: string
     indexedTransactions?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutInvitationToRedeemInput
   }
@@ -18195,9 +18279,12 @@ export namespace Prisma {
 
   export type InvitationCreateWithoutClaimedByInput = {
     createdAt: Date | string
+    name: string
     code: string
     claimedAt?: Date | string | null
     redeemedAt?: Date | string | null
+    redeemTxHash?: string | null
+    address: string
     key: string
     createdBy: ProfileCreateNestedOneWithoutInvitationsInput
     redeemedBy?: ProfileCreateNestedOneWithoutRedeemedInvitationsInput
@@ -18208,10 +18295,13 @@ export namespace Prisma {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    name: string
     code: string
     claimedAt?: Date | string | null
     redeemedByProfileId?: number | null
     redeemedAt?: Date | string | null
+    redeemTxHash?: string | null
+    address: string
     key: string
     indexedTransactions?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutInvitationToRedeemInput
   }
@@ -18429,11 +18519,14 @@ export namespace Prisma {
     id?: IntFilter | number
     createdByProfileId?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
+    name?: StringFilter | string
     code?: StringFilter | string
     claimedByProfileId?: IntNullableFilter | number | null
     claimedAt?: DateTimeNullableFilter | Date | string | null
     redeemedByProfileId?: IntNullableFilter | number | null
     redeemedAt?: DateTimeNullableFilter | Date | string | null
+    redeemTxHash?: StringNullableFilter | string | null
+    address?: StringFilter | string
     key?: StringFilter | string
   }
 
@@ -20248,11 +20341,14 @@ export namespace Prisma {
   export type InvitationCreateManyCreatedByInput = {
     id?: number
     createdAt: Date | string
+    name: string
     code: string
     claimedByProfileId?: number | null
     claimedAt?: Date | string | null
     redeemedByProfileId?: number | null
     redeemedAt?: Date | string | null
+    redeemTxHash?: string | null
+    address: string
     key: string
   }
 
@@ -20268,10 +20364,13 @@ export namespace Prisma {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    name: string
     code: string
     claimedByProfileId?: number | null
     claimedAt?: Date | string | null
     redeemedAt?: Date | string | null
+    redeemTxHash?: string | null
+    address: string
     key: string
   }
 
@@ -20279,10 +20378,13 @@ export namespace Prisma {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    name: string
     code: string
     claimedAt?: Date | string | null
     redeemedByProfileId?: number | null
     redeemedAt?: Date | string | null
+    redeemTxHash?: string | null
+    address: string
     key: string
   }
 
@@ -20461,9 +20563,12 @@ export namespace Prisma {
 
   export type InvitationUpdateWithoutCreatedByInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     claimedBy?: ProfileUpdateOneWithoutClaimedInvitationsInput
     redeemedBy?: ProfileUpdateOneWithoutRedeemedInvitationsInput
@@ -20473,11 +20578,14 @@ export namespace Prisma {
   export type InvitationUncheckedUpdateWithoutCreatedByInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     indexedTransactions?: RedeemInvitationRequestUncheckedUpdateManyWithoutInvitationToRedeemInput
   }
@@ -20485,11 +20593,14 @@ export namespace Prisma {
   export type InvitationUncheckedUpdateManyWithoutInvitationsInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
   }
 
@@ -20518,9 +20629,12 @@ export namespace Prisma {
 
   export type InvitationUpdateWithoutRedeemedByInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     createdBy?: ProfileUpdateOneRequiredWithoutInvitationsInput
     claimedBy?: ProfileUpdateOneWithoutClaimedInvitationsInput
@@ -20531,10 +20645,13 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     indexedTransactions?: RedeemInvitationRequestUncheckedUpdateManyWithoutInvitationToRedeemInput
   }
@@ -20543,18 +20660,24 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
   }
 
   export type InvitationUpdateWithoutClaimedByInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     createdBy?: ProfileUpdateOneRequiredWithoutInvitationsInput
     redeemedBy?: ProfileUpdateOneWithoutRedeemedInvitationsInput
@@ -20565,10 +20688,13 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     indexedTransactions?: RedeemInvitationRequestUncheckedUpdateManyWithoutInvitationToRedeemInput
   }
@@ -20577,10 +20703,13 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
   }
 

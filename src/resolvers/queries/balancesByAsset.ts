@@ -12,7 +12,7 @@ export function balancesByAsset(prisma:PrismaClient) {
         try {
             const balanceQuery = `
                 select *
-                from crc_balances_by_safe_and_token bst
+                from crc_balances_by_safe_and_token_2 bst
                 where bst.safe_address = $1;`;
 
             const balanceQueryParameters = [safeAddress];

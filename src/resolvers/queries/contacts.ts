@@ -7,8 +7,7 @@ import {Pool} from "pg";
 import {events} from "./queryEvents";
 
 export type LastEvent = {
-  transaction_id:number
-  , timestamp:string
+    timestamp:string
   , address1:string
   , address2:string
   , block_number:number
@@ -27,15 +26,15 @@ export async function lastEvents(safeAddress:string, contactAddresses:string[], 
       ), a as (
           select $1::text as address1, a.address2, 'crc_trust' as type, t.block_number, t.index,  t.hash as transaction_hash
           from addresses a
-                   join crc_trust ct on ($1 = ct.address or $1 = ct.can_send_to)
+                   join crc_trust_2 ct on ($1 = ct.address or $1 = ct.can_send_to)
               and (a.address2 = ct.address or a.address2 = ct.can_send_to)
-                   join transaction t on ct.transaction_id = t.id
+                   join transaction_2 t on ct.hash = t.hash
       ), b as (
           select $1::text as address1, a.address2, 'crc_hub_transfer' as type, t.block_number, t.index, t.hash as transaction_hash
           from addresses a
-                   join crc_hub_transfer cht on ($1 = cht."from" or $1 = cht."to")
+                   join crc_hub_transfer_2 cht on ($1 = cht."from" or $1 = cht."to")
               and (a.address2 = cht."from" or a.address2 = cht."to")
-                   join transaction t on cht.transaction_id = t.id
+                   join transaction_2 t on cht.hash = t.hash
       ), c as (
           select *
           from a
@@ -47,25 +46,22 @@ export async function lastEvents(safeAddress:string, contactAddresses:string[], 
           from c
           group by address1, address2
       ), safe_timeline as (
-          select t.id
-               , b.timestamp
+          select b.timestamp
                , d.address1
                , d.address2
                , b.number
                , t.index
                , t.hash
                , 'crc_hub_transfer' as type
-               , crc_signup."user"
+               , crc_signup_2."user"
                , case
-                     when cht."from" = crc_signup."user" and cht."to" = crc_signup."user" then 'self'
-                     when cht."from" = crc_signup."user" then 'out'
+                     when cht."from" = crc_signup_2."user" and cht."to" = crc_signup_2."user" then 'self'
+                     when cht."from" = crc_signup_2."user" then 'out'
                      else 'in' end  as direction
                , cht.value
                , (select row_to_json(_steps)
                   from (
-                           select cht.id,
-                                  t.id as          transaction_id,
-                                  t."hash"         "transactionHash",
+                           select t."hash"         "transactionHash",
                                   ht."from"        "from",
                                   ht."to"          "to",
                                   ht."value"::text flow,
@@ -75,43 +71,41 @@ export async function lastEvents(safeAddress:string, contactAddresses:string[], 
                                                    E20T."to"             "to",
                                                    E20T."token"          "token",
                                                    E20T."value"::text as "value"
-                                            from crc_token_transfer E20T
-                                            where E20T.transaction_id = t.id
+                                            from crc_token_transfer_2 E20T
+                                            where E20T.hash = t.hash
                                         ) steps)
-                           from transaction t
-                                    join crc_hub_transfer ht on t.id = ht.transaction_id
-                           where t.id = cht.transaction_id
+                           from transaction_2 t
+                                    join crc_hub_transfer_2 ht on t.hash = ht.hash
+                           where t.hash = cht.hash
                        ) _steps)
                                     as obj
-          from crc_hub_transfer cht
-                   join crc_signup on crc_signup."user" = cht."from" or crc_signup."user" = cht."to"
-                   join transaction t on cht.transaction_id = t.id
+          from crc_hub_transfer_2 cht
+                   join crc_signup_2 on crc_signup_2."user" = cht."from" or crc_signup_2."user" = cht."to"
+                   join transaction_2 t on cht.hash = t.hash
                    join block b on t.block_number = b.number
-                   join d on d.transaction_hash = t.hash and crc_signup."user" = d.address1
+                   join d on d.transaction_hash = t.hash and crc_signup_2."user" = d.address1
           union all
-          select t.id
-               , b.timestamp
+          select b.timestamp
                , d.address1
                , d.address2
                , b.number
                , t.index
                , t.hash
                , 'crc_trust'       as type
-               , crc_signup."user"
+               , crc_signup_2."user"
                , case
-                     when ct.can_send_to = crc_signup."user" and ct.address = crc_signup."user" then 'self'
-                     when ct.can_send_to = crc_signup."user" then 'out'
+                     when ct.can_send_to = crc_signup_2."user" and ct.address = crc_signup_2."user" then 'self'
+                     when ct.can_send_to = crc_signup_2."user" then 'out'
                      else 'in' end as direction
                , ct."limit"
                , row_to_json(ct)      obj
-          from crc_trust ct
-                   join crc_signup on crc_signup."user" = ct.address or crc_signup."user" = ct.can_send_to
-                   join transaction t on ct.transaction_id = t.id
+          from crc_trust_2 ct
+                   join crc_signup_2 on crc_signup_2."user" = ct.address or crc_signup_2."user" = ct.can_send_to
+                   join transaction_2 t on ct.hash = t.hash
                    join block b on t.block_number = b.number
-                   join d on d.transaction_hash = t.hash and crc_signup."user" = d.address1
+                   join d on d.transaction_hash = t.hash and crc_signup_2."user" = d.address1
       )
-      select id transaction_id
-           , timestamp
+      select timestamp
            , address1
            , address2
            , number block_number
@@ -131,8 +125,7 @@ export async function lastEvents(safeAddress:string, contactAddresses:string[], 
     const queryResult = await pool.query(sql, queryParameters);
     return queryResult.rows.map(row => {
       return {
-        transaction_id: row.transaction_id
-        , timestamp: (<Date>row.timestamp).toJSON()
+        timestamp: (<Date>row.timestamp).toJSON()
         , address1: row.address1
         , address2: row.address2
         , block_number: row.block_number
@@ -160,24 +153,24 @@ export function contacts(prisma:PrismaClient, resolveProfiles:boolean = false) {
       const contactsQuery = `
           WITH safe_contacts AS (
               SELECT distinct max(b.timestamp)                                                            ts,
-                              crc_signup."user",
-                              case when cht.from = crc_signup."user" then cht."to" else cht."from" end as contact
-              FROM crc_hub_transfer cht
-                       JOIN crc_signup ON crc_signup."user" = cht."from" OR crc_signup."user" = cht."to"
-                       JOIN transaction t ON cht.transaction_id = t.id
+                              crc_signup_2."user",
+                              case when cht.from = crc_signup_2."user" then cht."to" else cht."from" end as contact
+              FROM crc_hub_transfer_2 cht
+                       JOIN crc_signup_2 ON crc_signup_2."user" = cht."from" OR crc_signup_2."user" = cht."to"
+                       JOIN transaction_2 t ON cht.hash = t.hash
                        JOIN block b ON t.block_number = b.number
-              group by cht."from", crc_signup."user", cht."to"
+              group by cht."from", crc_signup_2."user", cht."to"
               UNION ALL
               SELECT distinct max(b.timestamp),
-                              crc_signup."user",
+                              crc_signup_2."user",
                               case
-                                  when ct.can_send_to = crc_signup."user" then ct."address"
+                                  when ct.can_send_to = crc_signup_2."user" then ct."address"
                                   else ct."can_send_to" end as contact
-              FROM crc_trust ct
-                       JOIN crc_signup ON crc_signup."user" = ct.address OR crc_signup."user" = ct.can_send_to
-                       JOIN transaction t ON ct.transaction_id = t.id
+              FROM crc_trust_2 ct
+                       JOIN crc_signup_2 ON crc_signup_2."user" = ct.address OR crc_signup_2."user" = ct.can_send_to
+                       JOIN transaction_2 t ON ct.hash = t.hash
                        JOIN block b ON t.block_number = b.number
-              group by ct."can_send_to", ct."address", crc_signup."user"
+              group by ct.can_send_to, ct."address", crc_signup_2."user"
           ), contacts as (
               SELECT max(st.ts) as last_contact_timestamp,
                      st."user"  AS safe_address,
@@ -191,8 +184,8 @@ export function contacts(prisma:PrismaClient, resolveProfiles:boolean = false) {
                  cr1."limit" trusts_you,
                  cr2."limit" you_trust
           from contacts st
-                   left join crc_current_trust cr1 on cr1."user" = st.safe_address and cr1.can_send_to = st.contact
-                   left join crc_current_trust cr2 on cr2.can_send_to = st.safe_address and cr2."user" = st.contact
+                   left join crc_current_trust_2 cr1 on cr1."user" = st.safe_address and cr1.can_send_to = st.contact
+                   left join crc_current_trust_2 cr2 on cr2.can_send_to = st.safe_address and cr2."user" = st.contact
           where st.safe_address = $1
           order by last_contact_timestamp desc;`;
 
@@ -205,6 +198,33 @@ export function contacts(prisma:PrismaClient, resolveProfiles:boolean = false) {
         allSafeAddresses[o.contact] = true;
       });
 
+      const lastChatContacts = await prisma.$queryRaw`
+          select max("createdAt") last_message_at, "from", "to"
+          from "ChatMessage"
+          where "from" = ${safeAddress}
+             or "to" = ${safeAddress}
+          group by "from", "to"
+          order by max("createdAt") desc;`;
+
+      /*
+            const arr = [
+              {
+                last_message_at: '2021-09-17T12:15:59.477+00:00',
+                from: '0xde374ece6fa50e781e81aac78e811b33d16912c7',
+                to: '0x1a3e7bee49c45897b8a501f43c21c2f17dc9354a'
+              },
+              {
+                last_message_at: '2021-09-17T11:36:16.366+00:00',
+                from: '0xde374ece6fa50e781e81aac78e811b33d16912c7',
+                to: '0x009626daded5e90aecee30ad3ebf2b3e510fe256'
+              },
+            ];
+            const lastChatContactsWithMessage = await prisma.$queryRaw(`
+              select *
+              from "ChatMessage"
+            `);
+            console.log(lastChatContacts);
+       */
 
       const allSafeAddressesArr = Object.keys(allSafeAddresses);
       const profilesBySafeAddressResolver = profilesBySafeAddress(prisma);
@@ -228,7 +248,7 @@ export function contacts(prisma:PrismaClient, resolveProfiles:boolean = false) {
 
       return contactsQueryResult.rows.map((o: any) => {
         const lastEvent = lastEventsByContactAddress[o.contact];
-        return <Contact>{
+        return <Contact> {
           safeAddress,
           lastContactAt: o.last_contact_timestamp,
           safeAddressProfile: _profilesBySafeAddress[o.safe_address],
@@ -241,7 +261,7 @@ export function contacts(prisma:PrismaClient, resolveProfiles:boolean = false) {
               __typename: lastEvent.type == "crc_trust" ? "CrcTrust" : "CrcHubTransfer"
             },
             safe_address: lastEvent.address1,
-            id: lastEvent.transaction_id
+            transaction_hash: lastEvent.transaction_hash
           },
           trustsYou: o.trusts_you,
           youTrust: o.you_trust

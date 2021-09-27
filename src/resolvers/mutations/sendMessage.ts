@@ -1,7 +1,6 @@
 import {ChatMessage, SendMessageResult} from "../../types";
 import {Context} from "../../context";
 import {PrismaClient} from "../../api-db/client";
-import {profilesBySafeAddress} from "../queries/profiles";
 
 export function sendMessage(prisma:PrismaClient) {
     return async (parent:any, args:{toSafeAddress:string, content:string}, context:Context) => {

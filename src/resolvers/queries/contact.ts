@@ -11,24 +11,24 @@ export function contact(prisma:PrismaClient) {
       const contactsQuery = `
           WITH safe_contacts AS (
               SELECT distinct max(b.timestamp)                                                            ts,
-                              crc_signup."user",
-                              case when cht.from = crc_signup."user" then cht."to" else cht."from" end as contact
-              FROM crc_hub_transfer cht
-                       JOIN crc_signup ON crc_signup."user" = cht."from" OR crc_signup."user" = cht."to"
-                       JOIN transaction t ON cht.transaction_id = t.id
+                              crc_signup_2."user",
+                              case when cht.from = crc_signup_2."user" then cht."to" else cht."from" end as contact
+              FROM crc_hub_transfer_2 cht
+                       JOIN crc_signup_2 ON crc_signup_2."user" = cht."from" OR crc_signup_2."user" = cht."to"
+                       JOIN transaction_2 t ON cht.hash = t.hash
                        JOIN block b ON t.block_number = b.number
-              group by cht."from", crc_signup."user", cht."to"
+              group by cht."from", crc_signup_2."user", cht."to"
               UNION ALL
               SELECT distinct max(b.timestamp),
-                              crc_signup."user",
+                              crc_signup_2."user",
                               case
-                                  when ct.can_send_to = crc_signup."user" then ct."address"
+                                  when ct.can_send_to = crc_signup_2."user" then ct."address"
                                   else ct."can_send_to" end as contact
-              FROM crc_trust ct
-                       JOIN crc_signup ON crc_signup."user" = ct.address OR crc_signup."user" = ct.can_send_to
-                       JOIN transaction t ON ct.transaction_id = t.id
+              FROM crc_trust_2 ct
+                       JOIN crc_signup_2 ON crc_signup_2."user" = ct.address OR crc_signup_2."user" = ct.can_send_to
+                       JOIN transaction_2 t ON ct.hash = t.hash
                        JOIN block b ON t.block_number = b.number
-              group by ct."can_send_to", ct."address", crc_signup."user"
+              group by ct.can_send_to, ct."address", crc_signup_2."user"
           ), contacts as (
               SELECT max(st.ts) as last_contact_timestamp,
                      st."user"  AS safe_address,
@@ -42,8 +42,8 @@ export function contact(prisma:PrismaClient) {
                  cr1."limit" trusts_you,
                  cr2."limit" you_trust
           from contacts st
-                   left join crc_current_trust cr1 on cr1."user" = st.safe_address and cr1.can_send_to = st.contact
-                   left join crc_current_trust cr2 on cr2.can_send_to = st.safe_address and cr2."user" = st.contact
+                   left join crc_current_trust_2 cr1 on cr1."user" = st.safe_address and cr1.can_send_to = st.contact
+                   left join crc_current_trust_2 cr2 on cr2.can_send_to = st.safe_address and cr2."user" = st.contact
           where st.safe_address = $1
             and st.contact = $2;`;
 

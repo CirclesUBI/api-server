@@ -11,22 +11,22 @@ export function commonTrust(prisma:PrismaClient) {
       const commonTrustsQuery = `
           with common_incoming_trust as (
               select 'in' direction, $1 as safe_address, ct."user", ct.can_send_to, ct."limit"
-              from crc_current_trust ct
+              from crc_current_trust_2 ct
               where ct.can_send_to = $1
                 and "limit" > 0
               union all
               select 'in' direction, $2 as safe_address, ct."user", ct.can_send_to, ct."limit"
-              from crc_current_trust ct
+              from crc_current_trust_2 ct
               where ct.can_send_to = $2
                 and "limit" > 0
           ), common_outgoing_trust as (
               select 'out' direction, $1 as safe_address, ct."user", ct.can_send_to, ct."limit"
-              from crc_current_trust ct
+              from crc_current_trust_2 ct
               where ct."user" = $1
                 and "limit" > 0
               union all
               select 'out' direction, $2 as safe_address, ct."user", ct.can_send_to, ct."limit"
-              from crc_current_trust ct
+              from crc_current_trust_2 ct
               where ct."user" = $2
                 and "limit" > 0
           ), common_in_and_out_trusts as (

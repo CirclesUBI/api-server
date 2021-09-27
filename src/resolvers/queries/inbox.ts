@@ -1,5 +1,5 @@
 import {Context} from "../../context";
-import {ChatMessage, Maybe, ProfileEvent} from "../../types";
+import {ChatMessage, ProfileEvent} from "../../types";
 import {getPool} from "../resolvers";
 import {PrismaClient} from "../../api-db/client";
 import {events} from "./queryEvents";
@@ -51,7 +51,7 @@ export function inbox(prisma:PrismaClient) {
       const chatMessagesPromise = prisma.chatMessage.findMany({
         where: {
           createdAt: {
-            gte: sinceDate,
+            gt: sinceDate,
             lte: untilDate
           },
           OR: [{
@@ -109,10 +109,6 @@ export function inbox(prisma:PrismaClient) {
       });
 
       const sorted = eventsResult.concat(chatMessageEvents)
-        .map(o => {
-          o.id = o.payload?.id ?? 0;
-          return o;
-        })
         .sort((a, b) =>
           a.timestamp > b.timestamp
             ? 1

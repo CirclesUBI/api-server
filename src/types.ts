@@ -24,8 +24,7 @@ export type AssetBalance = {
 
 export type ChatMessage = IEventPayload & {
   __typename?: 'ChatMessage';
-  id: Scalars['Int'];
-  transaction_id?: Maybe<Scalars['Int']>;
+  transaction_hash?: Maybe<Scalars['String']>;
   from: Scalars['String'];
   from_profile?: Maybe<Profile>;
   to: Scalars['String'];
@@ -106,8 +105,7 @@ export type CountryStats = {
 
 export type CrcHubTransfer = IEventPayload & {
   __typename?: 'CrcHubTransfer';
-  id: Scalars['Int'];
-  transaction_id: Scalars['Int'];
+  transaction_hash: Scalars['String'];
   from: Scalars['String'];
   from_profile?: Maybe<Profile>;
   to: Scalars['String'];
@@ -118,8 +116,7 @@ export type CrcHubTransfer = IEventPayload & {
 
 export type CrcMinting = IEventPayload & {
   __typename?: 'CrcMinting';
-  id: Scalars['Int'];
-  transaction_id: Scalars['Int'];
+  transaction_hash: Scalars['String'];
   from: Scalars['String'];
   from_profile?: Maybe<Profile>;
   to: Scalars['String'];
@@ -130,8 +127,7 @@ export type CrcMinting = IEventPayload & {
 
 export type CrcSignup = IEventPayload & {
   __typename?: 'CrcSignup';
-  id: Scalars['Int'];
-  transaction_id: Scalars['Int'];
+  transaction_hash: Scalars['String'];
   user: Scalars['String'];
   user_profile?: Maybe<Profile>;
   token: Scalars['String'];
@@ -139,8 +135,7 @@ export type CrcSignup = IEventPayload & {
 
 export type CrcTokenTransfer = IEventPayload & {
   __typename?: 'CrcTokenTransfer';
-  id: Scalars['Int'];
-  transaction_id: Scalars['Int'];
+  transaction_hash: Scalars['String'];
   from: Scalars['String'];
   from_profile?: Maybe<Profile>;
   to: Scalars['String'];
@@ -151,8 +146,7 @@ export type CrcTokenTransfer = IEventPayload & {
 
 export type CrcTrust = IEventPayload & {
   __typename?: 'CrcTrust';
-  id: Scalars['Int'];
-  transaction_id: Scalars['Int'];
+  transaction_hash: Scalars['String'];
   address: Scalars['String'];
   address_profile?: Maybe<Profile>;
   can_send_to: Scalars['String'];
@@ -164,6 +158,7 @@ export type CreateInvitationResult = {
   __typename?: 'CreateInvitationResult';
   success: Scalars['Boolean'];
   error?: Maybe<Scalars['String']>;
+  createdInviteEoas: Array<CreatedInvitation>;
 };
 
 export type CreateTagInput = {
@@ -179,7 +174,17 @@ export type CreatedInvitation = {
   claimedBy?: Maybe<Profile>;
   claimedByProfileId?: Maybe<Scalars['Int']>;
   claimedAt?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  address: Scalars['String'];
+  balance: Scalars['String'];
   code: Scalars['String'];
+};
+
+export type CreatedInviteEoa = {
+  __typename?: 'CreatedInviteEoa';
+  for: Scalars['String'];
+  address: Scalars['String'];
+  fee: Scalars['String'];
 };
 
 export type DelegateAuthInit = {
@@ -204,8 +209,7 @@ export type DepositChallengeResponse = {
 
 export type EthTransfer = IEventPayload & {
   __typename?: 'EthTransfer';
-  id: Scalars['Int'];
-  transaction_id: Scalars['Int'];
+  transaction_hash: Scalars['String'];
   from: Scalars['String'];
   from_profile?: Maybe<Profile>;
   to: Scalars['String'];
@@ -223,8 +227,7 @@ export type ExchangeTokenResponse = {
 
 export type GnosisSafeEthTransfer = IEventPayload & {
   __typename?: 'GnosisSafeEthTransfer';
-  id: Scalars['Int'];
-  transaction_id: Scalars['Int'];
+  transaction_hash: Scalars['String'];
   initiator: Scalars['String'];
   from: Scalars['String'];
   from_profile?: Maybe<Profile>;
@@ -249,8 +252,7 @@ export type ICity = {
 };
 
 export type IEventPayload = {
-  id: Scalars['Int'];
-  transaction_id?: Maybe<Scalars['Int']>;
+  transaction_hash?: Maybe<Scalars['String']>;
 };
 
 export type LockOfferInput = {
@@ -285,7 +287,7 @@ export type Mutation = {
   provePayment: ProvePaymentResult;
   upsertTag: Tag;
   acknowledge: Scalars['Boolean'];
-  createInvitation: CreateInvitationResult;
+  createInvitations: CreateInvitationResult;
   claimInvitation: ClaimInvitationResult;
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
   tagTransaction: TagTransactionResult;
@@ -353,8 +355,8 @@ export type MutationAcknowledgeArgs = {
 };
 
 
-export type MutationCreateInvitationArgs = {
-  for: Scalars['String'];
+export type MutationCreateInvitationsArgs = {
+  for: Array<Scalars['String']>;
 };
 
 
@@ -431,7 +433,6 @@ export type Profile = {
 
 export type ProfileEvent = {
   __typename?: 'ProfileEvent';
-  id: Scalars['Int'];
   timestamp: Scalars['String'];
   block_number?: Maybe<Scalars['Int']>;
   transaction_index?: Maybe<Scalars['Int']>;
@@ -633,12 +634,8 @@ export type QueryUniqueProfileInput = {
 export type RedeemClaimedInvitationResult = {
   __typename?: 'RedeemClaimedInvitationResult';
   success: Scalars['Boolean'];
-  redeemRequest?: Maybe<RedeemInvitationRequest>;
-};
-
-export type RedeemInvitationRequest = {
-  __typename?: 'RedeemInvitationRequest';
-  id: Scalars['Int'];
+  error?: Maybe<Scalars['String']>;
+  transactionHash?: Maybe<Scalars['String']>;
 };
 
 export type RequestUpdateSafeInput = {
@@ -860,8 +857,8 @@ export type ResolversTypes = ResolversObject<{
   AssetBalance: ResolverTypeWrapper<AssetBalance>;
   String: ResolverTypeWrapper<Scalars['String']>;
   ChatMessage: ResolverTypeWrapper<ChatMessage>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
   City: ResolverTypeWrapper<City>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   CityStats: ResolverTypeWrapper<CityStats>;
   ClaimInvitationResult: ResolverTypeWrapper<ClaimInvitationResult>;
@@ -879,6 +876,7 @@ export type ResolversTypes = ResolversObject<{
   CreateInvitationResult: ResolverTypeWrapper<CreateInvitationResult>;
   CreateTagInput: CreateTagInput;
   CreatedInvitation: ResolverTypeWrapper<CreatedInvitation>;
+  CreatedInviteEoa: ResolverTypeWrapper<CreatedInviteEoa>;
   DelegateAuthInit: ResolverTypeWrapper<DelegateAuthInit>;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
@@ -910,7 +908,6 @@ export type ResolversTypes = ResolversObject<{
   QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   RedeemClaimedInvitationResult: ResolverTypeWrapper<RedeemClaimedInvitationResult>;
-  RedeemInvitationRequest: ResolverTypeWrapper<RedeemInvitationRequest>;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: ResolverTypeWrapper<RequestUpdateSafeResponse>;
   SearchInput: SearchInput;
@@ -936,8 +933,8 @@ export type ResolversParentTypes = ResolversObject<{
   AssetBalance: AssetBalance;
   String: Scalars['String'];
   ChatMessage: ChatMessage;
-  Int: Scalars['Int'];
   City: City;
+  Int: Scalars['Int'];
   Float: Scalars['Float'];
   CityStats: CityStats;
   ClaimInvitationResult: ClaimInvitationResult;
@@ -955,6 +952,7 @@ export type ResolversParentTypes = ResolversObject<{
   CreateInvitationResult: CreateInvitationResult;
   CreateTagInput: CreateTagInput;
   CreatedInvitation: CreatedInvitation;
+  CreatedInviteEoa: CreatedInviteEoa;
   DelegateAuthInit: DelegateAuthInit;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: DepositChallengeResponse;
@@ -985,7 +983,6 @@ export type ResolversParentTypes = ResolversObject<{
   QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   RedeemClaimedInvitationResult: RedeemClaimedInvitationResult;
-  RedeemInvitationRequest: RedeemInvitationRequest;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: RequestUpdateSafeResponse;
   SearchInput: SearchInput;
@@ -1014,8 +1011,7 @@ export type AssetBalanceResolvers<ContextType = any, ParentType extends Resolver
 }>;
 
 export type ChatMessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['ChatMessage'] = ResolversParentTypes['ChatMessage']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  transaction_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   from_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1096,8 +1092,7 @@ export type CountryStatsResolvers<ContextType = any, ParentType extends Resolver
 }>;
 
 export type CrcHubTransferResolvers<ContextType = any, ParentType extends ResolversParentTypes['CrcHubTransfer'] = ResolversParentTypes['CrcHubTransfer']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  transaction_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   from_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1108,8 +1103,7 @@ export type CrcHubTransferResolvers<ContextType = any, ParentType extends Resolv
 }>;
 
 export type CrcMintingResolvers<ContextType = any, ParentType extends ResolversParentTypes['CrcMinting'] = ResolversParentTypes['CrcMinting']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  transaction_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   from_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1120,8 +1114,7 @@ export type CrcMintingResolvers<ContextType = any, ParentType extends ResolversP
 }>;
 
 export type CrcSignupResolvers<ContextType = any, ParentType extends ResolversParentTypes['CrcSignup'] = ResolversParentTypes['CrcSignup']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  transaction_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1129,8 +1122,7 @@ export type CrcSignupResolvers<ContextType = any, ParentType extends ResolversPa
 }>;
 
 export type CrcTokenTransferResolvers<ContextType = any, ParentType extends ResolversParentTypes['CrcTokenTransfer'] = ResolversParentTypes['CrcTokenTransfer']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  transaction_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   from_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1141,8 +1133,7 @@ export type CrcTokenTransferResolvers<ContextType = any, ParentType extends Reso
 }>;
 
 export type CrcTrustResolvers<ContextType = any, ParentType extends ResolversParentTypes['CrcTrust'] = ResolversParentTypes['CrcTrust']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  transaction_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   address_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   can_send_to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1154,6 +1145,7 @@ export type CrcTrustResolvers<ContextType = any, ParentType extends ResolversPar
 export type CreateInvitationResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateInvitationResult'] = ResolversParentTypes['CreateInvitationResult']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdInviteEoas?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1164,7 +1156,17 @@ export type CreatedInvitationResolvers<ContextType = any, ParentType extends Res
   claimedBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   claimedByProfileId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   claimedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  balance?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CreatedInviteEoaResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreatedInviteEoa'] = ResolversParentTypes['CreatedInviteEoa']> = ResolversObject<{
+  for?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  fee?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1185,8 +1187,7 @@ export type DepositChallengeResponseResolvers<ContextType = any, ParentType exte
 }>;
 
 export type EthTransferResolvers<ContextType = any, ParentType extends ResolversParentTypes['EthTransfer'] = ResolversParentTypes['EthTransfer']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  transaction_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   from_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1206,8 +1207,7 @@ export type ExchangeTokenResponseResolvers<ContextType = any, ParentType extends
 }>;
 
 export type GnosisSafeEthTransferResolvers<ContextType = any, ParentType extends ResolversParentTypes['GnosisSafeEthTransfer'] = ResolversParentTypes['GnosisSafeEthTransfer']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  transaction_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transaction_hash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   initiator?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   from_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
@@ -1235,8 +1235,7 @@ export type ICityResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type IEventPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['IEventPayload'] = ResolversParentTypes['IEventPayload']> = ResolversObject<{
   __resolveType: TypeResolveFn<'ChatMessage' | 'CrcHubTransfer' | 'CrcMinting' | 'CrcSignup' | 'CrcTokenTransfer' | 'CrcTrust' | 'EthTransfer' | 'GnosisSafeEthTransfer', ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  transaction_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type LockOfferResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['LockOfferResult'] = ResolversParentTypes['LockOfferResult']> = ResolversObject<{
@@ -1266,7 +1265,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   provePayment?: Resolver<ResolversTypes['ProvePaymentResult'], ParentType, ContextType, RequireFields<MutationProvePaymentArgs, 'data'>>;
   upsertTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationUpsertTagArgs, 'data'>>;
   acknowledge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'until'>>;
-  createInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType, RequireFields<MutationCreateInvitationArgs, 'for'>>;
+  createInvitations?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType, RequireFields<MutationCreateInvitationsArgs, 'for'>>;
   claimInvitation?: Resolver<ResolversTypes['ClaimInvitationResult'], ParentType, ContextType, RequireFields<MutationClaimInvitationArgs, 'code'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
   tagTransaction?: Resolver<ResolversTypes['TagTransactionResult'], ParentType, ContextType, RequireFields<MutationTagTransactionArgs, 'transactionHash' | 'tag'>>;
@@ -1321,7 +1320,6 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
 }>;
 
 export type ProfileEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProfileEvent'] = ResolversParentTypes['ProfileEvent']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   block_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   transaction_index?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -1385,12 +1383,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type RedeemClaimedInvitationResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['RedeemClaimedInvitationResult'] = ResolversParentTypes['RedeemClaimedInvitationResult']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  redeemRequest?: Resolver<Maybe<ResolversTypes['RedeemInvitationRequest']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type RedeemInvitationRequestResolvers<ContextType = any, ParentType extends ResolversParentTypes['RedeemInvitationRequest'] = ResolversParentTypes['RedeemInvitationRequest']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  transactionHash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1492,6 +1486,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   CrcTrust?: CrcTrustResolvers<ContextType>;
   CreateInvitationResult?: CreateInvitationResultResolvers<ContextType>;
   CreatedInvitation?: CreatedInvitationResolvers<ContextType>;
+  CreatedInviteEoa?: CreatedInviteEoaResolvers<ContextType>;
   DelegateAuthInit?: DelegateAuthInitResolvers<ContextType>;
   DepositChallengeResponse?: DepositChallengeResponseResolvers<ContextType>;
   EthTransfer?: EthTransferResolvers<ContextType>;
@@ -1511,7 +1506,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Purchase?: PurchaseResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RedeemClaimedInvitationResult?: RedeemClaimedInvitationResultResolvers<ContextType>;
-  RedeemInvitationRequest?: RedeemInvitationRequestResolvers<ContextType>;
   RequestUpdateSafeResponse?: RequestUpdateSafeResponseResolvers<ContextType>;
   SendMessageResult?: SendMessageResultResolvers<ContextType>;
   Server?: ServerResolvers<ContextType>;

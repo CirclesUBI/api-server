@@ -9,7 +9,7 @@ export function balance() {
         try {
             const balanceQuery = `
                 select *
-                from crc_balances_by_safe
+                from crc_balances_by_safe_2
                 where safe_address = $1;`;
 
             const balanceQueryParameters = [safeAddress];

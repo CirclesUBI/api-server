@@ -319,19 +319,16 @@ input QueryTagsInput {
 }
 
 interface IEventPayload {
-    id: Int!
-    transaction_id: Int
+    transaction_hash: String
 }
 type CrcSignup implements IEventPayload {
-    id: Int!
-    transaction_id: Int!
+    transaction_hash: String!
     user:String!
     user_profile: Profile
     token:String!
 }
 type CrcTrust implements IEventPayload  {
-    id: Int!
-    transaction_id: Int!
+    transaction_hash: String!
     address: String!
     address_profile: Profile
     can_send_to: String!
@@ -339,8 +336,7 @@ type CrcTrust implements IEventPayload  {
     limit: Int!
 }
 type CrcTokenTransfer implements IEventPayload  {
-    id: Int!
-    transaction_id: Int!
+    transaction_hash: String!
     from: String!
     from_profile: Profile
     to: String!
@@ -349,8 +345,7 @@ type CrcTokenTransfer implements IEventPayload  {
     value: String!
 }
 type CrcHubTransfer implements IEventPayload  {
-    id: Int!
-    transaction_id: Int!
+    transaction_hash: String!
     from: String!
     from_profile: Profile
     to: String!
@@ -359,8 +354,7 @@ type CrcHubTransfer implements IEventPayload  {
     transfers: [CrcTokenTransfer!]!
 }
 type CrcMinting implements IEventPayload  {
-    id: Int!
-    transaction_id: Int!
+    transaction_hash: String!
     from: String!
     from_profile: Profile
     to: String!
@@ -369,8 +363,7 @@ type CrcMinting implements IEventPayload  {
     token: String!
 }
 type EthTransfer implements IEventPayload  {
-    id: Int!
-    transaction_id: Int!
+    transaction_hash: String!
     from: String!
     from_profile: Profile
     to: String!
@@ -378,8 +371,7 @@ type EthTransfer implements IEventPayload  {
     value: String!
 }
 type GnosisSafeEthTransfer implements IEventPayload {
-    id: Int!
-    transaction_id: Int!
+    transaction_hash: String!
     initiator: String!
     from: String!
     from_profile: Profile
@@ -389,8 +381,7 @@ type GnosisSafeEthTransfer implements IEventPayload {
 }
 
 type ChatMessage implements IEventPayload {
-    id: Int!
-    transaction_id: Int
+    transaction_hash: String
     from: String!
     from_profile: Profile
     to: String!
@@ -408,7 +399,6 @@ union EventPayload = CrcSignup
     | ChatMessage
 
 type ProfileEvent {
-    id: Int!
     timestamp: String!
     block_number: Int
     transaction_index: Int
@@ -422,10 +412,6 @@ type ProfileEvent {
     tags: [Tag!]
 }
 
-type RedeemInvitationRequest {
-    id: Int!
-}
-
 type CreatedInvitation {
     createdBy: Profile
     createdByProfileId: Int!
@@ -435,6 +421,9 @@ type CreatedInvitation {
     claimedByProfileId: Int
     claimedAt: String
 
+    name: String!
+    address: String!
+    balance: String!
     code: String!
 }
 
@@ -455,12 +444,20 @@ type ClaimInvitationResult {
 
 type RedeemClaimedInvitationResult {
     success: Boolean!
-    redeemRequest: RedeemInvitationRequest
+    error: String
+    transactionHash: String
+}
+
+type CreatedInviteEoa {
+    for: String!
+    address: String!
+    fee: String!
 }
 
 type CreateInvitationResult {
     success: Boolean!
     error: String
+    createdInviteEoas: [CreatedInvitation!]!
 }
 
 type SendMessageResult {
@@ -532,8 +529,8 @@ type Mutation
 
     acknowledge(until:String!): Boolean!
 
-    # Creates an invitation and gives it a name
-    createInvitation(for:String!) : CreateInvitationResult!
+    # Creates as many new EOAs as there are strings in the array.
+    createInvitations(for:[String!]!) : CreateInvitationResult!
     claimInvitation(code:String!): ClaimInvitationResult!
     redeemClaimedInvitation: RedeemClaimedInvitationResult!
 

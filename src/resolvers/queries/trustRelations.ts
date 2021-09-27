@@ -13,7 +13,7 @@ export function trustRelations(prisma:PrismaClient) {
 
       const trustQuery = `select "user"
                                , "can_send_to"
-                          from crc_current_trust
+                          from crc_current_trust_2
                           where ("user" = $1
                               or "can_send_to" = $1)
                             and "limit" > 0;`;

@@ -1,4 +1,4 @@
-import {Contact, Profile} from "../../types";
+import {Contact, Maybe, Profile} from "../../types";
 import {Context} from "../../context";
 import {PrismaClient} from "../../api-db/client";
 import LRU from "lru-cache";

@@ -122,12 +122,12 @@ export class Main {
             server: httpServer,
             path: server.graphqlPath,
         });
-
+/*
         var indexerApiUrl = "ws://localhost:8675"
         console.log(`Subscribing to blockchain events from the indexer at ${indexerApiUrl} ..`)
         new BlockchainIndexerConnection(indexerApiUrl);
         console.log("Subscription ready.")
-
+*/
         const PORT = 8989;
         httpServer.listen(PORT, () =>
           console.log(`Server is now running on http://localhost:${PORT}/graphql`)

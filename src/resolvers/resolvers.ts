@@ -1,7 +1,7 @@
 import {myProfile, profilesById, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
-import {ProfileEvent, Resolvers} from "../types";
+import {CreatedInvitation, CreateInvitationResult, ProfileEvent, Resolvers} from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
 import {sessionInfo} from "./queries/sessionInfo";
@@ -43,6 +43,12 @@ import {sendMessage} from "./mutations/sendMessage";
 import {tagTransaction} from "./mutations/tagTransaction";
 import {acknowledge} from "./mutations/acknowledge";
 import {inbox} from "./queries/inbox";
+import {claimInvitation} from "./mutations/claimInvitation";
+import {RpcGateway} from "../rpcGateway";
+import {Session} from "../session";
+import {createInvitations} from "./mutations/createInvitations";
+import {redeemClaimedInvitation} from "./mutations/redeemClaimedInvitation";
+import {invitationTransaction} from "./queries/invitationTransaction";
 
 let cert:string;
 
@@ -90,7 +96,85 @@ export const resolvers: Resolvers = {
     whoami: whoami,
     cities: cities,
     claimedInvitation: claimedInvitation,
+    invitationTransaction: invitationTransaction(prisma_api_ro),
+    safeFundingTransaction: (async (parent, args, context) => {
+      const session = await context.verifySession();
+      const profile = await prisma_api_ro.profile.findUnique({
+        where:{ emailAddress: session.emailAddress }
+      });
+      if (!profile?.circlesAddress || !profile?.circlesSafeOwner) {
+        return null;
+      }
+      const pool = getPool();
+      try {
+        const safeFundingTransactionQuery = `
+            select *
+            from transaction
+            where "from" = $1
+              and "to" = $2`;
+
+        const safeFundingTransactionQueryParams = [
+          profile.circlesSafeOwner,
+          profile.circlesAddress
+        ];
+        const safeFundingTransactionResult = await pool.query(
+          safeFundingTransactionQuery,
+          safeFundingTransactionQueryParams);
+
+        if (safeFundingTransactionResult.rows.length == 0) {
+          return null;
+        }
+
+        const safeFundingTransaction = safeFundingTransactionResult.rows[0];
+
+        return <ProfileEvent>{
+          id: safeFundingTransaction.id,
+          safe_address: profile.circlesSafeOwner,
+          transaction_index: safeFundingTransaction.index,
+          value: safeFundingTransaction.value,
+          direction: "in",
+          transaction_hash: safeFundingTransaction.redeemTxHash,
+          type: "EthTransfer",
+          block_number: safeFundingTransaction.block_number,
+          timestamp: safeFundingTransaction.timestamp.toJSON(),
+          safe_address_profile: profile,
+          payload: {
+            __typename: "EthTransfer",
+            transaction_hash: safeFundingTransaction.hash,
+            from: safeFundingTransaction.from,
+            from_profile: profile,
+            to: safeFundingTransaction.to,
+            to_profile: profile,
+            value: safeFundingTransaction.value,
+          }
+        };
+      } finally {
+        await pool.end();
+      }
+    }),
     myProfile: myProfile(prisma_api_rw),
+    myInvitations: (async (parent, args, context) => {
+      const session = await context.verifySession();
+      const invitations = await prisma_api_ro.invitation.findMany({
+        where: {
+          createdByProfileId:session.profileId
+        },
+        include: {
+          claimedBy: true
+        }
+      });
+
+      return invitations.map(o => <CreatedInvitation>{
+        name: o.name,
+        address: o.address,
+        balance: "0",
+        code: o.code,
+        createdAt: o.createdAt.toJSON(),
+        createdByProfileId: session.profileId,
+        claimedBy: o.claimedBy,
+        claimedByProfileId: o.claimedByProfileId
+      });
+    }),
     profilesById: profilesById(prisma_api_ro),
     profilesBySafeAddress: profilesBySafeAddress(prisma_api_ro, true),
     search: search(prisma_api_ro),
@@ -172,24 +256,10 @@ export const resolvers: Resolvers = {
     upsertTag: upsertTag(prisma_api_ro, prisma_api_rw),
     tagTransaction: tagTransaction(prisma_api_rw),
     sendMessage: sendMessage(prisma_api_rw),
-    acknowledge: acknowledge(prisma_api_rw)
-    /*
+    acknowledge: acknowledge(prisma_api_rw),
+    createInvitations: createInvitations(prisma_api_rw),
     claimInvitation: claimInvitation(prisma_api_rw),
-    redeemClaimedInvitation: async (parent, args, context) => {
-        const session = await context.verifySession();
-        const claimedInvitation = await prisma_api_ro.invitation.findFirst({
-            where: {
-                claimedByProfileId: session.profileId
-            }
-        });
-
-        if (!claimedInvitation) {
-            throw new Error(`No claimed invitation for profile ${session.profileId}`);
-        }
-
-        throw new Error(`Not implemented`);
-    }
-     */
+    redeemClaimedInvitation: redeemClaimedInvitation(prisma_api_ro, prisma_api_rw)
   },
   Subscription: {
     events: {

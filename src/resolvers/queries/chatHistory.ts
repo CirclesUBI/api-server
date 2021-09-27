@@ -60,8 +60,7 @@ export function chatHistory(prisma:PrismaClient) {
                     eventResultsByTransactionHash[o.transaction_hash] = events;
                 }
                 events.push({
-                    ...o,
-                    id: o.payload?.id ?? 0
+                    ...o
                 });
             });
             const mutualEvents = Object.entries(eventResultsByTransactionHash)
