@@ -88,6 +88,7 @@ export function inbox(prisma:PrismaClient) {
         }
         allChatMessageProfiles[o.circlesAddress] = o;
       });
+
       const chatMessageEvents = chatMessagesResult.map(o => {
         return <ProfileEvent>{
           id: o.id ?? 0,
@@ -115,6 +116,7 @@ export function inbox(prisma:PrismaClient) {
             : (a.timestamp < b.timestamp
               ? -1
               : 0))
+        .filter(o => o.direction === "in")
         .map(o => {
           o.timestamp = (<Date><any>o.timestamp).toJSON();
           return o;

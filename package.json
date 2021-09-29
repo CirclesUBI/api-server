@@ -1,6 +1,6 @@
 {
   "name": "@o-platform/api-server",
-  "version": "0.1.84",
+  "version": "0.1.85",
   "description": "",
   "main": "dist/index.js",
   "prepublish": "tsc",
