@@ -4,13 +4,15 @@ import { SubscriptionServer } from "subscriptions-transport-ws";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import express, {NextFunction, Request, Response} from "express";
 import {ApolloServer} from "apollo-server-express";
-import {resolvers} from "./resolvers/resolvers";
+import {getPool, resolvers} from "./resolvers/resolvers";
 import {importSchema} from "graphql-import";
 import {BlockchainIndexerConnection} from "./indexer-api/blockchainIndexerConnection";
 import {Context} from "./context";
 import {Session} from "./session";
 import {newLogger} from "./logger";
 import {Error} from "apollo-server-core/src/plugin/schemaReporting/operations";
+import {GnosisSafeProxy} from "./web3Contract";
+import {RpcGateway} from "./rpcGateway";
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
 
 // TODO: Migrate to GraphQL-tools: https://www.graphql-tools.com/docs/migration-from-import/
@@ -29,9 +31,73 @@ const errorLogger = {
     },
 };
 
+
 export class Main {
 
     async run2 () {
+/*
+        const pool = getPool();
+        try {
+            const query = "select \"user\" from crc_signup_2;";
+            const result = await pool.query(query);
+
+            const chunk = (arr:any[], chunkSize:number) => {
+                const R = [];
+                for (var i = 0; i < arr.length; i += chunkSize)
+                    R.push(arr.slice(i, i + chunkSize));
+                return R;
+            };
+
+            const chunks = chunk(result.rows, 50);
+            const _owners:{user?:string, owners?:string[], error?:Error}[] = [];
+            const _queue:{user?:string, owners?:string[], error?:Error}[] = [];
+
+            for(let i = 0; i < chunks.length; i++) {
+                const currentChunk = chunks[i];
+
+                const results = await Promise.all(currentChunk.map(async p => {
+                    try {
+                        const proxy = new GnosisSafeProxy(RpcGateway.get(), "", p.user);
+                        const owners = await proxy.getOwners();
+                        return {
+                            owners: owners,
+                            user: p.user
+                        };
+                    } catch (e) {
+                        return {
+                            user: p.user,
+                            error: e
+                        };
+                    }
+                }));
+
+                await Promise.all(results.map(async o => {
+                    if (o.error) {
+                        _queue.push(o);
+                    } else {
+                        _owners.push(o);
+
+                        if (!o.owners) {
+                            return;
+                        }
+
+                        for(let owner of o.owners) {
+                            await pool.query(
+                              `insert into crc_safe_owners (safe_address, owner) values ($1, $2);`,
+                              [
+                                  o.user,
+                                  owner
+                              ]);
+                        }
+                    }
+                }));
+            }
+
+            console.log(JSON.stringify(_queue));
+        } finally {
+            await pool.end();
+        }
+*/
         const app = express();
         const httpServer = createServer(app);
 

@@ -32,7 +32,8 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
                     ...args.data,
                     id: args.data.id,
                     lastUpdateAt: new Date(),
-                    emailAddress: session.emailAddress
+                    emailAddress: session.emailAddress ?? undefined,
+                    circlesSafeOwner: session.ethAddress
                 }
             });
         } else {
@@ -45,7 +46,8 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
                     ...args.data,
                     id: undefined,
                     lastUpdateAt: new Date(),
-                    emailAddress: session.emailAddress
+                    emailAddress: session.emailAddress,
+                    circlesSafeOwner: session.ethAddress
                 }
             });
             await Session.assignProfile(prisma_api_rw, session.sessionId, profile.id, context);

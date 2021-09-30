@@ -18,11 +18,15 @@ type UnwrapTuple<Tuple extends readonly unknown[]> = {
 
 export type Session = {
   sessionId: string
-  emailAddress: string
+  emailAddress: string | null
+  ethAddress: string | null
+  challengeHash: string | null
+  signature: string | null
   profileId: number | null
   issuedBy: string
   jti: string | null
   createdAt: Date
+  validFrom: Date | null
   endedAt: Date | null
   endReason: string | null
   maxLifetime: number
@@ -67,7 +71,7 @@ export type RedeemInvitationRequest = {
 export type Profile = {
   id: number
   lastUpdateAt: Date
-  emailAddress: string
+  emailAddress: string | null
   status: string | null
   circlesAddress: string | null
   circlesSafeOwner: string | null
@@ -1050,10 +1054,14 @@ export namespace Prisma {
   export type SessionMinAggregateOutputType = {
     sessionId: string | null
     emailAddress: string | null
+    ethAddress: string | null
+    challengeHash: string | null
+    signature: string | null
     profileId: number | null
     issuedBy: string | null
     jti: string | null
     createdAt: Date | null
+    validFrom: Date | null
     endedAt: Date | null
     endReason: string | null
     maxLifetime: number | null
@@ -1062,10 +1070,14 @@ export namespace Prisma {
   export type SessionMaxAggregateOutputType = {
     sessionId: string | null
     emailAddress: string | null
+    ethAddress: string | null
+    challengeHash: string | null
+    signature: string | null
     profileId: number | null
     issuedBy: string | null
     jti: string | null
     createdAt: Date | null
+    validFrom: Date | null
     endedAt: Date | null
     endReason: string | null
     maxLifetime: number | null
@@ -1074,10 +1086,14 @@ export namespace Prisma {
   export type SessionCountAggregateOutputType = {
     sessionId: number
     emailAddress: number
+    ethAddress: number
+    challengeHash: number
+    signature: number
     profileId: number
     issuedBy: number
     jti: number
     createdAt: number
+    validFrom: number
     endedAt: number
     endReason: number
     maxLifetime: number
@@ -1098,10 +1114,14 @@ export namespace Prisma {
   export type SessionMinAggregateInputType = {
     sessionId?: true
     emailAddress?: true
+    ethAddress?: true
+    challengeHash?: true
+    signature?: true
     profileId?: true
     issuedBy?: true
     jti?: true
     createdAt?: true
+    validFrom?: true
     endedAt?: true
     endReason?: true
     maxLifetime?: true
@@ -1110,10 +1130,14 @@ export namespace Prisma {
   export type SessionMaxAggregateInputType = {
     sessionId?: true
     emailAddress?: true
+    ethAddress?: true
+    challengeHash?: true
+    signature?: true
     profileId?: true
     issuedBy?: true
     jti?: true
     createdAt?: true
+    validFrom?: true
     endedAt?: true
     endReason?: true
     maxLifetime?: true
@@ -1122,10 +1146,14 @@ export namespace Prisma {
   export type SessionCountAggregateInputType = {
     sessionId?: true
     emailAddress?: true
+    ethAddress?: true
+    challengeHash?: true
+    signature?: true
     profileId?: true
     issuedBy?: true
     jti?: true
     createdAt?: true
+    validFrom?: true
     endedAt?: true
     endReason?: true
     maxLifetime?: true
@@ -1246,11 +1274,15 @@ export namespace Prisma {
 
   export type SessionGroupByOutputType = {
     sessionId: string
-    emailAddress: string
+    emailAddress: string | null
+    ethAddress: string | null
+    challengeHash: string | null
+    signature: string | null
     profileId: number | null
     issuedBy: string
     jti: string | null
     createdAt: Date
+    validFrom: Date | null
     endedAt: Date | null
     endReason: string | null
     maxLifetime: number
@@ -1278,11 +1310,15 @@ export namespace Prisma {
   export type SessionSelect = {
     sessionId?: boolean
     emailAddress?: boolean
+    ethAddress?: boolean
+    challengeHash?: boolean
+    signature?: boolean
     profile?: boolean | ProfileArgs
     profileId?: boolean
     issuedBy?: boolean
     jti?: boolean
     createdAt?: boolean
+    validFrom?: boolean
     endedAt?: boolean
     endReason?: boolean
     maxLifetime?: boolean
@@ -4189,7 +4225,7 @@ export namespace Prisma {
   export type ProfileGroupByOutputType = {
     id: number
     lastUpdateAt: Date
-    emailAddress: string
+    emailAddress: string | null
     status: string | null
     circlesAddress: string | null
     circlesSafeOwner: string | null
@@ -13364,10 +13400,14 @@ export namespace Prisma {
   export const SessionScalarFieldEnum: {
     sessionId: 'sessionId',
     emailAddress: 'emailAddress',
+    ethAddress: 'ethAddress',
+    challengeHash: 'challengeHash',
+    signature: 'signature',
     profileId: 'profileId',
     issuedBy: 'issuedBy',
     jti: 'jti',
     createdAt: 'createdAt',
+    validFrom: 'validFrom',
     endedAt: 'endedAt',
     endReason: 'endReason',
     maxLifetime: 'maxLifetime'
@@ -13571,12 +13611,16 @@ export namespace Prisma {
     OR?: Enumerable<SessionWhereInput>
     NOT?: Enumerable<SessionWhereInput>
     sessionId?: StringFilter | string
-    emailAddress?: StringFilter | string
+    emailAddress?: StringNullableFilter | string | null
+    ethAddress?: StringNullableFilter | string | null
+    challengeHash?: StringNullableFilter | string | null
+    signature?: StringNullableFilter | string | null
     profile?: XOR<ProfileRelationFilter, ProfileWhereInput> | null
     profileId?: IntNullableFilter | number | null
     issuedBy?: StringFilter | string
     jti?: StringNullableFilter | string | null
     createdAt?: DateTimeFilter | Date | string
+    validFrom?: DateTimeNullableFilter | Date | string | null
     endedAt?: DateTimeNullableFilter | Date | string | null
     endReason?: StringNullableFilter | string | null
     maxLifetime?: IntFilter | number
@@ -13585,10 +13629,14 @@ export namespace Prisma {
   export type SessionOrderByInput = {
     sessionId?: SortOrder
     emailAddress?: SortOrder
+    ethAddress?: SortOrder
+    challengeHash?: SortOrder
+    signature?: SortOrder
     profileId?: SortOrder
     issuedBy?: SortOrder
     jti?: SortOrder
     createdAt?: SortOrder
+    validFrom?: SortOrder
     endedAt?: SortOrder
     endReason?: SortOrder
     maxLifetime?: SortOrder
@@ -13596,6 +13644,7 @@ export namespace Prisma {
 
   export type SessionWhereUniqueInput = {
     sessionId?: string
+    challengeHash?: string
   }
 
   export type SessionScalarWhereWithAggregatesInput = {
@@ -13603,11 +13652,15 @@ export namespace Prisma {
     OR?: Enumerable<SessionScalarWhereWithAggregatesInput>
     NOT?: Enumerable<SessionScalarWhereWithAggregatesInput>
     sessionId?: StringWithAggregatesFilter | string
-    emailAddress?: StringWithAggregatesFilter | string
+    emailAddress?: StringNullableWithAggregatesFilter | string | null
+    ethAddress?: StringNullableWithAggregatesFilter | string | null
+    challengeHash?: StringNullableWithAggregatesFilter | string | null
+    signature?: StringNullableWithAggregatesFilter | string | null
     profileId?: IntNullableWithAggregatesFilter | number | null
     issuedBy?: StringWithAggregatesFilter | string
     jti?: StringNullableWithAggregatesFilter | string | null
     createdAt?: DateTimeWithAggregatesFilter | Date | string
+    validFrom?: DateTimeNullableWithAggregatesFilter | Date | string | null
     endedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
     endReason?: StringNullableWithAggregatesFilter | string | null
     maxLifetime?: IntWithAggregatesFilter | number
@@ -13717,7 +13770,7 @@ export namespace Prisma {
     NOT?: Enumerable<ProfileWhereInput>
     id?: IntFilter | number
     lastUpdateAt?: DateTimeFilter | Date | string
-    emailAddress?: StringFilter | string
+    emailAddress?: StringNullableFilter | string | null
     status?: StringNullableFilter | string | null
     circlesAddress?: StringNullableFilter | string | null
     circlesSafeOwner?: StringNullableFilter | string | null
@@ -13770,7 +13823,6 @@ export namespace Prisma {
 
   export type ProfileWhereUniqueInput = {
     id?: number
-    emailAddress?: string
   }
 
   export type ProfileScalarWhereWithAggregatesInput = {
@@ -13779,7 +13831,7 @@ export namespace Prisma {
     NOT?: Enumerable<ProfileScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
     lastUpdateAt?: DateTimeWithAggregatesFilter | Date | string
-    emailAddress?: StringWithAggregatesFilter | string
+    emailAddress?: StringNullableWithAggregatesFilter | string | null
     status?: StringNullableWithAggregatesFilter | string | null
     circlesAddress?: StringNullableWithAggregatesFilter | string | null
     circlesSafeOwner?: StringNullableWithAggregatesFilter | string | null
@@ -14175,10 +14227,14 @@ export namespace Prisma {
 
   export type SessionCreateInput = {
     sessionId: string
-    emailAddress: string
+    emailAddress?: string | null
+    ethAddress?: string | null
+    challengeHash?: string | null
+    signature?: string | null
     issuedBy: string
     jti?: string | null
     createdAt: Date | string
+    validFrom?: Date | string | null
     endedAt?: Date | string | null
     endReason?: string | null
     maxLifetime: number
@@ -14187,11 +14243,15 @@ export namespace Prisma {
 
   export type SessionUncheckedCreateInput = {
     sessionId: string
-    emailAddress: string
+    emailAddress?: string | null
+    ethAddress?: string | null
+    challengeHash?: string | null
+    signature?: string | null
     profileId?: number | null
     issuedBy: string
     jti?: string | null
     createdAt: Date | string
+    validFrom?: Date | string | null
     endedAt?: Date | string | null
     endReason?: string | null
     maxLifetime: number
@@ -14199,10 +14259,14 @@ export namespace Prisma {
 
   export type SessionUpdateInput = {
     sessionId?: StringFieldUpdateOperationsInput | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ethAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    challengeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    signature?: NullableStringFieldUpdateOperationsInput | string | null
     issuedBy?: StringFieldUpdateOperationsInput | string
     jti?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    validFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endReason?: NullableStringFieldUpdateOperationsInput | string | null
     maxLifetime?: IntFieldUpdateOperationsInput | number
@@ -14211,11 +14275,15 @@ export namespace Prisma {
 
   export type SessionUncheckedUpdateInput = {
     sessionId?: StringFieldUpdateOperationsInput | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ethAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    challengeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    signature?: NullableStringFieldUpdateOperationsInput | string | null
     profileId?: NullableIntFieldUpdateOperationsInput | number | null
     issuedBy?: StringFieldUpdateOperationsInput | string
     jti?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    validFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endReason?: NullableStringFieldUpdateOperationsInput | string | null
     maxLifetime?: IntFieldUpdateOperationsInput | number
@@ -14223,11 +14291,15 @@ export namespace Prisma {
 
   export type SessionCreateManyInput = {
     sessionId: string
-    emailAddress: string
+    emailAddress?: string | null
+    ethAddress?: string | null
+    challengeHash?: string | null
+    signature?: string | null
     profileId?: number | null
     issuedBy: string
     jti?: string | null
     createdAt: Date | string
+    validFrom?: Date | string | null
     endedAt?: Date | string | null
     endReason?: string | null
     maxLifetime: number
@@ -14235,10 +14307,14 @@ export namespace Prisma {
 
   export type SessionUpdateManyMutationInput = {
     sessionId?: StringFieldUpdateOperationsInput | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ethAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    challengeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    signature?: NullableStringFieldUpdateOperationsInput | string | null
     issuedBy?: StringFieldUpdateOperationsInput | string
     jti?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    validFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endReason?: NullableStringFieldUpdateOperationsInput | string | null
     maxLifetime?: IntFieldUpdateOperationsInput | number
@@ -14246,11 +14322,15 @@ export namespace Prisma {
 
   export type SessionUncheckedUpdateManyInput = {
     sessionId?: StringFieldUpdateOperationsInput | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ethAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    challengeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    signature?: NullableStringFieldUpdateOperationsInput | string | null
     profileId?: NullableIntFieldUpdateOperationsInput | number | null
     issuedBy?: StringFieldUpdateOperationsInput | string
     jti?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    validFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endReason?: NullableStringFieldUpdateOperationsInput | string | null
     maxLifetime?: IntFieldUpdateOperationsInput | number
@@ -14419,7 +14499,7 @@ export namespace Prisma {
 
   export type ProfileCreateInput = {
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -14451,7 +14531,7 @@ export namespace Prisma {
   export type ProfileUncheckedCreateInput = {
     id?: number
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -14482,7 +14562,7 @@ export namespace Prisma {
 
   export type ProfileUpdateInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14514,7 +14594,7 @@ export namespace Prisma {
   export type ProfileUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14546,7 +14626,7 @@ export namespace Prisma {
   export type ProfileCreateManyInput = {
     id?: number
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -14567,7 +14647,7 @@ export namespace Prisma {
 
   export type ProfileUpdateManyMutationInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14589,7 +14669,7 @@ export namespace Prisma {
   export type ProfileUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15239,6 +15319,21 @@ export namespace Prisma {
     not?: NestedStringFilter | string
   }
 
+  export type StringNullableFilter = {
+    equals?: string | null
+    in?: Enumerable<string> | null
+    notIn?: Enumerable<string> | null
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
+    mode?: QueryMode
+    not?: NestedStringNullableFilter | string | null
+  }
+
   export type ProfileRelationFilter = {
     is?: ProfileWhereInput | null
     isNot?: ProfileWhereInput | null
@@ -15253,21 +15348,6 @@ export namespace Prisma {
     gt?: number
     gte?: number
     not?: NestedIntNullableFilter | number | null
-  }
-
-  export type StringNullableFilter = {
-    equals?: string | null
-    in?: Enumerable<string> | null
-    notIn?: Enumerable<string> | null
-    lt?: string
-    lte?: string
-    gt?: string
-    gte?: string
-    contains?: string
-    startsWith?: string
-    endsWith?: string
-    mode?: QueryMode
-    not?: NestedStringNullableFilter | string | null
   }
 
   export type DateTimeFilter = {
@@ -15336,6 +15416,39 @@ export namespace Prisma {
     max?: NestedStringFilter
   }
 
+  export type StringNullableWithAggregatesFilter = {
+    equals?: string | null
+    in?: Enumerable<string> | null
+    notIn?: Enumerable<string> | null
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter | string | null
+    _count?: NestedIntNullableFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    count?: NestedIntNullableFilter
+    _min?: NestedStringNullableFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    min?: NestedStringNullableFilter
+    _max?: NestedStringNullableFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    max?: NestedStringNullableFilter
+  }
+
   export type IntNullableWithAggregatesFilter = {
     equals?: number | null
     in?: Enumerable<number> | null
@@ -15375,39 +15488,6 @@ export namespace Prisma {
      * 
     **/
     max?: NestedIntNullableFilter
-  }
-
-  export type StringNullableWithAggregatesFilter = {
-    equals?: string | null
-    in?: Enumerable<string> | null
-    notIn?: Enumerable<string> | null
-    lt?: string
-    lte?: string
-    gt?: string
-    gte?: string
-    contains?: string
-    startsWith?: string
-    endsWith?: string
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter | string | null
-    _count?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntNullableFilter
-    _min?: NestedStringNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedStringNullableFilter
-    _max?: NestedStringNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedStringNullableFilter
   }
 
   export type DateTimeWithAggregatesFilter = {
@@ -16872,17 +16952,6 @@ export namespace Prisma {
     not?: NestedStringFilter | string
   }
 
-  export type NestedIntNullableFilter = {
-    equals?: number | null
-    in?: Enumerable<number> | null
-    notIn?: Enumerable<number> | null
-    lt?: number
-    lte?: number
-    gt?: number
-    gte?: number
-    not?: NestedIntNullableFilter | number | null
-  }
-
   export type NestedStringNullableFilter = {
     equals?: string | null
     in?: Enumerable<string> | null
@@ -16895,6 +16964,17 @@ export namespace Prisma {
     startsWith?: string
     endsWith?: string
     not?: NestedStringNullableFilter | string | null
+  }
+
+  export type NestedIntNullableFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableFilter | number | null
   }
 
   export type NestedDateTimeFilter = {
@@ -16962,6 +17042,38 @@ export namespace Prisma {
     max?: NestedStringFilter
   }
 
+  export type NestedStringNullableWithAggregatesFilter = {
+    equals?: string | null
+    in?: Enumerable<string> | null
+    notIn?: Enumerable<string> | null
+    lt?: string
+    lte?: string
+    gt?: string
+    gte?: string
+    contains?: string
+    startsWith?: string
+    endsWith?: string
+    not?: NestedStringNullableWithAggregatesFilter | string | null
+    _count?: NestedIntNullableFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    count?: NestedIntNullableFilter
+    _min?: NestedStringNullableFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    min?: NestedStringNullableFilter
+    _max?: NestedStringNullableFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    max?: NestedStringNullableFilter
+  }
+
   export type NestedIntNullableWithAggregatesFilter = {
     equals?: number | null
     in?: Enumerable<number> | null
@@ -17012,38 +17124,6 @@ export namespace Prisma {
     gt?: number
     gte?: number
     not?: NestedFloatNullableFilter | number | null
-  }
-
-  export type NestedStringNullableWithAggregatesFilter = {
-    equals?: string | null
-    in?: Enumerable<string> | null
-    notIn?: Enumerable<string> | null
-    lt?: string
-    lte?: string
-    gt?: string
-    gte?: string
-    contains?: string
-    startsWith?: string
-    endsWith?: string
-    not?: NestedStringNullableWithAggregatesFilter | string | null
-    _count?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntNullableFilter
-    _min?: NestedStringNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedStringNullableFilter
-    _max?: NestedStringNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedStringNullableFilter
   }
 
   export type NestedDateTimeWithAggregatesFilter = {
@@ -17246,7 +17326,7 @@ export namespace Prisma {
 
   export type ProfileCreateWithoutSessionsInput = {
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -17277,7 +17357,7 @@ export namespace Prisma {
   export type ProfileUncheckedCreateWithoutSessionsInput = {
     id?: number
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -17317,7 +17397,7 @@ export namespace Prisma {
 
   export type ProfileUpdateWithoutSessionsInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17348,7 +17428,7 @@ export namespace Prisma {
   export type ProfileUncheckedUpdateWithoutSessionsInput = {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17378,7 +17458,7 @@ export namespace Prisma {
 
   export type ProfileCreateWithoutInvitationsInput = {
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -17409,7 +17489,7 @@ export namespace Prisma {
   export type ProfileUncheckedCreateWithoutInvitationsInput = {
     id?: number
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -17444,7 +17524,7 @@ export namespace Prisma {
 
   export type ProfileCreateWithoutClaimedInvitationsInput = {
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -17475,7 +17555,7 @@ export namespace Prisma {
   export type ProfileUncheckedCreateWithoutClaimedInvitationsInput = {
     id?: number
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -17510,7 +17590,7 @@ export namespace Prisma {
 
   export type ProfileCreateWithoutRedeemedInvitationsInput = {
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -17541,7 +17621,7 @@ export namespace Prisma {
   export type ProfileUncheckedCreateWithoutRedeemedInvitationsInput = {
     id?: number
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -17606,7 +17686,7 @@ export namespace Prisma {
 
   export type ProfileUpdateWithoutInvitationsInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17637,7 +17717,7 @@ export namespace Prisma {
   export type ProfileUncheckedUpdateWithoutInvitationsInput = {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17672,7 +17752,7 @@ export namespace Prisma {
 
   export type ProfileUpdateWithoutClaimedInvitationsInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17703,7 +17783,7 @@ export namespace Prisma {
   export type ProfileUncheckedUpdateWithoutClaimedInvitationsInput = {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17738,7 +17818,7 @@ export namespace Prisma {
 
   export type ProfileUpdateWithoutRedeemedInvitationsInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17769,7 +17849,7 @@ export namespace Prisma {
   export type ProfileUncheckedUpdateWithoutRedeemedInvitationsInput = {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17827,7 +17907,7 @@ export namespace Prisma {
 
   export type ProfileCreateWithoutRedeemInvitationRequestsInput = {
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -17858,7 +17938,7 @@ export namespace Prisma {
   export type ProfileUncheckedCreateWithoutRedeemInvitationRequestsInput = {
     id?: number
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -17932,7 +18012,7 @@ export namespace Prisma {
 
   export type ProfileUpdateWithoutRedeemInvitationRequestsInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17963,7 +18043,7 @@ export namespace Prisma {
   export type ProfileUncheckedUpdateWithoutRedeemInvitationRequestsInput = {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18027,10 +18107,14 @@ export namespace Prisma {
 
   export type SessionCreateWithoutProfileInput = {
     sessionId: string
-    emailAddress: string
+    emailAddress?: string | null
+    ethAddress?: string | null
+    challengeHash?: string | null
+    signature?: string | null
     issuedBy: string
     jti?: string | null
     createdAt: Date | string
+    validFrom?: Date | string | null
     endedAt?: Date | string | null
     endReason?: string | null
     maxLifetime: number
@@ -18038,10 +18122,14 @@ export namespace Prisma {
 
   export type SessionUncheckedCreateWithoutProfileInput = {
     sessionId: string
-    emailAddress: string
+    emailAddress?: string | null
+    ethAddress?: string | null
+    challengeHash?: string | null
+    signature?: string | null
     issuedBy: string
     jti?: string | null
     createdAt: Date | string
+    validFrom?: Date | string | null
     endedAt?: Date | string | null
     endReason?: string | null
     maxLifetime: number
@@ -18387,11 +18475,15 @@ export namespace Prisma {
     OR?: Enumerable<SessionScalarWhereInput>
     NOT?: Enumerable<SessionScalarWhereInput>
     sessionId?: StringFilter | string
-    emailAddress?: StringFilter | string
+    emailAddress?: StringNullableFilter | string | null
+    ethAddress?: StringNullableFilter | string | null
+    challengeHash?: StringNullableFilter | string | null
+    signature?: StringNullableFilter | string | null
     profileId?: IntNullableFilter | number | null
     issuedBy?: StringFilter | string
     jti?: StringNullableFilter | string | null
     createdAt?: DateTimeFilter | Date | string
+    validFrom?: DateTimeNullableFilter | Date | string | null
     endedAt?: DateTimeNullableFilter | Date | string | null
     endReason?: StringNullableFilter | string | null
     maxLifetime?: IntFilter | number
@@ -18623,7 +18715,7 @@ export namespace Prisma {
 
   export type ProfileCreateWithoutSubscriptionsInput = {
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -18654,7 +18746,7 @@ export namespace Prisma {
   export type ProfileUncheckedCreateWithoutSubscriptionsInput = {
     id?: number
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -18729,7 +18821,7 @@ export namespace Prisma {
 
   export type ProfileCreateWithoutSubscribersInput = {
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -18760,7 +18852,7 @@ export namespace Prisma {
   export type ProfileUncheckedCreateWithoutSubscribersInput = {
     id?: number
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -18800,7 +18892,7 @@ export namespace Prisma {
 
   export type ProfileUpdateWithoutSubscriptionsInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18831,7 +18923,7 @@ export namespace Prisma {
   export type ProfileUncheckedUpdateWithoutSubscriptionsInput = {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18906,7 +18998,7 @@ export namespace Prisma {
 
   export type ProfileUpdateWithoutSubscribersInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18937,7 +19029,7 @@ export namespace Prisma {
   export type ProfileUncheckedUpdateWithoutSubscribersInput = {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19018,7 +19110,7 @@ export namespace Prisma {
 
   export type ProfileCreateWithoutOffersInput = {
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -19049,7 +19141,7 @@ export namespace Prisma {
   export type ProfileUncheckedCreateWithoutOffersInput = {
     id?: number
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -19241,7 +19333,7 @@ export namespace Prisma {
 
   export type ProfileUpdateWithoutOffersInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19272,7 +19364,7 @@ export namespace Prisma {
   export type ProfileUncheckedUpdateWithoutOffersInput = {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19424,7 +19516,7 @@ export namespace Prisma {
 
   export type ProfileCreateWithoutPurchasesInput = {
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -19455,7 +19547,7 @@ export namespace Prisma {
   export type ProfileUncheckedCreateWithoutPurchasesInput = {
     id?: number
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -19558,7 +19650,7 @@ export namespace Prisma {
 
   export type ProfileUpdateWithoutPurchasesInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19589,7 +19681,7 @@ export namespace Prisma {
   export type ProfileUncheckedUpdateWithoutPurchasesInput = {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19852,7 +19944,7 @@ export namespace Prisma {
 
   export type ProfileCreateWithoutTagsInput = {
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -19883,7 +19975,7 @@ export namespace Prisma {
   export type ProfileUncheckedCreateWithoutTagsInput = {
     id?: number
     lastUpdateAt?: Date | string
-    emailAddress: string
+    emailAddress?: string | null
     status?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
@@ -20104,7 +20196,7 @@ export namespace Prisma {
 
   export type ProfileUpdateWithoutTagsInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20135,7 +20227,7 @@ export namespace Prisma {
   export type ProfileUncheckedUpdateWithoutTagsInput = {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20290,10 +20382,14 @@ export namespace Prisma {
 
   export type SessionCreateManyProfileInput = {
     sessionId: string
-    emailAddress: string
+    emailAddress?: string | null
+    ethAddress?: string | null
+    challengeHash?: string | null
+    signature?: string | null
     issuedBy: string
     jti?: string | null
     createdAt: Date | string
+    validFrom?: Date | string | null
     endedAt?: Date | string | null
     endReason?: string | null
     maxLifetime: number
@@ -20404,10 +20500,14 @@ export namespace Prisma {
 
   export type SessionUpdateWithoutProfileInput = {
     sessionId?: StringFieldUpdateOperationsInput | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ethAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    challengeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    signature?: NullableStringFieldUpdateOperationsInput | string | null
     issuedBy?: StringFieldUpdateOperationsInput | string
     jti?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    validFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endReason?: NullableStringFieldUpdateOperationsInput | string | null
     maxLifetime?: IntFieldUpdateOperationsInput | number
@@ -20415,10 +20515,14 @@ export namespace Prisma {
 
   export type SessionUncheckedUpdateWithoutProfileInput = {
     sessionId?: StringFieldUpdateOperationsInput | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ethAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    challengeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    signature?: NullableStringFieldUpdateOperationsInput | string | null
     issuedBy?: StringFieldUpdateOperationsInput | string
     jti?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    validFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endReason?: NullableStringFieldUpdateOperationsInput | string | null
     maxLifetime?: IntFieldUpdateOperationsInput | number
@@ -20426,10 +20530,14 @@ export namespace Prisma {
 
   export type SessionUncheckedUpdateManyWithoutSessionsInput = {
     sessionId?: StringFieldUpdateOperationsInput | string
-    emailAddress?: StringFieldUpdateOperationsInput | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    ethAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    challengeHash?: NullableStringFieldUpdateOperationsInput | string | null
+    signature?: NullableStringFieldUpdateOperationsInput | string | null
     issuedBy?: StringFieldUpdateOperationsInput | string
     jti?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    validFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endReason?: NullableStringFieldUpdateOperationsInput | string | null
     maxLifetime?: IntFieldUpdateOperationsInput | number

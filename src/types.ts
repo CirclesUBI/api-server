@@ -292,6 +292,8 @@ export type Mutation = {
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
   tagTransaction: TagTransactionResult;
   sendMessage: SendMessageResult;
+  requestSessionChallenge: Scalars['String'];
+  verifySessionChallenge?: Maybe<ExchangeTokenResponse>;
 };
 
 
@@ -374,6 +376,12 @@ export type MutationTagTransactionArgs = {
 export type MutationSendMessageArgs = {
   toSafeAddress: Scalars['String'];
   content: Scalars['String'];
+};
+
+
+export type MutationVerifySessionChallengeArgs = {
+  challenge: Scalars['String'];
+  signature: Scalars['String'];
 };
 
 export type Offer = {
@@ -493,6 +501,7 @@ export type Query = {
   inbox: Array<ProfileEvent>;
   profilesById: Array<Profile>;
   profilesBySafeAddress: Array<Profile>;
+  findSafeAddressByOwner: Array<Scalars['String']>;
   search: Array<Profile>;
   cities: Array<City>;
   offers: Array<Offer>;
@@ -561,6 +570,11 @@ export type QueryProfilesByIdArgs = {
 
 export type QueryProfilesBySafeAddressArgs = {
   safeAddresses: Array<Scalars['String']>;
+};
+
+
+export type QueryFindSafeAddressByOwnerArgs = {
+  owner: Scalars['String'];
 };
 
 
@@ -1270,6 +1284,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
   tagTransaction?: Resolver<ResolversTypes['TagTransactionResult'], ParentType, ContextType, RequireFields<MutationTagTransactionArgs, 'transactionHash' | 'tag'>>;
   sendMessage?: Resolver<ResolversTypes['SendMessageResult'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'toSafeAddress' | 'content'>>;
+  requestSessionChallenge?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  verifySessionChallenge?: Resolver<Maybe<ResolversTypes['ExchangeTokenResponse']>, ParentType, ContextType, RequireFields<MutationVerifySessionChallengeArgs, 'challenge' | 'signature'>>;
 }>;
 
 export type OfferResolvers<ContextType = any, ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']> = ResolversObject<{
@@ -1374,6 +1390,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   inbox?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   profilesById?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesByIdArgs, 'ids'>>;
   profilesBySafeAddress?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesBySafeAddressArgs, 'safeAddresses'>>;
+  findSafeAddressByOwner?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryFindSafeAddressByOwnerArgs, 'owner'>>;
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, 'query'>>;
   offers?: Resolver<Array<ResolversTypes['Offer']>, ParentType, ContextType, RequireFields<QueryOffersArgs, 'query'>>;

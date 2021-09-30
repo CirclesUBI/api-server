@@ -12,7 +12,12 @@ model Session {
   //id Int @id @default(autoincrement())
   sessionId String @unique
   // Who is identified by the session?
-  emailAddress String
+  emailAddress String?
+  // Who is identified by the session?
+  ethAddress String?
+  challengeHash String? @unique
+  signature String?
+
   profile Profile? @relation(name: "Session_Profile", fields: [profileId], references: [id])
   profileId Int?
   // Which Authoritity issued the JWT that lead to this session?
@@ -21,6 +26,7 @@ model Session {
   jti String?
   // When the session was created.
   createdAt DateTime
+  validFrom DateTime?
   endedAt DateTime?
   endReason String?
   // This fields specifies the max. session lifetime in seconds.
@@ -69,8 +75,8 @@ model RedeemInvitationRequest {
 model Profile {
     id Int @id @default(autoincrement())
     lastUpdateAt DateTime @default(now())
-    emailAddress String
-    @@unique([emailAddress], name:"UX_Profile_EmailAddress")
+    emailAddress String?
+    // @@unique([emailAddress], name:"UX_Profile_EmailAddress")
 
     status String?
 

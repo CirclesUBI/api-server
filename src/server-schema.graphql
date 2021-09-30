@@ -536,6 +536,10 @@ type Mutation
 
     tagTransaction(transactionHash: String! tag:CreateTagInput!) : TagTransactionResult!
     sendMessage(toSafeAddress:String! content: String!) : SendMessageResult!
+
+    requestSessionChallenge:String!
+    verifySessionChallenge(challenge:String! signature:String!) : ExchangeTokenResponse
+
 }
 
 type Query
@@ -567,6 +571,7 @@ type Query
     profilesById(ids:[Int!]!) : [Profile!]!
     profilesBySafeAddress(safeAddresses:[String!]!) : [Profile!]!
 
+    findSafeAddressByOwner(owner:String!): [String!]!
     search(query:SearchInput!) : [Profile!]!
     cities(query:QueryCitiesInput!) : [City!]!
     offers(query:QueryOfferInput!): [Offer!]!

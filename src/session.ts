@@ -2,6 +2,8 @@ import {Client} from "./auth-client/client";
 import crypto from "crypto";
 import {Context} from "./context";
 import {Session as PrismaSession, PrismaClient} from "./api-db/client";
+import {RpcGateway} from "./rpcGateway";
+import * as Process from "process";
 
 export class Session
 {
@@ -49,7 +51,7 @@ export class Session
         const now = new Date();
         const expires = new Date(session.createdAt.getTime() + session.maxLifetime * 1000);
 
-        if (expires.getTime() < now.getTime())
+        if (expires.getTime() < now.getTime() || !session.validFrom || session.validFrom.getTime() > now.getTime())
         {
             return null;
         }
@@ -75,6 +77,68 @@ export class Session
                 maxLifetime: session.maxLifetime + 10080
             }
         });
+    }
+    static async requestSessionFromSignature(prisma:PrismaClient, address:string) {
+        if (!RpcGateway.get().utils.isAddress(address)) {
+            throw new Error(`The given value is not an address`);
+        }
+
+        const challenge = Session.generateRandomBase64String(64);
+        const ch = RpcGateway.get().utils.sha3(challenge);
+
+        await prisma.session.create({
+            data: {
+                ethAddress: address,
+                createdAt: new Date(),
+                issuedBy: process.env.APP_ID ?? "api-server",
+                maxLifetime: process.env.SESSION_LIIFETIME ? parseInt(process.env.SESSION_LIIFETIME) : 60 * 60 * 24 * 30,
+                sessionId: Session.generateRandomBase64String(64),
+                challengeHash: ch
+            }
+        });
+
+        return challenge;
+    }
+    static async createSessionFromSignature(prisma:PrismaClient, challenge:string, signature:string)
+    {
+        const ch = RpcGateway.get().utils.sha3(challenge);
+        if (!ch)
+            throw new Error(`Couldn't hash the challenge.`);
+
+        const session = await prisma.session.findUnique({
+            where: {
+                challengeHash: ch
+            }
+        });
+        if (!session?.challengeHash) {
+            throw new Error(`Couldn't find the challenge.`);
+        }
+
+        const address = RpcGateway.get().eth.accounts.recover(session.challengeHash, signature);
+
+        if (session.ethAddress?.toLowerCase() !== address.toLowerCase()) {
+            await prisma.session.update({
+                where: {
+                    challengeHash: ch
+                },
+                data: {
+                    endedAt: new Date()
+                }
+            });
+
+            throw new Error(`The signature doesn't belong to the given address`);
+        }
+
+        await prisma.session.update({
+            where: {
+                challengeHash: ch
+            },
+            data: {
+                validFrom: new Date()
+            }
+        });
+
+        return session;
     }
 
     static async createSessionFromJWT(prisma:PrismaClient, context: Context)
@@ -111,7 +175,7 @@ export class Session
         }
 
         // Find an agent that matches the subject
-        const profile = await prisma.profile.findUnique({where: {emailAddress: tokenPayload.sub}});
+        const profile = await prisma.profile.findFirst({where: { emailAddress: tokenPayload.sub}});
 
         const session = await prisma.session.create({
             data: {

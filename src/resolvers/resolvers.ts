@@ -49,6 +49,7 @@ import {Session} from "../session";
 import {createInvitations} from "./mutations/createInvitations";
 import {redeemClaimedInvitation} from "./mutations/redeemClaimedInvitation";
 import {invitationTransaction} from "./queries/invitationTransaction";
+import {doesNotThrow} from "assert";
 
 let cert:string;
 
@@ -96,11 +97,28 @@ export const resolvers: Resolvers = {
     whoami: whoami,
     cities: cities,
     claimedInvitation: claimedInvitation,
+    findSafeAddressByOwner: async (parent, args, context) => {
+      const pool = getPool();
+      try {
+        const query = "select safe_address from crc_safe_owners where \"owner\" = $1";
+        const result = await pool.query(query);
+        return result.rows.map(o => o.safe_address);
+      } finally {
+        await pool.end();
+      }
+    },
     invitationTransaction: invitationTransaction(prisma_api_ro),
     safeFundingTransaction: (async (parent, args, context) => {
       const session = await context.verifySession();
-      const profile = await prisma_api_ro.profile.findUnique({
-        where:{ emailAddress: session.emailAddress }
+      const profile = await prisma_api_ro.profile.findFirst({
+        where:{
+          OR:[{
+            emailAddress: null,
+            circlesSafeOwner: session.ethAddress
+          }, {
+            emailAddress: session.emailAddress
+          }]
+        }
       });
       if (!profile?.circlesAddress || !profile?.circlesSafeOwner) {
         return null;
@@ -259,7 +277,15 @@ export const resolvers: Resolvers = {
     acknowledge: acknowledge(prisma_api_rw),
     createInvitations: createInvitations(prisma_api_rw),
     claimInvitation: claimInvitation(prisma_api_rw),
-    redeemClaimedInvitation: redeemClaimedInvitation(prisma_api_ro, prisma_api_rw)
+    redeemClaimedInvitation: redeemClaimedInvitation(prisma_api_ro, prisma_api_rw),
+    requestSessionChallenge: (parent, args, context) => {
+      return ""
+    },
+    verifySessionChallenge: (parent, args, context) => {
+      return {
+        success: false
+      }
+    },
   },
   Subscription: {
     events: {

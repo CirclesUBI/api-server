@@ -5,8 +5,15 @@ import {ProfileEvent} from "../../types";
 export function invitationTransaction(prisma_api_ro:PrismaClient) {
     return async (parent:any, args:any, context:any) => {
         const session = await context.verifySession();
-        const profile = await prisma_api_ro.profile.findUnique({
-            where:{ emailAddress: session.emailAddress },
+        const profile = await prisma_api_ro.profile.findFirst({
+            where:{
+                OR:[{
+                    emailAddress: null,
+                    circlesSafeOwner: session.ethAddress
+                }, {
+                    emailAddress: session.emailAddress
+                }]
+            },
             include: {
                 claimedInvitations: {
                     include: {
