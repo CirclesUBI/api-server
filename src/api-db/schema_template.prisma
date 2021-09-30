@@ -15,7 +15,7 @@ model Session {
   emailAddress String?
   // Who is identified by the session?
   ethAddress String?
-  challengeHash String? @unique
+  challengeHash String?
   signature String?
 
   profile Profile? @relation(name: "Session_Profile", fields: [profileId], references: [id])
