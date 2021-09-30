@@ -57,7 +57,7 @@ export function invitationTransaction(prisma_api_ro:PrismaClient) {
                 transaction_index: redeemTransaction.index,
                 value: redeemTransaction.value,
                 direction: "in",
-                transaction_hash: redeemTransaction.redeemTxHash,
+                transaction_hash: redeemTransaction.hash,
                 type: "EthTransfer",
                 block_number: redeemTransaction.block_number,
                 timestamp: redeemTransaction.timestamp.toJSON(),

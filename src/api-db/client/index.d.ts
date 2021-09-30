@@ -13644,7 +13644,6 @@ export namespace Prisma {
 
   export type SessionWhereUniqueInput = {
     sessionId?: string
-    challengeHash?: string
   }
 
   export type SessionScalarWhereWithAggregatesInput = {

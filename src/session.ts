@@ -105,7 +105,7 @@ export class Session
         if (!ch)
             throw new Error(`Couldn't hash the challenge.`);
 
-        const session = await prisma.session.findUnique({
+        const session = await prisma.session.findFirst({
             where: {
                 challengeHash: ch
             }
@@ -114,10 +114,10 @@ export class Session
             throw new Error(`Couldn't find the challenge.`);
         }
 
-        const address = RpcGateway.get().eth.accounts.recover(session.challengeHash, signature);
+        const address = RpcGateway.get().eth.accounts.recover(challenge, signature);
 
         if (session.ethAddress?.toLowerCase() !== address.toLowerCase()) {
-            await prisma.session.update({
+            await prisma.session.updateMany({
                 where: {
                     challengeHash: ch
                 },
@@ -129,12 +129,15 @@ export class Session
             throw new Error(`The signature doesn't belong to the given address`);
         }
 
-        await prisma.session.update({
+        const profile = await prisma.profile.findFirst({where: { circlesSafeOwner: session.ethAddress }});
+
+        await prisma.session.updateMany({
             where: {
                 challengeHash: ch
             },
             data: {
-                validFrom: new Date()
+                validFrom: new Date(),
+                profileId: profile?.id
             }
         });
 
@@ -182,6 +185,7 @@ export class Session
                 profileId: profile?.id,
                 issuedBy: tokenPayload.iss,
                 createdAt: new Date(),
+                validFrom: new Date(),
                 maxLifetime: process.env.SESSION_LIIFETIME ? parseInt(process.env.SESSION_LIIFETIME) : 60 * 60 * 24 * 30,
                 sessionId: Session.generateRandomBase64String(64),
                 emailAddress: tokenPayload.sub,

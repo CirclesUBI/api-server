@@ -50,6 +50,7 @@ import {createInvitations} from "./mutations/createInvitations";
 import {redeemClaimedInvitation} from "./mutations/redeemClaimedInvitation";
 import {invitationTransaction} from "./queries/invitationTransaction";
 import {doesNotThrow} from "assert";
+import {verifySessionChallengeResolver} from "./mutations/verifySessionChallengeResolver";
 
 let cert:string;
 
@@ -108,6 +109,62 @@ export const resolvers: Resolvers = {
       }
     },
     invitationTransaction: invitationTransaction(prisma_api_ro),
+    hubSignupTransaction: async (parent, args, context) =>  {
+      const session = await context.verifySession();
+      const profile = await prisma_api_ro.profile.findFirst({
+        where:{
+          OR:[{
+            emailAddress: null,
+            circlesSafeOwner: session.ethAddress
+          }, {
+            emailAddress: session.emailAddress
+          }]
+        }
+      });
+      if (!profile?.circlesAddress || !profile?.circlesSafeOwner) {
+        return null;
+      }
+      const pool = getPool();
+      try {
+        const hubSignupTransactionQuery = `
+            select * from crc_signup_2 where "user" = $1`;
+
+        const hubSignupTransactionQueryParams = [
+          profile.circlesAddress.toLowerCase()
+        ];
+        const hubSignupTransactionResult = await pool.query(
+          hubSignupTransactionQuery,
+          hubSignupTransactionQueryParams);
+
+        if (hubSignupTransactionResult.rows.length == 0) {
+          return null;
+        }
+
+        const hubSignupTransaction = hubSignupTransactionResult.rows[0];
+
+        return <ProfileEvent>{
+          id: hubSignupTransaction.id,
+          safe_address: profile.circlesAddress.toLowerCase(),
+          transaction_index: hubSignupTransaction.index,
+          value: hubSignupTransaction.value,
+          direction: "out",
+          transaction_hash: hubSignupTransaction.hash,
+          type: "CrcSignup",
+          block_number: hubSignupTransaction.block_number,
+          timestamp: hubSignupTransaction.timestamp.toJSON(),
+          safe_address_profile: profile,
+          payload: {
+            __typename: "CrcSignup",
+            user: hubSignupTransaction.user,
+            token: hubSignupTransaction.token,
+            transaction_hash: hubSignupTransaction.hash,
+            user_profile: profile
+          }
+        };
+      } finally {
+        await pool.end();
+      }
+    },
     safeFundingTransaction: (async (parent, args, context) => {
       const session = await context.verifySession();
       const profile = await prisma_api_ro.profile.findFirst({
@@ -127,13 +184,13 @@ export const resolvers: Resolvers = {
       try {
         const safeFundingTransactionQuery = `
             select *
-            from transaction
+            from transaction_2
             where "from" = $1
               and "to" = $2`;
 
         const safeFundingTransactionQueryParams = [
-          profile.circlesSafeOwner,
-          profile.circlesAddress
+          profile.circlesSafeOwner.toLowerCase(),
+          profile.circlesAddress.toLowerCase()
         ];
         const safeFundingTransactionResult = await pool.query(
           safeFundingTransactionQuery,
@@ -151,7 +208,7 @@ export const resolvers: Resolvers = {
           transaction_index: safeFundingTransaction.index,
           value: safeFundingTransaction.value,
           direction: "in",
-          transaction_hash: safeFundingTransaction.redeemTxHash,
+          transaction_hash: safeFundingTransaction.hash,
           type: "EthTransfer",
           block_number: safeFundingTransaction.block_number,
           timestamp: safeFundingTransaction.timestamp.toJSON(),
@@ -211,55 +268,6 @@ export const resolvers: Resolvers = {
     chatHistory: chatHistory(prisma_api_ro),
     commonTrust: commonTrust(prisma_api_ro),
     inbox: inbox(prisma_api_ro)
-
-    // transactions: transactions(prisma_api_ro),
-    // events: events(prisma_api_ro),
-    /*
-    invitationTransaction: async (parent: any, args: any, context:Context) => {
-        // TODO: Find the transaction from the "invitation EOA" to the user's EOA (must be the only outgoing transaction from the invite-eoa)
-        const session = await context.verifySession()
-        if (!session.profileId) {
-            throw new Error(`The session has not profile associated.`);
-        }
-        const profile = await prisma_api_ro.profile.findUnique({
-            where: {id: session.profileId},
-            include: {
-                claimedInvitations: {
-                    include: {
-                        indexedTransactions: {
-                            include: {
-                                inviteTransaction: true
-                            }
-                        }
-                    }
-                }
-            }
-        });
-        if (!profile) {
-            throw new Error(`Couldn't find a profile with id ${session.profileId}`);
-        }
-        if (!profile.circlesSafeOwner) {
-            throw new Error(`The profile with the id ${session.profileId} has no EOA.`)
-        }
-        if (!profile.claimedInvitations.length) {
-            throw new Error(`Profile ${session.profileId} has no claimed invitation so there can be no invitation transactions`);
-        }
-        const claimedInvitation = profile.claimedInvitations[0];
-        if (!claimedInvitation.indexedTransactions.length) {
-
-            return null;
-        }
-
-        const inviteTransactionRequest = claimedInvitation.indexedTransactions[0];
-        if (!inviteTransactionRequest.inviteTransaction) {
-            return null;
-        }
-
-        return inviteTransactionRequest.inviteTransaction;
-    },
-    safeFundingTransaction: async (parent: any, args: any, context:any) => {
-        return null;
-    }*/
   },
   Mutation: {
     upsertOffer: upsertOfferResolver(prisma_api_rw),
@@ -278,14 +286,10 @@ export const resolvers: Resolvers = {
     createInvitations: createInvitations(prisma_api_rw),
     claimInvitation: claimInvitation(prisma_api_rw),
     redeemClaimedInvitation: redeemClaimedInvitation(prisma_api_ro, prisma_api_rw),
-    requestSessionChallenge: (parent, args, context) => {
-      return ""
+    requestSessionChallenge: async (parent, args, context) => {
+      return await Session.requestSessionFromSignature(prisma_api_rw, args.address);
     },
-    verifySessionChallenge: (parent, args, context) => {
-      return {
-        success: false
-      }
-    },
+    verifySessionChallenge: verifySessionChallengeResolver(prisma_api_rw)
   },
   Subscription: {
     events: {

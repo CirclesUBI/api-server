@@ -379,6 +379,11 @@ export type MutationSendMessageArgs = {
 };
 
 
+export type MutationRequestSessionChallengeArgs = {
+  address: Scalars['String'];
+};
+
+
 export type MutationVerifySessionChallengeArgs = {
   challenge: Scalars['String'];
   signature: Scalars['String'];
@@ -486,6 +491,7 @@ export type Query = {
   claimedInvitation?: Maybe<ClaimedInvitation>;
   invitationTransaction?: Maybe<ProfileEvent>;
   safeFundingTransaction?: Maybe<ProfileEvent>;
+  hubSignupTransaction?: Maybe<ProfileEvent>;
   stats?: Maybe<Stats>;
   myInvitations: Array<CreatedInvitation>;
   events: Array<ProfileEvent>;
@@ -1284,7 +1290,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
   tagTransaction?: Resolver<ResolversTypes['TagTransactionResult'], ParentType, ContextType, RequireFields<MutationTagTransactionArgs, 'transactionHash' | 'tag'>>;
   sendMessage?: Resolver<ResolversTypes['SendMessageResult'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'toSafeAddress' | 'content'>>;
-  requestSessionChallenge?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  requestSessionChallenge?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationRequestSessionChallengeArgs, 'address'>>;
   verifySessionChallenge?: Resolver<Maybe<ResolversTypes['ExchangeTokenResponse']>, ParentType, ContextType, RequireFields<MutationVerifySessionChallengeArgs, 'challenge' | 'signature'>>;
 }>;
 
@@ -1375,6 +1381,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   safeFundingTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
+  hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
   myInvitations?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'safeAddress'>>;

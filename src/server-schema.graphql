@@ -537,7 +537,7 @@ type Mutation
     tagTransaction(transactionHash: String! tag:CreateTagInput!) : TagTransactionResult!
     sendMessage(toSafeAddress:String! content: String!) : SendMessageResult!
 
-    requestSessionChallenge:String!
+    requestSessionChallenge(address:String!):String!
     verifySessionChallenge(challenge:String! signature:String!) : ExchangeTokenResponse
 
 }
@@ -553,6 +553,7 @@ type Query
     claimedInvitation: ClaimedInvitation
     invitationTransaction: ProfileEvent
     safeFundingTransaction: ProfileEvent
+    hubSignupTransaction: ProfileEvent
     stats: Stats
 
     # Gets the created (noty invitations of the currently logged on user

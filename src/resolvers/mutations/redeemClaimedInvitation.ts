@@ -40,7 +40,7 @@ export function redeemClaimedInvitation(prisma_api_ro:PrismaClient, prisma_api_r
         }
       }
 
-      const gas = 21000;
+      const gas = 41000;
       const gasPrice = new BN(await web3.eth.getGasPrice());
       const totalFee = gasPrice.mul(new BN(gas.toString()));
       const nonce = await web3.eth.getTransactionCount(claimedInvitation.address);
