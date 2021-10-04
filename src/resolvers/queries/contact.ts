@@ -1,11 +1,15 @@
-import {Context} from "../../context";
-import {profilesBySafeAddress, ProfilesBySafeAddressLookup} from "./profiles";
-import {PrismaClient} from "../../api-db/client";
-import {getPool} from "../resolvers";
-import {Contact} from "../../types";
+import { Context } from "../../context";
+import { profilesBySafeAddress, ProfilesBySafeAddressLookup } from "./profiles";
+import { PrismaClient } from "../../api-db/client";
+import { getPool } from "../resolvers";
+import { Contact } from "../../types";
 
-export function contact(prisma:PrismaClient) {
-  return async (parent:any, args:{safeAddress:string, contactAddress:string}, context:Context) => {
+export function contact(prisma: PrismaClient) {
+  return async (
+    parent: any,
+    args: { safeAddress: string; contactAddress: string },
+    context: Context
+  ) => {
     const pool = getPool();
     try {
       const contactsQuery = `
@@ -48,7 +52,10 @@ export function contact(prisma:PrismaClient) {
             and st.contact = $2;`;
 
       const contactsQueryParameters = [args.safeAddress, args.contactAddress];
-      const contactsQueryResult = await pool.query(contactsQuery, contactsQueryParameters);
+      const contactsQueryResult = await pool.query(
+        contactsQuery,
+        contactsQueryParameters
+      );
 
       const allSafeAddresses: { [safeAddress: string]: boolean } = {};
       contactsQueryResult.rows.forEach((o: any) => {
@@ -58,32 +65,36 @@ export function contact(prisma:PrismaClient) {
 
       const allSafeAddressesArr = Object.keys(allSafeAddresses);
       const profilesBySafeAddressResolver = profilesBySafeAddress(prisma);
-      const profiles = await profilesBySafeAddressResolver(null, {safeAddresses: allSafeAddressesArr}, context);
+      const profiles = await profilesBySafeAddressResolver(
+        null,
+        { safeAddresses: allSafeAddressesArr },
+        context
+      );
 
       const _profilesBySafeAddress: ProfilesBySafeAddressLookup = {};
-      profiles.filter(o => o.circlesAddress)
-        .forEach(o => _profilesBySafeAddress[<string>o.circlesAddress] = o);
+      profiles
+        .filter((o) => o.circlesAddress)
+        .forEach((o) => (_profilesBySafeAddress[<string>o.circlesAddress] = o));
 
       // TODO: Get the last relevant event for "args.safeAddress"
-
 
       const contacts = contactsQueryResult.rows.map((o: any) => {
         return <Contact>{
           safeAddress: args.safeAddress,
-          lastContactAt: o.last_contact_timestamp,
+          lastContactAt: o.last_contact_timestamp.toJSON(),
           safeAddressProfile: _profilesBySafeAddress[o.safe_address],
           contactAddress: o.contact,
           contactAddressProfile: _profilesBySafeAddress[o.contact],
           trustsYou: o.trusts_you,
-          youTrust: o.you_trust
+          youTrust: o.you_trust,
         };
       });
-      if (contacts.length ==  1) {
+      if (contacts.length == 1) {
         return contacts[0];
       }
       return null;
     } finally {
       await pool.end();
     }
-  }
+  };
 }

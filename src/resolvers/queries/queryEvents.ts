@@ -1,38 +1,48 @@
-import {Context} from "../../context";
+import { Context } from "../../context";
 import {
   Maybe,
   ProfileEvent,
   QueryEventByTransactionHashArgs,
   QueryEventsArgs,
-  RequireFields, Tag
+  RequireFields,
+  Tag,
 } from "../../types";
-import {Pool} from "pg";
-import {PrismaClient, Transaction} from "../../api-db/client";
-import {profilesBySafeAddress, ProfilesBySafeAddressLookup} from "./profiles";
-import {getPool} from "../resolvers";
+import { Pool } from "pg";
+import { PrismaClient, Transaction } from "../../api-db/client";
+import { profilesBySafeAddress, ProfilesBySafeAddressLookup } from "./profiles";
+import { getPool } from "../resolvers";
 
-export function events(prisma:PrismaClient, externalPool?:Pool, enablePaging:boolean = true) {
+export function events(
+  prisma: PrismaClient,
+  externalPool?: Pool,
+  enablePaging: boolean = true
+) {
   return async (
     parent: any,
-    args: RequireFields<QueryEventsArgs, "safeAddress">
-        | RequireFields<QueryEventByTransactionHashArgs, "safeAddress" | "transactionHash">,
-    context: Context) => {
-
+    args:
+      | RequireFields<QueryEventsArgs, "safeAddress">
+      | RequireFields<
+          QueryEventByTransactionHashArgs,
+          "safeAddress" | "transactionHash"
+        >,
+    context: Context
+  ) => {
     const pool = externalPool ?? getPool();
     try {
       //const maxPageSizeInBlocks = 518400; // ~ 30 days
       const maxPageSizeInBlocks = enablePaging ? 518400 : 518400 * 9999; // ~ 30 days
       const safeAddress: string = args.safeAddress.toLowerCase();
-      const transactionHash: Maybe<string> = (<any>args).transactionHash ?? null;
+      const transactionHash: Maybe<string> =
+        (<any>args).transactionHash ?? null;
       const types: Maybe<string[]> = args.types ?? null;
 
       const validTypes: { [x: string]: boolean } = {
-        "crc_signup": true,
-        "crc_hub_transfer": true,
-        "crc_trust": true,
-        "crc_minting": true,
-        "eth_transfer": true,
-        "gnosis_safe_eth_transfer": true
+        crc_signup: true,
+        crc_hub_transfer: true,
+        crc_trust: true,
+        crc_minting: true,
+        eth_transfer: true,
+        gnosis_safe_eth_transfer: true,
       };
 
       let selectedTypes: string[];
@@ -43,12 +53,15 @@ export function events(prisma:PrismaClient, externalPool?:Pool, enablePaging:boo
       }
 
       if (!safeAddress && !transactionHash) {
-        throw new Error(`One of the two parameters have to be specified: 'safeAddress', transactionHash`);
+        throw new Error(
+          `One of the two parameters have to be specified: 'safeAddress', transactionHash`
+        );
       }
 
       let whereBlock = ``;
       if ((<any>args).fromBlock || (<any>args).toBlock) {
-        const queryEventsArgs: RequireFields<QueryEventsArgs, "safeAddress"> = args;
+        const queryEventsArgs: RequireFields<QueryEventsArgs, "safeAddress"> =
+          args;
         let fromBlockInt: number | null = null;
         let toBlockInt: number | null = null;
         if (queryEventsArgs.fromBlock) {
@@ -87,8 +100,12 @@ export function events(prisma:PrismaClient, externalPool?:Pool, enablePaging:boo
       const transactionsQueryParameters = [
         safeAddress?.toLowerCase() ?? "",
         selectedTypes,
-        transactionHash ?? ""];
-      const timeline = await pool.query(transactionsQuery, transactionsQueryParameters);
+        transactionHash ?? "",
+      ];
+      const timeline = await pool.query(
+        transactionsQuery,
+        transactionsQueryParameters
+      );
       const classify = (row: any) => {
         switch (row.type) {
           case "crc_hub_transfer":
@@ -118,9 +135,9 @@ export function events(prisma:PrismaClient, externalPool?:Pool, enablePaging:boo
       };
 
       const allSafeAddressesDict: { [safeAddress: string]: any } = {};
-      const allTransactionHashesDict: {[transactionHash: string]: any} = {};
+      const allTransactionHashesDict: { [transactionHash: string]: any } = {};
       timeline.rows
-        .map(o => {
+        .map((o) => {
           if (Array.isArray(o.payload)) {
             o.payload = o.payload[0];
           }
@@ -151,7 +168,7 @@ export function events(prisma:PrismaClient, externalPool?:Pool, enablePaging:boo
             case "CrcHubTransfer":
               allSafeAddressesDict[payload.from] = null;
               allSafeAddressesDict[payload.to] = null;
-              payload.transfers.forEach(t => {
+              payload.transfers.forEach((t) => {
                 allSafeAddressesDict[t.from] = null;
                 allSafeAddressesDict[t.to] = null;
               });
@@ -171,37 +188,44 @@ export function events(prisma:PrismaClient, externalPool?:Pool, enablePaging:boo
           }
         });
 
-      const allSafeAddressesArr = Object.keys(allSafeAddressesDict)
-        .map(o => o.toLowerCase());
+      const allSafeAddressesArr = Object.keys(allSafeAddressesDict).map((o) =>
+        o.toLowerCase()
+      );
 
-      const allTransactionHashesArr = Object.keys(allTransactionHashesDict)
-        .map(o => o.toLowerCase());
+      const allTransactionHashesArr = Object.keys(allTransactionHashesDict).map(
+        (o) => o.toLowerCase()
+      );
 
       const tags = await prisma.transaction.findMany({
         where: {
           transactionHash: {
-            in: allTransactionHashesArr
+            in: allTransactionHashesArr,
           },
           tags: {
-            some: {}
-          }
+            some: {},
+          },
         },
         include: {
-          tags: true
-        }
+          tags: true,
+        },
       });
 
-      const tagsByTransactionHash:{[transactionHash:string]:Tag[]} = {};
-      tags.forEach(anchor => {
+      const tagsByTransactionHash: { [transactionHash: string]: Tag[] } = {};
+      tags.forEach((anchor) => {
         tagsByTransactionHash[anchor.transactionHash] = anchor.tags;
       });
 
       const profilesBySafeAddressResolver = profilesBySafeAddress(prisma);
-      const profiles = await profilesBySafeAddressResolver(null, {safeAddresses: allSafeAddressesArr}, context);
+      const profiles = await profilesBySafeAddressResolver(
+        null,
+        { safeAddresses: allSafeAddressesArr },
+        context
+      );
 
       const _profilesBySafeAddress: ProfilesBySafeAddressLookup = {};
-      profiles.filter(o => o.circlesAddress)
-        .forEach(o => _profilesBySafeAddress[<string>o.circlesAddress] = o);
+      profiles
+        .filter((o) => o.circlesAddress)
+        .forEach((o) => (_profilesBySafeAddress[<string>o.circlesAddress] = o));
 
       timeline.rows
         .filter((o: ProfileEvent) => classify(o) != null)
@@ -216,7 +240,8 @@ export function events(prisma:PrismaClient, externalPool?:Pool, enablePaging:boo
               break;
             case "CrcTrust":
               payload.address_profile = _profilesBySafeAddress[payload.address];
-              payload.can_send_to_profile = _profilesBySafeAddress[payload.can_send_to];
+              payload.can_send_to_profile =
+                _profilesBySafeAddress[payload.can_send_to];
               break;
             case "CrcTokenTransfer":
               payload.from_profile = _profilesBySafeAddress[payload.from];
@@ -225,7 +250,7 @@ export function events(prisma:PrismaClient, externalPool?:Pool, enablePaging:boo
             case "CrcHubTransfer":
               payload.from_profile = _profilesBySafeAddress[payload.from];
               payload.to_profile = _profilesBySafeAddress[payload.to];
-              payload.transfers.forEach(t => {
+              payload.transfers.forEach((t) => {
                 t.from_profile = _profilesBySafeAddress[t.from];
                 t.to_profile = _profilesBySafeAddress[t.to];
               });
@@ -255,21 +280,21 @@ export function events(prisma:PrismaClient, externalPool?:Pool, enablePaging:boo
             type: o.type,
             block_number: o.block_number,
             direction: o.direction,
-            timestamp: o.timestamp,
+            timestamp: o.timestamp.toJSON(),
             value: o.value,
             transaction_hash: o.transaction_hash,
             transaction_index: o.transaction_index,
             payload: {
               __typename: classify(o),
-              ...o.payload
+              ...o.payload,
             },
-            tags: tagsByTransactionHash[o.transaction_hash]
-          }
+            tags: tagsByTransactionHash[o.transaction_hash],
+          };
         });
     } finally {
       if (pool != externalPool) {
         await pool.end();
       }
     }
-  }
+  };
 }

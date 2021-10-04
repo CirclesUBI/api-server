@@ -1,25 +1,29 @@
-import {Context} from "../../context";
-import {profilesBySafeAddress, ProfilesBySafeAddressLookup} from "./profiles";
-import {PrismaClient} from "../../api-db/client";
-import {getPool} from "../resolvers";
-import {Contact, ProfileEvent} from "../../types";
-import {Pool} from "pg";
-import {events} from "./queryEvents";
+import { Context } from "../../context";
+import { profilesBySafeAddress, ProfilesBySafeAddressLookup } from "./profiles";
+import { PrismaClient } from "../../api-db/client";
+import { getPool } from "../resolvers";
+import { Contact, ProfileEvent } from "../../types";
+import { Pool } from "pg";
+import { events } from "./queryEvents";
 
 export type LastEvent = {
-    timestamp:string
-  , address1:string
-  , address2:string
-  , block_number:number
-  , transaction_index:number
-  , transaction_hash:string
-  , type:string
-  , direction:string
-  , value:string
-  , obj:any
+  timestamp: string;
+  address1: string;
+  address2: string;
+  block_number: number;
+  transaction_index: number;
+  transaction_hash: string;
+  type: string;
+  direction: string;
+  value: string;
+  obj: any;
 };
 
-export async function lastEvents(safeAddress:string, contactAddresses:string[], externalPool?:Pool) : Promise<LastEvent[]> {
+export async function lastEvents(
+  safeAddress: string,
+  contactAddresses: string[],
+  externalPool?: Pool
+): Promise<LastEvent[]> {
   const sql = `
       with addresses as (
           select unnest($2::text[]) as address2
@@ -118,23 +122,23 @@ export async function lastEvents(safeAddress:string, contactAddresses:string[], 
            , st.obj as obj
       from safe_timeline st;`;
 
-  let pool:Pool|null = null;
+  let pool: Pool | null = null;
   try {
     pool = externalPool ?? getPool();
     const queryParameters = [safeAddress, contactAddresses];
     const queryResult = await pool.query(sql, queryParameters);
-    return queryResult.rows.map(row => {
+    return queryResult.rows.map((row) => {
       return {
-        timestamp: (<Date>row.timestamp).toJSON()
-        , address1: row.address1
-        , address2: row.address2
-        , block_number: row.block_number
-        , transaction_index: row.transaction_index
-        , transaction_hash: row.transaction_hash
-        , type: row.type
-        , direction: row.direction
-        , value: row.value
-        , obj: row.obj
+        timestamp: (<Date>row.timestamp).toJSON(),
+        address1: row.address1,
+        address2: row.address2,
+        block_number: row.block_number,
+        transaction_index: row.transaction_index,
+        transaction_hash: row.transaction_hash,
+        type: row.type,
+        direction: row.direction,
+        value: row.value,
+        obj: row.obj,
       };
     });
   } finally {
@@ -144,8 +148,15 @@ export async function lastEvents(safeAddress:string, contactAddresses:string[], 
   }
 }
 
-export function contacts(prisma:PrismaClient, resolveProfiles:boolean = false) {
-  return async (parent:any, args:{safeAddress:string}, context:Context) => {
+export function contacts(
+  prisma: PrismaClient,
+  resolveProfiles: boolean = false
+) {
+  return async (
+    parent: any,
+    args: { safeAddress: string },
+    context: Context
+  ) => {
     const pool = getPool();
     try {
       const safeAddress = args.safeAddress.toLowerCase();
@@ -190,7 +201,10 @@ export function contacts(prisma:PrismaClient, resolveProfiles:boolean = false) {
           order by last_contact_timestamp desc;`;
 
       const contactsQueryParameters = [safeAddress];
-      const contactsQueryResult = await pool.query(contactsQuery, contactsQueryParameters);
+      const contactsQueryResult = await pool.query(
+        contactsQuery,
+        contactsQueryParameters
+      );
 
       const allSafeAddresses: { [safeAddress: string]: boolean } = {};
       contactsQueryResult.rows.forEach((o: any) => {
@@ -230,45 +244,63 @@ export function contacts(prisma:PrismaClient, resolveProfiles:boolean = false) {
       const profilesBySafeAddressResolver = profilesBySafeAddress(prisma);
 
       const profilesPromise = resolveProfiles
-        ? profilesBySafeAddressResolver(null, {safeAddresses: allSafeAddressesArr}, context)
+        ? profilesBySafeAddressResolver(
+            null,
+            { safeAddresses: allSafeAddressesArr },
+            context
+          )
         : Promise.resolve([]);
 
-      const lastEventsPromise = lastEvents(safeAddress, allSafeAddressesArr.filter(o => o != safeAddress));
+      const lastEventsPromise = lastEvents(
+        safeAddress,
+        allSafeAddressesArr.filter((o) => o != safeAddress)
+      );
 
-      const queryResults = await Promise.all([profilesPromise, lastEventsPromise]);
+      const queryResults = await Promise.all([
+        profilesPromise,
+        lastEventsPromise,
+      ]);
       const profiles = queryResults[0];
       const _lastEvents = queryResults[1];
 
       const _profilesBySafeAddress: ProfilesBySafeAddressLookup = {};
-      profiles.filter(o => o.circlesAddress)
-        .forEach(o => _profilesBySafeAddress[<string>o.circlesAddress] = o);
+      profiles
+        .filter((o) => o.circlesAddress)
+        .forEach((o) => (_profilesBySafeAddress[<string>o.circlesAddress] = o));
 
-      const lastEventsByContactAddress: {[contactAddress:string]: LastEvent} = {};
-      _lastEvents.forEach(o => lastEventsByContactAddress[o.address2] = o);
+      const lastEventsByContactAddress: {
+        [contactAddress: string]: LastEvent;
+      } = {};
+      _lastEvents.forEach((o) => (lastEventsByContactAddress[o.address2] = o));
 
       return contactsQueryResult.rows.map((o: any) => {
         const lastEvent = lastEventsByContactAddress[o.contact];
-        return <Contact> {
+        return <Contact>{
           safeAddress,
-          lastContactAt: o.last_contact_timestamp,
+          lastContactAt: o.last_contact_timestamp.toJSON(),
           safeAddressProfile: _profilesBySafeAddress[o.safe_address],
           contactAddress: o.contact,
           contactAddressProfile: _profilesBySafeAddress[o.contact],
-          lastEvent: !lastEvent ? undefined : {
-            ...lastEvent,
-            payload: {
-              ...lastEvent.obj,
-              __typename: lastEvent.type == "crc_trust" ? "CrcTrust" : "CrcHubTransfer"
-            },
-            safe_address: lastEvent.address1,
-            transaction_hash: lastEvent.transaction_hash
-          },
+          lastEvent: !lastEvent
+            ? undefined
+            : {
+                ...lastEvent,
+                payload: {
+                  ...lastEvent.obj,
+                  __typename:
+                    lastEvent.type == "crc_trust"
+                      ? "CrcTrust"
+                      : "CrcHubTransfer",
+                },
+                safe_address: lastEvent.address1,
+                transaction_hash: lastEvent.transaction_hash,
+              },
           trustsYou: o.trusts_you,
-          youTrust: o.you_trust
+          youTrust: o.you_trust,
         };
       });
     } finally {
       await pool.end();
     }
-  }
+  };
 }
