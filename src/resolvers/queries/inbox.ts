@@ -106,7 +106,7 @@ export function inbox(prisma: PrismaClient) {
       const chatMessageEvents = chatMessagesResult.map((o) => {
         return <ProfileEvent>{
           id: o.id ?? 0,
-          timestamp: <any>o.createdAt.toJSON(),
+          timestamp: <any>o.createdAt,
           type: "chat_message",
           direction: profile.circlesAddress == o.from ? "out" : "in",
           safe_address: profile.circlesAddress,
