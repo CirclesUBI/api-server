@@ -7,12 +7,12 @@ export function invitationTransaction(prisma_api_ro:PrismaClient) {
         const session = await context.verifySession();
         const profile = await prisma_api_ro.profile.findFirst({
             where:{
-                OR:[{
-                    emailAddress: null,
+                //OR:[{
+//                    emailAddress: null,
                     circlesSafeOwner: session.ethAddress
-                }, {
-                    emailAddress: session.emailAddress
-                }]
+//                }, {
+//                    emailAddress: session.emailAddress
+//                }]
             },
             include: {
                 claimedInvitations: {
