@@ -73,10 +73,14 @@ function makeEnum(x) { return x; }
 exports.Prisma.SessionScalarFieldEnum = makeEnum({
   sessionId: 'sessionId',
   emailAddress: 'emailAddress',
+  ethAddress: 'ethAddress',
+  challengeHash: 'challengeHash',
+  signature: 'signature',
   profileId: 'profileId',
   issuedBy: 'issuedBy',
   jti: 'jti',
   createdAt: 'createdAt',
+  validFrom: 'validFrom',
   endedAt: 'endedAt',
   endReason: 'endReason',
   maxLifetime: 'maxLifetime'
@@ -86,11 +90,14 @@ exports.Prisma.InvitationScalarFieldEnum = makeEnum({
   id: 'id',
   createdByProfileId: 'createdByProfileId',
   createdAt: 'createdAt',
+  name: 'name',
   code: 'code',
   claimedByProfileId: 'claimedByProfileId',
   claimedAt: 'claimedAt',
   redeemedByProfileId: 'redeemedByProfileId',
   redeemedAt: 'redeemedAt',
+  redeemTxHash: 'redeemTxHash',
+  address: 'address',
   key: 'key'
 });
 

@@ -29,7 +29,6 @@ export function redeemClaimedInvitation(prisma_api_ro:PrismaClient, prisma_api_r
 
     try {
       const web3 = RpcGateway.get();
-      console.log(web3);
       const balance = await web3.eth.getBalance(claimedInvitation.address);
       const eoaBalance = new BN(balance);
 

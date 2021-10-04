@@ -47,7 +47,8 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
                     id: undefined,
                     lastUpdateAt: new Date(),
                     emailAddress: session.emailAddress,
-                    circlesSafeOwner: session.ethAddress
+                    circlesSafeOwner: session.ethAddress,
+                    lastAcknowledged: new Date()
                 }
             });
             await Session.assignProfile(prisma_api_rw, session.sessionId, profile.id, context);

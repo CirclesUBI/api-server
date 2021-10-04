@@ -540,6 +540,7 @@ type Mutation
     requestSessionChallenge(address:String!):String!
     verifySessionChallenge(challenge:String! signature:String!) : ExchangeTokenResponse
 
+    createTestInvitation: CreateInvitationResult!
 }
 
 type Query

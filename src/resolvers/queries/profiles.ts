@@ -1,4 +1,4 @@
-import {Contact, Maybe, Profile} from "../../types";
+import {Contact, Profile} from "../../types";
 import {Context} from "../../context";
 import {PrismaClient} from "../../api-db/client";
 import LRU from "lru-cache";
@@ -13,6 +13,7 @@ export type ProfilesBySafeAddressLookup = {
 const profilesBySafeAddressCache = new LRU<string, Profile|null>({
   max: 20000,
   maxAge: 1000 * 60 * 60 * 24,
+  // TODO: Remove updated objects from cache (listen for new transactions)
 });
 
 export function profilesBySafeAddress(prisma:PrismaClient, loadContacts: boolean = false) {

@@ -3,7 +3,6 @@ import crypto from "crypto";
 import {Context} from "./context";
 import {Session as PrismaSession, PrismaClient} from "./api-db/client";
 import {RpcGateway} from "./rpcGateway";
-import * as Process from "process";
 
 export class Session
 {
@@ -99,6 +98,12 @@ export class Session
 
         return challenge;
     }
+
+    public static verifySignature(senderAddress:string, data:string, signature:string) {
+        const address = RpcGateway.get().eth.accounts.recover(data, signature);
+        return address.toLowerCase() == senderAddress.toLowerCase();
+    }
+
     static async createSessionFromSignature(prisma:PrismaClient, challenge:string, signature:string)
     {
         const ch = RpcGateway.get().utils.sha3(challenge);
@@ -116,7 +121,7 @@ export class Session
 
         const address = RpcGateway.get().eth.accounts.recover(challenge, signature);
 
-        if (session.ethAddress?.toLowerCase() !== address.toLowerCase()) {
+        if (!this.verifySignature(session.ethAddress ?? "", challenge, signature)) {
             await prisma.session.updateMany({
                 where: {
                     challengeHash: ch

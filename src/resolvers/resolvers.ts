@@ -51,6 +51,7 @@ import {redeemClaimedInvitation} from "./mutations/redeemClaimedInvitation";
 import {invitationTransaction} from "./queries/invitationTransaction";
 import {doesNotThrow} from "assert";
 import {verifySessionChallengeResolver} from "./mutations/verifySessionChallengeResolver";
+import {BN} from "ethereumjs-util";
 
 let cert:string;
 
@@ -102,7 +103,7 @@ export const resolvers: Resolvers = {
       const pool = getPool();
       try {
         const query = "select safe_address from crc_safe_owners where \"owner\" = $1";
-        const result = await pool.query(query);
+        const result = await pool.query(query, [args.owner]);
         return result.rows.map(o => o.safe_address);
       } finally {
         await pool.end();
@@ -267,7 +268,7 @@ export const resolvers: Resolvers = {
     contact: contact(prisma_api_ro),
     chatHistory: chatHistory(prisma_api_ro),
     commonTrust: commonTrust(prisma_api_ro),
-    inbox: inbox(prisma_api_ro)
+    inbox: inbox(prisma_api_ro),
   },
   Mutation: {
     upsertOffer: upsertOfferResolver(prisma_api_rw),
@@ -289,7 +290,59 @@ export const resolvers: Resolvers = {
     requestSessionChallenge: async (parent, args, context) => {
       return await Session.requestSessionFromSignature(prisma_api_rw, args.address);
     },
-    verifySessionChallenge: verifySessionChallengeResolver(prisma_api_rw)
+    verifySessionChallenge: verifySessionChallengeResolver(prisma_api_rw),
+    createTestInvitation: async (parent, args, context) => {
+      const web3 = RpcGateway.get();
+      const invitationEoa = web3.eth.accounts.create();
+      const invitation = await prisma_api_rw.invitation.create({
+        data: {
+          name: Session.generateRandomBase64String(3),
+          createdAt: new Date(),
+          createdByProfileId: 1,
+          address: invitationEoa.address,
+          key: invitationEoa.privateKey,
+          code: Session.generateRandomBase64String(16)
+        },
+        include: {
+          createdBy: true
+        }
+      });
+
+      const invitationFundsEoa = web3.eth.accounts.privateKeyToAccount(process.env.INVITE_EOA_KEY ?? "");
+
+      const gas = 41000;
+      const gasPrice = new BN(await web3.eth.getGasPrice());
+      const nonce = await web3.eth.getTransactionCount(invitationFundsEoa.address);
+
+      const signedTx = await invitationFundsEoa.signTransaction({
+        from: invitationFundsEoa.address,
+        to: invitation.address,
+        value: new BN(web3.utils.toWei("0.2", "ether")),
+        gasPrice: gasPrice,
+        gas: gas,
+        nonce: nonce
+      });
+
+      if (!signedTx?.rawTransaction) {
+        throw new Error(`Couldn't send the invitation transaction`);
+      }
+
+      const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+      console.log("Transferred invite xdai: ", receipt);
+
+      return <CreateInvitationResult>{
+        success: true,
+        createdInviteEoas: [{
+          createdBy: invitation.createdBy,
+          createdByProfileId: invitation.createdByProfileId,
+          createdAt: invitation.createdAt.toJSON(),
+          name: invitation.name,
+          address: invitation.address,
+          balance: "0",
+          code: invitation.code,
+        }]
+      };
+    }
   },
   Subscription: {
     events: {
