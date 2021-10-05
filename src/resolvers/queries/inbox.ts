@@ -125,15 +125,18 @@ export function inbox(prisma: PrismaClient) {
 
       const sorted = eventsResult
         .concat(chatMessageEvents)
+        .map((o) => {
+          o.timestamp = <any>(
+            (<any>o.timestamp instanceof Date
+              ? o.timestamp
+              : new Date(o.timestamp))
+          );
+          return o;
+        })
         .sort((a, b) =>
           a.timestamp > b.timestamp ? 1 : a.timestamp < b.timestamp ? -1 : 0
         )
-        .filter((o) => o.direction === "in")
-        .map((o) => {
-          o.timestamp = (<Date>(<any>o.timestamp)).toJSON();
-          return o;
-        });
-
+        .filter((o) => o.direction === "in");
       return sorted;
     } finally {
       await pool.end();
