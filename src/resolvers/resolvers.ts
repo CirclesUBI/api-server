@@ -346,74 +346,21 @@ export const resolvers: Resolvers = {
   },
   Subscription: {
     events: {
-      resolve: async (parent: ProfileEvent[], args: any, context: Context) => {
-        //const session = await context.verifySession();
-        /*if (!session.profileId) {
-          throw new Error(`You must have a profile before you can use the stream.`)
+      subscribe:async (parent, args, context:Context) => {
+        const session = await context.verifySession();
+        if (!session.profileId) {
+          throw new Error(`You need a profile to subscribe.`)
         }
-        const profile = await prisma_api_ro.profile.findUnique({
+        const profile = await prisma_api_rw.profile.findUnique({
           where: {
             id: session.profileId
           }
         });
-        if (!profile) {
-          throw new Error(`You must have a profile before you can use the stream.`)
-        }*/
+        if (!profile || !profile.circlesAddress)
+          throw new Error(`You need a safe to subscribe`);
 
-        const profile = {
-          circlesAddress: "0xde374ece6fa50e781e81aac78e811b33d16912c7"
-        }
-
-        const eventsByAddress: { [x: string]: ProfileEvent[] } = {};
-        parent.forEach(event => {
-          // Filter all events that do not concern this client
-          if (profile.circlesAddress != event.safe_address)
-            return;
-          if (!eventsByAddress[event.safe_address])
-            eventsByAddress[event.safe_address] = [];
-          eventsByAddress[event.safe_address].push(event);
-        });
-
-        const involvedAddresses:{[x:string]:unknown} = {};
-        Object.values(eventsByAddress)
-          .flatMap(o => o)
-          .forEach(event => {
-            if (!event.payload) {
-              return;
-            }
-            if (event.payload.__typename === "CrcHubTransfer") {
-              involvedAddresses[event.payload.from] = null;
-              involvedAddresses[event.payload.to] = null;
-            } else if (event.payload.__typename === "CrcMinting") {
-              involvedAddresses[event.payload.to] = null;
-            } else if (event.payload.__typename === "CrcSignup") {
-              involvedAddresses[event.payload.user] = null;
-            } else if (event.payload.__typename === "CrcTokenTransfer") {
-              involvedAddresses[event.payload.from] = null;
-              involvedAddresses[event.payload.to] = null;
-            } else if (event.payload.__typename === "CrcTrust") {
-              involvedAddresses[event.payload.address] = null;
-              involvedAddresses[event.payload.can_send_to] = null;
-            } else if (event.payload.__typename === "EthTransfer") {
-              involvedAddresses[event.payload.from] = null;
-              involvedAddresses[event.payload.to] = null;
-            } else if (event.payload.__typename === "GnosisSafeEthTransfer") {
-              involvedAddresses[event.payload.from] = null;
-              involvedAddresses[event.payload.to] = null;
-            }
-          });
-
-        const safeAddresses = Object.keys(involvedAddresses);
-        console.log(`Got events for ${safeAddresses.length} safes`);
-
-        try {
-          return parent;
-        } catch (e) {
-          console.warn(e);
-          return [];
-        }
-      },
-      subscribe: () => ApiPubSub.instance.pubSub.asyncIterator(["event"])
+        return ApiPubSub.instance.pubSub.asyncIterator([`events_${profile.circlesAddress.toLowerCase()}`]);
+      }
     }
   }
 };

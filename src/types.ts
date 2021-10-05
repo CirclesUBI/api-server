@@ -390,6 +390,11 @@ export type MutationVerifySessionChallengeArgs = {
   signature: Scalars['String'];
 };
 
+export type NotificationEvent = {
+  __typename?: 'NotificationEvent';
+  type: Scalars['String'];
+};
+
 export type Offer = {
   __typename?: 'Offer';
   id: Scalars['Int'];
@@ -443,6 +448,7 @@ export type Profile = {
   trustsYou?: Maybe<Scalars['Int']>;
   youTrust?: Maybe<Scalars['Int']>;
   lastEvent?: Maybe<ProfileEvent>;
+  claimedInvitation?: Maybe<ClaimedInvitation>;
 };
 
 export type ProfileEvent = {
@@ -708,7 +714,7 @@ export type Stats = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  events: Array<ProfileEvent>;
+  events: NotificationEvent;
 };
 
 export type Tag = {
@@ -912,6 +918,7 @@ export type ResolversTypes = ResolversObject<{
   LockOfferResult: ResolverTypeWrapper<LockOfferResult>;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
   Mutation: ResolverTypeWrapper<{}>;
+  NotificationEvent: ResolverTypeWrapper<NotificationEvent>;
   Offer: ResolverTypeWrapper<Offer>;
   PaymentProof: PaymentProof;
   Profile: ResolverTypeWrapper<Profile>;
@@ -988,6 +995,7 @@ export type ResolversParentTypes = ResolversObject<{
   LockOfferResult: LockOfferResult;
   LogoutResponse: LogoutResponse;
   Mutation: {};
+  NotificationEvent: NotificationEvent;
   Offer: Offer;
   PaymentProof: PaymentProof;
   Profile: Profile;
@@ -1296,6 +1304,11 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createTestInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType>;
 }>;
 
+export type NotificationEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['NotificationEvent'] = ResolversParentTypes['NotificationEvent']> = ResolversObject<{
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type OfferResolvers<ContextType = any, ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   createdBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
@@ -1340,6 +1353,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   trustsYou?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   youTrust?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   lastEvent?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
+  claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1454,7 +1468,7 @@ export type StatsResolvers<ContextType = any, ParentType extends ResolversParent
 }>;
 
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
-  events?: SubscriptionResolver<Array<ResolversTypes['ProfileEvent']>, "events", ParentType, ContextType>;
+  events?: SubscriptionResolver<ResolversTypes['NotificationEvent'], "events", ParentType, ContextType>;
 }>;
 
 export type TagResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = ResolversObject<{
@@ -1525,6 +1539,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   LockOfferResult?: LockOfferResultResolvers<ContextType>;
   LogoutResponse?: LogoutResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  NotificationEvent?: NotificationEventResolvers<ContextType>;
   Offer?: OfferResolvers<ContextType>;
   Profile?: ProfileResolvers<ContextType>;
   ProfileEvent?: ProfileEventResolvers<ContextType>;

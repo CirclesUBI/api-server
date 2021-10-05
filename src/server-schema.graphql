@@ -22,6 +22,7 @@ type Profile {
     trustsYou: Int # The trust relative to the safeAddress
     youTrust: Int # The trust relative to the safeAddress
     lastEvent: ProfileEvent # The last event that concerns the safeAddress
+    claimedInvitation: ClaimedInvitation
 }
 
 input QueryUniqueProfileInput
@@ -412,6 +413,10 @@ type ProfileEvent {
     tags: [Tag!]
 }
 
+type NotificationEvent {
+    type: String!
+}
+
 type CreatedInvitation {
     createdBy: Profile
     createdByProfileId: Int!
@@ -582,7 +587,7 @@ type Query
 }
 
 type Subscription {
-    events:[ProfileEvent!]!
+    events:NotificationEvent!
 }
 
 schema {

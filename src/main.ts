@@ -2,21 +2,16 @@ import { createServer } from "http";
 import { execute, subscribe } from "graphql";
 import { SubscriptionServer } from "subscriptions-transport-ws";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import express, {NextFunction, Request, Response} from "express";
+import express from "express";
 import {ApolloServer} from "apollo-server-express";
-import {getPool, resolvers} from "./resolvers/resolvers";
+import {resolvers} from "./resolvers/resolvers";
 import {importSchema} from "graphql-import";
-import {BlockchainIndexerConnection} from "./indexer-api/blockchainIndexerConnection";
 import {Context} from "./context";
 import {Session} from "./session";
 import {newLogger} from "./logger";
 import {Error} from "apollo-server-core/src/plugin/schemaReporting/operations";
-import {GnosisSafeProxy} from "./web3Contract";
-import {RpcGateway} from "./rpcGateway";
+import {BlockchainIndexerWsAdapter} from "./indexer-api/blockchainIndexerWsAdapter";
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
-
-// TODO: Migrate to GraphQL-tools: https://www.graphql-tools.com/docs/migration-from-import/
-const httpHeadersPlugin = require("apollo-server-plugin-http-headers");
 
 if (!process.env.CORS_ORIGNS) {
     throw new Error("No CORS_ORIGNS env variable");
@@ -28,76 +23,11 @@ const activeWsClients = [];
 const errorLogger = {
     async didEncounterErrors(requestContext: any) {
         console.log(requestContext);
-    },
+    }
 };
 
-
 export class Main {
-
     async run2 () {
-/*
-        const pool = getPool();
-        try {
-            const query = "select \"user\" from crc_signup_2;";
-            const result = await pool.query(query);
-
-            const chunk = (arr:any[], chunkSize:number) => {
-                const R = [];
-                for (var i = 0; i < arr.length; i += chunkSize)
-                    R.push(arr.slice(i, i + chunkSize));
-                return R;
-            };
-
-            const chunks = chunk(result.rows, 50);
-            const _owners:{user?:string, owners?:string[], error?:Error}[] = [];
-            const _queue:{user?:string, owners?:string[], error?:Error}[] = [];
-
-            for(let i = 0; i < chunks.length; i++) {
-                const currentChunk = chunks[i];
-
-                const results = await Promise.all(currentChunk.map(async p => {
-                    try {
-                        const proxy = new GnosisSafeProxy(RpcGateway.get(), "", p.user);
-                        const owners = await proxy.getOwners();
-                        return {
-                            owners: owners,
-                            user: p.user
-                        };
-                    } catch (e) {
-                        return {
-                            user: p.user,
-                            error: e
-                        };
-                    }
-                }));
-
-                await Promise.all(results.map(async o => {
-                    if (o.error) {
-                        _queue.push(o);
-                    } else {
-                        _owners.push(o);
-
-                        if (!o.owners) {
-                            return;
-                        }
-
-                        for(let owner of o.owners) {
-                            await pool.query(
-                              `insert into crc_safe_owners (safe_address, owner) values ($1, $2);`,
-                              [
-                                  o.user,
-                                  owner
-                              ]);
-                        }
-                    }
-                }));
-            }
-
-            console.log(JSON.stringify(_queue));
-        } finally {
-            await pool.end();
-        }
-*/
         const app = express();
         const httpServer = createServer(app);
 
@@ -162,10 +92,15 @@ export class Main {
                 const logger = newLogger(defaultTags);
                 isSubscription = true;
 
-
                 let sessionId:string|undefined = undefined;
                 if (cookieValue) {
-                    const cookies = cookieValue.split(";").map((o:string) => o.trim().split("=")).reduce((p:{[key:string]:any}, c:string) => { p[c[0]] = c[1]; return p}, {});
+                    const cookies = cookieValue.split(";")
+                                                .map((o:string) => o.trim()
+                                                  .split("="))
+                                                .reduce((p:{[key:string]:any}, c:string) => {
+                                                    p[c[0]] = c[1];
+                                                    return p
+                                                }, {});
                     if (cookies["session"]) {
                         sessionId = decodeURIComponent(cookies["session"]);
                     }
@@ -188,79 +123,18 @@ export class Main {
             server: httpServer,
             path: server.graphqlPath,
         });
-/*
-        var indexerApiUrl = "ws://localhost:8675"
+
+        const indexerApiUrl = "ws://localhost:8675"
         console.log(`Subscribing to blockchain events from the indexer at ${indexerApiUrl} ..`)
-        new BlockchainIndexerConnection(indexerApiUrl);
+        const conn = new BlockchainIndexerWsAdapter(indexerApiUrl);
+        conn.connect();
         console.log("Subscription ready.")
-*/
+
         const PORT = 8989;
         httpServer.listen(PORT, () =>
           console.log(`Server is now running on http://localhost:${PORT}/graphql`)
         );
     }
-/*
-    constructor() {
-        const apiSchemaTypeDefs = importSchema("../src/server-schema.graphql");
-        this._resolvers = this._resolvers;
-
-        console.log("cors origins: ", corsOrigins);
-
-        const httpServer = createServer(app);
-        const schema = makeExecutableSchema({
-            apiSchemaTypeDefs,
-            resolvers
-        });
-        const server = new ApolloServer({
-            schema,
-        });
-
-
-        this._server = new ApolloServer({
-            // extensions: [() => new BasicLogging()],
-            plugins: [httpHeadersPlugin],
-            context: Context.create,
-            typeDefs: apiSchemaTypeDefs,
-            resolvers: this._resolvers,
-            cors: {
-                origin: corsOrigins,
-                credentials: true
-            },
-            formatError: (err) => {
-                const errorId = Session.generateRandomBase64String(8);
-                console.error({
-                    timestamp: new Date().toJSON(),
-                    errorId: errorId,
-                    error: JSON.stringify(err)
-                });
-                return {
-                    path: err.path,
-                    message: `An error occurred while processing your request. `
-                        + `If the error persists contact the admins at '${process.env.ADMIN_EMAIL}' `
-                        + `and include the following error id in your request: `
-                        + `'${errorId}'`
-                }
-            }
-        });
-    }
-
-    async run() {
-        await this._server.listen({
-            port: parseInt("8989")
-        }).then(async o => {
-            console.log("listening at port 8989")
-
-            console.log("Initializing the db if necessary");
-            await InitDb.run(prisma_api_rw)
-            console.log("Db ready");
-
-            var indexerApiUrl = "ws://localhost:8080"
-            console.log(`Subscribing to blockchain events from the indexer at ${indexerApiUrl} ..`)
-            new BlockchainIndexerConnection("ws://localhost:8080");
-            console.log("Subscription ready.")
-        });
-    }
- */
 }
 
 new Main()
