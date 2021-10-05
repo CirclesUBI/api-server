@@ -123,19 +123,18 @@ export function inbox(prisma: PrismaClient) {
         };
       });
 
-      const sorted = eventsResult
-        .concat(chatMessageEvents)
-        .map((o) => {
-          o.timestamp = <any>(
-            (<any>o.timestamp instanceof Date
-              ? o.timestamp
-              : new Date(o.timestamp))
-          );
-          return o;
+      const sorted = eventsResult.map(e => {
+          e.timestamp = <any>new Date(Date.parse(e.timestamp))
+          return e;
         })
+        .concat(chatMessageEvents)
         .sort((a, b) =>
           a.timestamp > b.timestamp ? 1 : a.timestamp < b.timestamp ? -1 : 0
         )
+        .map(e => {
+          e.timestamp = (<Date>(<any>e.timestamp)).toJSON()
+          return e;
+        })
         .filter((o) => o.direction === "in");
       return sorted;
     } finally {
