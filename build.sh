@@ -7,7 +7,6 @@ echo "Building 'omo-central-server' .."
 rm -r -f dist
 npm run graphql-generate
 npx --no-install prisma generate --schema=src/api-db/schema_template.prisma || exit
-npx --no-install prisma generate --schema=src/index-db/schema_template.prisma || exit
 mkdir dist
 
 mkdir dist/auth-client

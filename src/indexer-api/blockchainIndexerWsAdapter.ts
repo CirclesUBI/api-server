@@ -66,7 +66,6 @@ export class BlockchainIndexerWsAdapter {
       const pool = getPool();
       try {
         const cur = this.i++;
-        const now = Date.now();
 
         console.log(`Message ${cur} received.`);
         // Find all events in the reported new range
@@ -92,9 +91,9 @@ export class BlockchainIndexerWsAdapter {
             select hash, "initiator" as address1, "from" as address2, "to" as address3
             from gnosis_safe_eth_transfer_2
         )
-                            select hash, address1, address2, address3
-                            from a
-                            where hash = ANY ($1);`;
+        select hash, address1, address2, address3
+        from a
+        where hash = ANY ($1);`;
 
 
         const eventsInMessage = await pool.query(trustQuery, [transactionHashes]);

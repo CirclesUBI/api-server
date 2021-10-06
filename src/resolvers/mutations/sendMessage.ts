@@ -1,6 +1,9 @@
 import { ChatMessage, SendMessageResult } from "../../types";
 import { Context } from "../../context";
 import { PrismaClient } from "../../api-db/client";
+import {ApiPubSub} from "../../pubsub";
+import {getPool} from "../resolvers";
+import {RpcGateway} from "../../rpcGateway";
 
 export function sendMessage(prisma: PrismaClient) {
   return async (
@@ -39,6 +42,19 @@ export function sendMessage(prisma: PrismaClient) {
         text: args.content,
       },
     });
+
+    if (toProfile.circlesAddress && RpcGateway.get().utils.isAddress(toProfile.circlesAddress)) {
+      const pool = getPool();
+      try {
+        await pool.query(
+          `call publish_event('new_message', '{"to":"${toProfile.circlesAddress.toLowerCase()}"}');`);
+      } finally {
+        await pool.end();
+      }
+    } else {
+      const err = new Error();
+      console.warn("A message was sent to a recipient without safe at:", err.stack);
+    }
 
     return <SendMessageResult>{
       event: {

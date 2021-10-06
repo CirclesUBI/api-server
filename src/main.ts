@@ -4,13 +4,15 @@ import { SubscriptionServer } from "subscriptions-transport-ws";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import express from "express";
 import {ApolloServer} from "apollo-server-express";
-import {resolvers} from "./resolvers/resolvers";
+import {getPool, resolvers} from "./resolvers/resolvers";
 import {importSchema} from "graphql-import";
 import {Context} from "./context";
 import {Session} from "./session";
 import {newLogger} from "./logger";
 import {Error} from "apollo-server-core/src/plugin/schemaReporting/operations";
 import {BlockchainIndexerWsAdapter} from "./indexer-api/blockchainIndexerWsAdapter";
+import {ApiPubSub} from "./pubsub";
+import {RpcGateway} from "./rpcGateway";
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
 
 if (!process.env.CORS_ORIGNS) {
@@ -133,6 +135,35 @@ export class Main {
         } else {
             console.warn(`No BLOCKCHAIN_INDEX_WS_URL environment variable was provided. Cannot subscribe to blockchain events.`)
         }
+
+        const notifyConnection = await getPool().connect();
+
+        // Listen for all pg_notify channel messages
+        notifyConnection.on('notification', async function(msg) {
+            if (msg.channel != "new_message")
+                return;
+            if (!msg.payload)
+                return;
+            const payload = JSON.parse(msg.payload);
+            if (!payload.to)
+                return;
+
+            const to:string = payload.to;
+            if (!RpcGateway.get().utils.isAddress(to))
+                return;
+
+            await ApiPubSub.instance.pubSub.publish(`events_${to}`, {
+                events: {
+                    type: "new_message"
+                }
+            });
+            console.log(payload);
+        });
+
+        // Designate which channels we are listening on. Add additional channels with multiple lines.
+        await notifyConnection.query('LISTEN new_message');
+
+
         const PORT = 8989;
             httpServer.listen(PORT, () =>
               console.log(`Server is now running on http://localhost:${PORT}/graphql`)
