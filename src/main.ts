@@ -124,16 +124,19 @@ export class Main {
             path: server.graphqlPath,
         });
 
-        const indexerApiUrl = "ws://localhost:8675"
-        console.log(`Subscribing to blockchain events from the indexer at ${indexerApiUrl} ..`)
-        const conn = new BlockchainIndexerWsAdapter(indexerApiUrl);
-        conn.connect();
-        console.log("Subscription ready.")
-
+        const indexerApiUrl = process.env.BLOCKCHAIN_INDEX_WS_URL;
+        if (indexerApiUrl) {
+            console.log(`Subscribing to blockchain events from the indexer at ${indexerApiUrl} ..`)
+            const conn = new BlockchainIndexerWsAdapter(indexerApiUrl);
+            conn.connect();
+            console.log("Subscription ready.")
+        } else {
+            console.warn(`No BLOCKCHAIN_INDEX_WS_URL environment variable was provided. Cannot subscribe to blockchain events.`)
+        }
         const PORT = 8989;
-        httpServer.listen(PORT, () =>
-          console.log(`Server is now running on http://localhost:${PORT}/graphql`)
-        );
+            httpServer.listen(PORT, () =>
+              console.log(`Server is now running on http://localhost:${PORT}/graphql`)
+            );
     }
 }
 
