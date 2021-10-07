@@ -27,9 +27,7 @@ export function profilesBySafeAddress(prisma:PrismaClient, loadContacts: boolean
         throw new Error(`You must have a complete profile to use this function`);
       ownProfile = await prisma.profile.findUnique({where: {id: ownProfileId}});
       if (!ownProfile)
-        throw new Error(`You must have a complete profile to use this function`);
-      if (!ownProfile.circlesAddress)
-        throw new Error(`You must have a connected safe to use this function`)
+        throw new Error(`You must have a profile to use this function`);
     } else {
       throw new Error(`You must have a valid session to use this function`)
     }
@@ -86,8 +84,10 @@ export function profilesBySafeAddress(prisma:PrismaClient, loadContacts: boolean
     const contactsByAddress: { [address: string]: Contact } = {};
     if (loadContacts) {
       const contactsResolver = contacts(prisma, false);
-      const _contacts = await contactsResolver(null, {safeAddress: ownProfile.circlesAddress}, context);
-      _contacts.forEach(o => contactsByAddress[o.contactAddress] = o);
+      if (ownProfile.circlesAddress) {
+        const _contacts = await contactsResolver(null, {safeAddress: ownProfile.circlesAddress}, context);
+        _contacts.forEach(o => contactsByAddress[o.contactAddress] = o);
+      }
     }
 
     return results.map(o => {
