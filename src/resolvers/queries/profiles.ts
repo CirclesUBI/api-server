@@ -10,7 +10,7 @@ export type ProfilesBySafeAddressLookup = {
   [safeAddress: string]: Profile|null
 };
 
-const profilesBySafeAddressCache = new LRU<string, Profile|null>({
+export const profilesBySafeAddressCache = new LRU<string, Profile|null>({
   max: 20000,
   maxAge: 1000 * 60 * 60 * 24,
   // TODO: Remove updated objects from cache (listen for new transactions)

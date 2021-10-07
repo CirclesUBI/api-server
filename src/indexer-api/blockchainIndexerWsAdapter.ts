@@ -1,6 +1,7 @@
 import WebSocket from 'ws';
 import {ApiPubSub} from "../pubsub";
 import {getPool} from "../resolvers/resolvers";
+import {profilesBySafeAddressCache} from "../resolvers/queries/profiles";
 
 export class BlockchainIndexerWsAdapter {
   private readonly _url: string;
@@ -95,7 +96,6 @@ export class BlockchainIndexerWsAdapter {
         from a
         where hash = ANY ($1);`;
 
-
         const eventsInMessage = await pool.query(trustQuery, [transactionHashes]);
         const affectedAddresses = eventsInMessage.rows.reduce((p, c) => {
           if (c.address1) {
@@ -111,6 +111,9 @@ export class BlockchainIndexerWsAdapter {
         }, <{ [address: string]: any }>{});
 
         for(let address of Object.keys(affectedAddresses)) {
+
+          profilesBySafeAddressCache.del(address)
+
           await ApiPubSub.instance.pubSub.publish(`events_${address}`, {
             events: {
               type: "blockchain_event"
