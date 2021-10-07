@@ -255,6 +255,15 @@ export type IEventPayload = {
   transaction_hash?: Maybe<Scalars['String']>;
 };
 
+export type InitAggregateState = {
+  __typename?: 'InitAggregateState';
+  registration?: Maybe<Profile>;
+  invitation?: Maybe<ClaimedInvitation>;
+  invitationTransaction?: Maybe<Scalars['String']>;
+  safeFundingTransaction?: Maybe<Scalars['String']>;
+  hubSignupTransaction?: Maybe<Scalars['String']>;
+};
+
 export type LockOfferInput = {
   offerId: Scalars['Int'];
 };
@@ -495,6 +504,7 @@ export type Query = {
   whoami?: Maybe<Scalars['String']>;
   version: Version;
   sessionInfo: SessionInfo;
+  initAggregateState?: Maybe<InitAggregateState>;
   claimedInvitation?: Maybe<ClaimedInvitation>;
   invitationTransaction?: Maybe<ProfileEvent>;
   safeFundingTransaction?: Maybe<ProfileEvent>;
@@ -914,6 +924,7 @@ export type ResolversTypes = ResolversObject<{
   Goal: ResolverTypeWrapper<Goal>;
   ICity: ResolversTypes['City'] | ResolversTypes['CityStats'];
   IEventPayload: ResolversTypes['ChatMessage'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['CrcSignup'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcTrust'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'];
+  InitAggregateState: ResolverTypeWrapper<InitAggregateState>;
   LockOfferInput: LockOfferInput;
   LockOfferResult: ResolverTypeWrapper<LockOfferResult>;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
@@ -991,6 +1002,7 @@ export type ResolversParentTypes = ResolversObject<{
   Goal: Goal;
   ICity: ResolversParentTypes['City'] | ResolversParentTypes['CityStats'];
   IEventPayload: ResolversParentTypes['ChatMessage'] | ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'];
+  InitAggregateState: InitAggregateState;
   LockOfferInput: LockOfferInput;
   LockOfferResult: LockOfferResult;
   LogoutResponse: LogoutResponse;
@@ -1267,6 +1279,15 @@ export type IEventPayloadResolvers<ContextType = any, ParentType extends Resolve
   transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
+export type InitAggregateStateResolvers<ContextType = any, ParentType extends ResolversParentTypes['InitAggregateState'] = ResolversParentTypes['InitAggregateState']> = ResolversObject<{
+  registration?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  invitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
+  invitationTransaction?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  safeFundingTransaction?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  hubSignupTransaction?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type LockOfferResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['LockOfferResult'] = ResolversParentTypes['LockOfferResult']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   lockedUntil?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1394,6 +1415,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   whoami?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   version?: Resolver<ResolversTypes['Version'], ParentType, ContextType>;
   sessionInfo?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
+  initAggregateState?: Resolver<Maybe<ResolversTypes['InitAggregateState']>, ParentType, ContextType>;
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   safeFundingTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
@@ -1536,6 +1558,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Goal?: GoalResolvers<ContextType>;
   ICity?: ICityResolvers<ContextType>;
   IEventPayload?: IEventPayloadResolvers<ContextType>;
+  InitAggregateState?: InitAggregateStateResolvers<ContextType>;
   LockOfferResult?: LockOfferResultResolvers<ContextType>;
   LogoutResponse?: LogoutResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;

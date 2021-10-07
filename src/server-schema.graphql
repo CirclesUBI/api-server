@@ -516,6 +516,14 @@ type TagTransactionResult {
     tag: Tag
 }
 
+type InitAggregateState {
+    registration: Profile
+    invitation: ClaimedInvitation
+    invitationTransaction: String
+    safeFundingTransaction: String
+    hubSignupTransaction: String
+}
+
 type Mutation
 {
     exchangeToken : ExchangeTokenResponse!
@@ -553,6 +561,8 @@ type Query
     whoami: String
     version : Version!
     sessionInfo: SessionInfo!
+
+    initAggregateState: InitAggregateState
 
     # Tries to find a claimed invitation for the logged-on user.
     # A user can claim and redeem only one invitation ever.

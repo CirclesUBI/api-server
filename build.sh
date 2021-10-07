@@ -15,7 +15,4 @@ cp -f src/auth-client/* dist/auth-client
 mkdir dist/api-db
 cp -r -f src/api-db/* dist/api-db
 
-mkdir dist/index-db
-cp -r -f src/index-db/* dist/index-db
-
 npx --no-install tsc || exit

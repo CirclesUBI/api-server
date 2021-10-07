@@ -1,7 +1,7 @@
 import {myProfile, profilesById, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
-import {CreatedInvitation, CreateInvitationResult, ProfileEvent, Resolvers} from "../types";
+import {CreatedInvitation, CreateInvitationResult, Profile, ProfileEvent, Resolvers} from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
 import {sessionInfo} from "./queries/sessionInfo";
@@ -49,11 +49,138 @@ import {Session} from "../session";
 import {createInvitations} from "./mutations/createInvitations";
 import {redeemClaimedInvitation} from "./mutations/redeemClaimedInvitation";
 import {invitationTransaction} from "./queries/invitationTransaction";
-import {doesNotThrow} from "assert";
 import {verifySessionChallengeResolver} from "./mutations/verifySessionChallengeResolver";
 import {BN} from "ethereumjs-util";
+import {Invitation} from "../api-db/client";
 
 let cert:string;
+
+const safeFundingTransactionResolver = (async (parent:any, args:any, context:Context) => {
+  const session = await context.verifySession();
+
+  const now = new Date();
+  const profile = await prisma_api_ro.profile.findFirst({
+    where:{
+//          OR:[{
+//            emailAddress: null,
+      circlesSafeOwner: session.ethAddress
+//          }, {
+//            emailAddress: session.emailAddress
+//          }]
+    }
+  });
+  if (!profile?.circlesAddress || !profile?.circlesSafeOwner) {
+    return null;
+  }
+  const pool = getPool();
+  try {
+    const safeFundingTransactionQuery = `
+            select *
+            from transaction_2
+            where "from" = $1
+              and "to" = $2`;
+
+    const safeFundingTransactionQueryParams = [
+      profile.circlesSafeOwner.toLowerCase(),
+      profile.circlesAddress.toLowerCase()
+    ];
+    const safeFundingTransactionResult = await pool.query(
+      safeFundingTransactionQuery,
+      safeFundingTransactionQueryParams);
+
+    console.log(`Searching for the safe funding transaction from ${profile.circlesSafeOwner.toLowerCase()} to ${profile.circlesAddress.toLowerCase()} took ${new Date().getTime() - now.getTime()} ms.`)
+
+    if (safeFundingTransactionResult.rows.length == 0) {
+      return null;
+    }
+
+    const safeFundingTransaction = safeFundingTransactionResult.rows[0];
+
+    return <ProfileEvent>{
+      id: safeFundingTransaction.id,
+      safe_address: profile.circlesSafeOwner,
+      transaction_index: safeFundingTransaction.index,
+      value: safeFundingTransaction.value,
+      direction: "in",
+      transaction_hash: safeFundingTransaction.hash,
+      type: "EthTransfer",
+      block_number: safeFundingTransaction.block_number,
+      timestamp: safeFundingTransaction.timestamp.toJSON(),
+      safe_address_profile: profile,
+      payload: {
+        __typename: "EthTransfer",
+        transaction_hash: safeFundingTransaction.hash,
+        from: safeFundingTransaction.from,
+        from_profile: profile,
+        to: safeFundingTransaction.to,
+        to_profile: profile,
+        value: safeFundingTransaction.value,
+      }
+    };
+  } finally {
+    await pool.end();
+  }
+});
+
+const hubSignupTransactionResolver = async (parent:any, args:any, context:Context) =>  {
+  const now = new Date();
+  const session = await context.verifySession();
+  const profile = await prisma_api_ro.profile.findFirst({
+    where:{
+      //OR:[{
+//            emailAddress: null,
+      circlesSafeOwner: session.ethAddress
+//          }, {
+//            emailAddress: session.emailAddress
+//          }]
+    }
+  });
+  if (!profile?.circlesAddress || !profile?.circlesSafeOwner) {
+    return null;
+  }
+  const pool = getPool();
+  try {
+    const hubSignupTransactionQuery = `
+            select * from crc_signup_2 where "user" = $1`;
+
+    const hubSignupTransactionQueryParams = [
+      profile.circlesAddress.toLowerCase()
+    ];
+    const hubSignupTransactionResult = await pool.query(
+      hubSignupTransactionQuery,
+      hubSignupTransactionQueryParams);
+
+    console.log(`Searching for the hub signup transaction for ${profile.circlesAddress.toLowerCase()} took ${new Date().getTime() - now.getTime()} ms.`)
+
+    if (hubSignupTransactionResult.rows.length == 0) {
+      return null;
+    }
+
+    const hubSignupTransaction = hubSignupTransactionResult.rows[0];
+
+    return <ProfileEvent>{
+      id: hubSignupTransaction.id,
+      safe_address: profile.circlesAddress.toLowerCase(),
+      transaction_index: hubSignupTransaction.index,
+      value: hubSignupTransaction.value,
+      direction: "out",
+      transaction_hash: hubSignupTransaction.hash,
+      type: "CrcSignup",
+      block_number: hubSignupTransaction.block_number,
+      timestamp: hubSignupTransaction.timestamp.toJSON(),
+      safe_address_profile: profile,
+      payload: {
+        __typename: "CrcSignup",
+        user: hubSignupTransaction.user,
+        token: hubSignupTransaction.token,
+        transaction_hash: hubSignupTransaction.hash,
+        user_profile: profile
+      }
+    };
+  } finally {
+    await pool.end();
+  }
+};
 
 export function getPool() {
   /*
@@ -110,124 +237,8 @@ export const resolvers: Resolvers = {
       }
     },
     invitationTransaction: invitationTransaction(prisma_api_ro),
-    hubSignupTransaction: async (parent, args, context) =>  {
-      const session = await context.verifySession();
-      const profile = await prisma_api_ro.profile.findFirst({
-        where:{
-          //OR:[{
-//            emailAddress: null,
-            circlesSafeOwner: session.ethAddress
-//          }, {
-//            emailAddress: session.emailAddress
-//          }]
-        }
-      });
-      if (!profile?.circlesAddress || !profile?.circlesSafeOwner) {
-        return null;
-      }
-      const pool = getPool();
-      try {
-        const hubSignupTransactionQuery = `
-            select * from crc_signup_2 where "user" = $1`;
-
-        const hubSignupTransactionQueryParams = [
-          profile.circlesAddress.toLowerCase()
-        ];
-        const hubSignupTransactionResult = await pool.query(
-          hubSignupTransactionQuery,
-          hubSignupTransactionQueryParams);
-
-        if (hubSignupTransactionResult.rows.length == 0) {
-          return null;
-        }
-
-        const hubSignupTransaction = hubSignupTransactionResult.rows[0];
-
-        return <ProfileEvent>{
-          id: hubSignupTransaction.id,
-          safe_address: profile.circlesAddress.toLowerCase(),
-          transaction_index: hubSignupTransaction.index,
-          value: hubSignupTransaction.value,
-          direction: "out",
-          transaction_hash: hubSignupTransaction.hash,
-          type: "CrcSignup",
-          block_number: hubSignupTransaction.block_number,
-          timestamp: hubSignupTransaction.timestamp.toJSON(),
-          safe_address_profile: profile,
-          payload: {
-            __typename: "CrcSignup",
-            user: hubSignupTransaction.user,
-            token: hubSignupTransaction.token,
-            transaction_hash: hubSignupTransaction.hash,
-            user_profile: profile
-          }
-        };
-      } finally {
-        await pool.end();
-      }
-    },
-    safeFundingTransaction: (async (parent, args, context) => {
-      const session = await context.verifySession();
-      const profile = await prisma_api_ro.profile.findFirst({
-        where:{
-//          OR:[{
-//            emailAddress: null,
-            circlesSafeOwner: session.ethAddress
-//          }, {
-//            emailAddress: session.emailAddress
-//          }]
-        }
-      });
-      if (!profile?.circlesAddress || !profile?.circlesSafeOwner) {
-        return null;
-      }
-      const pool = getPool();
-      try {
-        const safeFundingTransactionQuery = `
-            select *
-            from transaction_2
-            where "from" = $1
-              and "to" = $2`;
-
-        const safeFundingTransactionQueryParams = [
-          profile.circlesSafeOwner.toLowerCase(),
-          profile.circlesAddress.toLowerCase()
-        ];
-        const safeFundingTransactionResult = await pool.query(
-          safeFundingTransactionQuery,
-          safeFundingTransactionQueryParams);
-
-        if (safeFundingTransactionResult.rows.length == 0) {
-          return null;
-        }
-
-        const safeFundingTransaction = safeFundingTransactionResult.rows[0];
-
-        return <ProfileEvent>{
-          id: safeFundingTransaction.id,
-          safe_address: profile.circlesSafeOwner,
-          transaction_index: safeFundingTransaction.index,
-          value: safeFundingTransaction.value,
-          direction: "in",
-          transaction_hash: safeFundingTransaction.hash,
-          type: "EthTransfer",
-          block_number: safeFundingTransaction.block_number,
-          timestamp: safeFundingTransaction.timestamp.toJSON(),
-          safe_address_profile: profile,
-          payload: {
-            __typename: "EthTransfer",
-            transaction_hash: safeFundingTransaction.hash,
-            from: safeFundingTransaction.from,
-            from_profile: profile,
-            to: safeFundingTransaction.to,
-            to_profile: profile,
-            value: safeFundingTransaction.value,
-          }
-        };
-      } finally {
-        await pool.end();
-      }
-    }),
+    hubSignupTransaction: hubSignupTransactionResolver,
+    safeFundingTransaction: safeFundingTransactionResolver,
     myProfile: myProfile(prisma_api_rw),
     myInvitations: (async (parent, args, context) => {
       const session = await context.verifySession();
@@ -269,6 +280,38 @@ export const resolvers: Resolvers = {
     chatHistory: chatHistory(prisma_api_ro),
     commonTrust: commonTrust(prisma_api_ro),
     inbox: inbox(prisma_api_ro),
+    initAggregateState: async (parent, args, context) => {
+      const session = await context.verifySession();
+
+      let registration: (Profile & {redeemedInvitations: Invitation[]}) | null;
+      if (session.profileId) {
+        registration = await prisma_api_ro.profile.findUnique({
+          where: {id: session.profileId},
+          include: { redeemedInvitations: true}
+        });
+      } else {
+        // No profile, no anything..
+        return {
+        };
+      }
+      let safeFundingTx;
+      let ubi;
+      if (registration?.circlesSafeOwner) {
+        const safeFundingTxPromise = safeFundingTransactionResolver(null, null, context);
+        const ubiPromise = hubSignupTransactionResolver(null, null, context);
+        const promisedResults = await Promise.all([safeFundingTxPromise, ubiPromise]);
+        safeFundingTx = promisedResults[0];
+        ubi = promisedResults[1];
+      }
+
+      return {
+        safeFundingTransaction: safeFundingTx?.transaction_hash ?? undefined,
+        invitationTransaction: registration?.redeemedInvitations?.length ? registration.redeemedInvitations[0].redeemTxHash : undefined,
+        registration: registration ?? undefined,
+        invitation: registration?.claimedInvitation ?? undefined,
+        hubSignupTransaction: ubi?.transaction_hash ?? undefined
+      }
+    }
   },
   Mutation: {
     upsertOffer: upsertOfferResolver(prisma_api_rw),
@@ -356,10 +399,16 @@ export const resolvers: Resolvers = {
             id: session.profileId
           }
         });
-        if (!profile || !profile.circlesAddress)
-          throw new Error(`You need a safe to subscribe`);
+        if (!profile)
+          throw new Error(`You need a profile to subscribe`);
 
-        return ApiPubSub.instance.pubSub.asyncIterator([`events_${profile.circlesAddress.toLowerCase()}`]);
+        if (!profile.circlesAddress && profile.circlesSafeOwner) {
+          return ApiPubSub.instance.pubSub.asyncIterator([`events_${profile.circlesSafeOwner.toLowerCase()}`]);
+        } else if (profile.circlesAddress) {
+          return ApiPubSub.instance.pubSub.asyncIterator([`events_${profile.circlesAddress.toLowerCase()}`]);
+        } else {
+          throw new Error(`Cannot subscribe without an eoa- or safe-address.`)
+        }
       }
     }
   }
