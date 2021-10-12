@@ -84,6 +84,7 @@ export type Profile = {
   dream: string | null
   country: string | null
   newsletter: boolean | null
+  displayTimeCircles: boolean | null
   cityGeonameid: number | null
   lastAcknowledged: Date | null
   verifySafeChallenge: string | null
@@ -3981,6 +3982,7 @@ export namespace Prisma {
     dream: string | null
     country: string | null
     newsletter: boolean | null
+    displayTimeCircles: boolean | null
     cityGeonameid: number | null
     lastAcknowledged: Date | null
     verifySafeChallenge: string | null
@@ -4003,6 +4005,7 @@ export namespace Prisma {
     dream: string | null
     country: string | null
     newsletter: boolean | null
+    displayTimeCircles: boolean | null
     cityGeonameid: number | null
     lastAcknowledged: Date | null
     verifySafeChallenge: string | null
@@ -4025,6 +4028,7 @@ export namespace Prisma {
     dream: number
     country: number
     newsletter: number
+    displayTimeCircles: number
     cityGeonameid: number
     lastAcknowledged: number
     verifySafeChallenge: number
@@ -4059,6 +4063,7 @@ export namespace Prisma {
     dream?: true
     country?: true
     newsletter?: true
+    displayTimeCircles?: true
     cityGeonameid?: true
     lastAcknowledged?: true
     verifySafeChallenge?: true
@@ -4081,6 +4086,7 @@ export namespace Prisma {
     dream?: true
     country?: true
     newsletter?: true
+    displayTimeCircles?: true
     cityGeonameid?: true
     lastAcknowledged?: true
     verifySafeChallenge?: true
@@ -4103,6 +4109,7 @@ export namespace Prisma {
     dream?: true
     country?: true
     newsletter?: true
+    displayTimeCircles?: true
     cityGeonameid?: true
     lastAcknowledged?: true
     verifySafeChallenge?: true
@@ -4238,6 +4245,7 @@ export namespace Prisma {
     dream: string | null
     country: string | null
     newsletter: boolean | null
+    displayTimeCircles: boolean | null
     cityGeonameid: number | null
     lastAcknowledged: Date | null
     verifySafeChallenge: string | null
@@ -4279,6 +4287,7 @@ export namespace Prisma {
     dream?: boolean
     country?: boolean
     newsletter?: boolean
+    displayTimeCircles?: boolean
     cityGeonameid?: boolean
     lastAcknowledged?: boolean
     verifySafeChallenge?: boolean
@@ -13462,6 +13471,7 @@ export namespace Prisma {
     dream: 'dream',
     country: 'country',
     newsletter: 'newsletter',
+    displayTimeCircles: 'displayTimeCircles',
     cityGeonameid: 'cityGeonameid',
     lastAcknowledged: 'lastAcknowledged',
     verifySafeChallenge: 'verifySafeChallenge',
@@ -13782,6 +13792,7 @@ export namespace Prisma {
     dream?: StringNullableFilter | string | null
     country?: StringNullableFilter | string | null
     newsletter?: BoolNullableFilter | boolean | null
+    displayTimeCircles?: BoolNullableFilter | boolean | null
     cityGeonameid?: IntNullableFilter | number | null
     lastAcknowledged?: DateTimeNullableFilter | Date | string | null
     verifySafeChallenge?: StringNullableFilter | string | null
@@ -13814,6 +13825,7 @@ export namespace Prisma {
     dream?: SortOrder
     country?: SortOrder
     newsletter?: SortOrder
+    displayTimeCircles?: SortOrder
     cityGeonameid?: SortOrder
     lastAcknowledged?: SortOrder
     verifySafeChallenge?: SortOrder
@@ -13843,6 +13855,7 @@ export namespace Prisma {
     dream?: StringNullableWithAggregatesFilter | string | null
     country?: StringNullableWithAggregatesFilter | string | null
     newsletter?: BoolNullableWithAggregatesFilter | boolean | null
+    displayTimeCircles?: BoolNullableWithAggregatesFilter | boolean | null
     cityGeonameid?: IntNullableWithAggregatesFilter | number | null
     lastAcknowledged?: DateTimeNullableWithAggregatesFilter | Date | string | null
     verifySafeChallenge?: StringNullableWithAggregatesFilter | string | null
@@ -14511,6 +14524,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -14543,6 +14557,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -14574,6 +14589,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14606,6 +14622,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14638,6 +14655,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -14659,6 +14677,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14681,6 +14700,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17338,6 +17358,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -17369,6 +17390,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -17409,6 +17431,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17440,6 +17463,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17470,6 +17494,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -17501,6 +17526,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -17536,6 +17562,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -17567,6 +17594,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -17602,6 +17630,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -17633,6 +17662,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -17698,6 +17728,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17729,6 +17760,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17764,6 +17796,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17795,6 +17828,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17830,6 +17864,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17861,6 +17896,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17919,6 +17955,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -17950,6 +17987,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -18024,6 +18062,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18055,6 +18094,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18727,6 +18767,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -18758,6 +18799,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -18833,6 +18875,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -18864,6 +18907,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -18904,6 +18948,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18935,6 +18980,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19010,6 +19056,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19041,6 +19088,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19122,6 +19170,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -19153,6 +19202,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -19345,6 +19395,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19376,6 +19427,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19528,6 +19580,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -19559,6 +19612,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -19662,6 +19716,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19693,6 +19748,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19956,6 +20012,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -19987,6 +20044,7 @@ export namespace Prisma {
     dream?: string | null
     country?: string | null
     newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
     cityGeonameid?: number | null
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
@@ -20208,6 +20266,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20239,6 +20298,7 @@ export namespace Prisma {
     dream?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
     cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
