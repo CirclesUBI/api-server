@@ -91,6 +91,7 @@ model Profile {
     dream String?
     country String?
     newsletter Boolean?
+    displayTimeCircles Boolean? @default(true)
     cityGeonameid Int?
 
     lastAcknowledged DateTime?

@@ -1,607 +1,619 @@
 type Server {
-    version:String!
+  version: String!
 }
 
 type Profile {
-    id: Int!
-    status: String
-    circlesAddress:String
-    circlesSafeOwner:String
-    circlesTokenAddress:String
-    firstName:String!
-    lastName:String
-    dream:String
-    country:String
-    avatarUrl:String
-    avatarCid:String
-    avatarMimeType:String
-    newsletter:Boolean
-    cityGeonameid:Int
-    city: City
-    offers: [Offer!]
-    trustsYou: Int # The trust relative to the safeAddress
-    youTrust: Int # The trust relative to the safeAddress
-    lastEvent: ProfileEvent # The last event that concerns the safeAddress
-    claimedInvitation: ClaimedInvitation
+  id: Int!
+  status: String
+  circlesAddress: String
+  circlesSafeOwner: String
+  circlesTokenAddress: String
+  firstName: String!
+  lastName: String
+  dream: String
+  country: String
+  avatarUrl: String
+  avatarCid: String
+  avatarMimeType: String
+  newsletter: Boolean
+  displayTimeCircles: Boolean
+  cityGeonameid: Int
+  city: City
+  offers: [Offer!]
+  trustsYou: Int # The trust relative to the safeAddress
+  youTrust: Int # The trust relative to the safeAddress
+  lastEvent: ProfileEvent # The last event that concerns the safeAddress
+  claimedInvitation: ClaimedInvitation
 }
 
-input QueryUniqueProfileInput
-{
-    id: Int!
+input QueryUniqueProfileInput {
+  id: Int!
 }
 
-input QueryProfileInput
-{
-    id:[Int!]
-    firstName:String
-    lastName:String
-    country:String
-    circlesAddress:[String!]
+input QueryProfileInput {
+  id: [Int!]
+  firstName: String
+  lastName: String
+  country: String
+  circlesAddress: [String!]
 }
-input SearchInput
-{
-    searchString:String!
+input SearchInput {
+  searchString: String!
 }
 
-input UpsertProfileInput
-{
-    id: Int
-    status: String!
-    firstName:String!
-    lastName:String
-    dream: String
-    country: String
-    emailAddress:String
-    circlesAddress:String
-    circlesSafeOwner:String
-    circlesTokenAddress:String
-    avatarUrl:String
-    avatarCid:String
-    avatarMimeType:String
-    newsletter:Boolean
-    cityGeonameid:Int
+input UpsertProfileInput {
+  id: Int
+  status: String!
+  firstName: String!
+  lastName: String
+  dream: String
+  country: String
+  emailAddress: String
+  circlesAddress: String
+  circlesSafeOwner: String
+  circlesTokenAddress: String
+  avatarUrl: String
+  avatarCid: String
+  avatarMimeType: String
+  newsletter: Boolean
+  displayTimeCircles: Boolean
+  cityGeonameid: Int
 }
 
 type Tag {
-    id: Int!
-    typeId: String!
-    value: String
+  id: Int!
+  typeId: String!
+  value: String
 }
 
 input CreateTagInput {
-    typeId: String!
-    value: String
+  typeId: String!
+  value: String
 }
 
 input UpsertTagInput {
-    id: Int
-    typeId: String!
-    value: String
+  id: Int
+  typeId: String!
+  value: String
 }
 
 type ExchangeTokenResponse {
-    success: Boolean!
-    errorMessage: String
+  success: Boolean!
+  errorMessage: String
 }
 
 type DepositChallengeResponse {
-    success: Boolean!
-    errorMessage: String
+  success: Boolean!
+  errorMessage: String
 }
 input DepositChallenge {
-    jwt: String!
+  jwt: String!
 }
 
 type LogoutResponse {
-    success: Boolean!
-    errorMessage: String
+  success: Boolean!
+  errorMessage: String
 }
 
 type SessionInfo {
-    isLoggedOn: Boolean!
-    hasProfile: Boolean
-    profileId: Int
+  isLoggedOn: Boolean!
+  hasProfile: Boolean
+  profileId: Int
 }
 
 type DelegateAuthInit {
-    appId: String!
-    success: Boolean!
-    errorMessage: String
-    challengeType: String
-    delegateAuthCode: String
-    validTo: String
+  appId: String!
+  success: Boolean!
+  errorMessage: String
+  challengeType: String
+  delegateAuthCode: String
+  validTo: String
 }
 
 type ConsumeDepositedChallengeResponse {
-    success: Boolean!
-    challenge: String
+  success: Boolean!
+  challenge: String
 }
 
 type Version {
-    major: Int!
-    minor: Int!
-    revision: Int!
+  major: Int!
+  minor: Int!
+  revision: Int!
 }
 
 input RequestUpdateSafeInput {
-    newSafeAddress: String!
+  newSafeAddress: String!
 }
 
 type RequestUpdateSafeResponse {
-    success: Boolean!
-    errorMessage: String
-    challenge: String
+  success: Boolean!
+  errorMessage: String
+  challenge: String
 }
 
 input UpdateSafeInput {
-    signature: String!
+  signature: String!
 }
 
 type UpdateSafeResponse {
-    success: Boolean!
-    errorMessage: String
-    newSafeAddress: String
+  success: Boolean!
+  errorMessage: String
+  newSafeAddress: String
 }
 
 input QueryCitiesByNameInput {
-    name_like: String!
-    languageCode: String
+  name_like: String!
+  languageCode: String
 }
 
 input QueryCitiesByGeonameIdInput {
-    geonameid: [Int!]!
+  geonameid: [Int!]!
 }
 
 input QueryCitiesInput {
-    byName: QueryCitiesByNameInput
-    byId: QueryCitiesByGeonameIdInput
+  byName: QueryCitiesByNameInput
+  byId: QueryCitiesByGeonameIdInput
 }
 
 interface ICity {
-    geonameid: Int!
-    name: String!
-    country: String!
-    population: Int!
-    latitude: Float!
-    longitude: Float!
-    feature_code: String!
+  geonameid: Int!
+  name: String!
+  country: String!
+  population: Int!
+  latitude: Float!
+  longitude: Float!
+  feature_code: String!
 }
 
 type City implements ICity {
-    geonameid: Int!
-    name: String!
-    country: String!
-    population: Int!
-    latitude: Float!
-    longitude: Float!
-    feature_code: String!
+  geonameid: Int!
+  name: String!
+  country: String!
+  population: Int!
+  latitude: Float!
+  longitude: Float!
+  feature_code: String!
 }
 
 type Offer {
-    id: Int!
+  id: Int!
 
-    createdBy: Profile
-    createdByProfileId: Int!
+  createdBy: Profile
+  createdByProfileId: Int!
 
-    publishedAt: String!
-    unlistedAt: String
-    purchasedAt: String
+  publishedAt: String!
+  unlistedAt: String
+  purchasedAt: String
 
-    title: String!
-    pictureUrl: String!
-    pictureMimeType: String!
-    description: String
-    categoryTag: Tag
-    categoryTagId: Int!
+  title: String!
+  pictureUrl: String!
+  pictureMimeType: String!
+  description: String
+  categoryTag: Tag
+  categoryTagId: Int!
 
-    city: City
-    geonameid: Int!
+  city: City
+  geonameid: Int!
 
-    pricePerUnit: String!
-    unitTag: Tag
-    unitTagId: Int!
-    maxUnits: Int
+  pricePerUnit: String!
+  unitTag: Tag
+  unitTagId: Int!
+  maxUnits: Int
 
-    deliveryTermsTag: Tag
-    deliveryTermsTagId: Int!
+  deliveryTermsTag: Tag
+  deliveryTermsTagId: Int!
 }
 
-input UpsertOfferInput
-{
-    id: Int
-    title: String!
-    pictureUrl: String
-    pictureMimeType: String
-    description: String
-    categoryTagId: Int!
-    geonameid: Int!
+input UpsertOfferInput {
+  id: Int
+  title: String!
+  pictureUrl: String
+  pictureMimeType: String
+  description: String
+  categoryTagId: Int!
+  geonameid: Int!
 
-    pricePerUnit: String!
-    unitTagId: Int!
-    maxUnits: Int
+  pricePerUnit: String!
+  unitTagId: Int!
+  maxUnits: Int
 
-    deliveryTermsTagId: Int!
+  deliveryTermsTagId: Int!
 }
 
 input QueryOfferInput {
-    id:Int
-    categoryTagId: Int
-    createdByProfileId:Int
-    publishedAt_lt:String
-    publishedAt_gt:String
+  id: Int
+  categoryTagId: Int
+  createdByProfileId: Int
+  publishedAt_lt: String
+  publishedAt_gt: String
 }
 
-input LockOfferInput
-{
-    offerId:Int!
+input LockOfferInput {
+  offerId: Int!
 }
 
-type LockOfferResult
-{
-    success:Boolean!
-    lockedUntil:String
+type LockOfferResult {
+  success: Boolean!
+  lockedUntil: String
 }
 
-input PaymentProof
-{
-    forOfferId:Int!
-    tokenOwners:[String!]!
-    sources:[String!]!
-    destinations:[String!]!
-    values:[String!]!
+input PaymentProof {
+  forOfferId: Int!
+  tokenOwners: [String!]!
+  sources: [String!]!
+  destinations: [String!]!
+  values: [String!]!
 }
 
-type ProvePaymentResult
-{
-    success:Boolean!
+type ProvePaymentResult {
+  success: Boolean!
 }
 
 enum PurchaseStatus {
-    INVALID
-    ITEM_LOCKED
-    PAYMENT_PROVEN
+  INVALID
+  ITEM_LOCKED
+  PAYMENT_PROVEN
 }
 
 type Purchase {
-    id: Int!
+  id: Int!
 
-    purchasedAt: String!
-    status: PurchaseStatus!
+  purchasedAt: String!
+  status: PurchaseStatus!
 
-    purchasedFrom: Profile!
-    purchasedFromProfileId: Int!
+  purchasedFrom: Profile!
+  purchasedFromProfileId: Int!
 
-    purchasedBy: Profile!
-    purchasedByProfileId: Int!
+  purchasedBy: Profile!
+  purchasedByProfileId: Int!
 
-    purchasedItem: Offer!
-    purchasedOfferId: Int!
+  purchasedItem: Offer!
+  purchasedOfferId: Int!
 }
 
 input QueryPurchaseInput {
-    purchasedByProfileId: String!
+  purchasedByProfileId: String!
 }
 
 type CityStats implements ICity {
-    citizenCount: Int!
-    geonameid: Int!
-    name: String!
-    country: String!
-    population: Int!
-    latitude: Float!
-    longitude: Float!
-    feature_code: String!
+  citizenCount: Int!
+  geonameid: Int!
+  name: String!
+  country: String!
+  population: Int!
+  latitude: Float!
+  longitude: Float!
+  feature_code: String!
 }
 
 type CountryStats {
-    name: String!
-    citizenCount: Int!
+  name: String!
+  citizenCount: Int!
 }
 
 type Goal {
-    totalCitizens: Int!
+  totalCitizens: Int!
 }
 
 type Stats {
-    totalCitizens: Int!
-    currentGoalFrom: Int!
-    currentGoal: Int!
-    nextGoalAt: Int!
-    inviteRank: Int!
-    cityRank: Int
-    goals: [Goal!]!
-    cities: [CityStats!]!
-    countries: [CountryStats!]!
+  totalCitizens: Int!
+  currentGoalFrom: Int!
+  currentGoal: Int!
+  nextGoalAt: Int!
+  inviteRank: Int!
+  cityRank: Int
+  goals: [Goal!]!
+  cities: [CityStats!]!
+  countries: [CountryStats!]!
 }
 
 input QueryTagsInput {
-    typeId_in: [String!]!
-    value_like: String
+  typeId_in: [String!]!
+  value_like: String
 }
 
 interface IEventPayload {
-    transaction_hash: String
+  transaction_hash: String
 }
 type CrcSignup implements IEventPayload {
-    transaction_hash: String!
-    user:String!
-    user_profile: Profile
-    token:String!
+  transaction_hash: String!
+  user: String!
+  user_profile: Profile
+  token: String!
 }
-type CrcTrust implements IEventPayload  {
-    transaction_hash: String!
-    address: String!
-    address_profile: Profile
-    can_send_to: String!
-    can_send_to_profile: Profile
-    limit: Int!
+type CrcTrust implements IEventPayload {
+  transaction_hash: String!
+  address: String!
+  address_profile: Profile
+  can_send_to: String!
+  can_send_to_profile: Profile
+  limit: Int!
 }
-type CrcTokenTransfer implements IEventPayload  {
-    transaction_hash: String!
-    from: String!
-    from_profile: Profile
-    to: String!
-    to_profile: Profile
-    token: String!
-    value: String!
+type CrcTokenTransfer implements IEventPayload {
+  transaction_hash: String!
+  from: String!
+  from_profile: Profile
+  to: String!
+  to_profile: Profile
+  token: String!
+  value: String!
 }
-type CrcHubTransfer implements IEventPayload  {
-    transaction_hash: String!
-    from: String!
-    from_profile: Profile
-    to: String!
-    to_profile: Profile
-    flow: String!
-    transfers: [CrcTokenTransfer!]!
+type CrcHubTransfer implements IEventPayload {
+  transaction_hash: String!
+  from: String!
+  from_profile: Profile
+  to: String!
+  to_profile: Profile
+  flow: String!
+  transfers: [CrcTokenTransfer!]!
 }
-type CrcMinting implements IEventPayload  {
-    transaction_hash: String!
-    from: String!
-    from_profile: Profile
-    to: String!
-    to_profile: Profile
-    value: String!
-    token: String!
+type CrcMinting implements IEventPayload {
+  transaction_hash: String!
+  from: String!
+  from_profile: Profile
+  to: String!
+  to_profile: Profile
+  value: String!
+  token: String!
 }
-type EthTransfer implements IEventPayload  {
-    transaction_hash: String!
-    from: String!
-    from_profile: Profile
-    to: String!
-    to_profile: Profile
-    value: String!
+type EthTransfer implements IEventPayload {
+  transaction_hash: String!
+  from: String!
+  from_profile: Profile
+  to: String!
+  to_profile: Profile
+  value: String!
 }
 type GnosisSafeEthTransfer implements IEventPayload {
-    transaction_hash: String!
-    initiator: String!
-    from: String!
-    from_profile: Profile
-    to: String!
-    to_profile: Profile
-    value: String!
+  transaction_hash: String!
+  initiator: String!
+  from: String!
+  from_profile: Profile
+  to: String!
+  to_profile: Profile
+  value: String!
 }
 
 type ChatMessage implements IEventPayload {
-    transaction_hash: String
-    from: String!
-    from_profile: Profile
-    to: String!
-    to_profile: Profile
-    text: String!
+  transaction_hash: String
+  from: String!
+  from_profile: Profile
+  to: String!
+  to_profile: Profile
+  text: String!
 }
 
-union EventPayload = CrcSignup
-    | CrcTrust
-    | CrcTokenTransfer
-    | CrcHubTransfer
-    | CrcMinting
-    | EthTransfer
-    | GnosisSafeEthTransfer
-    | ChatMessage
+union EventPayload =
+    CrcSignup
+  | CrcTrust
+  | CrcTokenTransfer
+  | CrcHubTransfer
+  | CrcMinting
+  | EthTransfer
+  | GnosisSafeEthTransfer
+  | ChatMessage
 
 type ProfileEvent {
-    timestamp: String!
-    block_number: Int
-    transaction_index: Int
-    transaction_hash: String
-    type: String!
-    safe_address: String!
-    safe_address_profile: Profile
-    direction: String!
-    value: String
-    payload: EventPayload
-    tags: [Tag!]
+  timestamp: String!
+  block_number: Int
+  transaction_index: Int
+  transaction_hash: String
+  type: String!
+  safe_address: String!
+  safe_address_profile: Profile
+  direction: String!
+  value: String
+  payload: EventPayload
+  tags: [Tag!]
 }
 
 type NotificationEvent {
-    type: String!
+  type: String!
 }
 
 type CreatedInvitation {
-    createdBy: Profile
-    createdByProfileId: Int!
-    createdAt: String!
+  createdBy: Profile
+  createdByProfileId: Int!
+  createdAt: String!
 
-    claimedBy: Profile
-    claimedByProfileId: Int
-    claimedAt: String
+  claimedBy: Profile
+  claimedByProfileId: Int
+  claimedAt: String
 
-    name: String!
-    address: String!
-    balance: String!
-    code: String!
+  name: String!
+  address: String!
+  balance: String!
+  code: String!
 }
 
 type ClaimedInvitation {
-    createdBy: Profile
-    createdByProfileId: Int!
-    createdAt: String!
+  createdBy: Profile
+  createdByProfileId: Int!
+  createdAt: String!
 
-    claimedBy: Profile
-    claimedByProfileId: Int!
-    claimedAt: String!
+  claimedBy: Profile
+  claimedByProfileId: Int!
+  claimedAt: String!
 }
 
 type ClaimInvitationResult {
-    success:Boolean!
-    claimedInvitation: ClaimedInvitation
+  success: Boolean!
+  claimedInvitation: ClaimedInvitation
 }
 
 type RedeemClaimedInvitationResult {
-    success: Boolean!
-    error: String
-    transactionHash: String
+  success: Boolean!
+  error: String
+  transactionHash: String
 }
 
 type CreatedInviteEoa {
-    for: String!
-    address: String!
-    fee: String!
+  for: String!
+  address: String!
+  fee: String!
 }
 
 type CreateInvitationResult {
-    success: Boolean!
-    error: String
-    createdInviteEoas: [CreatedInvitation!]!
+  success: Boolean!
+  error: String
+  createdInviteEoas: [CreatedInvitation!]!
 }
 
 type SendMessageResult {
-    success: Boolean!
-    error: String
-    event: ProfileEvent
+  success: Boolean!
+  error: String
+  event: ProfileEvent
 }
 
 enum TrustDirection {
-    IN,
-    OUT,
-    MUTUAL
+  IN
+  OUT
+  MUTUAL
 }
 
 type TrustRelation {
-    safeAddress:String!
-    safeAddressProfile:Profile
-    otherSafeAddress: String!
-    otherSafeAddressProfile:Profile
-    direction: TrustDirection!
+  safeAddress: String!
+  safeAddressProfile: Profile
+  otherSafeAddress: String!
+  otherSafeAddressProfile: Profile
+  direction: TrustDirection!
 }
 
 type Contact {
-    safeAddress:String!
-    lastContactAt: String
-    safeAddressProfile:Profile
-    contactAddress:String!
-    contactAddressProfile:Profile
-    trustsYou: Int # The trust relative to the safeAddress
-    youTrust: Int # The trust relative to the safeAddress
-    lastEvent: ProfileEvent # The last event that concerns the safeAddress
+  safeAddress: String!
+  lastContactAt: String
+  safeAddressProfile: Profile
+  contactAddress: String!
+  contactAddressProfile: Profile
+  trustsYou: Int # The trust relative to the safeAddress
+  youTrust: Int # The trust relative to the safeAddress
+  lastEvent: ProfileEvent # The last event that concerns the safeAddress
 }
 
 type CommonTrust {
-    type: String!
-    safeAddress1: String!
-    safeAddress2: String!
-    profile: Profile
+  type: String!
+  safeAddress1: String!
+  safeAddress2: String!
+  profile: Profile
 }
 
 type AssetBalance {
-    token_address: String!
-    token_owner_address: String!
-    token_owner_profile: Profile
-    token_balance: String!
+  token_address: String!
+  token_owner_address: String!
+  token_owner_profile: Profile
+  token_balance: String!
 }
 
 type TagTransactionResult {
-    success: Boolean!
-    error: String
-    tag: Tag
+  success: Boolean!
+  error: String
+  tag: Tag
 }
 
 type InitAggregateState {
-    registration: Profile
-    invitation: ClaimedInvitation
-    invitationTransaction: String
-    safeFundingTransaction: String
-    hubSignupTransaction: String
+  registration: Profile
+  invitation: ClaimedInvitation
+  invitationTransaction: String
+  safeFundingTransaction: String
+  hubSignupTransaction: String
 }
 
-type Mutation
-{
-    exchangeToken : ExchangeTokenResponse!
-    authenticateAt(appId:String!) : DelegateAuthInit!
-    depositChallenge(jwt:String!) : DepositChallengeResponse!
-    consumeDepositedChallenge(delegateAuthCode:String!):ConsumeDepositedChallengeResponse!
-    logout: LogoutResponse!
-    upsertProfile(data:UpsertProfileInput!):Profile!
-    requestUpdateSafe(data:RequestUpdateSafeInput!) : RequestUpdateSafeResponse!
-    updateSafe(data:UpdateSafeInput!) : UpdateSafeResponse!
-    upsertOffer(data:UpsertOfferInput!):Offer!
-    unlistOffer(offerId:Int!):Boolean!
-    lockOffer(data:LockOfferInput!):LockOfferResult!
-    provePayment(data:PaymentProof!):ProvePaymentResult!
-    upsertTag(data:UpsertTagInput!):Tag!
+type Mutation {
+  exchangeToken: ExchangeTokenResponse!
+  authenticateAt(appId: String!): DelegateAuthInit!
+  depositChallenge(jwt: String!): DepositChallengeResponse!
+  consumeDepositedChallenge(
+    delegateAuthCode: String!
+  ): ConsumeDepositedChallengeResponse!
+  logout: LogoutResponse!
+  upsertProfile(data: UpsertProfileInput!): Profile!
+  requestUpdateSafe(data: RequestUpdateSafeInput!): RequestUpdateSafeResponse!
+  updateSafe(data: UpdateSafeInput!): UpdateSafeResponse!
+  upsertOffer(data: UpsertOfferInput!): Offer!
+  unlistOffer(offerId: Int!): Boolean!
+  lockOffer(data: LockOfferInput!): LockOfferResult!
+  provePayment(data: PaymentProof!): ProvePaymentResult!
+  upsertTag(data: UpsertTagInput!): Tag!
 
-    acknowledge(until:String!): Boolean!
+  acknowledge(until: String!): Boolean!
 
-    # Creates as many new EOAs as there are strings in the array.
-    createInvitations(for:[String!]!) : CreateInvitationResult!
-    claimInvitation(code:String!): ClaimInvitationResult!
-    redeemClaimedInvitation: RedeemClaimedInvitationResult!
+  # Creates as many new EOAs as there are strings in the array.
+  createInvitations(for: [String!]!): CreateInvitationResult!
+  claimInvitation(code: String!): ClaimInvitationResult!
+  redeemClaimedInvitation: RedeemClaimedInvitationResult!
 
-    tagTransaction(transactionHash: String! tag:CreateTagInput!) : TagTransactionResult!
-    sendMessage(toSafeAddress:String! content: String!) : SendMessageResult!
+  tagTransaction(
+    transactionHash: String!
+    tag: CreateTagInput!
+  ): TagTransactionResult!
+  sendMessage(toSafeAddress: String!, content: String!): SendMessageResult!
 
-    requestSessionChallenge(address:String!):String!
-    verifySessionChallenge(challenge:String! signature:String!) : ExchangeTokenResponse
+  requestSessionChallenge(address: String!): String!
+  verifySessionChallenge(
+    challenge: String!
+    signature: String!
+  ): ExchangeTokenResponse
 
-    createTestInvitation: CreateInvitationResult!
+  createTestInvitation: CreateInvitationResult!
 }
 
-type Query
-{
-    whoami: String
-    version : Version!
-    sessionInfo: SessionInfo!
+type Query {
+  whoami: String
+  version: Version!
+  sessionInfo: SessionInfo!
 
-    initAggregateState: InitAggregateState
+  initAggregateState: InitAggregateState
 
-    # Tries to find a claimed invitation for the logged-on user.
-    # A user can claim and redeem only one invitation ever.
-    claimedInvitation: ClaimedInvitation
-    invitationTransaction: ProfileEvent
-    safeFundingTransaction: ProfileEvent
-    hubSignupTransaction: ProfileEvent
-    stats: Stats
+  # Tries to find a claimed invitation for the logged-on user.
+  # A user can claim and redeem only one invitation ever.
+  claimedInvitation: ClaimedInvitation
+  invitationTransaction: ProfileEvent
+  safeFundingTransaction: ProfileEvent
+  hubSignupTransaction: ProfileEvent
+  stats: Stats
 
-    # Gets the created (noty invitations of the currently logged on user
-    myInvitations: [CreatedInvitation!]!
-    events(safeAddress:String! types:[String!] fromBlock:Int toBlock:Int):[ProfileEvent!]!
-    contacts(safeAddress:String!):[Contact!]!
-    contact(safeAddress:String! contactAddress:String!):Contact
-    commonTrust(safeAddress1:String! safeAddress2:String!):[CommonTrust!]!
-    chatHistory(safeAddress:String! contactSafeAddress:String!):[ProfileEvent!]!
-    eventByTransactionHash(safeAddress:String! transactionHash: String! types:[String!]):[ProfileEvent!]!
-    balance(safeAddress:String!) : String!
-    balancesByAsset(safeAddress:String!) : [AssetBalance!]!
-    trustRelations(safeAddress:String!) : [TrustRelation!]!
-    myProfile: Profile
-    inbox: [ProfileEvent!]!
-    profilesById(ids:[Int!]!) : [Profile!]!
-    profilesBySafeAddress(safeAddresses:[String!]!) : [Profile!]!
+  # Gets the created (noty invitations of the currently logged on user
+  myInvitations: [CreatedInvitation!]!
+  events(
+    safeAddress: String!
+    types: [String!]
+    fromBlock: Int
+    toBlock: Int
+  ): [ProfileEvent!]!
+  contacts(safeAddress: String!): [Contact!]!
+  contact(safeAddress: String!, contactAddress: String!): Contact
+  commonTrust(safeAddress1: String!, safeAddress2: String!): [CommonTrust!]!
+  chatHistory(
+    safeAddress: String!
+    contactSafeAddress: String!
+  ): [ProfileEvent!]!
+  eventByTransactionHash(
+    safeAddress: String!
+    transactionHash: String!
+    types: [String!]
+  ): [ProfileEvent!]!
+  balance(safeAddress: String!): String!
+  balancesByAsset(safeAddress: String!): [AssetBalance!]!
+  trustRelations(safeAddress: String!): [TrustRelation!]!
+  myProfile: Profile
+  inbox: [ProfileEvent!]!
+  profilesById(ids: [Int!]!): [Profile!]!
+  profilesBySafeAddress(safeAddresses: [String!]!): [Profile!]!
 
-    findSafeAddressByOwner(owner:String!): [String!]!
-    search(query:SearchInput!) : [Profile!]!
-    cities(query:QueryCitiesInput!) : [City!]!
-    offers(query:QueryOfferInput!): [Offer!]!
-    tags(query:QueryTagsInput!):[Tag!]!
-    tagById(id:Int!):Tag
+  findSafeAddressByOwner(owner: String!): [String!]!
+  search(query: SearchInput!): [Profile!]!
+  cities(query: QueryCitiesInput!): [City!]!
+  offers(query: QueryOfferInput!): [Offer!]!
+  tags(query: QueryTagsInput!): [Tag!]!
+  tagById(id: Int!): Tag
 }
 
 type Subscription {
-    events:NotificationEvent!
+  events: NotificationEvent!
 }
 
 schema {
-    query: Query
-    mutation: Mutation
-    subscription: Subscription
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
 }
