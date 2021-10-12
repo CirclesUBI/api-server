@@ -1,4 +1,5 @@
 api_run.env
+.vsode/launch.json
 .vsode/*
 # Logs
 logs

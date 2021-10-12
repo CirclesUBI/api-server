@@ -451,6 +451,7 @@ export type Profile = {
   avatarCid?: Maybe<Scalars['String']>;
   avatarMimeType?: Maybe<Scalars['String']>;
   newsletter?: Maybe<Scalars['Boolean']>;
+  displayTimeCircles?: Maybe<Scalars['Boolean']>;
   cityGeonameid?: Maybe<Scalars['Int']>;
   city?: Maybe<City>;
   offers?: Maybe<Array<Offer>>;
@@ -796,6 +797,7 @@ export type UpsertProfileInput = {
   avatarCid?: Maybe<Scalars['String']>;
   avatarMimeType?: Maybe<Scalars['String']>;
   newsletter?: Maybe<Scalars['Boolean']>;
+  displayTimeCircles?: Maybe<Scalars['Boolean']>;
   cityGeonameid?: Maybe<Scalars['Int']>;
 };
 
@@ -1368,6 +1370,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   avatarCid?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarMimeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   newsletter?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  displayTimeCircles?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   cityGeonameid?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
   offers?: Resolver<Maybe<Array<ResolversTypes['Offer']>>, ParentType, ContextType>;
