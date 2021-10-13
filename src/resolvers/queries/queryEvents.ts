@@ -74,7 +74,7 @@ export function events(
         whereBlock = ` and block_number >= ${fromBlockInt} and block_number <= ${toBlockInt}`;
       } else if ((<any>args).fromTimestamp) {
         const fromDate = new Date(Date.parse((<any>args).fromTimestamp));
-        whereBlock = ` and timestamp > '${fromDate.toISOString()}'`;
+        whereBlock = ` and timestamp < '${fromDate.toISOString()}'`;
         limit = 100;
       } else {
         limit = 100;
