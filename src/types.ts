@@ -539,6 +539,8 @@ export type QueryEventsArgs = {
   types?: Maybe<Array<Scalars['String']>>;
   fromBlock?: Maybe<Scalars['Int']>;
   toBlock?: Maybe<Scalars['Int']>;
+  fromTimestamp?: Maybe<Scalars['String']>;
+  limit?: Maybe<Scalars['Int']>;
 };
 
 

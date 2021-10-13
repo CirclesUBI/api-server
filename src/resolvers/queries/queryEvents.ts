@@ -14,8 +14,7 @@ import { getPool } from "../resolvers";
 
 export function events(
   prisma: PrismaClient,
-  externalPool?: Pool,
-  enablePaging: boolean = true
+  externalPool?: Pool
 ) {
   return async (
     parent: any,
@@ -27,10 +26,9 @@ export function events(
         >,
     context: Context
   ) => {
+    await context.verifySession();
     const pool = externalPool ?? getPool();
     try {
-      //const maxPageSizeInBlocks = 518400; // ~ 30 days
-      const maxPageSizeInBlocks = enablePaging ? 518400 : 518400 * 9999; // ~ 30 days
       const safeAddress: string = args.safeAddress.toLowerCase();
       const transactionHash: Maybe<string> =
         (<any>args).transactionHash ?? null;
@@ -59,6 +57,9 @@ export function events(
       }
 
       let whereBlock = ``;
+      let limit:number|null = null;
+
+
       if ((<any>args).fromBlock || (<any>args).toBlock) {
         const queryEventsArgs: RequireFields<QueryEventsArgs, "safeAddress"> =
           args;
@@ -70,15 +71,13 @@ export function events(
         if (queryEventsArgs.toBlock) {
           toBlockInt = parseInt(queryEventsArgs.toBlock.toString());
         }
-        if (fromBlockInt && !toBlockInt) {
-          toBlockInt = fromBlockInt + maxPageSizeInBlocks;
-        }
-        if (!fromBlockInt && toBlockInt) {
-          toBlockInt = toBlockInt - maxPageSizeInBlocks;
-        }
         whereBlock = ` and block_number >= ${fromBlockInt} and block_number <= ${toBlockInt}`;
+      } else if ((<any>args).fromTimestamp) {
+        const fromDate = new Date(Date.parse((<any>args).fromTimestamp));
+        whereBlock = ` and timestamp > '${fromDate.toISOString()}'`;
+        limit = 100;
       } else {
-        whereBlock = ` and block_number > (select max(number) from block) - ${maxPageSizeInBlocks} /* approx. one month */ `;
+        limit = 100;
       }
 
       const transactionsQuery = `select timestamp
@@ -95,7 +94,8 @@ export function events(
                                    and type = ANY ($2)
                                    and (($3 != '' and transaction_hash = $3) or ($3 = ''))
                                      ${whereBlock}
-                                 order by timestamp desc;`;
+                                 order by timestamp desc
+                                 ${limit ? "limit " + limit : ""};`;
 
       const transactionsQueryParameters = [
         safeAddress?.toLowerCase() ?? "",

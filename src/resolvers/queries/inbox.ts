@@ -8,7 +8,7 @@ import { profilesBySafeAddress, ProfilesBySafeAddressLookup } from "./profiles";
 export function inbox(prisma: PrismaClient) {
   return async (
     parent: any,
-    _: any,
+    args: any,
     context: Context
   ): Promise<ProfileEvent[]> => {
     const session = await context.verifySession();
@@ -46,7 +46,7 @@ export function inbox(prisma: PrismaClient) {
       const untilBlock = sinceBlock != 0 ? range.rows[0].until_block ?? 1 : 1;
 
       // get unread events
-      const eventsResolver = events(prisma, pool, false);
+      const eventsResolver = events(prisma, pool);
       const eventsPromise = eventsResolver(
         null,
         {

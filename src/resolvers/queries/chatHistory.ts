@@ -20,7 +20,7 @@ export function chatHistory(prisma: PrismaClient) {
         context
       );
 
-      const eventsResolver = events(prisma, pool, false);
+      const eventsResolver = events(prisma, pool);
       const safeEventsPromise = eventsResolver(
         undefined,
         {

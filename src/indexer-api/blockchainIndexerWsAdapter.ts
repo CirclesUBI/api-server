@@ -1,7 +1,7 @@
 import WebSocket from 'ws';
 import {ApiPubSub} from "../pubsub";
 import {getPool} from "../resolvers/resolvers";
-import {profilesBySafeAddressCache} from "../resolvers/queries/profiles";
+// import {profilesBySafeAddressCache} from "../resolvers/queries/profiles";
 
 export class BlockchainIndexerWsAdapter {
   private readonly _url: string;
@@ -112,7 +112,8 @@ export class BlockchainIndexerWsAdapter {
 
         for(let address of Object.keys(affectedAddresses)) {
 
-          profilesBySafeAddressCache.del(address)
+          // TODO: Clear cached profiles if cache is in use
+          // profilesBySafeAddressCache.del(address)
 
           await ApiPubSub.instance.pubSub.publish(`events_${address}`, {
             events: {
