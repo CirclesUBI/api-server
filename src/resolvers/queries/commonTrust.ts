@@ -32,11 +32,13 @@ export function commonTrust(prisma:PrismaClient) {
           ), common_in_and_out_trusts as (
               select 'in' direction, "user"
               from common_incoming_trust
+              where "limit" > 0
               group by "user"
               having count(can_send_to) > 1
               union all
               select 'out' direction, can_send_to
               from common_outgoing_trust
+              where "limit" > 0
               group by can_send_to
               having count("user") > 1
           ), common_mutual_trusts as (
@@ -56,7 +58,8 @@ export function commonTrust(prisma:PrismaClient) {
           select *
           from distinct_mutual_trusts
           where "user" != $1
-            and "user" != $2;`;
+            and "user" != $2
+            and direction = 'mutual';`;
 
       const commonTrustsQueryParameters = [args.safeAddress1, args.safeAddress2];
       const commonTrustsResult = await pool.query(commonTrustsQuery, commonTrustsQueryParameters);
@@ -91,6 +94,3 @@ export function commonTrust(prisma:PrismaClient) {
     }
   }
 }
-/*
-
- */
