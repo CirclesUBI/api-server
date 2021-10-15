@@ -57,8 +57,7 @@ export function events(
       }
 
       let whereBlock = ``;
-      let limit:number|null = null;
-
+      let limit:number|null = (<any>args).limit ? (<any>args).limit : 100;
 
       if ((<any>args).fromBlock || (<any>args).toBlock) {
         const queryEventsArgs: RequireFields<QueryEventsArgs, "safeAddress"> =
