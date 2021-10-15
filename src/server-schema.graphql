@@ -570,6 +570,7 @@ type Query {
   invitationTransaction: ProfileEvent
   safeFundingTransaction: ProfileEvent
   hubSignupTransaction: ProfileEvent
+  lastUBITransaction: String
   stats: Stats
 
   # Gets the created (noty invitations of the currently logged on user

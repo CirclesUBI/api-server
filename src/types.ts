@@ -510,6 +510,7 @@ export type Query = {
   invitationTransaction?: Maybe<ProfileEvent>;
   safeFundingTransaction?: Maybe<ProfileEvent>;
   hubSignupTransaction?: Maybe<ProfileEvent>;
+  lastUBITransaction?: Maybe<Scalars['String']>;
   stats?: Maybe<Stats>;
   myInvitations: Array<CreatedInvitation>;
   events: Array<ProfileEvent>;
@@ -1425,6 +1426,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   safeFundingTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
+  lastUBITransaction?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
   myInvitations?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'safeAddress'>>;
