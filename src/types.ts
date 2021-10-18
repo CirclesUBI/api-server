@@ -432,6 +432,7 @@ export type Organisation = {
   __typename?: 'Organisation';
   id: Scalars['Int'];
   circlesAddress?: Maybe<Scalars['String']>;
+  circlesSafeOwner?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   avatarUrl?: Maybe<Scalars['String']>;
@@ -441,6 +442,11 @@ export type Organisation = {
   offers?: Maybe<Array<Offer>>;
   members: Array<ProfileOrOrganisation>;
   trustsYou?: Maybe<Scalars['Int']>;
+};
+
+export type PaginationArgs = {
+  continueAt: Scalars['String'];
+  limit: Scalars['Int'];
 };
 
 export type PaymentProof = {
@@ -553,13 +559,17 @@ export type Query = {
 };
 
 
+export type QueryOrganisationsArgs = {
+  pagination?: Maybe<PaginationArgs>;
+};
+
+
 export type QueryEventsArgs = {
   safeAddress: Scalars['String'];
   types?: Maybe<Array<Scalars['String']>>;
   fromBlock?: Maybe<Scalars['Int']>;
   toBlock?: Maybe<Scalars['Int']>;
-  fromTimestamp?: Maybe<Scalars['String']>;
-  limit?: Maybe<Scalars['Int']>;
+  pagination?: Maybe<PaginationArgs>;
 };
 
 
@@ -583,6 +593,7 @@ export type QueryCommonTrustArgs = {
 export type QueryChatHistoryArgs = {
   safeAddress: Scalars['String'];
   contactSafeAddress: Scalars['String'];
+  pagination?: Maybe<PaginationArgs>;
 };
 
 
@@ -955,6 +966,7 @@ export type ResolversTypes = ResolversObject<{
   NotificationEvent: ResolverTypeWrapper<NotificationEvent>;
   Offer: ResolverTypeWrapper<Offer>;
   Organisation: ResolverTypeWrapper<Omit<Organisation, 'members'> & { members: Array<ResolversTypes['ProfileOrOrganisation']> }>;
+  PaginationArgs: PaginationArgs;
   PaymentProof: PaymentProof;
   Profile: ResolverTypeWrapper<Profile>;
   ProfileEvent: ResolverTypeWrapper<Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
@@ -1035,6 +1047,7 @@ export type ResolversParentTypes = ResolversObject<{
   NotificationEvent: NotificationEvent;
   Offer: Offer;
   Organisation: Omit<Organisation, 'members'> & { members: Array<ResolversParentTypes['ProfileOrOrganisation']> };
+  PaginationArgs: PaginationArgs;
   PaymentProof: PaymentProof;
   Profile: Profile;
   ProfileEvent: Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversParentTypes['EventPayload']> };
@@ -1470,7 +1483,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   lastUBITransaction?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
-  organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
+  organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsArgs, never>>;
   myInvitations?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'safeAddress'>>;
   contacts?: Resolver<Array<ResolversTypes['Contact']>, ParentType, ContextType, RequireFields<QueryContactsArgs, 'safeAddress'>>;

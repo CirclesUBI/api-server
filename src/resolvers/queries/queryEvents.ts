@@ -71,9 +71,15 @@ export function events(
           toBlockInt = parseInt(queryEventsArgs.toBlock.toString());
         }
         whereBlock = ` and block_number >= ${fromBlockInt} and block_number <= ${toBlockInt}`;
-      } else if ((<any>args).fromTimestamp) {
-        const fromDate = new Date(Date.parse((<any>args).fromTimestamp));
-        whereBlock = ` and timestamp < '${fromDate.toISOString()}'`;
+      } else if ((<QueryEventsArgs>args).pagination) {
+        const args_:QueryEventsArgs = args;
+        if (args_.pagination) {
+          const fromDate = new Date(Date.parse(args_.pagination.continueAt));
+          whereBlock = ` and timestamp < '${fromDate.toISOString()}'`;
+          limit = args_.pagination.limit && args_.pagination.limit > 0 && args_.pagination.limit <= 100
+            ? args_.pagination.limit
+            : 100;
+        }
       }
 
       const transactionsQuery = `select timestamp
