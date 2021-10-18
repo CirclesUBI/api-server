@@ -31,9 +31,8 @@ export function profilesBySafeAddress(
       const session = await context.verifySession();
       ownProfileId = session.profileId;
       if (!ownProfileId)
-        throw new Error(
-          `You must have a complete profile to use this function`
-        );
+        throw new Error(`You must have a profile to use this function`);
+
       ownProfile = await prisma.profile.findUnique({
         where: { id: ownProfileId },
       });

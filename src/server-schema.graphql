@@ -26,6 +26,25 @@ type Profile {
   claimedInvitation: ClaimedInvitation
 }
 
+type Organisation {
+  id: Int!
+  circlesAddress: String
+  circlesSafeOwner: String
+  name: String!
+  description: String
+  avatarUrl: String
+  avatarMimeType: String
+  cityGeonameid: Int
+  city: City
+  offers: [Offer!]
+  members: [ProfileOrOrganisation!]!
+  trustsYou: Int # The trust relative to the safeAddress
+}
+
+union ProfileOrOrganisation =
+  Profile
+  | Organisation
+
 input QueryUniqueProfileInput {
   id: Int!
 }
@@ -572,6 +591,7 @@ type Query {
   hubSignupTransaction: ProfileEvent
   lastUBITransaction: String
   stats: Stats
+  organisations: [Organisation!]!
 
   # Gets the created (noty invitations of the currently logged on user
   myInvitations: [CreatedInvitation!]!

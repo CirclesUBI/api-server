@@ -428,6 +428,21 @@ export type Offer = {
   deliveryTermsTagId: Scalars['Int'];
 };
 
+export type Organisation = {
+  __typename?: 'Organisation';
+  id: Scalars['Int'];
+  circlesAddress?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  avatarUrl?: Maybe<Scalars['String']>;
+  avatarMimeType?: Maybe<Scalars['String']>;
+  cityGeonameid?: Maybe<Scalars['Int']>;
+  city?: Maybe<City>;
+  offers?: Maybe<Array<Offer>>;
+  members: Array<ProfileOrOrganisation>;
+  trustsYou?: Maybe<Scalars['Int']>;
+};
+
 export type PaymentProof = {
   forOfferId: Scalars['Int'];
   tokenOwners: Array<Scalars['String']>;
@@ -476,6 +491,8 @@ export type ProfileEvent = {
   tags?: Maybe<Array<Tag>>;
 };
 
+export type ProfileOrOrganisation = Profile | Organisation;
+
 export type ProvePaymentResult = {
   __typename?: 'ProvePaymentResult';
   success: Scalars['Boolean'];
@@ -512,6 +529,7 @@ export type Query = {
   hubSignupTransaction?: Maybe<ProfileEvent>;
   lastUBITransaction?: Maybe<Scalars['String']>;
   stats?: Maybe<Stats>;
+  organisations: Array<Organisation>;
   myInvitations: Array<CreatedInvitation>;
   events: Array<ProfileEvent>;
   contacts: Array<Contact>;
@@ -936,9 +954,11 @@ export type ResolversTypes = ResolversObject<{
   Mutation: ResolverTypeWrapper<{}>;
   NotificationEvent: ResolverTypeWrapper<NotificationEvent>;
   Offer: ResolverTypeWrapper<Offer>;
+  Organisation: ResolverTypeWrapper<Omit<Organisation, 'members'> & { members: Array<ResolversTypes['ProfileOrOrganisation']> }>;
   PaymentProof: PaymentProof;
   Profile: ResolverTypeWrapper<Profile>;
   ProfileEvent: ResolverTypeWrapper<Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
+  ProfileOrOrganisation: ResolversTypes['Profile'] | ResolversTypes['Organisation'];
   ProvePaymentResult: ResolverTypeWrapper<ProvePaymentResult>;
   Purchase: ResolverTypeWrapper<Purchase>;
   PurchaseStatus: PurchaseStatus;
@@ -1014,9 +1034,11 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: {};
   NotificationEvent: NotificationEvent;
   Offer: Offer;
+  Organisation: Omit<Organisation, 'members'> & { members: Array<ResolversParentTypes['ProfileOrOrganisation']> };
   PaymentProof: PaymentProof;
   Profile: Profile;
   ProfileEvent: Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversParentTypes['EventPayload']> };
+  ProfileOrOrganisation: ResolversParentTypes['Profile'] | ResolversParentTypes['Organisation'];
   ProvePaymentResult: ProvePaymentResult;
   Purchase: Purchase;
   Query: {};
@@ -1359,6 +1381,22 @@ export type OfferResolvers<ContextType = any, ParentType extends ResolversParent
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type OrganisationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Organisation'] = ResolversParentTypes['Organisation']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  circlesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  circlesSafeOwner?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  avatarUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  avatarMimeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  cityGeonameid?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
+  offers?: Resolver<Maybe<Array<ResolversTypes['Offer']>>, ParentType, ContextType>;
+  members?: Resolver<Array<ResolversTypes['ProfileOrOrganisation']>, ParentType, ContextType>;
+  trustsYou?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type ProfileResolvers<ContextType = any, ParentType extends ResolversParentTypes['Profile'] = ResolversParentTypes['Profile']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1399,6 +1437,10 @@ export type ProfileEventResolvers<ContextType = any, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ProfileOrOrganisationResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProfileOrOrganisation'] = ResolversParentTypes['ProfileOrOrganisation']> = ResolversObject<{
+  __resolveType: TypeResolveFn<'Profile' | 'Organisation', ParentType, ContextType>;
+}>;
+
 export type ProvePaymentResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProvePaymentResult'] = ResolversParentTypes['ProvePaymentResult']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1428,6 +1470,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   lastUBITransaction?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
+  organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   myInvitations?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'safeAddress'>>;
   contacts?: Resolver<Array<ResolversTypes['Contact']>, ParentType, ContextType, RequireFields<QueryContactsArgs, 'safeAddress'>>;
@@ -1571,8 +1614,10 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   NotificationEvent?: NotificationEventResolvers<ContextType>;
   Offer?: OfferResolvers<ContextType>;
+  Organisation?: OrganisationResolvers<ContextType>;
   Profile?: ProfileResolvers<ContextType>;
   ProfileEvent?: ProfileEventResolvers<ContextType>;
+  ProfileOrOrganisation?: ProfileOrOrganisationResolvers<ContextType>;
   ProvePaymentResult?: ProvePaymentResultResolvers<ContextType>;
   Purchase?: PurchaseResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
