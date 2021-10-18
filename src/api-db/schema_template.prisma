@@ -72,6 +72,13 @@ model RedeemInvitationRequest {
   invitationToRedeemId Int
 }
 
+
+enum ProfileType {
+      PERSON
+      ORGANISATION
+      REGION
+}
+
 model Profile {
     id Int @id @default(autoincrement())
     lastUpdateAt DateTime @default(now())
@@ -79,6 +86,7 @@ model Profile {
     // @@unique([emailAddress], name:"UX_Profile_EmailAddress")
 
     status String?
+    type ProfileType? @default(PERSON)
 
     circlesAddress String?
     circlesSafeOwner String?
@@ -112,6 +120,20 @@ model Profile {
 
     subscribers Subscription[] @relation(name: "Subscription_SubscribingToProfile")
     subscriptions Subscription[] @relation(name: "Subscription_SubscriberProfile")
+
+    memberships Membership[] @relation(name: "Profile_Membership")
+    members Membership[] @relation(name: "Profile_MemberAt")
+}
+
+model Membership {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+
+    memberId Int
+    member Profile @relation(name: "Profile_Membership", fields: [memberId], references:[id])
+
+    memberAtId Int
+    memberAt Profile @relation(name: "Profile_MemberAt", fields: [memberAtId], references:[id])
 }
 
 model Subscription {

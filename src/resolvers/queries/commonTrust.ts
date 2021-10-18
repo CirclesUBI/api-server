@@ -59,7 +59,7 @@ export function commonTrust(prisma:PrismaClient) {
           from distinct_mutual_trusts
           where "user" != $1
             and "user" != $2
-            and direction = 'mutual';`;
+            and ("direction" = 'out' or "direction" = 'mutual')`;
 
       const commonTrustsQueryParameters = [args.safeAddress1, args.safeAddress2];
       const commonTrustsResult = await pool.query(commonTrustsQuery, commonTrustsQueryParameters);
