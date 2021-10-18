@@ -28,6 +28,7 @@ type Profile {
 
 type Organisation {
   id: Int!
+  createdAt: String!
   circlesAddress: String
   circlesSafeOwner: String
   name: String!
@@ -537,6 +538,22 @@ type InitAggregateState {
   hubSignupTransaction: String
 }
 
+type CreateOrganisationResult {
+  success: Boolean!
+  error: String
+  organisation: Organisation
+}
+
+input UpsertOrganisationInput {
+  id: Int
+  name: String!
+  description: String
+  circlesAddress: String
+  avatarUrl: String
+  avatarMimeType: String
+  cityGeonameid: Int
+}
+
 type Mutation {
   exchangeToken: ExchangeTokenResponse!
   authenticateAt(appId: String!): DelegateAuthInit!
@@ -555,6 +572,7 @@ type Mutation {
   upsertTag(data: UpsertTagInput!): Tag!
 
   acknowledge(until: String!): Boolean!
+  upsertOrganisation(organisation: UpsertOrganisationInput!) : CreateOrganisationResult!
 
   # Creates as many new EOAs as there are strings in the array.
   createInvitations(for: [String!]!): CreateInvitationResult!

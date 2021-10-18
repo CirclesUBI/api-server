@@ -61,6 +61,7 @@ import {verifySessionChallengeResolver} from "./mutations/verifySessionChallenge
 import {BN} from "ethereumjs-util";
 import {Invitation} from "../api-db/client";
 import {parentPort} from "worker_threads";
+import {organisations} from "./queries/organisations";
 
 let cert:string;
 
@@ -271,66 +272,7 @@ export const resolvers: Resolvers = {
         claimedByProfileId: o.claimedByProfileId
       });
     }),
-    organisations: async (parent:any, args:QueryOrganisationsArgs, context:Context) => {
-      // Get all organisations that signed up at the circles hub
-      const pool = getPool();
-      try {
-        let organisationSignupQuery = `
-            select organisation
-            from crc_organisation_signup_2`;
-
-        let limit = 100;
-
-        if (args.pagination) {
-          limit = Number.isInteger(args.pagination.limit) && args.pagination.limit > 0 && args.pagination.limit <= 100
-            ? args.pagination.limit
-            : 100
-
-          const continueAtDate = new Date(Date.parse(args.pagination.continueAt));
-          organisationSignupQuery += ` where timestamp < '${continueAtDate.toISOString()}'`;
-        }
-        organisationSignupQuery += ` order by timestamp desc`;
-        organisationSignupQuery += ` limit ${limit}`;
-
-        const organisationSignupsResult = await pool.query(organisationSignupQuery);
-        if (organisationSignupsResult.rows.length == 0) {
-          return [];
-        }
-
-        const profileResolver = profilesBySafeAddress(prisma_api_ro);
-        const allSafeAddresses = organisationSignupsResult.rows.reduce((p,c) => {
-          p[c.organisation] = true;
-          return p;
-        },{});
-        const profiles = await profileResolver(null, {safeAddresses:Object.keys(allSafeAddresses)}, context);
-        const _profilesBySafeAddress = profiles.reduce((p,c) => {
-          if (!c.circlesAddress)
-            return p;
-          p[c.circlesAddress] = c;
-          return p;
-        },<{[x:string]:Profile}>{});
-
-        return organisationSignupsResult.rows.map(o => {
-          const p:Profile = _profilesBySafeAddress[o.organisation] ?? {
-            id: -1,
-            firstName: o.organisation,
-            circlesAddress: o.organisation
-          };
-          return <Organisation>{
-            id: p.id,
-            name: p.firstName,
-            cityGeonameid: p.cityGeonameid,
-            circlesAddress: p.circlesAddress,
-            avatarUrl: p.avatarUrl,
-            description: p.dream,
-            trustsYou: p.trustsYou,
-            avatarMimeType: p.avatarMimeType
-          }
-        });
-      } finally {
-        await pool.end();
-      }
-    },
+    organisations: organisations(prisma_api_ro),
     profilesById: profilesById(prisma_api_ro),
     profilesBySafeAddress: profilesBySafeAddress(prisma_api_ro, true),
     search: search(prisma_api_ro),
@@ -412,6 +354,7 @@ export const resolvers: Resolvers = {
     }
   },
   Mutation: {
+    // upsertOrganisation: async (parent:any, args:Organ)
     upsertOffer: upsertOfferResolver(prisma_api_rw),
     exchangeToken: exchangeTokenResolver(prisma_api_rw),
     logout: logout(prisma_api_rw),
@@ -483,7 +426,19 @@ export const resolvers: Resolvers = {
           code: invitation.code,
         }]
       };
+    },
+    /*
+    upsertOrganisation: async (parent, args, context) => {
+      return {
+        success: true,
+        error: undefined,
+        organisation: {
+          id: 1,
+
+        }
+      };
     }
+     */
   },
   Subscription: {
     events: {

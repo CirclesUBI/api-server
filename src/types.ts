@@ -161,6 +161,13 @@ export type CreateInvitationResult = {
   createdInviteEoas: Array<CreatedInvitation>;
 };
 
+export type CreateOrganisationResult = {
+  __typename?: 'CreateOrganisationResult';
+  success: Scalars['Boolean'];
+  error?: Maybe<Scalars['String']>;
+  organisation?: Maybe<Organisation>;
+};
+
 export type CreateTagInput = {
   typeId: Scalars['String'];
   value?: Maybe<Scalars['String']>;
@@ -296,6 +303,7 @@ export type Mutation = {
   provePayment: ProvePaymentResult;
   upsertTag: Tag;
   acknowledge: Scalars['Boolean'];
+  upsertOrganisation: CreateOrganisationResult;
   createInvitations: CreateInvitationResult;
   claimInvitation: ClaimInvitationResult;
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
@@ -367,6 +375,11 @@ export type MutationAcknowledgeArgs = {
 };
 
 
+export type MutationUpsertOrganisationArgs = {
+  organisation: UpsertOrganisationInput;
+};
+
+
 export type MutationCreateInvitationsArgs = {
   for: Array<Scalars['String']>;
 };
@@ -431,6 +444,7 @@ export type Offer = {
 export type Organisation = {
   __typename?: 'Organisation';
   id: Scalars['Int'];
+  createdAt: Scalars['String'];
   circlesAddress?: Maybe<Scalars['String']>;
   circlesSafeOwner?: Maybe<Scalars['String']>;
   name: Scalars['String'];
@@ -814,6 +828,16 @@ export type UpsertOfferInput = {
   deliveryTermsTagId: Scalars['Int'];
 };
 
+export type UpsertOrganisationInput = {
+  id?: Maybe<Scalars['Int']>;
+  name: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  circlesAddress?: Maybe<Scalars['String']>;
+  avatarUrl?: Maybe<Scalars['String']>;
+  avatarMimeType?: Maybe<Scalars['String']>;
+  cityGeonameid?: Maybe<Scalars['Int']>;
+};
+
 export type UpsertProfileInput = {
   id?: Maybe<Scalars['Int']>;
   status: Scalars['String'];
@@ -945,6 +969,7 @@ export type ResolversTypes = ResolversObject<{
   CrcTokenTransfer: ResolverTypeWrapper<CrcTokenTransfer>;
   CrcTrust: ResolverTypeWrapper<CrcTrust>;
   CreateInvitationResult: ResolverTypeWrapper<CreateInvitationResult>;
+  CreateOrganisationResult: ResolverTypeWrapper<CreateOrganisationResult>;
   CreateTagInput: CreateTagInput;
   CreatedInvitation: ResolverTypeWrapper<CreatedInvitation>;
   CreatedInviteEoa: ResolverTypeWrapper<CreatedInviteEoa>;
@@ -999,6 +1024,7 @@ export type ResolversTypes = ResolversObject<{
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: ResolverTypeWrapper<UpdateSafeResponse>;
   UpsertOfferInput: UpsertOfferInput;
+  UpsertOrganisationInput: UpsertOrganisationInput;
   UpsertProfileInput: UpsertProfileInput;
   UpsertTagInput: UpsertTagInput;
   Version: ResolverTypeWrapper<Version>;
@@ -1026,6 +1052,7 @@ export type ResolversParentTypes = ResolversObject<{
   CrcTokenTransfer: CrcTokenTransfer;
   CrcTrust: CrcTrust;
   CreateInvitationResult: CreateInvitationResult;
+  CreateOrganisationResult: CreateOrganisationResult;
   CreateTagInput: CreateTagInput;
   CreatedInvitation: CreatedInvitation;
   CreatedInviteEoa: CreatedInviteEoa;
@@ -1078,6 +1105,7 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: UpdateSafeResponse;
   UpsertOfferInput: UpsertOfferInput;
+  UpsertOrganisationInput: UpsertOrganisationInput;
   UpsertProfileInput: UpsertProfileInput;
   UpsertTagInput: UpsertTagInput;
   Version: Version;
@@ -1230,6 +1258,13 @@ export type CreateInvitationResultResolvers<ContextType = any, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type CreateOrganisationResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateOrganisationResult'] = ResolversParentTypes['CreateOrganisationResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organisation?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type CreatedInvitationResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreatedInvitation'] = ResolversParentTypes['CreatedInvitation']> = ResolversObject<{
   createdBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   createdByProfileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -1355,6 +1390,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   provePayment?: Resolver<ResolversTypes['ProvePaymentResult'], ParentType, ContextType, RequireFields<MutationProvePaymentArgs, 'data'>>;
   upsertTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationUpsertTagArgs, 'data'>>;
   acknowledge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'until'>>;
+  upsertOrganisation?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertOrganisationArgs, 'organisation'>>;
   createInvitations?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType, RequireFields<MutationCreateInvitationsArgs, 'for'>>;
   claimInvitation?: Resolver<ResolversTypes['ClaimInvitationResult'], ParentType, ContextType, RequireFields<MutationClaimInvitationArgs, 'code'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
@@ -1396,6 +1432,7 @@ export type OfferResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type OrganisationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Organisation'] = ResolversParentTypes['Organisation']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   circlesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesSafeOwner?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1610,6 +1647,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   CrcTokenTransfer?: CrcTokenTransferResolvers<ContextType>;
   CrcTrust?: CrcTrustResolvers<ContextType>;
   CreateInvitationResult?: CreateInvitationResultResolvers<ContextType>;
+  CreateOrganisationResult?: CreateOrganisationResultResolvers<ContextType>;
   CreatedInvitation?: CreatedInvitationResolvers<ContextType>;
   CreatedInviteEoa?: CreatedInviteEoaResolvers<ContextType>;
   DelegateAuthInit?: DelegateAuthInitResolvers<ContextType>;
