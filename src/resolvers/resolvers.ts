@@ -7,7 +7,7 @@ import {
   CreateInvitationResult,
   Organisation,
   Profile,
-  ProfileEvent,
+  ProfileEvent, QueryOrganisationsArgs,
   Resolvers
 } from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
@@ -271,13 +271,26 @@ export const resolvers: Resolvers = {
         claimedByProfileId: o.claimedByProfileId
       });
     }),
-    organisations: async (parent:any, args:any, context:Context) => {
+    organisations: async (parent:any, args:QueryOrganisationsArgs, context:Context) => {
       // Get all organisations that signed up at the circles hub
       const pool = getPool();
       try {
-        const organisationSignupQuery = `
+        let organisationSignupQuery = `
             select organisation
             from crc_organisation_signup_2`;
+
+        let limit = 100;
+
+        if (args.pagination) {
+          limit = Number.isInteger(args.pagination.limit) && args.pagination.limit > 0 && args.pagination.limit <= 100
+            ? args.pagination.limit
+            : 100
+
+          const continueAtDate = new Date(Date.parse(args.pagination.continueAt));
+          organisationSignupQuery += ` where timestamp < '${continueAtDate.toISOString()}'`;
+        }
+        organisationSignupQuery += ` order by timestamp desc`;
+        organisationSignupQuery += ` limit ${limit}`;
 
         const organisationSignupsResult = await pool.query(organisationSignupQuery);
         if (organisationSignupsResult.rows.length == 0) {
