@@ -38,7 +38,7 @@ type Organisation {
   cityGeonameid: Int
   city: City
   offers: [Offer!]
-  members: [ProfileOrOrganisation!]!
+  members: [ProfileOrOrganisation!]
   trustsYou: Int # The trust relative to the safeAddress
 }
 

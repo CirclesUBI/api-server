@@ -454,7 +454,7 @@ export type Organisation = {
   cityGeonameid?: Maybe<Scalars['Int']>;
   city?: Maybe<City>;
   offers?: Maybe<Array<Offer>>;
-  members: Array<ProfileOrOrganisation>;
+  members?: Maybe<Array<ProfileOrOrganisation>>;
   trustsYou?: Maybe<Scalars['Int']>;
 };
 
@@ -990,7 +990,7 @@ export type ResolversTypes = ResolversObject<{
   Mutation: ResolverTypeWrapper<{}>;
   NotificationEvent: ResolverTypeWrapper<NotificationEvent>;
   Offer: ResolverTypeWrapper<Offer>;
-  Organisation: ResolverTypeWrapper<Omit<Organisation, 'members'> & { members: Array<ResolversTypes['ProfileOrOrganisation']> }>;
+  Organisation: ResolverTypeWrapper<Omit<Organisation, 'members'> & { members?: Maybe<Array<ResolversTypes['ProfileOrOrganisation']>> }>;
   PaginationArgs: PaginationArgs;
   PaymentProof: PaymentProof;
   Profile: ResolverTypeWrapper<Profile>;
@@ -1073,7 +1073,7 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: {};
   NotificationEvent: NotificationEvent;
   Offer: Offer;
-  Organisation: Omit<Organisation, 'members'> & { members: Array<ResolversParentTypes['ProfileOrOrganisation']> };
+  Organisation: Omit<Organisation, 'members'> & { members?: Maybe<Array<ResolversParentTypes['ProfileOrOrganisation']>> };
   PaginationArgs: PaginationArgs;
   PaymentProof: PaymentProof;
   Profile: Profile;
@@ -1442,7 +1442,7 @@ export type OrganisationResolvers<ContextType = any, ParentType extends Resolver
   cityGeonameid?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
   offers?: Resolver<Maybe<Array<ResolversTypes['Offer']>>, ParentType, ContextType>;
-  members?: Resolver<Array<ResolversTypes['ProfileOrOrganisation']>, ParentType, ContextType>;
+  members?: Resolver<Maybe<Array<ResolversTypes['ProfileOrOrganisation']>>, ParentType, ContextType>;
   trustsYou?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
