@@ -132,3 +132,5 @@ src/auth-client/client.js.map
 src/api-db/client/schema.prisma
 src/index-db/client/schema.prisma
 src/api-db/client/query-engine-darwin
+
+.vscode/launch.json
