@@ -251,15 +251,27 @@ export const resolvers: Resolvers = {
     addMember: async (parent:any, args:MutationAddMemberArgs, context:Context) => {
       // TODO: Only owners of a group can add or remove members
       const callerProfile = await context.callerProfile;
-      const memberProfile = await prisma_api_rw.profile.findUnique({
-        where: {
-          id: args.groupId
-        }
-      });
-      if (!callerProfile || !memberProfile) {
-        throw new Error(`!callerProfile || !memberProfile`);
+      if (!callerProfile) {
+        throw new Error(`!callerProfile`);
       }
 
+      const groupProfile = await prisma_api_rw.profile.findUnique({
+        where: {
+          id: args.groupId
+        },
+        include: {
+          members: {
+            where: {
+              memberId: callerProfile.id,
+              isAdmin: true
+            }
+          }
+        }
+      });
+
+      if (groupProfile?.members.length != 1) {
+        throw new Error(`You are not an admin of this group.`);
+      }
 
       await prisma_api_rw.membership.create({
         data: {
@@ -271,7 +283,29 @@ export const resolvers: Resolvers = {
         success: true
       }
     },
-    removeMember: async (parent:any, args:MutationRemoveMemberArgs, context:Context) => {
+    removeMember: async (parent:any, args:MutationRemoveMemberArgs, context:Context) => {      const callerProfile = await context.callerProfile;
+      if (!callerProfile) {
+        throw new Error(`!callerProfile`);
+      }
+
+      const groupProfile = await prisma_api_rw.profile.findUnique({
+        where: {
+          id: args.groupId
+        },
+        include: {
+          members: {
+            where: {
+              memberId: callerProfile.id,
+              isAdmin: true
+            }
+          }
+        }
+      });
+
+      if (groupProfile?.members.length != 1) {
+        throw new Error(`You are not an admin of this group.`);
+      }
+
       await prisma_api_rw.membership.deleteMany({
         where: {
           memberId: args.memberId,
