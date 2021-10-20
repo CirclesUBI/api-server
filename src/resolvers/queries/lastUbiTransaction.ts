@@ -4,12 +4,10 @@ import {prisma_api_ro} from "../../apiDbClient";
 
 export function lastUbiTransaction() {
     return async (parent:any, args:any, context:Context) => {
-        const session = await context.verifySession();
-        if (!session.profileId) {
+        const profile = await context.callerProfile;
+        if (!profile) {
             throw new Error(`You need a profile to use this feature.`);
         }
-
-        const profile = await prisma_api_ro.profile.findUnique({where:{id: session.profileId}});
         if (!profile){
             throw new Error(`You need a profile to use this feature.`);
         }

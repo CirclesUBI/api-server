@@ -4,21 +4,12 @@ import {PrismaClient} from "../../api-db/client";
 
 export function tagTransaction(prisma_api_rw:PrismaClient) {
   return async (parent: any, args: { transactionHash: string, tag: CreateTagInput }, context: Context) => {
-    const session = await context.verifySession();
-    if (!session.profileId) {
+    const profile = await context.callerProfile;
+    if (!profile) {
       return {
         success: false,
         errorMessage: "You must have a complete profile to use this function."
       }
-    }
-    const profile = await prisma_api_rw.profile.findUnique({
-      where: {
-        id: session.profileId
-      }
-    });
-    if (!profile)
-    {
-      throw new Error(`Couldn't find a profile with id ${session.profileId}`);
     }
 
     // 1. Check if the transaction anchor entry already exists

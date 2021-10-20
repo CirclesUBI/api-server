@@ -4,6 +4,7 @@ import {Session as PrismaSession} from "./api-db/client";
 import {Session} from "./session";
 import {prisma_api_ro, prisma_api_rw} from "./apiDbClient";
 import {Logger, newLogger} from "./logger";
+import {Profile} from "./api-db/client";
 
 export class Context {
     readonly id: string;
@@ -132,5 +133,15 @@ export class Context {
         }], `Session valid until ${new Date(new Date(validSession.createdAt).getTime() + validSession.maxLifetime).toJSON()}`);
 
         return validSession;
+    }
+
+    get callerProfile() : Promise<Profile|null> {
+        return this.verifySession().then(session => {
+            return prisma_api_ro.profile.findUnique({
+                where: {
+                    id: session.profileId ?? undefined
+                }
+            })
+        });
     }
 }

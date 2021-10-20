@@ -5,23 +5,18 @@ import {prisma_api_ro, prisma_api_rw} from "../../apiDbClient";
 
 export function upsertOrganisation(prisma_api_rw:PrismaClient) {
     return async (parent:any, args:MutationUpsertOrganisationArgs, context:Context) => {
-      const session = await context.verifySession();
-      const ownProfile = await prisma_api_ro.profile.findUnique({
-        where: {
-          id: session.profileId ?? undefined
-        }
-      });
+      const ownProfile = await context.callerProfile;
 
       if (!ownProfile?.circlesAddress) {
         throw new Error(`You need a completed profile to use this feature.`);
       }
 
-      let profile:Profile;
+      let organisationProfile:Profile;
       if (args.organisation.id) {
-        if (args.organisation.id != session.profileId) {
-          throw new Error(`'${session.sessionId}' (profile id: ${session.profileId ?? "<undefined>"}) can not upsert organisation '${args.organisation.id}'.`);
-        }
-        profile = await prisma_api_rw.profile.update({
+
+        // TODO: Only admins can upsert an organisation
+
+        organisationProfile = await prisma_api_rw.profile.update({
           where: {
             id: args.organisation.id
           },
@@ -37,7 +32,7 @@ export function upsertOrganisation(prisma_api_rw:PrismaClient) {
           }
         });
       } else {
-        profile = await prisma_api_rw.profile.create({
+        organisationProfile = await prisma_api_rw.profile.create({
           data: {
             firstName: args.organisation.name,
             dream: args.organisation.description,
@@ -48,15 +43,22 @@ export function upsertOrganisation(prisma_api_rw:PrismaClient) {
             cityGeonameid: args.organisation.cityGeonameid
           }
         });
+        const adminMembership = await prisma_api_rw.membership.create({
+          data: {
+            isAdmin: true,
+            memberId: ownProfile.id,
+            memberAtId: organisationProfile.id
+          }
+        })
       }
 
       return {
         success: true,
         organisation: {
           ...args,
-          id: profile.id,
+          id: organisationProfile.id,
           createdAt: new Date().toJSON(),
-          name: profile.firstName,
+          name: organisationProfile.firstName,
           members: []
         }
       };

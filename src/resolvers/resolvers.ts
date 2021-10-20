@@ -1,12 +1,7 @@
 import {myProfile, profilesById, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
-import {
-  CreatedInvitation,
-  CreateInvitationResult, MutationUpsertOrganisationArgs, Organisation,
-  Profile,
-  ProfileEvent, Resolvers
-} from "../types";
+import {MutationAddMemberArgs, MutationRemoveMemberArgs, ProfileEvent, Resolvers} from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
 import {sessionInfo} from "./queries/sessionInfo";
@@ -49,20 +44,20 @@ import {tagTransaction} from "./mutations/tagTransaction";
 import {acknowledge} from "./mutations/acknowledge";
 import {inbox} from "./queries/inbox";
 import {claimInvitation} from "./mutations/claimInvitation";
-import {RpcGateway} from "../rpcGateway";
 import {Session} from "../session";
 import {createInvitations} from "./mutations/createInvitations";
 import {redeemClaimedInvitation} from "./mutations/redeemClaimedInvitation";
 import {invitationTransaction} from "./queries/invitationTransaction";
 import {verifySessionChallengeResolver} from "./mutations/verifySessionChallengeResolver";
-import {BN} from "ethereumjs-util";
 import {organisations} from "./queries/organisations";
 import {lastUbiTransaction} from "./queries/lastUbiTransaction";
 import {initAggregateState} from "./queries/initAggregateState";
 import {hubSignupTransactionResolver} from "./queries/hubSignupTransactionResolver";
 import {upsertOrganisation} from "./mutations/upsertOrganisation";
-
-let cert:string;
+import {myInvitations} from "./queries/myInvitations";
+import {organisationsByAddress} from "./queries/organisationsByAddress";
+import {createTestInvitation} from "./mutations/createTestInvitation";
+import {Membership} from "../api-db/client";
 
 export const safeFundingTransactionResolver = (async (parent:any, args:any, context:Context) => {
   const session = await context.verifySession();
@@ -172,6 +167,21 @@ export const resolvers: Resolvers = {
     }
   },
   ProfileEvent: {},
+  Organisation: {
+    members: async (parent, args, context) => {
+      return (await prisma_api_ro.membership.findMany({
+        where: {
+          memberAtId: parent.id
+        },
+        include: {
+          member: true
+        }
+      }))
+      .map(o => {
+        return o.member;
+      });
+    }
+  },
   Query: {
     sessionInfo: sessionInfo,
     whoami: whoami,
@@ -191,77 +201,9 @@ export const resolvers: Resolvers = {
     hubSignupTransaction: hubSignupTransactionResolver,
     safeFundingTransaction: safeFundingTransactionResolver,
     myProfile: myProfile(prisma_api_rw),
-    myInvitations: (async (parent, args, context) => {
-      const session = await context.verifySession();
-      const invitations = await prisma_api_ro.invitation.findMany({
-        where: {
-          createdByProfileId: session.profileId
-        },
-        include: {
-          claimedBy: true
-        }
-      });
-
-      return invitations.map(o => <CreatedInvitation>{
-        name: o.name,
-        address: o.address,
-        balance: "0",
-        code: o.code,
-        createdAt: o.createdAt.toJSON(),
-        createdByProfileId: session.profileId,
-        claimedBy: o.claimedBy,
-        claimedByProfileId: o.claimedByProfileId
-      });
-    }),
+    myInvitations: myInvitations(),
     organisations: organisations(prisma_api_ro),
-    organisationsByAddress: async (parent, args, context) => {
-      const pool = getPool();
-      try {
-        let organisationSignupQuery = `
-            select organisation, timestamp
-            from crc_organisation_signup_2
-            where organisation = ANY ($1)`;
-
-        const organisationSignupsResult = await pool.query(organisationSignupQuery, [args.addresses]);
-        if (organisationSignupsResult.rows.length == 0) {
-          return [];
-        }
-
-        const profileResolver = profilesBySafeAddress(prisma_api_ro);
-        const allSafeAddresses = organisationSignupsResult.rows.reduce((p, c) => {
-          p[c.organisation] = c.timestamp;
-          return p;
-        }, {});
-        const profiles = await profileResolver(null, {safeAddresses: Object.keys(allSafeAddresses)}, context);
-        const _profilesBySafeAddress = profiles.reduce((p, c) => {
-          if (!c.circlesAddress)
-            return p;
-          p[c.circlesAddress] = c;
-          return p;
-        }, <{ [x: string]: Profile }>{});
-
-        return organisationSignupsResult.rows.map(o => {
-          const p: Profile = _profilesBySafeAddress[o.organisation] ?? {
-            id: -1,
-            firstName: o.organisation,
-            circlesAddress: o.organisation
-          };
-          return <Organisation>{
-            id: p.id,
-            createdAt: allSafeAddresses[p.circlesAddress ?? ""],
-            name: p.firstName,
-            cityGeonameid: p.cityGeonameid,
-            circlesAddress: p.circlesAddress,
-            avatarUrl: p.avatarUrl,
-            description: p.dream,
-            trustsYou: p.trustsYou,
-            avatarMimeType: p.avatarMimeType
-          }
-        });
-      } finally {
-        await pool.end();
-      }
-    },
+    organisationsByAddress: organisationsByAddress(),
     profilesById: profilesById(prisma_api_ro),
     profilesBySafeAddress: profilesBySafeAddress(prisma_api_ro, true),
     search: search(prisma_api_ro),
@@ -305,71 +247,46 @@ export const resolvers: Resolvers = {
       return await Session.requestSessionFromSignature(prisma_api_rw, args.address);
     },
     verifySessionChallenge: verifySessionChallengeResolver(prisma_api_rw),
-    createTestInvitation: async (parent, args, context) => {
-      const web3 = RpcGateway.get();
-      const invitationEoa = web3.eth.accounts.create();
-      const invitation = await prisma_api_rw.invitation.create({
-        data: {
-          name: Session.generateRandomBase64String(3),
-          createdAt: new Date(),
-          createdByProfileId: 1,
-          address: invitationEoa.address,
-          key: invitationEoa.privateKey,
-          code: Session.generateRandomBase64String(16)
-        },
-        include: {
-          createdBy: true
+    createTestInvitation: createTestInvitation(prisma_api_rw),
+    addMember: async (parent:any, args:MutationAddMemberArgs, context:Context) => {
+      // TODO: Only owners of a group can add or remove members
+      const callerProfile = await context.callerProfile;
+      const memberProfile = await prisma_api_rw.profile.findUnique({
+        where: {
+          id: args.groupId
         }
       });
-
-      const invitationFundsEoa = web3.eth.accounts.privateKeyToAccount(process.env.INVITE_EOA_KEY ?? "");
-
-      const gas = 41000;
-      const gasPrice = new BN(await web3.eth.getGasPrice());
-      const nonce = await web3.eth.getTransactionCount(invitationFundsEoa.address);
-
-      const signedTx = await invitationFundsEoa.signTransaction({
-        from: invitationFundsEoa.address,
-        to: invitation.address,
-        value: new BN(web3.utils.toWei("0.2", "ether")),
-        gasPrice: gasPrice,
-        gas: gas,
-        nonce: nonce
-      });
-
-      if (!signedTx?.rawTransaction) {
-        throw new Error(`Couldn't send the invitation transaction`);
+      if (!callerProfile || !memberProfile) {
+        throw new Error(`!callerProfile || !memberProfile`);
       }
 
-      const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
-      console.log("Transferred invite xdai: ", receipt);
 
-      return <CreateInvitationResult>{
-        success: true,
-        createdInviteEoas: [{
-          createdBy: invitation.createdBy,
-          createdByProfileId: invitation.createdByProfileId,
-          createdAt: invitation.createdAt.toJSON(),
-          name: invitation.name,
-          address: invitation.address,
-          balance: "0",
-          code: invitation.code,
-        }]
-      };
+      await prisma_api_rw.membership.create({
+        data: {
+          memberAtId: args.groupId,
+          memberId: args.memberId
+        }
+      });
+      return {
+        success: true
+      }
+    },
+    removeMember: async (parent:any, args:MutationRemoveMemberArgs, context:Context) => {
+      await prisma_api_rw.membership.deleteMany({
+        where: {
+          memberId: args.memberId,
+          memberAtId: args.groupId
+        }
+      });
+      return {
+        success: true
+      }
     }
   },
   Subscription: {
     events: {
       subscribe: async (parent, args, context:Context) => {
-        const session = await context.verifySession();
-        if (!session.profileId) {
-          throw new Error(`You need a profile to subscribe.`)
-        }
-        const profile = await prisma_api_rw.profile.findUnique({
-          where: {
-            id: session.profileId
-          }
-        });
+        const profile = await context.callerProfile;
         if (!profile)
           throw new Error(`You need a profile to subscribe`);
 

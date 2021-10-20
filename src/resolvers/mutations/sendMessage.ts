@@ -11,23 +11,14 @@ export function sendMessage(prisma: PrismaClient) {
     args: { toSafeAddress: string; content: string },
     context: Context
   ) => {
-    const session = await context.verifySession();
-    if (!session.profileId) {
+    const fromProfile = await context.callerProfile;
+    if (!fromProfile || !fromProfile.circlesAddress) {
       return {
         success: false,
         errorMessage: "You must have a complete profile to use this function.",
       };
     }
     const toSafeAddress = args.toSafeAddress.toLowerCase();
-    const fromProfile = await prisma.profile.findUnique({
-      where: { id: session.profileId },
-    });
-    if (!fromProfile) {
-      throw new Error(`Couldn't find a profile with id ${session.profileId}`);
-    }
-    if (!fromProfile.circlesAddress) {
-      throw new Error(`You need a connected safe to use this feature.`);
-    }
     const toProfile = await prisma.profile.findFirst({
       where: { circlesAddress: toSafeAddress },
     });

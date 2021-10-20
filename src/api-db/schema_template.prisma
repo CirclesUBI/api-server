@@ -135,6 +135,8 @@ model Membership {
     id Int @id @default(autoincrement())
     createdAt DateTime @default(now())
 
+    isAdmin Boolean?
+
     memberId Int
     member Profile @relation(name: "Profile_Membership", fields: [memberId], references:[id])
 

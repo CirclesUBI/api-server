@@ -7,12 +7,7 @@ import {CreateInvitationResult} from "../../types";
 
 export function createInvitations(prisma_api_rw:PrismaClient) {
     return async (parent:any, args:{for:string[]}, context:Context) => {
-      const session = await context.verifySession();
-      const profile = await prisma_api_ro.profile.findUnique({
-        where: {
-          id: session.profileId ?? undefined
-        }
-      });
+      const profile = await context.callerProfile;
 
       if (!profile?.circlesAddress) {
         throw new Error(`You need a completed profile to use this feature.`);

@@ -6,12 +6,7 @@ import {RedeemClaimedInvitationResult} from "../../types";
 
 export function redeemClaimedInvitation(prisma_api_ro:PrismaClient, prisma_api_rw:PrismaClient) {
   return async (parent: any, args: any, context: Context) => {
-    const session = await context.verifySession();
-    const profile = await prisma_api_ro.profile.findUnique({
-      where: {
-        id: session.profileId ?? undefined
-      }
-    });
+    const profile = await context.callerProfile;
 
     if (!profile?.circlesSafeOwner) {
       throw new Error(`You need a profile and EOA to redeem a claimed invitation.`);
@@ -19,12 +14,12 @@ export function redeemClaimedInvitation(prisma_api_ro:PrismaClient, prisma_api_r
 
     const claimedInvitation = await prisma_api_ro.invitation.findFirst({
       where: {
-        claimedByProfileId: session.profileId
+        claimedByProfileId: profile.id
       }
     });
 
     if (!claimedInvitation) {
-      throw new Error(`No claimed invitation for profile ${session.profileId}`);
+      throw new Error(`No claimed invitation for profile ${profile.id}`);
     }
 
     try {

@@ -11,14 +11,7 @@ export function inbox(prisma: PrismaClient) {
     args: any,
     context: Context
   ): Promise<ProfileEvent[]> => {
-    const session = await context.verifySession();
-    if (!session.profileId) {
-      throw new Error(`You must have a profile to use this feature.`);
-    }
-
-    const profile = await prisma.profile.findUnique({
-      where: { id: session.profileId },
-    });
+    const profile = await context.callerProfile;
     if (!profile || !profile.circlesAddress) {
       throw new Error(`You need a complete profile to use this feature.`);
     }

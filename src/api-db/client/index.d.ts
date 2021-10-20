@@ -109,6 +109,7 @@ export type ExternalProfiles = {
 export type Membership = {
   id: number
   createdAt: Date
+  isAdmin: boolean | null
   memberId: number
   memberAtId: number
 }
@@ -5953,6 +5954,7 @@ export namespace Prisma {
   export type MembershipMinAggregateOutputType = {
     id: number | null
     createdAt: Date | null
+    isAdmin: boolean | null
     memberId: number | null
     memberAtId: number | null
   }
@@ -5960,6 +5962,7 @@ export namespace Prisma {
   export type MembershipMaxAggregateOutputType = {
     id: number | null
     createdAt: Date | null
+    isAdmin: boolean | null
     memberId: number | null
     memberAtId: number | null
   }
@@ -5967,6 +5970,7 @@ export namespace Prisma {
   export type MembershipCountAggregateOutputType = {
     id: number
     createdAt: number
+    isAdmin: number
     memberId: number
     memberAtId: number
     _all: number
@@ -5988,6 +5992,7 @@ export namespace Prisma {
   export type MembershipMinAggregateInputType = {
     id?: true
     createdAt?: true
+    isAdmin?: true
     memberId?: true
     memberAtId?: true
   }
@@ -5995,6 +6000,7 @@ export namespace Prisma {
   export type MembershipMaxAggregateInputType = {
     id?: true
     createdAt?: true
+    isAdmin?: true
     memberId?: true
     memberAtId?: true
   }
@@ -6002,6 +6008,7 @@ export namespace Prisma {
   export type MembershipCountAggregateInputType = {
     id?: true
     createdAt?: true
+    isAdmin?: true
     memberId?: true
     memberAtId?: true
     _all?: true
@@ -6122,6 +6129,7 @@ export namespace Prisma {
   export type MembershipGroupByOutputType = {
     id: number
     createdAt: Date
+    isAdmin: boolean | null
     memberId: number
     memberAtId: number
     _count: MembershipCountAggregateOutputType | null
@@ -6148,6 +6156,7 @@ export namespace Prisma {
   export type MembershipSelect = {
     id?: boolean
     createdAt?: boolean
+    isAdmin?: boolean
     memberId?: boolean
     member?: boolean | ProfileArgs
     memberAtId?: boolean
@@ -15288,6 +15297,7 @@ export namespace Prisma {
   export const MembershipScalarFieldEnum: {
     id: 'id',
     createdAt: 'createdAt',
+    isAdmin: 'isAdmin',
     memberId: 'memberId',
     memberAtId: 'memberAtId'
   };
@@ -15715,6 +15725,7 @@ export namespace Prisma {
     NOT?: Enumerable<MembershipWhereInput>
     id?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
+    isAdmin?: BoolNullableFilter | boolean | null
     memberId?: IntFilter | number
     member?: XOR<ProfileRelationFilter, ProfileWhereInput>
     memberAtId?: IntFilter | number
@@ -15724,6 +15735,7 @@ export namespace Prisma {
   export type MembershipOrderByInput = {
     id?: SortOrder
     createdAt?: SortOrder
+    isAdmin?: SortOrder
     memberId?: SortOrder
     memberAtId?: SortOrder
   }
@@ -15738,6 +15750,7 @@ export namespace Prisma {
     NOT?: Enumerable<MembershipScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
     createdAt?: DateTimeWithAggregatesFilter | Date | string
+    isAdmin?: BoolNullableWithAggregatesFilter | boolean | null
     memberId?: IntWithAggregatesFilter | number
     memberAtId?: IntWithAggregatesFilter | number
   }
@@ -16646,6 +16659,7 @@ export namespace Prisma {
 
   export type MembershipCreateInput = {
     createdAt?: Date | string
+    isAdmin?: boolean | null
     member: ProfileCreateNestedOneWithoutMembershipsInput
     memberAt: ProfileCreateNestedOneWithoutMembersInput
   }
@@ -16653,12 +16667,14 @@ export namespace Prisma {
   export type MembershipUncheckedCreateInput = {
     id?: number
     createdAt?: Date | string
+    isAdmin?: boolean | null
     memberId: number
     memberAtId: number
   }
 
   export type MembershipUpdateInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
     member?: ProfileUpdateOneRequiredWithoutMembershipsInput
     memberAt?: ProfileUpdateOneRequiredWithoutMembersInput
   }
@@ -16666,6 +16682,7 @@ export namespace Prisma {
   export type MembershipUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
     memberId?: IntFieldUpdateOperationsInput | number
     memberAtId?: IntFieldUpdateOperationsInput | number
   }
@@ -16673,17 +16690,20 @@ export namespace Prisma {
   export type MembershipCreateManyInput = {
     id?: number
     createdAt?: Date | string
+    isAdmin?: boolean | null
     memberId: number
     memberAtId: number
   }
 
   export type MembershipUpdateManyMutationInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
 
   export type MembershipUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
     memberId?: IntFieldUpdateOperationsInput | number
     memberAtId?: IntFieldUpdateOperationsInput | number
   }
@@ -20722,12 +20742,14 @@ export namespace Prisma {
 
   export type MembershipCreateWithoutMemberInput = {
     createdAt?: Date | string
+    isAdmin?: boolean | null
     memberAt: ProfileCreateNestedOneWithoutMembersInput
   }
 
   export type MembershipUncheckedCreateWithoutMemberInput = {
     id?: number
     createdAt?: Date | string
+    isAdmin?: boolean | null
     memberAtId: number
   }
 
@@ -20743,12 +20765,14 @@ export namespace Prisma {
 
   export type MembershipCreateWithoutMemberAtInput = {
     createdAt?: Date | string
+    isAdmin?: boolean | null
     member: ProfileCreateNestedOneWithoutMembershipsInput
   }
 
   export type MembershipUncheckedCreateWithoutMemberAtInput = {
     id?: number
     createdAt?: Date | string
+    isAdmin?: boolean | null
     memberId: number
   }
 
@@ -21043,6 +21067,7 @@ export namespace Prisma {
     NOT?: Enumerable<MembershipScalarWhereInput>
     id?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
+    isAdmin?: BoolNullableFilter | boolean | null
     memberId?: IntFilter | number
     memberAtId?: IntFilter | number
   }
@@ -23227,12 +23252,14 @@ export namespace Prisma {
   export type MembershipCreateManyMemberInput = {
     id?: number
     createdAt?: Date | string
+    isAdmin?: boolean | null
     memberAtId: number
   }
 
   export type MembershipCreateManyMemberAtInput = {
     id?: number
     createdAt?: Date | string
+    isAdmin?: boolean | null
     memberId: number
   }
 
@@ -23605,35 +23632,41 @@ export namespace Prisma {
 
   export type MembershipUpdateWithoutMemberInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
     memberAt?: ProfileUpdateOneRequiredWithoutMembersInput
   }
 
   export type MembershipUncheckedUpdateWithoutMemberInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
     memberAtId?: IntFieldUpdateOperationsInput | number
   }
 
   export type MembershipUncheckedUpdateManyWithoutMembershipsInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
     memberAtId?: IntFieldUpdateOperationsInput | number
   }
 
   export type MembershipUpdateWithoutMemberAtInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
     member?: ProfileUpdateOneRequiredWithoutMembershipsInput
   }
 
   export type MembershipUncheckedUpdateWithoutMemberAtInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
     memberId?: IntFieldUpdateOperationsInput | number
   }
 
   export type MembershipUncheckedUpdateManyWithoutMembersInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
     memberId?: IntFieldUpdateOperationsInput | number
   }
 
