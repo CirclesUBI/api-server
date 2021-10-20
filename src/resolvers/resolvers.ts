@@ -3,7 +3,7 @@ import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {
   CreatedInvitation,
-  CreateInvitationResult, MutationUpsertOrganisationArgs,
+  CreateInvitationResult, MutationUpsertOrganisationArgs, Organisation,
   Profile,
   ProfileEvent, Resolvers
 } from "../types";
@@ -56,12 +56,15 @@ import {redeemClaimedInvitation} from "./mutations/redeemClaimedInvitation";
 import {invitationTransaction} from "./queries/invitationTransaction";
 import {verifySessionChallengeResolver} from "./mutations/verifySessionChallengeResolver";
 import {BN} from "ethereumjs-util";
-import {Invitation} from "../api-db/client";
 import {organisations} from "./queries/organisations";
+import {lastUbiTransaction} from "./queries/lastUbiTransaction";
+import {initAggregateState} from "./queries/initAggregateState";
+import {hubSignupTransactionResolver} from "./queries/hubSignupTransactionResolver";
+import {upsertOrganisation} from "./mutations/upsertOrganisation";
 
 let cert:string;
 
-const safeFundingTransactionResolver = (async (parent:any, args:any, context:Context) => {
+export const safeFundingTransactionResolver = (async (parent:any, args:any, context:Context) => {
   const session = await context.verifySession();
 
   const now = new Date();
@@ -128,65 +131,7 @@ const safeFundingTransactionResolver = (async (parent:any, args:any, context:Con
   }
 });
 
-const hubSignupTransactionResolver = async (parent:any, args:any, context:Context) =>  {
-  const now = new Date();
-  const session = await context.verifySession();
-  const profile = await prisma_api_ro.profile.findFirst({
-    where:{
-      //OR:[{
-//            emailAddress: null,
-      circlesSafeOwner: session.ethAddress
-//          }, {
-//            emailAddress: session.emailAddress
-//          }]
-    }
-  });
-  if (!profile?.circlesAddress || !profile?.circlesSafeOwner) {
-    return null;
-  }
-  const pool = getPool();
-  try {
-    const hubSignupTransactionQuery = `
-            select * from crc_signup_2 where "user" = $1`;
 
-    const hubSignupTransactionQueryParams = [
-      profile.circlesAddress.toLowerCase()
-    ];
-    const hubSignupTransactionResult = await pool.query(
-      hubSignupTransactionQuery,
-      hubSignupTransactionQueryParams);
-
-    console.log(`Searching for the hub signup transaction for ${profile.circlesAddress.toLowerCase()} took ${new Date().getTime() - now.getTime()} ms.`)
-
-    if (hubSignupTransactionResult.rows.length == 0) {
-      return null;
-    }
-
-    const hubSignupTransaction = hubSignupTransactionResult.rows[0];
-
-    return <ProfileEvent>{
-      id: hubSignupTransaction.id,
-      safe_address: profile.circlesAddress.toLowerCase(),
-      transaction_index: hubSignupTransaction.index,
-      value: hubSignupTransaction.value,
-      direction: "out",
-      transaction_hash: hubSignupTransaction.hash,
-      type: "CrcSignup",
-      block_number: hubSignupTransaction.block_number,
-      timestamp: hubSignupTransaction.timestamp.toJSON(),
-      safe_address_profile: profile,
-      payload: {
-        __typename: "CrcSignup",
-        user: hubSignupTransaction.user,
-        token: hubSignupTransaction.token,
-        transaction_hash: hubSignupTransaction.hash,
-        user_profile: profile
-      }
-    };
-  } finally {
-    await pool.end();
-  }
-};
 
 export function getPool() {
   /*
@@ -250,7 +195,7 @@ export const resolvers: Resolvers = {
       const session = await context.verifySession();
       const invitations = await prisma_api_ro.invitation.findMany({
         where: {
-          createdByProfileId:session.profileId
+          createdByProfileId: session.profileId
         },
         include: {
           claimedBy: true
@@ -269,6 +214,54 @@ export const resolvers: Resolvers = {
       });
     }),
     organisations: organisations(prisma_api_ro),
+    organisationsByAddress: async (parent, args, context) => {
+      const pool = getPool();
+      try {
+        let organisationSignupQuery = `
+            select organisation, timestamp
+            from crc_organisation_signup_2
+            where organisation = ANY ($1)`;
+
+        const organisationSignupsResult = await pool.query(organisationSignupQuery, [args.addresses]);
+        if (organisationSignupsResult.rows.length == 0) {
+          return [];
+        }
+
+        const profileResolver = profilesBySafeAddress(prisma_api_ro);
+        const allSafeAddresses = organisationSignupsResult.rows.reduce((p, c) => {
+          p[c.organisation] = c.timestamp;
+          return p;
+        }, {});
+        const profiles = await profileResolver(null, {safeAddresses: Object.keys(allSafeAddresses)}, context);
+        const _profilesBySafeAddress = profiles.reduce((p, c) => {
+          if (!c.circlesAddress)
+            return p;
+          p[c.circlesAddress] = c;
+          return p;
+        }, <{ [x: string]: Profile }>{});
+
+        return organisationSignupsResult.rows.map(o => {
+          const p: Profile = _profilesBySafeAddress[o.organisation] ?? {
+            id: -1,
+            firstName: o.organisation,
+            circlesAddress: o.organisation
+          };
+          return <Organisation>{
+            id: p.id,
+            createdAt: allSafeAddresses[p.circlesAddress ?? ""],
+            name: p.firstName,
+            cityGeonameid: p.cityGeonameid,
+            circlesAddress: p.circlesAddress,
+            avatarUrl: p.avatarUrl,
+            description: p.dream,
+            trustsYou: p.trustsYou,
+            avatarMimeType: p.avatarMimeType
+          }
+        });
+      } finally {
+        await pool.end();
+      }
+    },
     profilesById: profilesById(prisma_api_ro),
     profilesBySafeAddress: profilesBySafeAddress(prisma_api_ro, true),
     search: search(prisma_api_ro),
@@ -287,126 +280,11 @@ export const resolvers: Resolvers = {
     chatHistory: chatHistory(prisma_api_ro),
     commonTrust: commonTrust(prisma_api_ro),
     inbox: inbox(prisma_api_ro),
-    lastUBITransaction: async (parent:any, args:any, context:Context) => {
-      const session = await context.verifySession();
-      if (!session.profileId) {
-        throw new Error(`You need a profile to use this feature.`);
-      }
-
-      const profile = await prisma_api_ro.profile.findUnique({where:{id: session.profileId}});
-      if (!profile){
-        throw new Error(`You need a profile to use this feature.`);
-      }
-      if (!profile.circlesAddress) {
-        throw new Error(`You need a safe to use this feature.`);
-      }
-
-      const pool = getPool();
-      try {
-        const query = `select timestamp, type
-          from crc_safe_timeline_2
-          where safe_address = $1
-          and type = 'crc_minting'
-          order by timestamp desc
-          limit 1;`
-
-        const result = await pool.query(query, [profile.circlesAddress]);
-        return result.rows.length > 0 ? result.rows[0].timestamp.toJSON() : null;
-      } finally {
-        await pool.end();
-      }
-    },
-    initAggregateState: async (parent, args, context) => {
-      const session = await context.verifySession();
-
-      let registration: (Profile & {redeemedInvitations: Invitation[]}) | null;
-      if (session.profileId) {
-        registration = await prisma_api_ro.profile.findUnique({
-          where: {id: session.profileId},
-          include: { redeemedInvitations: true}
-        });
-      } else {
-        // No profile, no anything..
-        return {
-        };
-      }
-      let safeFundingTx;
-      let ubi;
-      if (registration?.circlesSafeOwner) {
-        const safeFundingTxPromise = safeFundingTransactionResolver(null, null, context);
-        const ubiPromise = hubSignupTransactionResolver(null, null, context);
-        const promisedResults = await Promise.all([safeFundingTxPromise, ubiPromise]);
-        safeFundingTx = promisedResults[0];
-        ubi = promisedResults[1];
-      }
-
-      return {
-        safeFundingTransaction: safeFundingTx?.transaction_hash ?? undefined,
-        invitationTransaction: registration?.redeemedInvitations?.length ? registration.redeemedInvitations[0].redeemTxHash : undefined,
-        registration: registration ?? undefined,
-        invitation: registration?.claimedInvitation ?? undefined,
-        hubSignupTransaction: ubi?.transaction_hash ?? undefined
-      }
-    }
+    lastUBITransaction: lastUbiTransaction(),
+    initAggregateState: initAggregateState()
   },
   Mutation: {
-    upsertOrganisation: async (parent:any, args:MutationUpsertOrganisationArgs, context:Context) => {
-      const session = await context.verifySession();
-      const ownProfile = await prisma_api_ro.profile.findUnique({
-        where: {
-          id: session.profileId ?? undefined
-        }
-      });
-
-      if (!ownProfile?.circlesAddress) {
-        throw new Error(`You need a completed profile to use this feature.`);
-      }
-
-      let profile:Profile;
-      if (args.organisation.id) {
-        if (args.organisation.id != session.profileId) {
-          throw new Error(`'${session.sessionId}' (profile id: ${session.profileId ?? "<undefined>"}) can not upsert organisation '${args.organisation.id}'.`);
-        }
-        profile = await prisma_api_rw.profile.update({
-          where: {
-            id: args.organisation.id
-          },
-          data: {
-            id: args.organisation.id,
-            firstName: args.organisation.name,
-            dream: args.organisation.description,
-            circlesAddress: args.organisation.circlesAddress,
-            avatarUrl: args.organisation.avatarUrl,
-            avatarMimeType: args.organisation.avatarMimeType,
-            type: "ORGANISATION",
-            cityGeonameid: args.organisation.cityGeonameid
-          }
-        });
-      } else {
-        profile = await prisma_api_rw.profile.create({
-          data: {
-            firstName: args.organisation.name,
-            dream: args.organisation.description,
-            circlesAddress: args.organisation.circlesAddress,
-            avatarUrl: args.organisation.avatarUrl,
-            avatarMimeType: args.organisation.avatarMimeType,
-            type: "ORGANISATION",
-            cityGeonameid: args.organisation.cityGeonameid
-          }
-        });
-      }
-
-      return {
-        success: true,
-        organisation: {
-          ...args,
-          id: profile.id,
-          createdAt: new Date().toJSON(),
-          name: profile.firstName,
-          members: []
-        }
-      };
-    },
+    upsertOrganisation: upsertOrganisation(prisma_api_rw),
     upsertOffer: upsertOfferResolver(prisma_api_rw),
     exchangeToken: exchangeTokenResolver(prisma_api_rw),
     logout: logout(prisma_api_rw),
@@ -478,23 +356,11 @@ export const resolvers: Resolvers = {
           code: invitation.code,
         }]
       };
-    },
-    /*
-    upsertOrganisation: async (parent, args, context) => {
-      return {
-        success: true,
-        error: undefined,
-        organisation: {
-          id: 1,
-
-        }
-      };
     }
-     */
   },
   Subscription: {
     events: {
-      subscribe:async (parent, args, context:Context) => {
+      subscribe: async (parent, args, context:Context) => {
         const session = await context.verifySession();
         if (!session.profileId) {
           throw new Error(`You need a profile to subscribe.`)

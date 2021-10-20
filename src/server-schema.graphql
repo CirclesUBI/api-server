@@ -628,6 +628,7 @@ type Query {
   lastUBITransaction: String
   stats: Stats
   organisations(pagination: PaginationArgs): [Organisation!]!
+  organisationsByAddress(addresses:[String!]!): [Organisation!]!
 
   # Gets the created (noty invitations of the currently logged on user
   myInvitations: [CreatedInvitation!]!

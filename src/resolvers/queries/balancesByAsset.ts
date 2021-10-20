@@ -26,6 +26,7 @@ export function balancesByAsset(prisma:PrismaClient) {
                 p[c.token_owner] = true;
                 return p;
             },{});
+
             const profiles = await profileResolver(null, {safeAddresses:Object.keys(allSafeAddresses)}, context);
             const _profilesBySafeAddress = profiles.reduce((p,c) => {
                 if (!c.circlesAddress)

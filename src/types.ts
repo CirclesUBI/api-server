@@ -570,6 +570,7 @@ export type Query = {
   lastUBITransaction?: Maybe<Scalars['String']>;
   stats?: Maybe<Stats>;
   organisations: Array<Organisation>;
+  organisationsByAddress: Array<Organisation>;
   myInvitations: Array<CreatedInvitation>;
   events: Array<ProfileEvent>;
   contacts: Array<Contact>;
@@ -595,6 +596,11 @@ export type Query = {
 
 export type QueryOrganisationsArgs = {
   pagination?: Maybe<PaginationArgs>;
+};
+
+
+export type QueryOrganisationsByAddressArgs = {
+  addresses: Array<Scalars['String']>;
 };
 
 
@@ -1559,6 +1565,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   lastUBITransaction?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
   organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsArgs, never>>;
+  organisationsByAddress?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsByAddressArgs, 'addresses'>>;
   myInvitations?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'safeAddress'>>;
   contacts?: Resolver<Array<ResolversTypes['Contact']>, ParentType, ContextType, RequireFields<QueryContactsArgs, 'safeAddress'>>;
