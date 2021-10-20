@@ -229,12 +229,8 @@ async function flush() {
     return;
   }
 
-  const query = batch.reduce(
-    (p, c) =>
-      p +
-      `address[]=${RpcGateway.get().utils.toChecksumAddress(c.safeAddress)}&`,
-    ""
-  );
+  const query = batch.reduce((p, c) =>
+    p + `address[]=${RpcGateway.get().utils.toChecksumAddress(c.safeAddress)}&`, "");
   const requestUrl = `https://api.circles.garden/api/users/?${query}`;
 
   console.log(requestUrl);

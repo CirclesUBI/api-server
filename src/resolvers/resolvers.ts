@@ -2,13 +2,10 @@ import {myProfile, profilesById, profilesBySafeAddress} from "./queries/profiles
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {
-  CommonTrust,
   CreatedInvitation,
   CreateInvitationResult, MutationUpsertOrganisationArgs,
-  Organisation,
   Profile,
-  ProfileEvent, QueryOrganisationsArgs,
-  Resolvers, UpsertOrganisationInput
+  ProfileEvent, Resolvers
 } from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
@@ -60,7 +57,6 @@ import {invitationTransaction} from "./queries/invitationTransaction";
 import {verifySessionChallengeResolver} from "./mutations/verifySessionChallengeResolver";
 import {BN} from "ethereumjs-util";
 import {Invitation} from "../api-db/client";
-import {parentPort} from "worker_threads";
 import {organisations} from "./queries/organisations";
 
 let cert:string;

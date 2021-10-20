@@ -14,6 +14,12 @@ export type Scalars = {
   Float: number;
 };
 
+export type AddMemberResult = {
+  __typename?: 'AddMemberResult';
+  success: Scalars['Boolean'];
+  error?: Maybe<Scalars['String']>;
+};
+
 export type AssetBalance = {
   __typename?: 'AssetBalance';
   token_address: Scalars['String'];
@@ -302,8 +308,10 @@ export type Mutation = {
   lockOffer: LockOfferResult;
   provePayment: ProvePaymentResult;
   upsertTag: Tag;
-  acknowledge: Scalars['Boolean'];
   upsertOrganisation: CreateOrganisationResult;
+  addMember?: Maybe<AddMemberResult>;
+  removeMember?: Maybe<RemoveMemberResult>;
+  acknowledge: Scalars['Boolean'];
   createInvitations: CreateInvitationResult;
   claimInvitation: ClaimInvitationResult;
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
@@ -370,13 +378,25 @@ export type MutationUpsertTagArgs = {
 };
 
 
-export type MutationAcknowledgeArgs = {
-  until: Scalars['String'];
+export type MutationUpsertOrganisationArgs = {
+  organisation: UpsertOrganisationInput;
 };
 
 
-export type MutationUpsertOrganisationArgs = {
-  organisation: UpsertOrganisationInput;
+export type MutationAddMemberArgs = {
+  groupId: Scalars['Int'];
+  memberId: Scalars['Int'];
+};
+
+
+export type MutationRemoveMemberArgs = {
+  groupId: Scalars['Int'];
+  memberId: Scalars['Int'];
+};
+
+
+export type MutationAcknowledgeArgs = {
+  until: Scalars['String'];
 };
 
 
@@ -722,6 +742,12 @@ export type RedeemClaimedInvitationResult = {
   transactionHash?: Maybe<Scalars['String']>;
 };
 
+export type RemoveMemberResult = {
+  __typename?: 'RemoveMemberResult';
+  success: Scalars['Boolean'];
+  error?: Maybe<Scalars['String']>;
+};
+
 export type RequestUpdateSafeInput = {
   newSafeAddress: Scalars['String'];
 };
@@ -949,15 +975,16 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
-  AssetBalance: ResolverTypeWrapper<AssetBalance>;
+  AddMemberResult: ResolverTypeWrapper<AddMemberResult>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  AssetBalance: ResolverTypeWrapper<AssetBalance>;
   ChatMessage: ResolverTypeWrapper<ChatMessage>;
   City: ResolverTypeWrapper<City>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   CityStats: ResolverTypeWrapper<CityStats>;
   ClaimInvitationResult: ResolverTypeWrapper<ClaimInvitationResult>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   ClaimedInvitation: ResolverTypeWrapper<ClaimedInvitation>;
   CommonTrust: ResolverTypeWrapper<CommonTrust>;
   ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
@@ -1009,6 +1036,7 @@ export type ResolversTypes = ResolversObject<{
   QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   RedeemClaimedInvitationResult: ResolverTypeWrapper<RedeemClaimedInvitationResult>;
+  RemoveMemberResult: ResolverTypeWrapper<RemoveMemberResult>;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: ResolverTypeWrapper<RequestUpdateSafeResponse>;
   SearchInput: SearchInput;
@@ -1032,15 +1060,16 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
-  AssetBalance: AssetBalance;
+  AddMemberResult: AddMemberResult;
+  Boolean: Scalars['Boolean'];
   String: Scalars['String'];
+  AssetBalance: AssetBalance;
   ChatMessage: ChatMessage;
   City: City;
   Int: Scalars['Int'];
   Float: Scalars['Float'];
   CityStats: CityStats;
   ClaimInvitationResult: ClaimInvitationResult;
-  Boolean: Scalars['Boolean'];
   ClaimedInvitation: ClaimedInvitation;
   CommonTrust: CommonTrust;
   ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
@@ -1091,6 +1120,7 @@ export type ResolversParentTypes = ResolversObject<{
   QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   RedeemClaimedInvitationResult: RedeemClaimedInvitationResult;
+  RemoveMemberResult: RemoveMemberResult;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: RequestUpdateSafeResponse;
   SearchInput: SearchInput;
@@ -1109,6 +1139,12 @@ export type ResolversParentTypes = ResolversObject<{
   UpsertProfileInput: UpsertProfileInput;
   UpsertTagInput: UpsertTagInput;
   Version: Version;
+}>;
+
+export type AddMemberResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['AddMemberResult'] = ResolversParentTypes['AddMemberResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type AssetBalanceResolvers<ContextType = any, ParentType extends ResolversParentTypes['AssetBalance'] = ResolversParentTypes['AssetBalance']> = ResolversObject<{
@@ -1389,8 +1425,10 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   lockOffer?: Resolver<ResolversTypes['LockOfferResult'], ParentType, ContextType, RequireFields<MutationLockOfferArgs, 'data'>>;
   provePayment?: Resolver<ResolversTypes['ProvePaymentResult'], ParentType, ContextType, RequireFields<MutationProvePaymentArgs, 'data'>>;
   upsertTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationUpsertTagArgs, 'data'>>;
-  acknowledge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'until'>>;
   upsertOrganisation?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertOrganisationArgs, 'organisation'>>;
+  addMember?: Resolver<Maybe<ResolversTypes['AddMemberResult']>, ParentType, ContextType, RequireFields<MutationAddMemberArgs, 'groupId' | 'memberId'>>;
+  removeMember?: Resolver<Maybe<ResolversTypes['RemoveMemberResult']>, ParentType, ContextType, RequireFields<MutationRemoveMemberArgs, 'groupId' | 'memberId'>>;
+  acknowledge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'until'>>;
   createInvitations?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType, RequireFields<MutationCreateInvitationsArgs, 'for'>>;
   claimInvitation?: Resolver<ResolversTypes['ClaimInvitationResult'], ParentType, ContextType, RequireFields<MutationClaimInvitationArgs, 'code'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
@@ -1550,6 +1588,12 @@ export type RedeemClaimedInvitationResultResolvers<ContextType = any, ParentType
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type RemoveMemberResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['RemoveMemberResult'] = ResolversParentTypes['RemoveMemberResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type RequestUpdateSafeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['RequestUpdateSafeResponse'] = ResolversParentTypes['RequestUpdateSafeResponse']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1631,6 +1675,7 @@ export type VersionResolvers<ContextType = any, ParentType extends ResolversPare
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  AddMemberResult?: AddMemberResultResolvers<ContextType>;
   AssetBalance?: AssetBalanceResolvers<ContextType>;
   ChatMessage?: ChatMessageResolvers<ContextType>;
   City?: CityResolvers<ContextType>;
@@ -1673,6 +1718,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Purchase?: PurchaseResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RedeemClaimedInvitationResult?: RedeemClaimedInvitationResultResolvers<ContextType>;
+  RemoveMemberResult?: RemoveMemberResultResolvers<ContextType>;
   RequestUpdateSafeResponse?: RequestUpdateSafeResponseResolvers<ContextType>;
   SendMessageResult?: SendMessageResultResolvers<ContextType>;
   Server?: ServerResolvers<ContextType>;

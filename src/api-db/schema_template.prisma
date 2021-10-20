@@ -125,6 +125,12 @@ model Profile {
     members Membership[] @relation(name: "Profile_MemberAt")
 }
 
+model ExternalProfiles {
+    circlesAddress String @unique
+    name String
+    avatarUrl String?
+}
+
 model Membership {
     id Int @id @default(autoincrement())
     createdAt DateTime @default(now())

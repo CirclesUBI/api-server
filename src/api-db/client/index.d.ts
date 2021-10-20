@@ -93,6 +93,16 @@ export type Profile = {
 }
 
 /**
+ * Model ExternalProfiles
+ */
+
+export type ExternalProfiles = {
+  circlesAddress: string
+  name: string
+  avatarUrl: string | null
+}
+
+/**
  * Model Membership
  */
 
@@ -413,6 +423,16 @@ export class PrismaClient<
     * ```
     */
   get profile(): Prisma.ProfileDelegate<GlobalReject>;
+
+  /**
+   * `prisma.externalProfiles`: Exposes CRUD operations for the **ExternalProfiles** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ExternalProfiles
+    * const externalProfiles = await prisma.externalProfiles.findMany()
+    * ```
+    */
+  get externalProfiles(): Prisma.ExternalProfilesDelegate<GlobalReject>;
 
   /**
    * `prisma.membership`: Exposes CRUD operations for the **Membership** model.
@@ -887,6 +907,7 @@ export namespace Prisma {
     Invitation: 'Invitation',
     RedeemInvitationRequest: 'RedeemInvitationRequest',
     Profile: 'Profile',
+    ExternalProfiles: 'ExternalProfiles',
     Membership: 'Membership',
     Subscription: 'Subscription',
     ChatMessage: 'ChatMessage',
@@ -5096,6 +5117,805 @@ export namespace Prisma {
      * 
     **/
     include?: ProfileInclude | null
+  }
+
+
+
+  /**
+   * Model ExternalProfiles
+   */
+
+
+  export type AggregateExternalProfiles = {
+    _count: ExternalProfilesCountAggregateOutputType | null
+    count: ExternalProfilesCountAggregateOutputType | null
+    _min: ExternalProfilesMinAggregateOutputType | null
+    min: ExternalProfilesMinAggregateOutputType | null
+    _max: ExternalProfilesMaxAggregateOutputType | null
+    max: ExternalProfilesMaxAggregateOutputType | null
+  }
+
+  export type ExternalProfilesMinAggregateOutputType = {
+    circlesAddress: string | null
+    name: string | null
+    avatarUrl: string | null
+  }
+
+  export type ExternalProfilesMaxAggregateOutputType = {
+    circlesAddress: string | null
+    name: string | null
+    avatarUrl: string | null
+  }
+
+  export type ExternalProfilesCountAggregateOutputType = {
+    circlesAddress: number
+    name: number
+    avatarUrl: number
+    _all: number
+  }
+
+
+  export type ExternalProfilesMinAggregateInputType = {
+    circlesAddress?: true
+    name?: true
+    avatarUrl?: true
+  }
+
+  export type ExternalProfilesMaxAggregateInputType = {
+    circlesAddress?: true
+    name?: true
+    avatarUrl?: true
+  }
+
+  export type ExternalProfilesCountAggregateInputType = {
+    circlesAddress?: true
+    name?: true
+    avatarUrl?: true
+    _all?: true
+  }
+
+  export type ExternalProfilesAggregateArgs = {
+    /**
+     * Filter which ExternalProfiles to aggregate.
+     * 
+    **/
+    where?: ExternalProfilesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExternalProfiles to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<ExternalProfilesOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     * 
+    **/
+    cursor?: ExternalProfilesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExternalProfiles from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExternalProfiles.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ExternalProfiles
+    **/
+    _count?: true | ExternalProfilesCountAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_count`
+    **/
+    count?: true | ExternalProfilesCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ExternalProfilesMinAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_min`
+    **/
+    min?: ExternalProfilesMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ExternalProfilesMaxAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_max`
+    **/
+    max?: ExternalProfilesMaxAggregateInputType
+  }
+
+  export type GetExternalProfilesAggregateType<T extends ExternalProfilesAggregateArgs> = {
+        [P in keyof T & keyof AggregateExternalProfiles]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateExternalProfiles[P]>
+      : GetScalarType<T[P], AggregateExternalProfiles[P]>
+  }
+
+
+    
+    
+  export type ExternalProfilesGroupByArgs = {
+    where?: ExternalProfilesWhereInput
+    orderBy?: Enumerable<ExternalProfilesOrderByInput>
+    by: Array<ExternalProfilesScalarFieldEnum>
+    having?: ExternalProfilesScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ExternalProfilesCountAggregateInputType | true
+    _min?: ExternalProfilesMinAggregateInputType
+    _max?: ExternalProfilesMaxAggregateInputType
+  }
+
+
+  export type ExternalProfilesGroupByOutputType = {
+    circlesAddress: string
+    name: string
+    avatarUrl: string | null
+    _count: ExternalProfilesCountAggregateOutputType | null
+    _min: ExternalProfilesMinAggregateOutputType | null
+    _max: ExternalProfilesMaxAggregateOutputType | null
+  }
+
+  type GetExternalProfilesGroupByPayload<T extends ExternalProfilesGroupByArgs> = Promise<
+    Array<
+      PickArray<ExternalProfilesGroupByOutputType, T['by']> & 
+        {
+          [P in ((keyof T) & (keyof ExternalProfilesGroupByOutputType))]: P extends '_count' 
+            ? T[P] extends boolean 
+              ? number 
+              : GetScalarType<T[P], ExternalProfilesGroupByOutputType[P]> 
+            : GetScalarType<T[P], ExternalProfilesGroupByOutputType[P]>
+        }
+      > 
+    >
+
+
+  export type ExternalProfilesSelect = {
+    circlesAddress?: boolean
+    name?: boolean
+    avatarUrl?: boolean
+  }
+
+  export type ExternalProfilesGetPayload<
+    S extends boolean | null | undefined | ExternalProfilesArgs,
+    U = keyof S
+      > = S extends true
+        ? ExternalProfiles
+    : S extends undefined
+    ? never
+    : S extends ExternalProfilesArgs | ExternalProfilesFindManyArgs
+    ?'include' extends U
+    ? ExternalProfiles 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]: P extends keyof ExternalProfiles ?ExternalProfiles [P]
+  : 
+     never
+  } 
+    : ExternalProfiles
+  : ExternalProfiles
+
+
+  type ExternalProfilesCountArgs = Merge<
+    Omit<ExternalProfilesFindManyArgs, 'select' | 'include'> & {
+      select?: ExternalProfilesCountAggregateInputType | true
+    }
+  >
+
+  export interface ExternalProfilesDelegate<GlobalRejectSettings> {
+    /**
+     * Find zero or one ExternalProfiles that matches the filter.
+     * @param {ExternalProfilesFindUniqueArgs} args - Arguments to find a ExternalProfiles
+     * @example
+     * // Get one ExternalProfiles
+     * const externalProfiles = await prisma.externalProfiles.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends ExternalProfilesFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, ExternalProfilesFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'ExternalProfiles'> extends True ? CheckSelect<T, Prisma__ExternalProfilesClient<ExternalProfiles>, Prisma__ExternalProfilesClient<ExternalProfilesGetPayload<T>>> : CheckSelect<T, Prisma__ExternalProfilesClient<ExternalProfiles | null >, Prisma__ExternalProfilesClient<ExternalProfilesGetPayload<T> | null >>
+
+    /**
+     * Find the first ExternalProfiles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExternalProfilesFindFirstArgs} args - Arguments to find a ExternalProfiles
+     * @example
+     * // Get one ExternalProfiles
+     * const externalProfiles = await prisma.externalProfiles.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends ExternalProfilesFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, ExternalProfilesFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'ExternalProfiles'> extends True ? CheckSelect<T, Prisma__ExternalProfilesClient<ExternalProfiles>, Prisma__ExternalProfilesClient<ExternalProfilesGetPayload<T>>> : CheckSelect<T, Prisma__ExternalProfilesClient<ExternalProfiles | null >, Prisma__ExternalProfilesClient<ExternalProfilesGetPayload<T> | null >>
+
+    /**
+     * Find zero or more ExternalProfiles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExternalProfilesFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ExternalProfiles
+     * const externalProfiles = await prisma.externalProfiles.findMany()
+     * 
+     * // Get first 10 ExternalProfiles
+     * const externalProfiles = await prisma.externalProfiles.findMany({ take: 10 })
+     * 
+     * // Only select the `circlesAddress`
+     * const externalProfilesWithCirclesAddressOnly = await prisma.externalProfiles.findMany({ select: { circlesAddress: true } })
+     * 
+    **/
+    findMany<T extends ExternalProfilesFindManyArgs>(
+      args?: SelectSubset<T, ExternalProfilesFindManyArgs>
+    ): CheckSelect<T, PrismaPromise<Array<ExternalProfiles>>, PrismaPromise<Array<ExternalProfilesGetPayload<T>>>>
+
+    /**
+     * Create a ExternalProfiles.
+     * @param {ExternalProfilesCreateArgs} args - Arguments to create a ExternalProfiles.
+     * @example
+     * // Create one ExternalProfiles
+     * const ExternalProfiles = await prisma.externalProfiles.create({
+     *   data: {
+     *     // ... data to create a ExternalProfiles
+     *   }
+     * })
+     * 
+    **/
+    create<T extends ExternalProfilesCreateArgs>(
+      args: SelectSubset<T, ExternalProfilesCreateArgs>
+    ): CheckSelect<T, Prisma__ExternalProfilesClient<ExternalProfiles>, Prisma__ExternalProfilesClient<ExternalProfilesGetPayload<T>>>
+
+    /**
+     * Create many ExternalProfiles.
+     *     @param {ExternalProfilesCreateManyArgs} args - Arguments to create many ExternalProfiles.
+     *     @example
+     *     // Create many ExternalProfiles
+     *     const externalProfiles = await prisma.externalProfiles.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends ExternalProfilesCreateManyArgs>(
+      args?: SelectSubset<T, ExternalProfilesCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a ExternalProfiles.
+     * @param {ExternalProfilesDeleteArgs} args - Arguments to delete one ExternalProfiles.
+     * @example
+     * // Delete one ExternalProfiles
+     * const ExternalProfiles = await prisma.externalProfiles.delete({
+     *   where: {
+     *     // ... filter to delete one ExternalProfiles
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends ExternalProfilesDeleteArgs>(
+      args: SelectSubset<T, ExternalProfilesDeleteArgs>
+    ): CheckSelect<T, Prisma__ExternalProfilesClient<ExternalProfiles>, Prisma__ExternalProfilesClient<ExternalProfilesGetPayload<T>>>
+
+    /**
+     * Update one ExternalProfiles.
+     * @param {ExternalProfilesUpdateArgs} args - Arguments to update one ExternalProfiles.
+     * @example
+     * // Update one ExternalProfiles
+     * const externalProfiles = await prisma.externalProfiles.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends ExternalProfilesUpdateArgs>(
+      args: SelectSubset<T, ExternalProfilesUpdateArgs>
+    ): CheckSelect<T, Prisma__ExternalProfilesClient<ExternalProfiles>, Prisma__ExternalProfilesClient<ExternalProfilesGetPayload<T>>>
+
+    /**
+     * Delete zero or more ExternalProfiles.
+     * @param {ExternalProfilesDeleteManyArgs} args - Arguments to filter ExternalProfiles to delete.
+     * @example
+     * // Delete a few ExternalProfiles
+     * const { count } = await prisma.externalProfiles.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends ExternalProfilesDeleteManyArgs>(
+      args?: SelectSubset<T, ExternalProfilesDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExternalProfiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExternalProfilesUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ExternalProfiles
+     * const externalProfiles = await prisma.externalProfiles.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends ExternalProfilesUpdateManyArgs>(
+      args: SelectSubset<T, ExternalProfilesUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ExternalProfiles.
+     * @param {ExternalProfilesUpsertArgs} args - Arguments to update or create a ExternalProfiles.
+     * @example
+     * // Update or create a ExternalProfiles
+     * const externalProfiles = await prisma.externalProfiles.upsert({
+     *   create: {
+     *     // ... data to create a ExternalProfiles
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ExternalProfiles we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends ExternalProfilesUpsertArgs>(
+      args: SelectSubset<T, ExternalProfilesUpsertArgs>
+    ): CheckSelect<T, Prisma__ExternalProfilesClient<ExternalProfiles>, Prisma__ExternalProfilesClient<ExternalProfilesGetPayload<T>>>
+
+    /**
+     * Count the number of ExternalProfiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExternalProfilesCountArgs} args - Arguments to filter ExternalProfiles to count.
+     * @example
+     * // Count the number of ExternalProfiles
+     * const count = await prisma.externalProfiles.count({
+     *   where: {
+     *     // ... the filter for the ExternalProfiles we want to count
+     *   }
+     * })
+    **/
+    count<T extends ExternalProfilesCountArgs>(
+      args?: Subset<T, ExternalProfilesCountArgs>,
+    ): PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ExternalProfilesCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ExternalProfiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExternalProfilesAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ExternalProfilesAggregateArgs>(args: Subset<T, ExternalProfilesAggregateArgs>): PrismaPromise<GetExternalProfilesAggregateType<T>>
+
+    /**
+     * Group by ExternalProfiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExternalProfilesGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ExternalProfilesGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ExternalProfilesGroupByArgs['orderBy'] }
+        : { orderBy?: ExternalProfilesGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ExternalProfilesGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetExternalProfilesGroupByPayload<T> : Promise<InputErrors>
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ExternalProfiles.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in 
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__ExternalProfilesClient<T> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+  // Custom InputTypes
+
+  /**
+   * ExternalProfiles findUnique
+   */
+  export type ExternalProfilesFindUniqueArgs = {
+    /**
+     * Select specific fields to fetch from the ExternalProfiles
+     * 
+    **/
+    select?: ExternalProfilesSelect | null
+    /**
+     * Throw an Error if a ExternalProfiles can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which ExternalProfiles to fetch.
+     * 
+    **/
+    where: ExternalProfilesWhereUniqueInput
+  }
+
+
+  /**
+   * ExternalProfiles findFirst
+   */
+  export type ExternalProfilesFindFirstArgs = {
+    /**
+     * Select specific fields to fetch from the ExternalProfiles
+     * 
+    **/
+    select?: ExternalProfilesSelect | null
+    /**
+     * Throw an Error if a ExternalProfiles can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which ExternalProfiles to fetch.
+     * 
+    **/
+    where?: ExternalProfilesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExternalProfiles to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<ExternalProfilesOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExternalProfiles.
+     * 
+    **/
+    cursor?: ExternalProfilesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExternalProfiles from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExternalProfiles.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExternalProfiles.
+     * 
+    **/
+    distinct?: Enumerable<ExternalProfilesScalarFieldEnum>
+  }
+
+
+  /**
+   * ExternalProfiles findMany
+   */
+  export type ExternalProfilesFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the ExternalProfiles
+     * 
+    **/
+    select?: ExternalProfilesSelect | null
+    /**
+     * Filter, which ExternalProfiles to fetch.
+     * 
+    **/
+    where?: ExternalProfilesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExternalProfiles to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<ExternalProfilesOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ExternalProfiles.
+     * 
+    **/
+    cursor?: ExternalProfilesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExternalProfiles from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExternalProfiles.
+     * 
+    **/
+    skip?: number
+    distinct?: Enumerable<ExternalProfilesScalarFieldEnum>
+  }
+
+
+  /**
+   * ExternalProfiles create
+   */
+  export type ExternalProfilesCreateArgs = {
+    /**
+     * Select specific fields to fetch from the ExternalProfiles
+     * 
+    **/
+    select?: ExternalProfilesSelect | null
+    /**
+     * The data needed to create a ExternalProfiles.
+     * 
+    **/
+    data: XOR<ExternalProfilesCreateInput, ExternalProfilesUncheckedCreateInput>
+  }
+
+
+  /**
+   * ExternalProfiles createMany
+   */
+  export type ExternalProfilesCreateManyArgs = {
+    data: Enumerable<ExternalProfilesCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * ExternalProfiles update
+   */
+  export type ExternalProfilesUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the ExternalProfiles
+     * 
+    **/
+    select?: ExternalProfilesSelect | null
+    /**
+     * The data needed to update a ExternalProfiles.
+     * 
+    **/
+    data: XOR<ExternalProfilesUpdateInput, ExternalProfilesUncheckedUpdateInput>
+    /**
+     * Choose, which ExternalProfiles to update.
+     * 
+    **/
+    where: ExternalProfilesWhereUniqueInput
+  }
+
+
+  /**
+   * ExternalProfiles updateMany
+   */
+  export type ExternalProfilesUpdateManyArgs = {
+    data: XOR<ExternalProfilesUpdateManyMutationInput, ExternalProfilesUncheckedUpdateManyInput>
+    where?: ExternalProfilesWhereInput
+  }
+
+
+  /**
+   * ExternalProfiles upsert
+   */
+  export type ExternalProfilesUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the ExternalProfiles
+     * 
+    **/
+    select?: ExternalProfilesSelect | null
+    /**
+     * The filter to search for the ExternalProfiles to update in case it exists.
+     * 
+    **/
+    where: ExternalProfilesWhereUniqueInput
+    /**
+     * In case the ExternalProfiles found by the `where` argument doesn't exist, create a new ExternalProfiles with this data.
+     * 
+    **/
+    create: XOR<ExternalProfilesCreateInput, ExternalProfilesUncheckedCreateInput>
+    /**
+     * In case the ExternalProfiles was found with the provided `where` argument, update it with this data.
+     * 
+    **/
+    update: XOR<ExternalProfilesUpdateInput, ExternalProfilesUncheckedUpdateInput>
+  }
+
+
+  /**
+   * ExternalProfiles delete
+   */
+  export type ExternalProfilesDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the ExternalProfiles
+     * 
+    **/
+    select?: ExternalProfilesSelect | null
+    /**
+     * Filter which ExternalProfiles to delete.
+     * 
+    **/
+    where: ExternalProfilesWhereUniqueInput
+  }
+
+
+  /**
+   * ExternalProfiles deleteMany
+   */
+  export type ExternalProfilesDeleteManyArgs = {
+    where?: ExternalProfilesWhereInput
+  }
+
+
+  /**
+   * ExternalProfiles without action
+   */
+  export type ExternalProfilesArgs = {
+    /**
+     * Select specific fields to fetch from the ExternalProfiles
+     * 
+    **/
+    select?: ExternalProfilesSelect | null
   }
 
 
@@ -14456,6 +15276,15 @@ export namespace Prisma {
   export type ProfileScalarFieldEnum = (typeof ProfileScalarFieldEnum)[keyof typeof ProfileScalarFieldEnum]
 
 
+  export const ExternalProfilesScalarFieldEnum: {
+    circlesAddress: 'circlesAddress',
+    name: 'name',
+    avatarUrl: 'avatarUrl'
+  };
+
+  export type ExternalProfilesScalarFieldEnum = (typeof ExternalProfilesScalarFieldEnum)[keyof typeof ExternalProfilesScalarFieldEnum]
+
+
   export const MembershipScalarFieldEnum: {
     id: 'id',
     createdAt: 'createdAt',
@@ -14850,6 +15679,34 @@ export namespace Prisma {
     lastAcknowledged?: DateTimeNullableWithAggregatesFilter | Date | string | null
     verifySafeChallenge?: StringNullableWithAggregatesFilter | string | null
     newSafeAddress?: StringNullableWithAggregatesFilter | string | null
+  }
+
+  export type ExternalProfilesWhereInput = {
+    AND?: Enumerable<ExternalProfilesWhereInput>
+    OR?: Enumerable<ExternalProfilesWhereInput>
+    NOT?: Enumerable<ExternalProfilesWhereInput>
+    circlesAddress?: StringFilter | string
+    name?: StringFilter | string
+    avatarUrl?: StringNullableFilter | string | null
+  }
+
+  export type ExternalProfilesOrderByInput = {
+    circlesAddress?: SortOrder
+    name?: SortOrder
+    avatarUrl?: SortOrder
+  }
+
+  export type ExternalProfilesWhereUniqueInput = {
+    circlesAddress?: string
+  }
+
+  export type ExternalProfilesScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<ExternalProfilesScalarWhereWithAggregatesInput>
+    OR?: Enumerable<ExternalProfilesScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<ExternalProfilesScalarWhereWithAggregatesInput>
+    circlesAddress?: StringWithAggregatesFilter | string
+    name?: StringWithAggregatesFilter | string
+    avatarUrl?: StringNullableWithAggregatesFilter | string | null
   }
 
   export type MembershipWhereInput = {
@@ -15743,6 +16600,48 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ExternalProfilesCreateInput = {
+    circlesAddress: string
+    name: string
+    avatarUrl?: string | null
+  }
+
+  export type ExternalProfilesUncheckedCreateInput = {
+    circlesAddress: string
+    name: string
+    avatarUrl?: string | null
+  }
+
+  export type ExternalProfilesUpdateInput = {
+    circlesAddress?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ExternalProfilesUncheckedUpdateInput = {
+    circlesAddress?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ExternalProfilesCreateManyInput = {
+    circlesAddress: string
+    name: string
+    avatarUrl?: string | null
+  }
+
+  export type ExternalProfilesUpdateManyMutationInput = {
+    circlesAddress?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ExternalProfilesUncheckedUpdateManyInput = {
+    circlesAddress?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MembershipCreateInput = {

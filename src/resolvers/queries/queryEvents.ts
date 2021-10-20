@@ -57,7 +57,7 @@ export function events(
       }
 
       let whereBlock = ``;
-      let limit:number|null = Number.isInteger((<any>args).limit) ? (<any>args).limit : 100;
+      let limit:number|null = Number.isInteger((<any>args).limit) ? (<any>args).limit : 50;
 
       if ((<any>args).fromBlock || (<any>args).toBlock) {
         const queryEventsArgs: RequireFields<QueryEventsArgs, "safeAddress"> =
@@ -78,7 +78,7 @@ export function events(
           whereBlock = ` and timestamp < '${fromDate.toISOString()}'`;
           limit = Number.isInteger(args_.pagination.limit) && args_.pagination.limit > 0 && args_.pagination.limit <= 100
             ? args_.pagination.limit
-            : 100;
+            : 50;
         }
       }
 

@@ -1,6 +1,6 @@
 {
   "name": "@o-platform/api-server",
-  "version": "0.1.105",
+  "version": "0.1.106",
   "description": "",
   "main": "dist/index.js",
   "prepublish": "tsc",
@@ -14,6 +14,7 @@
   "author": "Daniel Janz & Samuel Andert (Basic Income Lab GmbH)",
   "license": "AGPL-3",
   "dependencies": {
+    "dataloader": "^2.0.0",
     "@graphql-tools/schema": "^8.2.0",
     "@prisma/client": "^2.30.2",
     "@types/lru-cache": "^5.1.1",

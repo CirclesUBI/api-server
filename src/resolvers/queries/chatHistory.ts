@@ -1,12 +1,12 @@
 import { Context } from "../../context";
 import { events } from "./queryEvents";
-import { ChatMessage, ProfileEvent } from "../../types";
+import {ChatMessage, ProfileEvent, QueryChatHistoryArgs} from "../../types";
 import { PrismaClient } from "../../api-db/client";
 import { getPool } from "../resolvers";
 import { profilesBySafeAddress } from "./profiles";
 
 export function chatHistory(prisma: PrismaClient) {
-  return async (parent: any, args: any, context: Context) => {
+  return async (parent: any, args: QueryChatHistoryArgs, context: Context) => {
     const pool = getPool();
 
     const safeAddress = args.safeAddress.toLowerCase();
@@ -32,9 +32,19 @@ export function chatHistory(prisma: PrismaClient) {
         undefined,
         {
           safeAddress: contactSafeAddress,
+          pagination: args.pagination
         },
         context
       );
+
+      const paginationFilter = args.pagination?.continueAt
+        ? {
+          createdAt: {
+            lt: new Date(Date.parse(args.pagination?.continueAt))
+          }
+        }
+        : {};
+
       const chatMessagesPromise = prisma.chatMessage.findMany({
         where: {
           from: {
@@ -43,10 +53,12 @@ export function chatHistory(prisma: PrismaClient) {
           to: {
             in: [safeAddress, contactSafeAddress],
           },
+          ...paginationFilter
         },
         orderBy: {
           createdAt: "desc",
         },
+        take: args.pagination?.limit ?? 50
       });
 
       const eventPromiseResults = await Promise.all([

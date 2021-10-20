@@ -2,7 +2,7 @@ import { Context } from "../../context";
 import { profilesBySafeAddress, ProfilesBySafeAddressLookup } from "./profiles";
 import { PrismaClient } from "../../api-db/client";
 import { getPool } from "../resolvers";
-import { Contact, ProfileEvent } from "../../types";
+import {Contact, Maybe, PaginationArgs, ProfileEvent, QueryContactsArgs} from "../../types";
 import { Pool } from "pg";
 import { events } from "./queryEvents";
 
@@ -154,7 +154,7 @@ export function contacts(
 ) {
   return async (
     parent: any,
-    args: { safeAddress: string },
+    args: QueryContactsArgs,
     context: Context
   ) => {
     const pool = getPool();
