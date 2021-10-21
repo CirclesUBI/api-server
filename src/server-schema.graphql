@@ -582,8 +582,8 @@ type Mutation {
   upsertTag(data: UpsertTagInput!): Tag!
 
   upsertOrganisation(organisation: UpsertOrganisationInput!) : CreateOrganisationResult!
-  addMember(groupId: Int! memberId: Int!) : AddMemberResult
-  removeMember(groupId: Int! memberId: Int!) : RemoveMemberResult
+  addMember(groupId: String! memberId: Int!) : AddMemberResult
+  removeMember(groupId: String! memberId: Int!) : RemoveMemberResult
 
   acknowledge(until: String!): Boolean!
 

@@ -1,7 +1,13 @@
 import {myProfile, profilesById, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
-import {MutationAddMemberArgs, MutationRemoveMemberArgs, ProfileEvent, Resolvers} from "../types";
+import {
+  MutationAddMemberArgs,
+  MutationRemoveMemberArgs, Profile,
+  ProfileEvent,
+  ProfileOrOrganisation,
+  Resolvers
+} from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
 import {sessionInfo} from "./queries/sessionInfo";
@@ -146,6 +152,36 @@ export function getPool() {
 
 const packageJson = require("../../package.json");
 
+async function findGroup(groupId: number|string, callerProfile: Profile) {
+  const where = Number.isInteger(groupId)
+    ? {
+      id: groupId
+    }
+    : {
+      circlesAddress: groupId
+    };
+
+  const groupProfiles = await prisma_api_rw.profile.findMany({
+    where: {
+      ...<any>where
+    },
+    include: {
+      members: {
+        where: {
+          memberId: callerProfile.id,
+          isAdmin: true
+        }
+      }
+    }
+  });
+
+  if (groupProfiles.length != 1) {
+    throw new Error(`Couldn't find a group with id or address ${groupId}.`);
+  }
+
+  return groupProfiles[0];
+}
+
 export const resolvers: Resolvers = {
   Profile: {
     offers: profileOffers(prisma_api_ro),
@@ -178,7 +214,10 @@ export const resolvers: Resolvers = {
         }
       }))
       .map(o => {
-        return o.member;
+        return <ProfileOrOrganisation>{
+          __typename: "Profile",
+          ...o.member
+        };
       });
     }
   },
@@ -249,25 +288,11 @@ export const resolvers: Resolvers = {
     verifySessionChallenge: verifySessionChallengeResolver(prisma_api_rw),
     createTestInvitation: createTestInvitation(prisma_api_rw),
     addMember: async (parent:any, args:MutationAddMemberArgs, context:Context) => {
-      // TODO: Only owners of a group can add or remove members
       const callerProfile = await context.callerProfile;
       if (!callerProfile) {
         throw new Error(`!callerProfile`);
       }
-
-      const groupProfile = await prisma_api_rw.profile.findUnique({
-        where: {
-          id: args.groupId
-        },
-        include: {
-          members: {
-            where: {
-              memberId: callerProfile.id,
-              isAdmin: true
-            }
-          }
-        }
-      });
+      const groupProfile = await findGroup(args.groupId, callerProfile);
 
       if (groupProfile?.members.length != 1) {
         throw new Error(`You are not an admin of this group.`);
@@ -275,7 +300,7 @@ export const resolvers: Resolvers = {
 
       await prisma_api_rw.membership.create({
         data: {
-          memberAtId: args.groupId,
+          memberAtId: groupProfile.id,
           memberId: args.memberId
         }
       });
@@ -283,24 +308,12 @@ export const resolvers: Resolvers = {
         success: true
       }
     },
-    removeMember: async (parent:any, args:MutationRemoveMemberArgs, context:Context) => {      const callerProfile = await context.callerProfile;
+    removeMember: async (parent:any, args:MutationRemoveMemberArgs, context:Context) => {
+      const callerProfile = await context.callerProfile;
       if (!callerProfile) {
         throw new Error(`!callerProfile`);
       }
-
-      const groupProfile = await prisma_api_rw.profile.findUnique({
-        where: {
-          id: args.groupId
-        },
-        include: {
-          members: {
-            where: {
-              memberId: callerProfile.id,
-              isAdmin: true
-            }
-          }
-        }
-      });
+      const groupProfile = await findGroup(args.groupId, callerProfile);
 
       if (groupProfile?.members.length != 1) {
         throw new Error(`You are not an admin of this group.`);
@@ -309,7 +322,7 @@ export const resolvers: Resolvers = {
       await prisma_api_rw.membership.deleteMany({
         where: {
           memberId: args.memberId,
-          memberAtId: args.groupId
+          memberAtId: groupProfile.id,
         }
       });
       return {

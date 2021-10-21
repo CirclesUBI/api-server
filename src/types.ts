@@ -384,13 +384,13 @@ export type MutationUpsertOrganisationArgs = {
 
 
 export type MutationAddMemberArgs = {
-  groupId: Scalars['Int'];
+  groupId: Scalars['String'];
   memberId: Scalars['Int'];
 };
 
 
 export type MutationRemoveMemberArgs = {
-  groupId: Scalars['Int'];
+  groupId: Scalars['String'];
   memberId: Scalars['Int'];
 };
 
