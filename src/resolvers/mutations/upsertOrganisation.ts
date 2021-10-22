@@ -3,7 +3,7 @@ import {PrismaClient} from "../../api-db/client";
 import {MutationUpsertOrganisationArgs, Profile} from "../../types";
 import {prisma_api_ro, prisma_api_rw} from "../../apiDbClient";
 
-export function upsertOrganisation(prisma_api_rw:PrismaClient) {
+export function upsertOrganisation(prisma_api_rw:PrismaClient, isRegion:boolean) {
     return async (parent:any, args:MutationUpsertOrganisationArgs, context:Context) => {
       const ownProfile = await context.callerProfile;
 
@@ -39,7 +39,7 @@ export function upsertOrganisation(prisma_api_rw:PrismaClient) {
             circlesAddress: args.organisation.circlesAddress,
             avatarUrl: args.organisation.avatarUrl,
             avatarMimeType: args.organisation.avatarMimeType,
-            type: "ORGANISATION",
+            type: isRegion ? "REGION" : "ORGANISATION",
             cityGeonameid: args.organisation.cityGeonameid
           }
         });

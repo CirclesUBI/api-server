@@ -54,6 +54,7 @@ export function organisations(prisma: PrismaClient) {
           firstName: o.organisation,
           circlesAddress: o.organisation
         };
+
         return <Organisation>{
           id: p.id,
           createdAt: allSafeAddresses[p.circlesAddress ?? ""],

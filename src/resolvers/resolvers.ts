@@ -3,7 +3,7 @@ import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {
   MutationAddMemberArgs,
-  MutationRemoveMemberArgs, Profile,
+  MutationRemoveMemberArgs, Organisation, Profile,
   ProfileEvent,
   ProfileOrOrganisation,
   Resolvers
@@ -241,6 +241,25 @@ export const resolvers: Resolvers = {
     myProfile: myProfile(prisma_api_rw),
     myInvitations: myInvitations(),
     organisations: organisations(prisma_api_ro),
+    regions: async (parent:any, args:any, context:Context) => {
+      const regions = await prisma_api_ro.profile.findMany({
+        where: {
+          type: "REGION"
+        }
+      });
+      return regions.map(o => {
+        return <Organisation>{
+          id: o.id,
+          createdAt: o.lastUpdateAt.toJSON(),
+          name: o.firstName,
+          cityGeonameid: o.cityGeonameid,
+          circlesAddress: o.circlesAddress,
+          avatarUrl: o.avatarUrl,
+          description: o.dream,
+          avatarMimeType: o.avatarMimeType
+        }
+      });
+    },
     organisationsByAddress: organisationsByAddress(),
     profilesById: profilesById(prisma_api_ro),
     profilesBySafeAddress: profilesBySafeAddress(prisma_api_ro, true),
@@ -264,7 +283,8 @@ export const resolvers: Resolvers = {
     initAggregateState: initAggregateState()
   },
   Mutation: {
-    upsertOrganisation: upsertOrganisation(prisma_api_rw),
+    upsertOrganisation: upsertOrganisation(prisma_api_rw, false),
+    upsertRegion: upsertOrganisation(prisma_api_rw, true),
     upsertOffer: upsertOfferResolver(prisma_api_rw),
     exchangeToken: exchangeTokenResolver(prisma_api_rw),
     logout: logout(prisma_api_rw),

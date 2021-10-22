@@ -315,6 +315,7 @@ export type Mutation = {
   provePayment: ProvePaymentResult;
   upsertTag: Tag;
   upsertOrganisation: CreateOrganisationResult;
+  upsertRegion: CreateOrganisationResult;
   addMember?: Maybe<AddMemberResult>;
   removeMember?: Maybe<RemoveMemberResult>;
   acknowledge: Scalars['Boolean'];
@@ -385,6 +386,11 @@ export type MutationUpsertTagArgs = {
 
 
 export type MutationUpsertOrganisationArgs = {
+  organisation: UpsertOrganisationInput;
+};
+
+
+export type MutationUpsertRegionArgs = {
   organisation: UpsertOrganisationInput;
 };
 
@@ -577,6 +583,7 @@ export type Query = {
   lastUBITransaction?: Maybe<Scalars['String']>;
   stats?: Maybe<Stats>;
   organisations: Array<Organisation>;
+  regions: Array<Organisation>;
   organisationsByAddress: Array<Organisation>;
   myInvitations: Array<CreatedInvitation>;
   events: Array<ProfileEvent>;
@@ -602,6 +609,11 @@ export type Query = {
 
 
 export type QueryOrganisationsArgs = {
+  pagination?: Maybe<PaginationArgs>;
+};
+
+
+export type QueryRegionsArgs = {
   pagination?: Maybe<PaginationArgs>;
 };
 
@@ -1447,6 +1459,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   provePayment?: Resolver<ResolversTypes['ProvePaymentResult'], ParentType, ContextType, RequireFields<MutationProvePaymentArgs, 'data'>>;
   upsertTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationUpsertTagArgs, 'data'>>;
   upsertOrganisation?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertOrganisationArgs, 'organisation'>>;
+  upsertRegion?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertRegionArgs, 'organisation'>>;
   addMember?: Resolver<Maybe<ResolversTypes['AddMemberResult']>, ParentType, ContextType, RequireFields<MutationAddMemberArgs, 'groupId' | 'memberId'>>;
   removeMember?: Resolver<Maybe<ResolversTypes['RemoveMemberResult']>, ParentType, ContextType, RequireFields<MutationRemoveMemberArgs, 'groupId' | 'memberId'>>;
   acknowledge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'until'>>;
@@ -1581,6 +1594,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   lastUBITransaction?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
   organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsArgs, never>>;
+  regions?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryRegionsArgs, never>>;
   organisationsByAddress?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsByAddressArgs, 'addresses'>>;
   myInvitations?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'safeAddress'>>;

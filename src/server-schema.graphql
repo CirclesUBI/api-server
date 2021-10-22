@@ -588,6 +588,7 @@ type Mutation {
   upsertTag(data: UpsertTagInput!): Tag!
 
   upsertOrganisation(organisation: UpsertOrganisationInput!) : CreateOrganisationResult!
+  upsertRegion(organisation: UpsertOrganisationInput!) : CreateOrganisationResult!
   addMember(groupId: String! memberId: Int!) : AddMemberResult
   removeMember(groupId: String! memberId: Int!) : RemoveMemberResult
 
@@ -635,6 +636,7 @@ type Query {
   stats: Stats
 
   organisations(pagination: PaginationArgs): [Organisation!]!
+  regions(pagination: PaginationArgs): [Organisation!]!
   organisationsByAddress(addresses:[String!]!): [Organisation!]!
 
   # Gets the created (noty invitations of the currently logged on user
