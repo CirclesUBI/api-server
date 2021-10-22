@@ -64,6 +64,8 @@ import {myInvitations} from "./queries/myInvitations";
 import {organisationsByAddress} from "./queries/organisationsByAddress";
 import {createTestInvitation} from "./mutations/createTestInvitation";
 import {Membership} from "../api-db/client";
+import {addMemberResolver} from "./mutations/addMember";
+import {removeMemberResolver} from "./mutations/removeMember";
 
 export const safeFundingTransactionResolver = (async (parent:any, args:any, context:Context) => {
   const session = await context.verifySession();
@@ -152,40 +154,37 @@ export function getPool() {
 
 const packageJson = require("../../package.json");
 
-async function findGroup(groupId: number|string, callerProfile: Profile) {
-  const where = Number.isInteger(groupId)
-    ? {
-      id: groupId
-    }
-    : {
-      circlesAddress: groupId
-    };
-
-  const groupProfiles = await prisma_api_rw.profile.findMany({
-    where: {
-      ...<any>where
-    },
-    include: {
-      members: {
-        where: {
-          memberId: callerProfile.id,
-          isAdmin: true
-        }
-      }
-    }
-  });
-
-  if (groupProfiles.length != 1) {
-    throw new Error(`Couldn't find a group with id or address ${groupId}.`);
-  }
-
-  return groupProfiles[0];
-}
-
 export const resolvers: Resolvers = {
   Profile: {
     offers: profileOffers(prisma_api_ro),
-    city: profileCity
+    city: profileCity,
+    memberships: async (parent:Profile, args, context:Context) => {
+      const memberships = await prisma_api_ro.membership.findMany({
+        where: {
+          memberId: parent.id
+        },
+        include: {
+          memberAt: true
+        }
+      });
+
+      return memberships.map(o => {
+        return {
+          organisation: {
+            id: o.memberAt.id,
+            name: o.memberAt.firstName,
+            cityGeonameid: o.memberAt.cityGeonameid,
+            avatarUrl: o.memberAt.avatarUrl,
+            avatarMimeType: o.memberAt.avatarMimeType,
+            circlesSafeOwner: o.memberAt.circlesSafeOwner,
+            description: o.memberAt.dream,
+            createdAt: o.createdAt.toJSON(), // TODO: This is the creation date of the membership, not the one of the organisation
+            circlesAddress: o.memberAt.circlesAddress
+          },
+          isAdmin: o.isAdmin ?? false
+        }
+      })
+    }
   },
   Offer: {
     createdBy: offerCreatedBy(prisma_api_ro),
@@ -282,53 +281,13 @@ export const resolvers: Resolvers = {
     createInvitations: createInvitations(prisma_api_rw),
     claimInvitation: claimInvitation(prisma_api_rw),
     redeemClaimedInvitation: redeemClaimedInvitation(prisma_api_ro, prisma_api_rw),
-    requestSessionChallenge: async (parent, args, context) => {
+    requestSessionChallenge: async (parent, args, context:Context) => {
       return await Session.requestSessionFromSignature(prisma_api_rw, args.address);
     },
     verifySessionChallenge: verifySessionChallengeResolver(prisma_api_rw),
     createTestInvitation: createTestInvitation(prisma_api_rw),
-    addMember: async (parent:any, args:MutationAddMemberArgs, context:Context) => {
-      const callerProfile = await context.callerProfile;
-      if (!callerProfile) {
-        throw new Error(`!callerProfile`);
-      }
-      const groupProfile = await findGroup(args.groupId, callerProfile);
-
-      if (groupProfile?.members.length != 1) {
-        throw new Error(`You are not an admin of this group.`);
-      }
-
-      await prisma_api_rw.membership.create({
-        data: {
-          memberAtId: groupProfile.id,
-          memberId: args.memberId
-        }
-      });
-      return {
-        success: true
-      }
-    },
-    removeMember: async (parent:any, args:MutationRemoveMemberArgs, context:Context) => {
-      const callerProfile = await context.callerProfile;
-      if (!callerProfile) {
-        throw new Error(`!callerProfile`);
-      }
-      const groupProfile = await findGroup(args.groupId, callerProfile);
-
-      if (groupProfile?.members.length != 1) {
-        throw new Error(`You are not an admin of this group.`);
-      }
-
-      await prisma_api_rw.membership.deleteMany({
-        where: {
-          memberId: args.memberId,
-          memberAtId: groupProfile.id,
-        }
-      });
-      return {
-        success: true
-      }
-    }
+    addMember: addMemberResolver,
+    removeMember: removeMemberResolver
   },
   Subscription: {
     events: {

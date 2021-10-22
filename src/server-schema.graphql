@@ -23,7 +23,13 @@ type Profile {
   trustsYou: Int # The trust relative to the safeAddress
   youTrust: Int # The trust relative to the safeAddress
   lastEvent: ProfileEvent # The last event that concerns the safeAddress
-  claimedInvitation: ClaimedInvitation
+  claimedInvitation: ClaimedInvitation,
+  memberships: [Membership!]
+}
+
+type Membership {
+  isAdmin: Boolean!
+  organisation: Organisation!
 }
 
 type Organisation {
@@ -627,6 +633,7 @@ type Query {
   hubSignupTransaction: ProfileEvent
   lastUBITransaction: String
   stats: Stats
+
   organisations(pagination: PaginationArgs): [Organisation!]!
   organisationsByAddress(addresses:[String!]!): [Organisation!]!
 

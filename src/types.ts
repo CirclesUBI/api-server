@@ -293,6 +293,12 @@ export type LogoutResponse = {
   errorMessage?: Maybe<Scalars['String']>;
 };
 
+export type Membership = {
+  __typename?: 'Membership';
+  isAdmin: Scalars['Boolean'];
+  organisation: Organisation;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   exchangeToken: ExchangeTokenResponse;
@@ -514,6 +520,7 @@ export type Profile = {
   youTrust?: Maybe<Scalars['Int']>;
   lastEvent?: Maybe<ProfileEvent>;
   claimedInvitation?: Maybe<ClaimedInvitation>;
+  memberships?: Maybe<Array<Membership>>;
 };
 
 export type ProfileEvent = {
@@ -1020,6 +1027,7 @@ export type ResolversTypes = ResolversObject<{
   LockOfferInput: LockOfferInput;
   LockOfferResult: ResolverTypeWrapper<LockOfferResult>;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
+  Membership: ResolverTypeWrapper<Membership>;
   Mutation: ResolverTypeWrapper<{}>;
   NotificationEvent: ResolverTypeWrapper<NotificationEvent>;
   Offer: ResolverTypeWrapper<Offer>;
@@ -1105,6 +1113,7 @@ export type ResolversParentTypes = ResolversObject<{
   LockOfferInput: LockOfferInput;
   LockOfferResult: LockOfferResult;
   LogoutResponse: LogoutResponse;
+  Membership: Membership;
   Mutation: {};
   NotificationEvent: NotificationEvent;
   Offer: Offer;
@@ -1417,6 +1426,12 @@ export type LogoutResponseResolvers<ContextType = any, ParentType extends Resolv
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type MembershipResolvers<ContextType = any, ParentType extends ResolversParentTypes['Membership'] = ResolversParentTypes['Membership']> = ResolversObject<{
+  isAdmin?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  organisation?: Resolver<ResolversTypes['Organisation'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   exchangeToken?: Resolver<ResolversTypes['ExchangeTokenResponse'], ParentType, ContextType>;
   authenticateAt?: Resolver<ResolversTypes['DelegateAuthInit'], ParentType, ContextType, RequireFields<MutationAuthenticateAtArgs, 'appId'>>;
@@ -1513,6 +1528,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   youTrust?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   lastEvent?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
+  memberships?: Resolver<Maybe<Array<ResolversTypes['Membership']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1714,6 +1730,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   InitAggregateState?: InitAggregateStateResolvers<ContextType>;
   LockOfferResult?: LockOfferResultResolvers<ContextType>;
   LogoutResponse?: LogoutResponseResolvers<ContextType>;
+  Membership?: MembershipResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   NotificationEvent?: NotificationEventResolvers<ContextType>;
   Offer?: OfferResolvers<ContextType>;
