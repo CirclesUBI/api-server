@@ -72,11 +72,19 @@ model RedeemInvitationRequest {
   invitationToRedeemId Int
 }
 
-
 enum ProfileType {
       PERSON
       ORGANISATION
       REGION
+}
+
+model InvitationFundsEOA {
+    id Int @id @default(autoincrement())
+    address String
+    privateKey String
+
+    profileId Int
+    profile Profile @relation(name: "Profile_InvitationFundsEOA", fields: [profileId], references:[id])
 }
 
 model Profile {
@@ -114,12 +122,14 @@ model Profile {
     purchases Purchase[]  @relation(name: "Purchase_CreatedBy")
 
     invitations Invitation[]  @relation(name: "Invitation_CreatedBy")
+    invitationFunds InvitationFundsEOA? @relation(name: "Profile_InvitationFundsEOA")
+
     redeemInvitationRequests RedeemInvitationRequest[] @relation(name: "RedeemInvitationRequest_CreatedBy")
     redeemedInvitations Invitation[]  @relation(name: "Invitation_RedeemedBy")
     claimedInvitations Invitation[]  @relation(name: "Invitation_ClaimedBy")
 
-    subscribers Subscription[] @relation(name: "Subscription_SubscribingToProfile")
-    subscriptions Subscription[] @relation(name: "Subscription_SubscriberProfile")
+    //subscribers Subscription[] @relation(name: "Subscription_SubscribingToProfile")
+    //subscriptions Subscription[] @relation(name: "Subscription_SubscriberProfile")
 
     memberships Membership[] @relation(name: "Profile_Membership")
     members Membership[] @relation(name: "Profile_MemberAt")
@@ -144,20 +154,20 @@ model Membership {
     memberAt Profile @relation(name: "Profile_MemberAt", fields: [memberAtId], references:[id])
 }
 
-model Subscription {
-    id Int @id @default(autoincrement())
-
-    createdAt DateTime
-
-    subscriber Profile @relation(name: "Subscription_SubscriberProfile", fields: [subscriberProfileId], references: [id])
-    subscriberProfileId Int
-
-    subscribingToOffer Offer? @relation(name: "Subscription_SubscribingToOffer", fields: [subscriberProfileId], references: [id])
-    subscribingToOfferId Int?
-
-    subscribingToProfile Profile? @relation(name: "Subscription_SubscribingToProfile", fields: [subscriberProfileId], references: [id])
-    subscribingToProfileId Int?
-}
+//model Subscription {
+//    id Int @id @default(autoincrement())
+//
+//    createdAt DateTime
+//
+//    subscriber Profile @relation(name: "Subscription_SubscriberProfile", fields: [subscriberProfileId], references: [id])
+//    subscriberProfileId Int
+//
+//    subscribingToOffer Offer? @relation(name: "Subscription_SubscribingToOffer", fields: [subscriberProfileId], references: [id])
+//    subscribingToOfferId Int?
+//
+//    subscribingToProfile Profile? @relation(name: "Subscription_SubscribingToProfile", fields: [subscriberProfileId], references: [id])
+//    subscribingToProfileId Int?
+//}
 
 model ChatMessage {
     id Int @id @default(autoincrement())
@@ -186,8 +196,9 @@ model DelegatedChallenges {
 }
 
 model Offer {
-    id Int @id @default(autoincrement())
+    id String @id
 
+    isPrivate Boolean
     createdBy Profile @relation(name: "Offer_CreatedBy", fields: [createdByProfileId], references: [id])
     createdByProfileId Int
 
@@ -216,7 +227,7 @@ model Offer {
     deliveryTermsTag Tag @relation(name: "Offer_DeliveryTermsTag", fields: [deliveryTermsTagId], references: [id])
     deliveryTermsTagId Int
 
-    subscribers Subscription[] @relation(name: "Subscription_SubscribingToOffer")
+    //subscribers Subscription[] @relation(name: "Subscription_SubscribingToOffer")
 }
 
 model Purchase {
@@ -227,7 +238,7 @@ model Purchase {
     purchasedProvenAt DateTime?
 
     purchasedItem Offer @relation(name: "Purchase_PurchasedItem", fields: [purchasedItemId], references: [id])
-    purchasedItemId Int
+    purchasedItemId String
 
     purchasedItemTitle String
 

@@ -65,6 +65,17 @@ export type RedeemInvitationRequest = {
 }
 
 /**
+ * Model InvitationFundsEOA
+ */
+
+export type InvitationFundsEOA = {
+  id: number
+  address: string
+  privateKey: string
+  profileId: number
+}
+
+/**
  * Model Profile
  */
 
@@ -115,18 +126,6 @@ export type Membership = {
 }
 
 /**
- * Model Subscription
- */
-
-export type Subscription = {
-  id: number
-  createdAt: Date
-  subscriberProfileId: number
-  subscribingToOfferId: number | null
-  subscribingToProfileId: number | null
-}
-
-/**
  * Model ChatMessage
  */
 
@@ -160,7 +159,8 @@ export type DelegatedChallenges = {
  */
 
 export type Offer = {
-  id: number
+  id: string
+  isPrivate: boolean
   createdByProfileId: number
   publishedAt: Date
   unlistedAt: Date | null
@@ -185,7 +185,7 @@ export type Purchase = {
   purchasedByProfileId: number
   purchasedAt: Date
   purchasedProvenAt: Date | null
-  purchasedItemId: number
+  purchasedItemId: string
   purchasedItemTitle: string
   pricePerUnit: string
   purchasedUnits: number
@@ -416,6 +416,16 @@ export class PrismaClient<
   get redeemInvitationRequest(): Prisma.RedeemInvitationRequestDelegate<GlobalReject>;
 
   /**
+   * `prisma.invitationFundsEOA`: Exposes CRUD operations for the **InvitationFundsEOA** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more InvitationFundsEOAS
+    * const invitationFundsEOAS = await prisma.invitationFundsEOA.findMany()
+    * ```
+    */
+  get invitationFundsEOA(): Prisma.InvitationFundsEOADelegate<GlobalReject>;
+
+  /**
    * `prisma.profile`: Exposes CRUD operations for the **Profile** model.
     * Example usage:
     * ```ts
@@ -444,16 +454,6 @@ export class PrismaClient<
     * ```
     */
   get membership(): Prisma.MembershipDelegate<GlobalReject>;
-
-  /**
-   * `prisma.subscription`: Exposes CRUD operations for the **Subscription** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Subscriptions
-    * const subscriptions = await prisma.subscription.findMany()
-    * ```
-    */
-  get subscription(): Prisma.SubscriptionDelegate<GlobalReject>;
 
   /**
    * `prisma.chatMessage`: Exposes CRUD operations for the **ChatMessage** model.
@@ -907,10 +907,10 @@ export namespace Prisma {
     Session: 'Session',
     Invitation: 'Invitation',
     RedeemInvitationRequest: 'RedeemInvitationRequest',
+    InvitationFundsEOA: 'InvitationFundsEOA',
     Profile: 'Profile',
     ExternalProfiles: 'ExternalProfiles',
     Membership: 'Membership',
-    Subscription: 'Subscription',
     ChatMessage: 'ChatMessage',
     DelegatedChallenges: 'DelegatedChallenges',
     Offer: 'Offer',
@@ -3993,6 +3993,912 @@ export namespace Prisma {
 
 
   /**
+   * Model InvitationFundsEOA
+   */
+
+
+  export type AggregateInvitationFundsEOA = {
+    _count: InvitationFundsEOACountAggregateOutputType | null
+    count: InvitationFundsEOACountAggregateOutputType | null
+    _avg: InvitationFundsEOAAvgAggregateOutputType | null
+    avg: InvitationFundsEOAAvgAggregateOutputType | null
+    _sum: InvitationFundsEOASumAggregateOutputType | null
+    sum: InvitationFundsEOASumAggregateOutputType | null
+    _min: InvitationFundsEOAMinAggregateOutputType | null
+    min: InvitationFundsEOAMinAggregateOutputType | null
+    _max: InvitationFundsEOAMaxAggregateOutputType | null
+    max: InvitationFundsEOAMaxAggregateOutputType | null
+  }
+
+  export type InvitationFundsEOAAvgAggregateOutputType = {
+    id: number | null
+    profileId: number | null
+  }
+
+  export type InvitationFundsEOASumAggregateOutputType = {
+    id: number | null
+    profileId: number | null
+  }
+
+  export type InvitationFundsEOAMinAggregateOutputType = {
+    id: number | null
+    address: string | null
+    privateKey: string | null
+    profileId: number | null
+  }
+
+  export type InvitationFundsEOAMaxAggregateOutputType = {
+    id: number | null
+    address: string | null
+    privateKey: string | null
+    profileId: number | null
+  }
+
+  export type InvitationFundsEOACountAggregateOutputType = {
+    id: number
+    address: number
+    privateKey: number
+    profileId: number
+    _all: number
+  }
+
+
+  export type InvitationFundsEOAAvgAggregateInputType = {
+    id?: true
+    profileId?: true
+  }
+
+  export type InvitationFundsEOASumAggregateInputType = {
+    id?: true
+    profileId?: true
+  }
+
+  export type InvitationFundsEOAMinAggregateInputType = {
+    id?: true
+    address?: true
+    privateKey?: true
+    profileId?: true
+  }
+
+  export type InvitationFundsEOAMaxAggregateInputType = {
+    id?: true
+    address?: true
+    privateKey?: true
+    profileId?: true
+  }
+
+  export type InvitationFundsEOACountAggregateInputType = {
+    id?: true
+    address?: true
+    privateKey?: true
+    profileId?: true
+    _all?: true
+  }
+
+  export type InvitationFundsEOAAggregateArgs = {
+    /**
+     * Filter which InvitationFundsEOA to aggregate.
+     * 
+    **/
+    where?: InvitationFundsEOAWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvitationFundsEOAS to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<InvitationFundsEOAOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     * 
+    **/
+    cursor?: InvitationFundsEOAWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvitationFundsEOAS from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvitationFundsEOAS.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned InvitationFundsEOAS
+    **/
+    _count?: true | InvitationFundsEOACountAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_count`
+    **/
+    count?: true | InvitationFundsEOACountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: InvitationFundsEOAAvgAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_avg`
+    **/
+    avg?: InvitationFundsEOAAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: InvitationFundsEOASumAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_sum`
+    **/
+    sum?: InvitationFundsEOASumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: InvitationFundsEOAMinAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_min`
+    **/
+    min?: InvitationFundsEOAMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: InvitationFundsEOAMaxAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_max`
+    **/
+    max?: InvitationFundsEOAMaxAggregateInputType
+  }
+
+  export type GetInvitationFundsEOAAggregateType<T extends InvitationFundsEOAAggregateArgs> = {
+        [P in keyof T & keyof AggregateInvitationFundsEOA]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateInvitationFundsEOA[P]>
+      : GetScalarType<T[P], AggregateInvitationFundsEOA[P]>
+  }
+
+
+    
+    
+  export type InvitationFundsEOAGroupByArgs = {
+    where?: InvitationFundsEOAWhereInput
+    orderBy?: Enumerable<InvitationFundsEOAOrderByInput>
+    by: Array<InvitationFundsEOAScalarFieldEnum>
+    having?: InvitationFundsEOAScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: InvitationFundsEOACountAggregateInputType | true
+    _avg?: InvitationFundsEOAAvgAggregateInputType
+    _sum?: InvitationFundsEOASumAggregateInputType
+    _min?: InvitationFundsEOAMinAggregateInputType
+    _max?: InvitationFundsEOAMaxAggregateInputType
+  }
+
+
+  export type InvitationFundsEOAGroupByOutputType = {
+    id: number
+    address: string
+    privateKey: string
+    profileId: number
+    _count: InvitationFundsEOACountAggregateOutputType | null
+    _avg: InvitationFundsEOAAvgAggregateOutputType | null
+    _sum: InvitationFundsEOASumAggregateOutputType | null
+    _min: InvitationFundsEOAMinAggregateOutputType | null
+    _max: InvitationFundsEOAMaxAggregateOutputType | null
+  }
+
+  type GetInvitationFundsEOAGroupByPayload<T extends InvitationFundsEOAGroupByArgs> = Promise<
+    Array<
+      PickArray<InvitationFundsEOAGroupByOutputType, T['by']> & 
+        {
+          [P in ((keyof T) & (keyof InvitationFundsEOAGroupByOutputType))]: P extends '_count' 
+            ? T[P] extends boolean 
+              ? number 
+              : GetScalarType<T[P], InvitationFundsEOAGroupByOutputType[P]> 
+            : GetScalarType<T[P], InvitationFundsEOAGroupByOutputType[P]>
+        }
+      > 
+    >
+
+
+  export type InvitationFundsEOASelect = {
+    id?: boolean
+    address?: boolean
+    privateKey?: boolean
+    profileId?: boolean
+    profile?: boolean | ProfileArgs
+  }
+
+  export type InvitationFundsEOAInclude = {
+    profile?: boolean | ProfileArgs
+  }
+
+  export type InvitationFundsEOAGetPayload<
+    S extends boolean | null | undefined | InvitationFundsEOAArgs,
+    U = keyof S
+      > = S extends true
+        ? InvitationFundsEOA
+    : S extends undefined
+    ? never
+    : S extends InvitationFundsEOAArgs | InvitationFundsEOAFindManyArgs
+    ?'include' extends U
+    ? InvitationFundsEOA  & {
+    [P in TrueKeys<S['include']>]: 
+          P extends 'profile'
+        ? ProfileGetPayload<S['include'][P]> : never
+  } 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]: P extends keyof InvitationFundsEOA ?InvitationFundsEOA [P]
+  : 
+          P extends 'profile'
+        ? ProfileGetPayload<S['select'][P]> : never
+  } 
+    : InvitationFundsEOA
+  : InvitationFundsEOA
+
+
+  type InvitationFundsEOACountArgs = Merge<
+    Omit<InvitationFundsEOAFindManyArgs, 'select' | 'include'> & {
+      select?: InvitationFundsEOACountAggregateInputType | true
+    }
+  >
+
+  export interface InvitationFundsEOADelegate<GlobalRejectSettings> {
+    /**
+     * Find zero or one InvitationFundsEOA that matches the filter.
+     * @param {InvitationFundsEOAFindUniqueArgs} args - Arguments to find a InvitationFundsEOA
+     * @example
+     * // Get one InvitationFundsEOA
+     * const invitationFundsEOA = await prisma.invitationFundsEOA.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends InvitationFundsEOAFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, InvitationFundsEOAFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'InvitationFundsEOA'> extends True ? CheckSelect<T, Prisma__InvitationFundsEOAClient<InvitationFundsEOA>, Prisma__InvitationFundsEOAClient<InvitationFundsEOAGetPayload<T>>> : CheckSelect<T, Prisma__InvitationFundsEOAClient<InvitationFundsEOA | null >, Prisma__InvitationFundsEOAClient<InvitationFundsEOAGetPayload<T> | null >>
+
+    /**
+     * Find the first InvitationFundsEOA that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvitationFundsEOAFindFirstArgs} args - Arguments to find a InvitationFundsEOA
+     * @example
+     * // Get one InvitationFundsEOA
+     * const invitationFundsEOA = await prisma.invitationFundsEOA.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends InvitationFundsEOAFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, InvitationFundsEOAFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'InvitationFundsEOA'> extends True ? CheckSelect<T, Prisma__InvitationFundsEOAClient<InvitationFundsEOA>, Prisma__InvitationFundsEOAClient<InvitationFundsEOAGetPayload<T>>> : CheckSelect<T, Prisma__InvitationFundsEOAClient<InvitationFundsEOA | null >, Prisma__InvitationFundsEOAClient<InvitationFundsEOAGetPayload<T> | null >>
+
+    /**
+     * Find zero or more InvitationFundsEOAS that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvitationFundsEOAFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all InvitationFundsEOAS
+     * const invitationFundsEOAS = await prisma.invitationFundsEOA.findMany()
+     * 
+     * // Get first 10 InvitationFundsEOAS
+     * const invitationFundsEOAS = await prisma.invitationFundsEOA.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const invitationFundsEOAWithIdOnly = await prisma.invitationFundsEOA.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends InvitationFundsEOAFindManyArgs>(
+      args?: SelectSubset<T, InvitationFundsEOAFindManyArgs>
+    ): CheckSelect<T, PrismaPromise<Array<InvitationFundsEOA>>, PrismaPromise<Array<InvitationFundsEOAGetPayload<T>>>>
+
+    /**
+     * Create a InvitationFundsEOA.
+     * @param {InvitationFundsEOACreateArgs} args - Arguments to create a InvitationFundsEOA.
+     * @example
+     * // Create one InvitationFundsEOA
+     * const InvitationFundsEOA = await prisma.invitationFundsEOA.create({
+     *   data: {
+     *     // ... data to create a InvitationFundsEOA
+     *   }
+     * })
+     * 
+    **/
+    create<T extends InvitationFundsEOACreateArgs>(
+      args: SelectSubset<T, InvitationFundsEOACreateArgs>
+    ): CheckSelect<T, Prisma__InvitationFundsEOAClient<InvitationFundsEOA>, Prisma__InvitationFundsEOAClient<InvitationFundsEOAGetPayload<T>>>
+
+    /**
+     * Create many InvitationFundsEOAS.
+     *     @param {InvitationFundsEOACreateManyArgs} args - Arguments to create many InvitationFundsEOAS.
+     *     @example
+     *     // Create many InvitationFundsEOAS
+     *     const invitationFundsEOA = await prisma.invitationFundsEOA.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends InvitationFundsEOACreateManyArgs>(
+      args?: SelectSubset<T, InvitationFundsEOACreateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a InvitationFundsEOA.
+     * @param {InvitationFundsEOADeleteArgs} args - Arguments to delete one InvitationFundsEOA.
+     * @example
+     * // Delete one InvitationFundsEOA
+     * const InvitationFundsEOA = await prisma.invitationFundsEOA.delete({
+     *   where: {
+     *     // ... filter to delete one InvitationFundsEOA
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends InvitationFundsEOADeleteArgs>(
+      args: SelectSubset<T, InvitationFundsEOADeleteArgs>
+    ): CheckSelect<T, Prisma__InvitationFundsEOAClient<InvitationFundsEOA>, Prisma__InvitationFundsEOAClient<InvitationFundsEOAGetPayload<T>>>
+
+    /**
+     * Update one InvitationFundsEOA.
+     * @param {InvitationFundsEOAUpdateArgs} args - Arguments to update one InvitationFundsEOA.
+     * @example
+     * // Update one InvitationFundsEOA
+     * const invitationFundsEOA = await prisma.invitationFundsEOA.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends InvitationFundsEOAUpdateArgs>(
+      args: SelectSubset<T, InvitationFundsEOAUpdateArgs>
+    ): CheckSelect<T, Prisma__InvitationFundsEOAClient<InvitationFundsEOA>, Prisma__InvitationFundsEOAClient<InvitationFundsEOAGetPayload<T>>>
+
+    /**
+     * Delete zero or more InvitationFundsEOAS.
+     * @param {InvitationFundsEOADeleteManyArgs} args - Arguments to filter InvitationFundsEOAS to delete.
+     * @example
+     * // Delete a few InvitationFundsEOAS
+     * const { count } = await prisma.invitationFundsEOA.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends InvitationFundsEOADeleteManyArgs>(
+      args?: SelectSubset<T, InvitationFundsEOADeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more InvitationFundsEOAS.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvitationFundsEOAUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many InvitationFundsEOAS
+     * const invitationFundsEOA = await prisma.invitationFundsEOA.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends InvitationFundsEOAUpdateManyArgs>(
+      args: SelectSubset<T, InvitationFundsEOAUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one InvitationFundsEOA.
+     * @param {InvitationFundsEOAUpsertArgs} args - Arguments to update or create a InvitationFundsEOA.
+     * @example
+     * // Update or create a InvitationFundsEOA
+     * const invitationFundsEOA = await prisma.invitationFundsEOA.upsert({
+     *   create: {
+     *     // ... data to create a InvitationFundsEOA
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the InvitationFundsEOA we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends InvitationFundsEOAUpsertArgs>(
+      args: SelectSubset<T, InvitationFundsEOAUpsertArgs>
+    ): CheckSelect<T, Prisma__InvitationFundsEOAClient<InvitationFundsEOA>, Prisma__InvitationFundsEOAClient<InvitationFundsEOAGetPayload<T>>>
+
+    /**
+     * Count the number of InvitationFundsEOAS.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvitationFundsEOACountArgs} args - Arguments to filter InvitationFundsEOAS to count.
+     * @example
+     * // Count the number of InvitationFundsEOAS
+     * const count = await prisma.invitationFundsEOA.count({
+     *   where: {
+     *     // ... the filter for the InvitationFundsEOAS we want to count
+     *   }
+     * })
+    **/
+    count<T extends InvitationFundsEOACountArgs>(
+      args?: Subset<T, InvitationFundsEOACountArgs>,
+    ): PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], InvitationFundsEOACountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a InvitationFundsEOA.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvitationFundsEOAAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends InvitationFundsEOAAggregateArgs>(args: Subset<T, InvitationFundsEOAAggregateArgs>): PrismaPromise<GetInvitationFundsEOAAggregateType<T>>
+
+    /**
+     * Group by InvitationFundsEOA.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvitationFundsEOAGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends InvitationFundsEOAGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: InvitationFundsEOAGroupByArgs['orderBy'] }
+        : { orderBy?: InvitationFundsEOAGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, InvitationFundsEOAGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInvitationFundsEOAGroupByPayload<T> : Promise<InputErrors>
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for InvitationFundsEOA.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in 
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__InvitationFundsEOAClient<T> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+
+    profile<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+  // Custom InputTypes
+
+  /**
+   * InvitationFundsEOA findUnique
+   */
+  export type InvitationFundsEOAFindUniqueArgs = {
+    /**
+     * Select specific fields to fetch from the InvitationFundsEOA
+     * 
+    **/
+    select?: InvitationFundsEOASelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: InvitationFundsEOAInclude | null
+    /**
+     * Throw an Error if a InvitationFundsEOA can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which InvitationFundsEOA to fetch.
+     * 
+    **/
+    where: InvitationFundsEOAWhereUniqueInput
+  }
+
+
+  /**
+   * InvitationFundsEOA findFirst
+   */
+  export type InvitationFundsEOAFindFirstArgs = {
+    /**
+     * Select specific fields to fetch from the InvitationFundsEOA
+     * 
+    **/
+    select?: InvitationFundsEOASelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: InvitationFundsEOAInclude | null
+    /**
+     * Throw an Error if a InvitationFundsEOA can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which InvitationFundsEOA to fetch.
+     * 
+    **/
+    where?: InvitationFundsEOAWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvitationFundsEOAS to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<InvitationFundsEOAOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for InvitationFundsEOAS.
+     * 
+    **/
+    cursor?: InvitationFundsEOAWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvitationFundsEOAS from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvitationFundsEOAS.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InvitationFundsEOAS.
+     * 
+    **/
+    distinct?: Enumerable<InvitationFundsEOAScalarFieldEnum>
+  }
+
+
+  /**
+   * InvitationFundsEOA findMany
+   */
+  export type InvitationFundsEOAFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the InvitationFundsEOA
+     * 
+    **/
+    select?: InvitationFundsEOASelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: InvitationFundsEOAInclude | null
+    /**
+     * Filter, which InvitationFundsEOAS to fetch.
+     * 
+    **/
+    where?: InvitationFundsEOAWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvitationFundsEOAS to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<InvitationFundsEOAOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing InvitationFundsEOAS.
+     * 
+    **/
+    cursor?: InvitationFundsEOAWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvitationFundsEOAS from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvitationFundsEOAS.
+     * 
+    **/
+    skip?: number
+    distinct?: Enumerable<InvitationFundsEOAScalarFieldEnum>
+  }
+
+
+  /**
+   * InvitationFundsEOA create
+   */
+  export type InvitationFundsEOACreateArgs = {
+    /**
+     * Select specific fields to fetch from the InvitationFundsEOA
+     * 
+    **/
+    select?: InvitationFundsEOASelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: InvitationFundsEOAInclude | null
+    /**
+     * The data needed to create a InvitationFundsEOA.
+     * 
+    **/
+    data: XOR<InvitationFundsEOACreateInput, InvitationFundsEOAUncheckedCreateInput>
+  }
+
+
+  /**
+   * InvitationFundsEOA createMany
+   */
+  export type InvitationFundsEOACreateManyArgs = {
+    data: Enumerable<InvitationFundsEOACreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * InvitationFundsEOA update
+   */
+  export type InvitationFundsEOAUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the InvitationFundsEOA
+     * 
+    **/
+    select?: InvitationFundsEOASelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: InvitationFundsEOAInclude | null
+    /**
+     * The data needed to update a InvitationFundsEOA.
+     * 
+    **/
+    data: XOR<InvitationFundsEOAUpdateInput, InvitationFundsEOAUncheckedUpdateInput>
+    /**
+     * Choose, which InvitationFundsEOA to update.
+     * 
+    **/
+    where: InvitationFundsEOAWhereUniqueInput
+  }
+
+
+  /**
+   * InvitationFundsEOA updateMany
+   */
+  export type InvitationFundsEOAUpdateManyArgs = {
+    data: XOR<InvitationFundsEOAUpdateManyMutationInput, InvitationFundsEOAUncheckedUpdateManyInput>
+    where?: InvitationFundsEOAWhereInput
+  }
+
+
+  /**
+   * InvitationFundsEOA upsert
+   */
+  export type InvitationFundsEOAUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the InvitationFundsEOA
+     * 
+    **/
+    select?: InvitationFundsEOASelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: InvitationFundsEOAInclude | null
+    /**
+     * The filter to search for the InvitationFundsEOA to update in case it exists.
+     * 
+    **/
+    where: InvitationFundsEOAWhereUniqueInput
+    /**
+     * In case the InvitationFundsEOA found by the `where` argument doesn't exist, create a new InvitationFundsEOA with this data.
+     * 
+    **/
+    create: XOR<InvitationFundsEOACreateInput, InvitationFundsEOAUncheckedCreateInput>
+    /**
+     * In case the InvitationFundsEOA was found with the provided `where` argument, update it with this data.
+     * 
+    **/
+    update: XOR<InvitationFundsEOAUpdateInput, InvitationFundsEOAUncheckedUpdateInput>
+  }
+
+
+  /**
+   * InvitationFundsEOA delete
+   */
+  export type InvitationFundsEOADeleteArgs = {
+    /**
+     * Select specific fields to fetch from the InvitationFundsEOA
+     * 
+    **/
+    select?: InvitationFundsEOASelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: InvitationFundsEOAInclude | null
+    /**
+     * Filter which InvitationFundsEOA to delete.
+     * 
+    **/
+    where: InvitationFundsEOAWhereUniqueInput
+  }
+
+
+  /**
+   * InvitationFundsEOA deleteMany
+   */
+  export type InvitationFundsEOADeleteManyArgs = {
+    where?: InvitationFundsEOAWhereInput
+  }
+
+
+  /**
+   * InvitationFundsEOA without action
+   */
+  export type InvitationFundsEOAArgs = {
+    /**
+     * Select specific fields to fetch from the InvitationFundsEOA
+     * 
+    **/
+    select?: InvitationFundsEOASelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: InvitationFundsEOAInclude | null
+  }
+
+
+
+  /**
    * Model Profile
    */
 
@@ -4359,11 +5265,10 @@ export namespace Prisma {
     offers?: boolean | OfferFindManyArgs
     purchases?: boolean | PurchaseFindManyArgs
     invitations?: boolean | InvitationFindManyArgs
+    invitationFunds?: boolean | InvitationFundsEOAArgs
     redeemInvitationRequests?: boolean | RedeemInvitationRequestFindManyArgs
     redeemedInvitations?: boolean | InvitationFindManyArgs
     claimedInvitations?: boolean | InvitationFindManyArgs
-    subscribers?: boolean | SubscriptionFindManyArgs
-    subscriptions?: boolean | SubscriptionFindManyArgs
     memberships?: boolean | MembershipFindManyArgs
     members?: boolean | MembershipFindManyArgs
   }
@@ -4374,11 +5279,10 @@ export namespace Prisma {
     offers?: boolean | OfferFindManyArgs
     purchases?: boolean | PurchaseFindManyArgs
     invitations?: boolean | InvitationFindManyArgs
+    invitationFunds?: boolean | InvitationFundsEOAArgs
     redeemInvitationRequests?: boolean | RedeemInvitationRequestFindManyArgs
     redeemedInvitations?: boolean | InvitationFindManyArgs
     claimedInvitations?: boolean | InvitationFindManyArgs
-    subscribers?: boolean | SubscriptionFindManyArgs
-    subscriptions?: boolean | SubscriptionFindManyArgs
     memberships?: boolean | MembershipFindManyArgs
     members?: boolean | MembershipFindManyArgs
   }
@@ -4404,16 +5308,14 @@ export namespace Prisma {
         ? Array < PurchaseGetPayload<S['include'][P]>>  :
         P extends 'invitations'
         ? Array < InvitationGetPayload<S['include'][P]>>  :
+        P extends 'invitationFunds'
+        ? InvitationFundsEOAGetPayload<S['include'][P]> | null :
         P extends 'redeemInvitationRequests'
         ? Array < RedeemInvitationRequestGetPayload<S['include'][P]>>  :
         P extends 'redeemedInvitations'
         ? Array < InvitationGetPayload<S['include'][P]>>  :
         P extends 'claimedInvitations'
         ? Array < InvitationGetPayload<S['include'][P]>>  :
-        P extends 'subscribers'
-        ? Array < SubscriptionGetPayload<S['include'][P]>>  :
-        P extends 'subscriptions'
-        ? Array < SubscriptionGetPayload<S['include'][P]>>  :
         P extends 'memberships'
         ? Array < MembershipGetPayload<S['include'][P]>>  :
         P extends 'members'
@@ -4433,16 +5335,14 @@ export namespace Prisma {
         ? Array < PurchaseGetPayload<S['select'][P]>>  :
         P extends 'invitations'
         ? Array < InvitationGetPayload<S['select'][P]>>  :
+        P extends 'invitationFunds'
+        ? InvitationFundsEOAGetPayload<S['select'][P]> | null :
         P extends 'redeemInvitationRequests'
         ? Array < RedeemInvitationRequestGetPayload<S['select'][P]>>  :
         P extends 'redeemedInvitations'
         ? Array < InvitationGetPayload<S['select'][P]>>  :
         P extends 'claimedInvitations'
         ? Array < InvitationGetPayload<S['select'][P]>>  :
-        P extends 'subscribers'
-        ? Array < SubscriptionGetPayload<S['select'][P]>>  :
-        P extends 'subscriptions'
-        ? Array < SubscriptionGetPayload<S['select'][P]>>  :
         P extends 'memberships'
         ? Array < MembershipGetPayload<S['select'][P]>>  :
         P extends 'members'
@@ -4796,15 +5696,13 @@ export namespace Prisma {
 
     invitations<T extends InvitationFindManyArgs = {}>(args?: Subset<T, InvitationFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Invitation>>, PrismaPromise<Array<InvitationGetPayload<T>>>>;
 
+    invitationFunds<T extends InvitationFundsEOAArgs = {}>(args?: Subset<T, InvitationFundsEOAArgs>): CheckSelect<T, Prisma__InvitationFundsEOAClient<InvitationFundsEOA | null >, Prisma__InvitationFundsEOAClient<InvitationFundsEOAGetPayload<T> | null >>;
+
     redeemInvitationRequests<T extends RedeemInvitationRequestFindManyArgs = {}>(args?: Subset<T, RedeemInvitationRequestFindManyArgs>): CheckSelect<T, PrismaPromise<Array<RedeemInvitationRequest>>, PrismaPromise<Array<RedeemInvitationRequestGetPayload<T>>>>;
 
     redeemedInvitations<T extends InvitationFindManyArgs = {}>(args?: Subset<T, InvitationFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Invitation>>, PrismaPromise<Array<InvitationGetPayload<T>>>>;
 
     claimedInvitations<T extends InvitationFindManyArgs = {}>(args?: Subset<T, InvitationFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Invitation>>, PrismaPromise<Array<InvitationGetPayload<T>>>>;
-
-    subscribers<T extends SubscriptionFindManyArgs = {}>(args?: Subset<T, SubscriptionFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Subscription>>, PrismaPromise<Array<SubscriptionGetPayload<T>>>>;
-
-    subscriptions<T extends SubscriptionFindManyArgs = {}>(args?: Subset<T, SubscriptionFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Subscription>>, PrismaPromise<Array<SubscriptionGetPayload<T>>>>;
 
     memberships<T extends MembershipFindManyArgs = {}>(args?: Subset<T, MembershipFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Membership>>, PrismaPromise<Array<MembershipGetPayload<T>>>>;
 
@@ -6848,944 +7746,6 @@ export namespace Prisma {
 
 
   /**
-   * Model Subscription
-   */
-
-
-  export type AggregateSubscription = {
-    _count: SubscriptionCountAggregateOutputType | null
-    count: SubscriptionCountAggregateOutputType | null
-    _avg: SubscriptionAvgAggregateOutputType | null
-    avg: SubscriptionAvgAggregateOutputType | null
-    _sum: SubscriptionSumAggregateOutputType | null
-    sum: SubscriptionSumAggregateOutputType | null
-    _min: SubscriptionMinAggregateOutputType | null
-    min: SubscriptionMinAggregateOutputType | null
-    _max: SubscriptionMaxAggregateOutputType | null
-    max: SubscriptionMaxAggregateOutputType | null
-  }
-
-  export type SubscriptionAvgAggregateOutputType = {
-    id: number | null
-    subscriberProfileId: number | null
-    subscribingToOfferId: number | null
-    subscribingToProfileId: number | null
-  }
-
-  export type SubscriptionSumAggregateOutputType = {
-    id: number | null
-    subscriberProfileId: number | null
-    subscribingToOfferId: number | null
-    subscribingToProfileId: number | null
-  }
-
-  export type SubscriptionMinAggregateOutputType = {
-    id: number | null
-    createdAt: Date | null
-    subscriberProfileId: number | null
-    subscribingToOfferId: number | null
-    subscribingToProfileId: number | null
-  }
-
-  export type SubscriptionMaxAggregateOutputType = {
-    id: number | null
-    createdAt: Date | null
-    subscriberProfileId: number | null
-    subscribingToOfferId: number | null
-    subscribingToProfileId: number | null
-  }
-
-  export type SubscriptionCountAggregateOutputType = {
-    id: number
-    createdAt: number
-    subscriberProfileId: number
-    subscribingToOfferId: number
-    subscribingToProfileId: number
-    _all: number
-  }
-
-
-  export type SubscriptionAvgAggregateInputType = {
-    id?: true
-    subscriberProfileId?: true
-    subscribingToOfferId?: true
-    subscribingToProfileId?: true
-  }
-
-  export type SubscriptionSumAggregateInputType = {
-    id?: true
-    subscriberProfileId?: true
-    subscribingToOfferId?: true
-    subscribingToProfileId?: true
-  }
-
-  export type SubscriptionMinAggregateInputType = {
-    id?: true
-    createdAt?: true
-    subscriberProfileId?: true
-    subscribingToOfferId?: true
-    subscribingToProfileId?: true
-  }
-
-  export type SubscriptionMaxAggregateInputType = {
-    id?: true
-    createdAt?: true
-    subscriberProfileId?: true
-    subscribingToOfferId?: true
-    subscribingToProfileId?: true
-  }
-
-  export type SubscriptionCountAggregateInputType = {
-    id?: true
-    createdAt?: true
-    subscriberProfileId?: true
-    subscribingToOfferId?: true
-    subscribingToProfileId?: true
-    _all?: true
-  }
-
-  export type SubscriptionAggregateArgs = {
-    /**
-     * Filter which Subscription to aggregate.
-     * 
-    **/
-    where?: SubscriptionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Subscriptions to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<SubscriptionOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     * 
-    **/
-    cursor?: SubscriptionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Subscriptions from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Subscriptions.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned Subscriptions
-    **/
-    _count?: true | SubscriptionCountAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | SubscriptionCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: SubscriptionAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: SubscriptionAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: SubscriptionSumAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: SubscriptionSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: SubscriptionMinAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: SubscriptionMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: SubscriptionMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: SubscriptionMaxAggregateInputType
-  }
-
-  export type GetSubscriptionAggregateType<T extends SubscriptionAggregateArgs> = {
-        [P in keyof T & keyof AggregateSubscription]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateSubscription[P]>
-      : GetScalarType<T[P], AggregateSubscription[P]>
-  }
-
-
-    
-    
-  export type SubscriptionGroupByArgs = {
-    where?: SubscriptionWhereInput
-    orderBy?: Enumerable<SubscriptionOrderByInput>
-    by: Array<SubscriptionScalarFieldEnum>
-    having?: SubscriptionScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: SubscriptionCountAggregateInputType | true
-    _avg?: SubscriptionAvgAggregateInputType
-    _sum?: SubscriptionSumAggregateInputType
-    _min?: SubscriptionMinAggregateInputType
-    _max?: SubscriptionMaxAggregateInputType
-  }
-
-
-  export type SubscriptionGroupByOutputType = {
-    id: number
-    createdAt: Date
-    subscriberProfileId: number
-    subscribingToOfferId: number | null
-    subscribingToProfileId: number | null
-    _count: SubscriptionCountAggregateOutputType | null
-    _avg: SubscriptionAvgAggregateOutputType | null
-    _sum: SubscriptionSumAggregateOutputType | null
-    _min: SubscriptionMinAggregateOutputType | null
-    _max: SubscriptionMaxAggregateOutputType | null
-  }
-
-  type GetSubscriptionGroupByPayload<T extends SubscriptionGroupByArgs> = Promise<
-    Array<
-      PickArray<SubscriptionGroupByOutputType, T['by']> & 
-        {
-          [P in ((keyof T) & (keyof SubscriptionGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], SubscriptionGroupByOutputType[P]> 
-            : GetScalarType<T[P], SubscriptionGroupByOutputType[P]>
-        }
-      > 
-    >
-
-
-  export type SubscriptionSelect = {
-    id?: boolean
-    createdAt?: boolean
-    subscriber?: boolean | ProfileArgs
-    subscriberProfileId?: boolean
-    subscribingToOffer?: boolean | OfferArgs
-    subscribingToOfferId?: boolean
-    subscribingToProfile?: boolean | ProfileArgs
-    subscribingToProfileId?: boolean
-  }
-
-  export type SubscriptionInclude = {
-    subscriber?: boolean | ProfileArgs
-    subscribingToOffer?: boolean | OfferArgs
-    subscribingToProfile?: boolean | ProfileArgs
-  }
-
-  export type SubscriptionGetPayload<
-    S extends boolean | null | undefined | SubscriptionArgs,
-    U = keyof S
-      > = S extends true
-        ? Subscription
-    : S extends undefined
-    ? never
-    : S extends SubscriptionArgs | SubscriptionFindManyArgs
-    ?'include' extends U
-    ? Subscription  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'subscriber'
-        ? ProfileGetPayload<S['include'][P]> :
-        P extends 'subscribingToOffer'
-        ? OfferGetPayload<S['include'][P]> | null :
-        P extends 'subscribingToProfile'
-        ? ProfileGetPayload<S['include'][P]> | null : never
-  } 
-    : 'select' extends U
-    ? {
-    [P in TrueKeys<S['select']>]: P extends keyof Subscription ?Subscription [P]
-  : 
-          P extends 'subscriber'
-        ? ProfileGetPayload<S['select'][P]> :
-        P extends 'subscribingToOffer'
-        ? OfferGetPayload<S['select'][P]> | null :
-        P extends 'subscribingToProfile'
-        ? ProfileGetPayload<S['select'][P]> | null : never
-  } 
-    : Subscription
-  : Subscription
-
-
-  type SubscriptionCountArgs = Merge<
-    Omit<SubscriptionFindManyArgs, 'select' | 'include'> & {
-      select?: SubscriptionCountAggregateInputType | true
-    }
-  >
-
-  export interface SubscriptionDelegate<GlobalRejectSettings> {
-    /**
-     * Find zero or one Subscription that matches the filter.
-     * @param {SubscriptionFindUniqueArgs} args - Arguments to find a Subscription
-     * @example
-     * // Get one Subscription
-     * const subscription = await prisma.subscription.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUnique<T extends SubscriptionFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, SubscriptionFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Subscription'> extends True ? CheckSelect<T, Prisma__SubscriptionClient<Subscription>, Prisma__SubscriptionClient<SubscriptionGetPayload<T>>> : CheckSelect<T, Prisma__SubscriptionClient<Subscription | null >, Prisma__SubscriptionClient<SubscriptionGetPayload<T> | null >>
-
-    /**
-     * Find the first Subscription that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SubscriptionFindFirstArgs} args - Arguments to find a Subscription
-     * @example
-     * // Get one Subscription
-     * const subscription = await prisma.subscription.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirst<T extends SubscriptionFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, SubscriptionFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Subscription'> extends True ? CheckSelect<T, Prisma__SubscriptionClient<Subscription>, Prisma__SubscriptionClient<SubscriptionGetPayload<T>>> : CheckSelect<T, Prisma__SubscriptionClient<Subscription | null >, Prisma__SubscriptionClient<SubscriptionGetPayload<T> | null >>
-
-    /**
-     * Find zero or more Subscriptions that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SubscriptionFindManyArgs=} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Subscriptions
-     * const subscriptions = await prisma.subscription.findMany()
-     * 
-     * // Get first 10 Subscriptions
-     * const subscriptions = await prisma.subscription.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const subscriptionWithIdOnly = await prisma.subscription.findMany({ select: { id: true } })
-     * 
-    **/
-    findMany<T extends SubscriptionFindManyArgs>(
-      args?: SelectSubset<T, SubscriptionFindManyArgs>
-    ): CheckSelect<T, PrismaPromise<Array<Subscription>>, PrismaPromise<Array<SubscriptionGetPayload<T>>>>
-
-    /**
-     * Create a Subscription.
-     * @param {SubscriptionCreateArgs} args - Arguments to create a Subscription.
-     * @example
-     * // Create one Subscription
-     * const Subscription = await prisma.subscription.create({
-     *   data: {
-     *     // ... data to create a Subscription
-     *   }
-     * })
-     * 
-    **/
-    create<T extends SubscriptionCreateArgs>(
-      args: SelectSubset<T, SubscriptionCreateArgs>
-    ): CheckSelect<T, Prisma__SubscriptionClient<Subscription>, Prisma__SubscriptionClient<SubscriptionGetPayload<T>>>
-
-    /**
-     * Create many Subscriptions.
-     *     @param {SubscriptionCreateManyArgs} args - Arguments to create many Subscriptions.
-     *     @example
-     *     // Create many Subscriptions
-     *     const subscription = await prisma.subscription.createMany({
-     *       data: {
-     *         // ... provide data here
-     *       }
-     *     })
-     *     
-    **/
-    createMany<T extends SubscriptionCreateManyArgs>(
-      args?: SelectSubset<T, SubscriptionCreateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a Subscription.
-     * @param {SubscriptionDeleteArgs} args - Arguments to delete one Subscription.
-     * @example
-     * // Delete one Subscription
-     * const Subscription = await prisma.subscription.delete({
-     *   where: {
-     *     // ... filter to delete one Subscription
-     *   }
-     * })
-     * 
-    **/
-    delete<T extends SubscriptionDeleteArgs>(
-      args: SelectSubset<T, SubscriptionDeleteArgs>
-    ): CheckSelect<T, Prisma__SubscriptionClient<Subscription>, Prisma__SubscriptionClient<SubscriptionGetPayload<T>>>
-
-    /**
-     * Update one Subscription.
-     * @param {SubscriptionUpdateArgs} args - Arguments to update one Subscription.
-     * @example
-     * // Update one Subscription
-     * const subscription = await prisma.subscription.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    update<T extends SubscriptionUpdateArgs>(
-      args: SelectSubset<T, SubscriptionUpdateArgs>
-    ): CheckSelect<T, Prisma__SubscriptionClient<Subscription>, Prisma__SubscriptionClient<SubscriptionGetPayload<T>>>
-
-    /**
-     * Delete zero or more Subscriptions.
-     * @param {SubscriptionDeleteManyArgs} args - Arguments to filter Subscriptions to delete.
-     * @example
-     * // Delete a few Subscriptions
-     * const { count } = await prisma.subscription.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-    **/
-    deleteMany<T extends SubscriptionDeleteManyArgs>(
-      args?: SelectSubset<T, SubscriptionDeleteManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Subscriptions.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SubscriptionUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Subscriptions
-     * const subscription = await prisma.subscription.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    updateMany<T extends SubscriptionUpdateManyArgs>(
-      args: SelectSubset<T, SubscriptionUpdateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one Subscription.
-     * @param {SubscriptionUpsertArgs} args - Arguments to update or create a Subscription.
-     * @example
-     * // Update or create a Subscription
-     * const subscription = await prisma.subscription.upsert({
-     *   create: {
-     *     // ... data to create a Subscription
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Subscription we want to update
-     *   }
-     * })
-    **/
-    upsert<T extends SubscriptionUpsertArgs>(
-      args: SelectSubset<T, SubscriptionUpsertArgs>
-    ): CheckSelect<T, Prisma__SubscriptionClient<Subscription>, Prisma__SubscriptionClient<SubscriptionGetPayload<T>>>
-
-    /**
-     * Count the number of Subscriptions.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SubscriptionCountArgs} args - Arguments to filter Subscriptions to count.
-     * @example
-     * // Count the number of Subscriptions
-     * const count = await prisma.subscription.count({
-     *   where: {
-     *     // ... the filter for the Subscriptions we want to count
-     *   }
-     * })
-    **/
-    count<T extends SubscriptionCountArgs>(
-      args?: Subset<T, SubscriptionCountArgs>,
-    ): PrismaPromise<
-      T extends _Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], SubscriptionCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Subscription.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SubscriptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends SubscriptionAggregateArgs>(args: Subset<T, SubscriptionAggregateArgs>): PrismaPromise<GetSubscriptionAggregateType<T>>
-
-    /**
-     * Group by Subscription.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {SubscriptionGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends SubscriptionGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: SubscriptionGroupByArgs['orderBy'] }
-        : { orderBy?: SubscriptionGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends TupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, SubscriptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSubscriptionGroupByPayload<T> : Promise<InputErrors>
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for Subscription.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export class Prisma__SubscriptionClient<T> implements PrismaPromise<T> {
-    [prisma]: true;
-    private readonly _dmmf;
-    private readonly _fetcher;
-    private readonly _queryType;
-    private readonly _rootField;
-    private readonly _clientMethod;
-    private readonly _args;
-    private readonly _dataPath;
-    private readonly _errorFormat;
-    private readonly _measurePerformance?;
-    private _isList;
-    private _callsite;
-    private _requestPromise?;
-    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
-
-    subscriber<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
-
-    subscribingToOffer<T extends OfferArgs = {}>(args?: Subset<T, OfferArgs>): CheckSelect<T, Prisma__OfferClient<Offer | null >, Prisma__OfferClient<OfferGetPayload<T> | null >>;
-
-    subscribingToProfile<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
-
-    private get _document();
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
-  }
-
-  // Custom InputTypes
-
-  /**
-   * Subscription findUnique
-   */
-  export type SubscriptionFindUniqueArgs = {
-    /**
-     * Select specific fields to fetch from the Subscription
-     * 
-    **/
-    select?: SubscriptionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: SubscriptionInclude | null
-    /**
-     * Throw an Error if a Subscription can't be found
-     * 
-    **/
-    rejectOnNotFound?: RejectOnNotFound
-    /**
-     * Filter, which Subscription to fetch.
-     * 
-    **/
-    where: SubscriptionWhereUniqueInput
-  }
-
-
-  /**
-   * Subscription findFirst
-   */
-  export type SubscriptionFindFirstArgs = {
-    /**
-     * Select specific fields to fetch from the Subscription
-     * 
-    **/
-    select?: SubscriptionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: SubscriptionInclude | null
-    /**
-     * Throw an Error if a Subscription can't be found
-     * 
-    **/
-    rejectOnNotFound?: RejectOnNotFound
-    /**
-     * Filter, which Subscription to fetch.
-     * 
-    **/
-    where?: SubscriptionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Subscriptions to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<SubscriptionOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Subscriptions.
-     * 
-    **/
-    cursor?: SubscriptionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Subscriptions from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Subscriptions.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Subscriptions.
-     * 
-    **/
-    distinct?: Enumerable<SubscriptionScalarFieldEnum>
-  }
-
-
-  /**
-   * Subscription findMany
-   */
-  export type SubscriptionFindManyArgs = {
-    /**
-     * Select specific fields to fetch from the Subscription
-     * 
-    **/
-    select?: SubscriptionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: SubscriptionInclude | null
-    /**
-     * Filter, which Subscriptions to fetch.
-     * 
-    **/
-    where?: SubscriptionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Subscriptions to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<SubscriptionOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing Subscriptions.
-     * 
-    **/
-    cursor?: SubscriptionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Subscriptions from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Subscriptions.
-     * 
-    **/
-    skip?: number
-    distinct?: Enumerable<SubscriptionScalarFieldEnum>
-  }
-
-
-  /**
-   * Subscription create
-   */
-  export type SubscriptionCreateArgs = {
-    /**
-     * Select specific fields to fetch from the Subscription
-     * 
-    **/
-    select?: SubscriptionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: SubscriptionInclude | null
-    /**
-     * The data needed to create a Subscription.
-     * 
-    **/
-    data: XOR<SubscriptionCreateInput, SubscriptionUncheckedCreateInput>
-  }
-
-
-  /**
-   * Subscription createMany
-   */
-  export type SubscriptionCreateManyArgs = {
-    data: Enumerable<SubscriptionCreateManyInput>
-    skipDuplicates?: boolean
-  }
-
-
-  /**
-   * Subscription update
-   */
-  export type SubscriptionUpdateArgs = {
-    /**
-     * Select specific fields to fetch from the Subscription
-     * 
-    **/
-    select?: SubscriptionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: SubscriptionInclude | null
-    /**
-     * The data needed to update a Subscription.
-     * 
-    **/
-    data: XOR<SubscriptionUpdateInput, SubscriptionUncheckedUpdateInput>
-    /**
-     * Choose, which Subscription to update.
-     * 
-    **/
-    where: SubscriptionWhereUniqueInput
-  }
-
-
-  /**
-   * Subscription updateMany
-   */
-  export type SubscriptionUpdateManyArgs = {
-    data: XOR<SubscriptionUpdateManyMutationInput, SubscriptionUncheckedUpdateManyInput>
-    where?: SubscriptionWhereInput
-  }
-
-
-  /**
-   * Subscription upsert
-   */
-  export type SubscriptionUpsertArgs = {
-    /**
-     * Select specific fields to fetch from the Subscription
-     * 
-    **/
-    select?: SubscriptionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: SubscriptionInclude | null
-    /**
-     * The filter to search for the Subscription to update in case it exists.
-     * 
-    **/
-    where: SubscriptionWhereUniqueInput
-    /**
-     * In case the Subscription found by the `where` argument doesn't exist, create a new Subscription with this data.
-     * 
-    **/
-    create: XOR<SubscriptionCreateInput, SubscriptionUncheckedCreateInput>
-    /**
-     * In case the Subscription was found with the provided `where` argument, update it with this data.
-     * 
-    **/
-    update: XOR<SubscriptionUpdateInput, SubscriptionUncheckedUpdateInput>
-  }
-
-
-  /**
-   * Subscription delete
-   */
-  export type SubscriptionDeleteArgs = {
-    /**
-     * Select specific fields to fetch from the Subscription
-     * 
-    **/
-    select?: SubscriptionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: SubscriptionInclude | null
-    /**
-     * Filter which Subscription to delete.
-     * 
-    **/
-    where: SubscriptionWhereUniqueInput
-  }
-
-
-  /**
-   * Subscription deleteMany
-   */
-  export type SubscriptionDeleteManyArgs = {
-    where?: SubscriptionWhereInput
-  }
-
-
-  /**
-   * Subscription without action
-   */
-  export type SubscriptionArgs = {
-    /**
-     * Select specific fields to fetch from the Subscription
-     * 
-    **/
-    select?: SubscriptionSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: SubscriptionInclude | null
-  }
-
-
-
-  /**
    * Model ChatMessage
    */
 
@@ -9613,7 +9573,6 @@ export namespace Prisma {
   }
 
   export type OfferAvgAggregateOutputType = {
-    id: number | null
     createdByProfileId: number | null
     categoryTagId: number | null
     geonameid: number | null
@@ -9623,7 +9582,6 @@ export namespace Prisma {
   }
 
   export type OfferSumAggregateOutputType = {
-    id: number | null
     createdByProfileId: number | null
     categoryTagId: number | null
     geonameid: number | null
@@ -9633,7 +9591,8 @@ export namespace Prisma {
   }
 
   export type OfferMinAggregateOutputType = {
-    id: number | null
+    id: string | null
+    isPrivate: boolean | null
     createdByProfileId: number | null
     publishedAt: Date | null
     unlistedAt: Date | null
@@ -9650,7 +9609,8 @@ export namespace Prisma {
   }
 
   export type OfferMaxAggregateOutputType = {
-    id: number | null
+    id: string | null
+    isPrivate: boolean | null
     createdByProfileId: number | null
     publishedAt: Date | null
     unlistedAt: Date | null
@@ -9668,6 +9628,7 @@ export namespace Prisma {
 
   export type OfferCountAggregateOutputType = {
     id: number
+    isPrivate: number
     createdByProfileId: number
     publishedAt: number
     unlistedAt: number
@@ -9686,7 +9647,6 @@ export namespace Prisma {
 
 
   export type OfferAvgAggregateInputType = {
-    id?: true
     createdByProfileId?: true
     categoryTagId?: true
     geonameid?: true
@@ -9696,7 +9656,6 @@ export namespace Prisma {
   }
 
   export type OfferSumAggregateInputType = {
-    id?: true
     createdByProfileId?: true
     categoryTagId?: true
     geonameid?: true
@@ -9707,6 +9666,7 @@ export namespace Prisma {
 
   export type OfferMinAggregateInputType = {
     id?: true
+    isPrivate?: true
     createdByProfileId?: true
     publishedAt?: true
     unlistedAt?: true
@@ -9724,6 +9684,7 @@ export namespace Prisma {
 
   export type OfferMaxAggregateInputType = {
     id?: true
+    isPrivate?: true
     createdByProfileId?: true
     publishedAt?: true
     unlistedAt?: true
@@ -9741,6 +9702,7 @@ export namespace Prisma {
 
   export type OfferCountAggregateInputType = {
     id?: true
+    isPrivate?: true
     createdByProfileId?: true
     publishedAt?: true
     unlistedAt?: true
@@ -9870,7 +9832,8 @@ export namespace Prisma {
 
 
   export type OfferGroupByOutputType = {
-    id: number
+    id: string
+    isPrivate: boolean
     createdByProfileId: number
     publishedAt: Date
     unlistedAt: Date | null
@@ -9907,6 +9870,7 @@ export namespace Prisma {
 
   export type OfferSelect = {
     id?: boolean
+    isPrivate?: boolean
     createdBy?: boolean | ProfileArgs
     createdByProfileId?: boolean
     publishedAt?: boolean
@@ -9925,7 +9889,6 @@ export namespace Prisma {
     maxUnits?: boolean
     deliveryTermsTag?: boolean | TagArgs
     deliveryTermsTagId?: boolean
-    subscribers?: boolean | SubscriptionFindManyArgs
   }
 
   export type OfferInclude = {
@@ -9934,7 +9897,6 @@ export namespace Prisma {
     categoryTag?: boolean | TagArgs
     unitTag?: boolean | TagArgs
     deliveryTermsTag?: boolean | TagArgs
-    subscribers?: boolean | SubscriptionFindManyArgs
   }
 
   export type OfferGetPayload<
@@ -9957,9 +9919,7 @@ export namespace Prisma {
         P extends 'unitTag'
         ? TagGetPayload<S['include'][P]> :
         P extends 'deliveryTermsTag'
-        ? TagGetPayload<S['include'][P]> :
-        P extends 'subscribers'
-        ? Array < SubscriptionGetPayload<S['include'][P]>>  : never
+        ? TagGetPayload<S['include'][P]> : never
   } 
     : 'select' extends U
     ? {
@@ -9974,9 +9934,7 @@ export namespace Prisma {
         P extends 'unitTag'
         ? TagGetPayload<S['select'][P]> :
         P extends 'deliveryTermsTag'
-        ? TagGetPayload<S['select'][P]> :
-        P extends 'subscribers'
-        ? Array < SubscriptionGetPayload<S['select'][P]>>  : never
+        ? TagGetPayload<S['select'][P]> : never
   } 
     : Offer
   : Offer
@@ -10326,8 +10284,6 @@ export namespace Prisma {
 
     deliveryTermsTag<T extends TagArgs = {}>(args?: Subset<T, TagArgs>): CheckSelect<T, Prisma__TagClient<Tag | null >, Prisma__TagClient<TagGetPayload<T> | null >>;
 
-    subscribers<T extends SubscriptionFindManyArgs = {}>(args?: Subset<T, SubscriptionFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Subscription>>, PrismaPromise<Array<SubscriptionGetPayload<T>>>>;
-
     private get _document();
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -10661,7 +10617,6 @@ export namespace Prisma {
   export type PurchaseAvgAggregateOutputType = {
     id: number | null
     purchasedByProfileId: number | null
-    purchasedItemId: number | null
     purchasedUnits: number | null
     purchasedItemVat: number | null
   }
@@ -10669,7 +10624,6 @@ export namespace Prisma {
   export type PurchaseSumAggregateOutputType = {
     id: number | null
     purchasedByProfileId: number | null
-    purchasedItemId: number | null
     purchasedUnits: number | null
     purchasedItemVat: number | null
   }
@@ -10679,7 +10633,7 @@ export namespace Prisma {
     purchasedByProfileId: number | null
     purchasedAt: Date | null
     purchasedProvenAt: Date | null
-    purchasedItemId: number | null
+    purchasedItemId: string | null
     purchasedItemTitle: string | null
     pricePerUnit: string | null
     purchasedUnits: number | null
@@ -10693,7 +10647,7 @@ export namespace Prisma {
     purchasedByProfileId: number | null
     purchasedAt: Date | null
     purchasedProvenAt: Date | null
-    purchasedItemId: number | null
+    purchasedItemId: string | null
     purchasedItemTitle: string | null
     pricePerUnit: string | null
     purchasedUnits: number | null
@@ -10721,7 +10675,6 @@ export namespace Prisma {
   export type PurchaseAvgAggregateInputType = {
     id?: true
     purchasedByProfileId?: true
-    purchasedItemId?: true
     purchasedUnits?: true
     purchasedItemVat?: true
   }
@@ -10729,7 +10682,6 @@ export namespace Prisma {
   export type PurchaseSumAggregateInputType = {
     id?: true
     purchasedByProfileId?: true
-    purchasedItemId?: true
     purchasedUnits?: true
     purchasedItemVat?: true
   }
@@ -10894,7 +10846,7 @@ export namespace Prisma {
     purchasedByProfileId: number
     purchasedAt: Date
     purchasedProvenAt: Date | null
-    purchasedItemId: number
+    purchasedItemId: string
     purchasedItemTitle: string
     pricePerUnit: string
     purchasedUnits: number
@@ -15258,6 +15210,16 @@ export namespace Prisma {
   export type RedeemInvitationRequestScalarFieldEnum = (typeof RedeemInvitationRequestScalarFieldEnum)[keyof typeof RedeemInvitationRequestScalarFieldEnum]
 
 
+  export const InvitationFundsEOAScalarFieldEnum: {
+    id: 'id',
+    address: 'address',
+    privateKey: 'privateKey',
+    profileId: 'profileId'
+  };
+
+  export type InvitationFundsEOAScalarFieldEnum = (typeof InvitationFundsEOAScalarFieldEnum)[keyof typeof InvitationFundsEOAScalarFieldEnum]
+
+
   export const ProfileScalarFieldEnum: {
     id: 'id',
     lastUpdateAt: 'lastUpdateAt',
@@ -15305,17 +15267,6 @@ export namespace Prisma {
   export type MembershipScalarFieldEnum = (typeof MembershipScalarFieldEnum)[keyof typeof MembershipScalarFieldEnum]
 
 
-  export const SubscriptionScalarFieldEnum: {
-    id: 'id',
-    createdAt: 'createdAt',
-    subscriberProfileId: 'subscriberProfileId',
-    subscribingToOfferId: 'subscribingToOfferId',
-    subscribingToProfileId: 'subscribingToProfileId'
-  };
-
-  export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
-
-
   export const ChatMessageScalarFieldEnum: {
     id: 'id',
     createdAt: 'createdAt',
@@ -15345,6 +15296,7 @@ export namespace Prisma {
 
   export const OfferScalarFieldEnum: {
     id: 'id',
+    isPrivate: 'isPrivate',
     createdByProfileId: 'createdByProfileId',
     publishedAt: 'publishedAt',
     unlistedAt: 'unlistedAt',
@@ -15597,6 +15549,38 @@ export namespace Prisma {
     invitationToRedeemId?: IntWithAggregatesFilter | number
   }
 
+  export type InvitationFundsEOAWhereInput = {
+    AND?: Enumerable<InvitationFundsEOAWhereInput>
+    OR?: Enumerable<InvitationFundsEOAWhereInput>
+    NOT?: Enumerable<InvitationFundsEOAWhereInput>
+    id?: IntFilter | number
+    address?: StringFilter | string
+    privateKey?: StringFilter | string
+    profileId?: IntFilter | number
+    profile?: XOR<ProfileRelationFilter, ProfileWhereInput>
+  }
+
+  export type InvitationFundsEOAOrderByInput = {
+    id?: SortOrder
+    address?: SortOrder
+    privateKey?: SortOrder
+    profileId?: SortOrder
+  }
+
+  export type InvitationFundsEOAWhereUniqueInput = {
+    id?: number
+  }
+
+  export type InvitationFundsEOAScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<InvitationFundsEOAScalarWhereWithAggregatesInput>
+    OR?: Enumerable<InvitationFundsEOAScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<InvitationFundsEOAScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    address?: StringWithAggregatesFilter | string
+    privateKey?: StringWithAggregatesFilter | string
+    profileId?: IntWithAggregatesFilter | number
+  }
+
   export type ProfileWhereInput = {
     AND?: Enumerable<ProfileWhereInput>
     OR?: Enumerable<ProfileWhereInput>
@@ -15627,11 +15611,10 @@ export namespace Prisma {
     offers?: OfferListRelationFilter
     purchases?: PurchaseListRelationFilter
     invitations?: InvitationListRelationFilter
+    invitationFunds?: XOR<InvitationFundsEOARelationFilter, InvitationFundsEOAWhereInput> | null
     redeemInvitationRequests?: RedeemInvitationRequestListRelationFilter
     redeemedInvitations?: InvitationListRelationFilter
     claimedInvitations?: InvitationListRelationFilter
-    subscribers?: SubscriptionListRelationFilter
-    subscriptions?: SubscriptionListRelationFilter
     memberships?: MembershipListRelationFilter
     members?: MembershipListRelationFilter
   }
@@ -15755,43 +15738,6 @@ export namespace Prisma {
     memberAtId?: IntWithAggregatesFilter | number
   }
 
-  export type SubscriptionWhereInput = {
-    AND?: Enumerable<SubscriptionWhereInput>
-    OR?: Enumerable<SubscriptionWhereInput>
-    NOT?: Enumerable<SubscriptionWhereInput>
-    id?: IntFilter | number
-    createdAt?: DateTimeFilter | Date | string
-    subscriber?: XOR<ProfileRelationFilter, ProfileWhereInput>
-    subscriberProfileId?: IntFilter | number
-    subscribingToOffer?: XOR<OfferRelationFilter, OfferWhereInput> | null
-    subscribingToOfferId?: IntNullableFilter | number | null
-    subscribingToProfile?: XOR<ProfileRelationFilter, ProfileWhereInput> | null
-    subscribingToProfileId?: IntNullableFilter | number | null
-  }
-
-  export type SubscriptionOrderByInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    subscriberProfileId?: SortOrder
-    subscribingToOfferId?: SortOrder
-    subscribingToProfileId?: SortOrder
-  }
-
-  export type SubscriptionWhereUniqueInput = {
-    id?: number
-  }
-
-  export type SubscriptionScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<SubscriptionScalarWhereWithAggregatesInput>
-    OR?: Enumerable<SubscriptionScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<SubscriptionScalarWhereWithAggregatesInput>
-    id?: IntWithAggregatesFilter | number
-    createdAt?: DateTimeWithAggregatesFilter | Date | string
-    subscriberProfileId?: IntWithAggregatesFilter | number
-    subscribingToOfferId?: IntNullableWithAggregatesFilter | number | null
-    subscribingToProfileId?: IntNullableWithAggregatesFilter | number | null
-  }
-
   export type ChatMessageWhereInput = {
     AND?: Enumerable<ChatMessageWhereInput>
     OR?: Enumerable<ChatMessageWhereInput>
@@ -15881,7 +15827,8 @@ export namespace Prisma {
     AND?: Enumerable<OfferWhereInput>
     OR?: Enumerable<OfferWhereInput>
     NOT?: Enumerable<OfferWhereInput>
-    id?: IntFilter | number
+    id?: StringFilter | string
+    isPrivate?: BoolFilter | boolean
     createdBy?: XOR<ProfileRelationFilter, ProfileWhereInput>
     createdByProfileId?: IntFilter | number
     publishedAt?: DateTimeFilter | Date | string
@@ -15900,11 +15847,11 @@ export namespace Prisma {
     maxUnits?: IntNullableFilter | number | null
     deliveryTermsTag?: XOR<TagRelationFilter, TagWhereInput>
     deliveryTermsTagId?: IntFilter | number
-    subscribers?: SubscriptionListRelationFilter
   }
 
   export type OfferOrderByInput = {
     id?: SortOrder
+    isPrivate?: SortOrder
     createdByProfileId?: SortOrder
     publishedAt?: SortOrder
     unlistedAt?: SortOrder
@@ -15921,14 +15868,15 @@ export namespace Prisma {
   }
 
   export type OfferWhereUniqueInput = {
-    id?: number
+    id?: string
   }
 
   export type OfferScalarWhereWithAggregatesInput = {
     AND?: Enumerable<OfferScalarWhereWithAggregatesInput>
     OR?: Enumerable<OfferScalarWhereWithAggregatesInput>
     NOT?: Enumerable<OfferScalarWhereWithAggregatesInput>
-    id?: IntWithAggregatesFilter | number
+    id?: StringWithAggregatesFilter | string
+    isPrivate?: BoolWithAggregatesFilter | boolean
     createdByProfileId?: IntWithAggregatesFilter | number
     publishedAt?: DateTimeWithAggregatesFilter | Date | string
     unlistedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
@@ -15954,7 +15902,7 @@ export namespace Prisma {
     purchasedAt?: DateTimeFilter | Date | string
     purchasedProvenAt?: DateTimeNullableFilter | Date | string | null
     purchasedItem?: XOR<OfferRelationFilter, OfferWhereInput>
-    purchasedItemId?: IntFilter | number
+    purchasedItemId?: StringFilter | string
     purchasedItemTitle?: StringFilter | string
     pricePerUnit?: StringFilter | string
     purchasedUnits?: IntFilter | number
@@ -15990,7 +15938,7 @@ export namespace Prisma {
     purchasedByProfileId?: IntWithAggregatesFilter | number
     purchasedAt?: DateTimeWithAggregatesFilter | Date | string
     purchasedProvenAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
-    purchasedItemId?: IntWithAggregatesFilter | number
+    purchasedItemId?: StringWithAggregatesFilter | string
     purchasedItemTitle?: StringWithAggregatesFilter | string
     pricePerUnit?: StringWithAggregatesFilter | string
     purchasedUnits?: IntWithAggregatesFilter | number
@@ -16402,6 +16350,51 @@ export namespace Prisma {
     invitationToRedeemId?: IntFieldUpdateOperationsInput | number
   }
 
+  export type InvitationFundsEOACreateInput = {
+    address: string
+    privateKey: string
+    profile: ProfileCreateNestedOneWithoutInvitationFundsInput
+  }
+
+  export type InvitationFundsEOAUncheckedCreateInput = {
+    id?: number
+    address: string
+    privateKey: string
+    profileId: number
+  }
+
+  export type InvitationFundsEOAUpdateInput = {
+    address?: StringFieldUpdateOperationsInput | string
+    privateKey?: StringFieldUpdateOperationsInput | string
+    profile?: ProfileUpdateOneRequiredWithoutInvitationFundsInput
+  }
+
+  export type InvitationFundsEOAUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    address?: StringFieldUpdateOperationsInput | string
+    privateKey?: StringFieldUpdateOperationsInput | string
+    profileId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type InvitationFundsEOACreateManyInput = {
+    id?: number
+    address: string
+    privateKey: string
+    profileId: number
+  }
+
+  export type InvitationFundsEOAUpdateManyMutationInput = {
+    address?: StringFieldUpdateOperationsInput | string
+    privateKey?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type InvitationFundsEOAUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    address?: StringFieldUpdateOperationsInput | string
+    privateKey?: StringFieldUpdateOperationsInput | string
+    profileId?: IntFieldUpdateOperationsInput | number
+  }
+
   export type ProfileCreateInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
@@ -16428,11 +16421,10 @@ export namespace Prisma {
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
   }
@@ -16464,11 +16456,10 @@ export namespace Prisma {
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
   }
@@ -16499,11 +16490,10 @@ export namespace Prisma {
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUpdateManyWithoutSubscriberInput
     memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
   }
@@ -16535,11 +16525,10 @@ export namespace Prisma {
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
     memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
   }
@@ -16708,62 +16697,6 @@ export namespace Prisma {
     memberAtId?: IntFieldUpdateOperationsInput | number
   }
 
-  export type SubscriptionCreateInput = {
-    createdAt: Date | string
-    subscribingToOfferId?: number | null
-    subscribingToProfileId?: number | null
-    subscriber: ProfileCreateNestedOneWithoutSubscriptionsInput
-    subscribingToOffer?: OfferCreateNestedOneWithoutSubscribersInput
-    subscribingToProfile?: ProfileCreateNestedOneWithoutSubscribersInput
-  }
-
-  export type SubscriptionUncheckedCreateInput = {
-    id?: number
-    createdAt: Date | string
-    subscriberProfileId: number
-    subscribingToOfferId?: number | null
-    subscribingToProfileId?: number | null
-  }
-
-  export type SubscriptionUpdateInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    subscribingToOfferId?: NullableIntFieldUpdateOperationsInput | number | null
-    subscribingToProfileId?: NullableIntFieldUpdateOperationsInput | number | null
-    subscriber?: ProfileUpdateOneRequiredWithoutSubscriptionsInput
-    subscribingToOffer?: OfferUpdateOneWithoutSubscribersInput
-    subscribingToProfile?: ProfileUpdateOneWithoutSubscribersInput
-  }
-
-  export type SubscriptionUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    subscriberProfileId?: IntFieldUpdateOperationsInput | number
-    subscribingToOfferId?: NullableIntFieldUpdateOperationsInput | number | null
-    subscribingToProfileId?: NullableIntFieldUpdateOperationsInput | number | null
-  }
-
-  export type SubscriptionCreateManyInput = {
-    id?: number
-    createdAt: Date | string
-    subscriberProfileId: number
-    subscribingToOfferId?: number | null
-    subscribingToProfileId?: number | null
-  }
-
-  export type SubscriptionUpdateManyMutationInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    subscribingToOfferId?: NullableIntFieldUpdateOperationsInput | number | null
-    subscribingToProfileId?: NullableIntFieldUpdateOperationsInput | number | null
-  }
-
-  export type SubscriptionUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    subscriberProfileId?: IntFieldUpdateOperationsInput | number
-    subscribingToOfferId?: NullableIntFieldUpdateOperationsInput | number | null
-    subscribingToProfileId?: NullableIntFieldUpdateOperationsInput | number | null
-  }
-
   export type ChatMessageCreateInput = {
     createdAt: Date | string
     from: string
@@ -16910,6 +16843,8 @@ export namespace Prisma {
   }
 
   export type OfferCreateInput = {
+    id: string
+    isPrivate: boolean
     publishedAt: Date | string
     unlistedAt?: Date | string | null
     title: string
@@ -16924,11 +16859,11 @@ export namespace Prisma {
     categoryTag: TagCreateNestedOneWithoutOfferCategoryInput
     unitTag: TagCreateNestedOneWithoutOfferUnitInput
     deliveryTermsTag: TagCreateNestedOneWithoutOfferDeliveryTermsInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToOfferInput
   }
 
   export type OfferUncheckedCreateInput = {
-    id?: number
+    id: string
+    isPrivate: boolean
     createdByProfileId: number
     publishedAt: Date | string
     unlistedAt?: Date | string | null
@@ -16943,10 +16878,11 @@ export namespace Prisma {
     maxUnits?: number | null
     deliveryTermsTagId: number
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedItemInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToOfferInput
   }
 
   export type OfferUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -16961,11 +16897,11 @@ export namespace Prisma {
     categoryTag?: TagUpdateOneRequiredWithoutOfferCategoryInput
     unitTag?: TagUpdateOneRequiredWithoutOfferUnitInput
     deliveryTermsTag?: TagUpdateOneRequiredWithoutOfferDeliveryTermsInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToOfferInput
   }
 
   export type OfferUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -16980,11 +16916,11 @@ export namespace Prisma {
     maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
     deliveryTermsTagId?: IntFieldUpdateOperationsInput | number
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedItemInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToOfferInput
   }
 
   export type OfferCreateManyInput = {
-    id?: number
+    id: string
+    isPrivate: boolean
     createdByProfileId: number
     publishedAt: Date | string
     unlistedAt?: Date | string | null
@@ -17001,6 +16937,8 @@ export namespace Prisma {
   }
 
   export type OfferUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -17013,7 +16951,8 @@ export namespace Prisma {
   }
 
   export type OfferUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -17048,7 +16987,7 @@ export namespace Prisma {
     purchasedByProfileId: number
     purchasedAt: Date | string
     purchasedProvenAt?: Date | string | null
-    purchasedItemId: number
+    purchasedItemId: string
     purchasedItemTitle: string
     pricePerUnit: string
     purchasedUnits: number
@@ -17077,7 +17016,7 @@ export namespace Prisma {
     purchasedByProfileId?: IntFieldUpdateOperationsInput | number
     purchasedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchasedProvenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    purchasedItemId?: IntFieldUpdateOperationsInput | number
+    purchasedItemId?: StringFieldUpdateOperationsInput | string
     purchasedItemTitle?: StringFieldUpdateOperationsInput | string
     pricePerUnit?: StringFieldUpdateOperationsInput | string
     purchasedUnits?: IntFieldUpdateOperationsInput | number
@@ -17092,7 +17031,7 @@ export namespace Prisma {
     purchasedByProfileId: number
     purchasedAt: Date | string
     purchasedProvenAt?: Date | string | null
-    purchasedItemId: number
+    purchasedItemId: string
     purchasedItemTitle: string
     pricePerUnit: string
     purchasedUnits: number
@@ -17117,7 +17056,7 @@ export namespace Prisma {
     purchasedByProfileId?: IntFieldUpdateOperationsInput | number
     purchasedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchasedProvenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    purchasedItemId?: IntFieldUpdateOperationsInput | number
+    purchasedItemId?: StringFieldUpdateOperationsInput | string
     purchasedItemTitle?: StringFieldUpdateOperationsInput | string
     pricePerUnit?: StringFieldUpdateOperationsInput | string
     purchasedUnits?: IntFieldUpdateOperationsInput | number
@@ -17662,10 +17601,9 @@ export namespace Prisma {
     none?: InvitationWhereInput
   }
 
-  export type SubscriptionListRelationFilter = {
-    every?: SubscriptionWhereInput
-    some?: SubscriptionWhereInput
-    none?: SubscriptionWhereInput
+  export type InvitationFundsEOARelationFilter = {
+    is?: InvitationFundsEOAWhereInput | null
+    isNot?: InvitationFundsEOAWhereInput | null
   }
 
   export type MembershipListRelationFilter = {
@@ -17722,14 +17660,42 @@ export namespace Prisma {
     max?: NestedBoolNullableFilter
   }
 
-  export type OfferRelationFilter = {
-    is?: OfferWhereInput
-    isNot?: OfferWhereInput
+  export type BoolFilter = {
+    equals?: boolean
+    not?: NestedBoolFilter | boolean
   }
 
   export type TagRelationFilter = {
     is?: TagWhereInput
     isNot?: TagWhereInput
+  }
+
+  export type BoolWithAggregatesFilter = {
+    equals?: boolean
+    not?: NestedBoolWithAggregatesFilter | boolean
+    _count?: NestedIntFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    count?: NestedIntFilter
+    _min?: NestedBoolFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    min?: NestedBoolFilter
+    _max?: NestedBoolFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    max?: NestedBoolFilter
+  }
+
+  export type OfferRelationFilter = {
+    is?: OfferWhereInput
+    isNot?: OfferWhereInput
   }
 
   export type EnumPurchaseStatusFilter = {
@@ -17775,11 +17741,6 @@ export namespace Prisma {
     isNot?: PurchaseWhereInput
   }
 
-  export type BoolFilter = {
-    equals?: boolean
-    not?: NestedBoolFilter | boolean
-  }
-
   export type TransactionRelationFilter = {
     is?: TransactionWhereInput | null
     isNot?: TransactionWhereInput | null
@@ -17793,29 +17754,6 @@ export namespace Prisma {
   export type ChatMessageRelationFilter = {
     is?: ChatMessageWhereInput | null
     isNot?: ChatMessageWhereInput | null
-  }
-
-  export type BoolWithAggregatesFilter = {
-    equals?: boolean
-    not?: NestedBoolWithAggregatesFilter | boolean
-    _count?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntFilter
-    _min?: NestedBoolFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedBoolFilter
-    _max?: NestedBoolFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedBoolFilter
   }
 
   export type ProfileCreateNestedOneWithoutSessionsInput = {
@@ -17982,6 +17920,20 @@ export namespace Prisma {
     update?: XOR<InvitationUpdateWithoutIndexedTransactionsInput, InvitationUncheckedUpdateWithoutIndexedTransactionsInput>
   }
 
+  export type ProfileCreateNestedOneWithoutInvitationFundsInput = {
+    create?: XOR<ProfileCreateWithoutInvitationFundsInput, ProfileUncheckedCreateWithoutInvitationFundsInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutInvitationFundsInput
+    connect?: ProfileWhereUniqueInput
+  }
+
+  export type ProfileUpdateOneRequiredWithoutInvitationFundsInput = {
+    create?: XOR<ProfileCreateWithoutInvitationFundsInput, ProfileUncheckedCreateWithoutInvitationFundsInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutInvitationFundsInput
+    upsert?: ProfileUpsertWithoutInvitationFundsInput
+    connect?: ProfileWhereUniqueInput
+    update?: XOR<ProfileUpdateWithoutInvitationFundsInput, ProfileUncheckedUpdateWithoutInvitationFundsInput>
+  }
+
   export type SessionCreateNestedManyWithoutProfileInput = {
     create?: XOR<Enumerable<SessionCreateWithoutProfileInput>, Enumerable<SessionUncheckedCreateWithoutProfileInput>>
     connectOrCreate?: Enumerable<SessionCreateOrConnectWithoutProfileInput>
@@ -18017,6 +17969,12 @@ export namespace Prisma {
     connect?: Enumerable<InvitationWhereUniqueInput>
   }
 
+  export type InvitationFundsEOACreateNestedOneWithoutProfileInput = {
+    create?: XOR<InvitationFundsEOACreateWithoutProfileInput, InvitationFundsEOAUncheckedCreateWithoutProfileInput>
+    connectOrCreate?: InvitationFundsEOACreateOrConnectWithoutProfileInput
+    connect?: InvitationFundsEOAWhereUniqueInput
+  }
+
   export type RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<Enumerable<RedeemInvitationRequestCreateWithoutCreatedByInput>, Enumerable<RedeemInvitationRequestUncheckedCreateWithoutCreatedByInput>>
     connectOrCreate?: Enumerable<RedeemInvitationRequestCreateOrConnectWithoutCreatedByInput>
@@ -18036,20 +17994,6 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvitationCreateOrConnectWithoutClaimedByInput>
     createMany?: InvitationCreateManyClaimedByInputEnvelope
     connect?: Enumerable<InvitationWhereUniqueInput>
-  }
-
-  export type SubscriptionCreateNestedManyWithoutSubscribingToProfileInput = {
-    create?: XOR<Enumerable<SubscriptionCreateWithoutSubscribingToProfileInput>, Enumerable<SubscriptionUncheckedCreateWithoutSubscribingToProfileInput>>
-    connectOrCreate?: Enumerable<SubscriptionCreateOrConnectWithoutSubscribingToProfileInput>
-    createMany?: SubscriptionCreateManySubscribingToProfileInputEnvelope
-    connect?: Enumerable<SubscriptionWhereUniqueInput>
-  }
-
-  export type SubscriptionCreateNestedManyWithoutSubscriberInput = {
-    create?: XOR<Enumerable<SubscriptionCreateWithoutSubscriberInput>, Enumerable<SubscriptionUncheckedCreateWithoutSubscriberInput>>
-    connectOrCreate?: Enumerable<SubscriptionCreateOrConnectWithoutSubscriberInput>
-    createMany?: SubscriptionCreateManySubscriberInputEnvelope
-    connect?: Enumerable<SubscriptionWhereUniqueInput>
   }
 
   export type MembershipCreateNestedManyWithoutMemberInput = {
@@ -18101,6 +18045,12 @@ export namespace Prisma {
     connect?: Enumerable<InvitationWhereUniqueInput>
   }
 
+  export type InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput = {
+    create?: XOR<InvitationFundsEOACreateWithoutProfileInput, InvitationFundsEOAUncheckedCreateWithoutProfileInput>
+    connectOrCreate?: InvitationFundsEOACreateOrConnectWithoutProfileInput
+    connect?: InvitationFundsEOAWhereUniqueInput
+  }
+
   export type RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<Enumerable<RedeemInvitationRequestCreateWithoutCreatedByInput>, Enumerable<RedeemInvitationRequestUncheckedCreateWithoutCreatedByInput>>
     connectOrCreate?: Enumerable<RedeemInvitationRequestCreateOrConnectWithoutCreatedByInput>
@@ -18120,20 +18070,6 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvitationCreateOrConnectWithoutClaimedByInput>
     createMany?: InvitationCreateManyClaimedByInputEnvelope
     connect?: Enumerable<InvitationWhereUniqueInput>
-  }
-
-  export type SubscriptionUncheckedCreateNestedManyWithoutSubscribingToProfileInput = {
-    create?: XOR<Enumerable<SubscriptionCreateWithoutSubscribingToProfileInput>, Enumerable<SubscriptionUncheckedCreateWithoutSubscribingToProfileInput>>
-    connectOrCreate?: Enumerable<SubscriptionCreateOrConnectWithoutSubscribingToProfileInput>
-    createMany?: SubscriptionCreateManySubscribingToProfileInputEnvelope
-    connect?: Enumerable<SubscriptionWhereUniqueInput>
-  }
-
-  export type SubscriptionUncheckedCreateNestedManyWithoutSubscriberInput = {
-    create?: XOR<Enumerable<SubscriptionCreateWithoutSubscriberInput>, Enumerable<SubscriptionUncheckedCreateWithoutSubscriberInput>>
-    connectOrCreate?: Enumerable<SubscriptionCreateOrConnectWithoutSubscriberInput>
-    createMany?: SubscriptionCreateManySubscriberInputEnvelope
-    connect?: Enumerable<SubscriptionWhereUniqueInput>
   }
 
   export type MembershipUncheckedCreateNestedManyWithoutMemberInput = {
@@ -18228,6 +18164,16 @@ export namespace Prisma {
     deleteMany?: Enumerable<InvitationScalarWhereInput>
   }
 
+  export type InvitationFundsEOAUpdateOneWithoutProfileInput = {
+    create?: XOR<InvitationFundsEOACreateWithoutProfileInput, InvitationFundsEOAUncheckedCreateWithoutProfileInput>
+    connectOrCreate?: InvitationFundsEOACreateOrConnectWithoutProfileInput
+    upsert?: InvitationFundsEOAUpsertWithoutProfileInput
+    connect?: InvitationFundsEOAWhereUniqueInput
+    disconnect?: boolean
+    delete?: boolean
+    update?: XOR<InvitationFundsEOAUpdateWithoutProfileInput, InvitationFundsEOAUncheckedUpdateWithoutProfileInput>
+  }
+
   export type RedeemInvitationRequestUpdateManyWithoutCreatedByInput = {
     create?: XOR<Enumerable<RedeemInvitationRequestCreateWithoutCreatedByInput>, Enumerable<RedeemInvitationRequestUncheckedCreateWithoutCreatedByInput>>
     connectOrCreate?: Enumerable<RedeemInvitationRequestCreateOrConnectWithoutCreatedByInput>
@@ -18268,34 +18214,6 @@ export namespace Prisma {
     update?: Enumerable<InvitationUpdateWithWhereUniqueWithoutClaimedByInput>
     updateMany?: Enumerable<InvitationUpdateManyWithWhereWithoutClaimedByInput>
     deleteMany?: Enumerable<InvitationScalarWhereInput>
-  }
-
-  export type SubscriptionUpdateManyWithoutSubscribingToProfileInput = {
-    create?: XOR<Enumerable<SubscriptionCreateWithoutSubscribingToProfileInput>, Enumerable<SubscriptionUncheckedCreateWithoutSubscribingToProfileInput>>
-    connectOrCreate?: Enumerable<SubscriptionCreateOrConnectWithoutSubscribingToProfileInput>
-    upsert?: Enumerable<SubscriptionUpsertWithWhereUniqueWithoutSubscribingToProfileInput>
-    createMany?: SubscriptionCreateManySubscribingToProfileInputEnvelope
-    connect?: Enumerable<SubscriptionWhereUniqueInput>
-    set?: Enumerable<SubscriptionWhereUniqueInput>
-    disconnect?: Enumerable<SubscriptionWhereUniqueInput>
-    delete?: Enumerable<SubscriptionWhereUniqueInput>
-    update?: Enumerable<SubscriptionUpdateWithWhereUniqueWithoutSubscribingToProfileInput>
-    updateMany?: Enumerable<SubscriptionUpdateManyWithWhereWithoutSubscribingToProfileInput>
-    deleteMany?: Enumerable<SubscriptionScalarWhereInput>
-  }
-
-  export type SubscriptionUpdateManyWithoutSubscriberInput = {
-    create?: XOR<Enumerable<SubscriptionCreateWithoutSubscriberInput>, Enumerable<SubscriptionUncheckedCreateWithoutSubscriberInput>>
-    connectOrCreate?: Enumerable<SubscriptionCreateOrConnectWithoutSubscriberInput>
-    upsert?: Enumerable<SubscriptionUpsertWithWhereUniqueWithoutSubscriberInput>
-    createMany?: SubscriptionCreateManySubscriberInputEnvelope
-    connect?: Enumerable<SubscriptionWhereUniqueInput>
-    set?: Enumerable<SubscriptionWhereUniqueInput>
-    disconnect?: Enumerable<SubscriptionWhereUniqueInput>
-    delete?: Enumerable<SubscriptionWhereUniqueInput>
-    update?: Enumerable<SubscriptionUpdateWithWhereUniqueWithoutSubscriberInput>
-    updateMany?: Enumerable<SubscriptionUpdateManyWithWhereWithoutSubscriberInput>
-    deleteMany?: Enumerable<SubscriptionScalarWhereInput>
   }
 
   export type MembershipUpdateManyWithoutMemberInput = {
@@ -18396,6 +18314,16 @@ export namespace Prisma {
     deleteMany?: Enumerable<InvitationScalarWhereInput>
   }
 
+  export type InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput = {
+    create?: XOR<InvitationFundsEOACreateWithoutProfileInput, InvitationFundsEOAUncheckedCreateWithoutProfileInput>
+    connectOrCreate?: InvitationFundsEOACreateOrConnectWithoutProfileInput
+    upsert?: InvitationFundsEOAUpsertWithoutProfileInput
+    connect?: InvitationFundsEOAWhereUniqueInput
+    disconnect?: boolean
+    delete?: boolean
+    update?: XOR<InvitationFundsEOAUpdateWithoutProfileInput, InvitationFundsEOAUncheckedUpdateWithoutProfileInput>
+  }
+
   export type RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput = {
     create?: XOR<Enumerable<RedeemInvitationRequestCreateWithoutCreatedByInput>, Enumerable<RedeemInvitationRequestUncheckedCreateWithoutCreatedByInput>>
     connectOrCreate?: Enumerable<RedeemInvitationRequestCreateOrConnectWithoutCreatedByInput>
@@ -18436,34 +18364,6 @@ export namespace Prisma {
     update?: Enumerable<InvitationUpdateWithWhereUniqueWithoutClaimedByInput>
     updateMany?: Enumerable<InvitationUpdateManyWithWhereWithoutClaimedByInput>
     deleteMany?: Enumerable<InvitationScalarWhereInput>
-  }
-
-  export type SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput = {
-    create?: XOR<Enumerable<SubscriptionCreateWithoutSubscribingToProfileInput>, Enumerable<SubscriptionUncheckedCreateWithoutSubscribingToProfileInput>>
-    connectOrCreate?: Enumerable<SubscriptionCreateOrConnectWithoutSubscribingToProfileInput>
-    upsert?: Enumerable<SubscriptionUpsertWithWhereUniqueWithoutSubscribingToProfileInput>
-    createMany?: SubscriptionCreateManySubscribingToProfileInputEnvelope
-    connect?: Enumerable<SubscriptionWhereUniqueInput>
-    set?: Enumerable<SubscriptionWhereUniqueInput>
-    disconnect?: Enumerable<SubscriptionWhereUniqueInput>
-    delete?: Enumerable<SubscriptionWhereUniqueInput>
-    update?: Enumerable<SubscriptionUpdateWithWhereUniqueWithoutSubscribingToProfileInput>
-    updateMany?: Enumerable<SubscriptionUpdateManyWithWhereWithoutSubscribingToProfileInput>
-    deleteMany?: Enumerable<SubscriptionScalarWhereInput>
-  }
-
-  export type SubscriptionUncheckedUpdateManyWithoutSubscriberInput = {
-    create?: XOR<Enumerable<SubscriptionCreateWithoutSubscriberInput>, Enumerable<SubscriptionUncheckedCreateWithoutSubscriberInput>>
-    connectOrCreate?: Enumerable<SubscriptionCreateOrConnectWithoutSubscriberInput>
-    upsert?: Enumerable<SubscriptionUpsertWithWhereUniqueWithoutSubscriberInput>
-    createMany?: SubscriptionCreateManySubscriberInputEnvelope
-    connect?: Enumerable<SubscriptionWhereUniqueInput>
-    set?: Enumerable<SubscriptionWhereUniqueInput>
-    disconnect?: Enumerable<SubscriptionWhereUniqueInput>
-    delete?: Enumerable<SubscriptionWhereUniqueInput>
-    update?: Enumerable<SubscriptionUpdateWithWhereUniqueWithoutSubscriberInput>
-    updateMany?: Enumerable<SubscriptionUpdateManyWithWhereWithoutSubscriberInput>
-    deleteMany?: Enumerable<SubscriptionScalarWhereInput>
   }
 
   export type MembershipUncheckedUpdateManyWithoutMemberInput = {
@@ -18520,52 +18420,6 @@ export namespace Prisma {
     upsert?: ProfileUpsertWithoutMembersInput
     connect?: ProfileWhereUniqueInput
     update?: XOR<ProfileUpdateWithoutMembersInput, ProfileUncheckedUpdateWithoutMembersInput>
-  }
-
-  export type ProfileCreateNestedOneWithoutSubscriptionsInput = {
-    create?: XOR<ProfileCreateWithoutSubscriptionsInput, ProfileUncheckedCreateWithoutSubscriptionsInput>
-    connectOrCreate?: ProfileCreateOrConnectWithoutSubscriptionsInput
-    connect?: ProfileWhereUniqueInput
-  }
-
-  export type OfferCreateNestedOneWithoutSubscribersInput = {
-    create?: XOR<OfferCreateWithoutSubscribersInput, OfferUncheckedCreateWithoutSubscribersInput>
-    connectOrCreate?: OfferCreateOrConnectWithoutSubscribersInput
-    connect?: OfferWhereUniqueInput
-  }
-
-  export type ProfileCreateNestedOneWithoutSubscribersInput = {
-    create?: XOR<ProfileCreateWithoutSubscribersInput, ProfileUncheckedCreateWithoutSubscribersInput>
-    connectOrCreate?: ProfileCreateOrConnectWithoutSubscribersInput
-    connect?: ProfileWhereUniqueInput
-  }
-
-  export type ProfileUpdateOneRequiredWithoutSubscriptionsInput = {
-    create?: XOR<ProfileCreateWithoutSubscriptionsInput, ProfileUncheckedCreateWithoutSubscriptionsInput>
-    connectOrCreate?: ProfileCreateOrConnectWithoutSubscriptionsInput
-    upsert?: ProfileUpsertWithoutSubscriptionsInput
-    connect?: ProfileWhereUniqueInput
-    update?: XOR<ProfileUpdateWithoutSubscriptionsInput, ProfileUncheckedUpdateWithoutSubscriptionsInput>
-  }
-
-  export type OfferUpdateOneWithoutSubscribersInput = {
-    create?: XOR<OfferCreateWithoutSubscribersInput, OfferUncheckedCreateWithoutSubscribersInput>
-    connectOrCreate?: OfferCreateOrConnectWithoutSubscribersInput
-    upsert?: OfferUpsertWithoutSubscribersInput
-    connect?: OfferWhereUniqueInput
-    disconnect?: boolean
-    delete?: boolean
-    update?: XOR<OfferUpdateWithoutSubscribersInput, OfferUncheckedUpdateWithoutSubscribersInput>
-  }
-
-  export type ProfileUpdateOneWithoutSubscribersInput = {
-    create?: XOR<ProfileCreateWithoutSubscribersInput, ProfileUncheckedCreateWithoutSubscribersInput>
-    connectOrCreate?: ProfileCreateOrConnectWithoutSubscribersInput
-    upsert?: ProfileUpsertWithoutSubscribersInput
-    connect?: ProfileWhereUniqueInput
-    disconnect?: boolean
-    delete?: boolean
-    update?: XOR<ProfileUpdateWithoutSubscribersInput, ProfileUncheckedUpdateWithoutSubscribersInput>
   }
 
   export type TagCreateNestedManyWithoutChatMessageInput = {
@@ -18641,13 +18495,6 @@ export namespace Prisma {
     connect?: TagWhereUniqueInput
   }
 
-  export type SubscriptionCreateNestedManyWithoutSubscribingToOfferInput = {
-    create?: XOR<Enumerable<SubscriptionCreateWithoutSubscribingToOfferInput>, Enumerable<SubscriptionUncheckedCreateWithoutSubscribingToOfferInput>>
-    connectOrCreate?: Enumerable<SubscriptionCreateOrConnectWithoutSubscribingToOfferInput>
-    createMany?: SubscriptionCreateManySubscribingToOfferInputEnvelope
-    connect?: Enumerable<SubscriptionWhereUniqueInput>
-  }
-
   export type PurchaseUncheckedCreateNestedManyWithoutPurchasedItemInput = {
     create?: XOR<Enumerable<PurchaseCreateWithoutPurchasedItemInput>, Enumerable<PurchaseUncheckedCreateWithoutPurchasedItemInput>>
     connectOrCreate?: Enumerable<PurchaseCreateOrConnectWithoutPurchasedItemInput>
@@ -18655,11 +18502,8 @@ export namespace Prisma {
     connect?: Enumerable<PurchaseWhereUniqueInput>
   }
 
-  export type SubscriptionUncheckedCreateNestedManyWithoutSubscribingToOfferInput = {
-    create?: XOR<Enumerable<SubscriptionCreateWithoutSubscribingToOfferInput>, Enumerable<SubscriptionUncheckedCreateWithoutSubscribingToOfferInput>>
-    connectOrCreate?: Enumerable<SubscriptionCreateOrConnectWithoutSubscribingToOfferInput>
-    createMany?: SubscriptionCreateManySubscribingToOfferInputEnvelope
-    connect?: Enumerable<SubscriptionWhereUniqueInput>
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
   }
 
   export type ProfileUpdateOneRequiredWithoutOffersInput = {
@@ -18708,20 +18552,6 @@ export namespace Prisma {
     update?: XOR<TagUpdateWithoutOfferDeliveryTermsInput, TagUncheckedUpdateWithoutOfferDeliveryTermsInput>
   }
 
-  export type SubscriptionUpdateManyWithoutSubscribingToOfferInput = {
-    create?: XOR<Enumerable<SubscriptionCreateWithoutSubscribingToOfferInput>, Enumerable<SubscriptionUncheckedCreateWithoutSubscribingToOfferInput>>
-    connectOrCreate?: Enumerable<SubscriptionCreateOrConnectWithoutSubscribingToOfferInput>
-    upsert?: Enumerable<SubscriptionUpsertWithWhereUniqueWithoutSubscribingToOfferInput>
-    createMany?: SubscriptionCreateManySubscribingToOfferInputEnvelope
-    connect?: Enumerable<SubscriptionWhereUniqueInput>
-    set?: Enumerable<SubscriptionWhereUniqueInput>
-    disconnect?: Enumerable<SubscriptionWhereUniqueInput>
-    delete?: Enumerable<SubscriptionWhereUniqueInput>
-    update?: Enumerable<SubscriptionUpdateWithWhereUniqueWithoutSubscribingToOfferInput>
-    updateMany?: Enumerable<SubscriptionUpdateManyWithWhereWithoutSubscribingToOfferInput>
-    deleteMany?: Enumerable<SubscriptionScalarWhereInput>
-  }
-
   export type PurchaseUncheckedUpdateManyWithoutPurchasedItemInput = {
     create?: XOR<Enumerable<PurchaseCreateWithoutPurchasedItemInput>, Enumerable<PurchaseUncheckedCreateWithoutPurchasedItemInput>>
     connectOrCreate?: Enumerable<PurchaseCreateOrConnectWithoutPurchasedItemInput>
@@ -18734,20 +18564,6 @@ export namespace Prisma {
     update?: Enumerable<PurchaseUpdateWithWhereUniqueWithoutPurchasedItemInput>
     updateMany?: Enumerable<PurchaseUpdateManyWithWhereWithoutPurchasedItemInput>
     deleteMany?: Enumerable<PurchaseScalarWhereInput>
-  }
-
-  export type SubscriptionUncheckedUpdateManyWithoutSubscribingToOfferInput = {
-    create?: XOR<Enumerable<SubscriptionCreateWithoutSubscribingToOfferInput>, Enumerable<SubscriptionUncheckedCreateWithoutSubscribingToOfferInput>>
-    connectOrCreate?: Enumerable<SubscriptionCreateOrConnectWithoutSubscribingToOfferInput>
-    upsert?: Enumerable<SubscriptionUpsertWithWhereUniqueWithoutSubscribingToOfferInput>
-    createMany?: SubscriptionCreateManySubscribingToOfferInputEnvelope
-    connect?: Enumerable<SubscriptionWhereUniqueInput>
-    set?: Enumerable<SubscriptionWhereUniqueInput>
-    disconnect?: Enumerable<SubscriptionWhereUniqueInput>
-    delete?: Enumerable<SubscriptionWhereUniqueInput>
-    update?: Enumerable<SubscriptionUpdateWithWhereUniqueWithoutSubscribingToOfferInput>
-    updateMany?: Enumerable<SubscriptionUpdateManyWithWhereWithoutSubscribingToOfferInput>
-    deleteMany?: Enumerable<SubscriptionScalarWhereInput>
   }
 
   export type ProfileCreateNestedOneWithoutPurchasesInput = {
@@ -18986,10 +18802,6 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<OfferCreateOrConnectWithoutDeliveryTermsTagInput>
     createMany?: OfferCreateManyDeliveryTermsTagInputEnvelope
     connect?: Enumerable<OfferWhereUniqueInput>
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
   }
 
   export type ProfileUpdateOneRequiredWithoutTagsInput = {
@@ -19470,6 +19282,34 @@ export namespace Prisma {
     max?: NestedBoolNullableFilter
   }
 
+  export type NestedBoolFilter = {
+    equals?: boolean
+    not?: NestedBoolFilter | boolean
+  }
+
+  export type NestedBoolWithAggregatesFilter = {
+    equals?: boolean
+    not?: NestedBoolWithAggregatesFilter | boolean
+    _count?: NestedIntFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    count?: NestedIntFilter
+    _min?: NestedBoolFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    min?: NestedBoolFilter
+    _max?: NestedBoolFilter
+    /**
+     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
+     * 
+    **/
+    max?: NestedBoolFilter
+  }
+
   export type NestedEnumPurchaseStatusFilter = {
     equals?: PurchaseStatus
     in?: Enumerable<PurchaseStatus>
@@ -19502,34 +19342,6 @@ export namespace Prisma {
     max?: NestedEnumPurchaseStatusFilter
   }
 
-  export type NestedBoolFilter = {
-    equals?: boolean
-    not?: NestedBoolFilter | boolean
-  }
-
-  export type NestedBoolWithAggregatesFilter = {
-    equals?: boolean
-    not?: NestedBoolWithAggregatesFilter | boolean
-    _count?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntFilter
-    _min?: NestedBoolFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedBoolFilter
-    _max?: NestedBoolFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedBoolFilter
-  }
-
   export type ProfileCreateWithoutSessionsInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
@@ -19555,11 +19367,10 @@ export namespace Prisma {
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
   }
@@ -19590,11 +19401,10 @@ export namespace Prisma {
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
   }
@@ -19634,11 +19444,10 @@ export namespace Prisma {
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUpdateManyWithoutSubscriberInput
     memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
   }
@@ -19669,11 +19478,10 @@ export namespace Prisma {
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
     memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
   }
@@ -19703,11 +19511,10 @@ export namespace Prisma {
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
+    invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
   }
@@ -19738,11 +19545,10 @@ export namespace Prisma {
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
   }
@@ -19778,10 +19584,9 @@ export namespace Prisma {
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
   }
@@ -19813,10 +19618,9 @@ export namespace Prisma {
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
   }
@@ -19852,10 +19656,9 @@ export namespace Prisma {
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
   }
@@ -19887,10 +19690,9 @@ export namespace Prisma {
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
   }
@@ -19955,11 +19757,10 @@ export namespace Prisma {
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
+    invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUpdateManyWithoutSubscriberInput
     memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
   }
@@ -19990,11 +19791,10 @@ export namespace Prisma {
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
     memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
   }
@@ -20030,10 +19830,9 @@ export namespace Prisma {
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUpdateManyWithoutSubscriberInput
     memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
   }
@@ -20065,10 +19864,9 @@ export namespace Prisma {
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
     memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
   }
@@ -20104,10 +19902,9 @@ export namespace Prisma {
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUpdateManyWithoutSubscriberInput
     memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
   }
@@ -20139,10 +19936,9 @@ export namespace Prisma {
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
     memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
   }
@@ -20201,10 +19997,9 @@ export namespace Prisma {
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
   }
@@ -20236,10 +20031,9 @@ export namespace Prisma {
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
   }
@@ -20314,10 +20108,9 @@ export namespace Prisma {
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUpdateManyWithoutSubscriberInput
     memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
   }
@@ -20349,10 +20142,9 @@ export namespace Prisma {
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
     memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
   }
@@ -20389,6 +20181,150 @@ export namespace Prisma {
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ProfileCreateWithoutInvitationFundsInput = {
+    lastUpdateAt?: Date | string
+    emailAddress?: string | null
+    status?: string | null
+    type?: ProfileType | null
+    circlesAddress?: string | null
+    circlesSafeOwner?: string | null
+    circlesTokenAddress?: string | null
+    firstName: string
+    lastName?: string | null
+    avatarUrl?: string | null
+    avatarCid?: string | null
+    avatarMimeType?: string | null
+    dream?: string | null
+    country?: string | null
+    newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
+    cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
+    verifySafeChallenge?: string | null
+    newSafeAddress?: string | null
+    sessions?: SessionCreateNestedManyWithoutProfileInput
+    tags?: TagCreateNestedManyWithoutCreatedByInput
+    offers?: OfferCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
+    invitations?: InvitationCreateNestedManyWithoutCreatedByInput
+    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
+    redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
+    memberships?: MembershipCreateNestedManyWithoutMemberInput
+    members?: MembershipCreateNestedManyWithoutMemberAtInput
+  }
+
+  export type ProfileUncheckedCreateWithoutInvitationFundsInput = {
+    id?: number
+    lastUpdateAt?: Date | string
+    emailAddress?: string | null
+    status?: string | null
+    type?: ProfileType | null
+    circlesAddress?: string | null
+    circlesSafeOwner?: string | null
+    circlesTokenAddress?: string | null
+    firstName: string
+    lastName?: string | null
+    avatarUrl?: string | null
+    avatarCid?: string | null
+    avatarMimeType?: string | null
+    dream?: string | null
+    country?: string | null
+    newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
+    cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
+    verifySafeChallenge?: string | null
+    newSafeAddress?: string | null
+    sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
+    tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
+    invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
+    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
+    redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
+    memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
+    members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
+  }
+
+  export type ProfileCreateOrConnectWithoutInvitationFundsInput = {
+    where: ProfileWhereUniqueInput
+    create: XOR<ProfileCreateWithoutInvitationFundsInput, ProfileUncheckedCreateWithoutInvitationFundsInput>
+  }
+
+  export type ProfileUpsertWithoutInvitationFundsInput = {
+    update: XOR<ProfileUpdateWithoutInvitationFundsInput, ProfileUncheckedUpdateWithoutInvitationFundsInput>
+    create: XOR<ProfileCreateWithoutInvitationFundsInput, ProfileUncheckedCreateWithoutInvitationFundsInput>
+  }
+
+  export type ProfileUpdateWithoutInvitationFundsInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    dream?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
+    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    sessions?: SessionUpdateManyWithoutProfileInput
+    tags?: TagUpdateManyWithoutCreatedByInput
+    offers?: OfferUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUpdateManyWithoutPurchasedByInput
+    invitations?: InvitationUpdateManyWithoutCreatedByInput
+    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
+    redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
+    memberships?: MembershipUpdateManyWithoutMemberInput
+    members?: MembershipUpdateManyWithoutMemberAtInput
+  }
+
+  export type ProfileUncheckedUpdateWithoutInvitationFundsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    dream?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
+    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    sessions?: SessionUncheckedUpdateManyWithoutProfileInput
+    tags?: TagUncheckedUpdateManyWithoutCreatedByInput
+    offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
+    invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
+    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
+    redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
+    memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
+    members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
   }
 
   export type SessionCreateWithoutProfileInput = {
@@ -20467,6 +20403,8 @@ export namespace Prisma {
   }
 
   export type OfferCreateWithoutCreatedByInput = {
+    id: string
+    isPrivate: boolean
     publishedAt: Date | string
     unlistedAt?: Date | string | null
     title: string
@@ -20480,11 +20418,11 @@ export namespace Prisma {
     categoryTag: TagCreateNestedOneWithoutOfferCategoryInput
     unitTag: TagCreateNestedOneWithoutOfferUnitInput
     deliveryTermsTag: TagCreateNestedOneWithoutOfferDeliveryTermsInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToOfferInput
   }
 
   export type OfferUncheckedCreateWithoutCreatedByInput = {
-    id?: number
+    id: string
+    isPrivate: boolean
     publishedAt: Date | string
     unlistedAt?: Date | string | null
     title: string
@@ -20498,7 +20436,6 @@ export namespace Prisma {
     maxUnits?: number | null
     deliveryTermsTagId: number
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedItemInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToOfferInput
   }
 
   export type OfferCreateOrConnectWithoutCreatedByInput = {
@@ -20528,7 +20465,7 @@ export namespace Prisma {
     id?: number
     purchasedAt: Date | string
     purchasedProvenAt?: Date | string | null
-    purchasedItemId: number
+    purchasedItemId: string
     purchasedItemTitle: string
     pricePerUnit: string
     purchasedUnits: number
@@ -20585,6 +20522,22 @@ export namespace Prisma {
   export type InvitationCreateManyCreatedByInputEnvelope = {
     data: Enumerable<InvitationCreateManyCreatedByInput>
     skipDuplicates?: boolean
+  }
+
+  export type InvitationFundsEOACreateWithoutProfileInput = {
+    address: string
+    privateKey: string
+  }
+
+  export type InvitationFundsEOAUncheckedCreateWithoutProfileInput = {
+    id?: number
+    address: string
+    privateKey: string
+  }
+
+  export type InvitationFundsEOACreateOrConnectWithoutProfileInput = {
+    where: InvitationFundsEOAWhereUniqueInput
+    create: XOR<InvitationFundsEOACreateWithoutProfileInput, InvitationFundsEOAUncheckedCreateWithoutProfileInput>
   }
 
   export type RedeemInvitationRequestCreateWithoutCreatedByInput = {
@@ -20687,56 +20640,6 @@ export namespace Prisma {
 
   export type InvitationCreateManyClaimedByInputEnvelope = {
     data: Enumerable<InvitationCreateManyClaimedByInput>
-    skipDuplicates?: boolean
-  }
-
-  export type SubscriptionCreateWithoutSubscribingToProfileInput = {
-    createdAt: Date | string
-    subscribingToOfferId?: number | null
-    subscribingToProfileId?: number | null
-    subscriber: ProfileCreateNestedOneWithoutSubscriptionsInput
-    subscribingToOffer?: OfferCreateNestedOneWithoutSubscribersInput
-  }
-
-  export type SubscriptionUncheckedCreateWithoutSubscribingToProfileInput = {
-    id?: number
-    createdAt: Date | string
-    subscribingToOfferId?: number | null
-    subscribingToProfileId?: number | null
-  }
-
-  export type SubscriptionCreateOrConnectWithoutSubscribingToProfileInput = {
-    where: SubscriptionWhereUniqueInput
-    create: XOR<SubscriptionCreateWithoutSubscribingToProfileInput, SubscriptionUncheckedCreateWithoutSubscribingToProfileInput>
-  }
-
-  export type SubscriptionCreateManySubscribingToProfileInputEnvelope = {
-    data: Enumerable<SubscriptionCreateManySubscribingToProfileInput>
-    skipDuplicates?: boolean
-  }
-
-  export type SubscriptionCreateWithoutSubscriberInput = {
-    createdAt: Date | string
-    subscribingToOfferId?: number | null
-    subscribingToProfileId?: number | null
-    subscribingToOffer?: OfferCreateNestedOneWithoutSubscribersInput
-    subscribingToProfile?: ProfileCreateNestedOneWithoutSubscribersInput
-  }
-
-  export type SubscriptionUncheckedCreateWithoutSubscriberInput = {
-    id?: number
-    createdAt: Date | string
-    subscribingToOfferId?: number | null
-    subscribingToProfileId?: number | null
-  }
-
-  export type SubscriptionCreateOrConnectWithoutSubscriberInput = {
-    where: SubscriptionWhereUniqueInput
-    create: XOR<SubscriptionCreateWithoutSubscriberInput, SubscriptionUncheckedCreateWithoutSubscriberInput>
-  }
-
-  export type SubscriptionCreateManySubscriberInputEnvelope = {
-    data: Enumerable<SubscriptionCreateManySubscriberInput>
     skipDuplicates?: boolean
   }
 
@@ -20871,7 +20774,8 @@ export namespace Prisma {
     AND?: Enumerable<OfferScalarWhereInput>
     OR?: Enumerable<OfferScalarWhereInput>
     NOT?: Enumerable<OfferScalarWhereInput>
-    id?: IntFilter | number
+    id?: StringFilter | string
+    isPrivate?: BoolFilter | boolean
     createdByProfileId?: IntFilter | number
     publishedAt?: DateTimeFilter | Date | string
     unlistedAt?: DateTimeNullableFilter | Date | string | null
@@ -20911,7 +20815,7 @@ export namespace Prisma {
     purchasedByProfileId?: IntFilter | number
     purchasedAt?: DateTimeFilter | Date | string
     purchasedProvenAt?: DateTimeNullableFilter | Date | string | null
-    purchasedItemId?: IntFilter | number
+    purchasedItemId?: StringFilter | string
     purchasedItemTitle?: StringFilter | string
     pricePerUnit?: StringFilter | string
     purchasedUnits?: IntFilter | number
@@ -20952,6 +20856,22 @@ export namespace Prisma {
     redeemTxHash?: StringNullableFilter | string | null
     address?: StringFilter | string
     key?: StringFilter | string
+  }
+
+  export type InvitationFundsEOAUpsertWithoutProfileInput = {
+    update: XOR<InvitationFundsEOAUpdateWithoutProfileInput, InvitationFundsEOAUncheckedUpdateWithoutProfileInput>
+    create: XOR<InvitationFundsEOACreateWithoutProfileInput, InvitationFundsEOAUncheckedCreateWithoutProfileInput>
+  }
+
+  export type InvitationFundsEOAUpdateWithoutProfileInput = {
+    address?: StringFieldUpdateOperationsInput | string
+    privateKey?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type InvitationFundsEOAUncheckedUpdateWithoutProfileInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    address?: StringFieldUpdateOperationsInput | string
+    privateKey?: StringFieldUpdateOperationsInput | string
   }
 
   export type RedeemInvitationRequestUpsertWithWhereUniqueWithoutCreatedByInput = {
@@ -21000,49 +20920,6 @@ export namespace Prisma {
   export type InvitationUpdateManyWithWhereWithoutClaimedByInput = {
     where: InvitationScalarWhereInput
     data: XOR<InvitationUpdateManyMutationInput, InvitationUncheckedUpdateManyWithoutClaimedInvitationsInput>
-  }
-
-  export type SubscriptionUpsertWithWhereUniqueWithoutSubscribingToProfileInput = {
-    where: SubscriptionWhereUniqueInput
-    update: XOR<SubscriptionUpdateWithoutSubscribingToProfileInput, SubscriptionUncheckedUpdateWithoutSubscribingToProfileInput>
-    create: XOR<SubscriptionCreateWithoutSubscribingToProfileInput, SubscriptionUncheckedCreateWithoutSubscribingToProfileInput>
-  }
-
-  export type SubscriptionUpdateWithWhereUniqueWithoutSubscribingToProfileInput = {
-    where: SubscriptionWhereUniqueInput
-    data: XOR<SubscriptionUpdateWithoutSubscribingToProfileInput, SubscriptionUncheckedUpdateWithoutSubscribingToProfileInput>
-  }
-
-  export type SubscriptionUpdateManyWithWhereWithoutSubscribingToProfileInput = {
-    where: SubscriptionScalarWhereInput
-    data: XOR<SubscriptionUpdateManyMutationInput, SubscriptionUncheckedUpdateManyWithoutSubscribersInput>
-  }
-
-  export type SubscriptionScalarWhereInput = {
-    AND?: Enumerable<SubscriptionScalarWhereInput>
-    OR?: Enumerable<SubscriptionScalarWhereInput>
-    NOT?: Enumerable<SubscriptionScalarWhereInput>
-    id?: IntFilter | number
-    createdAt?: DateTimeFilter | Date | string
-    subscriberProfileId?: IntFilter | number
-    subscribingToOfferId?: IntNullableFilter | number | null
-    subscribingToProfileId?: IntNullableFilter | number | null
-  }
-
-  export type SubscriptionUpsertWithWhereUniqueWithoutSubscriberInput = {
-    where: SubscriptionWhereUniqueInput
-    update: XOR<SubscriptionUpdateWithoutSubscriberInput, SubscriptionUncheckedUpdateWithoutSubscriberInput>
-    create: XOR<SubscriptionCreateWithoutSubscriberInput, SubscriptionUncheckedCreateWithoutSubscriberInput>
-  }
-
-  export type SubscriptionUpdateWithWhereUniqueWithoutSubscriberInput = {
-    where: SubscriptionWhereUniqueInput
-    data: XOR<SubscriptionUpdateWithoutSubscriberInput, SubscriptionUncheckedUpdateWithoutSubscriberInput>
-  }
-
-  export type SubscriptionUpdateManyWithWhereWithoutSubscriberInput = {
-    where: SubscriptionScalarWhereInput
-    data: XOR<SubscriptionUpdateManyMutationInput, SubscriptionUncheckedUpdateManyWithoutSubscriptionsInput>
   }
 
   export type MembershipUpsertWithWhereUniqueWithoutMemberInput = {
@@ -21114,11 +20991,10 @@ export namespace Prisma {
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionCreateNestedManyWithoutSubscriberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
   }
 
@@ -21149,11 +21025,10 @@ export namespace Prisma {
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutSubscriberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
   }
 
@@ -21188,11 +21063,10 @@ export namespace Prisma {
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipCreateNestedManyWithoutMemberInput
   }
 
@@ -21223,11 +21097,10 @@ export namespace Prisma {
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
   }
 
@@ -21267,11 +21140,10 @@ export namespace Prisma {
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUpdateManyWithoutSubscriberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
   }
 
@@ -21302,11 +21174,10 @@ export namespace Prisma {
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
   }
 
@@ -21341,11 +21212,10 @@ export namespace Prisma {
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUpdateManyWithoutSubscriberInput
     memberships?: MembershipUpdateManyWithoutMemberInput
   }
 
@@ -21376,388 +21246,11 @@ export namespace Prisma {
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
     memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
-  }
-
-  export type ProfileCreateWithoutSubscriptionsInput = {
-    lastUpdateAt?: Date | string
-    emailAddress?: string | null
-    status?: string | null
-    type?: ProfileType | null
-    circlesAddress?: string | null
-    circlesSafeOwner?: string | null
-    circlesTokenAddress?: string | null
-    firstName: string
-    lastName?: string | null
-    avatarUrl?: string | null
-    avatarCid?: string | null
-    avatarMimeType?: string | null
-    dream?: string | null
-    country?: string | null
-    newsletter?: boolean | null
-    displayTimeCircles?: boolean | null
-    cityGeonameid?: number | null
-    lastAcknowledged?: Date | string | null
-    verifySafeChallenge?: string | null
-    newSafeAddress?: string | null
-    sessions?: SessionCreateNestedManyWithoutProfileInput
-    tags?: TagCreateNestedManyWithoutCreatedByInput
-    offers?: OfferCreateNestedManyWithoutCreatedByInput
-    purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
-    invitations?: InvitationCreateNestedManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToProfileInput
-    memberships?: MembershipCreateNestedManyWithoutMemberInput
-    members?: MembershipCreateNestedManyWithoutMemberAtInput
-  }
-
-  export type ProfileUncheckedCreateWithoutSubscriptionsInput = {
-    id?: number
-    lastUpdateAt?: Date | string
-    emailAddress?: string | null
-    status?: string | null
-    type?: ProfileType | null
-    circlesAddress?: string | null
-    circlesSafeOwner?: string | null
-    circlesTokenAddress?: string | null
-    firstName: string
-    lastName?: string | null
-    avatarUrl?: string | null
-    avatarCid?: string | null
-    avatarMimeType?: string | null
-    dream?: string | null
-    country?: string | null
-    newsletter?: boolean | null
-    displayTimeCircles?: boolean | null
-    cityGeonameid?: number | null
-    lastAcknowledged?: Date | string | null
-    verifySafeChallenge?: string | null
-    newSafeAddress?: string | null
-    sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
-    tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
-    offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
-    purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
-    invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToProfileInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
-    members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
-  }
-
-  export type ProfileCreateOrConnectWithoutSubscriptionsInput = {
-    where: ProfileWhereUniqueInput
-    create: XOR<ProfileCreateWithoutSubscriptionsInput, ProfileUncheckedCreateWithoutSubscriptionsInput>
-  }
-
-  export type OfferCreateWithoutSubscribersInput = {
-    publishedAt: Date | string
-    unlistedAt?: Date | string | null
-    title: string
-    pictureUrl?: string | null
-    pictureMimeType?: string | null
-    description?: string | null
-    geonameid: number
-    pricePerUnit: string
-    maxUnits?: number | null
-    createdBy: ProfileCreateNestedOneWithoutOffersInput
-    purchases?: PurchaseCreateNestedManyWithoutPurchasedItemInput
-    categoryTag: TagCreateNestedOneWithoutOfferCategoryInput
-    unitTag: TagCreateNestedOneWithoutOfferUnitInput
-    deliveryTermsTag: TagCreateNestedOneWithoutOfferDeliveryTermsInput
-  }
-
-  export type OfferUncheckedCreateWithoutSubscribersInput = {
-    id?: number
-    createdByProfileId: number
-    publishedAt: Date | string
-    unlistedAt?: Date | string | null
-    title: string
-    pictureUrl?: string | null
-    pictureMimeType?: string | null
-    description?: string | null
-    categoryTagId: number
-    geonameid: number
-    pricePerUnit: string
-    unitTagId: number
-    maxUnits?: number | null
-    deliveryTermsTagId: number
-    purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedItemInput
-  }
-
-  export type OfferCreateOrConnectWithoutSubscribersInput = {
-    where: OfferWhereUniqueInput
-    create: XOR<OfferCreateWithoutSubscribersInput, OfferUncheckedCreateWithoutSubscribersInput>
-  }
-
-  export type ProfileCreateWithoutSubscribersInput = {
-    lastUpdateAt?: Date | string
-    emailAddress?: string | null
-    status?: string | null
-    type?: ProfileType | null
-    circlesAddress?: string | null
-    circlesSafeOwner?: string | null
-    circlesTokenAddress?: string | null
-    firstName: string
-    lastName?: string | null
-    avatarUrl?: string | null
-    avatarCid?: string | null
-    avatarMimeType?: string | null
-    dream?: string | null
-    country?: string | null
-    newsletter?: boolean | null
-    displayTimeCircles?: boolean | null
-    cityGeonameid?: number | null
-    lastAcknowledged?: Date | string | null
-    verifySafeChallenge?: string | null
-    newSafeAddress?: string | null
-    sessions?: SessionCreateNestedManyWithoutProfileInput
-    tags?: TagCreateNestedManyWithoutCreatedByInput
-    offers?: OfferCreateNestedManyWithoutCreatedByInput
-    purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
-    invitations?: InvitationCreateNestedManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    subscriptions?: SubscriptionCreateNestedManyWithoutSubscriberInput
-    memberships?: MembershipCreateNestedManyWithoutMemberInput
-    members?: MembershipCreateNestedManyWithoutMemberAtInput
-  }
-
-  export type ProfileUncheckedCreateWithoutSubscribersInput = {
-    id?: number
-    lastUpdateAt?: Date | string
-    emailAddress?: string | null
-    status?: string | null
-    type?: ProfileType | null
-    circlesAddress?: string | null
-    circlesSafeOwner?: string | null
-    circlesTokenAddress?: string | null
-    firstName: string
-    lastName?: string | null
-    avatarUrl?: string | null
-    avatarCid?: string | null
-    avatarMimeType?: string | null
-    dream?: string | null
-    country?: string | null
-    newsletter?: boolean | null
-    displayTimeCircles?: boolean | null
-    cityGeonameid?: number | null
-    lastAcknowledged?: Date | string | null
-    verifySafeChallenge?: string | null
-    newSafeAddress?: string | null
-    sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
-    tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
-    offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
-    purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
-    invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutSubscriberInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
-    members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
-  }
-
-  export type ProfileCreateOrConnectWithoutSubscribersInput = {
-    where: ProfileWhereUniqueInput
-    create: XOR<ProfileCreateWithoutSubscribersInput, ProfileUncheckedCreateWithoutSubscribersInput>
-  }
-
-  export type ProfileUpsertWithoutSubscriptionsInput = {
-    update: XOR<ProfileUpdateWithoutSubscriptionsInput, ProfileUncheckedUpdateWithoutSubscriptionsInput>
-    create: XOR<ProfileCreateWithoutSubscriptionsInput, ProfileUncheckedCreateWithoutSubscriptionsInput>
-  }
-
-  export type ProfileUpdateWithoutSubscriptionsInput = {
-    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
-    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    dream?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
-    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
-    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    sessions?: SessionUpdateManyWithoutProfileInput
-    tags?: TagUpdateManyWithoutCreatedByInput
-    offers?: OfferUpdateManyWithoutCreatedByInput
-    purchases?: PurchaseUpdateManyWithoutPurchasedByInput
-    invitations?: InvitationUpdateManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToProfileInput
-    memberships?: MembershipUpdateManyWithoutMemberInput
-    members?: MembershipUpdateManyWithoutMemberAtInput
-  }
-
-  export type ProfileUncheckedUpdateWithoutSubscriptionsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
-    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    dream?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
-    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
-    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    sessions?: SessionUncheckedUpdateManyWithoutProfileInput
-    tags?: TagUncheckedUpdateManyWithoutCreatedByInput
-    offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
-    purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
-    invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput
-    memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
-    members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
-  }
-
-  export type OfferUpsertWithoutSubscribersInput = {
-    update: XOR<OfferUpdateWithoutSubscribersInput, OfferUncheckedUpdateWithoutSubscribersInput>
-    create: XOR<OfferCreateWithoutSubscribersInput, OfferUncheckedCreateWithoutSubscribersInput>
-  }
-
-  export type OfferUpdateWithoutSubscribersInput = {
-    publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    title?: StringFieldUpdateOperationsInput | string
-    pictureUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    geonameid?: IntFieldUpdateOperationsInput | number
-    pricePerUnit?: StringFieldUpdateOperationsInput | string
-    maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
-    createdBy?: ProfileUpdateOneRequiredWithoutOffersInput
-    purchases?: PurchaseUpdateManyWithoutPurchasedItemInput
-    categoryTag?: TagUpdateOneRequiredWithoutOfferCategoryInput
-    unitTag?: TagUpdateOneRequiredWithoutOfferUnitInput
-    deliveryTermsTag?: TagUpdateOneRequiredWithoutOfferDeliveryTermsInput
-  }
-
-  export type OfferUncheckedUpdateWithoutSubscribersInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    title?: StringFieldUpdateOperationsInput | string
-    pictureUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    categoryTagId?: IntFieldUpdateOperationsInput | number
-    geonameid?: IntFieldUpdateOperationsInput | number
-    pricePerUnit?: StringFieldUpdateOperationsInput | string
-    unitTagId?: IntFieldUpdateOperationsInput | number
-    maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
-    deliveryTermsTagId?: IntFieldUpdateOperationsInput | number
-    purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedItemInput
-  }
-
-  export type ProfileUpsertWithoutSubscribersInput = {
-    update: XOR<ProfileUpdateWithoutSubscribersInput, ProfileUncheckedUpdateWithoutSubscribersInput>
-    create: XOR<ProfileCreateWithoutSubscribersInput, ProfileUncheckedCreateWithoutSubscribersInput>
-  }
-
-  export type ProfileUpdateWithoutSubscribersInput = {
-    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
-    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    dream?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
-    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
-    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    sessions?: SessionUpdateManyWithoutProfileInput
-    tags?: TagUpdateManyWithoutCreatedByInput
-    offers?: OfferUpdateManyWithoutCreatedByInput
-    purchases?: PurchaseUpdateManyWithoutPurchasedByInput
-    invitations?: InvitationUpdateManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    subscriptions?: SubscriptionUpdateManyWithoutSubscriberInput
-    memberships?: MembershipUpdateManyWithoutMemberInput
-    members?: MembershipUpdateManyWithoutMemberAtInput
-  }
-
-  export type ProfileUncheckedUpdateWithoutSubscribersInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
-    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    dream?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
-    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
-    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    sessions?: SessionUncheckedUpdateManyWithoutProfileInput
-    tags?: TagUncheckedUpdateManyWithoutCreatedByInput
-    offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
-    purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
-    invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
-    memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
-    members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
   }
 
   export type TagCreateWithoutChatMessageInput = {
@@ -21836,11 +21329,10 @@ export namespace Prisma {
     tags?: TagCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
   }
@@ -21871,11 +21363,10 @@ export namespace Prisma {
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
   }
@@ -22012,31 +21503,6 @@ export namespace Prisma {
     create: XOR<TagCreateWithoutOfferDeliveryTermsInput, TagUncheckedCreateWithoutOfferDeliveryTermsInput>
   }
 
-  export type SubscriptionCreateWithoutSubscribingToOfferInput = {
-    createdAt: Date | string
-    subscribingToOfferId?: number | null
-    subscribingToProfileId?: number | null
-    subscriber: ProfileCreateNestedOneWithoutSubscriptionsInput
-    subscribingToProfile?: ProfileCreateNestedOneWithoutSubscribersInput
-  }
-
-  export type SubscriptionUncheckedCreateWithoutSubscribingToOfferInput = {
-    id?: number
-    createdAt: Date | string
-    subscribingToOfferId?: number | null
-    subscribingToProfileId?: number | null
-  }
-
-  export type SubscriptionCreateOrConnectWithoutSubscribingToOfferInput = {
-    where: SubscriptionWhereUniqueInput
-    create: XOR<SubscriptionCreateWithoutSubscribingToOfferInput, SubscriptionUncheckedCreateWithoutSubscribingToOfferInput>
-  }
-
-  export type SubscriptionCreateManySubscribingToOfferInputEnvelope = {
-    data: Enumerable<SubscriptionCreateManySubscribingToOfferInput>
-    skipDuplicates?: boolean
-  }
-
   export type ProfileUpsertWithoutOffersInput = {
     update: XOR<ProfileUpdateWithoutOffersInput, ProfileUncheckedUpdateWithoutOffersInput>
     create: XOR<ProfileCreateWithoutOffersInput, ProfileUncheckedCreateWithoutOffersInput>
@@ -22067,11 +21533,10 @@ export namespace Prisma {
     tags?: TagUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUpdateManyWithoutSubscriberInput
     memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
   }
@@ -22102,11 +21567,10 @@ export namespace Prisma {
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
     memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
   }
@@ -22217,22 +21681,6 @@ export namespace Prisma {
     offerUnit?: OfferUncheckedUpdateManyWithoutUnitTagInput
   }
 
-  export type SubscriptionUpsertWithWhereUniqueWithoutSubscribingToOfferInput = {
-    where: SubscriptionWhereUniqueInput
-    update: XOR<SubscriptionUpdateWithoutSubscribingToOfferInput, SubscriptionUncheckedUpdateWithoutSubscribingToOfferInput>
-    create: XOR<SubscriptionCreateWithoutSubscribingToOfferInput, SubscriptionUncheckedCreateWithoutSubscribingToOfferInput>
-  }
-
-  export type SubscriptionUpdateWithWhereUniqueWithoutSubscribingToOfferInput = {
-    where: SubscriptionWhereUniqueInput
-    data: XOR<SubscriptionUpdateWithoutSubscribingToOfferInput, SubscriptionUncheckedUpdateWithoutSubscribingToOfferInput>
-  }
-
-  export type SubscriptionUpdateManyWithWhereWithoutSubscribingToOfferInput = {
-    where: SubscriptionScalarWhereInput
-    data: XOR<SubscriptionUpdateManyMutationInput, SubscriptionUncheckedUpdateManyWithoutSubscribersInput>
-  }
-
   export type ProfileCreateWithoutPurchasesInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
@@ -22258,11 +21706,10 @@ export namespace Prisma {
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
   }
@@ -22293,11 +21740,10 @@ export namespace Prisma {
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
   }
@@ -22308,6 +21754,8 @@ export namespace Prisma {
   }
 
   export type OfferCreateWithoutPurchasesInput = {
+    id: string
+    isPrivate: boolean
     publishedAt: Date | string
     unlistedAt?: Date | string | null
     title: string
@@ -22321,11 +21769,11 @@ export namespace Prisma {
     categoryTag: TagCreateNestedOneWithoutOfferCategoryInput
     unitTag: TagCreateNestedOneWithoutOfferUnitInput
     deliveryTermsTag: TagCreateNestedOneWithoutOfferDeliveryTermsInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToOfferInput
   }
 
   export type OfferUncheckedCreateWithoutPurchasesInput = {
-    id?: number
+    id: string
+    isPrivate: boolean
     createdByProfileId: number
     publishedAt: Date | string
     unlistedAt?: Date | string | null
@@ -22339,7 +21787,6 @@ export namespace Prisma {
     unitTagId: number
     maxUnits?: number | null
     deliveryTermsTagId: number
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToOfferInput
   }
 
   export type OfferCreateOrConnectWithoutPurchasesInput = {
@@ -22400,11 +21847,10 @@ export namespace Prisma {
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUpdateManyWithoutSubscriberInput
     memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
   }
@@ -22435,11 +21881,10 @@ export namespace Prisma {
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
     memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
   }
@@ -22450,6 +21895,8 @@ export namespace Prisma {
   }
 
   export type OfferUpdateWithoutPurchasesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -22463,11 +21910,11 @@ export namespace Prisma {
     categoryTag?: TagUpdateOneRequiredWithoutOfferCategoryInput
     unitTag?: TagUpdateOneRequiredWithoutOfferUnitInput
     deliveryTermsTag?: TagUpdateOneRequiredWithoutOfferDeliveryTermsInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToOfferInput
   }
 
   export type OfferUncheckedUpdateWithoutPurchasesInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -22481,7 +21928,6 @@ export namespace Prisma {
     unitTagId?: IntFieldUpdateOperationsInput | number
     maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
     deliveryTermsTagId?: IntFieldUpdateOperationsInput | number
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToOfferInput
   }
 
   export type TransactionJobsUpsertWithWhereUniqueWithoutPurchaseInput = {
@@ -22529,7 +21975,7 @@ export namespace Prisma {
     purchasedByProfileId: number
     purchasedAt: Date | string
     purchasedProvenAt?: Date | string | null
-    purchasedItemId: number
+    purchasedItemId: string
     purchasedItemTitle: string
     pricePerUnit: string
     purchasedUnits: number
@@ -22566,7 +22012,7 @@ export namespace Prisma {
     purchasedByProfileId?: IntFieldUpdateOperationsInput | number
     purchasedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchasedProvenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    purchasedItemId?: IntFieldUpdateOperationsInput | number
+    purchasedItemId?: StringFieldUpdateOperationsInput | string
     purchasedItemTitle?: StringFieldUpdateOperationsInput | string
     pricePerUnit?: StringFieldUpdateOperationsInput | string
     purchasedUnits?: IntFieldUpdateOperationsInput | number
@@ -22702,11 +22148,10 @@ export namespace Prisma {
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
   }
@@ -22737,11 +22182,10 @@ export namespace Prisma {
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutSubscriberInput
     memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
   }
@@ -22798,6 +22242,8 @@ export namespace Prisma {
   }
 
   export type OfferCreateWithoutCategoryTagInput = {
+    id: string
+    isPrivate: boolean
     publishedAt: Date | string
     unlistedAt?: Date | string | null
     title: string
@@ -22811,11 +22257,11 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutPurchasedItemInput
     unitTag: TagCreateNestedOneWithoutOfferUnitInput
     deliveryTermsTag: TagCreateNestedOneWithoutOfferDeliveryTermsInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToOfferInput
   }
 
   export type OfferUncheckedCreateWithoutCategoryTagInput = {
-    id?: number
+    id: string
+    isPrivate: boolean
     createdByProfileId: number
     publishedAt: Date | string
     unlistedAt?: Date | string | null
@@ -22829,7 +22275,6 @@ export namespace Prisma {
     maxUnits?: number | null
     deliveryTermsTagId: number
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedItemInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToOfferInput
   }
 
   export type OfferCreateOrConnectWithoutCategoryTagInput = {
@@ -22843,6 +22288,8 @@ export namespace Prisma {
   }
 
   export type OfferCreateWithoutUnitTagInput = {
+    id: string
+    isPrivate: boolean
     publishedAt: Date | string
     unlistedAt?: Date | string | null
     title: string
@@ -22856,11 +22303,11 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutPurchasedItemInput
     categoryTag: TagCreateNestedOneWithoutOfferCategoryInput
     deliveryTermsTag: TagCreateNestedOneWithoutOfferDeliveryTermsInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToOfferInput
   }
 
   export type OfferUncheckedCreateWithoutUnitTagInput = {
-    id?: number
+    id: string
+    isPrivate: boolean
     createdByProfileId: number
     publishedAt: Date | string
     unlistedAt?: Date | string | null
@@ -22874,7 +22321,6 @@ export namespace Prisma {
     maxUnits?: number | null
     deliveryTermsTagId: number
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedItemInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToOfferInput
   }
 
   export type OfferCreateOrConnectWithoutUnitTagInput = {
@@ -22888,6 +22334,8 @@ export namespace Prisma {
   }
 
   export type OfferCreateWithoutDeliveryTermsTagInput = {
+    id: string
+    isPrivate: boolean
     publishedAt: Date | string
     unlistedAt?: Date | string | null
     title: string
@@ -22901,11 +22349,11 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutPurchasedItemInput
     categoryTag: TagCreateNestedOneWithoutOfferCategoryInput
     unitTag: TagCreateNestedOneWithoutOfferUnitInput
-    subscribers?: SubscriptionCreateNestedManyWithoutSubscribingToOfferInput
   }
 
   export type OfferUncheckedCreateWithoutDeliveryTermsTagInput = {
-    id?: number
+    id: string
+    isPrivate: boolean
     createdByProfileId: number
     publishedAt: Date | string
     unlistedAt?: Date | string | null
@@ -22919,7 +22367,6 @@ export namespace Prisma {
     unitTagId: number
     maxUnits?: number | null
     purchases?: PurchaseUncheckedCreateNestedManyWithoutPurchasedItemInput
-    subscribers?: SubscriptionUncheckedCreateNestedManyWithoutSubscribingToOfferInput
   }
 
   export type OfferCreateOrConnectWithoutDeliveryTermsTagInput = {
@@ -22962,11 +22409,10 @@ export namespace Prisma {
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUpdateManyWithoutSubscriberInput
     memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
   }
@@ -22997,11 +22443,10 @@ export namespace Prisma {
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToProfileInput
-    subscriptions?: SubscriptionUncheckedUpdateManyWithoutSubscriberInput
     memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
   }
@@ -23157,7 +22602,8 @@ export namespace Prisma {
   }
 
   export type OfferCreateManyCreatedByInput = {
-    id?: number
+    id: string
+    isPrivate: boolean
     publishedAt: Date | string
     unlistedAt?: Date | string | null
     title: string
@@ -23176,7 +22622,7 @@ export namespace Prisma {
     id?: number
     purchasedAt: Date | string
     purchasedProvenAt?: Date | string | null
-    purchasedItemId: number
+    purchasedItemId: string
     purchasedItemTitle: string
     pricePerUnit: string
     purchasedUnits: number
@@ -23233,20 +22679,6 @@ export namespace Prisma {
     redeemTxHash?: string | null
     address: string
     key: string
-  }
-
-  export type SubscriptionCreateManySubscribingToProfileInput = {
-    id?: number
-    createdAt: Date | string
-    subscribingToOfferId?: number | null
-    subscribingToProfileId?: number | null
-  }
-
-  export type SubscriptionCreateManySubscriberInput = {
-    id?: number
-    createdAt: Date | string
-    subscribingToOfferId?: number | null
-    subscribingToProfileId?: number | null
   }
 
   export type MembershipCreateManyMemberInput = {
@@ -23344,6 +22776,8 @@ export namespace Prisma {
   }
 
   export type OfferUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -23357,11 +22791,11 @@ export namespace Prisma {
     categoryTag?: TagUpdateOneRequiredWithoutOfferCategoryInput
     unitTag?: TagUpdateOneRequiredWithoutOfferUnitInput
     deliveryTermsTag?: TagUpdateOneRequiredWithoutOfferDeliveryTermsInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToOfferInput
   }
 
   export type OfferUncheckedUpdateWithoutCreatedByInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -23375,11 +22809,11 @@ export namespace Prisma {
     maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
     deliveryTermsTagId?: IntFieldUpdateOperationsInput | number
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedItemInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToOfferInput
   }
 
   export type OfferUncheckedUpdateManyWithoutOffersInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -23411,7 +22845,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     purchasedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchasedProvenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    purchasedItemId?: IntFieldUpdateOperationsInput | number
+    purchasedItemId?: StringFieldUpdateOperationsInput | string
     purchasedItemTitle?: StringFieldUpdateOperationsInput | string
     pricePerUnit?: StringFieldUpdateOperationsInput | string
     purchasedUnits?: IntFieldUpdateOperationsInput | number
@@ -23425,7 +22859,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     purchasedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchasedProvenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    purchasedItemId?: IntFieldUpdateOperationsInput | number
+    purchasedItemId?: StringFieldUpdateOperationsInput | string
     purchasedItemTitle?: StringFieldUpdateOperationsInput | string
     pricePerUnit?: StringFieldUpdateOperationsInput | string
     purchasedUnits?: IntFieldUpdateOperationsInput | number
@@ -23586,50 +23020,6 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
   }
 
-  export type SubscriptionUpdateWithoutSubscribingToProfileInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    subscribingToOfferId?: NullableIntFieldUpdateOperationsInput | number | null
-    subscribingToProfileId?: NullableIntFieldUpdateOperationsInput | number | null
-    subscriber?: ProfileUpdateOneRequiredWithoutSubscriptionsInput
-    subscribingToOffer?: OfferUpdateOneWithoutSubscribersInput
-  }
-
-  export type SubscriptionUncheckedUpdateWithoutSubscribingToProfileInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    subscribingToOfferId?: NullableIntFieldUpdateOperationsInput | number | null
-    subscribingToProfileId?: NullableIntFieldUpdateOperationsInput | number | null
-  }
-
-  export type SubscriptionUncheckedUpdateManyWithoutSubscribersInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    subscribingToOfferId?: NullableIntFieldUpdateOperationsInput | number | null
-    subscribingToProfileId?: NullableIntFieldUpdateOperationsInput | number | null
-  }
-
-  export type SubscriptionUpdateWithoutSubscriberInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    subscribingToOfferId?: NullableIntFieldUpdateOperationsInput | number | null
-    subscribingToProfileId?: NullableIntFieldUpdateOperationsInput | number | null
-    subscribingToOffer?: OfferUpdateOneWithoutSubscribersInput
-    subscribingToProfile?: ProfileUpdateOneWithoutSubscribersInput
-  }
-
-  export type SubscriptionUncheckedUpdateWithoutSubscriberInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    subscribingToOfferId?: NullableIntFieldUpdateOperationsInput | number | null
-    subscribingToProfileId?: NullableIntFieldUpdateOperationsInput | number | null
-  }
-
-  export type SubscriptionUncheckedUpdateManyWithoutSubscriptionsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    subscribingToOfferId?: NullableIntFieldUpdateOperationsInput | number | null
-    subscribingToProfileId?: NullableIntFieldUpdateOperationsInput | number | null
-  }
-
   export type MembershipUpdateWithoutMemberInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -23718,13 +23108,6 @@ export namespace Prisma {
     status: PurchaseStatus
   }
 
-  export type SubscriptionCreateManySubscribingToOfferInput = {
-    id?: number
-    createdAt: Date | string
-    subscribingToOfferId?: number | null
-    subscribingToProfileId?: number | null
-  }
-
   export type PurchaseUpdateWithoutPurchasedItemInput = {
     purchasedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchasedProvenAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -23750,21 +23133,6 @@ export namespace Prisma {
     purchasedItemVat?: IntFieldUpdateOperationsInput | number
     status?: EnumPurchaseStatusFieldUpdateOperationsInput | PurchaseStatus
     jobs?: TransactionJobsUncheckedUpdateManyWithoutPurchaseInput
-  }
-
-  export type SubscriptionUpdateWithoutSubscribingToOfferInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    subscribingToOfferId?: NullableIntFieldUpdateOperationsInput | number | null
-    subscribingToProfileId?: NullableIntFieldUpdateOperationsInput | number | null
-    subscriber?: ProfileUpdateOneRequiredWithoutSubscriptionsInput
-    subscribingToProfile?: ProfileUpdateOneWithoutSubscribersInput
-  }
-
-  export type SubscriptionUncheckedUpdateWithoutSubscribingToOfferInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    subscribingToOfferId?: NullableIntFieldUpdateOperationsInput | number | null
-    subscribingToProfileId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type TransactionJobsCreateManyPurchaseInput = {
@@ -23865,7 +23233,8 @@ export namespace Prisma {
   }
 
   export type OfferCreateManyCategoryTagInput = {
-    id?: number
+    id: string
+    isPrivate: boolean
     createdByProfileId: number
     publishedAt: Date | string
     unlistedAt?: Date | string | null
@@ -23881,7 +23250,8 @@ export namespace Prisma {
   }
 
   export type OfferCreateManyUnitTagInput = {
-    id?: number
+    id: string
+    isPrivate: boolean
     createdByProfileId: number
     publishedAt: Date | string
     unlistedAt?: Date | string | null
@@ -23897,7 +23267,8 @@ export namespace Prisma {
   }
 
   export type OfferCreateManyDeliveryTermsTagInput = {
-    id?: number
+    id: string
+    isPrivate: boolean
     createdByProfileId: number
     publishedAt: Date | string
     unlistedAt?: Date | string | null
@@ -23913,6 +23284,8 @@ export namespace Prisma {
   }
 
   export type OfferUpdateWithoutCategoryTagInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -23926,11 +23299,11 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutPurchasedItemInput
     unitTag?: TagUpdateOneRequiredWithoutOfferUnitInput
     deliveryTermsTag?: TagUpdateOneRequiredWithoutOfferDeliveryTermsInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToOfferInput
   }
 
   export type OfferUncheckedUpdateWithoutCategoryTagInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -23944,11 +23317,11 @@ export namespace Prisma {
     maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
     deliveryTermsTagId?: IntFieldUpdateOperationsInput | number
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedItemInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToOfferInput
   }
 
   export type OfferUncheckedUpdateManyWithoutOfferCategoryInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -23964,6 +23337,8 @@ export namespace Prisma {
   }
 
   export type OfferUpdateWithoutUnitTagInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -23977,11 +23352,11 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutPurchasedItemInput
     categoryTag?: TagUpdateOneRequiredWithoutOfferCategoryInput
     deliveryTermsTag?: TagUpdateOneRequiredWithoutOfferDeliveryTermsInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToOfferInput
   }
 
   export type OfferUncheckedUpdateWithoutUnitTagInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -23995,11 +23370,11 @@ export namespace Prisma {
     maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
     deliveryTermsTagId?: IntFieldUpdateOperationsInput | number
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedItemInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToOfferInput
   }
 
   export type OfferUncheckedUpdateManyWithoutOfferUnitInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -24015,6 +23390,8 @@ export namespace Prisma {
   }
 
   export type OfferUpdateWithoutDeliveryTermsTagInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     title?: StringFieldUpdateOperationsInput | string
@@ -24028,11 +23405,11 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutPurchasedItemInput
     categoryTag?: TagUpdateOneRequiredWithoutOfferCategoryInput
     unitTag?: TagUpdateOneRequiredWithoutOfferUnitInput
-    subscribers?: SubscriptionUpdateManyWithoutSubscribingToOfferInput
   }
 
   export type OfferUncheckedUpdateWithoutDeliveryTermsTagInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -24046,11 +23423,11 @@ export namespace Prisma {
     unitTagId?: IntFieldUpdateOperationsInput | number
     maxUnits?: NullableIntFieldUpdateOperationsInput | number | null
     purchases?: PurchaseUncheckedUpdateManyWithoutPurchasedItemInput
-    subscribers?: SubscriptionUncheckedUpdateManyWithoutSubscribingToOfferInput
   }
 
   export type OfferUncheckedUpdateManyWithoutOfferDeliveryTermsInput = {
-    id?: IntFieldUpdateOperationsInput | number
+    id?: StringFieldUpdateOperationsInput | string
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     publishedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     unlistedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

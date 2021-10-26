@@ -134,7 +134,7 @@ export class Session
             throw new Error(`The signature doesn't belong to the given address`);
         }
 
-        const profile = await prisma.profile.findFirst({where: { circlesSafeOwner: session.ethAddress }});
+        const profile = await prisma.profile.findFirst({where: { circlesSafeOwner: session.ethAddress?.toLowerCase() }});
 
         await prisma.session.updateMany({
             where: {

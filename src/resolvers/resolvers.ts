@@ -2,8 +2,8 @@ import {myProfile, profilesById, profilesBySafeAddress} from "./queries/profiles
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {
-  MutationAddMemberArgs,
-  MutationRemoveMemberArgs, Organisation, Profile,
+  MutationRequestInvitationOfferArgs,
+  Profile,
   ProfileEvent,
   ProfileOrOrganisation,
   Resolvers
@@ -63,9 +63,13 @@ import {upsertOrganisation} from "./mutations/upsertOrganisation";
 import {myInvitations} from "./queries/myInvitations";
 import {organisationsByAddress} from "./queries/organisationsByAddress";
 import {createTestInvitation} from "./mutations/createTestInvitation";
-import {Membership} from "../api-db/client";
 import {addMemberResolver} from "./mutations/addMember";
 import {removeMemberResolver} from "./mutations/removeMember";
+import {regionsResolver} from "./queries/regions";
+import {findSafeAddressByOwnerResolver} from "./queries/findSafeAddressByOwner";
+import {Generate} from "../generate";
+import {RpcGateway} from "../rpcGateway";
+import BN from "bn.js";
 
 export const safeFundingTransactionResolver = (async (parent:any, args:any, context:Context) => {
   const session = await context.verifySession();
@@ -75,7 +79,7 @@ export const safeFundingTransactionResolver = (async (parent:any, args:any, cont
     where:{
 //          OR:[{
 //            emailAddress: null,
-      circlesSafeOwner: session.ethAddress
+      circlesSafeOwner: session.ethAddress?.toLowerCase()
 //          }, {
 //            emailAddress: session.emailAddress
 //          }]
@@ -110,7 +114,7 @@ export const safeFundingTransactionResolver = (async (parent:any, args:any, cont
 
     return <ProfileEvent>{
       id: safeFundingTransaction.id,
-      safe_address: profile.circlesSafeOwner,
+      safe_address: profile.circlesSafeOwner?.toLowerCase(),
       transaction_index: safeFundingTransaction.index,
       value: safeFundingTransaction.value,
       direction: "in",
@@ -176,7 +180,7 @@ export const resolvers: Resolvers = {
             cityGeonameid: o.memberAt.cityGeonameid,
             avatarUrl: o.memberAt.avatarUrl,
             avatarMimeType: o.memberAt.avatarMimeType,
-            circlesSafeOwner: o.memberAt.circlesSafeOwner,
+            circlesSafeOwner: o.memberAt.circlesSafeOwner?.toLowerCase(),
             description: o.memberAt.dream,
             createdAt: o.createdAt.toJSON(), // TODO: This is the creation date of the membership, not the one of the organisation
             circlesAddress: o.memberAt.circlesAddress
@@ -225,41 +229,14 @@ export const resolvers: Resolvers = {
     whoami: whoami,
     cities: cities,
     claimedInvitation: claimedInvitation,
-    findSafeAddressByOwner: async (parent, args, context) => {
-      const pool = getPool();
-      try {
-        const query = "select safe_address from crc_safe_owners where \"owner\" = $1";
-        const result = await pool.query(query, [args.owner]);
-        return result.rows.map(o => o.safe_address);
-      } finally {
-        await pool.end();
-      }
-    },
+    findSafeAddressByOwner: findSafeAddressByOwnerResolver,
     invitationTransaction: invitationTransaction(prisma_api_ro),
     hubSignupTransaction: hubSignupTransactionResolver,
     safeFundingTransaction: safeFundingTransactionResolver,
     myProfile: myProfile(prisma_api_rw),
     myInvitations: myInvitations(),
     organisations: organisations(prisma_api_ro),
-    regions: async (parent:any, args:any, context:Context) => {
-      const regions = await prisma_api_ro.profile.findMany({
-        where: {
-          type: "REGION"
-        }
-      });
-      return regions.map(o => {
-        return <Organisation>{
-          id: o.id,
-          createdAt: o.lastUpdateAt.toJSON(),
-          name: o.firstName,
-          cityGeonameid: o.cityGeonameid,
-          circlesAddress: o.circlesAddress,
-          avatarUrl: o.avatarUrl,
-          description: o.dream,
-          avatarMimeType: o.avatarMimeType
-        }
-      });
-    },
+    regions: regionsResolver,
     organisationsByAddress: organisationsByAddress(),
     profilesById: profilesById(prisma_api_ro),
     profilesBySafeAddress: profilesBySafeAddress(prisma_api_ro, true),
@@ -307,7 +284,73 @@ export const resolvers: Resolvers = {
     verifySessionChallenge: verifySessionChallengeResolver(prisma_api_rw),
     createTestInvitation: createTestInvitation(prisma_api_rw),
     addMember: addMemberResolver,
-    removeMember: removeMemberResolver
+    removeMember: removeMemberResolver,
+    requestInvitationOffer: async (parent:any, args: MutationRequestInvitationOfferArgs, context:Context) => {
+
+      // TODO: while(foundRegion || end) {
+      //       }
+
+      // 1. Find the region of the currently logged on user:
+      //    TODO: First try the cityId of the user, then use coarser fallbacks.
+      const region = await prisma_api_ro.profile.findMany({
+        where: {
+          type: "REGION"
+        },
+        include: {
+          invitationFunds: true
+        },
+        take: 1
+      });
+
+      if (!region.length)
+        throw new Error(`Couldn't find a regional assembly that can provide you with new invites to the system.`);
+
+      const myRegion = region[0];
+      if (!myRegion.invitationFunds)
+        throw new Error(`Your region doesn't provide a pool to fund new invitations.`);
+
+      const account = RpcGateway.get().eth.accounts.privateKeyToAccount(myRegion.invitationFunds.privateKey);
+      const balance = new BN(await RpcGateway.get().eth.getBalance(account.address));
+
+      // TODO: Make configurable per Region:
+      const price = new BN(RpcGateway.get().utils.toWei("10", "ether"));
+      const maxAvailable = balance.div(price);
+      const effectiveBalance = balance.sub(maxAvailable.mul(new BN("21000")));
+      const effectiveMaxAvailable = effectiveBalance.div(price).toNumber();
+
+      // TODO: Why absoluteMax? Can be used to:
+      //       * Hide the EOA that's used to fund the invites (if balance always > 25 invites)
+      //       * Max. amount per user
+      //       * Guaranteed available amount (together with a 'validTo' date on the offer)
+      const absoluteMax = effectiveMaxAvailable > 25 ? 25 : effectiveMaxAvailable;
+
+      const offer = await prisma_api_rw.offer.create({
+        data: {
+          id: Generate.randomHexString(16),
+          isPrivate: true,
+          publishedAt: new Date().toJSON(),
+          createdByProfileId: 0,
+          geonameid: 0,
+          title: `1 Invite`,
+          description: `One invitation voucher`,
+          pictureUrl: `https://dev.circles.land/logos/circles.png`,
+          pictureMimeType: `image/png`,
+          categoryTagId: 2,
+          pricePerUnit: price.toString(),
+          unitTagId: 3,
+          maxUnits: Number.parseInt(absoluteMax.toFixed()),
+          deliveryTermsTagId: 4
+        }
+      });
+
+      return {
+        ...offer,
+        pictureUrl: offer.pictureUrl ?? "",
+        pictureMimeType: offer.pictureMimeType ?? "",
+        publishedAt: offer.publishedAt.toJSON(),
+        unlistedAt: offer.unlistedAt?.toJSON() ?? undefined
+      };
+    }
   },
   Subscription: {
     events: {

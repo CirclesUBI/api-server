@@ -278,7 +278,7 @@ export type InitAggregateState = {
 };
 
 export type LockOfferInput = {
-  offerId: Scalars['Int'];
+  offerId: Scalars['String'];
 };
 
 export type LockOfferResult = {
@@ -319,14 +319,15 @@ export type Mutation = {
   addMember?: Maybe<AddMemberResult>;
   removeMember?: Maybe<RemoveMemberResult>;
   acknowledge: Scalars['Boolean'];
+  requestInvitationOffer: Offer;
   createInvitations: CreateInvitationResult;
+  createTestInvitation: CreateInvitationResult;
   claimInvitation: ClaimInvitationResult;
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
   tagTransaction: TagTransactionResult;
   sendMessage: SendMessageResult;
   requestSessionChallenge: Scalars['String'];
   verifySessionChallenge?: Maybe<ExchangeTokenResponse>;
-  createTestInvitation: CreateInvitationResult;
 };
 
 
@@ -366,7 +367,7 @@ export type MutationUpsertOfferArgs = {
 
 
 export type MutationUnlistOfferArgs = {
-  offerId: Scalars['Int'];
+  offerId: LockOfferInput;
 };
 
 
@@ -412,6 +413,11 @@ export type MutationAcknowledgeArgs = {
 };
 
 
+export type MutationRequestInvitationOfferArgs = {
+  for: Scalars['String'];
+};
+
+
 export type MutationCreateInvitationsArgs = {
   for: Array<Scalars['String']>;
 };
@@ -451,7 +457,7 @@ export type NotificationEvent = {
 
 export type Offer = {
   __typename?: 'Offer';
-  id: Scalars['Int'];
+  id: Scalars['String'];
   createdBy?: Maybe<Profile>;
   createdByProfileId: Scalars['Int'];
   publishedAt: Scalars['String'];
@@ -496,11 +502,8 @@ export type PaginationArgs = {
 };
 
 export type PaymentProof = {
-  forOfferId: Scalars['Int'];
-  tokenOwners: Array<Scalars['String']>;
-  sources: Array<Scalars['String']>;
-  destinations: Array<Scalars['String']>;
-  values: Array<Scalars['String']>;
+  forOfferId: LockOfferInput;
+  transactionHash: Scalars['String'];
 };
 
 export type Profile = {
@@ -561,7 +564,7 @@ export type Purchase = {
   purchasedBy: Profile;
   purchasedByProfileId: Scalars['Int'];
   purchasedItem: Offer;
-  purchasedOfferId: Scalars['Int'];
+  purchasedOfferId: Scalars['String'];
 };
 
 export enum PurchaseStatus {
@@ -732,7 +735,7 @@ export type QueryCitiesInput = {
 };
 
 export type QueryOfferInput = {
-  id?: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['String']>;
   categoryTagId?: Maybe<Scalars['Int']>;
   createdByProfileId?: Maybe<Scalars['Int']>;
   publishedAt_lt?: Maybe<Scalars['String']>;
@@ -866,7 +869,7 @@ export type UpdateSafeResponse = {
 };
 
 export type UpsertOfferInput = {
-  id?: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['String']>;
   title: Scalars['String'];
   pictureUrl?: Maybe<Scalars['String']>;
   pictureMimeType?: Maybe<Scalars['String']>;
@@ -1463,14 +1466,15 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   addMember?: Resolver<Maybe<ResolversTypes['AddMemberResult']>, ParentType, ContextType, RequireFields<MutationAddMemberArgs, 'groupId' | 'memberId'>>;
   removeMember?: Resolver<Maybe<ResolversTypes['RemoveMemberResult']>, ParentType, ContextType, RequireFields<MutationRemoveMemberArgs, 'groupId' | 'memberId'>>;
   acknowledge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'until'>>;
+  requestInvitationOffer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType, RequireFields<MutationRequestInvitationOfferArgs, 'for'>>;
   createInvitations?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType, RequireFields<MutationCreateInvitationsArgs, 'for'>>;
+  createTestInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType>;
   claimInvitation?: Resolver<ResolversTypes['ClaimInvitationResult'], ParentType, ContextType, RequireFields<MutationClaimInvitationArgs, 'code'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
   tagTransaction?: Resolver<ResolversTypes['TagTransactionResult'], ParentType, ContextType, RequireFields<MutationTagTransactionArgs, 'transactionHash' | 'tag'>>;
   sendMessage?: Resolver<ResolversTypes['SendMessageResult'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'toSafeAddress' | 'content'>>;
   requestSessionChallenge?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationRequestSessionChallengeArgs, 'address'>>;
   verifySessionChallenge?: Resolver<Maybe<ResolversTypes['ExchangeTokenResponse']>, ParentType, ContextType, RequireFields<MutationVerifySessionChallengeArgs, 'challenge' | 'signature'>>;
-  createTestInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType>;
 }>;
 
 export type NotificationEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['NotificationEvent'] = ResolversParentTypes['NotificationEvent']> = ResolversObject<{
@@ -1479,7 +1483,7 @@ export type NotificationEventResolvers<ContextType = any, ParentType extends Res
 }>;
 
 export type OfferResolvers<ContextType = any, ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']> = ResolversObject<{
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   createdByProfileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   publishedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1578,7 +1582,7 @@ export type PurchaseResolvers<ContextType = any, ParentType extends ResolversPar
   purchasedBy?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
   purchasedByProfileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   purchasedItem?: Resolver<ResolversTypes['Offer'], ParentType, ContextType>;
-  purchasedOfferId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  purchasedOfferId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

@@ -1,4 +1,4 @@
-import {prisma, PrismaClient} from "./api-db/client";
+import {PrismaClient} from "./api-db/client";
 
 export type TypeTagType = "o-marketplace:offer" | "o-banking:transfer" | "o-banking:trust";
 export interface ITypeTag {

@@ -1,6 +1,6 @@
 {
   "name": "@o-platform/api-server",
-  "version": "0.1.113",
+  "version": "0.1.114",
   "description": "",
   "main": "dist/index.js",
   "prepublish": "tsc",
@@ -14,7 +14,6 @@
   "author": "Daniel Janz & Samuel Andert (Basic Income Lab GmbH)",
   "license": "AGPL-3",
   "dependencies": {
-    "dataloader": "^2.0.0",
     "@graphql-tools/schema": "^8.2.0",
     "@prisma/client": "^2.30.2",
     "@types/lru-cache": "^5.1.1",
@@ -22,6 +21,8 @@
     "apollo-server-core": "^3.3.0",
     "apollo-server-express": "^3.3.0",
     "apollo-server-plugin-http-headers": "^0.1.4",
+    "bn.js": "^5.2.0",
+    "dataloader": "^2.0.0",
     "ethereumjs-util": "^7.0.10",
     "express": "^4.17.1",
     "graphql": "^15.5.2",
@@ -34,7 +35,8 @@
     "pg": "^8.7.1",
     "subscriptions-transport-ws": "^0.9.19",
     "web3": "^1.5.2",
-    "ws": "^8.2.1"
+    "ws": "^8.2.1",
+    "xstate": "^4.25.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^1.21.4",

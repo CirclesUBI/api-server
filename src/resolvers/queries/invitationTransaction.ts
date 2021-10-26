@@ -9,7 +9,7 @@ export function invitationTransaction(prisma_api_ro:PrismaClient) {
             where:{
                 //OR:[{
 //                    emailAddress: null,
-                    circlesSafeOwner: session.ethAddress
+                    circlesSafeOwner: session.ethAddress?.toLowerCase()
 //                }, {
 //                    emailAddress: session.emailAddress
 //                }]
@@ -53,7 +53,7 @@ export function invitationTransaction(prisma_api_ro:PrismaClient) {
             const redeemTransaction = redeemResult.rows[0];
 
             return <ProfileEvent>{
-                safe_address: profile.circlesSafeOwner,
+                safe_address: profile.circlesSafeOwner?.toLowerCase(),
                 transaction_index: redeemTransaction.index,
                 value: redeemTransaction.value,
                 direction: "in",

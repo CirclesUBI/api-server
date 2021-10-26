@@ -27,7 +27,6 @@ export function upsertOrganisation(prisma_api_rw:PrismaClient, isRegion:boolean)
             circlesAddress: args.organisation.circlesAddress,
             avatarUrl: args.organisation.avatarUrl,
             avatarMimeType: args.organisation.avatarMimeType,
-            type: "ORGANISATION",
             cityGeonameid: args.organisation.cityGeonameid
           }
         });

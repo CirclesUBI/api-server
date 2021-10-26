@@ -10,7 +10,7 @@ export async function hubSignupTransactionResolver (parent:any, args:any, contex
     where:{
       //OR:[{
 //            emailAddress: null,
-      circlesSafeOwner: session.ethAddress
+      circlesSafeOwner: session.ethAddress?.toLowerCase()
 //          }, {
 //            emailAddress: session.emailAddress
 //          }]

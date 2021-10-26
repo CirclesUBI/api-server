@@ -3,7 +3,7 @@ import {Context} from "../../context";
 import {PrismaClient} from "../../api-db/client";
 
 export function profileOffers(prisma:PrismaClient) {
-    return async (parent: Profile,args:any, context:Context) => {
+    return async (parent: Profile, args:any, context:Context) => {
         context.logger?.trace([{
             key: `call`,
             value: `/resolvers/profile/offers.ts/profileOffers(parent: Profile,args:any, context:Context)`

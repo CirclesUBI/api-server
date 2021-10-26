@@ -11,7 +11,7 @@ export function unlistOfferResolver() {
         const session = await context.verifySession();
         const result = await prisma_api_rw.offer.updateMany({
             where: {
-                id: args.offerId,
+                id: args.offerId.offerId,
                 createdByProfileId: session.profileId ?? undefined
             },
             data: {

@@ -33,7 +33,7 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
                     id: args.data.id,
                     lastUpdateAt: new Date(),
                     emailAddress: session.emailAddress ?? undefined,
-                    circlesSafeOwner: session.ethAddress
+                    circlesSafeOwner: session.ethAddress?.toLowerCase()
                 }
             });
         } else {
@@ -47,7 +47,7 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
                     id: undefined,
                     lastUpdateAt: new Date(),
                     emailAddress: session.emailAddress,
-                    circlesSafeOwner: session.ethAddress,
+                    circlesSafeOwner: session.ethAddress?.toLowerCase(),
                     lastAcknowledged: new Date()
                 }
             });

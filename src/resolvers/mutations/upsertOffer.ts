@@ -1,6 +1,7 @@
 import {MutationUpsertOfferArgs} from "../../types";
 import {Context} from "../../context";
 import {PrismaClient} from "../../api-db/client";
+import {Generate} from "../../generate";
 
 // TODO: Throttle max. offer creations per minute at ~ 0.5 per profile
 // TODO: Cache all newly created objects in redis until they're replicated
@@ -13,6 +14,8 @@ async function createOffer(parent:any, args:MutationUpsertOfferArgs, context:Con
     const session = await context.verifySession();
     const offer = await prisma.offer.create({
         data: {
+            id: Generate.randomHexString(16),
+            isPrivate: false,
             createdByProfileId: <number>session.profileId,
             categoryTagId: args.data.categoryTagId,
             publishedAt: new Date(),
@@ -55,7 +58,7 @@ async function updateOffer(parent:any, args:MutationUpsertOfferArgs, context:Con
     const session = await context.verifySession();
     const existingOffer = await prisma.offer.findFirst({
         where: {
-            id: <number>args.data.id,
+            id: args.data.id ?? undefined,
             unlistedAt: null
         },
         select: {
@@ -83,7 +86,7 @@ async function updateOffer(parent:any, args:MutationUpsertOfferArgs, context:Con
             pictureMimeType: args.data.pictureMimeType
         },
         where: {
-            id: <number>args.data.id
+            id: args.data.id ?? undefined
         }
     });
 

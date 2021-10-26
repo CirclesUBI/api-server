@@ -8,7 +8,7 @@ export const claimedInvitation = async (parent:any, args:any, context:Context) =
         where:{
             //OR:[{
             //    emailAddress: null,
-                circlesSafeOwner: session.ethAddress
+                circlesSafeOwner: session.ethAddress?.toLowerCase()
             //}, {
             //    emailAddress: session.emailAddress
             //}]

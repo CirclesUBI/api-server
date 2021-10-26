@@ -43,7 +43,7 @@ export function redeemClaimedInvitation(prisma_api_ro:PrismaClient, prisma_api_r
       const account = web3.eth.accounts.privateKeyToAccount(claimedInvitation.key);
       const signedTx = await account.signTransaction({
         from: claimedInvitation.address,
-        to: profile.circlesSafeOwner,
+        to: profile.circlesSafeOwner?.toLowerCase(),
         value: availableForTransfer,
         gasPrice: gasPrice,
         gas: gas,

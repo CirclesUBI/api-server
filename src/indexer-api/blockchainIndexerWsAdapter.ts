@@ -70,7 +70,7 @@ export class BlockchainIndexerWsAdapter {
 
         console.log(`Message ${cur} received.`);
         // Find all events in the reported new range
-        const trustQuery = `with a as (
+        const affectedAddressesQuery = `with a as (
             select hash, "user" as address1, null as address2, null as address3
             from crc_signup_2
             union all
@@ -96,7 +96,7 @@ export class BlockchainIndexerWsAdapter {
         from a
         where hash = ANY ($1);`;
 
-        const eventsInMessage = await pool.query(trustQuery, [transactionHashes]);
+        const eventsInMessage = await pool.query(affectedAddressesQuery, [transactionHashes]);
         const affectedAddresses = eventsInMessage.rows.reduce((p, c) => {
           if (c.address1) {
             p[c.address1] = true;

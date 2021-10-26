@@ -4,9 +4,6 @@ import {PrismaClient} from "../../api-db/client";
 
 export function offers(prisma:PrismaClient) {
     return async (parent:any, args:QueryOffersArgs, context: Context) => {
-        
-
-
         const offers = await prisma.offer.findMany({
             where: {
                 id: args.query.id ?? undefined,

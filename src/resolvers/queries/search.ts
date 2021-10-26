@@ -41,6 +41,11 @@ export function search(prisma: PrismaClient) {
                                       OR "firstName" ILIKE ${searchFirstName}
                                       OR "lastName" ILIKE ${searchLastName}
                                    ORDER BY "firstName", "lastName" LIMIT 100`;
-        return result;
+        return result.map(o => {
+            return {
+                ...o,
+                circlesSafeOwner: o.circlesSafeOwner?.toLowerCase()
+            }
+        });
     };
 }
