@@ -147,7 +147,7 @@ model Membership {
     createdAt DateTime @default(now())
 
     createdBy Profile @relation(name: "Membership_CreatedBy", fields: [createdByProfileId], references: [id])
-    createdByProfileId Int
+    createdByProfileId Int @default(1)
 
     acceptedAt DateTime? // The point in time when the invitee accepted the membership
     rejectedAt DateTime? // The point in time when the invitee rejected the membership
