@@ -4,7 +4,7 @@ import { PrismaClient } from "../../api-db/client";
 import { getPool } from "../resolvers";
 import {Contact, Maybe, PaginationArgs, ProfileEvent, QueryContactsArgs} from "../../types";
 import { Pool } from "pg";
-import { events } from "./queryEvents";
+import { blockchainEvents } from "./blockchainEvents";
 
 export type LastEvent = {
   timestamp: string;

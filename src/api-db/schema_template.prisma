@@ -131,8 +131,9 @@ model Profile {
     //subscribers Subscription[] @relation(name: "Subscription_SubscribingToProfile")
     //subscriptions Subscription[] @relation(name: "Subscription_SubscriberProfile")
 
-    memberships Membership[] @relation(name: "Profile_Membership")
-    members Membership[] @relation(name: "Profile_MemberAt")
+    memberships Membership[] @relation(name: "Membership_Member")
+    members Membership[] @relation(name: "Membership_MemberAt")
+    createdMemberships Membership[]  @relation(name: "Membership_CreatedBy")
 }
 
 model ExternalProfiles {
@@ -145,13 +146,20 @@ model Membership {
     id Int @id @default(autoincrement())
     createdAt DateTime @default(now())
 
+    createdBy Profile @relation(name: "Membership_CreatedBy", fields: [createdByProfileId], references: [id])
+    createdByProfileId Int
+
+    acceptedAt DateTime? // The point in time when the invitee accepted the membership
+    rejectedAt DateTime? // The point in time when the invitee rejected the membership
+
+    validTo DateTime?    // Memberships are only valid if this property is null or lies in the future
     isAdmin Boolean?
 
     memberId Int
-    member Profile @relation(name: "Profile_Membership", fields: [memberId], references:[id])
+    member Profile @relation(name: "Membership_Member", fields: [memberId], references:[id])
 
     memberAtId Int
-    memberAt Profile @relation(name: "Profile_MemberAt", fields: [memberAtId], references:[id])
+    memberAt Profile @relation(name: "Membership_MemberAt", fields: [memberAtId], references:[id])
 }
 
 //model Subscription {

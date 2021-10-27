@@ -36,7 +36,7 @@ import {upsertTag} from "./mutations/upsertTag";
 import {claimedInvitation} from "./queries/claimedInvitation";
 import {Context} from "../context";
 import {ApiPubSub} from "../pubsub";
-import {events} from "./queries/queryEvents";
+import {blockchainEvents} from "./queries/blockchainEvents";
 import {balance} from "./queries/balance";
 import {trustRelations} from "./queries/trustRelations";
 import {contacts} from "./queries/contacts";
@@ -185,6 +185,11 @@ export const resolvers: Resolvers = {
             createdAt: o.createdAt.toJSON(), // TODO: This is the creation date of the membership, not the one of the organisation
             circlesAddress: o.memberAt.circlesAddress
           },
+          createdByProfileId: o.createdByProfileId,
+          createdAt: o.createdAt.toJSON(),
+          acceptedAt: o.acceptedAt?.toJSON(),
+          rejectedAt: o.rejectedAt?.toJSON(),
+          validTo: o.validTo?.toJSON(),
           isAdmin: o.isAdmin ?? false
         }
       })
@@ -246,8 +251,8 @@ export const resolvers: Resolvers = {
     tags: tags(prisma_api_ro),
     tagById: tagById(prisma_api_ro),
     stats: stats(prisma_api_ro),
-    events: events(prisma_api_ro),
-    eventByTransactionHash: events(prisma_api_ro),
+    events: blockchainEvents(prisma_api_ro),
+    eventByTransactionHash: blockchainEvents(prisma_api_ro),
     balance: balance(),
     balancesByAsset: balancesByAsset(prisma_api_ro),
     trustRelations: trustRelations(prisma_api_ro),
@@ -285,6 +290,13 @@ export const resolvers: Resolvers = {
     createTestInvitation: createTestInvitation(prisma_api_rw),
     addMember: addMemberResolver,
     removeMember: removeMemberResolver,
+    /**
+     * This mutation should create a new Offer (with a random id and set isPrivate-flag) which is only intended
+     * for the user who called the mutation.
+     * The offer should be persisted in the db as long as it's "valid".
+     * Offers which haven't purchased can be purged after their validTo date passed by.
+     */
+    /*
     requestInvitationOffer: async (parent:any, args: MutationRequestInvitationOfferArgs, context:Context) => {
 
       // TODO: while(foundRegion || end) {
@@ -350,7 +362,7 @@ export const resolvers: Resolvers = {
         publishedAt: offer.publishedAt.toJSON(),
         unlistedAt: offer.unlistedAt?.toJSON() ?? undefined
       };
-    }
+    }*/
   },
   Subscription: {
     events: {

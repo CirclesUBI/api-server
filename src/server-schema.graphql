@@ -28,7 +28,16 @@ type Profile {
 }
 
 type Membership {
+  createdAt: String!
+  createdBy: Profile
+  createdByProfileId: Int!
+
+  acceptedAt: String
+  rejectedAt: String
+
+  validTo: String
   isAdmin: Boolean!
+
   organisation: Organisation!
 }
 
@@ -338,12 +347,16 @@ input QueryTagsInput {
 interface IEventPayload {
   transaction_hash: String
 }
+
+# ${user} just signed up with token ${token}
 type CrcSignup implements IEventPayload {
   transaction_hash: String!
   user: String!
   user_profile: Profile
   token: String!
 }
+
+# ${can_send_to} trusts ${address} with limit ${limit}
 type CrcTrust implements IEventPayload {
   transaction_hash: String!
   address: String!
@@ -352,6 +365,8 @@ type CrcTrust implements IEventPayload {
   can_send_to_profile: Profile
   limit: Int!
 }
+
+# ${from} sent ${value} CRC to ${to}
 type CrcTokenTransfer implements IEventPayload {
   transaction_hash: String!
   from: String!
@@ -361,6 +376,8 @@ type CrcTokenTransfer implements IEventPayload {
   token: String!
   value: String!
 }
+
+# ${from} sent ${value} CRC to ${to}
 type CrcHubTransfer implements IEventPayload {
   transaction_hash: String!
   from: String!
@@ -370,6 +387,8 @@ type CrcHubTransfer implements IEventPayload {
   flow: String!
   transfers: [CrcTokenTransfer!]!
 }
+
+# ${to} received a ubi payout of ${value} CRC
 type CrcMinting implements IEventPayload {
   transaction_hash: String!
   from: String!
@@ -379,6 +398,8 @@ type CrcMinting implements IEventPayload {
   value: String!
   token: String!
 }
+
+# ${from} sent ${value} xdai to ${to}
 type EthTransfer implements IEventPayload {
   transaction_hash: String!
   from: String!
@@ -387,6 +408,8 @@ type EthTransfer implements IEventPayload {
   to_profile: Profile
   value: String!
 }
+
+# ${from} sent ${value} xdai to ${to}
 type GnosisSafeEthTransfer implements IEventPayload {
   transaction_hash: String!
   initiator: String!
@@ -397,6 +420,7 @@ type GnosisSafeEthTransfer implements IEventPayload {
   value: String!
 }
 
+# ${from} wrote: ${text}
 type ChatMessage implements IEventPayload {
   transaction_hash: String
   from: String!
@@ -404,6 +428,43 @@ type ChatMessage implements IEventPayload {
   to: String!
   to_profile: Profile
   text: String!
+}
+
+# ${createdBy} invited you to join ${organisation}. Do you want to accept the invitation?
+type MembershipOffer implements IEventPayload {
+  transaction_hash: String
+  createdBy: String!
+  createdBy_profile: Profile
+  isAdmin: Boolean!
+  organisation: String!
+  organisation_profile: Organisation
+}
+
+# ${member} accepted your invitation to ${organisation}
+type MembershipAccepted implements IEventPayload {
+  transaction_hash: String
+  member: String!
+  member_profile: Profile
+  organisation: String!
+  organisation_profile: Organisation
+}
+
+# ${member} rejected your invitation to ${organisation}
+type MembershipRejected implements IEventPayload {
+  transaction_hash: String
+  member: String!
+  member_profile: Profile
+  organisation: String!
+  organisation_profile: Organisation
+}
+
+# Welcome!
+# ${member} invited you to circles.
+# Do you want to trust this ${member}?
+type WelcomeMessage implements IEventPayload {
+  transaction_hash: String
+  member: String!
+  member_profile: Profile
 }
 
 union EventPayload =
@@ -415,6 +476,10 @@ union EventPayload =
   | EthTransfer
   | GnosisSafeEthTransfer
   | ChatMessage
+  | MembershipOffer
+  | MembershipAccepted
+  | MembershipRejected
+  | WelcomeMessage
 
 type ProfileEvent {
   timestamp: String!
@@ -562,6 +627,16 @@ type AddMemberResult {
   error: String
 }
 
+type AcceptMembershipResult {
+  success: Boolean!
+  error: String
+}
+
+type RejectMembershipResult {
+  success: Boolean!
+  error: String
+}
+
 type RemoveMemberResult {
   success: Boolean!
   error: String
@@ -586,8 +661,11 @@ type Mutation {
 
   upsertOrganisation(organisation: UpsertOrganisationInput!) : CreateOrganisationResult!
   upsertRegion(organisation: UpsertOrganisationInput!) : CreateOrganisationResult!
+
   addMember(groupId: String! memberId: Int!) : AddMemberResult
+  acceptMembership(membershipId: Int!) : AcceptMembershipResult
   removeMember(groupId: String! memberId: Int!) : RemoveMemberResult
+  rejectMembership(membershipId: Int!) : RejectMembershipResult
 
   acknowledge(until: String!): Boolean!
 
@@ -641,7 +719,7 @@ type Query {
 
   # Gets the created (noty invitations of the currently logged on user
   myInvitations: [CreatedInvitation!]!
-  events(
+  blockchainEvents(
     safeAddress: String!
     types: [String!]
     fromBlock: Int
@@ -656,7 +734,7 @@ type Query {
     contactSafeAddress: String!
     pagination: PaginationArgs
   ): [ProfileEvent!]!
-  eventByTransactionHash(
+  blockchainEventsByTransactionHash(
     safeAddress: String!
     transactionHash: String!
     types: [String!]

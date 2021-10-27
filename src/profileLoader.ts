@@ -5,7 +5,7 @@ import fetch from "cross-fetch";
 
 export type SafeProfileMap = {[safeAddress:string]:Profile|null};
 
-export class CirclesGardenLoader {
+export class ProfileLoader {
   async queryCirclesLand(prisma: PrismaClient, safeAddresses:string[]) : Promise<SafeProfileMap> {
     const profiles = await prisma.profile.findMany({
       where: {
@@ -127,16 +127,19 @@ export class CirclesGardenLoader {
 
     // Persist the non-local results in the api-db
     await prisma.externalProfiles.createMany({
-      data: Object.values(nonLocalProfileMap).map(o => {
-        if (!o || !o.circlesAddress)
-          throw new Error(`Invalid state`);
+      data: Object.values(nonLocalProfileMap)
+        .filter(o => !!o?.circlesAddress)
+        .map(o => {
+          if (!o || !o.circlesAddress)
+            throw new Error(`Invalid state`);
 
-        return {
-          circlesAddress: o.circlesAddress,
-          name: o.firstName,
-          avatarUrl: o.avatarUrl
-        };
-      }),
+          return {
+            circlesAddress: o.circlesAddress,
+            name: o.firstName,
+            avatarUrl: o.avatarUrl
+          };
+        }
+      ),
       skipDuplicates: true
     });
 

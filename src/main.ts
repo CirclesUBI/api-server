@@ -10,9 +10,11 @@ import {Context} from "./context";
 import {Session} from "./session";
 import {newLogger} from "./logger";
 import {Error} from "apollo-server-core/src/plugin/schemaReporting/operations";
-import {BlockchainIndexerWsAdapter} from "./indexer-api/blockchainIndexerWsAdapter";
+import {BlockchainEventSource} from "./indexer-api/blockchainEventSource";
 import {ApiPubSub} from "./pubsub";
 import {RpcGateway} from "./rpcGateway";
+import {BlockchainEventsInboxSource, BlockchainEventType} from "./inboxSources/blockchainEventsInboxSource";
+import {ApiEventsInboxSource} from "./inboxSources/apiEventsInboxSource";
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
 
 if (!process.env.CORS_ORIGNS) {
@@ -30,6 +32,29 @@ const errorLogger = {
 
 export class Main {
     async run2 () {
+        /*
+        const blockchainInboxSource = new BlockchainEventsInboxSource([
+            BlockchainEventType.CRC_HUB_TRANSFER,
+            BlockchainEventType.CRC_MINTING,
+            BlockchainEventType.CRC_SIGNUP,
+            BlockchainEventType.CRC_TRUST,
+            BlockchainEventType.ETH_TRANSFER,
+            BlockchainEventType.GNOSIS_SAFE_ETH_TRANSFER
+        ]);
+
+        const blockchainEvents = await blockchainInboxSource.getNewEvents(
+          "0xde374ece6fa50e781e81aac78e811b33d16912c7",
+          new Date("2019-08-01"));
+
+        const apiEventSource = new ApiEventsInboxSource();
+        const apiEvents = await apiEventSource.getNewEvents(
+          "0xde374ece6fa50e781e81aac78e811b33d16912c7",
+          new Date("2019-08-01"));
+
+        const allEvents = blockchainEvents.concat(apiEvents);
+        return;*/
+
+
         const app = express();
         const httpServer = createServer(app);
 
@@ -129,7 +154,7 @@ export class Main {
         const indexerApiUrl = process.env.BLOCKCHAIN_INDEX_WS_URL;
         if (indexerApiUrl) {
             console.log(`Subscribing to blockchain events from the indexer at ${indexerApiUrl} ..`)
-            const conn = new BlockchainIndexerWsAdapter(indexerApiUrl);
+            const conn = new BlockchainEventSource(indexerApiUrl ?? "");
             conn.connect();
             console.log("Subscription ready.")
         } else {

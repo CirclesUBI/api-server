@@ -2,7 +2,7 @@ import { Context } from "../../context";
 import { ChatMessage, ProfileEvent } from "../../types";
 import { getPool } from "../resolvers";
 import { PrismaClient } from "../../api-db/client";
-import { events } from "./queryEvents";
+import { blockchainEvents } from "./blockchainEvents";
 import { profilesBySafeAddress, ProfilesBySafeAddressLookup } from "./profiles";
 
 export function inbox(prisma: PrismaClient) {
@@ -38,8 +38,8 @@ export function inbox(prisma: PrismaClient) {
       const sinceBlock = range.rows[0].since_block ?? 1;
       const untilBlock = sinceBlock != 0 ? range.rows[0].until_block ?? 1 : 1;
 
-      // get unread events
-      const eventsResolver = events(prisma, pool);
+      // get unread blockchainEvents
+      const eventsResolver = blockchainEvents(prisma, pool);
       const eventsPromise = eventsResolver(
         null,
         {

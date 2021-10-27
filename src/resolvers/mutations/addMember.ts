@@ -43,12 +43,16 @@ export const addMemberResolver = async (parent:any, args:MutationAddMemberArgs, 
     throw new Error(`You are not an admin of this group.`);
   }
 
+  // Create a membership that must be accepted by the member.
   await prisma_api_rw.membership.create({
     data: {
+      createdAt: new Date(),
+      createdByProfileId: callerProfile.id,
       memberAtId: groupProfile.id,
       memberId: args.memberId
     }
   });
+
   return {
     success: true
   }

@@ -42,13 +42,19 @@ export function upsertOrganisation(prisma_api_rw:PrismaClient, isRegion:boolean)
             cityGeonameid: args.organisation.cityGeonameid
           }
         });
-        const adminMembership = await prisma_api_rw.membership.create({
+
+        // Automatically create an accepted admin membership for the creator.
+        await prisma_api_rw.membership.create({
           data: {
+            createdAt: new Date(),
+            createdByProfileId: ownProfile.id,
+            validTo: null,
+            acceptedAt: new Date(),
             isAdmin: true,
             memberId: ownProfile.id,
             memberAtId: organisationProfile.id
           }
-        })
+        });
       }
 
       return {

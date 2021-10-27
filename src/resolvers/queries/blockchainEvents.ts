@@ -1,27 +1,25 @@
 import { Context } from "../../context";
 import {
   Maybe,
-  ProfileEvent,
-  QueryEventByTransactionHashArgs,
-  QueryEventsArgs,
+  ProfileEvent, QueryBlockchainEventsArgs, QueryBlockchainEventsByTransactionHashArgs,
   RequireFields,
   Tag,
 } from "../../types";
 import { Pool } from "pg";
-import { PrismaClient, Transaction } from "../../api-db/client";
+import { PrismaClient } from "../../api-db/client";
 import { profilesBySafeAddress, ProfilesBySafeAddressLookup } from "./profiles";
 import { getPool } from "../resolvers";
 
-export function events(
+export function blockchainEvents(
   prisma: PrismaClient,
   externalPool?: Pool
 ) {
   return async (
     parent: any,
     args:
-      | RequireFields<QueryEventsArgs, "safeAddress">
+      | RequireFields<QueryBlockchainEventsArgs, "safeAddress">
       | RequireFields<
-          QueryEventByTransactionHashArgs,
+          QueryBlockchainEventsByTransactionHashArgs,
           "safeAddress" | "transactionHash"
         >,
     context: Context
@@ -60,7 +58,7 @@ export function events(
       let limit:number|null = Number.isInteger((<any>args).limit) ? (<any>args).limit : 50;
 
       if ((<any>args).fromBlock || (<any>args).toBlock) {
-        const queryEventsArgs: RequireFields<QueryEventsArgs, "safeAddress"> =
+        const queryEventsArgs: RequireFields<QueryBlockchainEventsArgs, "safeAddress"> =
           args;
         let fromBlockInt: number | null = null;
         let toBlockInt: number | null = null;
@@ -71,8 +69,8 @@ export function events(
           toBlockInt = parseInt(queryEventsArgs.toBlock.toString());
         }
         whereBlock = ` and block_number >= ${fromBlockInt} and block_number <= ${toBlockInt}`;
-      } else if ((<QueryEventsArgs>args).pagination) {
-        const args_:QueryEventsArgs = args;
+      } else if ((<QueryBlockchainEventsArgs>args).pagination) {
+        const args_:QueryBlockchainEventsArgs = args;
         if (args_.pagination) {
           const fromDate = new Date(Date.parse(args_.pagination.continueAt));
           whereBlock = ` and timestamp < '${fromDate.toISOString()}'`;
@@ -108,34 +106,7 @@ export function events(
         transactionsQuery,
         transactionsQueryParameters
       );
-      const classify = (row: any) => {
-        switch (row.type) {
-          case "crc_hub_transfer":
-            row.payload.__typename = "CrcHubTransfer";
-            return "CrcHubTransfer";
-          case "crc_organisation_signup":
-            row.payload.__typename = "CrcTrust";
-            return "CrcTrust";
-          case "crc_signup":
-            row.payload.__typename = "CrcSignup";
-            return "CrcSignup";
-          case "crc_trust":
-            row.payload.__typename = "CrcTrust";
-            return "CrcTrust";
-          case "crc_minting":
-            row.payload.__typename = "CrcMinting";
-            return "CrcMinting";
-          case "eth_transfer":
-            row.payload.__typename = "EthTransfer";
-            return "EthTransfer";
-          case "gnosis_safe_eth_transfer":
-            row.payload.__typename = "GnosisSafeEthTransfer";
-            return "GnosisSafeEthTransfer";
-          default:
-            return null;
-        }
-      };
-
+      const classify = (row: any) => row.type;
       const allSafeAddressesDict: { [safeAddress: string]: any } = {};
       const allTransactionHashesDict: { [transactionHash: string]: any } = {};
       timeline.rows

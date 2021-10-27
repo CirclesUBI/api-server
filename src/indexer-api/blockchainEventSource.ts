@@ -1,9 +1,24 @@
 import WebSocket from 'ws';
 import {ApiPubSub} from "../pubsub";
 import {getPool} from "../resolvers/resolvers";
-// import {profilesBySafeAddressCache} from "../resolvers/queries/profiles";
 
-export class BlockchainIndexerWsAdapter {
+
+export interface ProfileEventSource {
+  /**
+   * Takes a json string, interprets it and creates ProfileEvents if applicable.
+   * @param message
+   */
+  //yieldEvent(message: string) : void;
+}
+
+/**
+ * This class can be used to listen to new transaction blockchainEvents from
+ * the https://github.com/circlesland/blockchain-indexer service.
+ * The blockchain indexer only sends a stream of new transaction hashes.
+ * It's the BlockchainEventSource's job to make sense of the hashes and
+ * to dispatch the resulting blockchainEvents to the right recipients.
+ */
+export class BlockchainEventSource implements ProfileEventSource {
   private readonly _url: string;
 
   private _ws?: WebSocket;
@@ -69,7 +84,7 @@ export class BlockchainIndexerWsAdapter {
         const cur = this.i++;
 
         console.log(`Message ${cur} received.`);
-        // Find all events in the reported new range
+        // Find all blockchainEvents in the reported new range
         const affectedAddressesQuery = `with a as (
             select hash, "user" as address1, null as address2, null as address3
             from crc_signup_2

@@ -14,6 +14,12 @@ export type Scalars = {
   Float: number;
 };
 
+export type AcceptMembershipResult = {
+  __typename?: 'AcceptMembershipResult';
+  success: Scalars['Boolean'];
+  error?: Maybe<Scalars['String']>;
+};
+
 export type AddMemberResult = {
   __typename?: 'AddMemberResult';
   success: Scalars['Boolean'];
@@ -230,7 +236,7 @@ export type EthTransfer = IEventPayload & {
   value: Scalars['String'];
 };
 
-export type EventPayload = CrcSignup | CrcTrust | CrcTokenTransfer | CrcHubTransfer | CrcMinting | EthTransfer | GnosisSafeEthTransfer | ChatMessage;
+export type EventPayload = CrcSignup | CrcTrust | CrcTokenTransfer | CrcHubTransfer | CrcMinting | EthTransfer | GnosisSafeEthTransfer | ChatMessage | MembershipOffer | MembershipAccepted | MembershipRejected | WelcomeMessage;
 
 export type ExchangeTokenResponse = {
   __typename?: 'ExchangeTokenResponse';
@@ -295,8 +301,42 @@ export type LogoutResponse = {
 
 export type Membership = {
   __typename?: 'Membership';
+  createdAt: Scalars['String'];
+  createdBy?: Maybe<Profile>;
+  createdByProfileId: Scalars['Int'];
+  acceptedAt?: Maybe<Scalars['String']>;
+  rejectedAt?: Maybe<Scalars['String']>;
+  validTo?: Maybe<Scalars['String']>;
   isAdmin: Scalars['Boolean'];
   organisation: Organisation;
+};
+
+export type MembershipAccepted = IEventPayload & {
+  __typename?: 'MembershipAccepted';
+  transaction_hash?: Maybe<Scalars['String']>;
+  member: Scalars['String'];
+  member_profile?: Maybe<Profile>;
+  organisation: Scalars['String'];
+  organisation_profile?: Maybe<Organisation>;
+};
+
+export type MembershipOffer = IEventPayload & {
+  __typename?: 'MembershipOffer';
+  transaction_hash?: Maybe<Scalars['String']>;
+  createdBy: Scalars['String'];
+  createdBy_profile?: Maybe<Profile>;
+  isAdmin: Scalars['Boolean'];
+  organisation: Scalars['String'];
+  organisation_profile?: Maybe<Organisation>;
+};
+
+export type MembershipRejected = IEventPayload & {
+  __typename?: 'MembershipRejected';
+  transaction_hash?: Maybe<Scalars['String']>;
+  member: Scalars['String'];
+  member_profile?: Maybe<Profile>;
+  organisation: Scalars['String'];
+  organisation_profile?: Maybe<Organisation>;
 };
 
 export type Mutation = {
@@ -317,7 +357,9 @@ export type Mutation = {
   upsertOrganisation: CreateOrganisationResult;
   upsertRegion: CreateOrganisationResult;
   addMember?: Maybe<AddMemberResult>;
+  acceptMembership?: Maybe<AcceptMembershipResult>;
   removeMember?: Maybe<RemoveMemberResult>;
+  rejectMembership?: Maybe<RejectMembershipResult>;
   acknowledge: Scalars['Boolean'];
   requestInvitationOffer: Offer;
   createInvitations: CreateInvitationResult;
@@ -402,9 +444,19 @@ export type MutationAddMemberArgs = {
 };
 
 
+export type MutationAcceptMembershipArgs = {
+  membershipId: Scalars['Int'];
+};
+
+
 export type MutationRemoveMemberArgs = {
   groupId: Scalars['String'];
   memberId: Scalars['Int'];
+};
+
+
+export type MutationRejectMembershipArgs = {
+  membershipId: Scalars['Int'];
 };
 
 
@@ -589,12 +641,12 @@ export type Query = {
   regions: Array<Organisation>;
   organisationsByAddress: Array<Organisation>;
   myInvitations: Array<CreatedInvitation>;
-  events: Array<ProfileEvent>;
+  blockchainEvents: Array<ProfileEvent>;
   contacts: Array<Contact>;
   contact?: Maybe<Contact>;
   commonTrust: Array<CommonTrust>;
   chatHistory: Array<ProfileEvent>;
-  eventByTransactionHash: Array<ProfileEvent>;
+  blockchainEventsByTransactionHash: Array<ProfileEvent>;
   balance: Scalars['String'];
   balancesByAsset: Array<AssetBalance>;
   trustRelations: Array<TrustRelation>;
@@ -626,7 +678,7 @@ export type QueryOrganisationsByAddressArgs = {
 };
 
 
-export type QueryEventsArgs = {
+export type QueryBlockchainEventsArgs = {
   safeAddress: Scalars['String'];
   types?: Maybe<Array<Scalars['String']>>;
   fromBlock?: Maybe<Scalars['Int']>;
@@ -659,7 +711,7 @@ export type QueryChatHistoryArgs = {
 };
 
 
-export type QueryEventByTransactionHashArgs = {
+export type QueryBlockchainEventsByTransactionHashArgs = {
   safeAddress: Scalars['String'];
   transactionHash: Scalars['String'];
   types?: Maybe<Array<Scalars['String']>>;
@@ -768,6 +820,12 @@ export type RedeemClaimedInvitationResult = {
   success: Scalars['Boolean'];
   error?: Maybe<Scalars['String']>;
   transactionHash?: Maybe<Scalars['String']>;
+};
+
+export type RejectMembershipResult = {
+  __typename?: 'RejectMembershipResult';
+  success: Scalars['Boolean'];
+  error?: Maybe<Scalars['String']>;
 };
 
 export type RemoveMemberResult = {
@@ -924,6 +982,13 @@ export type Version = {
   revision: Scalars['Int'];
 };
 
+export type WelcomeMessage = IEventPayload & {
+  __typename?: 'WelcomeMessage';
+  transaction_hash?: Maybe<Scalars['String']>;
+  member: Scalars['String'];
+  member_profile?: Maybe<Profile>;
+};
+
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
 
@@ -1003,9 +1068,10 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
-  AddMemberResult: ResolverTypeWrapper<AddMemberResult>;
+  AcceptMembershipResult: ResolverTypeWrapper<AcceptMembershipResult>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  AddMemberResult: ResolverTypeWrapper<AddMemberResult>;
   AssetBalance: ResolverTypeWrapper<AssetBalance>;
   ChatMessage: ResolverTypeWrapper<ChatMessage>;
   City: ResolverTypeWrapper<City>;
@@ -1032,17 +1098,20 @@ export type ResolversTypes = ResolversObject<{
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
   EthTransfer: ResolverTypeWrapper<EthTransfer>;
-  EventPayload: ResolversTypes['CrcSignup'] | ResolversTypes['CrcTrust'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'] | ResolversTypes['ChatMessage'];
+  EventPayload: ResolversTypes['CrcSignup'] | ResolversTypes['CrcTrust'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'] | ResolversTypes['ChatMessage'] | ResolversTypes['MembershipOffer'] | ResolversTypes['MembershipAccepted'] | ResolversTypes['MembershipRejected'] | ResolversTypes['WelcomeMessage'];
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
   GnosisSafeEthTransfer: ResolverTypeWrapper<GnosisSafeEthTransfer>;
   Goal: ResolverTypeWrapper<Goal>;
   ICity: ResolversTypes['City'] | ResolversTypes['CityStats'];
-  IEventPayload: ResolversTypes['ChatMessage'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['CrcSignup'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcTrust'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'];
+  IEventPayload: ResolversTypes['ChatMessage'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['CrcSignup'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcTrust'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'] | ResolversTypes['MembershipAccepted'] | ResolversTypes['MembershipOffer'] | ResolversTypes['MembershipRejected'] | ResolversTypes['WelcomeMessage'];
   InitAggregateState: ResolverTypeWrapper<InitAggregateState>;
   LockOfferInput: LockOfferInput;
   LockOfferResult: ResolverTypeWrapper<LockOfferResult>;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
   Membership: ResolverTypeWrapper<Membership>;
+  MembershipAccepted: ResolverTypeWrapper<MembershipAccepted>;
+  MembershipOffer: ResolverTypeWrapper<MembershipOffer>;
+  MembershipRejected: ResolverTypeWrapper<MembershipRejected>;
   Mutation: ResolverTypeWrapper<{}>;
   NotificationEvent: ResolverTypeWrapper<NotificationEvent>;
   Offer: ResolverTypeWrapper<Offer>;
@@ -1065,6 +1134,7 @@ export type ResolversTypes = ResolversObject<{
   QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   RedeemClaimedInvitationResult: ResolverTypeWrapper<RedeemClaimedInvitationResult>;
+  RejectMembershipResult: ResolverTypeWrapper<RejectMembershipResult>;
   RemoveMemberResult: ResolverTypeWrapper<RemoveMemberResult>;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: ResolverTypeWrapper<RequestUpdateSafeResponse>;
@@ -1085,13 +1155,15 @@ export type ResolversTypes = ResolversObject<{
   UpsertProfileInput: UpsertProfileInput;
   UpsertTagInput: UpsertTagInput;
   Version: ResolverTypeWrapper<Version>;
+  WelcomeMessage: ResolverTypeWrapper<WelcomeMessage>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
-  AddMemberResult: AddMemberResult;
+  AcceptMembershipResult: AcceptMembershipResult;
   Boolean: Scalars['Boolean'];
   String: Scalars['String'];
+  AddMemberResult: AddMemberResult;
   AssetBalance: AssetBalance;
   ChatMessage: ChatMessage;
   City: City;
@@ -1118,17 +1190,20 @@ export type ResolversParentTypes = ResolversObject<{
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: DepositChallengeResponse;
   EthTransfer: EthTransfer;
-  EventPayload: ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'] | ResolversParentTypes['ChatMessage'];
+  EventPayload: ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'] | ResolversParentTypes['ChatMessage'] | ResolversParentTypes['MembershipOffer'] | ResolversParentTypes['MembershipAccepted'] | ResolversParentTypes['MembershipRejected'] | ResolversParentTypes['WelcomeMessage'];
   ExchangeTokenResponse: ExchangeTokenResponse;
   GnosisSafeEthTransfer: GnosisSafeEthTransfer;
   Goal: Goal;
   ICity: ResolversParentTypes['City'] | ResolversParentTypes['CityStats'];
-  IEventPayload: ResolversParentTypes['ChatMessage'] | ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'];
+  IEventPayload: ResolversParentTypes['ChatMessage'] | ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'] | ResolversParentTypes['MembershipAccepted'] | ResolversParentTypes['MembershipOffer'] | ResolversParentTypes['MembershipRejected'] | ResolversParentTypes['WelcomeMessage'];
   InitAggregateState: InitAggregateState;
   LockOfferInput: LockOfferInput;
   LockOfferResult: LockOfferResult;
   LogoutResponse: LogoutResponse;
   Membership: Membership;
+  MembershipAccepted: MembershipAccepted;
+  MembershipOffer: MembershipOffer;
+  MembershipRejected: MembershipRejected;
   Mutation: {};
   NotificationEvent: NotificationEvent;
   Offer: Offer;
@@ -1150,6 +1225,7 @@ export type ResolversParentTypes = ResolversObject<{
   QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
   RedeemClaimedInvitationResult: RedeemClaimedInvitationResult;
+  RejectMembershipResult: RejectMembershipResult;
   RemoveMemberResult: RemoveMemberResult;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: RequestUpdateSafeResponse;
@@ -1169,6 +1245,13 @@ export type ResolversParentTypes = ResolversObject<{
   UpsertProfileInput: UpsertProfileInput;
   UpsertTagInput: UpsertTagInput;
   Version: Version;
+  WelcomeMessage: WelcomeMessage;
+}>;
+
+export type AcceptMembershipResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['AcceptMembershipResult'] = ResolversParentTypes['AcceptMembershipResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type AddMemberResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['AddMemberResult'] = ResolversParentTypes['AddMemberResult']> = ResolversObject<{
@@ -1379,7 +1462,7 @@ export type EthTransferResolvers<ContextType = any, ParentType extends Resolvers
 }>;
 
 export type EventPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['EventPayload'] = ResolversParentTypes['EventPayload']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'CrcSignup' | 'CrcTrust' | 'CrcTokenTransfer' | 'CrcHubTransfer' | 'CrcMinting' | 'EthTransfer' | 'GnosisSafeEthTransfer' | 'ChatMessage', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'CrcSignup' | 'CrcTrust' | 'CrcTokenTransfer' | 'CrcHubTransfer' | 'CrcMinting' | 'EthTransfer' | 'GnosisSafeEthTransfer' | 'ChatMessage' | 'MembershipOffer' | 'MembershipAccepted' | 'MembershipRejected' | 'WelcomeMessage', ParentType, ContextType>;
 }>;
 
 export type ExchangeTokenResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['ExchangeTokenResponse'] = ResolversParentTypes['ExchangeTokenResponse']> = ResolversObject<{
@@ -1416,7 +1499,7 @@ export type ICityResolvers<ContextType = any, ParentType extends ResolversParent
 }>;
 
 export type IEventPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['IEventPayload'] = ResolversParentTypes['IEventPayload']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'ChatMessage' | 'CrcHubTransfer' | 'CrcMinting' | 'CrcSignup' | 'CrcTokenTransfer' | 'CrcTrust' | 'EthTransfer' | 'GnosisSafeEthTransfer', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ChatMessage' | 'CrcHubTransfer' | 'CrcMinting' | 'CrcSignup' | 'CrcTokenTransfer' | 'CrcTrust' | 'EthTransfer' | 'GnosisSafeEthTransfer' | 'MembershipAccepted' | 'MembershipOffer' | 'MembershipRejected' | 'WelcomeMessage', ParentType, ContextType>;
   transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
@@ -1442,8 +1525,42 @@ export type LogoutResponseResolvers<ContextType = any, ParentType extends Resolv
 }>;
 
 export type MembershipResolvers<ContextType = any, ParentType extends ResolversParentTypes['Membership'] = ResolversParentTypes['Membership']> = ResolversObject<{
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  createdByProfileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  acceptedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  rejectedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  validTo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   isAdmin?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   organisation?: Resolver<ResolversTypes['Organisation'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type MembershipAcceptedResolvers<ContextType = any, ParentType extends ResolversParentTypes['MembershipAccepted'] = ResolversParentTypes['MembershipAccepted']> = ResolversObject<{
+  transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  member?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  member_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  organisation?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  organisation_profile?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type MembershipOfferResolvers<ContextType = any, ParentType extends ResolversParentTypes['MembershipOffer'] = ResolversParentTypes['MembershipOffer']> = ResolversObject<{
+  transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdBy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdBy_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  isAdmin?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  organisation?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  organisation_profile?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type MembershipRejectedResolvers<ContextType = any, ParentType extends ResolversParentTypes['MembershipRejected'] = ResolversParentTypes['MembershipRejected']> = ResolversObject<{
+  transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  member?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  member_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  organisation?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  organisation_profile?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1464,7 +1581,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   upsertOrganisation?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertOrganisationArgs, 'organisation'>>;
   upsertRegion?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertRegionArgs, 'organisation'>>;
   addMember?: Resolver<Maybe<ResolversTypes['AddMemberResult']>, ParentType, ContextType, RequireFields<MutationAddMemberArgs, 'groupId' | 'memberId'>>;
+  acceptMembership?: Resolver<Maybe<ResolversTypes['AcceptMembershipResult']>, ParentType, ContextType, RequireFields<MutationAcceptMembershipArgs, 'membershipId'>>;
   removeMember?: Resolver<Maybe<ResolversTypes['RemoveMemberResult']>, ParentType, ContextType, RequireFields<MutationRemoveMemberArgs, 'groupId' | 'memberId'>>;
+  rejectMembership?: Resolver<Maybe<ResolversTypes['RejectMembershipResult']>, ParentType, ContextType, RequireFields<MutationRejectMembershipArgs, 'membershipId'>>;
   acknowledge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'until'>>;
   requestInvitationOffer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType, RequireFields<MutationRequestInvitationOfferArgs, 'for'>>;
   createInvitations?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType, RequireFields<MutationCreateInvitationsArgs, 'for'>>;
@@ -1601,12 +1720,12 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   regions?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryRegionsArgs, never>>;
   organisationsByAddress?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsByAddressArgs, 'addresses'>>;
   myInvitations?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
-  events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'safeAddress'>>;
+  blockchainEvents?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryBlockchainEventsArgs, 'safeAddress'>>;
   contacts?: Resolver<Array<ResolversTypes['Contact']>, ParentType, ContextType, RequireFields<QueryContactsArgs, 'safeAddress'>>;
   contact?: Resolver<Maybe<ResolversTypes['Contact']>, ParentType, ContextType, RequireFields<QueryContactArgs, 'safeAddress' | 'contactAddress'>>;
   commonTrust?: Resolver<Array<ResolversTypes['CommonTrust']>, ParentType, ContextType, RequireFields<QueryCommonTrustArgs, 'safeAddress1' | 'safeAddress2'>>;
   chatHistory?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryChatHistoryArgs, 'safeAddress' | 'contactSafeAddress'>>;
-  eventByTransactionHash?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventByTransactionHashArgs, 'safeAddress' | 'transactionHash'>>;
+  blockchainEventsByTransactionHash?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryBlockchainEventsByTransactionHashArgs, 'safeAddress' | 'transactionHash'>>;
   balance?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<QueryBalanceArgs, 'safeAddress'>>;
   balancesByAsset?: Resolver<Array<ResolversTypes['AssetBalance']>, ParentType, ContextType, RequireFields<QueryBalancesByAssetArgs, 'safeAddress'>>;
   trustRelations?: Resolver<Array<ResolversTypes['TrustRelation']>, ParentType, ContextType, RequireFields<QueryTrustRelationsArgs, 'safeAddress'>>;
@@ -1626,6 +1745,12 @@ export type RedeemClaimedInvitationResultResolvers<ContextType = any, ParentType
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   transactionHash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type RejectMembershipResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['RejectMembershipResult'] = ResolversParentTypes['RejectMembershipResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1715,7 +1840,15 @@ export type VersionResolvers<ContextType = any, ParentType extends ResolversPare
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type WelcomeMessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['WelcomeMessage'] = ResolversParentTypes['WelcomeMessage']> = ResolversObject<{
+  transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  member?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  member_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type Resolvers<ContextType = any> = ResolversObject<{
+  AcceptMembershipResult?: AcceptMembershipResultResolvers<ContextType>;
   AddMemberResult?: AddMemberResultResolvers<ContextType>;
   AssetBalance?: AssetBalanceResolvers<ContextType>;
   ChatMessage?: ChatMessageResolvers<ContextType>;
@@ -1749,6 +1882,9 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   LockOfferResult?: LockOfferResultResolvers<ContextType>;
   LogoutResponse?: LogoutResponseResolvers<ContextType>;
   Membership?: MembershipResolvers<ContextType>;
+  MembershipAccepted?: MembershipAcceptedResolvers<ContextType>;
+  MembershipOffer?: MembershipOfferResolvers<ContextType>;
+  MembershipRejected?: MembershipRejectedResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   NotificationEvent?: NotificationEventResolvers<ContextType>;
   Offer?: OfferResolvers<ContextType>;
@@ -1760,6 +1896,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Purchase?: PurchaseResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RedeemClaimedInvitationResult?: RedeemClaimedInvitationResultResolvers<ContextType>;
+  RejectMembershipResult?: RejectMembershipResultResolvers<ContextType>;
   RemoveMemberResult?: RemoveMemberResultResolvers<ContextType>;
   RequestUpdateSafeResponse?: RequestUpdateSafeResponseResolvers<ContextType>;
   SendMessageResult?: SendMessageResultResolvers<ContextType>;
@@ -1772,6 +1909,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   TrustRelation?: TrustRelationResolvers<ContextType>;
   UpdateSafeResponse?: UpdateSafeResponseResolvers<ContextType>;
   Version?: VersionResolvers<ContextType>;
+  WelcomeMessage?: WelcomeMessageResolvers<ContextType>;
 }>;
 
 

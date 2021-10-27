@@ -1,5 +1,5 @@
 import { Context } from "../../context";
-import { events } from "./queryEvents";
+import { blockchainEvents } from "./blockchainEvents";
 import {ChatMessage, ProfileEvent, QueryChatHistoryArgs} from "../../types";
 import { PrismaClient } from "../../api-db/client";
 import { getPool } from "../resolvers";
@@ -20,7 +20,7 @@ export function chatHistory(prisma: PrismaClient) {
         context
       );
 
-      const eventsResolver = events(prisma, pool);
+      const eventsResolver = blockchainEvents(prisma, pool);
       const safeEventsPromise = eventsResolver(
         undefined,
         {
@@ -79,7 +79,7 @@ export function chatHistory(prisma: PrismaClient) {
       } = {};
       eventResults.forEach((o) => {
         if (!o.transaction_hash) {
-          return; // These are all blockchain events so the hash should be present
+          return; // These are all blockchain blockchainEvents so the hash should be present
         }
         let events = eventResultsByTransactionHash[o.transaction_hash];
         if (!events) {
