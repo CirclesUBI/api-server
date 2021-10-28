@@ -28,13 +28,13 @@ export async function lastEvents(
       with addresses as (
           select unnest($2::text[]) as address2
       ), a as (
-          select $1::text as address1, a.address2, 'crc_trust' as type, t.block_number, t.index,  t.hash as transaction_hash
+          select $1::text as address1, a.address2, 'CrcTrust' as type, t.block_number, t.index,  t.hash as transaction_hash
           from addresses a
                    join crc_trust_2 ct on ($1 = ct.address or $1 = ct.can_send_to)
               and (a.address2 = ct.address or a.address2 = ct.can_send_to)
                    join transaction_2 t on ct.hash = t.hash
       ), b as (
-          select $1::text as address1, a.address2, 'crc_hub_transfer' as type, t.block_number, t.index, t.hash as transaction_hash
+          select $1::text as address1, a.address2, 'CrcHubTransfer' as type, t.block_number, t.index, t.hash as transaction_hash
           from addresses a
                    join crc_hub_transfer_2 cht on ($1 = cht."from" or $1 = cht."to")
               and (a.address2 = cht."from" or a.address2 = cht."to")
@@ -56,7 +56,7 @@ export async function lastEvents(
                , b.number
                , t.index
                , t.hash
-               , 'crc_hub_transfer' as type
+               , 'CrcHubTransfer' as type
                , crc_signup_2."user"
                , case
                      when cht."from" = crc_signup_2."user" and cht."to" = crc_signup_2."user" then 'self'
@@ -95,7 +95,7 @@ export async function lastEvents(
                , b.number
                , t.index
                , t.hash
-               , 'crc_trust'       as type
+               , 'CrcTrust'       as type
                , crc_signup_2."user"
                , case
                      when ct.can_send_to = crc_signup_2."user" and ct.address = crc_signup_2."user" then 'self'
@@ -288,7 +288,7 @@ export function contacts(
                 payload: {
                   ...lastEvent.obj,
                   __typename:
-                    lastEvent.type == "crc_trust"
+                    lastEvent.type == "CrcTrust"
                       ? "CrcTrust"
                       : "CrcHubTransfer",
                 },

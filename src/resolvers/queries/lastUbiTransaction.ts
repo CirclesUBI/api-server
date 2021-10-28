@@ -20,7 +20,7 @@ export function lastUbiTransaction() {
             const query = `select timestamp, type
           from crc_safe_timeline_2
           where safe_address = $1
-          and type = 'crc_minting'
+          and type = 'CrcMinting'
           order by timestamp desc
           limit 1;`
 

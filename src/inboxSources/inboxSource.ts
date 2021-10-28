@@ -1,5 +1,5 @@
-import {ProfileEvent} from "../types";
+import {PaginationArgs, ProfileEvent} from "../types";
 
 export interface InboxSource {
-  getNewEvents(forSafeAddress:string, startFrom: Date) : Promise<ProfileEvent[]>
+  getNewEvents(forSafeAddress:string, pagination:PaginationArgs) : Promise<ProfileEvent[]>
 }

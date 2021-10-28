@@ -440,9 +440,24 @@ type MembershipOffer implements IEventPayload {
   organisation_profile: Organisation
 }
 
-# ${member} accepted your invitation to ${organisation}
+# !isAdmin: You|${createdBy} added ${member} as a member to ${organisation}
+# isAdmin: You|${createdBy} added ${member} as an admin to ${organisation}
+type MemberAdded implements IEventPayload {
+  transaction_hash: String
+  createdBy: String!
+  createdBy_profile: Profile
+  member: String!
+  member_profile: Profile
+  isAdmin: Boolean!
+  organisation: String!
+  organisation_profile: Organisation
+}
+
+# ${member} accepted your|${createdBy}'s invitation to ${organisation}
 type MembershipAccepted implements IEventPayload {
   transaction_hash: String
+  createdBy: String!
+  createdBy_profile: Profile
   member: String!
   member_profile: Profile
   organisation: String!
@@ -458,13 +473,36 @@ type MembershipRejected implements IEventPayload {
   organisation_profile: Organisation
 }
 
+# You created a new invitation with the name ${name}
+type InvitationCreated implements IEventPayload {
+  transaction_hash: String
+  name: String!
+  code: String!
+}
+
+# ${redeemedBy} redeemed your invitation ${name} with code ${code}
+type InvitationRedeemed implements IEventPayload {
+  transaction_hash: String
+  name: String!
+  code: String!
+  redeemedBy: String!
+  redeemedBy_profile: Profile
+}
+
 # Welcome!
 # ${member} invited you to circles.
-# Do you want to trust this ${member}?
+# Do you want to trust ${member}?
 type WelcomeMessage implements IEventPayload {
   transaction_hash: String
   member: String!
   member_profile: Profile
+}
+
+# You created the ${name} organisation
+type OrganisationCreated implements IEventPayload {
+  transaction_hash: String
+  organisation: String!
+  organisation_profile: Organisation
 }
 
 union EventPayload =
@@ -480,6 +518,10 @@ union EventPayload =
   | MembershipAccepted
   | MembershipRejected
   | WelcomeMessage
+  | InvitationCreated
+  | InvitationRedeemed
+  | OrganisationCreated
+  | MemberAdded
 
 type ProfileEvent {
   timestamp: String!
@@ -692,8 +734,14 @@ type Mutation {
 
 }
 
+enum SortOrder {
+  ASC
+  DESC
+}
+
 input PaginationArgs {
   continueAt: String!
+  order: SortOrder!
   limit: Int!
 }
 

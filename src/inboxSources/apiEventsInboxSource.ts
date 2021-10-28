@@ -1,14 +1,26 @@
 import {InboxSource} from "./inboxSource";
-import {ChatMessage, MembershipAccepted, MembershipOffer, MembershipRejected, ProfileEvent} from "../types";
+import {
+  ChatMessage,
+  InvitationCreated,
+  InvitationRedeemed,
+  MembershipAccepted,
+  MembershipOffer,
+  MembershipRejected,
+  PaginationArgs,
+  ProfileEvent
+} from "../types";
 import {prisma_api_ro} from "../apiDbClient";
 import {ProfileEventAugmenter} from "./profileEventAugmenter";
+import {Prisma} from "../api-db/client";
 
 export class ApiEventsInboxSource implements InboxSource {
-  private async findMembershipOffers(forSafeAddress: string, startFrom: Date) : Promise<ProfileEvent[]> {
+  private async findMembershipOffers(forSafeAddress: string, pagination: PaginationArgs) : Promise<ProfileEvent[]> {
     const pendingMembershipOffers = await prisma_api_ro.membership.findMany({
       where: {
-        createdAt: {
-          gt: startFrom
+        createdAt: pagination.order == "ASC" ? {
+          gt: new Date(pagination.continueAt)
+        } : {
+          lt: new Date(pagination.continueAt)
         },
         member: {
           circlesAddress: forSafeAddress
@@ -25,7 +37,11 @@ export class ApiEventsInboxSource implements InboxSource {
             circlesAddress: true
           }
         }
-      }
+      },
+      orderBy: {
+        createdAt: pagination.order == "ASC" ? Prisma.SortOrder.asc : Prisma.SortOrder.desc
+      },
+      take: pagination.limit ?? 50
     });
 
     return pendingMembershipOffers.map(r => {
@@ -49,14 +65,16 @@ export class ApiEventsInboxSource implements InboxSource {
     });
   }
 
-  private async findRejectedMembershipOffers(forSafeAddress: string, startFrom: Date) : Promise<ProfileEvent[]> {
+  private async findRejectedMembershipOffers(forSafeAddress: string, pagination: PaginationArgs) : Promise<ProfileEvent[]> {
     const rejectedMembershipOffers = await prisma_api_ro.membership.findMany({
       where: {
         createdBy: {
           circlesAddress: forSafeAddress
         },
-        rejectedAt: {
-          gt: startFrom
+        rejectedAt: pagination.order == "ASC" ? {
+          gt: new Date(pagination.continueAt)
+        } : {
+          lt: new Date(pagination.continueAt)
         }
       },
       include: {
@@ -70,7 +88,11 @@ export class ApiEventsInboxSource implements InboxSource {
             circlesAddress: true
           }
         }
-      }
+      },
+      orderBy: {
+        rejectedAt: pagination.order == "ASC" ? Prisma.SortOrder.asc : Prisma.SortOrder.desc
+      },
+      take: pagination.limit ?? 50
     });
 
     return rejectedMembershipOffers.map(r => {
@@ -93,14 +115,16 @@ export class ApiEventsInboxSource implements InboxSource {
     });
   }
 
-  private async findAcceptedMembershipOffers(forSafeAddress: string, startFrom: Date) : Promise<ProfileEvent[]> {
+  private async findAcceptedMembershipOffers(forSafeAddress: string, pagination: PaginationArgs) : Promise<ProfileEvent[]> {
     const acceptedMembershipOffers = await prisma_api_ro.membership.findMany({
       where: {
         createdBy: {
           circlesAddress: forSafeAddress
         },
-        acceptedAt: {
-          gt: startFrom
+        acceptedAt: pagination.order == "ASC" ? {
+          gt: new Date(pagination.continueAt)
+        } : {
+          lt: new Date(pagination.continueAt)
         }
       },
       include: {
@@ -114,7 +138,11 @@ export class ApiEventsInboxSource implements InboxSource {
             circlesAddress: true
           }
         }
-      }
+      },
+      orderBy: {
+        acceptedAt: pagination.order == "ASC" ? Prisma.SortOrder.asc : Prisma.SortOrder.desc
+      },
+      take: pagination.limit ?? 50
     });
 
     return acceptedMembershipOffers.map(r => {
@@ -137,14 +165,20 @@ export class ApiEventsInboxSource implements InboxSource {
     });
   }
 
-  private async findChatMessages(forSafeAddress: string, startFrom: Date) : Promise<ProfileEvent[]> {
+  private async findChatMessages(forSafeAddress: string, pagination: PaginationArgs) : Promise<ProfileEvent[]> {
     const chatMessages = await prisma_api_ro.chatMessage.findMany({
       where: {
         to: forSafeAddress,
-        createdAt: {
-          gt: startFrom
+        createdAt: pagination.order == "ASC" ? {
+          gt: new Date(pagination.continueAt)
+        } : {
+          lt: new Date(pagination.continueAt)
         }
-      }
+      },
+      orderBy: {
+        createdAt: pagination.order == "ASC" ? Prisma.SortOrder.asc : Prisma.SortOrder.desc
+      },
+      take: pagination.limit ?? 50
     });
 
     return chatMessages.map(r => {
@@ -168,17 +202,111 @@ export class ApiEventsInboxSource implements InboxSource {
     });
   }
 
-  async getNewEvents(forSafeAddress: string, startFrom: Date): Promise<ProfileEvent[]> {
-    /*
-    const results = await Promise.all([
-      this.findMembershipOffers(forSafeAddress, startFrom),
-      this.findAcceptedMembershipOffers(forSafeAddress, startFrom),
-      this.findRejectedMembershipOffers(forSafeAddress, startFrom),
-      this.findChatMessages(forSafeAddress, startFrom)
-    ]);
-     */
+  private async findCreatedInvitations(forSafeAddress: string, pagination: PaginationArgs) : Promise<ProfileEvent[]> {
+    const createdInvitations = await prisma_api_ro.invitation.findMany({
+      where: {
+        createdBy: {
+          circlesAddress: forSafeAddress
+        },
+        createdAt: pagination.order == "ASC" ? {
+          gt: new Date(pagination.continueAt)
+        } : {
+          lt: new Date(pagination.continueAt)
+        }
+      },
+      orderBy: {
+        createdAt: pagination.order == "ASC" ? Prisma.SortOrder.asc : Prisma.SortOrder.desc
+      },
+      select: {
+        createdAt: true,
+        name: true,
+        code: true
+      },
+      take: pagination.limit ?? 50
+    });
 
-    const results = [await this.findMembershipOffers(forSafeAddress, startFrom)];
+    return createdInvitations.map(r => {
+      return <ProfileEvent> {
+        __typename: "ProfileEvent",
+        safe_address: forSafeAddress,
+        type: "InvitationCreated",
+        block_number: null,
+        direction: "in",
+        timestamp: r.createdAt.toJSON(),
+        value: null,
+        transaction_hash: null,
+        transaction_index: null,
+        payload: <InvitationCreated> {
+          __typename: "InvitationCreated",
+          name: r.name,
+          code: r.code
+        }
+      };
+    });
+  }
+
+  private async findRedeemedInvitations(forSafeAddress: string, pagination: PaginationArgs) : Promise<ProfileEvent[]> {
+    const redeemedInvitations = await prisma_api_ro.invitation.findMany({
+      where: {
+        createdBy: {
+          circlesAddress: forSafeAddress
+        },
+        redeemedAt: pagination.order == "ASC" ? {
+          gt: new Date(pagination.continueAt)
+        } : {
+          lt: new Date(pagination.continueAt)
+        }
+      },
+      orderBy: {
+        createdAt: pagination.order == "ASC" ? Prisma.SortOrder.asc : Prisma.SortOrder.desc
+      },
+      select: {
+        redeemedAt: true,
+        redeemedBy: {
+          select: {
+            circlesAddress: true
+          }
+        },
+        name: true,
+        code: true
+      },
+      take: pagination.limit ?? 50
+    });
+
+    return redeemedInvitations.map(r => {
+      if (!r.redeemedAt)
+        throw new Error(`r.redeemedAt == null or undefined in findRedeemedInvitations()`);
+
+      return <ProfileEvent> {
+        __typename: "ProfileEvent",
+        safe_address: forSafeAddress,
+        type: "InvitationCreated",
+        block_number: null,
+        direction: "in",
+        timestamp: r.redeemedAt.toJSON(),
+        value: null,
+        transaction_hash: null,
+        transaction_index: null,
+        payload: <InvitationRedeemed> {
+          __typename: "InvitationRedeemed",
+          name: r.name,
+          code: r.code,
+          redeemedBy: r.redeemedBy?.circlesAddress
+        }
+      };
+    });
+  }
+
+
+  async getNewEvents(forSafeAddress: string, pagination: PaginationArgs): Promise<ProfileEvent[]> {
+    const results = await Promise.all([
+      this.findMembershipOffers(forSafeAddress, pagination),
+      this.findAcceptedMembershipOffers(forSafeAddress, pagination),
+      this.findRejectedMembershipOffers(forSafeAddress, pagination),
+      this.findChatMessages(forSafeAddress, pagination),
+      this.findCreatedInvitations(forSafeAddress, pagination),
+      this.findRedeemedInvitations(forSafeAddress, pagination)
+    ]);
 
     let events = results.reduce((p,c) => p.concat(c), []);
     const augmentation = new ProfileEventAugmenter();

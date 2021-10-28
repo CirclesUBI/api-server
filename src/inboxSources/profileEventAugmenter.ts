@@ -41,7 +41,7 @@ export class ProfileEventAugmenter
     const addresses = this._extractors
       .filter(e => e.matches(profileEvent))
       .flatMap(e => e.extractAddresses(profileEvent.payload)
-                             .filter(a => typeof a == "string"));
+                             .filter(a => typeof a == "string" && a !== ""));
 
     addresses.push(profileEvent.safe_address);
 

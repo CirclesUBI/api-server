@@ -1,5 +1,5 @@
 import {InboxSource} from "./inboxSource";
-import {ProfileEvent} from "../types";
+import {PaginationArgs, ProfileEvent} from "../types";
 import {getPool} from "../resolvers/resolvers";
 import {ProfileEventAugmenter} from "./profileEventAugmenter";
 
@@ -27,7 +27,8 @@ export class BlockchainEventsInboxSource implements InboxSource
                            where type =ANY($1)
                              and safe_address = $2
                              and timestamp > $3
-                           order by timestamp desc`;
+                           order by timestamp desc
+                           limit $4`;
 
   private readonly _types:BlockchainEventType[];
 
@@ -35,7 +36,7 @@ export class BlockchainEventsInboxSource implements InboxSource
     this._types = types;
   }
 
-  async getNewEvents(forSafeAddress: string, startFrom: Date): Promise<ProfileEvent[]> {
+  async getNewEvents(forSafeAddress: string, pagination:PaginationArgs): Promise<ProfileEvent[]> {
     const pool = getPool();
     try {
       const eventRows = await pool.query(
@@ -43,7 +44,8 @@ export class BlockchainEventsInboxSource implements InboxSource
         [
           this._types,
           forSafeAddress,
-          startFrom
+          pagination.continueAt,
+          pagination.limit
         ]
       );
 

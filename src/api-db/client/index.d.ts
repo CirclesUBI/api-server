@@ -16730,7 +16730,7 @@ export namespace Prisma {
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
     isAdmin?: boolean | null
-    createdBy: ProfileCreateNestedOneWithoutCreatedMembershipsInput
+    createdBy?: ProfileCreateNestedOneWithoutCreatedMembershipsInput
     member: ProfileCreateNestedOneWithoutMembershipsInput
     memberAt: ProfileCreateNestedOneWithoutMembersInput
   }
@@ -16738,7 +16738,7 @@ export namespace Prisma {
   export type MembershipUncheckedCreateInput = {
     id?: number
     createdAt?: Date | string
-    createdByProfileId: number
+    createdByProfileId?: number
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
@@ -16773,7 +16773,7 @@ export namespace Prisma {
   export type MembershipCreateManyInput = {
     id?: number
     createdAt?: Date | string
-    createdByProfileId: number
+    createdByProfileId?: number
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
@@ -20834,14 +20834,14 @@ export namespace Prisma {
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
     isAdmin?: boolean | null
-    createdBy: ProfileCreateNestedOneWithoutCreatedMembershipsInput
+    createdBy?: ProfileCreateNestedOneWithoutCreatedMembershipsInput
     memberAt: ProfileCreateNestedOneWithoutMembersInput
   }
 
   export type MembershipUncheckedCreateWithoutMemberInput = {
     id?: number
     createdAt?: Date | string
-    createdByProfileId: number
+    createdByProfileId?: number
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
@@ -20865,14 +20865,14 @@ export namespace Prisma {
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
     isAdmin?: boolean | null
-    createdBy: ProfileCreateNestedOneWithoutCreatedMembershipsInput
+    createdBy?: ProfileCreateNestedOneWithoutCreatedMembershipsInput
     member: ProfileCreateNestedOneWithoutMembershipsInput
   }
 
   export type MembershipUncheckedCreateWithoutMemberAtInput = {
     id?: number
     createdAt?: Date | string
-    createdByProfileId: number
+    createdByProfileId?: number
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
@@ -23104,7 +23104,7 @@ export namespace Prisma {
   export type MembershipCreateManyMemberInput = {
     id?: number
     createdAt?: Date | string
-    createdByProfileId: number
+    createdByProfileId?: number
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
@@ -23115,7 +23115,7 @@ export namespace Prisma {
   export type MembershipCreateManyMemberAtInput = {
     id?: number
     createdAt?: Date | string
-    createdByProfileId: number
+    createdByProfileId?: number
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     validTo?: Date | string | null

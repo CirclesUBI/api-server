@@ -33,12 +33,12 @@ export function blockchainEvents(
       const types: Maybe<string[]> = args.types ?? null;
 
       const validTypes: { [x: string]: boolean } = {
-        crc_signup: true,
-        crc_hub_transfer: true,
-        crc_trust: true,
-        crc_minting: true,
-        eth_transfer: true,
-        gnosis_safe_eth_transfer: true,
+        CrcSignup: true,
+        CrcHubTransfer: true,
+        CrcTrust: true,
+        CrcMinting: true,
+        EthTransfer: true,
+        GnosisSafeEthTransfer: true,
       };
 
       let selectedTypes: string[];

@@ -1,7 +1,7 @@
-import { createServer } from "http";
-import { execute, subscribe } from "graphql";
-import { SubscriptionServer } from "subscriptions-transport-ws";
-import { makeExecutableSchema } from "@graphql-tools/schema";
+import {createServer} from "http";
+import {execute, subscribe} from "graphql";
+import {SubscriptionServer} from "subscriptions-transport-ws";
+import {makeExecutableSchema} from "@graphql-tools/schema";
 import express from "express";
 import {ApolloServer} from "apollo-server-express";
 import {getPool, resolvers} from "./resolvers/resolvers";
@@ -15,6 +15,8 @@ import {ApiPubSub} from "./pubsub";
 import {RpcGateway} from "./rpcGateway";
 import {BlockchainEventsInboxSource, BlockchainEventType} from "./inboxSources/blockchainEventsInboxSource";
 import {ApiEventsInboxSource} from "./inboxSources/apiEventsInboxSource";
+import {SortOrder} from "./types";
+
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
 
 if (!process.env.CORS_ORIGNS) {
@@ -42,19 +44,45 @@ export class Main {
             BlockchainEventType.GNOSIS_SAFE_ETH_TRANSFER
         ]);
 
+        const order = SortOrder.Asc;
         const blockchainEvents = await blockchainInboxSource.getNewEvents(
           "0xde374ece6fa50e781e81aac78e811b33d16912c7",
-          new Date("2019-08-01"));
+          {
+              order,
+              continueAt: "2019-08-01",
+              limit: 5000
+          });
 
         const apiEventSource = new ApiEventsInboxSource();
         const apiEvents = await apiEventSource.getNewEvents(
           "0xde374ece6fa50e781e81aac78e811b33d16912c7",
-          new Date("2019-08-01"));
+          {
+              order,
+              continueAt: "2019-08-01",
+              limit: 5000
+          });
 
-        const allEvents = blockchainEvents.concat(apiEvents);
-        return;*/
+        const allEvents = blockchainEvents
+          .concat(apiEvents)
+          .sort((a,b) => {
+              const aTime = new Date(a.timestamp).getTime();
+              const bTime = new Date(b.timestamp).getTime();
+              return (
+                order == SortOrder.Asc
+                ? aTime < bTime
+                : aTime > bTime
+              )
+                ? -1
+                : aTime < bTime
+                  ? 1
+                  : 0;
+          });
 
+        console.log(allEvents);
 
+       // return;
+
+*/
         const app = express();
         const httpServer = createServer(app);
 
