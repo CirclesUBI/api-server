@@ -348,6 +348,10 @@ interface IEventPayload {
   transaction_hash: String
 }
 
+interface IAggregatePayload {
+  lastUpdatedAt: String
+}
+
 # ${user} just signed up with token ${token}
 type CrcSignup implements IEventPayload {
   transaction_hash: String!
@@ -506,7 +510,7 @@ type OrganisationCreated implements IEventPayload {
 }
 
 union EventPayload =
-    CrcSignup
+  CrcSignup
   | CrcTrust
   | CrcTokenTransfer
   | CrcHubTransfer
@@ -522,6 +526,84 @@ union EventPayload =
   | InvitationRedeemed
   | OrganisationCreated
   | MemberAdded
+
+enum EventType {
+  CrcSignup
+  , CrcTrust
+  , CrcTokenTransfer
+  , CrcHubTransfer
+  , CrcMinting
+  , EthTransfer
+  , GnosisSafeEthTransfer
+  , ChatMessage
+  , MembershipOffer
+  , MembershipAccepted
+  , MembershipRejected
+  , WelcomeMessage
+  , InvitationCreated
+  , InvitationRedeemed
+  , OrganisationCreated
+  , MemberAdded
+}
+
+enum AggregateType {
+  CrcBalance
+  Contacts
+  Memberships
+  Members
+}
+
+# All crc holdings of the user
+type CrcBalance implements IAggregatePayload {
+  lastUpdatedAt: String!
+  balances: [AssetBalance!]!
+}
+
+type Contacts implements IAggregatePayload {
+  lastUpdatedAt: String!
+  contacts: [ContactPoint!]!
+}
+
+type Memberships implements IAggregatePayload {
+  lastUpdatedAt: String!
+  organisations: [Organisation!]!
+}
+
+type Members implements IAggregatePayload {
+  lastUpdatedAt: String!
+  members: [ProfileOrOrganisation!]!
+}
+
+enum ContactDirection {
+  In
+  Out
+}
+
+type ContactPointSource {
+  name: String!
+  directions: [ContactDirection!]!
+  values: [String!]!
+}
+
+type ContactPoint {
+  metadata: [ContactPointSource!]!
+  lastContactAt: String!
+  contactAddress: String!
+  contactAddress_Profile: Profile
+}
+
+union AggregatePayload =
+    CrcBalance
+  | Contacts
+  | Memberships
+  | Members
+
+type ProfileAggregate {
+  type: String!
+  safe_address: String!
+  safe_address_profile: Profile
+  payload: AggregatePayload!
+}
 
 type ProfileEvent {
   timestamp: String!
@@ -760,6 +842,9 @@ type Query {
   hubSignupTransaction: ProfileEvent
   lastUBITransaction: String
   stats: Stats
+
+  events(types:[EventType!]! safeAddress: String! pagination:PaginationArgs!) : [ProfileEvent!]!
+  aggregates(types:[AggregateType!]! safeAddress: String!) : [ProfileAggregate!]!
 
   organisations(pagination: PaginationArgs): [Organisation!]!
   regions(pagination: PaginationArgs): [Organisation!]!

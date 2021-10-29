@@ -13,6 +13,9 @@ export class ProfileLoader {
           in: safeAddresses
         }
       },
+      orderBy: {
+        lastUpdateAt: "asc"
+      }
     });
 
     const safeProfileMap = profiles.reduce((p,c)=> {
@@ -93,8 +96,9 @@ export class ProfileLoader {
   }
 
   async profilesBySafeAddress(prisma:PrismaClient, addresses:string[]) : Promise<SafeProfileMap> {
-    const circlesLandProfilesPromise = this.queryCirclesLand(prisma, addresses);
-    const circlesGardenLocalPromise = this.queryCirclesGardenLocal(prisma, addresses);
+    const lowercaseAddresses = addresses.map(o => o.toLowerCase());
+    const circlesLandProfilesPromise = this.queryCirclesLand(prisma, lowercaseAddresses);
+    const circlesGardenLocalPromise = this.queryCirclesGardenLocal(prisma, lowercaseAddresses);
 
     const localQueryResults = await Promise.all([
       circlesLandProfilesPromise,
@@ -113,11 +117,11 @@ export class ProfileLoader {
     });
 
     const nonLocalProfileMap: SafeProfileMap = {};
-    addresses.forEach(addr => {
-      if (allProfilesMap[addr])
-        return;
-      nonLocalProfileMap[addr] = null;
-    });
+    lowercaseAddresses
+      .filter(addr => !allProfilesMap[addr])
+      .forEach(addr => {
+        nonLocalProfileMap[addr] = null;
+      });
 
     const circlesGardenRemoteResult = await this.queryCirclesGardenRemote(prisma, Object.keys(nonLocalProfileMap));
     Object.entries(circlesGardenRemoteResult).forEach(entry => {
@@ -125,21 +129,32 @@ export class ProfileLoader {
       nonLocalProfileMap[entry[0]] = entry[1];
     });
 
+    const nonLocal = Object.keys(nonLocalProfileMap).filter(o => allProfilesMap[o]);
+    const notFound = Object.keys(nonLocalProfileMap).filter(o => !allProfilesMap[o]);
+
+    const nonLocalProfiles = nonLocal.map(o => nonLocalProfileMap[o]);
+    const notFoundProfiles = notFound.map(o => {
+      return <any>{
+        circlesAddress: o,
+        name: o,
+        avatarUrl: null
+      }
+    });
+
     // Persist the non-local results in the api-db
     await prisma.externalProfiles.createMany({
-      data: Object.values(nonLocalProfileMap)
-        .filter(o => !!o?.circlesAddress)
+      data: nonLocalProfiles.concat(notFoundProfiles)
         .map(o => {
-          if (!o || !o.circlesAddress)
-            throw new Error(`Invalid state`);
+            if (!o || !o.circlesAddress)
+              throw new Error(`Invalid state`);
 
-          return {
-            circlesAddress: o.circlesAddress,
-            name: o.firstName,
-            avatarUrl: o.avatarUrl
-          };
-        }
-      ),
+            return {
+              circlesAddress: o.circlesAddress,
+              name: o.firstName ?? o.circlesAddress,
+              avatarUrl: o.avatarUrl ?? null
+            };
+          }
+        ),
       skipDuplicates: true
     });
 

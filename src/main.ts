@@ -13,9 +13,6 @@ import {Error} from "apollo-server-core/src/plugin/schemaReporting/operations";
 import {BlockchainEventSource} from "./indexer-api/blockchainEventSource";
 import {ApiPubSub} from "./pubsub";
 import {RpcGateway} from "./rpcGateway";
-import {BlockchainEventsInboxSource, BlockchainEventType} from "./inboxSources/blockchainEventsInboxSource";
-import {ApiEventsInboxSource} from "./inboxSources/apiEventsInboxSource";
-import {SortOrder} from "./types";
 
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
 
@@ -34,55 +31,6 @@ const errorLogger = {
 
 export class Main {
     async run2 () {
-        /*
-        const blockchainInboxSource = new BlockchainEventsInboxSource([
-            BlockchainEventType.CRC_HUB_TRANSFER,
-            BlockchainEventType.CRC_MINTING,
-            BlockchainEventType.CRC_SIGNUP,
-            BlockchainEventType.CRC_TRUST,
-            BlockchainEventType.ETH_TRANSFER,
-            BlockchainEventType.GNOSIS_SAFE_ETH_TRANSFER
-        ]);
-
-        const order = SortOrder.Asc;
-        const blockchainEvents = await blockchainInboxSource.getNewEvents(
-          "0xde374ece6fa50e781e81aac78e811b33d16912c7",
-          {
-              order,
-              continueAt: "2019-08-01",
-              limit: 5000
-          });
-
-        const apiEventSource = new ApiEventsInboxSource();
-        const apiEvents = await apiEventSource.getNewEvents(
-          "0xde374ece6fa50e781e81aac78e811b33d16912c7",
-          {
-              order,
-              continueAt: "2019-08-01",
-              limit: 5000
-          });
-
-        const allEvents = blockchainEvents
-          .concat(apiEvents)
-          .sort((a,b) => {
-              const aTime = new Date(a.timestamp).getTime();
-              const bTime = new Date(b.timestamp).getTime();
-              return (
-                order == SortOrder.Asc
-                ? aTime < bTime
-                : aTime > bTime
-              )
-                ? -1
-                : aTime < bTime
-                  ? 1
-                  : 0;
-          });
-
-        console.log(allEvents);
-
-       // return;
-
-*/
         const app = express();
         const httpServer = createServer(app);
 

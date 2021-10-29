@@ -136,6 +136,7 @@ export type Membership = {
 export type ChatMessage = {
   id: number
   createdAt: Date
+  openedAt: Date | null
   from: string
   to: string
   text: string
@@ -7830,6 +7831,7 @@ export namespace Prisma {
   export type ChatMessageMinAggregateOutputType = {
     id: number | null
     createdAt: Date | null
+    openedAt: Date | null
     from: string | null
     to: string | null
     text: string | null
@@ -7838,6 +7840,7 @@ export namespace Prisma {
   export type ChatMessageMaxAggregateOutputType = {
     id: number | null
     createdAt: Date | null
+    openedAt: Date | null
     from: string | null
     to: string | null
     text: string | null
@@ -7846,6 +7849,7 @@ export namespace Prisma {
   export type ChatMessageCountAggregateOutputType = {
     id: number
     createdAt: number
+    openedAt: number
     from: number
     to: number
     text: number
@@ -7864,6 +7868,7 @@ export namespace Prisma {
   export type ChatMessageMinAggregateInputType = {
     id?: true
     createdAt?: true
+    openedAt?: true
     from?: true
     to?: true
     text?: true
@@ -7872,6 +7877,7 @@ export namespace Prisma {
   export type ChatMessageMaxAggregateInputType = {
     id?: true
     createdAt?: true
+    openedAt?: true
     from?: true
     to?: true
     text?: true
@@ -7880,6 +7886,7 @@ export namespace Prisma {
   export type ChatMessageCountAggregateInputType = {
     id?: true
     createdAt?: true
+    openedAt?: true
     from?: true
     to?: true
     text?: true
@@ -8001,6 +8008,7 @@ export namespace Prisma {
   export type ChatMessageGroupByOutputType = {
     id: number
     createdAt: Date
+    openedAt: Date | null
     from: string
     to: string
     text: string
@@ -8028,6 +8036,7 @@ export namespace Prisma {
   export type ChatMessageSelect = {
     id?: boolean
     createdAt?: boolean
+    openedAt?: boolean
     from?: boolean
     to?: boolean
     text?: boolean
@@ -15330,6 +15339,7 @@ export namespace Prisma {
   export const ChatMessageScalarFieldEnum: {
     id: 'id',
     createdAt: 'createdAt',
+    openedAt: 'openedAt',
     from: 'from',
     to: 'to',
     text: 'text'
@@ -15818,6 +15828,7 @@ export namespace Prisma {
     NOT?: Enumerable<ChatMessageWhereInput>
     id?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
+    openedAt?: DateTimeNullableFilter | Date | string | null
     from?: StringFilter | string
     to?: StringFilter | string
     text?: StringFilter | string
@@ -15827,6 +15838,7 @@ export namespace Prisma {
   export type ChatMessageOrderByInput = {
     id?: SortOrder
     createdAt?: SortOrder
+    openedAt?: SortOrder
     from?: SortOrder
     to?: SortOrder
     text?: SortOrder
@@ -15842,6 +15854,7 @@ export namespace Prisma {
     NOT?: Enumerable<ChatMessageScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
     createdAt?: DateTimeWithAggregatesFilter | Date | string
+    openedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
     from?: StringWithAggregatesFilter | string
     to?: StringWithAggregatesFilter | string
     text?: StringWithAggregatesFilter | string
@@ -16804,6 +16817,7 @@ export namespace Prisma {
 
   export type ChatMessageCreateInput = {
     createdAt: Date | string
+    openedAt?: Date | string | null
     from: string
     to: string
     text: string
@@ -16813,6 +16827,7 @@ export namespace Prisma {
   export type ChatMessageUncheckedCreateInput = {
     id?: number
     createdAt: Date | string
+    openedAt?: Date | string | null
     from: string
     to: string
     text: string
@@ -16821,6 +16836,7 @@ export namespace Prisma {
 
   export type ChatMessageUpdateInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     from?: StringFieldUpdateOperationsInput | string
     to?: StringFieldUpdateOperationsInput | string
     text?: StringFieldUpdateOperationsInput | string
@@ -16830,6 +16846,7 @@ export namespace Prisma {
   export type ChatMessageUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     from?: StringFieldUpdateOperationsInput | string
     to?: StringFieldUpdateOperationsInput | string
     text?: StringFieldUpdateOperationsInput | string
@@ -16839,6 +16856,7 @@ export namespace Prisma {
   export type ChatMessageCreateManyInput = {
     id?: number
     createdAt: Date | string
+    openedAt?: Date | string | null
     from: string
     to: string
     text: string
@@ -16846,6 +16864,7 @@ export namespace Prisma {
 
   export type ChatMessageUpdateManyMutationInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     from?: StringFieldUpdateOperationsInput | string
     to?: StringFieldUpdateOperationsInput | string
     text?: StringFieldUpdateOperationsInput | string
@@ -16854,6 +16873,7 @@ export namespace Prisma {
   export type ChatMessageUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     from?: StringFieldUpdateOperationsInput | string
     to?: StringFieldUpdateOperationsInput | string
     text?: StringFieldUpdateOperationsInput | string
@@ -22641,6 +22661,7 @@ export namespace Prisma {
 
   export type ChatMessageCreateWithoutTagsInput = {
     createdAt: Date | string
+    openedAt?: Date | string | null
     from: string
     to: string
     text: string
@@ -22649,6 +22670,7 @@ export namespace Prisma {
   export type ChatMessageUncheckedCreateWithoutTagsInput = {
     id?: number
     createdAt: Date | string
+    openedAt?: Date | string | null
     from: string
     to: string
     text: string
@@ -22904,6 +22926,7 @@ export namespace Prisma {
 
   export type ChatMessageUpdateWithoutTagsInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     from?: StringFieldUpdateOperationsInput | string
     to?: StringFieldUpdateOperationsInput | string
     text?: StringFieldUpdateOperationsInput | string
@@ -22912,6 +22935,7 @@ export namespace Prisma {
   export type ChatMessageUncheckedUpdateWithoutTagsInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     from?: StringFieldUpdateOperationsInput | string
     to?: StringFieldUpdateOperationsInput | string
     text?: StringFieldUpdateOperationsInput | string

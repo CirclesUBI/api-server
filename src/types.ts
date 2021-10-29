@@ -26,6 +26,15 @@ export type AddMemberResult = {
   error?: Maybe<Scalars['String']>;
 };
 
+export type AggregatePayload = CrcBalance | Contacts | Memberships | Members;
+
+export enum AggregateType {
+  CrcBalance = 'CrcBalance',
+  Contacts = 'Contacts',
+  Memberships = 'Memberships',
+  Members = 'Members'
+}
+
 export type AssetBalance = {
   __typename?: 'AssetBalance';
   token_address: Scalars['String'];
@@ -109,10 +118,42 @@ export type Contact = {
   lastEvent?: Maybe<ProfileEvent>;
 };
 
+export enum ContactDirection {
+  In = 'In',
+  Out = 'Out'
+}
+
+export type ContactPoint = {
+  __typename?: 'ContactPoint';
+  metadata: Array<ContactPointSource>;
+  lastContactAt: Scalars['String'];
+  contactAddress: Scalars['String'];
+  contactAddress_Profile?: Maybe<Profile>;
+};
+
+export type ContactPointSource = {
+  __typename?: 'ContactPointSource';
+  name: Scalars['String'];
+  directions: Array<ContactDirection>;
+  values: Array<Scalars['String']>;
+};
+
+export type Contacts = IAggregatePayload & {
+  __typename?: 'Contacts';
+  lastUpdatedAt: Scalars['String'];
+  contacts: Array<ContactPoint>;
+};
+
 export type CountryStats = {
   __typename?: 'CountryStats';
   name: Scalars['String'];
   citizenCount: Scalars['Int'];
+};
+
+export type CrcBalance = IAggregatePayload & {
+  __typename?: 'CrcBalance';
+  lastUpdatedAt: Scalars['String'];
+  balances: Array<AssetBalance>;
 };
 
 export type CrcHubTransfer = IEventPayload & {
@@ -238,6 +279,25 @@ export type EthTransfer = IEventPayload & {
 
 export type EventPayload = CrcSignup | CrcTrust | CrcTokenTransfer | CrcHubTransfer | CrcMinting | EthTransfer | GnosisSafeEthTransfer | ChatMessage | MembershipOffer | MembershipAccepted | MembershipRejected | WelcomeMessage | InvitationCreated | InvitationRedeemed | OrganisationCreated | MemberAdded;
 
+export enum EventType {
+  CrcSignup = 'CrcSignup',
+  CrcTrust = 'CrcTrust',
+  CrcTokenTransfer = 'CrcTokenTransfer',
+  CrcHubTransfer = 'CrcHubTransfer',
+  CrcMinting = 'CrcMinting',
+  EthTransfer = 'EthTransfer',
+  GnosisSafeEthTransfer = 'GnosisSafeEthTransfer',
+  ChatMessage = 'ChatMessage',
+  MembershipOffer = 'MembershipOffer',
+  MembershipAccepted = 'MembershipAccepted',
+  MembershipRejected = 'MembershipRejected',
+  WelcomeMessage = 'WelcomeMessage',
+  InvitationCreated = 'InvitationCreated',
+  InvitationRedeemed = 'InvitationRedeemed',
+  OrganisationCreated = 'OrganisationCreated',
+  MemberAdded = 'MemberAdded'
+}
+
 export type ExchangeTokenResponse = {
   __typename?: 'ExchangeTokenResponse';
   success: Scalars['Boolean'];
@@ -258,6 +318,10 @@ export type GnosisSafeEthTransfer = IEventPayload & {
 export type Goal = {
   __typename?: 'Goal';
   totalCitizens: Scalars['Int'];
+};
+
+export type IAggregatePayload = {
+  lastUpdatedAt?: Maybe<Scalars['String']>;
 };
 
 export type ICity = {
@@ -327,6 +391,12 @@ export type MemberAdded = IEventPayload & {
   organisation_profile?: Maybe<Organisation>;
 };
 
+export type Members = IAggregatePayload & {
+  __typename?: 'Members';
+  lastUpdatedAt: Scalars['String'];
+  members: Array<ProfileOrOrganisation>;
+};
+
 export type Membership = {
   __typename?: 'Membership';
   createdAt: Scalars['String'];
@@ -367,6 +437,12 @@ export type MembershipRejected = IEventPayload & {
   member_profile?: Maybe<Profile>;
   organisation: Scalars['String'];
   organisation_profile?: Maybe<Organisation>;
+};
+
+export type Memberships = IAggregatePayload & {
+  __typename?: 'Memberships';
+  lastUpdatedAt: Scalars['String'];
+  organisations: Array<Organisation>;
 };
 
 export type Mutation = {
@@ -622,6 +698,14 @@ export type Profile = {
   memberships?: Maybe<Array<Membership>>;
 };
 
+export type ProfileAggregate = {
+  __typename?: 'ProfileAggregate';
+  type: Scalars['String'];
+  safe_address: Scalars['String'];
+  safe_address_profile?: Maybe<Profile>;
+  payload: AggregatePayload;
+};
+
 export type ProfileEvent = {
   __typename?: 'ProfileEvent';
   timestamp: Scalars['String'];
@@ -675,6 +759,8 @@ export type Query = {
   hubSignupTransaction?: Maybe<ProfileEvent>;
   lastUBITransaction?: Maybe<Scalars['String']>;
   stats?: Maybe<Stats>;
+  events: Array<ProfileEvent>;
+  aggregates: Array<ProfileAggregate>;
   organisations: Array<Organisation>;
   regions: Array<Organisation>;
   organisationsByAddress: Array<Organisation>;
@@ -698,6 +784,19 @@ export type Query = {
   offers: Array<Offer>;
   tags: Array<Tag>;
   tagById?: Maybe<Tag>;
+};
+
+
+export type QueryEventsArgs = {
+  types: Array<EventType>;
+  safeAddress: Scalars['String'];
+  pagination: PaginationArgs;
+};
+
+
+export type QueryAggregatesArgs = {
+  types: Array<AggregateType>;
+  safeAddress: Scalars['String'];
 };
 
 
@@ -1115,6 +1214,8 @@ export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   String: ResolverTypeWrapper<Scalars['String']>;
   AddMemberResult: ResolverTypeWrapper<AddMemberResult>;
+  AggregatePayload: ResolversTypes['CrcBalance'] | ResolversTypes['Contacts'] | ResolversTypes['Memberships'] | ResolversTypes['Members'];
+  AggregateType: AggregateType;
   AssetBalance: ResolverTypeWrapper<AssetBalance>;
   ChatMessage: ResolverTypeWrapper<ChatMessage>;
   City: ResolverTypeWrapper<City>;
@@ -1126,7 +1227,12 @@ export type ResolversTypes = ResolversObject<{
   CommonTrust: ResolverTypeWrapper<CommonTrust>;
   ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
   Contact: ResolverTypeWrapper<Contact>;
+  ContactDirection: ContactDirection;
+  ContactPoint: ResolverTypeWrapper<ContactPoint>;
+  ContactPointSource: ResolverTypeWrapper<ContactPointSource>;
+  Contacts: ResolverTypeWrapper<Contacts>;
   CountryStats: ResolverTypeWrapper<CountryStats>;
+  CrcBalance: ResolverTypeWrapper<CrcBalance>;
   CrcHubTransfer: ResolverTypeWrapper<CrcHubTransfer>;
   CrcMinting: ResolverTypeWrapper<CrcMinting>;
   CrcSignup: ResolverTypeWrapper<CrcSignup>;
@@ -1142,9 +1248,11 @@ export type ResolversTypes = ResolversObject<{
   DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
   EthTransfer: ResolverTypeWrapper<EthTransfer>;
   EventPayload: ResolversTypes['CrcSignup'] | ResolversTypes['CrcTrust'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'] | ResolversTypes['ChatMessage'] | ResolversTypes['MembershipOffer'] | ResolversTypes['MembershipAccepted'] | ResolversTypes['MembershipRejected'] | ResolversTypes['WelcomeMessage'] | ResolversTypes['InvitationCreated'] | ResolversTypes['InvitationRedeemed'] | ResolversTypes['OrganisationCreated'] | ResolversTypes['MemberAdded'];
+  EventType: EventType;
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
   GnosisSafeEthTransfer: ResolverTypeWrapper<GnosisSafeEthTransfer>;
   Goal: ResolverTypeWrapper<Goal>;
+  IAggregatePayload: ResolversTypes['Contacts'] | ResolversTypes['CrcBalance'] | ResolversTypes['Members'] | ResolversTypes['Memberships'];
   ICity: ResolversTypes['City'] | ResolversTypes['CityStats'];
   IEventPayload: ResolversTypes['ChatMessage'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['CrcSignup'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcTrust'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'] | ResolversTypes['InvitationCreated'] | ResolversTypes['InvitationRedeemed'] | ResolversTypes['MemberAdded'] | ResolversTypes['MembershipAccepted'] | ResolversTypes['MembershipOffer'] | ResolversTypes['MembershipRejected'] | ResolversTypes['OrganisationCreated'] | ResolversTypes['WelcomeMessage'];
   InitAggregateState: ResolverTypeWrapper<InitAggregateState>;
@@ -1154,10 +1262,12 @@ export type ResolversTypes = ResolversObject<{
   LockOfferResult: ResolverTypeWrapper<LockOfferResult>;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
   MemberAdded: ResolverTypeWrapper<MemberAdded>;
+  Members: ResolverTypeWrapper<Omit<Members, 'members'> & { members: Array<ResolversTypes['ProfileOrOrganisation']> }>;
   Membership: ResolverTypeWrapper<Membership>;
   MembershipAccepted: ResolverTypeWrapper<MembershipAccepted>;
   MembershipOffer: ResolverTypeWrapper<MembershipOffer>;
   MembershipRejected: ResolverTypeWrapper<MembershipRejected>;
+  Memberships: ResolverTypeWrapper<Memberships>;
   Mutation: ResolverTypeWrapper<{}>;
   NotificationEvent: ResolverTypeWrapper<NotificationEvent>;
   Offer: ResolverTypeWrapper<Offer>;
@@ -1166,6 +1276,7 @@ export type ResolversTypes = ResolversObject<{
   PaginationArgs: PaginationArgs;
   PaymentProof: PaymentProof;
   Profile: ResolverTypeWrapper<Profile>;
+  ProfileAggregate: ResolverTypeWrapper<Omit<ProfileAggregate, 'payload'> & { payload: ResolversTypes['AggregatePayload'] }>;
   ProfileEvent: ResolverTypeWrapper<Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
   ProfileOrOrganisation: ResolversTypes['Profile'] | ResolversTypes['Organisation'];
   ProvePaymentResult: ResolverTypeWrapper<ProvePaymentResult>;
@@ -1212,6 +1323,7 @@ export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean'];
   String: Scalars['String'];
   AddMemberResult: AddMemberResult;
+  AggregatePayload: ResolversParentTypes['CrcBalance'] | ResolversParentTypes['Contacts'] | ResolversParentTypes['Memberships'] | ResolversParentTypes['Members'];
   AssetBalance: AssetBalance;
   ChatMessage: ChatMessage;
   City: City;
@@ -1223,7 +1335,11 @@ export type ResolversParentTypes = ResolversObject<{
   CommonTrust: CommonTrust;
   ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
   Contact: Contact;
+  ContactPoint: ContactPoint;
+  ContactPointSource: ContactPointSource;
+  Contacts: Contacts;
   CountryStats: CountryStats;
+  CrcBalance: CrcBalance;
   CrcHubTransfer: CrcHubTransfer;
   CrcMinting: CrcMinting;
   CrcSignup: CrcSignup;
@@ -1242,6 +1358,7 @@ export type ResolversParentTypes = ResolversObject<{
   ExchangeTokenResponse: ExchangeTokenResponse;
   GnosisSafeEthTransfer: GnosisSafeEthTransfer;
   Goal: Goal;
+  IAggregatePayload: ResolversParentTypes['Contacts'] | ResolversParentTypes['CrcBalance'] | ResolversParentTypes['Members'] | ResolversParentTypes['Memberships'];
   ICity: ResolversParentTypes['City'] | ResolversParentTypes['CityStats'];
   IEventPayload: ResolversParentTypes['ChatMessage'] | ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'] | ResolversParentTypes['InvitationCreated'] | ResolversParentTypes['InvitationRedeemed'] | ResolversParentTypes['MemberAdded'] | ResolversParentTypes['MembershipAccepted'] | ResolversParentTypes['MembershipOffer'] | ResolversParentTypes['MembershipRejected'] | ResolversParentTypes['OrganisationCreated'] | ResolversParentTypes['WelcomeMessage'];
   InitAggregateState: InitAggregateState;
@@ -1251,10 +1368,12 @@ export type ResolversParentTypes = ResolversObject<{
   LockOfferResult: LockOfferResult;
   LogoutResponse: LogoutResponse;
   MemberAdded: MemberAdded;
+  Members: Omit<Members, 'members'> & { members: Array<ResolversParentTypes['ProfileOrOrganisation']> };
   Membership: Membership;
   MembershipAccepted: MembershipAccepted;
   MembershipOffer: MembershipOffer;
   MembershipRejected: MembershipRejected;
+  Memberships: Memberships;
   Mutation: {};
   NotificationEvent: NotificationEvent;
   Offer: Offer;
@@ -1263,6 +1382,7 @@ export type ResolversParentTypes = ResolversObject<{
   PaginationArgs: PaginationArgs;
   PaymentProof: PaymentProof;
   Profile: Profile;
+  ProfileAggregate: Omit<ProfileAggregate, 'payload'> & { payload: ResolversParentTypes['AggregatePayload'] };
   ProfileEvent: Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversParentTypes['EventPayload']> };
   ProfileOrOrganisation: ResolversParentTypes['Profile'] | ResolversParentTypes['Organisation'];
   ProvePaymentResult: ProvePaymentResult;
@@ -1310,6 +1430,10 @@ export type AddMemberResultResolvers<ContextType = any, ParentType extends Resol
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type AggregatePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['AggregatePayload'] = ResolversParentTypes['AggregatePayload']> = ResolversObject<{
+  __resolveType: TypeResolveFn<'CrcBalance' | 'Contacts' | 'Memberships' | 'Members', ParentType, ContextType>;
 }>;
 
 export type AssetBalanceResolvers<ContextType = any, ParentType extends ResolversParentTypes['AssetBalance'] = ResolversParentTypes['AssetBalance']> = ResolversObject<{
@@ -1395,9 +1519,36 @@ export type ContactResolvers<ContextType = any, ParentType extends ResolversPare
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ContactPointResolvers<ContextType = any, ParentType extends ResolversParentTypes['ContactPoint'] = ResolversParentTypes['ContactPoint']> = ResolversObject<{
+  metadata?: Resolver<Array<ResolversTypes['ContactPointSource']>, ParentType, ContextType>;
+  lastContactAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  contactAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  contactAddress_Profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ContactPointSourceResolvers<ContextType = any, ParentType extends ResolversParentTypes['ContactPointSource'] = ResolversParentTypes['ContactPointSource']> = ResolversObject<{
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  directions?: Resolver<Array<ResolversTypes['ContactDirection']>, ParentType, ContextType>;
+  values?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ContactsResolvers<ContextType = any, ParentType extends ResolversParentTypes['Contacts'] = ResolversParentTypes['Contacts']> = ResolversObject<{
+  lastUpdatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  contacts?: Resolver<Array<ResolversTypes['ContactPoint']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type CountryStatsResolvers<ContextType = any, ParentType extends ResolversParentTypes['CountryStats'] = ResolversParentTypes['CountryStats']> = ResolversObject<{
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   citizenCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CrcBalanceResolvers<ContextType = any, ParentType extends ResolversParentTypes['CrcBalance'] = ResolversParentTypes['CrcBalance']> = ResolversObject<{
+  lastUpdatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  balances?: Resolver<Array<ResolversTypes['AssetBalance']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1539,6 +1690,11 @@ export type GoalResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type IAggregatePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['IAggregatePayload'] = ResolversParentTypes['IAggregatePayload']> = ResolversObject<{
+  __resolveType: TypeResolveFn<'Contacts' | 'CrcBalance' | 'Members' | 'Memberships', ParentType, ContextType>;
+  lastUpdatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
 export type ICityResolvers<ContextType = any, ParentType extends ResolversParentTypes['ICity'] = ResolversParentTypes['ICity']> = ResolversObject<{
   __resolveType: TypeResolveFn<'City' | 'CityStats', ParentType, ContextType>;
   geonameid?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -1604,6 +1760,12 @@ export type MemberAddedResolvers<ContextType = any, ParentType extends Resolvers
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type MembersResolvers<ContextType = any, ParentType extends ResolversParentTypes['Members'] = ResolversParentTypes['Members']> = ResolversObject<{
+  lastUpdatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  members?: Resolver<Array<ResolversTypes['ProfileOrOrganisation']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type MembershipResolvers<ContextType = any, ParentType extends ResolversParentTypes['Membership'] = ResolversParentTypes['Membership']> = ResolversObject<{
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
@@ -1643,6 +1805,12 @@ export type MembershipRejectedResolvers<ContextType = any, ParentType extends Re
   member_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   organisation?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   organisation_profile?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type MembershipsResolvers<ContextType = any, ParentType extends ResolversParentTypes['Memberships'] = ResolversParentTypes['Memberships']> = ResolversObject<{
+  lastUpdatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1757,6 +1925,14 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ProfileAggregateResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProfileAggregate'] = ResolversParentTypes['ProfileAggregate']> = ResolversObject<{
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  safe_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  safe_address_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  payload?: Resolver<ResolversTypes['AggregatePayload'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type ProfileEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProfileEvent'] = ResolversParentTypes['ProfileEvent']> = ResolversObject<{
   timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   block_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -1805,6 +1981,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   lastUBITransaction?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   stats?: Resolver<Maybe<ResolversTypes['Stats']>, ParentType, ContextType>;
+  events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'types' | 'safeAddress' | 'pagination'>>;
+  aggregates?: Resolver<Array<ResolversTypes['ProfileAggregate']>, ParentType, ContextType, RequireFields<QueryAggregatesArgs, 'types' | 'safeAddress'>>;
   organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsArgs, never>>;
   regions?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryRegionsArgs, never>>;
   organisationsByAddress?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsByAddressArgs, 'addresses'>>;
@@ -1939,6 +2117,7 @@ export type WelcomeMessageResolvers<ContextType = any, ParentType extends Resolv
 export type Resolvers<ContextType = any> = ResolversObject<{
   AcceptMembershipResult?: AcceptMembershipResultResolvers<ContextType>;
   AddMemberResult?: AddMemberResultResolvers<ContextType>;
+  AggregatePayload?: AggregatePayloadResolvers<ContextType>;
   AssetBalance?: AssetBalanceResolvers<ContextType>;
   ChatMessage?: ChatMessageResolvers<ContextType>;
   City?: CityResolvers<ContextType>;
@@ -1948,7 +2127,11 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   CommonTrust?: CommonTrustResolvers<ContextType>;
   ConsumeDepositedChallengeResponse?: ConsumeDepositedChallengeResponseResolvers<ContextType>;
   Contact?: ContactResolvers<ContextType>;
+  ContactPoint?: ContactPointResolvers<ContextType>;
+  ContactPointSource?: ContactPointSourceResolvers<ContextType>;
+  Contacts?: ContactsResolvers<ContextType>;
   CountryStats?: CountryStatsResolvers<ContextType>;
+  CrcBalance?: CrcBalanceResolvers<ContextType>;
   CrcHubTransfer?: CrcHubTransferResolvers<ContextType>;
   CrcMinting?: CrcMintingResolvers<ContextType>;
   CrcSignup?: CrcSignupResolvers<ContextType>;
@@ -1965,6 +2148,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   ExchangeTokenResponse?: ExchangeTokenResponseResolvers<ContextType>;
   GnosisSafeEthTransfer?: GnosisSafeEthTransferResolvers<ContextType>;
   Goal?: GoalResolvers<ContextType>;
+  IAggregatePayload?: IAggregatePayloadResolvers<ContextType>;
   ICity?: ICityResolvers<ContextType>;
   IEventPayload?: IEventPayloadResolvers<ContextType>;
   InitAggregateState?: InitAggregateStateResolvers<ContextType>;
@@ -1973,16 +2157,19 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   LockOfferResult?: LockOfferResultResolvers<ContextType>;
   LogoutResponse?: LogoutResponseResolvers<ContextType>;
   MemberAdded?: MemberAddedResolvers<ContextType>;
+  Members?: MembersResolvers<ContextType>;
   Membership?: MembershipResolvers<ContextType>;
   MembershipAccepted?: MembershipAcceptedResolvers<ContextType>;
   MembershipOffer?: MembershipOfferResolvers<ContextType>;
   MembershipRejected?: MembershipRejectedResolvers<ContextType>;
+  Memberships?: MembershipsResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   NotificationEvent?: NotificationEventResolvers<ContextType>;
   Offer?: OfferResolvers<ContextType>;
   Organisation?: OrganisationResolvers<ContextType>;
   OrganisationCreated?: OrganisationCreatedResolvers<ContextType>;
   Profile?: ProfileResolvers<ContextType>;
+  ProfileAggregate?: ProfileAggregateResolvers<ContextType>;
   ProfileEvent?: ProfileEventResolvers<ContextType>;
   ProfileOrOrganisation?: ProfileOrOrganisationResolvers<ContextType>;
   ProvePaymentResult?: ProvePaymentResultResolvers<ContextType>;

@@ -1,13 +1,7 @@
 import {myProfile, profilesById, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
-import {
-  MutationRequestInvitationOfferArgs,
-  Profile,
-  ProfileEvent,
-  ProfileOrOrganisation,
-  Resolvers
-} from "../types";
+import {Profile, ProfileEvent, ProfileOrOrganisation, Resolvers} from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
 import {sessionInfo} from "./queries/sessionInfo";
@@ -67,16 +61,32 @@ import {addMemberResolver} from "./mutations/addMember";
 import {removeMemberResolver} from "./mutations/removeMember";
 import {regionsResolver} from "./queries/regions";
 import {findSafeAddressByOwnerResolver} from "./queries/findSafeAddressByOwner";
-import {Generate} from "../generate";
-import {RpcGateway} from "../rpcGateway";
-import BN from "bn.js";
+import {AcceptedMembershipOfferEventSource} from "../eventSources/api/acceptedMembershipOfferEventSource";
+import {ChatMessageEventSource} from "../eventSources/api/chatMessageEventSource";
+import {MembershipOfferEventSource} from "../eventSources/api/membershipOfferEventSource";
+import {RejectedMembershipOfferEventSource} from "../eventSources/api/rejectedMembershipOfferEventSource";
+import {CreatedInvitationsEventSource} from "../eventSources/api/createdInvitationsEventSource";
+import {RedeemedInvitationsEventSource} from "../eventSources/api/redeemedInvitationsEventSource";
+import {
+  BlockchainEventType,
+  BlockchainIndexerEventSource
+} from "../eventSources/blockchain-indexer/blockchainIndexerEventSource";
+import {EventSource} from "../eventSources/eventSource";
+import {ProfileEventAugmenter} from "../eventSources/profileEventAugmenter";
+import {CombinedEventSource} from "../eventSources/combinedEventSource";
+import {ContactPoints, ContactsSource} from "../aggregateSources/api/contactsSource";
+import {CombinedAggregateSource} from "../aggregateSources/combinedAggregateSource";
+import {AggregateSource} from "../aggregateSources/aggregateSource";
+import {BalanceSource} from "../aggregateSources/blockchain-indexer/balanceSource";
+import {MembershipsSource} from "../aggregateSources/api/membershipsSource";
+import {MembersSource} from "../aggregateSources/api/membersSource";
 
-export const safeFundingTransactionResolver = (async (parent:any, args:any, context:Context) => {
+export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
 
   const now = new Date();
   const profile = await prisma_api_ro.profile.findFirst({
-    where:{
+    where: {
 //          OR:[{
 //            emailAddress: null,
       circlesSafeOwner: session.ethAddress?.toLowerCase()
@@ -91,10 +101,10 @@ export const safeFundingTransactionResolver = (async (parent:any, args:any, cont
   const pool = getPool();
   try {
     const safeFundingTransactionQuery = `
-            select *
-            from transaction_2
-            where "from" = $1
-              and "to" = $2`;
+        select *
+        from transaction_2
+        where "from" = $1
+          and "to" = $2`;
 
     const safeFundingTransactionQueryParams = [
       profile.circlesSafeOwner.toLowerCase(),
@@ -139,7 +149,6 @@ export const safeFundingTransactionResolver = (async (parent:any, args:any, cont
 });
 
 
-
 export function getPool() {
   /*
   if (!cert) {
@@ -162,7 +171,7 @@ export const resolvers: Resolvers = {
   Profile: {
     offers: profileOffers(prisma_api_ro),
     city: profileCity,
-    memberships: async (parent:Profile, args, context:Context) => {
+    memberships: async (parent: Profile, args, context: Context) => {
       const memberships = await prisma_api_ro.membership.findMany({
         where: {
           memberId: parent.id
@@ -221,12 +230,12 @@ export const resolvers: Resolvers = {
           member: true
         }
       }))
-      .map(o => {
-        return <ProfileOrOrganisation>{
-          __typename: "Profile",
-          ...o.member
-        };
-      });
+        .map(o => {
+          return <ProfileOrOrganisation>{
+            __typename: "Profile",
+            ...o.member
+          };
+        });
     }
   },
   Query: {
@@ -262,7 +271,133 @@ export const resolvers: Resolvers = {
     commonTrust: commonTrust(prisma_api_ro),
     inbox: inbox(prisma_api_ro),
     lastUBITransaction: lastUbiTransaction(),
-    initAggregateState: initAggregateState()
+    initAggregateState: initAggregateState(),
+    aggregates: async (parent, args, context:Context) => {
+      const aggregateSources: AggregateSource[] = [];
+      const types = args.types?.reduce((p, c) => {
+        if (!c) return p;
+        p[c] = true;
+        return p;
+      }, <{ [x: string]: any }>{}) ?? {};
+
+      if (types["CrcBalance"]) {
+        aggregateSources.push(new BalanceSource());
+      }
+      if (types["Contacts"]) {
+        const contactPoints = [
+          ContactPoints.CrcHubTransfer,
+          ContactPoints.CrcTrust
+        ];
+        if (context.sessionId)  {
+          const callerProfile = await context.callerProfile;
+          if (callerProfile?.circlesAddress == args.safeAddress.toLowerCase()) {
+            contactPoints.push(ContactPoints.Invitation);
+            contactPoints.push(ContactPoints.MembershipOffer);
+            contactPoints.push(ContactPoints.ChatMessage);
+          }
+        }
+        aggregateSources.push(new ContactsSource(contactPoints));
+      }
+      if (types["Memberships"]) {
+        aggregateSources.push(new MembershipsSource());
+      }
+      if (types["Members"]) {
+        aggregateSources.push(new MembersSource());
+      }
+
+      const source = new CombinedAggregateSource(aggregateSources);
+      return await source.getAggregate(args.safeAddress);
+    },
+    events: async (parent, args, context:Context) => {
+      const eventSources: EventSource[] = [];
+      const types = args.types?.reduce((p, c) => {
+        if (!c) return p;
+        p[c] = true;
+        return p;
+      }, <{ [x: string]: any }>{}) ?? {};
+
+      //
+      // public
+      //
+      if (types["CrcSignup"]) {
+        delete types["CrcSignup"];
+        eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.CrcSignup]));
+      }
+      if (types["CrcTrust"]) {
+        delete types["CrcTrust"];
+        eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.CrcTrust]));
+      }
+      if (types["CrcHubTransfer"]) {
+        delete types["CrcHubTransfer"];
+        eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.CrcHubTransfer]));
+      }
+      if (types["CrcMinting"]) {
+        delete types["CrcMinting"];
+        eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.CrcMinting]));
+      }
+      if (types["OrganisationCreated"]) {
+        delete types["OrganisationCreated"];
+        throw new Error(`Not implemented: OrganisationCreated`);
+      }
+      if (types["MemberAdded"]) {
+        delete types["MemberAdded"];
+        throw new Error(`Not implemented: MemberAdded`);
+      }
+      if (types["MemberRemoved"]) {
+        delete types["MemberRemoved"];
+        throw new Error(`Not implemented: MemberRemoved`);
+      }
+      if (types["EthTransfer"]) {
+        delete types["EthTransfer"];
+        eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.EthTransfer]));
+      }
+      if (types["GnosisSafeEthTransfer"]) {
+        delete types["GnosisSafeEthTransfer"];
+        eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.GnosisSafeEthTransfer]));
+      }
+
+      //
+      // private
+      //
+      if (Object.keys(types).length > 0 && context.sessionId) {
+        const callerProfile = await context.callerProfile;
+        const isSelf = callerProfile?.circlesAddress == args.safeAddress.toLowerCase();
+
+        if (isSelf && types["ChatMessage"]) {
+          eventSources.push(new ChatMessageEventSource());
+        }
+        if (isSelf && types["MembershipOffer"]) {
+          eventSources.push(new MembershipOfferEventSource());
+        }
+        if (isSelf && types["MembershipAccepted"]) {
+          eventSources.push(new AcceptedMembershipOfferEventSource());
+        }
+        if (isSelf && types["MembershipRejected"]) {
+          eventSources.push(new RejectedMembershipOfferEventSource());
+        }
+        if (isSelf && types["WelcomeMessage"]) {
+          throw new Error(`Not implemented: WelcomeMessage`);
+        }
+        if (isSelf && types["InvitationCreated"]) {
+          eventSources.push(new CreatedInvitationsEventSource());
+        }
+        if (isSelf && types["InvitationRedeemed"]) {
+          eventSources.push(new RedeemedInvitationsEventSource());
+        }
+      }
+
+      const aggregateEventSource = new CombinedEventSource(eventSources);
+
+      let events = await aggregateEventSource.getEvents(
+        args.safeAddress,
+        args.pagination);
+
+      const augmentation = new ProfileEventAugmenter();
+      events.forEach(e => augmentation.add(e));
+      events = await augmentation.augment();
+
+      return events;
+    }
   },
   Mutation: {
     upsertOrganisation: upsertOrganisation(prisma_api_rw, false),
@@ -283,7 +418,7 @@ export const resolvers: Resolvers = {
     createInvitations: createInvitations(prisma_api_rw),
     claimInvitation: claimInvitation(prisma_api_rw),
     redeemClaimedInvitation: redeemClaimedInvitation(prisma_api_ro, prisma_api_rw),
-    requestSessionChallenge: async (parent, args, context:Context) => {
+    requestSessionChallenge: async (parent, args, context: Context) => {
       return await Session.requestSessionFromSignature(prisma_api_rw, args.address);
     },
     verifySessionChallenge: verifySessionChallengeResolver(prisma_api_rw),
@@ -366,7 +501,7 @@ export const resolvers: Resolvers = {
   },
   Subscription: {
     events: {
-      subscribe: async (parent, args, context:Context) => {
+      subscribe: async (parent, args, context: Context) => {
         const profile = await context.callerProfile;
         if (!profile)
           throw new Error(`You need a profile to subscribe`);
