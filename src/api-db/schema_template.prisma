@@ -181,6 +181,7 @@ model ChatMessage {
     id Int @id @default(autoincrement())
 
     createdAt DateTime
+    openedAt DateTime?
 
     from String
     to String
