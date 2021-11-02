@@ -9,7 +9,14 @@ export class CombinedEventSource implements EventSource {
   }
 
   async getEvents(forSafeAddress: string, pagination:PaginationArgs): Promise<ProfileEvent[]> {
-    const resultPromises = this._resolvers.map(resolver => resolver.getEvents(forSafeAddress, pagination));
+    const resultPromises = this._resolvers.map(resolver => {
+      try {
+        return resolver.getEvents(forSafeAddress, pagination)
+      } catch (e) {
+        console.error(e);
+        return [];
+      }
+    });
     const results = await Promise.all(resultPromises);
     const events = results.flatMap(o => o);
 

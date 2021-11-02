@@ -62,6 +62,7 @@ export class BlockchainIndexerEventSource implements EventSource
           transaction_index: r.transaction_index,
           payload: {
             __typename: r.type,
+            transaction_hash: r.transaction_hash,
             ...(Array.isArray(r.payload) ? r.payload[0] : r.payload),
           }
         };

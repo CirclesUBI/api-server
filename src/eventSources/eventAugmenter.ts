@@ -17,7 +17,7 @@ import {ProfilesBySafeAddressLookup} from "../resolvers/queries/profiles";
 import {ProfileLoader} from "../profileLoader";
 import {prisma_api_ro} from "../apiDbClient";
 
-export class ProfileEventAugmenter
+export class EventAugmenter
 {
   private _profiles: ProfilesBySafeAddressLookup = {};
   private _events: ProfileEvent[] = [];

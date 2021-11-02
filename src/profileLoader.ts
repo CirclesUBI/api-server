@@ -116,6 +116,13 @@ export class ProfileLoader {
       allProfilesMap[entry[0]] = entry[1];
     });
 
+    allProfilesMap["0x0000000000000000000000000000000000000000"] = {
+      id: 0,
+      firstName: "Circles",
+      lastName: "Land",
+      avatarUrl: "https://dev.circles.land/logos/circles.png"
+    };
+
     const nonLocalProfileMap: SafeProfileMap = {};
     lowercaseAddresses
       .filter(addr => !allProfilesMap[addr])

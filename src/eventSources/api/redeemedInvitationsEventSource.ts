@@ -39,7 +39,7 @@ export class RedeemedInvitationsEventSource implements EventSource {
       return <ProfileEvent> {
         __typename: "ProfileEvent",
         safe_address: forSafeAddress,
-        type: "InvitationCreated",
+        type: "InvitationRedeemed",
         block_number: null,
         direction: "in",
         timestamp: r.redeemedAt.toJSON(),

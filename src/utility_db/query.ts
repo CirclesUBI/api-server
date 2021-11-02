@@ -60,7 +60,7 @@ export class Query {
                 where lower(name) like $1
                   and p.feature_code like 'PPL%'
                   and p.feature_code not in ('PPLX', 'PPLQ', 'PPLH', 'PPLCH')
-                  and p.population > 0
+                  and p.population > 5000
             ),
             intl as (
             -- Find places by local name

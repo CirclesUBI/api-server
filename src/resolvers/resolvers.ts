@@ -1,7 +1,7 @@
 import {myProfile, profilesById, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
-import {Profile, ProfileEvent, ProfileOrOrganisation, Resolvers} from "../types";
+import {Profile, ProfileEvent, ProfileOrOrganisation, Resolvers, SortOrder} from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
 import {sessionInfo} from "./queries/sessionInfo";
@@ -72,7 +72,7 @@ import {
   BlockchainIndexerEventSource
 } from "../eventSources/blockchain-indexer/blockchainIndexerEventSource";
 import {EventSource} from "../eventSources/eventSource";
-import {ProfileEventAugmenter} from "../eventSources/profileEventAugmenter";
+import {EventAugmenter} from "../eventSources/eventAugmenter";
 import {CombinedEventSource} from "../eventSources/combinedEventSource";
 import {ContactPoints, ContactsSource} from "../aggregateSources/api/contactsSource";
 import {CombinedAggregateSource} from "../aggregateSources/combinedAggregateSource";
@@ -80,6 +80,12 @@ import {AggregateSource} from "../aggregateSources/aggregateSource";
 import {BalanceSource} from "../aggregateSources/blockchain-indexer/balanceSource";
 import {MembershipsSource} from "../aggregateSources/api/membershipsSource";
 import {MembersSource} from "../aggregateSources/api/membersSource";
+import {AggregateAugmenter} from "../aggregateSources/aggregateAugmenter";
+import {open} from "lmdb-store";
+import {EventCache} from "../eventSources/cache/eventCache";
+
+const eventCache2 = new EventCache("eventCache2.lmdb");
+
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
@@ -306,7 +312,13 @@ export const resolvers: Resolvers = {
       }
 
       const source = new CombinedAggregateSource(aggregateSources);
-      return await source.getAggregate(args.safeAddress);
+      let aggregates = await source.getAggregate(args.safeAddress);
+
+      const augmentation = new AggregateAugmenter();
+      aggregates.forEach(e => augmentation.add(e));
+      aggregates = await augmentation.augment();
+
+      return aggregates;
     },
     events: async (parent, args, context:Context) => {
       const eventSources: EventSource[] = [];
@@ -335,6 +347,9 @@ export const resolvers: Resolvers = {
         delete types["CrcMinting"];
         eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.CrcMinting]));
       }
+      if (types["CrcTokenTransfer"]) {
+        delete types["CrcTokenTransfer"];
+      }
       if (types["OrganisationCreated"]) {
         delete types["OrganisationCreated"];
         throw new Error(`Not implemented: OrganisationCreated`);
@@ -359,8 +374,10 @@ export const resolvers: Resolvers = {
       //
       // private
       //
+      let callerProfile:Profile|null = null;
+
       if (Object.keys(types).length > 0 && context.sessionId) {
-        const callerProfile = await context.callerProfile;
+        callerProfile = await context.callerProfile;
         const isSelf = callerProfile?.circlesAddress == args.safeAddress.toLowerCase();
 
         if (isSelf && types["ChatMessage"]) {
@@ -388,13 +405,68 @@ export const resolvers: Resolvers = {
 
       const aggregateEventSource = new CombinedEventSource(eventSources);
 
-      let events = await aggregateEventSource.getEvents(
-        args.safeAddress,
-        args.pagination);
+      if (context.sessionId && !callerProfile) {
+        callerProfile = await context.callerProfile;
+      }
 
-      const augmentation = new ProfileEventAugmenter();
-      events.forEach(e => augmentation.add(e));
-      events = await augmentation.augment();
+      let events: ProfileEvent[] = [];
+      events = (await Promise.all(args.types.flatMap(async t => {
+        let cachedEvents = await eventCache2.read(
+          context,
+          args.safeAddress.toLowerCase(),
+          t,
+          new Date(args.pagination.continueAt).getTime(),
+          args.pagination.order == SortOrder.Asc ? "asc" : "desc",
+          args.pagination.limit);
+
+        return cachedEvents;
+      }))).flatMap(o => o);
+
+      if (events.length == 0) {
+        events = await aggregateEventSource.getEvents(
+          args.safeAddress,
+          args.pagination);
+
+        events = events.sort((a,b) => {
+          const aTime = new Date(a.timestamp).getTime();
+          const bTime = new Date(b.timestamp).getTime();
+          return (
+            //args.pagination.order == SortOrder.Asc
+              /*?*/ aTime < bTime
+              //: aTime > bTime
+          )
+            ? -1
+            : aTime < bTime
+              ? 1
+              : 0;
+        });
+
+        events.forEach(e => {
+          const eTime = new Date(e.timestamp).getTime();
+          eventCache2.store(context, e);
+        });
+      }
+
+      const augmentation = new EventAugmenter();
+      events.forEach(e => {
+        augmentation.add(e);
+      });
+      //events = await augmentation.augment();
+
+      events = events.sort((a,b) => {
+        const aTime = new Date(a.timestamp).getTime();
+        const bTime = new Date(b.timestamp).getTime();
+        return (
+          args.pagination.order == SortOrder.Asc
+          ? aTime < bTime
+          : aTime > bTime
+        )
+          ? -1
+          : aTime < bTime
+            ? 1
+            : 0;
+      });
+      events = events.slice(0, Math.min(events.length, args.pagination.limit));
 
       return events;
     }

@@ -5,6 +5,7 @@ import {Session} from "./session";
 import {prisma_api_ro, prisma_api_rw} from "./apiDbClient";
 import {Logger, newLogger} from "./logger";
 import {Profile} from "./api-db/client";
+import {assertWrappingType} from "graphql";
 
 export class Context {
     readonly id: string;
@@ -135,13 +136,20 @@ export class Context {
         return validSession;
     }
 
+    private _callerProfile:Profile|null|undefined = undefined;
     get callerProfile() : Promise<Profile|null> {
-        return this.verifySession().then(session => {
-            return prisma_api_ro.profile.findUnique({
-                where: {
-                    id: session.profileId ?? undefined
-                }
-            })
-        });
+        if (this._callerProfile === undefined) {
+            return this.verifySession().then(async session => {
+                const p = await prisma_api_ro.profile.findUnique({
+                    where: {
+                        id: session.profileId ?? undefined
+                    }
+                });
+                this._callerProfile = p;
+                return this._callerProfile;
+            });
+        } else {
+            return Promise.resolve(this._callerProfile);
+        }
     }
 }
