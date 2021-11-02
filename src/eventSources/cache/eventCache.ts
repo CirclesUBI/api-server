@@ -66,6 +66,7 @@ export class LmdbIndex<TKey extends Key> extends LmdbWrapper {
   }
 
   read(startAt: TKey, order:"asc"|"desc", limit: number) {
+    /*
     const start = this._db.getKeys({
      limit:1
     });
@@ -76,6 +77,8 @@ export class LmdbIndex<TKey extends Key> extends LmdbWrapper {
     });
     const a = Array.from(r.asArray);
     return a;
+     */
+    return [];
   }
 
   clear() {

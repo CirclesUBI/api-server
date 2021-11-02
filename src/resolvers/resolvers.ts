@@ -84,7 +84,7 @@ import {AggregateAugmenter} from "../aggregateSources/aggregateAugmenter";
 import {open} from "lmdb-store";
 import {EventCache} from "../eventSources/cache/eventCache";
 
-const eventCache2 = new EventCache("eventCache2.lmdb");
+// const eventCache2 = new EventCache("eventCache2.lmdb");
 
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
@@ -410,7 +410,7 @@ export const resolvers: Resolvers = {
       }
 
       let events: ProfileEvent[] = [];
-      events = (await Promise.all(args.types.flatMap(async t => {
+      /*events = (await Promise.all(args.types.flatMap(async t => {
         let cachedEvents = await eventCache2.read(
           context,
           args.safeAddress.toLowerCase(),
@@ -421,7 +421,7 @@ export const resolvers: Resolvers = {
 
         return cachedEvents;
       }))).flatMap(o => o);
-
+      */
       if (events.length == 0) {
         events = await aggregateEventSource.getEvents(
           args.safeAddress,
@@ -441,10 +441,12 @@ export const resolvers: Resolvers = {
               : 0;
         });
 
+        /*
         events.forEach(e => {
           const eTime = new Date(e.timestamp).getTime();
           eventCache2.store(context, e);
         });
+         */
       }
 
       const augmentation = new EventAugmenter();
