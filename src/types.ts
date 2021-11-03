@@ -136,7 +136,7 @@ export type ContactPoint = {
   name: Scalars['String'];
   directions: Array<ContactDirection>;
   values: Array<Scalars['String']>;
-  lastContactAt: Scalars['String'];
+  timestamps: Array<Scalars['String']>;
 };
 
 export type Contacts = IAggregatePayload & {
@@ -1535,7 +1535,7 @@ export type ContactPointResolvers<ContextType = any, ParentType extends Resolver
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   directions?: Resolver<Array<ResolversTypes['ContactDirection']>, ParentType, ContextType>;
   values?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
-  lastContactAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  timestamps?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

@@ -586,7 +586,7 @@ type ContactPoint {
   name: String!
   directions: [ContactDirection!]!
   values: [String!]!
-  lastContactAt: String!
+  timestamps: [String!]!
 }
 
 type Contact2 {
