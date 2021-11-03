@@ -1,9 +1,9 @@
 import {AggregateSource} from "../aggregateSource";
-import {CrcBalance, ProfileAggregate} from "../../types";
+import {AssetBalance, CrcBalances, ProfileAggregate} from "../../types";
 import {getPool} from "../../resolvers/resolvers";
 
 // All CRC balances of a safe
-export class BalanceSource implements AggregateSource {
+export class CrcBalanceSource implements AggregateSource {
   async getAggregate(forSafeAddress: string): Promise<ProfileAggregate[]> {
     const pool = getPool();
     try {
@@ -14,21 +14,24 @@ export class BalanceSource implements AggregateSource {
           order by last_change_at desc;`,
         [forSafeAddress.toLowerCase()]);
 
-      return crcBalancesResult.rows.map((o: any) => {
-        return <ProfileAggregate>{
-          safe_address: forSafeAddress.toLowerCase(),
-          type: "CrcBalance",
-          payload: <CrcBalance>{
-            __typename: "CrcBalance",
-            lastUpdatedAt: o.last_change_at,
-            balances: [{
+      const lastChangeAt = crcBalancesResult.rows.reduce((p,c) => Math.max(new Date(c.last_change_at).getTime(), p) ,0);
+
+      return [<ProfileAggregate>{
+        safe_address: forSafeAddress.toLowerCase(),
+        type: "CrcBalances",
+        payload: <CrcBalances> {
+          __typename: "CrcBalances",
+          lastUpdatedAt: lastChangeAt,
+          balances: crcBalancesResult.rows.map((o: any) => {
+            return <AssetBalance> {
+              token_owner_profile: null,
               token_address: o.token,
               token_owner_address: o.token_owner,
               token_balance: o.balance
-            }]
-          }
-        };
-      });
+            }
+          })
+        }
+      }]
     } finally {
       await pool.end();
     }

@@ -9,17 +9,20 @@ import {
   IEventPayload,
   MembershipAccepted,
   MembershipOffer,
-  MembershipRejected,
-  ProfileEvent,
+  MembershipRejected, Profile,
+  ProfileEvent, Tag,
   WelcomeMessage
 } from "../types";
 import {ProfilesBySafeAddressLookup} from "../resolvers/queries/profiles";
-import {ProfileLoader} from "../profileLoader";
+import {ProfileLoader, SafeProfileMap} from "../profileLoader";
 import {prisma_api_ro} from "../apiDbClient";
+import {TagLoader, TagsByTxHashLookup} from "../tagLoader";
 
 export class EventAugmenter
 {
   private _profiles: ProfilesBySafeAddressLookup = {};
+  private _tags: TagsByTxHashLookup = {};
+
   private _events: ProfileEvent[] = [];
   private _extractors: ProfileEventAugmentation<any>[] = [
     new CrcSignupAugmentation(),
@@ -50,29 +53,45 @@ export class EventAugmenter
       .filter(a => !this._profiles[a])
       .forEach(a => this._profiles[a] = null);
 
+    const hashes = this._extractors
+      .filter(e => e.matches(profileEvent))
+      .flatMap(e => e.extractTransactionHashes ? e.extractTransactionHashes(profileEvent.payload) : []);
+
+    hashes.forEach(e => this._tags[e] = null);
+
     this._events.push(profileEvent);
   }
 
   async augment() : Promise<ProfileEvent[]> {
     // Find the profiles for the collected addresses
-    this._profiles = await new ProfileLoader()
-      .profilesBySafeAddress(prisma_api_ro, Object.keys(this._profiles))
+
+    const requests = [
+      await new ProfileLoader().profilesBySafeAddress(prisma_api_ro, Object.keys(this._profiles)),
+      await new TagLoader().tagsByTransactionHash(prisma_api_ro, Object.keys(this._tags))
+    ]
+
+    const results = await Promise.all(requests);
+
+    this._profiles = <SafeProfileMap>results[0];
+    this._tags = <TagsByTxHashLookup>results[1];
 
     // Apply the profiles
     this._events.forEach(ev => {
       this._extractors
         .filter(ex => ex.matches(ev))
-        .forEach(ex => ex.augmentProfiles(ev.payload, this._profiles))
+        .forEach(ex => ex.augment(ev.payload, this._profiles, this._tags))
     });
 
     return this._events;
   }
 }
 
+
 export interface ProfileEventAugmentation<TEventPayload extends IEventPayload> {
   matches(profileEvent:ProfileEvent) : boolean;
   extractAddresses(payload: TEventPayload): string[];
-  augmentProfiles(payload: TEventPayload, profiles: ProfilesBySafeAddressLookup) : void;
+  extractTransactionHashes?(payload: TEventPayload): string[];
+  augment(payload: TEventPayload, profiles: ProfilesBySafeAddressLookup, tags: TagsByTxHashLookup) : void;
 }
 
 export class CrcSignupAugmentation implements ProfileEventAugmentation<CrcSignup> {
@@ -82,7 +101,10 @@ export class CrcSignupAugmentation implements ProfileEventAugmentation<CrcSignup
   extractAddresses(payload: CrcSignup): string[] {
     return [payload.user];
   }
-  augmentProfiles(payload: CrcSignup, profiles: ProfilesBySafeAddressLookup): void {
+  extractTransactionHashes(payload: CrcSignup) {
+    return [payload.transaction_hash];
+  }
+  augment(payload: CrcSignup, profiles: ProfilesBySafeAddressLookup): void {
     payload.user_profile = profiles[payload.user];
   }
 }
@@ -94,7 +116,10 @@ export class CrcTrustAugmentation implements ProfileEventAugmentation<CrcTrust> 
   extractAddresses(payload: CrcTrust): string[] {
     return [payload.address, payload.can_send_to];
   }
-  augmentProfiles(payload: CrcTrust, profiles: ProfilesBySafeAddressLookup): void {
+  extractTransactionHashes(payload: CrcTrust) {
+    return [payload.transaction_hash];
+  }
+  augment(payload: CrcTrust, profiles: ProfilesBySafeAddressLookup): void {
     payload.address_profile = profiles[payload.address];
     payload.can_send_to_profile = profiles[payload.can_send_to];
   }
@@ -107,7 +132,10 @@ export class CrcTokenTransferAugmentation implements ProfileEventAugmentation<Cr
   extractAddresses(payload: CrcTokenTransfer): string[] {
     return [payload.from, payload.to];
   }
-  augmentProfiles(payload: CrcTokenTransfer, profiles: ProfilesBySafeAddressLookup): void {
+  extractTransactionHashes(payload: CrcTokenTransfer) {
+    return [payload.transaction_hash];
+  }
+  augment(payload: CrcTokenTransfer, profiles: ProfilesBySafeAddressLookup): void {
     payload.from_profile = profiles[payload.from];
     payload.to_profile = profiles[payload.to];
   }
@@ -126,13 +154,17 @@ export class CrcHubTransferAugmentation implements ProfileEventAugmentation<CrcH
 
     return [payload.from, payload.to].concat(transferAddresses);
   }
-  augmentProfiles(payload: CrcHubTransfer, profiles: ProfilesBySafeAddressLookup): void {
+  extractTransactionHashes(payload: CrcHubTransfer) {
+    return [payload.transaction_hash];
+  }
+  augment(payload: CrcHubTransfer, profiles: ProfilesBySafeAddressLookup, tags: TagsByTxHashLookup): void {
     payload.to_profile = profiles[payload.to];
     payload.from_profile = profiles[payload.from];
     payload.transfers.forEach(t => {
       t.from_profile = profiles[t.from];
       t.to_profile = profiles[t.to];
-    })
+    });
+    payload.tags = tags[payload.transaction_hash] ?? [];
   }
 }
 
@@ -143,7 +175,10 @@ export class CrcMintingAugmentation implements ProfileEventAugmentation<CrcMinti
   extractAddresses(payload: CrcMinting): string[] {
     return [payload.from, payload.to];
   }
-  augmentProfiles(payload: CrcMinting, profiles: ProfilesBySafeAddressLookup): void {
+  extractTransactionHashes(payload: CrcMinting) {
+    return [payload.transaction_hash];
+  }
+  augment(payload: CrcMinting, profiles: ProfilesBySafeAddressLookup): void {
     payload.from_profile = profiles[payload.from];
     payload.to_profile = profiles[payload.to];
   }
@@ -156,7 +191,10 @@ export class EthTransferAugmentation implements ProfileEventAugmentation<EthTran
   extractAddresses(payload: EthTransfer): string[] {
     return [payload.from, payload.to];
   }
-  augmentProfiles(payload: EthTransfer, profiles: ProfilesBySafeAddressLookup): void {
+  extractTransactionHashes(payload: EthTransfer) {
+    return [payload.transaction_hash];
+  }
+  augment(payload: EthTransfer, profiles: ProfilesBySafeAddressLookup): void {
     payload.from_profile = profiles[payload.from];
     payload.to_profile = profiles[payload.to];
   }
@@ -169,7 +207,10 @@ export class GnosisSafeEthTransferAugmentation implements ProfileEventAugmentati
   extractAddresses(payload: GnosisSafeEthTransfer): string[] {
     return [payload.from, payload.to];
   }
-  augmentProfiles(payload: GnosisSafeEthTransfer, profiles: ProfilesBySafeAddressLookup): void {
+  extractTransactionHashes(payload: GnosisSafeEthTransfer) {
+    return [payload.transaction_hash];
+  }
+  augment(payload: GnosisSafeEthTransfer, profiles: ProfilesBySafeAddressLookup): void {
     payload.from_profile = profiles[payload.from];
     payload.to_profile = profiles[payload.to];
   }
@@ -182,7 +223,7 @@ export class MembershipOfferAugmentation implements ProfileEventAugmentation<Mem
   extractAddresses(payload: MembershipOffer): string[] {
     return [payload.createdBy, payload.organisation];
   }
-  augmentProfiles(payload: MembershipOffer, profiles: ProfilesBySafeAddressLookup): void {
+  augment(payload: MembershipOffer, profiles: ProfilesBySafeAddressLookup): void {
     payload.createdBy_profile = profiles[payload.createdBy];
     // TODO: payload.organisation_profile = profiles[payload.organisation];
   }
@@ -195,7 +236,7 @@ export class MembershipAcceptedAugmentation implements ProfileEventAugmentation<
   extractAddresses(payload: MembershipAccepted): string[] {
     return [payload.member, payload.organisation];
   }
-  augmentProfiles(payload: MembershipAccepted, profiles: ProfilesBySafeAddressLookup): void {
+  augment(payload: MembershipAccepted, profiles: ProfilesBySafeAddressLookup): void {
     payload.member_profile = profiles[payload.member];
     // TODO: payload.organisation_profile = profiles[payload.organisation];
   }
@@ -208,7 +249,7 @@ export class MembershipRejectedAugmentation implements ProfileEventAugmentation<
   extractAddresses(payload: MembershipRejected): string[] {
     return [payload.member, payload.organisation];
   }
-  augmentProfiles(payload: MembershipRejected, profiles: ProfilesBySafeAddressLookup): void {
+  augment(payload: MembershipRejected, profiles: ProfilesBySafeAddressLookup): void {
     payload.member_profile = profiles[payload.member];
     // TODO: payload.organisation_profile = profiles[payload.organisation];
   }
@@ -221,7 +262,7 @@ export class ChatMessageAugmentation implements ProfileEventAugmentation<ChatMes
   extractAddresses(payload: ChatMessage): string[] {
     return [payload.from, payload.to];
   }
-  augmentProfiles(payload: ChatMessage, profiles: ProfilesBySafeAddressLookup): void {
+  augment(payload: ChatMessage, profiles: ProfilesBySafeAddressLookup): void {
     payload.from_profile = profiles[payload.from];
     payload.to_profile = profiles[payload.to];
   }
@@ -234,7 +275,7 @@ export class WelcomeMessageAugmentation implements ProfileEventAugmentation<Welc
   extractAddresses(payload: WelcomeMessage): string[] {
     return [payload.member];
   }
-  augmentProfiles(payload: WelcomeMessage, profiles: ProfilesBySafeAddressLookup): void {
+  augment(payload: WelcomeMessage, profiles: ProfilesBySafeAddressLookup): void {
     payload.member_profile = profiles[payload.member];
     // TODO: payload.organisation_profile = profiles[payload.organisation];
   }

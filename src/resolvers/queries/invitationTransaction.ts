@@ -70,6 +70,7 @@ export function invitationTransaction(prisma_api_ro:PrismaClient) {
                     to: redeemTransaction.to,
                     to_profile: profile,
                     value: redeemTransaction.value,
+                    tags: []
                 }
             };
         } finally {

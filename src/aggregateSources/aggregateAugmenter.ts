@@ -1,17 +1,10 @@
 import {
-  ChatMessage, ContactPoint, Contacts, CrcBalance,
-  CrcHubTransfer,
-  CrcMinting,
-  CrcSignup,
-  CrcTokenTransfer,
-  CrcTrust,
-  EthTransfer, GnosisSafeEthTransfer, IAggregatePayload,
-  IEventPayload, Members,
-  MembershipAccepted,
-  MembershipOffer,
-  MembershipRejected, Memberships, ProfileAggregate,
-  ProfileEvent,
-  WelcomeMessage
+  Contacts,
+  CrcBalances,
+  IAggregatePayload,
+  Members,
+  Memberships,
+  ProfileAggregate
 } from "../types";
 import {ProfilesBySafeAddressLookup} from "../resolvers/queries/profiles";
 import {ProfileLoader} from "../profileLoader";
@@ -67,16 +60,16 @@ export interface AggregateAugmentation<TAggregatePayload extends IAggregatePaylo
   augmentProfiles(payload: TAggregatePayload, profiles: ProfilesBySafeAddressLookup) : void;
 }
 
-export class CrcBalanceAugmentation implements AggregateAugmentation<CrcBalance> {
+export class CrcBalanceAugmentation implements AggregateAugmentation<CrcBalances> {
   matches(profileAggregate: ProfileAggregate) {
-    return profileAggregate.type == "CrcBalance";
+    return profileAggregate.type == "CrcBalances";
   }
 
-  augmentProfiles(payload: CrcBalance, profiles: ProfilesBySafeAddressLookup): void {
+  augmentProfiles(payload: CrcBalances, profiles: ProfilesBySafeAddressLookup): void {
     payload.balances.forEach(b => b.token_owner_profile = profiles[b.token_owner_address]);
   }
 
-  extractAddresses(payload: CrcBalance): string[] {
+  extractAddresses(payload: CrcBalances): string[] {
     return payload.balances.map(o => o.token_owner_address);
   }
 }

@@ -1,9 +1,9 @@
 import {AggregateSource} from "../aggregateSource";
-import {ContactDirection, ContactPoint, ContactPointSource, Contacts, CrcTrust, ProfileAggregate} from "../../types";
+import {ContactDirection, Contact2, ContactPoint, Contacts, CrcTrust, ProfileAggregate} from "../../types";
 import {getPool} from "../../resolvers/resolvers";
 import {prisma_api_ro} from "../../apiDbClient";
 
-async function trustContacts(forSafeAddress: string) : Promise<ContactPoint[]> {
+async function trustContacts(forSafeAddress: string) : Promise<Contact2[]> {
   const pool = getPool();
   try {
     const trustContactsResult = await pool.query(`
@@ -31,8 +31,8 @@ async function trustContacts(forSafeAddress: string) : Promise<ContactPoint[]> {
       [forSafeAddress.toLowerCase()]);
 
     return trustContactsResult.rows.map(o => {
-      return <ContactPoint> {
-        metadata: [<ContactPointSource>{
+      return <Contact2> {
+        metadata: [<ContactPoint>{
             name: "CrcTrust",
             directions: o.directions.map((p:string) => p == "in" ? ContactDirection.In : ContactDirection.Out),
             values: o.limits.map((p:any) => p.toString())
@@ -46,7 +46,7 @@ async function trustContacts(forSafeAddress: string) : Promise<ContactPoint[]> {
   }
 }
 
-async function hubTransferContacts(forSafeAddress: string) : Promise<ContactPoint[]> {
+async function hubTransferContacts(forSafeAddress: string) : Promise<Contact2[]> {
   const pool = getPool();
   try {
     const hubTransferContactsResult = await pool.query(`
@@ -75,14 +75,16 @@ async function hubTransferContacts(forSafeAddress: string) : Promise<ContactPoin
       [forSafeAddress.toLowerCase()]);
 
     return hubTransferContactsResult.rows.map(o => {
-      return <ContactPoint> {
-        metadata: [<ContactPointSource>{
+      const time = new Date(o.last_contact_at).getTime().toString();
+      return <Contact2> {
+        metadata: [<ContactPoint>{
           name: "CrcHubTransfer",
           directions: o.directions.map((p:string) => p == "in" ? ContactDirection.In : ContactDirection.Out),
-          values: []
+          values: [],
+          lastContactAt: time
         }],
         contactAddress: o.contact_address,
-        lastContactAt: new Date(o.last_contact_at).getTime().toString()
+        lastContactAt: time
       };
     })
   } finally {
@@ -90,7 +92,7 @@ async function hubTransferContacts(forSafeAddress: string) : Promise<ContactPoin
   }
 }
 
-async function chatMessageContacts(forSafeAddress: string) : Promise<ContactPoint[]> {
+async function chatMessageContacts(forSafeAddress: string) : Promise<Contact2[]> {
   const chatContactsResult = await prisma_api_ro.$queryRaw`
               with "in" as (
                   select max("createdAt") last_contact_at, "from" as contact_address
@@ -108,19 +110,26 @@ async function chatMessageContacts(forSafeAddress: string) : Promise<ContactPoin
                   union all
                   select 'in' direction, *
                   from "in"
+              ), "all_directions" as (
+                  select array_agg(direction) as directions,
+                         max(last_contact_at) as last_contact_at,
+                         contact_address
+                  from "all"
+                  group by contact_address
+              ), "all_directions_with_latest_text" as (
+                  select "all_directions".*, cm.text
+                  from "all_directions"
+                 join "ChatMessage" cm on cm."createdAt" = "all_directions".last_contact_at
               )
-              select array_agg(direction) as directions,
-                     max(last_contact_at) as last_contact_at,
-                     contact_address
-              from "all"
-              group by contact_address;`;
+              select *
+              from "all_directions_with_latest_text";`;
 
   return chatContactsResult.map((o:any) => {
-    return <ContactPoint> {
-      metadata: [<ContactPointSource>{
+    return <Contact2> {
+      metadata: [<ContactPoint>{
         name: "ChatMessage",
         directions: o.directions.map((p:string) => p == "in" ? ContactDirection.In : ContactDirection.Out),
-        values: []
+        values: [o.text]
       }],
       contactAddress: o.contact_address,
       lastContactAt: new Date(o.last_contact_at).getTime().toString()
@@ -130,7 +139,7 @@ async function chatMessageContacts(forSafeAddress: string) : Promise<ContactPoin
 
 // People who claimed my invitations
 // The person from which I claimed my invitation
-async function invitationContacts(forSafeAddress: string) : Promise<ContactPoint[]> {
+async function invitationContacts(forSafeAddress: string) : Promise<Contact2[]> {
   const invitationContactsResult = await prisma_api_ro.$queryRaw`
               with "in" as (
                   select max(i."createdAt") last_contact_at, "creatorProfile"."circlesAddress" as contact_address
@@ -161,21 +170,23 @@ async function invitationContacts(forSafeAddress: string) : Promise<ContactPoint
               group by contact_address;`;
 
   return invitationContactsResult.map((o:any) => {
-    return <ContactPoint> {
-      metadata: [<ContactPointSource>{
+    const time = new Date(o.last_contact_at).getTime().toString();
+    return <Contact2> {
+      metadata: [<ContactPoint>{
         name: "Invitation",
         directions: o.directions.map((p:string) => p == "in" ? ContactDirection.In : ContactDirection.Out),
-        values: []
+        values: [],
+        lastContactAt: time
       }],
       contactAddress: o.contact_address,
-      lastContactAt: new Date(o.last_contact_at).getTime().toString()
+      lastContactAt: time
     };
   })
 }
 
 // People who offered me (non-rejected) orga-invitations
 // People I offered orga invitations to
-async function membershipOfferContacts(forSafeAddress: string) : Promise<ContactPoint[]> {
+async function membershipOfferContacts(forSafeAddress: string) : Promise<Contact2[]> {
   const membershipOfferContactsResult = await prisma_api_ro.$queryRaw`
               with  "in" as (
                   select max(m."createdAt") as last_contact_at, "createdByProfile"."circlesAddress" as contact_address
@@ -206,14 +217,16 @@ async function membershipOfferContacts(forSafeAddress: string) : Promise<Contact
               group by contact_address;`;
 
   return membershipOfferContactsResult.map((o:any) => {
-    return <ContactPoint> {
-      metadata: [<ContactPointSource>{
+    const time = new Date(o.last_contact_at).getTime().toString();
+    return <Contact2> {
+      metadata: [<ContactPoint>{
         name: "MembershipOffer",
         directions: o.directions.map((p:string) => p == "in" ? ContactDirection.In : ContactDirection.Out),
-        values: []
+        values: [],
+        lastContactAt: time
       }],
       contactAddress: o.contact_address,
-      lastContactAt: new Date(o.last_contact_at).getTime().toString()
+      lastContactAt: time
     };
   })
 }
@@ -238,7 +251,7 @@ export class ContactsSource implements AggregateSource {
       return p;
     }, <{ [x: string]: any }>{}) ?? {};
 
-    const contactSources: Promise<ContactPoint[]>[] = [];
+    const contactSources: Promise<Contact2[]>[] = [];
     if (types["CrcTrust"]) {
       contactSources.push(trustContacts(forSafeAddress));
     }
@@ -276,7 +289,7 @@ export class ContactsSource implements AggregateSource {
         };
       }
       return p;
-    }, <{ [x: string]:ContactPoint }>{});
+    }, <{ [x: string]:Contact2 }>{});
 
     return [{
       safe_address: forSafeAddress,

@@ -390,6 +390,7 @@ type CrcHubTransfer implements IEventPayload {
   to_profile: Profile
   flow: String!
   transfers: [CrcTokenTransfer!]!
+  tags: [Tag!]!
 }
 
 # ${to} received a ubi payout of ${value} CRC
@@ -411,6 +412,7 @@ type EthTransfer implements IEventPayload {
   to: String!
   to_profile: Profile
   value: String!
+  tags: [Tag!]!
 }
 
 # ${from} sent ${value} xdai to ${to}
@@ -422,6 +424,7 @@ type GnosisSafeEthTransfer implements IEventPayload {
   to: String!
   to_profile: Profile
   value: String!
+  tags: [Tag!]!
 }
 
 # ${from} wrote: ${text}
@@ -547,21 +550,21 @@ enum EventType {
 }
 
 enum AggregateType {
-  CrcBalance
+  CrcBalances
   Contacts
   Memberships
   Members
 }
 
 # All crc holdings of the user
-type CrcBalance implements IAggregatePayload {
+type CrcBalances implements IAggregatePayload {
   lastUpdatedAt: String!
   balances: [AssetBalance!]!
 }
 
 type Contacts implements IAggregatePayload {
   lastUpdatedAt: String!
-  contacts: [ContactPoint!]!
+  contacts: [Contact2!]!
 }
 
 type Memberships implements IAggregatePayload {
@@ -579,21 +582,22 @@ enum ContactDirection {
   Out
 }
 
-type ContactPointSource {
+type ContactPoint {
   name: String!
   directions: [ContactDirection!]!
   values: [String!]!
+  lastContactAt: String!
 }
 
-type ContactPoint {
-  metadata: [ContactPointSource!]!
+type Contact2 {
+  metadata: [ContactPoint!]!
   lastContactAt: String!
   contactAddress: String!
   contactAddress_Profile: Profile
 }
 
 union AggregatePayload =
-    CrcBalance
+    CrcBalances
   | Contacts
   | Memberships
   | Members

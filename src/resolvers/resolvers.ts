@@ -77,7 +77,7 @@ import {CombinedEventSource} from "../eventSources/combinedEventSource";
 import {ContactPoints, ContactsSource} from "../aggregateSources/api/contactsSource";
 import {CombinedAggregateSource} from "../aggregateSources/combinedAggregateSource";
 import {AggregateSource} from "../aggregateSources/aggregateSource";
-import {BalanceSource} from "../aggregateSources/blockchain-indexer/balanceSource";
+import {CrcBalanceSource} from "../aggregateSources/blockchain-indexer/crcBalanceSource";
 import {MembershipsSource} from "../aggregateSources/api/membershipsSource";
 import {MembersSource} from "../aggregateSources/api/membersSource";
 import {AggregateAugmenter} from "../aggregateSources/aggregateAugmenter";
@@ -147,6 +147,7 @@ export const safeFundingTransactionResolver = (async (parent: any, args: any, co
         to: safeFundingTransaction.to,
         to_profile: profile,
         value: safeFundingTransaction.value,
+        tags: []
       }
     };
   } finally {
@@ -286,8 +287,8 @@ export const resolvers: Resolvers = {
         return p;
       }, <{ [x: string]: any }>{}) ?? {};
 
-      if (types["CrcBalance"]) {
-        aggregateSources.push(new BalanceSource());
+      if (types["CrcBalances"]) {
+        aggregateSources.push(new CrcBalanceSource());
       }
       if (types["Contacts"]) {
         const contactPoints = [
@@ -410,6 +411,8 @@ export const resolvers: Resolvers = {
       }
 
       let events: ProfileEvent[] = [];
+
+      // TODO: Check if there are cached events in the queried range ...
       /*events = (await Promise.all(args.types.flatMap(async t => {
         let cachedEvents = await eventCache2.read(
           context,
@@ -422,6 +425,7 @@ export const resolvers: Resolvers = {
         return cachedEvents;
       }))).flatMap(o => o);
       */
+
       if (events.length == 0) {
         events = await aggregateEventSource.getEvents(
           args.safeAddress,
@@ -441,6 +445,7 @@ export const resolvers: Resolvers = {
               : 0;
         });
 
+        // TODO: Cache all new events
         /*
         events.forEach(e => {
           const eTime = new Date(e.timestamp).getTime();
@@ -453,7 +458,7 @@ export const resolvers: Resolvers = {
       events.forEach(e => {
         augmentation.add(e);
       });
-      //events = await augmentation.augment();
+      events = await augmentation.augment();
 
       events = events.sort((a,b) => {
         const aTime = new Date(a.timestamp).getTime();
