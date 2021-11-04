@@ -3,6 +3,7 @@ import {TrustDirection} from "../../types";
 import {profilesBySafeAddress, ProfilesBySafeAddressLookup} from "./profiles";
 import {PrismaClient} from "../../api-db/client";
 import {getPool} from "../resolvers";
+import {ProfileLoader} from "../../profileLoader";
 
 export function trustRelations(prisma:PrismaClient) {
   return async (parent:any, args:any, context:Context) => {
@@ -37,20 +38,16 @@ export function trustRelations(prisma:PrismaClient) {
         .forEach(o => allSafeAddresses[o] = true);
 
       const allSafeAddressesArr = Object.keys(allSafeAddresses);
-      const profilesBySafeAddressResolver = profilesBySafeAddress(prisma);
-      const profiles = await profilesBySafeAddressResolver(null, {safeAddresses: allSafeAddressesArr}, context);
-
-      const _profilesBySafeAddress: ProfilesBySafeAddressLookup = {};
-      profiles.filter(o => o.circlesAddress)
-        .forEach(o => _profilesBySafeAddress[<string>o.circlesAddress] = o);
+      const profileLoader = new ProfileLoader();
+      const profiles = await profileLoader.profilesBySafeAddress(prisma, allSafeAddressesArr);
 
       return Object.keys(allSafeAddresses)
         .map(o => {
           return {
             safeAddress: safeAddress,
-            safeAddressProfile: _profilesBySafeAddress[safeAddress],
+            safeAddressProfile: profiles[safeAddress],
             otherSafeAddress: o,
-            otherSafeAddressProfile: _profilesBySafeAddress[o],
+            otherSafeAddressProfile: profiles[o],
             direction: trusting[o] && trustedBy[o]
               ? TrustDirection.Mutual
               : (

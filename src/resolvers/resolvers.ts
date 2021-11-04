@@ -1,4 +1,4 @@
-import {myProfile, profilesById, profilesBySafeAddress} from "./queries/profiles";
+import {myProfile, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {Profile, ProfileEvent, ProfileOrOrganisation, Resolvers, SortOrder} from "../types";
@@ -30,19 +30,13 @@ import {upsertTag} from "./mutations/upsertTag";
 import {claimedInvitation} from "./queries/claimedInvitation";
 import {Context} from "../context";
 import {ApiPubSub} from "../pubsub";
-import {blockchainEvents} from "./queries/blockchainEvents";
 import {balance} from "./queries/balance";
 import {trustRelations} from "./queries/trustRelations";
-import {contacts} from "./queries/contacts";
-import {chatHistory} from "./queries/chatHistory";
 import {Pool, PoolConfig} from "pg";
-import {contact} from "./queries/contact";
 import {commonTrust} from "./queries/commonTrust";
-import {balancesByAsset} from "./queries/balancesByAsset";
 import {sendMessage} from "./mutations/sendMessage";
 import {tagTransaction} from "./mutations/tagTransaction";
 import {acknowledge} from "./mutations/acknowledge";
-import {inbox} from "./queries/inbox";
 import {claimInvitation} from "./mutations/claimInvitation";
 import {Session} from "../session";
 import {createInvitations} from "./mutations/createInvitations";
@@ -259,24 +253,16 @@ export const resolvers: Resolvers = {
     organisations: organisations(prisma_api_ro),
     regions: regionsResolver,
     organisationsByAddress: organisationsByAddress(),
-    profilesById: profilesById(prisma_api_ro),
-    profilesBySafeAddress: profilesBySafeAddress(prisma_api_ro, true),
+    profilesBySafeAddress: profilesBySafeAddress(prisma_api_ro),
     search: search(prisma_api_ro),
     version: version(packageJson),
     offers: offers(prisma_api_ro),
     tags: tags(prisma_api_ro),
     tagById: tagById(prisma_api_ro),
     stats: stats(prisma_api_ro),
-    blockchainEvents: blockchainEvents(prisma_api_ro),
-    blockchainEventsByTransactionHash: blockchainEvents(prisma_api_ro),
     balance: balance(),
-    balancesByAsset: balancesByAsset(prisma_api_ro),
     trustRelations: trustRelations(prisma_api_ro),
-    contacts: contacts(prisma_api_ro, true),
-    contact: contact(prisma_api_ro),
-    chatHistory: chatHistory(prisma_api_ro),
     commonTrust: commonTrust(prisma_api_ro),
-    inbox: inbox(prisma_api_ro),
     lastUBITransaction: lastUbiTransaction(),
     initAggregateState: initAggregateState(),
     aggregates: async (parent, args, context:Context) => {

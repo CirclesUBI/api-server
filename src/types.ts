@@ -769,14 +769,10 @@ export type Query = {
   regions: Array<Organisation>;
   organisationsByAddress: Array<Organisation>;
   myInvitations: Array<CreatedInvitation>;
-  blockchainEvents: Array<ProfileEvent>;
   contacts: Array<Contact>;
   contact?: Maybe<Contact>;
   commonTrust: Array<CommonTrust>;
   chatHistory: Array<ProfileEvent>;
-  blockchainEventsByTransactionHash: Array<ProfileEvent>;
-  balance: Scalars['String'];
-  balancesByAsset: Array<AssetBalance>;
   trustRelations: Array<TrustRelation>;
   myProfile?: Maybe<Profile>;
   inbox: Array<ProfileEvent>;
@@ -819,15 +815,6 @@ export type QueryOrganisationsByAddressArgs = {
 };
 
 
-export type QueryBlockchainEventsArgs = {
-  safeAddress: Scalars['String'];
-  types?: Maybe<Array<Scalars['String']>>;
-  fromBlock?: Maybe<Scalars['Int']>;
-  toBlock?: Maybe<Scalars['Int']>;
-  pagination?: Maybe<PaginationArgs>;
-};
-
-
 export type QueryContactsArgs = {
   safeAddress: Scalars['String'];
 };
@@ -849,23 +836,6 @@ export type QueryChatHistoryArgs = {
   safeAddress: Scalars['String'];
   contactSafeAddress: Scalars['String'];
   pagination?: Maybe<PaginationArgs>;
-};
-
-
-export type QueryBlockchainEventsByTransactionHashArgs = {
-  safeAddress: Scalars['String'];
-  transactionHash: Scalars['String'];
-  types?: Maybe<Array<Scalars['String']>>;
-};
-
-
-export type QueryBalanceArgs = {
-  safeAddress: Scalars['String'];
-};
-
-
-export type QueryBalancesByAssetArgs = {
-  safeAddress: Scalars['String'];
 };
 
 
@@ -1995,14 +1965,10 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   regions?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryRegionsArgs, never>>;
   organisationsByAddress?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsByAddressArgs, 'addresses'>>;
   myInvitations?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
-  blockchainEvents?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryBlockchainEventsArgs, 'safeAddress'>>;
   contacts?: Resolver<Array<ResolversTypes['Contact']>, ParentType, ContextType, RequireFields<QueryContactsArgs, 'safeAddress'>>;
   contact?: Resolver<Maybe<ResolversTypes['Contact']>, ParentType, ContextType, RequireFields<QueryContactArgs, 'safeAddress' | 'contactAddress'>>;
   commonTrust?: Resolver<Array<ResolversTypes['CommonTrust']>, ParentType, ContextType, RequireFields<QueryCommonTrustArgs, 'safeAddress1' | 'safeAddress2'>>;
   chatHistory?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryChatHistoryArgs, 'safeAddress' | 'contactSafeAddress'>>;
-  blockchainEventsByTransactionHash?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryBlockchainEventsByTransactionHashArgs, 'safeAddress' | 'transactionHash'>>;
-  balance?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<QueryBalanceArgs, 'safeAddress'>>;
-  balancesByAsset?: Resolver<Array<ResolversTypes['AssetBalance']>, ParentType, ContextType, RequireFields<QueryBalancesByAssetArgs, 'safeAddress'>>;
   trustRelations?: Resolver<Array<ResolversTypes['TrustRelation']>, ParentType, ContextType, RequireFields<QueryTrustRelationsArgs, 'safeAddress'>>;
   myProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   inbox?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;

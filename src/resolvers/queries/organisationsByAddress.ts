@@ -3,6 +3,7 @@ import {getPool} from "../resolvers";
 import {profilesBySafeAddress} from "./profiles";
 import {prisma_api_ro} from "../../apiDbClient";
 import {Organisation, Profile, QueryOrganisationsByAddressArgs} from "../../types";
+import {ProfileLoader} from "../../profileLoader";
 
 export function organisationsByAddress() {
     return async (parent:any, args:QueryOrganisationsByAddressArgs, context:Context) => {
@@ -18,21 +19,17 @@ export function organisationsByAddress() {
                 return [];
             }
 
-            const profileResolver = profilesBySafeAddress(prisma_api_ro);
             const allSafeAddresses = organisationSignupsResult.rows.reduce((p, c) => {
                 p[c.organisation] = c.timestamp;
                 return p;
             }, {});
-            const profiles = await profileResolver(null, {safeAddresses: Object.keys(allSafeAddresses)}, context);
-            const _profilesBySafeAddress = profiles.reduce((p, c) => {
-                if (!c.circlesAddress)
-                    return p;
-                p[c.circlesAddress] = c;
-                return p;
-            }, <{ [x: string]: Profile }>{});
+
+
+            const profileLoader = new ProfileLoader();
+            const profiles = await profileLoader.profilesBySafeAddress(prisma_api_ro, Object.keys(allSafeAddresses));
 
             return organisationSignupsResult.rows.map(o => {
-                const p: Profile = _profilesBySafeAddress[o.organisation] ?? {
+                const p: Profile = profiles[o.organisation] ?? {
                     id: -1,
                     firstName: o.organisation,
                     circlesAddress: o.organisation

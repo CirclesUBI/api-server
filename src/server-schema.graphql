@@ -856,13 +856,6 @@ type Query {
 
   # Gets the created (noty invitations of the currently logged on user
   myInvitations: [CreatedInvitation!]!
-  blockchainEvents(
-    safeAddress: String!
-    types: [String!]
-    fromBlock: Int
-    toBlock: Int
-    pagination: PaginationArgs
-  ): [ProfileEvent!]!
   contacts(safeAddress: String!): [Contact!]!
   contact(safeAddress: String!, contactAddress: String!): Contact
   commonTrust(safeAddress1: String!, safeAddress2: String!): [CommonTrust!]!
@@ -871,13 +864,6 @@ type Query {
     contactSafeAddress: String!
     pagination: PaginationArgs
   ): [ProfileEvent!]!
-  blockchainEventsByTransactionHash(
-    safeAddress: String!
-    transactionHash: String!
-    types: [String!]
-  ): [ProfileEvent!]!
-  balance(safeAddress: String!): String!
-  balancesByAsset(safeAddress: String!): [AssetBalance!]!
   trustRelations(safeAddress: String!): [TrustRelation!]!
   myProfile: Profile
   inbox: [ProfileEvent!]!

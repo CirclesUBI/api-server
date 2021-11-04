@@ -3,6 +3,7 @@ import {getPool} from "../resolvers";
 import {CommonTrust, Profile} from "../../types";
 import {profilesBySafeAddress} from "./profiles";
 import {PrismaClient} from "../../api-db/client";
+import {ProfileLoader} from "../../profileLoader";
 
 export function commonTrust(prisma:PrismaClient) {
   return async (parent:any, args:any, context:Context) : Promise<CommonTrust[]> => {
@@ -67,18 +68,13 @@ export function commonTrust(prisma:PrismaClient) {
         return [];
       }
 
-      const profileResolver = profilesBySafeAddress(prisma);
       const allSafeAddresses = commonTrustsResult.rows.reduce((p,c) => {
         p[c.user] = true;
         return p;
       },{});
-      const profiles = await profileResolver(null, {safeAddresses:Object.keys(allSafeAddresses)}, context);
-      const _profilesBySafeAddress = profiles.reduce((p,c) => {
-        if (!c.circlesAddress)
-          return p;
-         p[c.circlesAddress] = c;
-        return p;
-      },<{[x:string]:Profile}>{});
+
+      const profileLoader = new ProfileLoader();
+      const profiles = await profileLoader.profilesBySafeAddress(prisma, Object.keys(allSafeAddresses));
 
       return commonTrustsResult.rows.map(o => {
         return <CommonTrust>{
@@ -86,7 +82,7 @@ export function commonTrust(prisma:PrismaClient) {
           type: o.direction,
           safeAddress1: args.safeAddress1,
           safeAddress2: args.safeAddress2,
-          profile: _profilesBySafeAddress[o.user]
+          profile: profiles[o.user]
         }
       });
     } finally {
