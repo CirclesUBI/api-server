@@ -1,10 +1,10 @@
 import {EventSource} from "../eventSource";
-import {InvitationCreated, PaginationArgs, ProfileEvent} from "../../types";
+import {InvitationCreated, Maybe, PaginationArgs, ProfileEvent, ProfileEventFilter} from "../../types";
 import {prisma_api_ro} from "../../apiDbClient";
 import {Prisma} from "../../api-db/client";
 
 export class CreatedInvitationsEventSource implements EventSource {
-  async getEvents(forSafeAddress: string, pagination: PaginationArgs): Promise<ProfileEvent[]> {
+  async getEvents(forSafeAddress: string, pagination: PaginationArgs, filter: Maybe<ProfileEventFilter>): Promise<ProfileEvent[]> {
     const createdInvitations = await prisma_api_ro.invitation.findMany({
       where: {
         createdBy: {

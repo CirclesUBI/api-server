@@ -1,7 +1,7 @@
 import {myProfile, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
-import {Profile, ProfileEvent, ProfileOrOrganisation, Resolvers, SortOrder} from "../types";
+import {Maybe, Profile, ProfileEvent, ProfileEventFilter, ProfileOrOrganisation, Resolvers, SortOrder} from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
 import {sessionInfo} from "./queries/sessionInfo";
@@ -260,7 +260,6 @@ export const resolvers: Resolvers = {
     tags: tags(prisma_api_ro),
     tagById: tagById(prisma_api_ro),
     stats: stats(prisma_api_ro),
-    balance: balance(),
     trustRelations: trustRelations(prisma_api_ro),
     commonTrust: commonTrust(prisma_api_ro),
     lastUBITransaction: lastUbiTransaction(),
@@ -415,7 +414,8 @@ export const resolvers: Resolvers = {
       if (events.length == 0) {
         events = await aggregateEventSource.getEvents(
           args.safeAddress,
-          args.pagination);
+          args.pagination,
+          args.filter ?? null);
 
         events = events.sort((a,b) => {
           const aTime = new Date(a.timestamp).getTime();

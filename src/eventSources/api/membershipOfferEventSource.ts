@@ -1,10 +1,10 @@
 import {EventSource} from "../eventSource";
-import {MembershipOffer, PaginationArgs, ProfileEvent} from "../../types";
+import {Maybe, MembershipOffer, PaginationArgs, ProfileEvent, ProfileEventFilter} from "../../types";
 import {prisma_api_ro} from "../../apiDbClient";
 import {Prisma} from "../../api-db/client";
 
 export class MembershipOfferEventSource implements EventSource {
-  async getEvents(forSafeAddress: string, pagination: PaginationArgs): Promise<ProfileEvent[]> {
+  async getEvents(forSafeAddress: string, pagination: PaginationArgs, filter: Maybe<ProfileEventFilter>): Promise<ProfileEvent[]> {
     const pendingMembershipOffers = await prisma_api_ro.membership.findMany({
       where: {
         createdAt: pagination.order == "ASC" ? {

@@ -1,23 +1,95 @@
 import {EventSource} from "../eventSource";
-import {ChatMessage, PaginationArgs, ProfileEvent} from "../../types";
+import {ChatMessage, Maybe, PaginationArgs, ProfileEvent, ProfileEventFilter} from "../../types";
 import {prisma_api_ro} from "../../apiDbClient";
 import {Prisma} from "../../api-db/client";
+import ChatMessageWhereInput = Prisma.ChatMessageWhereInput;
 
 export class ChatMessageEventSource implements EventSource {
-  async getEvents(forSafeAddress: string, pagination: PaginationArgs): Promise<ProfileEvent[]> {
-    const chatMessages = await prisma_api_ro.chatMessage.findMany({
-      where: {
+  async getEvents(forSafeAddress: string, pagination: PaginationArgs, filter: Maybe<ProfileEventFilter>): Promise<ProfileEvent[]> {
+    const noFilter: ChatMessageWhereInput = {
+      OR: [{
+        from: forSafeAddress
+      }, {
+        to: forSafeAddress
+      }]
+    };
+
+    const filteredWhereFrom: ChatMessageWhereInput = {
+      AND:[{
         OR: [{
           from: forSafeAddress
         }, {
           to: forSafeAddress
-        }],
-        createdAt: pagination.order == "ASC" ? {
-          gt: new Date(pagination.continueAt)
-        } : {
-          lt: new Date(pagination.continueAt)
-        }
-      },
+        }]
+      }, {
+        from: filter?.from ?? undefined
+      }]
+    };
+
+    const filteredWhereTo: ChatMessageWhereInput = {
+      AND:[{
+        OR: [{
+          from: forSafeAddress
+        }, {
+          to: forSafeAddress
+        }]
+      }, {
+        to: filter?.to ?? undefined
+      }]
+    };
+
+    const filteredWhereFromTo: ChatMessageWhereInput = {
+      AND:[{
+        OR: [{
+          from: forSafeAddress
+        }, {
+          to: forSafeAddress
+        }]
+      }, {
+        from: filter?.from ?? undefined,
+        to: filter?.to ?? undefined
+      }]
+    };
+
+    const filteredWhereWith: ChatMessageWhereInput = {
+      AND:[{
+        OR: [{
+          from: forSafeAddress
+        }, {
+          to: forSafeAddress
+        }]
+      }, {
+        OR: [{
+          from: filter?.with ?? undefined
+        }, {
+          to: filter?.with ?? undefined
+        }]
+      }]
+    };
+
+    const compositeFilter = {
+      ...(
+        filter?.from && filter?.to
+          ? filteredWhereFromTo
+          : filter?.from && !filter?.to
+            ? filteredWhereFrom
+            : !filter?.from && filter?.to
+              ? filteredWhereTo
+              : filter?.with
+                ? filteredWhereWith
+                : noFilter
+      ),
+      createdAt: pagination.order == "ASC" ? {
+        gt: new Date(pagination.continueAt)
+      } : {
+        lt: new Date(pagination.continueAt)
+      }
+    };
+
+    console.log(compositeFilter);
+
+    const chatMessages = await prisma_api_ro.chatMessage.findMany({
+      where: compositeFilter,
       orderBy: {
         createdAt: pagination.order == "ASC" ? Prisma.SortOrder.asc : Prisma.SortOrder.desc
       },

@@ -55,6 +55,7 @@ export function sendMessage(prisma: PrismaClient) {
         direction: "out",
         safe_address: message.from,
         safe_address_profile: fromProfile,
+
         payload: <ChatMessage>{
           __typename: "ChatMessage",
           id: message.id,

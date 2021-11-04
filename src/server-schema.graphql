@@ -831,6 +831,12 @@ input PaginationArgs {
   limit: Int!
 }
 
+input ProfileEventFilter {
+  from: String
+  to: String
+  with: String
+}
+
 type Query {
   whoami: String
   version: Version!
@@ -847,7 +853,7 @@ type Query {
   lastUBITransaction: String
   stats: Stats
 
-  events(types:[EventType!]! safeAddress: String! pagination:PaginationArgs!) : [ProfileEvent!]!
+  events(types:[EventType!]! safeAddress: String! pagination:PaginationArgs! filter:ProfileEventFilter) : [ProfileEvent!]!
   aggregates(types:[AggregateType!]! safeAddress: String!) : [ProfileAggregate!]!
 
   organisations(pagination: PaginationArgs): [Organisation!]!
@@ -856,17 +862,9 @@ type Query {
 
   # Gets the created (noty invitations of the currently logged on user
   myInvitations: [CreatedInvitation!]!
-  contacts(safeAddress: String!): [Contact!]!
-  contact(safeAddress: String!, contactAddress: String!): Contact
   commonTrust(safeAddress1: String!, safeAddress2: String!): [CommonTrust!]!
-  chatHistory(
-    safeAddress: String!
-    contactSafeAddress: String!
-    pagination: PaginationArgs
-  ): [ProfileEvent!]!
   trustRelations(safeAddress: String!): [TrustRelation!]!
   myProfile: Profile
-  inbox: [ProfileEvent!]!
   profilesById(ids: [Int!]!): [Profile!]!
   profilesBySafeAddress(safeAddresses: [String!]!): [Profile!]!
 

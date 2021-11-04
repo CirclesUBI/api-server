@@ -725,6 +725,12 @@ export type ProfileEvent = {
   tags?: Maybe<Array<Tag>>;
 };
 
+export type ProfileEventFilter = {
+  from?: Maybe<Scalars['String']>;
+  to?: Maybe<Scalars['String']>;
+  with?: Maybe<Scalars['String']>;
+};
+
 export type ProfileOrOrganisation = Profile | Organisation;
 
 export type ProvePaymentResult = {
@@ -769,13 +775,9 @@ export type Query = {
   regions: Array<Organisation>;
   organisationsByAddress: Array<Organisation>;
   myInvitations: Array<CreatedInvitation>;
-  contacts: Array<Contact>;
-  contact?: Maybe<Contact>;
   commonTrust: Array<CommonTrust>;
-  chatHistory: Array<ProfileEvent>;
   trustRelations: Array<TrustRelation>;
   myProfile?: Maybe<Profile>;
-  inbox: Array<ProfileEvent>;
   profilesById: Array<Profile>;
   profilesBySafeAddress: Array<Profile>;
   findSafeAddressByOwner: Array<Scalars['String']>;
@@ -791,6 +793,7 @@ export type QueryEventsArgs = {
   types: Array<EventType>;
   safeAddress: Scalars['String'];
   pagination: PaginationArgs;
+  filter?: Maybe<ProfileEventFilter>;
 };
 
 
@@ -815,27 +818,9 @@ export type QueryOrganisationsByAddressArgs = {
 };
 
 
-export type QueryContactsArgs = {
-  safeAddress: Scalars['String'];
-};
-
-
-export type QueryContactArgs = {
-  safeAddress: Scalars['String'];
-  contactAddress: Scalars['String'];
-};
-
-
 export type QueryCommonTrustArgs = {
   safeAddress1: Scalars['String'];
   safeAddress2: Scalars['String'];
-};
-
-
-export type QueryChatHistoryArgs = {
-  safeAddress: Scalars['String'];
-  contactSafeAddress: Scalars['String'];
-  pagination?: Maybe<PaginationArgs>;
 };
 
 
@@ -1252,6 +1237,7 @@ export type ResolversTypes = ResolversObject<{
   Profile: ResolverTypeWrapper<Profile>;
   ProfileAggregate: ResolverTypeWrapper<Omit<ProfileAggregate, 'payload'> & { payload: ResolversTypes['AggregatePayload'] }>;
   ProfileEvent: ResolverTypeWrapper<Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
+  ProfileEventFilter: ProfileEventFilter;
   ProfileOrOrganisation: ResolversTypes['Profile'] | ResolversTypes['Organisation'];
   ProvePaymentResult: ResolverTypeWrapper<ProvePaymentResult>;
   Purchase: ResolverTypeWrapper<Purchase>;
@@ -1358,6 +1344,7 @@ export type ResolversParentTypes = ResolversObject<{
   Profile: Profile;
   ProfileAggregate: Omit<ProfileAggregate, 'payload'> & { payload: ResolversParentTypes['AggregatePayload'] };
   ProfileEvent: Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversParentTypes['EventPayload']> };
+  ProfileEventFilter: ProfileEventFilter;
   ProfileOrOrganisation: ResolversParentTypes['Profile'] | ResolversParentTypes['Organisation'];
   ProvePaymentResult: ProvePaymentResult;
   Purchase: Purchase;
@@ -1965,13 +1952,9 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   regions?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryRegionsArgs, never>>;
   organisationsByAddress?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsByAddressArgs, 'addresses'>>;
   myInvitations?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
-  contacts?: Resolver<Array<ResolversTypes['Contact']>, ParentType, ContextType, RequireFields<QueryContactsArgs, 'safeAddress'>>;
-  contact?: Resolver<Maybe<ResolversTypes['Contact']>, ParentType, ContextType, RequireFields<QueryContactArgs, 'safeAddress' | 'contactAddress'>>;
   commonTrust?: Resolver<Array<ResolversTypes['CommonTrust']>, ParentType, ContextType, RequireFields<QueryCommonTrustArgs, 'safeAddress1' | 'safeAddress2'>>;
-  chatHistory?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryChatHistoryArgs, 'safeAddress' | 'contactSafeAddress'>>;
   trustRelations?: Resolver<Array<ResolversTypes['TrustRelation']>, ParentType, ContextType, RequireFields<QueryTrustRelationsArgs, 'safeAddress'>>;
   myProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
-  inbox?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   profilesById?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesByIdArgs, 'ids'>>;
   profilesBySafeAddress?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesBySafeAddressArgs, 'safeAddresses'>>;
   findSafeAddressByOwner?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryFindSafeAddressByOwnerArgs, 'owner'>>;

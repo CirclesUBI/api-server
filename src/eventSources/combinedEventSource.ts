@@ -1,5 +1,5 @@
 import {EventSource} from "./eventSource";
-import {PaginationArgs, ProfileEvent, SortOrder} from "../types";
+import {Maybe, PaginationArgs, ProfileEvent, ProfileEventFilter, SortOrder} from "../types";
 
 export class CombinedEventSource implements EventSource {
   private readonly _resolvers:EventSource[];
@@ -8,10 +8,10 @@ export class CombinedEventSource implements EventSource {
     this._resolvers = resolvers;
   }
 
-  async getEvents(forSafeAddress: string, pagination:PaginationArgs): Promise<ProfileEvent[]> {
+  async getEvents(forSafeAddress: string, pagination:PaginationArgs, filter:Maybe<ProfileEventFilter>): Promise<ProfileEvent[]> {
     const resultPromises = this._resolvers.map(resolver => {
       try {
-        return resolver.getEvents(forSafeAddress, pagination)
+        return resolver.getEvents(forSafeAddress, pagination, filter)
       } catch (e) {
         console.error(e);
         return [];

@@ -1,5 +1,5 @@
 import {EventSource} from "../eventSource";
-import {PaginationArgs, ProfileEvent, SortOrder} from "../../types";
+import {Maybe, PaginationArgs, ProfileEvent, ProfileEventFilter, SortOrder} from "../../types";
 import {getPool} from "../../resolvers/resolvers";
 
 export enum BlockchainEventType {
@@ -13,22 +13,77 @@ export enum BlockchainEventType {
 
 export class BlockchainIndexerEventSource implements EventSource
 {
-  private readonly _sql = `select timestamp
-                                , block_number
-                                , transaction_index
-                                , transaction_hash
-                                , type
-                                , safe_address
-                                , direction
-                                , value
-                                , obj as payload
-                           from crc_safe_timeline_2
-                           where type =ANY($1)
-                             and safe_address = $2
-                             and (('~~SORT_ORDER~~' = 'asc' and timestamp > $3)
-                                 or ('~~SORT_ORDER~~' = 'desc' and timestamp < $3))
-                           order by timestamp ~~SORT_ORDER~~
-                           limit $4`;
+  private _in(filter: Maybe<ProfileEventFilter>) : string {
+    let sql = `
+      select timestamp
+           , block_number
+           , transaction_index
+           , transaction_hash
+           , type
+           , safe_address
+           , contact_address
+           , direction
+           , value
+           , obj as payload
+      from crc_safe_timeline_2
+      where direction = 'in'`;
+
+      sql += `
+      and ($5 = '' or contact_address = $5) --you`;
+
+      sql += `
+      and ($6 = '' or safe_address = $6) -- me`;
+
+    return sql;
+  }
+
+  private _out(filter: Maybe<ProfileEventFilter>) : string {
+    let sql = `
+      select timestamp
+           , block_number
+           , transaction_index
+           , transaction_hash
+           , type
+           , safe_address
+           , contact_address
+           , direction
+           , value
+           , obj as payload
+      from crc_safe_timeline_2
+      where direction = 'out'`;
+
+      sql += `
+      and ($6 = '' or contact_address = $6) --you`;
+
+      sql += `
+      and ($5 = '' or safe_address = $5) -- me`;
+
+    return sql;
+  }
+
+
+  private cte(_in:string, _out:string) : string {
+    return `
+      with "in" as (
+          ${_in}
+      ), "out" as (
+          ${_out}
+      ), "all" as (
+          select *
+          from "in"
+          union all
+          select *
+          from "out"
+      )
+      select *
+      from "all"
+      where type = ANY ($1)
+        and safe_address = $2
+        and (('~~SORT_ORDER~~' = 'asc' and timestamp > $3)
+          or ('~~SORT_ORDER~~' = 'desc' and timestamp < $3))
+      order by timestamp ~~SORT_ORDER~~
+      limit $4;`;
+  }
 
   private readonly _types:BlockchainEventType[];
 
@@ -36,17 +91,26 @@ export class BlockchainIndexerEventSource implements EventSource
     this._types = types;
   }
 
-  async getEvents(forSafeAddress: string, pagination:PaginationArgs): Promise<ProfileEvent[]> {
+  async getEvents(forSafeAddress: string, pagination:PaginationArgs, filter: Maybe<ProfileEventFilter>): Promise<ProfileEvent[]> {
     const pool = getPool();
     try {
+      const inSql = this._in(filter);
+      const outSql = this._out(filter);
+      const baseQuery = this.cte(inSql, outSql);
+      const queryWithFilter = (<any>baseQuery).replaceAll("~~SORT_ORDER~~", pagination.order == SortOrder.Asc ? "asc" : "desc");
+
+      const params = [
+        this._types,
+        forSafeAddress,
+        pagination.continueAt,
+        pagination.limit,
+        filter?.from ?? "",
+        filter?.to ?? ""
+      ];
+
       const eventRows = await pool.query(
-        (<any>this._sql).replaceAll("~~SORT_ORDER~~", pagination.order == SortOrder.Asc ? "asc" : "desc"),
-        [
-          this._types,
-          forSafeAddress,
-          pagination.continueAt,
-          pagination.limit
-        ]
+        queryWithFilter,
+        params
       );
 
       return eventRows.rows.map((r:any) => {

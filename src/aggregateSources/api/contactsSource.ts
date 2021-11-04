@@ -110,7 +110,7 @@ async function chatMessageContacts(forSafeAddress: string) : Promise<Contact2[]>
       with "in" as (
           select max("createdAt") last_contact_at, "from" as contact_address
           from "ChatMessage"
-          where "to" = '0xde374ece6fa50e781e81aac78e811b33d16912c7'
+          where "to" = ${forSafeAddress}
           group by "from"
       ), "in_with_text" as (
           select "in".*, cm.text as value
@@ -119,7 +119,7 @@ async function chatMessageContacts(forSafeAddress: string) : Promise<Contact2[]>
       ), "out" as (
           select max("createdAt") last_contact_at, "to" as contact_address
           from "ChatMessage"
-          where "from" = '0xde374ece6fa50e781e81aac78e811b33d16912c7'
+          where "from" = ${forSafeAddress}
           group by "to"
       ), "out_with_text" as (
           select "out".*, cm.text as value
