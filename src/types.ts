@@ -729,6 +729,7 @@ export type ProfileEventFilter = {
   from?: Maybe<Scalars['String']>;
   to?: Maybe<Scalars['String']>;
   with?: Maybe<Scalars['String']>;
+  transactionHash?: Maybe<Scalars['String']>;
 };
 
 export type ProfileOrOrganisation = Profile | Organisation;

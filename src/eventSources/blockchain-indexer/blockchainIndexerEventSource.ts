@@ -83,12 +83,12 @@ export class BlockchainIndexerEventSource implements EventSource
         and safe_address = $2
         and (('~~SORT_ORDER~~' = 'asc' and timestamp > $3)
           or ('~~SORT_ORDER~~' = 'desc' and timestamp < $3))`;
-
     sql += `
       and ($7 = '' or (safe_address = $7 or contact_address = $7)) 
     `;
-
-
+    sql += `
+      and ($8 = '' or transaction_hash = $8)
+    `;
     sql += `
       order by timestamp ~~SORT_ORDER~~
       limit $4;`;
@@ -117,7 +117,8 @@ export class BlockchainIndexerEventSource implements EventSource
         pagination.limit,
         filter?.from ?? "",
         filter?.to ?? "",
-        filter?.with ?? ""
+        filter?.with ?? "",
+        filter?.transactionHash ?? ""
       ];
 
       const eventRows = await pool.query(
