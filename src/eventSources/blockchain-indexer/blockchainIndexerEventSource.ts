@@ -13,7 +13,7 @@ export enum BlockchainEventType {
 
 export class BlockchainIndexerEventSource implements EventSource
 {
-  private _in(filter: Maybe<ProfileEventFilter>) : string {
+  private _in() : string {
     let sql = `
       select timestamp
            , block_number
@@ -37,7 +37,7 @@ export class BlockchainIndexerEventSource implements EventSource
     return sql;
   }
 
-  private _out(filter: Maybe<ProfileEventFilter>) : string {
+  private _out() : string {
     let sql = `
       select timestamp
            , block_number
@@ -62,8 +62,8 @@ export class BlockchainIndexerEventSource implements EventSource
   }
 
 
-  private cte(_in:string, _out:string) : string {
-    return `
+  private cte(_in:string, _out:string, filter: Maybe<ProfileEventFilter>) : string {
+    let sql = `
       with "in" as (
           ${_in}
       ), "out" as (
@@ -74,15 +74,26 @@ export class BlockchainIndexerEventSource implements EventSource
           union all
           select *
           from "out"
-      )
+      )`;
+
+    sql += `
       select *
       from "all"
       where type = ANY ($1)
         and safe_address = $2
         and (('~~SORT_ORDER~~' = 'asc' and timestamp > $3)
-          or ('~~SORT_ORDER~~' = 'desc' and timestamp < $3))
+          or ('~~SORT_ORDER~~' = 'desc' and timestamp < $3))`;
+
+    sql += `
+      and ($7 = '' or (safe_address = $7 or contact_address = $7)) 
+    `;
+
+
+    sql += `
       order by timestamp ~~SORT_ORDER~~
       limit $4;`;
+
+    return sql;
   }
 
   private readonly _types:BlockchainEventType[];
@@ -94,9 +105,9 @@ export class BlockchainIndexerEventSource implements EventSource
   async getEvents(forSafeAddress: string, pagination:PaginationArgs, filter: Maybe<ProfileEventFilter>): Promise<ProfileEvent[]> {
     const pool = getPool();
     try {
-      const inSql = this._in(filter);
-      const outSql = this._out(filter);
-      const baseQuery = this.cte(inSql, outSql);
+      const inSql = this._in();
+      const outSql = this._out();
+      const baseQuery = this.cte(inSql, outSql, filter);
       const queryWithFilter = (<any>baseQuery).replaceAll("~~SORT_ORDER~~", pagination.order == SortOrder.Asc ? "asc" : "desc");
 
       const params = [
@@ -105,7 +116,8 @@ export class BlockchainIndexerEventSource implements EventSource
         pagination.continueAt,
         pagination.limit,
         filter?.from ?? "",
-        filter?.to ?? ""
+        filter?.to ?? "",
+        filter?.with ?? ""
       ];
 
       const eventRows = await pool.query(

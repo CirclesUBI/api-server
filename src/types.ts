@@ -363,7 +363,7 @@ export type InvitationRedeemed = IEventPayload & {
   transaction_hash?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   code: Scalars['String'];
-  redeemedBy: Scalars['String'];
+  redeemedBy?: Maybe<Scalars['String']>;
   redeemedBy_profile?: Maybe<Profile>;
 };
 
@@ -962,6 +962,7 @@ export type SessionInfo = {
   isLoggedOn: Scalars['Boolean'];
   hasProfile?: Maybe<Scalars['Boolean']>;
   profileId?: Maybe<Scalars['Int']>;
+  lastAcknowledgedAt?: Maybe<Scalars['String']>;
 };
 
 export enum SortOrder {
@@ -1696,7 +1697,7 @@ export type InvitationRedeemedResolvers<ContextType = any, ParentType extends Re
   transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  redeemedBy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  redeemedBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   redeemedBy_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -2007,6 +2008,7 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
   isLoggedOn?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   hasProfile?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   profileId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  lastAcknowledgedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

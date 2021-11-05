@@ -77,6 +77,7 @@ import {MembersSource} from "../aggregateSources/api/membersSource";
 import {AggregateAugmenter} from "../aggregateSources/aggregateAugmenter";
 import {open} from "lmdb-store";
 import {EventCache} from "../eventSources/cache/eventCache";
+import {ProfileLoader} from "../profileLoader";
 
 // const eventCache2 = new EventCache("eventCache2.lmdb");
 
@@ -264,6 +265,16 @@ export const resolvers: Resolvers = {
     commonTrust: commonTrust(prisma_api_ro),
     lastUBITransaction: lastUbiTransaction(),
     initAggregateState: initAggregateState(),
+    profilesById: async (parent, args, context:Context) => {
+      const profiles = await new ProfileLoader().queryCirclesLandById(prisma_api_rw, args.ids);
+      return <Profile[]>Object.values(profiles).map(o => {
+        // @ts-ignore
+        delete o.newsletter;
+        // @ts-ignore
+        o.memberships = [];
+        return o;
+      });
+    },
     aggregates: async (parent, args, context:Context) => {
       const aggregateSources: AggregateSource[] = [];
       const types = args.types?.reduce((p, c) => {

@@ -17,6 +17,7 @@ type Profile {
   avatarMimeType: String
   newsletter: Boolean
   displayTimeCircles: Boolean
+  #lastAcknowledged: String
   cityGeonameid: Int
   city: City
   offers: [Offer!]
@@ -134,6 +135,7 @@ type SessionInfo {
   isLoggedOn: Boolean!
   hasProfile: Boolean
   profileId: Int
+  lastAcknowledgedAt: String
 }
 
 type DelegateAuthInit {
@@ -492,7 +494,7 @@ type InvitationRedeemed implements IEventPayload {
   transaction_hash: String
   name: String!
   code: String!
-  redeemedBy: String!
+  redeemedBy: String
   redeemedBy_profile: Profile
 }
 

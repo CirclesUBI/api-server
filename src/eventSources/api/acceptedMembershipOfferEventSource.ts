@@ -17,6 +17,11 @@ export class AcceptedMembershipOfferEventSource implements EventSource {
         }
       },
       include: {
+        createdBy: {
+          select: {
+            circlesAddress: true
+          }
+        },
         member: {
           select: {
             circlesAddress: true
@@ -47,6 +52,7 @@ export class AcceptedMembershipOfferEventSource implements EventSource {
         transaction_index: null,
         payload: <MembershipAccepted> {
           __typename: "MembershipAccepted",
+          createdBy: r.createdBy.circlesAddress,
           member: r.member.circlesAddress,
           organisation: r.memberAt.circlesAddress
         }

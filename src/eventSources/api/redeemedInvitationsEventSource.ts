@@ -14,7 +14,10 @@ export class RedeemedInvitationsEventSource implements EventSource {
           gt: new Date(pagination.continueAt)
         } : {
           lt: new Date(pagination.continueAt)
-        }
+        },
+        // redeemedBy: {
+        //   isNot: null
+        // }
       },
       orderBy: {
         createdAt: pagination.order == "ASC" ? Prisma.SortOrder.asc : Prisma.SortOrder.desc

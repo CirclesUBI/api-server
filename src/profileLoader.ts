@@ -6,7 +6,29 @@ import fetch from "cross-fetch";
 export type SafeProfileMap = {[safeAddress:string]:Profile|null};
 
 export class ProfileLoader {
-  async queryCirclesLand(prisma: PrismaClient, safeAddresses:string[]) : Promise<SafeProfileMap> {
+  async queryCirclesLandById(prisma: PrismaClient, ids:number[]) : Promise<SafeProfileMap> {
+    const profiles = await prisma.profile.findMany({
+      where: {
+        id: {
+          in: ids
+        }
+      },
+      orderBy: {
+        lastUpdateAt: "asc"
+      }
+    });
+
+    const safeProfileMap = profiles.reduce((p,c)=> {
+      if (!c.circlesAddress)
+        return p;
+      p[c.circlesAddress] = c;
+      return p;
+    }, <SafeProfileMap>{});
+
+    return safeProfileMap;
+  }
+
+  async queryCirclesLandBySafeAddress(prisma: PrismaClient, safeAddresses:string[]) : Promise<SafeProfileMap> {
     const profiles = await prisma.profile.findMany({
       where: {
         circlesAddress: {
@@ -97,7 +119,7 @@ export class ProfileLoader {
 
   async profilesBySafeAddress(prisma:PrismaClient, addresses:string[]) : Promise<SafeProfileMap> {
     const lowercaseAddresses = addresses.map(o => o.toLowerCase());
-    const circlesLandProfilesPromise = this.queryCirclesLand(prisma, lowercaseAddresses);
+    const circlesLandProfilesPromise = this.queryCirclesLandBySafeAddress(prisma, lowercaseAddresses);
     const circlesGardenLocalPromise = this.queryCirclesGardenLocal(prisma, lowercaseAddresses);
 
     const localQueryResults = await Promise.all([
@@ -116,12 +138,14 @@ export class ProfileLoader {
       allProfilesMap[entry[0]] = entry[1];
     });
 
-    allProfilesMap["0x0000000000000000000000000000000000000000"] = {
-      id: 0,
-      firstName: "Circles",
-      lastName: "Land",
-      avatarUrl: "https://dev.circles.land/logos/circles.png"
-    };
+    if (allProfilesMap["0x0000000000000000000000000000000000000000"]) {
+      allProfilesMap["0x0000000000000000000000000000000000000000"] = {
+        id: 0,
+        firstName: "Circles",
+        lastName: "Land",
+        avatarUrl: "https://dev.circles.land/logos/circles.png"
+      };
+    }
 
     const nonLocalProfileMap: SafeProfileMap = {};
     lowercaseAddresses

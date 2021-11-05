@@ -140,7 +140,7 @@ export class BlockchainEventSource implements ProfileEventSource {
         await pool.end();
       }
     } catch (e) {
-      console.error(`The received websocket message was not understood:`, message, e);
+      console.error(`The received websocket message was not understood:`, message, `Exception was: ${e}`);
     }
   }
 }
