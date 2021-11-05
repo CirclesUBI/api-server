@@ -719,6 +719,8 @@ export type ProfileEvent = {
   type: Scalars['String'];
   safe_address: Scalars['String'];
   safe_address_profile?: Maybe<Profile>;
+  contact_address?: Maybe<Scalars['String']>;
+  contact_address_profile?: Maybe<Profile>;
   direction: Scalars['String'];
   value?: Maybe<Scalars['String']>;
   payload?: Maybe<EventPayload>;
@@ -1908,6 +1910,8 @@ export type ProfileEventResolvers<ContextType = any, ParentType extends Resolver
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   safe_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   safe_address_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  contact_address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  contact_address_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   direction?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   payload?: Resolver<Maybe<ResolversTypes['EventPayload']>, ParentType, ContextType>;

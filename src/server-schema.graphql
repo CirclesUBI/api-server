@@ -619,6 +619,8 @@ type ProfileEvent {
   type: String!
   safe_address: String!
   safe_address_profile: Profile
+  contact_address: String
+  contact_address_profile: Profile
   direction: String!
   value: String
   payload: EventPayload

@@ -47,6 +47,9 @@ export class EventAugmenter
                              .filter(a => typeof a == "string" && a !== ""));
 
     addresses.push(profileEvent.safe_address);
+    if (profileEvent.contact_address) {
+      addresses.push(profileEvent.contact_address);
+    }
 
     // Add new addresses as key of the _profiles-map
     addresses
@@ -79,7 +82,14 @@ export class EventAugmenter
     this._events.forEach(ev => {
       this._extractors
         .filter(ex => ex.matches(ev))
-        .forEach(ex => ex.augment(ev.payload, this._profiles, this._tags))
+        .forEach(ex => {
+          if (ev.contact_address) {
+            ev.contact_address_profile = this._profiles[ev.contact_address]
+          }
+          ev.safe_address_profile = this._profiles[ev.safe_address];
+
+          ex.augment(ev.payload, this._profiles, this._tags)
+        })
     });
 
     return this._events;

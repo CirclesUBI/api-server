@@ -130,6 +130,7 @@ export class BlockchainIndexerEventSource implements EventSource
         return <ProfileEvent>{
           __typename: "ProfileEvent",
           safe_address: r.safe_address,
+          contact_address: r.contact_address,
           type: r.type,
           block_number: r.block_number,
           direction: r.direction,
