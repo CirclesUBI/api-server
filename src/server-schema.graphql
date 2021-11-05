@@ -842,6 +842,17 @@ input ProfileEventFilter {
   transactionHash: String
 }
 
+input ContactAggregateFilter {
+  addresses: [String!]!
+}
+input CrcBalanceAggregateFilter {
+  tokenAddresses: [String!]!
+}
+input ProfileAggregateFilter {
+  contacts: ContactAggregateFilter
+  crcBalance: CrcBalanceAggregateFilter
+}
+
 type Query {
   whoami: String
   version: Version!
@@ -859,7 +870,7 @@ type Query {
   stats: Stats
 
   events(types:[EventType!]! safeAddress: String! pagination:PaginationArgs! filter:ProfileEventFilter) : [ProfileEvent!]!
-  aggregates(types:[AggregateType!]! safeAddress: String!) : [ProfileAggregate!]!
+  aggregates(types:[AggregateType!]! safeAddress: String! filter:ProfileAggregateFilter) : [ProfileAggregate!]!
 
   organisations(pagination: PaginationArgs): [Organisation!]!
   regions(pagination: PaginationArgs): [Organisation!]!

@@ -1,5 +1,5 @@
-import {ProfileAggregate} from "../types";
+import {Maybe, ProfileAggregate, ProfileAggregateFilter} from "../types";
 
 export interface AggregateSource {
-  getAggregate(forSafeAddress:string) : Promise<ProfileAggregate[]>
+  getAggregate(forSafeAddress:string, filter?: Maybe<ProfileAggregateFilter>) : Promise<ProfileAggregate[]>
 }

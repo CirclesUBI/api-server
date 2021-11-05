@@ -126,6 +126,10 @@ export type Contact2 = {
   contactAddress_Profile?: Maybe<Profile>;
 };
 
+export type ContactAggregateFilter = {
+  addresses: Array<Scalars['String']>;
+};
+
 export enum ContactDirection {
   In = 'In',
   Out = 'Out'
@@ -149,6 +153,10 @@ export type CountryStats = {
   __typename?: 'CountryStats';
   name: Scalars['String'];
   citizenCount: Scalars['Int'];
+};
+
+export type CrcBalanceAggregateFilter = {
+  tokenAddresses: Array<Scalars['String']>;
 };
 
 export type CrcBalances = IAggregatePayload & {
@@ -710,6 +718,11 @@ export type ProfileAggregate = {
   payload: AggregatePayload;
 };
 
+export type ProfileAggregateFilter = {
+  contacts?: Maybe<ContactAggregateFilter>;
+  crcBalance?: Maybe<CrcBalanceAggregateFilter>;
+};
+
 export type ProfileEvent = {
   __typename?: 'ProfileEvent';
   timestamp: Scalars['String'];
@@ -803,6 +816,7 @@ export type QueryEventsArgs = {
 export type QueryAggregatesArgs = {
   types: Array<AggregateType>;
   safeAddress: Scalars['String'];
+  filter?: Maybe<ProfileAggregateFilter>;
 };
 
 
@@ -1191,10 +1205,12 @@ export type ResolversTypes = ResolversObject<{
   ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
   Contact: ResolverTypeWrapper<Contact>;
   Contact2: ResolverTypeWrapper<Contact2>;
+  ContactAggregateFilter: ContactAggregateFilter;
   ContactDirection: ContactDirection;
   ContactPoint: ResolverTypeWrapper<ContactPoint>;
   Contacts: ResolverTypeWrapper<Contacts>;
   CountryStats: ResolverTypeWrapper<CountryStats>;
+  CrcBalanceAggregateFilter: CrcBalanceAggregateFilter;
   CrcBalances: ResolverTypeWrapper<CrcBalances>;
   CrcHubTransfer: ResolverTypeWrapper<CrcHubTransfer>;
   CrcMinting: ResolverTypeWrapper<CrcMinting>;
@@ -1240,6 +1256,7 @@ export type ResolversTypes = ResolversObject<{
   PaymentProof: PaymentProof;
   Profile: ResolverTypeWrapper<Profile>;
   ProfileAggregate: ResolverTypeWrapper<Omit<ProfileAggregate, 'payload'> & { payload: ResolversTypes['AggregatePayload'] }>;
+  ProfileAggregateFilter: ProfileAggregateFilter;
   ProfileEvent: ResolverTypeWrapper<Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
   ProfileEventFilter: ProfileEventFilter;
   ProfileOrOrganisation: ResolversTypes['Profile'] | ResolversTypes['Organisation'];
@@ -1300,9 +1317,11 @@ export type ResolversParentTypes = ResolversObject<{
   ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
   Contact: Contact;
   Contact2: Contact2;
+  ContactAggregateFilter: ContactAggregateFilter;
   ContactPoint: ContactPoint;
   Contacts: Contacts;
   CountryStats: CountryStats;
+  CrcBalanceAggregateFilter: CrcBalanceAggregateFilter;
   CrcBalances: CrcBalances;
   CrcHubTransfer: CrcHubTransfer;
   CrcMinting: CrcMinting;
@@ -1347,6 +1366,7 @@ export type ResolversParentTypes = ResolversObject<{
   PaymentProof: PaymentProof;
   Profile: Profile;
   ProfileAggregate: Omit<ProfileAggregate, 'payload'> & { payload: ResolversParentTypes['AggregatePayload'] };
+  ProfileAggregateFilter: ProfileAggregateFilter;
   ProfileEvent: Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversParentTypes['EventPayload']> };
   ProfileEventFilter: ProfileEventFilter;
   ProfileOrOrganisation: ResolversParentTypes['Profile'] | ResolversParentTypes['Organisation'];

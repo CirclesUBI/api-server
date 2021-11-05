@@ -1,7 +1,16 @@
 import {myProfile, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
-import {Maybe, Profile, ProfileEvent, ProfileEventFilter, ProfileOrOrganisation, Resolvers, SortOrder} from "../types";
+import {
+  AggregateType,
+  Maybe,
+  Profile,
+  ProfileEvent,
+  ProfileEventFilter,
+  ProfileOrOrganisation,
+  Resolvers,
+  SortOrder
+} from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
 import {sessionInfo} from "./queries/sessionInfo";
@@ -283,10 +292,10 @@ export const resolvers: Resolvers = {
         return p;
       }, <{ [x: string]: any }>{}) ?? {};
 
-      if (types["CrcBalances"]) {
+      if (types[AggregateType.CrcBalances]) {
         aggregateSources.push(new CrcBalanceSource());
       }
-      if (types["Contacts"]) {
+      if (types[AggregateType.Contacts]) {
         const contactPoints = [
           ContactPoints.CrcHubTransfer,
           ContactPoints.CrcTrust
@@ -301,15 +310,15 @@ export const resolvers: Resolvers = {
         }
         aggregateSources.push(new ContactsSource(contactPoints));
       }
-      if (types["Memberships"]) {
+      if (types[AggregateType.Memberships]) {
         aggregateSources.push(new MembershipsSource());
       }
-      if (types["Members"]) {
+      if (types[AggregateType.Members]) {
         aggregateSources.push(new MembersSource());
       }
 
       const source = new CombinedAggregateSource(aggregateSources);
-      let aggregates = await source.getAggregate(args.safeAddress);
+      let aggregates = await source.getAggregate(args.safeAddress, args.filter);
 
       const augmentation = new AggregateAugmenter();
       aggregates.forEach(e => augmentation.add(e));
@@ -403,6 +412,7 @@ export const resolvers: Resolvers = {
       const aggregateEventSource = new CombinedEventSource(eventSources);
 
       if (context.sessionId && !callerProfile) {
+        // Necessary to cache private items?!
         callerProfile = await context.callerProfile;
       }
 

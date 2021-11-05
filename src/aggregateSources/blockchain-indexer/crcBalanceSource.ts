@@ -1,10 +1,16 @@
 import {AggregateSource} from "../aggregateSource";
-import {AssetBalance, CrcBalances, ProfileAggregate} from "../../types";
+import {
+  AssetBalance,
+  CrcBalanceAggregateFilter,
+  CrcBalances, Maybe,
+  ProfileAggregate,
+  ProfileAggregateFilter
+} from "../../types";
 import {getPool} from "../../resolvers/resolvers";
 
 // All CRC balances of a safe
 export class CrcBalanceSource implements AggregateSource {
-  async getAggregate(forSafeAddress: string): Promise<ProfileAggregate[]> {
+  async getAggregate(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>): Promise<ProfileAggregate[]> {
     const pool = getPool();
     try {
       const crcBalancesResult = await pool.query(`

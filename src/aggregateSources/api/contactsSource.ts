@@ -1,9 +1,18 @@
 import {AggregateSource} from "../aggregateSource";
-import {ContactDirection, Contact2, ContactPoint, Contacts, CrcTrust, ProfileAggregate} from "../../types";
+import {
+  ContactDirection,
+  Contact2,
+  ContactPoint,
+  Contacts,
+  CrcTrust,
+  ProfileAggregate,
+  ProfileAggregateFilter, Maybe
+} from "../../types";
 import {getPool} from "../../resolvers/resolvers";
 import {prisma_api_ro} from "../../apiDbClient";
 
-async function trustContacts(forSafeAddress: string) : Promise<Contact2[]> {
+async function trustContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact2[]> {
+  const start = new Date().getTime();
   const pool = getPool();
   try {
     const trustContactsResult = await pool.query(`
@@ -27,8 +36,9 @@ async function trustContacts(forSafeAddress: string) : Promise<Contact2[]> {
                        array_agg(last_contact_at) timestamps,
                        address as contact_address
                 from "all"
+                where $2=ARRAY[]::text[] or address=ANY($2)
                 group by address;`,
-      [forSafeAddress.toLowerCase()]);
+      [forSafeAddress.toLowerCase(), filter?.contacts?.addresses ?? []]);
 
     return trustContactsResult.rows.map(o => {
       const timestamps = o.timestamps.map((p:any) => new Date(p).getTime().toString());
@@ -46,10 +56,13 @@ async function trustContacts(forSafeAddress: string) : Promise<Contact2[]> {
     })
   } finally {
     await pool.end();
+    const duration = new Date().getTime() - start;
+    console.log(`contact source 'trustContacts' took: ${duration} ms`);
   }
 }
 
-async function hubTransferContacts(forSafeAddress: string) : Promise<Contact2[]> {
+async function hubTransferContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact2[]> {
+  const start = new Date().getTime();
   const pool = getPool();
   try {
     const hubTransferContactsResult = await pool.query(`
@@ -83,8 +96,9 @@ async function hubTransferContacts(forSafeAddress: string) : Promise<Contact2[]>
                        array_agg(last_contact_at) as timestamps,
                        contact_address
                 from "all"
+                where $2=ARRAY[]::text[] or contact_address=ANY($2)
                 group by contact_address;`,
-      [forSafeAddress.toLowerCase()]);
+      [forSafeAddress.toLowerCase(), filter?.contacts?.addresses ?? []]);
 
     return hubTransferContactsResult.rows.map(o => {
       const timestamps = o.timestamps.map((p:any) => new Date(p).getTime().toString());
@@ -102,15 +116,18 @@ async function hubTransferContacts(forSafeAddress: string) : Promise<Contact2[]>
     })
   } finally {
     await pool.end();
+    const duration = new Date().getTime() - start;
+    console.log(`contact source 'hubTransferContacts' took: ${duration} ms`);
   }
 }
 
-async function chatMessageContacts(forSafeAddress: string) : Promise<Contact2[]> {
+async function chatMessageContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact2[]> {
+  const start = new Date().getTime();
   const chatContactsResult = await prisma_api_ro.$queryRaw`
       with "in" as (
           select max("createdAt") last_contact_at, "from" as contact_address
           from "ChatMessage"
-          where "to" = ${forSafeAddress}
+          where "to" = ${forSafeAddress.toLowerCase()}
           group by "from"
       ), "in_with_text" as (
           select "in".*, cm.text as value
@@ -119,7 +136,7 @@ async function chatMessageContacts(forSafeAddress: string) : Promise<Contact2[]>
       ), "out" as (
           select max("createdAt") last_contact_at, "to" as contact_address
           from "ChatMessage"
-          where "from" = ${forSafeAddress}
+          where "from" = ${forSafeAddress.toLowerCase()}
           group by "to"
       ), "out_with_text" as (
           select "out".*, cm.text as value
@@ -137,12 +154,13 @@ async function chatMessageContacts(forSafeAddress: string) : Promise<Contact2[]>
                  array_agg(last_contact_at) as timestamps,
                  contact_address
           from "all"
+          where ${filter?.contacts?.addresses ?? []}=ARRAY[]::text[] or contact_address=ANY(${filter?.contacts?.addresses ?? []})
           group by contact_address
       )
       select *
       from "all_directions";`;
 
-  return chatContactsResult.map((o:any) => {
+  const r = chatContactsResult.map((o:any) => {
     const timestamps = o.timestamps.map((p:any) => new Date(p).getTime().toString());
     const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0);
     return <Contact2> {
@@ -155,12 +173,18 @@ async function chatMessageContacts(forSafeAddress: string) : Promise<Contact2[]>
       contactAddress: o.contact_address,
       lastContactAt: lastContactAt
     };
-  })
+  });
+
+  const duration = new Date().getTime() - start;
+  console.log(`contact source 'chatMessageContacts' took: ${duration} ms`);
+
+  return r;
 }
 
 // People who claimed my invitations
 // The person from which I claimed my invitation
-async function invitationContacts(forSafeAddress: string) : Promise<Contact2[]> {
+async function invitationContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact2[]> {
+  const start = new Date().getTime();
   const invitationContactsResult = await prisma_api_ro.$queryRaw`
       with "in" as (
           select max(i."createdAt") last_contact_at, "creatorProfile"."circlesAddress" as contact_address
@@ -188,9 +212,10 @@ async function invitationContacts(forSafeAddress: string) : Promise<Contact2[]> 
              array_agg(last_contact_at) as timestamps,
              contact_address
       from "all"
+      where ${filter?.contacts?.addresses ?? []}=ARRAY[]::text[] or contact_address=ANY(${filter?.contacts?.addresses ?? []})
       group by contact_address`;
 
-  return invitationContactsResult.map((o:any) => {
+  const r = invitationContactsResult.map((o:any) => {
     const timestamps = o.timestamps.map((p:any) => new Date(p).getTime().toString());
     const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0);
     return <Contact2> {
@@ -203,12 +228,18 @@ async function invitationContacts(forSafeAddress: string) : Promise<Contact2[]> 
       contactAddress: o.contact_address,
       lastContactAt: lastContactAt
     };
-  })
+  });
+
+  const duration = new Date().getTime() - start;
+  console.log(`contact source 'invitationContacts' took: ${duration} ms`);
+
+  return r;
 }
 
 // People who offered me (non-rejected) orga-invitations
 // People I offered orga invitations to
-async function membershipOfferContacts(forSafeAddress: string) : Promise<Contact2[]> {
+async function membershipOfferContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact2[]> {
+  const start = new Date().getTime();
   const membershipOfferContactsResult = await prisma_api_ro.$queryRaw`
       with "in" as (
           select max(m."createdAt") as last_contact_at, "createdByProfile"."circlesAddress" as contact_address
@@ -249,9 +280,10 @@ async function membershipOfferContacts(forSafeAddress: string) : Promise<Contact
              array_agg(value) as values,
              contact_address
       from "all"
+      where ${filter?.contacts?.addresses ?? []}=ARRAY[]::text[] or contact_address=ANY(${filter?.contacts?.addresses ?? []})
       group by contact_address;`;
 
-  return membershipOfferContactsResult.map((o:any) => {
+  const r = membershipOfferContactsResult.map((o:any) => {
     const timestamps = o.timestamps.map((p:any) => new Date(p).getTime().toString());
     const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0);
     return <Contact2> {
@@ -264,7 +296,12 @@ async function membershipOfferContacts(forSafeAddress: string) : Promise<Contact
       contactAddress: o.contact_address,
       lastContactAt: lastContactAt
     };
-  })
+  });
+
+  const duration = new Date().getTime() - start;
+  console.log(`contact source 'membershipOfferContacts' took: ${duration} ms`);
+
+  return r;
 }
 
 export enum ContactPoints {
@@ -280,7 +317,8 @@ export class ContactsSource implements AggregateSource {
   constructor(contactPoints:ContactPoints[]) {
     this._contactPoints = contactPoints;
   }
-  async getAggregate(forSafeAddress: string): Promise<ProfileAggregate[]> {
+  async getAggregate(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>): Promise<ProfileAggregate[]> {
+    const start = new Date().getTime();
     const types = this._contactPoints?.reduce((p, c) => {
       if (!c) return p;
       p[c] = true;
@@ -288,20 +326,20 @@ export class ContactsSource implements AggregateSource {
     }, <{ [x: string]: any }>{}) ?? {};
 
     const contactSources: Promise<Contact2[]>[] = [];
-    if (types["CrcTrust"]) {
-      contactSources.push(trustContacts(forSafeAddress));
+    if (types[ContactPoints.CrcTrust]) {
+      contactSources.push(trustContacts(forSafeAddress, filter));
     }
-    if (types["CrcHubTransfer"]) {
-      contactSources.push(hubTransferContacts(forSafeAddress));
+    if (types[ContactPoints.CrcHubTransfer]) {
+      contactSources.push(hubTransferContacts(forSafeAddress, filter));
     }
-    if (types["ChatMessage"]) {
-      contactSources.push(chatMessageContacts(forSafeAddress));
+    if (types[ContactPoints.ChatMessage]) {
+      contactSources.push(chatMessageContacts(forSafeAddress, filter));
     }
-    if (types["Invitation"]) {
-      contactSources.push(invitationContacts(forSafeAddress));
+    if (types[ContactPoints.Invitation]) {
+      contactSources.push(invitationContacts(forSafeAddress, filter));
     }
-    if (types["MembershipOffer"]) {
-      contactSources.push(membershipOfferContacts(forSafeAddress));
+    if (types[ContactPoints.MembershipOffer]) {
+      contactSources.push(membershipOfferContacts(forSafeAddress, filter));
     }
 
     const results = await Promise.all(contactSources);
@@ -326,6 +364,9 @@ export class ContactsSource implements AggregateSource {
       }
       return p;
     }, <{ [x: string]:Contact2 }>{});
+
+    const duration = new Date().getTime() - start;
+    console.log(`contact source took: ${duration} ms`);
 
     return [{
       safe_address: forSafeAddress,

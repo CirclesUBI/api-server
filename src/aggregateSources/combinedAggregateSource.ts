@@ -1,5 +1,5 @@
 import {AggregateSource} from "./aggregateSource";
-import {ProfileAggregate} from "../types";
+import {Maybe, ProfileAggregate, ProfileAggregateFilter} from "../types";
 import {AggregateAugmenter} from "./aggregateAugmenter";
 
 export class CombinedAggregateSource implements AggregateSource {
@@ -9,8 +9,8 @@ export class CombinedAggregateSource implements AggregateSource {
     this._resolvers = resolvers;
   }
 
-  async getAggregate(forSafeAddress:string) : Promise<ProfileAggregate[]> {
-    const resultPromises = this._resolvers.map(resolver => resolver.getAggregate(forSafeAddress));
+  async getAggregate(forSafeAddress:string, filter?: Maybe<ProfileAggregateFilter>) : Promise<ProfileAggregate[]> {
+    const resultPromises = this._resolvers.map(resolver => resolver.getAggregate(forSafeAddress, filter));
     const results = await Promise.all(resultPromises);
     let aggregates = results.flatMap(o => o);
 

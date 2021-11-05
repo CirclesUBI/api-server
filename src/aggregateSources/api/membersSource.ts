@@ -1,10 +1,10 @@
 import {AggregateSource} from "../aggregateSource";
-import {Members, ProfileAggregate} from "../../types";
+import {Maybe, Members, ProfileAggregate, ProfileAggregateFilter} from "../../types";
 import {getPool} from "../../resolvers/resolvers";
 import {prisma_api_ro} from "../../apiDbClient";
 
 export class MembersSource implements AggregateSource {
-  async getAggregate(forSafeAddress: string): Promise<ProfileAggregate[]> {
+  async getAggregate(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>): Promise<ProfileAggregate[]> {
     const pool = getPool();
     try {
       const membershipsResult = await prisma_api_ro.$queryRaw`
