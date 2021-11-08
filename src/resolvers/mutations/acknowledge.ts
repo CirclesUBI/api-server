@@ -8,6 +8,7 @@ export function acknowledge(prisma_api_rw:PrismaClient) {
         {
           throw new Error(`You need a profile to use this function.`)
         }
+
         const until = new Date(args.until);
         await prisma_api_rw.profile.update({
           where: {
@@ -17,6 +18,7 @@ export function acknowledge(prisma_api_rw:PrismaClient) {
             lastAcknowledged: until
           }
         });
+
         return true;
     }
 }

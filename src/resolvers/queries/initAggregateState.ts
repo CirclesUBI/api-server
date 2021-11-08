@@ -1,5 +1,5 @@
 import {Context} from "../../context";
-import {getPool, safeFundingTransactionResolver} from "../resolvers";
+import {safeFundingTransactionResolver} from "../resolvers";
 import {Profile} from "../../types";
 import {Invitation} from "../../api-db/client";
 import {prisma_api_ro} from "../../apiDbClient";
