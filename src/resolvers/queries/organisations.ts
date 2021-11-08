@@ -1,8 +1,6 @@
 import {PrismaClient} from "../../api-db/client";
 import {Context} from "../../context";
 import {getPool} from "../resolvers";
-import {profilesBySafeAddress} from "./profiles";
-import {prisma_api_ro} from "../../apiDbClient";
 import {Organisation, Profile, QueryOrganisationsArgs} from "../../types";
 import {ProfileLoader} from "../../profileLoader";
 

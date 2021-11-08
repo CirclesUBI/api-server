@@ -1,9 +1,15 @@
 import {Context} from "../../context";
 import {SessionInfo} from "../../types";
+import {prisma_api_rw} from "../../apiDbClient";
+import {Profile} from "../../api-db/client";
 
 export const sessionInfo = async (parent:any, args:any, context:Context) : Promise<SessionInfo> => {
     try {
         const session = await context.verifySession();
+        let profile: Profile|null = null;
+        if (session.profileId) {
+            profile = await prisma_api_rw.profile.findUnique({where:{id: session.profileId}});
+        }
 
         context.logger?.info([{
             key: `call`,
@@ -13,7 +19,9 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
         return {
             isLoggedOn: true,
             hasProfile: !!session.profileId,
-            profileId: session.profileId
+            profileId: session.profileId,
+            profile: profile,
+            lastAcknowledgedAt: profile?.lastAcknowledged?.toJSON()
         }
     } catch(e) {
         context.logger?.error([{

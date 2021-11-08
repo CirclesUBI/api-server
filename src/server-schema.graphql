@@ -136,6 +136,7 @@ type SessionInfo {
   hasProfile: Boolean
   profileId: Int
   lastAcknowledgedAt: String
+  profile: Profile
 }
 
 type DelegateAuthInit {

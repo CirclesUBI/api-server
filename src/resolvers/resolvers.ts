@@ -3,10 +3,8 @@ import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {
   AggregateType,
-  Maybe,
   Profile,
   ProfileEvent,
-  ProfileEventFilter,
   ProfileOrOrganisation,
   Resolvers,
   SortOrder
@@ -97,12 +95,7 @@ export const safeFundingTransactionResolver = (async (parent: any, args: any, co
   const now = new Date();
   const profile = await prisma_api_ro.profile.findFirst({
     where: {
-//          OR:[{
-//            emailAddress: null,
       circlesSafeOwner: session.ethAddress?.toLowerCase()
-//          }, {
-//            emailAddress: session.emailAddress
-//          }]
     }
   });
   if (!profile?.circlesAddress || !profile?.circlesSafeOwner) {

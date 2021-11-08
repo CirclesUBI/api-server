@@ -980,6 +980,7 @@ export type SessionInfo = {
   hasProfile?: Maybe<Scalars['Boolean']>;
   profileId?: Maybe<Scalars['Int']>;
   lastAcknowledgedAt?: Maybe<Scalars['String']>;
+  profile?: Maybe<Profile>;
 };
 
 export enum SortOrder {
@@ -2034,6 +2035,7 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
   hasProfile?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   profileId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   lastAcknowledgedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
