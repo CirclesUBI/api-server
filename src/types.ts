@@ -261,6 +261,11 @@ export type DepositChallengeResponse = {
   errorMessage?: Maybe<Scalars['String']>;
 };
 
+export enum Direction {
+  In = 'in',
+  Out = 'out'
+}
+
 export type EthTransfer = IEventPayload & {
   __typename?: 'EthTransfer';
   transaction_hash: Scalars['String'];
@@ -575,8 +580,8 @@ export type Offer = {
   __typename?: 'Offer';
   id: Scalars['Int'];
   version: Scalars['Int'];
-  createdBy?: Maybe<Profile>;
-  createdByProfileId: Scalars['Int'];
+  createdByProfile?: Maybe<Profile>;
+  createdByAddress: Scalars['String'];
   createdAt: Scalars['String'];
   title: Scalars['String'];
   pictureUrl: Scalars['String'];
@@ -589,6 +594,11 @@ export type Offers = IAggregatePayload & {
   __typename?: 'Offers';
   lastUpdatedAt: Scalars['String'];
   offers: Array<Offer>;
+};
+
+export type OffersAggregateFilter = {
+  createdByAddresses?: Maybe<Array<Scalars['String']>>;
+  offerIds?: Maybe<Array<Scalars['Int']>>;
 };
 
 export type Organisation = {
@@ -657,6 +667,7 @@ export type ProfileAggregate = {
 export type ProfileAggregateFilter = {
   contacts?: Maybe<ContactAggregateFilter>;
   crcBalance?: Maybe<CrcBalanceAggregateFilter>;
+  offers?: Maybe<OffersAggregateFilter>;
 };
 
 export type ProfileEvent = {
@@ -677,6 +688,7 @@ export type ProfileEvent = {
 };
 
 export type ProfileEventFilter = {
+  direction?: Maybe<Direction>;
   from?: Maybe<Scalars['String']>;
   to?: Maybe<Scalars['String']>;
   with?: Maybe<Scalars['String']>;
@@ -688,8 +700,8 @@ export type ProfileOrOrganisation = Profile | Organisation;
 export type Purchase = {
   __typename?: 'Purchase';
   id: Scalars['Int'];
-  createdBy?: Maybe<Profile>;
-  createdByProfileId: Scalars['Int'];
+  createdByProfile?: Maybe<Profile>;
+  createdByAddress: Scalars['String'];
   createdAt: Scalars['String'];
   lines: Array<PurchaseLine>;
   paymentTransaction?: Maybe<ProfileEvent>;
@@ -1120,6 +1132,7 @@ export type ResolversTypes = ResolversObject<{
   DelegateAuthInit: ResolverTypeWrapper<DelegateAuthInit>;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
+  Direction: Direction;
   EthTransfer: ResolverTypeWrapper<EthTransfer>;
   EventPayload: ResolversTypes['CrcSignup'] | ResolversTypes['CrcTrust'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'] | ResolversTypes['ChatMessage'] | ResolversTypes['MembershipOffer'] | ResolversTypes['MembershipAccepted'] | ResolversTypes['MembershipRejected'] | ResolversTypes['WelcomeMessage'] | ResolversTypes['InvitationCreated'] | ResolversTypes['InvitationRedeemed'] | ResolversTypes['OrganisationCreated'] | ResolversTypes['MemberAdded'] | ResolversTypes['Purchased'];
   EventType: EventType;
@@ -1143,6 +1156,7 @@ export type ResolversTypes = ResolversObject<{
   NotificationEvent: ResolverTypeWrapper<NotificationEvent>;
   Offer: ResolverTypeWrapper<Offer>;
   Offers: ResolverTypeWrapper<Offers>;
+  OffersAggregateFilter: OffersAggregateFilter;
   Organisation: ResolverTypeWrapper<Omit<Organisation, 'members'> & { members?: Maybe<Array<ResolversTypes['ProfileOrOrganisation']>> }>;
   OrganisationCreated: ResolverTypeWrapper<OrganisationCreated>;
   PaginationArgs: PaginationArgs;
@@ -1245,6 +1259,7 @@ export type ResolversParentTypes = ResolversObject<{
   NotificationEvent: NotificationEvent;
   Offer: Offer;
   Offers: Offers;
+  OffersAggregateFilter: OffersAggregateFilter;
   Organisation: Omit<Organisation, 'members'> & { members?: Maybe<Array<ResolversParentTypes['ProfileOrOrganisation']>> };
   OrganisationCreated: OrganisationCreated;
   PaginationArgs: PaginationArgs;
@@ -1692,8 +1707,8 @@ export type NotificationEventResolvers<ContextType = any, ParentType extends Res
 export type OfferResolvers<ContextType = any, ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   version?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  createdBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
-  createdByProfileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  createdByProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  createdByAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   pictureUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1789,8 +1804,8 @@ export type ProfileOrOrganisationResolvers<ContextType = any, ParentType extends
 
 export type PurchaseResolvers<ContextType = any, ParentType extends ResolversParentTypes['Purchase'] = ResolversParentTypes['Purchase']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  createdBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
-  createdByProfileId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  createdByProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  createdByAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lines?: Resolver<Array<ResolversTypes['PurchaseLine']>, ParentType, ContextType>;
   paymentTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;

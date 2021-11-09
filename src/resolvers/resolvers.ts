@@ -2,7 +2,7 @@ import {myProfile, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {
-  AggregateType,
+  AggregateType, EventType,
   Profile,
   ProfileEvent,
   ProfileOrOrganisation,
@@ -73,6 +73,7 @@ import {MembershipsSource} from "../aggregateSources/api/membershipsSource";
 import {MembersSource} from "../aggregateSources/api/membersSource";
 import {AggregateAugmenter} from "../aggregateSources/aggregateAugmenter";
 import {ProfileLoader} from "../profileLoader";
+import {OffersSource} from "../aggregateSources/api/offersSource";
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
@@ -139,12 +140,6 @@ export const safeFundingTransactionResolver = (async (parent: any, args: any, co
 
 
 export function getPool() {
-  /*
-  if (!cert) {
-    const fs = require('fs');
-    cert = fs.readFileSync("/home/daniel/src/circles-world/api-server/ca-certificate.crt", "ascii");
-  }
-   */
   return new Pool(<PoolConfig>{
     connectionString: process.env.BLOCKCHAIN_INDEX_DB_CONNECTION_STRING,
     ssl: {
@@ -284,6 +279,9 @@ export const resolvers: Resolvers = {
       if (types[AggregateType.Members]) {
         aggregateSources.push(new MembersSource());
       }
+      if (types[AggregateType.Offers]) {
+        aggregateSources.push(new OffersSource());
+      }
 
       const source = new CombinedAggregateSource(aggregateSources);
       let aggregates = await source.getAggregate(args.safeAddress, args.filter);
@@ -305,43 +303,45 @@ export const resolvers: Resolvers = {
       //
       // public
       //
-      if (types["CrcSignup"]) {
-        delete types["CrcSignup"];
+      if (types[EventType.CrcSignup]) {
+        delete types[EventType.CrcSignup];
         eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.CrcSignup]));
       }
-      if (types["CrcTrust"]) {
-        delete types["CrcTrust"];
+      if (types[EventType.CrcTrust]) {
+        delete types[EventType.CrcTrust];
         eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.CrcTrust]));
       }
-      if (types["CrcHubTransfer"]) {
-        delete types["CrcHubTransfer"];
+      if (types[EventType.CrcHubTransfer]) {
+        delete types[EventType.CrcHubTransfer];
         eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.CrcHubTransfer]));
       }
-      if (types["CrcMinting"]) {
-        delete types["CrcMinting"];
+      if (types[EventType.CrcMinting]) {
+        delete types[EventType.CrcMinting];
         eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.CrcMinting]));
       }
-      if (types["CrcTokenTransfer"]) {
-        delete types["CrcTokenTransfer"];
+      if (types[EventType.CrcTokenTransfer]) {
+        delete types[EventType.CrcTokenTransfer];
       }
-      if (types["OrganisationCreated"]) {
-        delete types["OrganisationCreated"];
+      if (types[EventType.OrganisationCreated]) {
+        delete types[EventType.OrganisationCreated];
         throw new Error(`Not implemented: OrganisationCreated`);
       }
-      if (types["MemberAdded"]) {
-        delete types["MemberAdded"];
+      if (types[EventType.MemberAdded]) {
+        delete types[EventType.MemberAdded];
         throw new Error(`Not implemented: MemberAdded`);
       }
-      if (types["MemberRemoved"]) {
-        delete types["MemberRemoved"];
+      /*
+      if (types[EventType.MemberRemoved]) {
+        delete types[EventType.MemberRemoved];
         throw new Error(`Not implemented: MemberRemoved`);
       }
-      if (types["EthTransfer"]) {
-        delete types["EthTransfer"];
+       */
+      if (types[EventType.EthTransfer]) {
+        delete types[EventType.EthTransfer];
         eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.EthTransfer]));
       }
-      if (types["GnosisSafeEthTransfer"]) {
-        delete types["GnosisSafeEthTransfer"];
+      if (types[EventType.GnosisSafeEthTransfer]) {
+        delete types[EventType.GnosisSafeEthTransfer];
         eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.GnosisSafeEthTransfer]));
       }
 
@@ -354,25 +354,25 @@ export const resolvers: Resolvers = {
         callerProfile = await context.callerProfile;
         const isSelf = callerProfile?.circlesAddress == args.safeAddress.toLowerCase();
 
-        if (isSelf && types["ChatMessage"]) {
+        if (isSelf && types[EventType.ChatMessage]) {
           eventSources.push(new ChatMessageEventSource());
         }
-        if (isSelf && types["MembershipOffer"]) {
+        if (isSelf && types[EventType.MembershipOffer]) {
           eventSources.push(new MembershipOfferEventSource());
         }
-        if (isSelf && types["MembershipAccepted"]) {
+        if (isSelf && types[EventType.MembershipAccepted]) {
           eventSources.push(new AcceptedMembershipOfferEventSource());
         }
-        if (isSelf && types["MembershipRejected"]) {
+        if (isSelf && types[EventType.MembershipRejected]) {
           eventSources.push(new RejectedMembershipOfferEventSource());
         }
-        if (isSelf && types["WelcomeMessage"]) {
+        if (isSelf && types[EventType.WelcomeMessage]) {
           throw new Error(`Not implemented: WelcomeMessage`);
         }
-        if (isSelf && types["InvitationCreated"]) {
+        if (isSelf && types[EventType.InvitationCreated]) {
           eventSources.push(new CreatedInvitationsEventSource());
         }
-        if (isSelf && types["InvitationRedeemed"]) {
+        if (isSelf && types[EventType.InvitationRedeemed]) {
           eventSources.push(new RedeemedInvitationsEventSource());
         }
       }

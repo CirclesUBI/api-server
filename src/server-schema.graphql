@@ -118,7 +118,6 @@ type ExchangeTokenResponse {
 
 type DepositChallengeResponse {
   success: Boolean!
-  success: Boolean!
   errorMessage: String
 }
 input DepositChallenge {
@@ -217,8 +216,8 @@ type Offer {
   id: Int!
   version: Int!
 
-  createdBy: Profile
-  createdByProfileId: Int!
+  createdByProfile: Profile
+  createdByAddress: String!
   createdAt: String!
 
   title: String!
@@ -232,8 +231,8 @@ type Offer {
 type Purchase {
   id: Int!
 
-  createdBy: Profile
-  createdByProfileId: Int!
+  createdByProfile: Profile
+  createdByAddress: String!
   createdAt: String!
 
   lines: [PurchaseLine!]!
@@ -760,7 +759,13 @@ input PaginationArgs {
   limit: Int!
 }
 
+enum Direction {
+  in
+  out
+}
+
 input ProfileEventFilter {
+  direction: Direction,
   from: String
   to: String
   with: String
@@ -773,9 +778,14 @@ input ContactAggregateFilter {
 input CrcBalanceAggregateFilter {
   tokenAddresses: [String!]!
 }
+input OffersAggregateFilter {
+  createdByAddresses: [String!]
+  offerIds: [Int!]
+}
 input ProfileAggregateFilter {
   contacts: ContactAggregateFilter
   crcBalance: CrcBalanceAggregateFilter
+  offers: OffersAggregateFilter
 }
 
 type Query {

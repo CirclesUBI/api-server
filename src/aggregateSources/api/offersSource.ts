@@ -2,22 +2,55 @@ import {AggregateSource} from "../aggregateSource";
 import {AggregateType, Maybe, Offer, Offers, ProfileAggregate, ProfileAggregateFilter} from "../../types";
 import {prisma_api_ro} from "../../apiDbClient";
 
+export type OfferRow = {
+  id: number
+  version: number
+  created_at: string
+  last_updated_at: string
+  createdByAddress: string
+  title: string
+  pictureUrl: string
+  pictureMimeType: string
+  description: string
+  pricePerUnit: string
+};
+
 export class OffersSource implements AggregateSource {
   async getAggregate(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>): Promise<ProfileAggregate[]> {
-    const offers = await prisma_api_ro.offer.findMany({
-      where: {},
-      orderBy: {
-        createdAt: "desc"
-      }
-    });
+    const offersResult = <OfferRow[]>(await prisma_api_ro.$queryRaw`
+        with "latest" as (
+            select id
+                 , max(o.version) as latest_version
+                 , min(o."createdAt") as created_at
+                 , max(o."createdAt") as last_updated_at
+            from "Offer" o
+            group by id
+        ), data as (
+            select o.id
+                 , version
+                 , l."created_at"
+                 , l."last_updated_at"
+                 , p."circlesAddress" as "createdByAddress"
+                 , o.title
+                 , o."pictureUrl"
+                 , o."pictureMimeType"
+                 , o."description"
+                 , o."pricePerUnit"
+            from "Offer" o
+                     join "Profile" p on p.id = o."createdByProfileId"
+                     join "latest" l on o.id = l.id and o.version = l.latest_version
+            where p."circlesAddress" is not null
+        )
+        select *
+        from data;`);
 
-    const lastUpdatedAt = new Date(offers.reduce((p,c) => Math.max(p, c.createdAt.getTime()), 0));
-    const apiOffers = offers.map(o => {
+    const lastUpdatedAt = new Date(offersResult.reduce((p,c) => Math.max(p, new Date(c.created_at).getTime()), 0));
+    const apiOffers = offersResult.map(o => {
       return <Offer>{
         ...o,
         pictureUrl: o.pictureUrl ? o.pictureUrl : "",
         pictureMimeType: o.pictureMimeType ? o.pictureMimeType : "",
-        createdAt: o.createdAt.toJSON()
+        createdAt: o.created_at
       }
     });
 
@@ -26,6 +59,8 @@ export class OffersSource implements AggregateSource {
       safe_address: forSafeAddress,
       lastUpdatedAt: lastUpdatedAt.toJSON(),
       payload: <Offers> {
+        __typename: "Offers",
+        lastUpdatedAt: lastUpdatedAt.toJSON(),
         offers: apiOffers
       }
     }]
