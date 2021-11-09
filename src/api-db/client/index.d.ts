@@ -164,7 +164,8 @@ export type DelegatedChallenges = {
  */
 
 export type Offer = {
-  id: string
+  id: number
+  version: number
   createdByProfileId: number
   createdAt: Date
   title: string
@@ -172,6 +173,28 @@ export type Offer = {
   pictureMimeType: string | null
   description: string | null
   pricePerUnit: string
+}
+
+/**
+ * Model Purchase
+ */
+
+export type Purchase = {
+  id: number
+  createdByProfileId: number
+  createdAt: Date
+}
+
+/**
+ * Model PurchaseLine
+ */
+
+export type PurchaseLine = {
+  id: number
+  purchaseId: number
+  amount: number
+  productId: number
+  productVersion: number
 }
 
 /**
@@ -443,6 +466,26 @@ export class PrismaClient<
     * ```
     */
   get offer(): Prisma.OfferDelegate<GlobalReject>;
+
+  /**
+   * `prisma.purchase`: Exposes CRUD operations for the **Purchase** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Purchases
+    * const purchases = await prisma.purchase.findMany()
+    * ```
+    */
+  get purchase(): Prisma.PurchaseDelegate<GlobalReject>;
+
+  /**
+   * `prisma.purchaseLine`: Exposes CRUD operations for the **PurchaseLine** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PurchaseLines
+    * const purchaseLines = await prisma.purchaseLine.findMany()
+    * ```
+    */
+  get purchaseLine(): Prisma.PurchaseLineDelegate<GlobalReject>;
 
   /**
    * `prisma.tagType`: Exposes CRUD operations for the **TagType** model.
@@ -853,6 +896,8 @@ export namespace Prisma {
     ChatMessage: 'ChatMessage',
     DelegatedChallenges: 'DelegatedChallenges',
     Offer: 'Offer',
+    Purchase: 'Purchase',
+    PurchaseLine: 'PurchaseLine',
     TagType: 'TagType',
     Transaction: 'Transaction',
     Tag: 'Tag'
@@ -5200,6 +5245,7 @@ export namespace Prisma {
     sessions?: boolean | SessionFindManyArgs
     tags?: boolean | TagFindManyArgs
     offers?: boolean | OfferFindManyArgs
+    purchases?: boolean | PurchaseFindManyArgs
     invitations?: boolean | InvitationFindManyArgs
     invitationFunds?: boolean | InvitationFundsEOAArgs
     redeemInvitationRequests?: boolean | RedeemInvitationRequestFindManyArgs
@@ -5214,6 +5260,7 @@ export namespace Prisma {
     sessions?: boolean | SessionFindManyArgs
     tags?: boolean | TagFindManyArgs
     offers?: boolean | OfferFindManyArgs
+    purchases?: boolean | PurchaseFindManyArgs
     invitations?: boolean | InvitationFindManyArgs
     invitationFunds?: boolean | InvitationFundsEOAArgs
     redeemInvitationRequests?: boolean | RedeemInvitationRequestFindManyArgs
@@ -5241,6 +5288,8 @@ export namespace Prisma {
         ? Array < TagGetPayload<S['include'][P]>>  :
         P extends 'offers'
         ? Array < OfferGetPayload<S['include'][P]>>  :
+        P extends 'purchases'
+        ? Array < PurchaseGetPayload<S['include'][P]>>  :
         P extends 'invitations'
         ? Array < InvitationGetPayload<S['include'][P]>>  :
         P extends 'invitationFunds'
@@ -5268,6 +5317,8 @@ export namespace Prisma {
         ? Array < TagGetPayload<S['select'][P]>>  :
         P extends 'offers'
         ? Array < OfferGetPayload<S['select'][P]>>  :
+        P extends 'purchases'
+        ? Array < PurchaseGetPayload<S['select'][P]>>  :
         P extends 'invitations'
         ? Array < InvitationGetPayload<S['select'][P]>>  :
         P extends 'invitationFunds'
@@ -5628,6 +5679,8 @@ export namespace Prisma {
     tags<T extends TagFindManyArgs = {}>(args?: Subset<T, TagFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Tag>>, PrismaPromise<Array<TagGetPayload<T>>>>;
 
     offers<T extends OfferFindManyArgs = {}>(args?: Subset<T, OfferFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Offer>>, PrismaPromise<Array<OfferGetPayload<T>>>>;
+
+    purchases<T extends PurchaseFindManyArgs = {}>(args?: Subset<T, PurchaseFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Purchase>>, PrismaPromise<Array<PurchaseGetPayload<T>>>>;
 
     invitations<T extends InvitationFindManyArgs = {}>(args?: Subset<T, InvitationFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Invitation>>, PrismaPromise<Array<InvitationGetPayload<T>>>>;
 
@@ -9562,15 +9615,20 @@ export namespace Prisma {
   }
 
   export type OfferAvgAggregateOutputType = {
+    id: number | null
+    version: number | null
     createdByProfileId: number | null
   }
 
   export type OfferSumAggregateOutputType = {
+    id: number | null
+    version: number | null
     createdByProfileId: number | null
   }
 
   export type OfferMinAggregateOutputType = {
-    id: string | null
+    id: number | null
+    version: number | null
     createdByProfileId: number | null
     createdAt: Date | null
     title: string | null
@@ -9581,7 +9639,8 @@ export namespace Prisma {
   }
 
   export type OfferMaxAggregateOutputType = {
-    id: string | null
+    id: number | null
+    version: number | null
     createdByProfileId: number | null
     createdAt: Date | null
     title: string | null
@@ -9593,6 +9652,7 @@ export namespace Prisma {
 
   export type OfferCountAggregateOutputType = {
     id: number
+    version: number
     createdByProfileId: number
     createdAt: number
     title: number
@@ -9605,15 +9665,20 @@ export namespace Prisma {
 
 
   export type OfferAvgAggregateInputType = {
+    id?: true
+    version?: true
     createdByProfileId?: true
   }
 
   export type OfferSumAggregateInputType = {
+    id?: true
+    version?: true
     createdByProfileId?: true
   }
 
   export type OfferMinAggregateInputType = {
     id?: true
+    version?: true
     createdByProfileId?: true
     createdAt?: true
     title?: true
@@ -9625,6 +9690,7 @@ export namespace Prisma {
 
   export type OfferMaxAggregateInputType = {
     id?: true
+    version?: true
     createdByProfileId?: true
     createdAt?: true
     title?: true
@@ -9636,6 +9702,7 @@ export namespace Prisma {
 
   export type OfferCountAggregateInputType = {
     id?: true
+    version?: true
     createdByProfileId?: true
     createdAt?: true
     title?: true
@@ -9759,7 +9826,8 @@ export namespace Prisma {
 
 
   export type OfferGroupByOutputType = {
-    id: string
+    id: number
+    version: number
     createdByProfileId: number
     createdAt: Date
     title: string
@@ -9790,6 +9858,7 @@ export namespace Prisma {
 
   export type OfferSelect = {
     id?: boolean
+    version?: boolean
     createdBy?: boolean | ProfileArgs
     createdByProfileId?: boolean
     createdAt?: boolean
@@ -9798,10 +9867,12 @@ export namespace Prisma {
     pictureMimeType?: boolean
     description?: boolean
     pricePerUnit?: boolean
+    purchaseLines?: boolean | PurchaseLineFindManyArgs
   }
 
   export type OfferInclude = {
     createdBy?: boolean | ProfileArgs
+    purchaseLines?: boolean | PurchaseLineFindManyArgs
   }
 
   export type OfferGetPayload<
@@ -9816,14 +9887,18 @@ export namespace Prisma {
     ? Offer  & {
     [P in TrueKeys<S['include']>]: 
           P extends 'createdBy'
-        ? ProfileGetPayload<S['include'][P]> : never
+        ? ProfileGetPayload<S['include'][P]> :
+        P extends 'purchaseLines'
+        ? Array < PurchaseLineGetPayload<S['include'][P]>>  : never
   } 
     : 'select' extends U
     ? {
     [P in TrueKeys<S['select']>]: P extends keyof Offer ?Offer [P]
   : 
           P extends 'createdBy'
-        ? ProfileGetPayload<S['select'][P]> : never
+        ? ProfileGetPayload<S['select'][P]> :
+        P extends 'purchaseLines'
+        ? Array < PurchaseLineGetPayload<S['select'][P]>>  : never
   } 
     : Offer
   : Offer
@@ -10165,6 +10240,8 @@ export namespace Prisma {
 
     createdBy<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
 
+    purchaseLines<T extends PurchaseLineFindManyArgs = {}>(args?: Subset<T, PurchaseLineFindManyArgs>): CheckSelect<T, PrismaPromise<Array<PurchaseLine>>, PrismaPromise<Array<PurchaseLineGetPayload<T>>>>;
+
     private get _document();
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -10473,6 +10550,1846 @@ export namespace Prisma {
      * 
     **/
     include?: OfferInclude | null
+  }
+
+
+
+  /**
+   * Model Purchase
+   */
+
+
+  export type AggregatePurchase = {
+    _count: PurchaseCountAggregateOutputType | null
+    count: PurchaseCountAggregateOutputType | null
+    _avg: PurchaseAvgAggregateOutputType | null
+    avg: PurchaseAvgAggregateOutputType | null
+    _sum: PurchaseSumAggregateOutputType | null
+    sum: PurchaseSumAggregateOutputType | null
+    _min: PurchaseMinAggregateOutputType | null
+    min: PurchaseMinAggregateOutputType | null
+    _max: PurchaseMaxAggregateOutputType | null
+    max: PurchaseMaxAggregateOutputType | null
+  }
+
+  export type PurchaseAvgAggregateOutputType = {
+    id: number | null
+    createdByProfileId: number | null
+  }
+
+  export type PurchaseSumAggregateOutputType = {
+    id: number | null
+    createdByProfileId: number | null
+  }
+
+  export type PurchaseMinAggregateOutputType = {
+    id: number | null
+    createdByProfileId: number | null
+    createdAt: Date | null
+  }
+
+  export type PurchaseMaxAggregateOutputType = {
+    id: number | null
+    createdByProfileId: number | null
+    createdAt: Date | null
+  }
+
+  export type PurchaseCountAggregateOutputType = {
+    id: number
+    createdByProfileId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PurchaseAvgAggregateInputType = {
+    id?: true
+    createdByProfileId?: true
+  }
+
+  export type PurchaseSumAggregateInputType = {
+    id?: true
+    createdByProfileId?: true
+  }
+
+  export type PurchaseMinAggregateInputType = {
+    id?: true
+    createdByProfileId?: true
+    createdAt?: true
+  }
+
+  export type PurchaseMaxAggregateInputType = {
+    id?: true
+    createdByProfileId?: true
+    createdAt?: true
+  }
+
+  export type PurchaseCountAggregateInputType = {
+    id?: true
+    createdByProfileId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PurchaseAggregateArgs = {
+    /**
+     * Filter which Purchase to aggregate.
+     * 
+    **/
+    where?: PurchaseWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Purchases to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<PurchaseOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     * 
+    **/
+    cursor?: PurchaseWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Purchases from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Purchases.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Purchases
+    **/
+    _count?: true | PurchaseCountAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_count`
+    **/
+    count?: true | PurchaseCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PurchaseAvgAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_avg`
+    **/
+    avg?: PurchaseAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PurchaseSumAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_sum`
+    **/
+    sum?: PurchaseSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PurchaseMinAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_min`
+    **/
+    min?: PurchaseMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PurchaseMaxAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_max`
+    **/
+    max?: PurchaseMaxAggregateInputType
+  }
+
+  export type GetPurchaseAggregateType<T extends PurchaseAggregateArgs> = {
+        [P in keyof T & keyof AggregatePurchase]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePurchase[P]>
+      : GetScalarType<T[P], AggregatePurchase[P]>
+  }
+
+
+    
+    
+  export type PurchaseGroupByArgs = {
+    where?: PurchaseWhereInput
+    orderBy?: Enumerable<PurchaseOrderByInput>
+    by: Array<PurchaseScalarFieldEnum>
+    having?: PurchaseScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PurchaseCountAggregateInputType | true
+    _avg?: PurchaseAvgAggregateInputType
+    _sum?: PurchaseSumAggregateInputType
+    _min?: PurchaseMinAggregateInputType
+    _max?: PurchaseMaxAggregateInputType
+  }
+
+
+  export type PurchaseGroupByOutputType = {
+    id: number
+    createdByProfileId: number
+    createdAt: Date
+    _count: PurchaseCountAggregateOutputType | null
+    _avg: PurchaseAvgAggregateOutputType | null
+    _sum: PurchaseSumAggregateOutputType | null
+    _min: PurchaseMinAggregateOutputType | null
+    _max: PurchaseMaxAggregateOutputType | null
+  }
+
+  type GetPurchaseGroupByPayload<T extends PurchaseGroupByArgs> = Promise<
+    Array<
+      PickArray<PurchaseGroupByOutputType, T['by']> & 
+        {
+          [P in ((keyof T) & (keyof PurchaseGroupByOutputType))]: P extends '_count' 
+            ? T[P] extends boolean 
+              ? number 
+              : GetScalarType<T[P], PurchaseGroupByOutputType[P]> 
+            : GetScalarType<T[P], PurchaseGroupByOutputType[P]>
+        }
+      > 
+    >
+
+
+  export type PurchaseSelect = {
+    id?: boolean
+    createdBy?: boolean | ProfileArgs
+    createdByProfileId?: boolean
+    createdAt?: boolean
+    lines?: boolean | PurchaseLineFindManyArgs
+  }
+
+  export type PurchaseInclude = {
+    createdBy?: boolean | ProfileArgs
+    lines?: boolean | PurchaseLineFindManyArgs
+  }
+
+  export type PurchaseGetPayload<
+    S extends boolean | null | undefined | PurchaseArgs,
+    U = keyof S
+      > = S extends true
+        ? Purchase
+    : S extends undefined
+    ? never
+    : S extends PurchaseArgs | PurchaseFindManyArgs
+    ?'include' extends U
+    ? Purchase  & {
+    [P in TrueKeys<S['include']>]: 
+          P extends 'createdBy'
+        ? ProfileGetPayload<S['include'][P]> :
+        P extends 'lines'
+        ? Array < PurchaseLineGetPayload<S['include'][P]>>  : never
+  } 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]: P extends keyof Purchase ?Purchase [P]
+  : 
+          P extends 'createdBy'
+        ? ProfileGetPayload<S['select'][P]> :
+        P extends 'lines'
+        ? Array < PurchaseLineGetPayload<S['select'][P]>>  : never
+  } 
+    : Purchase
+  : Purchase
+
+
+  type PurchaseCountArgs = Merge<
+    Omit<PurchaseFindManyArgs, 'select' | 'include'> & {
+      select?: PurchaseCountAggregateInputType | true
+    }
+  >
+
+  export interface PurchaseDelegate<GlobalRejectSettings> {
+    /**
+     * Find zero or one Purchase that matches the filter.
+     * @param {PurchaseFindUniqueArgs} args - Arguments to find a Purchase
+     * @example
+     * // Get one Purchase
+     * const purchase = await prisma.purchase.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends PurchaseFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, PurchaseFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Purchase'> extends True ? CheckSelect<T, Prisma__PurchaseClient<Purchase>, Prisma__PurchaseClient<PurchaseGetPayload<T>>> : CheckSelect<T, Prisma__PurchaseClient<Purchase | null >, Prisma__PurchaseClient<PurchaseGetPayload<T> | null >>
+
+    /**
+     * Find the first Purchase that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseFindFirstArgs} args - Arguments to find a Purchase
+     * @example
+     * // Get one Purchase
+     * const purchase = await prisma.purchase.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends PurchaseFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, PurchaseFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Purchase'> extends True ? CheckSelect<T, Prisma__PurchaseClient<Purchase>, Prisma__PurchaseClient<PurchaseGetPayload<T>>> : CheckSelect<T, Prisma__PurchaseClient<Purchase | null >, Prisma__PurchaseClient<PurchaseGetPayload<T> | null >>
+
+    /**
+     * Find zero or more Purchases that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Purchases
+     * const purchases = await prisma.purchase.findMany()
+     * 
+     * // Get first 10 Purchases
+     * const purchases = await prisma.purchase.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const purchaseWithIdOnly = await prisma.purchase.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends PurchaseFindManyArgs>(
+      args?: SelectSubset<T, PurchaseFindManyArgs>
+    ): CheckSelect<T, PrismaPromise<Array<Purchase>>, PrismaPromise<Array<PurchaseGetPayload<T>>>>
+
+    /**
+     * Create a Purchase.
+     * @param {PurchaseCreateArgs} args - Arguments to create a Purchase.
+     * @example
+     * // Create one Purchase
+     * const Purchase = await prisma.purchase.create({
+     *   data: {
+     *     // ... data to create a Purchase
+     *   }
+     * })
+     * 
+    **/
+    create<T extends PurchaseCreateArgs>(
+      args: SelectSubset<T, PurchaseCreateArgs>
+    ): CheckSelect<T, Prisma__PurchaseClient<Purchase>, Prisma__PurchaseClient<PurchaseGetPayload<T>>>
+
+    /**
+     * Create many Purchases.
+     *     @param {PurchaseCreateManyArgs} args - Arguments to create many Purchases.
+     *     @example
+     *     // Create many Purchases
+     *     const purchase = await prisma.purchase.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends PurchaseCreateManyArgs>(
+      args?: SelectSubset<T, PurchaseCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Purchase.
+     * @param {PurchaseDeleteArgs} args - Arguments to delete one Purchase.
+     * @example
+     * // Delete one Purchase
+     * const Purchase = await prisma.purchase.delete({
+     *   where: {
+     *     // ... filter to delete one Purchase
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends PurchaseDeleteArgs>(
+      args: SelectSubset<T, PurchaseDeleteArgs>
+    ): CheckSelect<T, Prisma__PurchaseClient<Purchase>, Prisma__PurchaseClient<PurchaseGetPayload<T>>>
+
+    /**
+     * Update one Purchase.
+     * @param {PurchaseUpdateArgs} args - Arguments to update one Purchase.
+     * @example
+     * // Update one Purchase
+     * const purchase = await prisma.purchase.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends PurchaseUpdateArgs>(
+      args: SelectSubset<T, PurchaseUpdateArgs>
+    ): CheckSelect<T, Prisma__PurchaseClient<Purchase>, Prisma__PurchaseClient<PurchaseGetPayload<T>>>
+
+    /**
+     * Delete zero or more Purchases.
+     * @param {PurchaseDeleteManyArgs} args - Arguments to filter Purchases to delete.
+     * @example
+     * // Delete a few Purchases
+     * const { count } = await prisma.purchase.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends PurchaseDeleteManyArgs>(
+      args?: SelectSubset<T, PurchaseDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Purchases.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Purchases
+     * const purchase = await prisma.purchase.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends PurchaseUpdateManyArgs>(
+      args: SelectSubset<T, PurchaseUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Purchase.
+     * @param {PurchaseUpsertArgs} args - Arguments to update or create a Purchase.
+     * @example
+     * // Update or create a Purchase
+     * const purchase = await prisma.purchase.upsert({
+     *   create: {
+     *     // ... data to create a Purchase
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Purchase we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends PurchaseUpsertArgs>(
+      args: SelectSubset<T, PurchaseUpsertArgs>
+    ): CheckSelect<T, Prisma__PurchaseClient<Purchase>, Prisma__PurchaseClient<PurchaseGetPayload<T>>>
+
+    /**
+     * Count the number of Purchases.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseCountArgs} args - Arguments to filter Purchases to count.
+     * @example
+     * // Count the number of Purchases
+     * const count = await prisma.purchase.count({
+     *   where: {
+     *     // ... the filter for the Purchases we want to count
+     *   }
+     * })
+    **/
+    count<T extends PurchaseCountArgs>(
+      args?: Subset<T, PurchaseCountArgs>,
+    ): PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PurchaseCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Purchase.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PurchaseAggregateArgs>(args: Subset<T, PurchaseAggregateArgs>): PrismaPromise<GetPurchaseAggregateType<T>>
+
+    /**
+     * Group by Purchase.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PurchaseGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PurchaseGroupByArgs['orderBy'] }
+        : { orderBy?: PurchaseGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PurchaseGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPurchaseGroupByPayload<T> : Promise<InputErrors>
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Purchase.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in 
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__PurchaseClient<T> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+
+    createdBy<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
+
+    lines<T extends PurchaseLineFindManyArgs = {}>(args?: Subset<T, PurchaseLineFindManyArgs>): CheckSelect<T, PrismaPromise<Array<PurchaseLine>>, PrismaPromise<Array<PurchaseLineGetPayload<T>>>>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+  // Custom InputTypes
+
+  /**
+   * Purchase findUnique
+   */
+  export type PurchaseFindUniqueArgs = {
+    /**
+     * Select specific fields to fetch from the Purchase
+     * 
+    **/
+    select?: PurchaseSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: PurchaseInclude | null
+    /**
+     * Throw an Error if a Purchase can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which Purchase to fetch.
+     * 
+    **/
+    where: PurchaseWhereUniqueInput
+  }
+
+
+  /**
+   * Purchase findFirst
+   */
+  export type PurchaseFindFirstArgs = {
+    /**
+     * Select specific fields to fetch from the Purchase
+     * 
+    **/
+    select?: PurchaseSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: PurchaseInclude | null
+    /**
+     * Throw an Error if a Purchase can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which Purchase to fetch.
+     * 
+    **/
+    where?: PurchaseWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Purchases to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<PurchaseOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Purchases.
+     * 
+    **/
+    cursor?: PurchaseWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Purchases from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Purchases.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Purchases.
+     * 
+    **/
+    distinct?: Enumerable<PurchaseScalarFieldEnum>
+  }
+
+
+  /**
+   * Purchase findMany
+   */
+  export type PurchaseFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the Purchase
+     * 
+    **/
+    select?: PurchaseSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: PurchaseInclude | null
+    /**
+     * Filter, which Purchases to fetch.
+     * 
+    **/
+    where?: PurchaseWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Purchases to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<PurchaseOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Purchases.
+     * 
+    **/
+    cursor?: PurchaseWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Purchases from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Purchases.
+     * 
+    **/
+    skip?: number
+    distinct?: Enumerable<PurchaseScalarFieldEnum>
+  }
+
+
+  /**
+   * Purchase create
+   */
+  export type PurchaseCreateArgs = {
+    /**
+     * Select specific fields to fetch from the Purchase
+     * 
+    **/
+    select?: PurchaseSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: PurchaseInclude | null
+    /**
+     * The data needed to create a Purchase.
+     * 
+    **/
+    data: XOR<PurchaseCreateInput, PurchaseUncheckedCreateInput>
+  }
+
+
+  /**
+   * Purchase createMany
+   */
+  export type PurchaseCreateManyArgs = {
+    data: Enumerable<PurchaseCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * Purchase update
+   */
+  export type PurchaseUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the Purchase
+     * 
+    **/
+    select?: PurchaseSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: PurchaseInclude | null
+    /**
+     * The data needed to update a Purchase.
+     * 
+    **/
+    data: XOR<PurchaseUpdateInput, PurchaseUncheckedUpdateInput>
+    /**
+     * Choose, which Purchase to update.
+     * 
+    **/
+    where: PurchaseWhereUniqueInput
+  }
+
+
+  /**
+   * Purchase updateMany
+   */
+  export type PurchaseUpdateManyArgs = {
+    data: XOR<PurchaseUpdateManyMutationInput, PurchaseUncheckedUpdateManyInput>
+    where?: PurchaseWhereInput
+  }
+
+
+  /**
+   * Purchase upsert
+   */
+  export type PurchaseUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the Purchase
+     * 
+    **/
+    select?: PurchaseSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: PurchaseInclude | null
+    /**
+     * The filter to search for the Purchase to update in case it exists.
+     * 
+    **/
+    where: PurchaseWhereUniqueInput
+    /**
+     * In case the Purchase found by the `where` argument doesn't exist, create a new Purchase with this data.
+     * 
+    **/
+    create: XOR<PurchaseCreateInput, PurchaseUncheckedCreateInput>
+    /**
+     * In case the Purchase was found with the provided `where` argument, update it with this data.
+     * 
+    **/
+    update: XOR<PurchaseUpdateInput, PurchaseUncheckedUpdateInput>
+  }
+
+
+  /**
+   * Purchase delete
+   */
+  export type PurchaseDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the Purchase
+     * 
+    **/
+    select?: PurchaseSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: PurchaseInclude | null
+    /**
+     * Filter which Purchase to delete.
+     * 
+    **/
+    where: PurchaseWhereUniqueInput
+  }
+
+
+  /**
+   * Purchase deleteMany
+   */
+  export type PurchaseDeleteManyArgs = {
+    where?: PurchaseWhereInput
+  }
+
+
+  /**
+   * Purchase without action
+   */
+  export type PurchaseArgs = {
+    /**
+     * Select specific fields to fetch from the Purchase
+     * 
+    **/
+    select?: PurchaseSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: PurchaseInclude | null
+  }
+
+
+
+  /**
+   * Model PurchaseLine
+   */
+
+
+  export type AggregatePurchaseLine = {
+    _count: PurchaseLineCountAggregateOutputType | null
+    count: PurchaseLineCountAggregateOutputType | null
+    _avg: PurchaseLineAvgAggregateOutputType | null
+    avg: PurchaseLineAvgAggregateOutputType | null
+    _sum: PurchaseLineSumAggregateOutputType | null
+    sum: PurchaseLineSumAggregateOutputType | null
+    _min: PurchaseLineMinAggregateOutputType | null
+    min: PurchaseLineMinAggregateOutputType | null
+    _max: PurchaseLineMaxAggregateOutputType | null
+    max: PurchaseLineMaxAggregateOutputType | null
+  }
+
+  export type PurchaseLineAvgAggregateOutputType = {
+    id: number | null
+    purchaseId: number | null
+    amount: number | null
+    productId: number | null
+    productVersion: number | null
+  }
+
+  export type PurchaseLineSumAggregateOutputType = {
+    id: number | null
+    purchaseId: number | null
+    amount: number | null
+    productId: number | null
+    productVersion: number | null
+  }
+
+  export type PurchaseLineMinAggregateOutputType = {
+    id: number | null
+    purchaseId: number | null
+    amount: number | null
+    productId: number | null
+    productVersion: number | null
+  }
+
+  export type PurchaseLineMaxAggregateOutputType = {
+    id: number | null
+    purchaseId: number | null
+    amount: number | null
+    productId: number | null
+    productVersion: number | null
+  }
+
+  export type PurchaseLineCountAggregateOutputType = {
+    id: number
+    purchaseId: number
+    amount: number
+    productId: number
+    productVersion: number
+    _all: number
+  }
+
+
+  export type PurchaseLineAvgAggregateInputType = {
+    id?: true
+    purchaseId?: true
+    amount?: true
+    productId?: true
+    productVersion?: true
+  }
+
+  export type PurchaseLineSumAggregateInputType = {
+    id?: true
+    purchaseId?: true
+    amount?: true
+    productId?: true
+    productVersion?: true
+  }
+
+  export type PurchaseLineMinAggregateInputType = {
+    id?: true
+    purchaseId?: true
+    amount?: true
+    productId?: true
+    productVersion?: true
+  }
+
+  export type PurchaseLineMaxAggregateInputType = {
+    id?: true
+    purchaseId?: true
+    amount?: true
+    productId?: true
+    productVersion?: true
+  }
+
+  export type PurchaseLineCountAggregateInputType = {
+    id?: true
+    purchaseId?: true
+    amount?: true
+    productId?: true
+    productVersion?: true
+    _all?: true
+  }
+
+  export type PurchaseLineAggregateArgs = {
+    /**
+     * Filter which PurchaseLine to aggregate.
+     * 
+    **/
+    where?: PurchaseLineWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PurchaseLines to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<PurchaseLineOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     * 
+    **/
+    cursor?: PurchaseLineWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PurchaseLines from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PurchaseLines.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PurchaseLines
+    **/
+    _count?: true | PurchaseLineCountAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_count`
+    **/
+    count?: true | PurchaseLineCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PurchaseLineAvgAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_avg`
+    **/
+    avg?: PurchaseLineAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PurchaseLineSumAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_sum`
+    **/
+    sum?: PurchaseLineSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PurchaseLineMinAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_min`
+    **/
+    min?: PurchaseLineMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PurchaseLineMaxAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_max`
+    **/
+    max?: PurchaseLineMaxAggregateInputType
+  }
+
+  export type GetPurchaseLineAggregateType<T extends PurchaseLineAggregateArgs> = {
+        [P in keyof T & keyof AggregatePurchaseLine]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePurchaseLine[P]>
+      : GetScalarType<T[P], AggregatePurchaseLine[P]>
+  }
+
+
+    
+    
+  export type PurchaseLineGroupByArgs = {
+    where?: PurchaseLineWhereInput
+    orderBy?: Enumerable<PurchaseLineOrderByInput>
+    by: Array<PurchaseLineScalarFieldEnum>
+    having?: PurchaseLineScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PurchaseLineCountAggregateInputType | true
+    _avg?: PurchaseLineAvgAggregateInputType
+    _sum?: PurchaseLineSumAggregateInputType
+    _min?: PurchaseLineMinAggregateInputType
+    _max?: PurchaseLineMaxAggregateInputType
+  }
+
+
+  export type PurchaseLineGroupByOutputType = {
+    id: number
+    purchaseId: number
+    amount: number
+    productId: number
+    productVersion: number
+    _count: PurchaseLineCountAggregateOutputType | null
+    _avg: PurchaseLineAvgAggregateOutputType | null
+    _sum: PurchaseLineSumAggregateOutputType | null
+    _min: PurchaseLineMinAggregateOutputType | null
+    _max: PurchaseLineMaxAggregateOutputType | null
+  }
+
+  type GetPurchaseLineGroupByPayload<T extends PurchaseLineGroupByArgs> = Promise<
+    Array<
+      PickArray<PurchaseLineGroupByOutputType, T['by']> & 
+        {
+          [P in ((keyof T) & (keyof PurchaseLineGroupByOutputType))]: P extends '_count' 
+            ? T[P] extends boolean 
+              ? number 
+              : GetScalarType<T[P], PurchaseLineGroupByOutputType[P]> 
+            : GetScalarType<T[P], PurchaseLineGroupByOutputType[P]>
+        }
+      > 
+    >
+
+
+  export type PurchaseLineSelect = {
+    id?: boolean
+    purchase?: boolean | PurchaseArgs
+    purchaseId?: boolean
+    amount?: boolean
+    product?: boolean | OfferArgs
+    productId?: boolean
+    productVersion?: boolean
+  }
+
+  export type PurchaseLineInclude = {
+    purchase?: boolean | PurchaseArgs
+    product?: boolean | OfferArgs
+  }
+
+  export type PurchaseLineGetPayload<
+    S extends boolean | null | undefined | PurchaseLineArgs,
+    U = keyof S
+      > = S extends true
+        ? PurchaseLine
+    : S extends undefined
+    ? never
+    : S extends PurchaseLineArgs | PurchaseLineFindManyArgs
+    ?'include' extends U
+    ? PurchaseLine  & {
+    [P in TrueKeys<S['include']>]: 
+          P extends 'purchase'
+        ? PurchaseGetPayload<S['include'][P]> :
+        P extends 'product'
+        ? OfferGetPayload<S['include'][P]> : never
+  } 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]: P extends keyof PurchaseLine ?PurchaseLine [P]
+  : 
+          P extends 'purchase'
+        ? PurchaseGetPayload<S['select'][P]> :
+        P extends 'product'
+        ? OfferGetPayload<S['select'][P]> : never
+  } 
+    : PurchaseLine
+  : PurchaseLine
+
+
+  type PurchaseLineCountArgs = Merge<
+    Omit<PurchaseLineFindManyArgs, 'select' | 'include'> & {
+      select?: PurchaseLineCountAggregateInputType | true
+    }
+  >
+
+  export interface PurchaseLineDelegate<GlobalRejectSettings> {
+    /**
+     * Find zero or one PurchaseLine that matches the filter.
+     * @param {PurchaseLineFindUniqueArgs} args - Arguments to find a PurchaseLine
+     * @example
+     * // Get one PurchaseLine
+     * const purchaseLine = await prisma.purchaseLine.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends PurchaseLineFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, PurchaseLineFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'PurchaseLine'> extends True ? CheckSelect<T, Prisma__PurchaseLineClient<PurchaseLine>, Prisma__PurchaseLineClient<PurchaseLineGetPayload<T>>> : CheckSelect<T, Prisma__PurchaseLineClient<PurchaseLine | null >, Prisma__PurchaseLineClient<PurchaseLineGetPayload<T> | null >>
+
+    /**
+     * Find the first PurchaseLine that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseLineFindFirstArgs} args - Arguments to find a PurchaseLine
+     * @example
+     * // Get one PurchaseLine
+     * const purchaseLine = await prisma.purchaseLine.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends PurchaseLineFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, PurchaseLineFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'PurchaseLine'> extends True ? CheckSelect<T, Prisma__PurchaseLineClient<PurchaseLine>, Prisma__PurchaseLineClient<PurchaseLineGetPayload<T>>> : CheckSelect<T, Prisma__PurchaseLineClient<PurchaseLine | null >, Prisma__PurchaseLineClient<PurchaseLineGetPayload<T> | null >>
+
+    /**
+     * Find zero or more PurchaseLines that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseLineFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PurchaseLines
+     * const purchaseLines = await prisma.purchaseLine.findMany()
+     * 
+     * // Get first 10 PurchaseLines
+     * const purchaseLines = await prisma.purchaseLine.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const purchaseLineWithIdOnly = await prisma.purchaseLine.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends PurchaseLineFindManyArgs>(
+      args?: SelectSubset<T, PurchaseLineFindManyArgs>
+    ): CheckSelect<T, PrismaPromise<Array<PurchaseLine>>, PrismaPromise<Array<PurchaseLineGetPayload<T>>>>
+
+    /**
+     * Create a PurchaseLine.
+     * @param {PurchaseLineCreateArgs} args - Arguments to create a PurchaseLine.
+     * @example
+     * // Create one PurchaseLine
+     * const PurchaseLine = await prisma.purchaseLine.create({
+     *   data: {
+     *     // ... data to create a PurchaseLine
+     *   }
+     * })
+     * 
+    **/
+    create<T extends PurchaseLineCreateArgs>(
+      args: SelectSubset<T, PurchaseLineCreateArgs>
+    ): CheckSelect<T, Prisma__PurchaseLineClient<PurchaseLine>, Prisma__PurchaseLineClient<PurchaseLineGetPayload<T>>>
+
+    /**
+     * Create many PurchaseLines.
+     *     @param {PurchaseLineCreateManyArgs} args - Arguments to create many PurchaseLines.
+     *     @example
+     *     // Create many PurchaseLines
+     *     const purchaseLine = await prisma.purchaseLine.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends PurchaseLineCreateManyArgs>(
+      args?: SelectSubset<T, PurchaseLineCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a PurchaseLine.
+     * @param {PurchaseLineDeleteArgs} args - Arguments to delete one PurchaseLine.
+     * @example
+     * // Delete one PurchaseLine
+     * const PurchaseLine = await prisma.purchaseLine.delete({
+     *   where: {
+     *     // ... filter to delete one PurchaseLine
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends PurchaseLineDeleteArgs>(
+      args: SelectSubset<T, PurchaseLineDeleteArgs>
+    ): CheckSelect<T, Prisma__PurchaseLineClient<PurchaseLine>, Prisma__PurchaseLineClient<PurchaseLineGetPayload<T>>>
+
+    /**
+     * Update one PurchaseLine.
+     * @param {PurchaseLineUpdateArgs} args - Arguments to update one PurchaseLine.
+     * @example
+     * // Update one PurchaseLine
+     * const purchaseLine = await prisma.purchaseLine.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends PurchaseLineUpdateArgs>(
+      args: SelectSubset<T, PurchaseLineUpdateArgs>
+    ): CheckSelect<T, Prisma__PurchaseLineClient<PurchaseLine>, Prisma__PurchaseLineClient<PurchaseLineGetPayload<T>>>
+
+    /**
+     * Delete zero or more PurchaseLines.
+     * @param {PurchaseLineDeleteManyArgs} args - Arguments to filter PurchaseLines to delete.
+     * @example
+     * // Delete a few PurchaseLines
+     * const { count } = await prisma.purchaseLine.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends PurchaseLineDeleteManyArgs>(
+      args?: SelectSubset<T, PurchaseLineDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PurchaseLines.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseLineUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PurchaseLines
+     * const purchaseLine = await prisma.purchaseLine.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends PurchaseLineUpdateManyArgs>(
+      args: SelectSubset<T, PurchaseLineUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one PurchaseLine.
+     * @param {PurchaseLineUpsertArgs} args - Arguments to update or create a PurchaseLine.
+     * @example
+     * // Update or create a PurchaseLine
+     * const purchaseLine = await prisma.purchaseLine.upsert({
+     *   create: {
+     *     // ... data to create a PurchaseLine
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PurchaseLine we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends PurchaseLineUpsertArgs>(
+      args: SelectSubset<T, PurchaseLineUpsertArgs>
+    ): CheckSelect<T, Prisma__PurchaseLineClient<PurchaseLine>, Prisma__PurchaseLineClient<PurchaseLineGetPayload<T>>>
+
+    /**
+     * Count the number of PurchaseLines.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseLineCountArgs} args - Arguments to filter PurchaseLines to count.
+     * @example
+     * // Count the number of PurchaseLines
+     * const count = await prisma.purchaseLine.count({
+     *   where: {
+     *     // ... the filter for the PurchaseLines we want to count
+     *   }
+     * })
+    **/
+    count<T extends PurchaseLineCountArgs>(
+      args?: Subset<T, PurchaseLineCountArgs>,
+    ): PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PurchaseLineCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PurchaseLine.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseLineAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PurchaseLineAggregateArgs>(args: Subset<T, PurchaseLineAggregateArgs>): PrismaPromise<GetPurchaseLineAggregateType<T>>
+
+    /**
+     * Group by PurchaseLine.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PurchaseLineGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PurchaseLineGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PurchaseLineGroupByArgs['orderBy'] }
+        : { orderBy?: PurchaseLineGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PurchaseLineGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPurchaseLineGroupByPayload<T> : Promise<InputErrors>
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PurchaseLine.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in 
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__PurchaseLineClient<T> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+
+    purchase<T extends PurchaseArgs = {}>(args?: Subset<T, PurchaseArgs>): CheckSelect<T, Prisma__PurchaseClient<Purchase | null >, Prisma__PurchaseClient<PurchaseGetPayload<T> | null >>;
+
+    product<T extends OfferArgs = {}>(args?: Subset<T, OfferArgs>): CheckSelect<T, Prisma__OfferClient<Offer | null >, Prisma__OfferClient<OfferGetPayload<T> | null >>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+  // Custom InputTypes
+
+  /**
+   * PurchaseLine findUnique
+   */
+  export type PurchaseLineFindUniqueArgs = {
+    /**
+     * Select specific fields to fetch from the PurchaseLine
+     * 
+    **/
+    select?: PurchaseLineSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: PurchaseLineInclude | null
+    /**
+     * Throw an Error if a PurchaseLine can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which PurchaseLine to fetch.
+     * 
+    **/
+    where: PurchaseLineWhereUniqueInput
+  }
+
+
+  /**
+   * PurchaseLine findFirst
+   */
+  export type PurchaseLineFindFirstArgs = {
+    /**
+     * Select specific fields to fetch from the PurchaseLine
+     * 
+    **/
+    select?: PurchaseLineSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: PurchaseLineInclude | null
+    /**
+     * Throw an Error if a PurchaseLine can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which PurchaseLine to fetch.
+     * 
+    **/
+    where?: PurchaseLineWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PurchaseLines to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<PurchaseLineOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PurchaseLines.
+     * 
+    **/
+    cursor?: PurchaseLineWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PurchaseLines from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PurchaseLines.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PurchaseLines.
+     * 
+    **/
+    distinct?: Enumerable<PurchaseLineScalarFieldEnum>
+  }
+
+
+  /**
+   * PurchaseLine findMany
+   */
+  export type PurchaseLineFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the PurchaseLine
+     * 
+    **/
+    select?: PurchaseLineSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: PurchaseLineInclude | null
+    /**
+     * Filter, which PurchaseLines to fetch.
+     * 
+    **/
+    where?: PurchaseLineWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PurchaseLines to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<PurchaseLineOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PurchaseLines.
+     * 
+    **/
+    cursor?: PurchaseLineWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PurchaseLines from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PurchaseLines.
+     * 
+    **/
+    skip?: number
+    distinct?: Enumerable<PurchaseLineScalarFieldEnum>
+  }
+
+
+  /**
+   * PurchaseLine create
+   */
+  export type PurchaseLineCreateArgs = {
+    /**
+     * Select specific fields to fetch from the PurchaseLine
+     * 
+    **/
+    select?: PurchaseLineSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: PurchaseLineInclude | null
+    /**
+     * The data needed to create a PurchaseLine.
+     * 
+    **/
+    data: XOR<PurchaseLineCreateInput, PurchaseLineUncheckedCreateInput>
+  }
+
+
+  /**
+   * PurchaseLine createMany
+   */
+  export type PurchaseLineCreateManyArgs = {
+    data: Enumerable<PurchaseLineCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * PurchaseLine update
+   */
+  export type PurchaseLineUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the PurchaseLine
+     * 
+    **/
+    select?: PurchaseLineSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: PurchaseLineInclude | null
+    /**
+     * The data needed to update a PurchaseLine.
+     * 
+    **/
+    data: XOR<PurchaseLineUpdateInput, PurchaseLineUncheckedUpdateInput>
+    /**
+     * Choose, which PurchaseLine to update.
+     * 
+    **/
+    where: PurchaseLineWhereUniqueInput
+  }
+
+
+  /**
+   * PurchaseLine updateMany
+   */
+  export type PurchaseLineUpdateManyArgs = {
+    data: XOR<PurchaseLineUpdateManyMutationInput, PurchaseLineUncheckedUpdateManyInput>
+    where?: PurchaseLineWhereInput
+  }
+
+
+  /**
+   * PurchaseLine upsert
+   */
+  export type PurchaseLineUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the PurchaseLine
+     * 
+    **/
+    select?: PurchaseLineSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: PurchaseLineInclude | null
+    /**
+     * The filter to search for the PurchaseLine to update in case it exists.
+     * 
+    **/
+    where: PurchaseLineWhereUniqueInput
+    /**
+     * In case the PurchaseLine found by the `where` argument doesn't exist, create a new PurchaseLine with this data.
+     * 
+    **/
+    create: XOR<PurchaseLineCreateInput, PurchaseLineUncheckedCreateInput>
+    /**
+     * In case the PurchaseLine was found with the provided `where` argument, update it with this data.
+     * 
+    **/
+    update: XOR<PurchaseLineUpdateInput, PurchaseLineUncheckedUpdateInput>
+  }
+
+
+  /**
+   * PurchaseLine delete
+   */
+  export type PurchaseLineDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the PurchaseLine
+     * 
+    **/
+    select?: PurchaseLineSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: PurchaseLineInclude | null
+    /**
+     * Filter which PurchaseLine to delete.
+     * 
+    **/
+    where: PurchaseLineWhereUniqueInput
+  }
+
+
+  /**
+   * PurchaseLine deleteMany
+   */
+  export type PurchaseLineDeleteManyArgs = {
+    where?: PurchaseLineWhereInput
+  }
+
+
+  /**
+   * PurchaseLine without action
+   */
+  export type PurchaseLineArgs = {
+    /**
+     * Select specific fields to fetch from the PurchaseLine
+     * 
+    **/
+    select?: PurchaseLineSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: PurchaseLineInclude | null
   }
 
 
@@ -13258,6 +15175,7 @@ export namespace Prisma {
 
   export const OfferScalarFieldEnum: {
     id: 'id',
+    version: 'version',
     createdByProfileId: 'createdByProfileId',
     createdAt: 'createdAt',
     title: 'title',
@@ -13268,6 +15186,26 @@ export namespace Prisma {
   };
 
   export type OfferScalarFieldEnum = (typeof OfferScalarFieldEnum)[keyof typeof OfferScalarFieldEnum]
+
+
+  export const PurchaseScalarFieldEnum: {
+    id: 'id',
+    createdByProfileId: 'createdByProfileId',
+    createdAt: 'createdAt'
+  };
+
+  export type PurchaseScalarFieldEnum = (typeof PurchaseScalarFieldEnum)[keyof typeof PurchaseScalarFieldEnum]
+
+
+  export const PurchaseLineScalarFieldEnum: {
+    id: 'id',
+    purchaseId: 'purchaseId',
+    amount: 'amount',
+    productId: 'productId',
+    productVersion: 'productVersion'
+  };
+
+  export type PurchaseLineScalarFieldEnum = (typeof PurchaseLineScalarFieldEnum)[keyof typeof PurchaseLineScalarFieldEnum]
 
 
   export const TagTypeScalarFieldEnum: {
@@ -13536,6 +15474,7 @@ export namespace Prisma {
     sessions?: SessionListRelationFilter
     tags?: TagListRelationFilter
     offers?: OfferListRelationFilter
+    purchases?: PurchaseListRelationFilter
     invitations?: InvitationListRelationFilter
     invitationFunds?: XOR<InvitationFundsEOARelationFilter, InvitationFundsEOAWhereInput> | null
     redeemInvitationRequests?: RedeemInvitationRequestListRelationFilter
@@ -13770,7 +15709,8 @@ export namespace Prisma {
     AND?: Enumerable<OfferWhereInput>
     OR?: Enumerable<OfferWhereInput>
     NOT?: Enumerable<OfferWhereInput>
-    id?: StringFilter | string
+    id?: IntFilter | number
+    version?: IntFilter | number
     createdBy?: XOR<ProfileRelationFilter, ProfileWhereInput>
     createdByProfileId?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
@@ -13779,10 +15719,12 @@ export namespace Prisma {
     pictureMimeType?: StringNullableFilter | string | null
     description?: StringNullableFilter | string | null
     pricePerUnit?: StringFilter | string
+    purchaseLines?: PurchaseLineListRelationFilter
   }
 
   export type OfferOrderByInput = {
     id?: SortOrder
+    version?: SortOrder
     createdByProfileId?: SortOrder
     createdAt?: SortOrder
     title?: SortOrder
@@ -13793,14 +15735,15 @@ export namespace Prisma {
   }
 
   export type OfferWhereUniqueInput = {
-    id?: string
+    id_version?: OfferIdVersionCompoundUniqueInput
   }
 
   export type OfferScalarWhereWithAggregatesInput = {
     AND?: Enumerable<OfferScalarWhereWithAggregatesInput>
     OR?: Enumerable<OfferScalarWhereWithAggregatesInput>
     NOT?: Enumerable<OfferScalarWhereWithAggregatesInput>
-    id?: StringWithAggregatesFilter | string
+    id?: IntWithAggregatesFilter | number
+    version?: IntWithAggregatesFilter | number
     createdByProfileId?: IntWithAggregatesFilter | number
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     title?: StringWithAggregatesFilter | string
@@ -13808,6 +15751,72 @@ export namespace Prisma {
     pictureMimeType?: StringNullableWithAggregatesFilter | string | null
     description?: StringNullableWithAggregatesFilter | string | null
     pricePerUnit?: StringWithAggregatesFilter | string
+  }
+
+  export type PurchaseWhereInput = {
+    AND?: Enumerable<PurchaseWhereInput>
+    OR?: Enumerable<PurchaseWhereInput>
+    NOT?: Enumerable<PurchaseWhereInput>
+    id?: IntFilter | number
+    createdBy?: XOR<ProfileRelationFilter, ProfileWhereInput>
+    createdByProfileId?: IntFilter | number
+    createdAt?: DateTimeFilter | Date | string
+    lines?: PurchaseLineListRelationFilter
+  }
+
+  export type PurchaseOrderByInput = {
+    id?: SortOrder
+    createdByProfileId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PurchaseWhereUniqueInput = {
+    id?: number
+  }
+
+  export type PurchaseScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<PurchaseScalarWhereWithAggregatesInput>
+    OR?: Enumerable<PurchaseScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<PurchaseScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    createdByProfileId?: IntWithAggregatesFilter | number
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+  }
+
+  export type PurchaseLineWhereInput = {
+    AND?: Enumerable<PurchaseLineWhereInput>
+    OR?: Enumerable<PurchaseLineWhereInput>
+    NOT?: Enumerable<PurchaseLineWhereInput>
+    id?: IntFilter | number
+    purchase?: XOR<PurchaseRelationFilter, PurchaseWhereInput>
+    purchaseId?: IntFilter | number
+    amount?: IntFilter | number
+    product?: XOR<OfferRelationFilter, OfferWhereInput>
+    productId?: IntFilter | number
+    productVersion?: IntFilter | number
+  }
+
+  export type PurchaseLineOrderByInput = {
+    id?: SortOrder
+    purchaseId?: SortOrder
+    amount?: SortOrder
+    productId?: SortOrder
+    productVersion?: SortOrder
+  }
+
+  export type PurchaseLineWhereUniqueInput = {
+    id?: number
+  }
+
+  export type PurchaseLineScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<PurchaseLineScalarWhereWithAggregatesInput>
+    OR?: Enumerable<PurchaseLineScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<PurchaseLineScalarWhereWithAggregatesInput>
+    id?: IntWithAggregatesFilter | number
+    purchaseId?: IntWithAggregatesFilter | number
+    amount?: IntWithAggregatesFilter | number
+    productId?: IntWithAggregatesFilter | number
+    productVersion?: IntWithAggregatesFilter | number
   }
 
   export type TagTypeWhereInput = {
@@ -14244,6 +16253,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -14279,6 +16289,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -14313,6 +16324,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -14348,6 +16360,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -14702,7 +16715,8 @@ export namespace Prisma {
   }
 
   export type OfferCreateInput = {
-    id: string
+    id?: number
+    version: number
     createdAt: Date | string
     title: string
     pictureUrl?: string | null
@@ -14710,10 +16724,12 @@ export namespace Prisma {
     description?: string | null
     pricePerUnit: string
     createdBy: ProfileCreateNestedOneWithoutOffersInput
+    purchaseLines?: PurchaseLineCreateNestedManyWithoutProductInput
   }
 
   export type OfferUncheckedCreateInput = {
-    id: string
+    id?: number
+    version: number
     createdByProfileId: number
     createdAt: Date | string
     title: string
@@ -14721,10 +16737,12 @@ export namespace Prisma {
     pictureMimeType?: string | null
     description?: string | null
     pricePerUnit: string
+    purchaseLines?: PurchaseLineUncheckedCreateNestedManyWithoutProductInput
   }
 
   export type OfferUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
+    id?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: StringFieldUpdateOperationsInput | string
     pictureUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14732,10 +16750,12 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
     createdBy?: ProfileUpdateOneRequiredWithoutOffersInput
+    purchaseLines?: PurchaseLineUpdateManyWithoutProductInput
   }
 
   export type OfferUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
+    id?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: StringFieldUpdateOperationsInput | string
@@ -14743,10 +16763,12 @@ export namespace Prisma {
     pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
+    purchaseLines?: PurchaseLineUncheckedUpdateManyWithoutProductInput
   }
 
   export type OfferCreateManyInput = {
-    id: string
+    id?: number
+    version: number
     createdByProfileId: number
     createdAt: Date | string
     title: string
@@ -14757,7 +16779,8 @@ export namespace Prisma {
   }
 
   export type OfferUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
+    id?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: StringFieldUpdateOperationsInput | string
     pictureUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14767,7 +16790,8 @@ export namespace Prisma {
   }
 
   export type OfferUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
+    id?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: StringFieldUpdateOperationsInput | string
@@ -14775,6 +16799,96 @@ export namespace Prisma {
     pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type PurchaseCreateInput = {
+    createdAt: Date | string
+    createdBy: ProfileCreateNestedOneWithoutPurchasesInput
+    lines?: PurchaseLineCreateNestedManyWithoutPurchaseInput
+  }
+
+  export type PurchaseUncheckedCreateInput = {
+    id?: number
+    createdByProfileId: number
+    createdAt: Date | string
+    lines?: PurchaseLineUncheckedCreateNestedManyWithoutPurchaseInput
+  }
+
+  export type PurchaseUpdateInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
+    lines?: PurchaseLineUpdateManyWithoutPurchaseInput
+  }
+
+  export type PurchaseUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lines?: PurchaseLineUncheckedUpdateManyWithoutPurchaseInput
+  }
+
+  export type PurchaseCreateManyInput = {
+    id?: number
+    createdByProfileId: number
+    createdAt: Date | string
+  }
+
+  export type PurchaseUpdateManyMutationInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PurchaseUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PurchaseLineCreateInput = {
+    amount: number
+    purchase: PurchaseCreateNestedOneWithoutLinesInput
+    product: OfferCreateNestedOneWithoutPurchaseLinesInput
+  }
+
+  export type PurchaseLineUncheckedCreateInput = {
+    id?: number
+    purchaseId: number
+    amount: number
+    productId: number
+    productVersion: number
+  }
+
+  export type PurchaseLineUpdateInput = {
+    amount?: IntFieldUpdateOperationsInput | number
+    purchase?: PurchaseUpdateOneRequiredWithoutLinesInput
+    product?: OfferUpdateOneRequiredWithoutPurchaseLinesInput
+  }
+
+  export type PurchaseLineUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    purchaseId?: IntFieldUpdateOperationsInput | number
+    amount?: IntFieldUpdateOperationsInput | number
+    productId?: IntFieldUpdateOperationsInput | number
+    productVersion?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type PurchaseLineCreateManyInput = {
+    id?: number
+    purchaseId: number
+    amount: number
+    productId: number
+    productVersion: number
+  }
+
+  export type PurchaseLineUpdateManyMutationInput = {
+    amount?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type PurchaseLineUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    purchaseId?: IntFieldUpdateOperationsInput | number
+    amount?: IntFieldUpdateOperationsInput | number
+    productId?: IntFieldUpdateOperationsInput | number
+    productVersion?: IntFieldUpdateOperationsInput | number
   }
 
   export type TagTypeCreateInput = {
@@ -15237,6 +17351,12 @@ export namespace Prisma {
     none?: OfferWhereInput
   }
 
+  export type PurchaseListRelationFilter = {
+    every?: PurchaseWhereInput
+    some?: PurchaseWhereInput
+    none?: PurchaseWhereInput
+  }
+
   export type InvitationListRelationFilter = {
     every?: InvitationWhereInput
     some?: InvitationWhereInput
@@ -15300,6 +17420,27 @@ export namespace Prisma {
      * 
     **/
     max?: NestedBoolNullableFilter
+  }
+
+  export type PurchaseLineListRelationFilter = {
+    every?: PurchaseLineWhereInput
+    some?: PurchaseLineWhereInput
+    none?: PurchaseLineWhereInput
+  }
+
+  export type OfferIdVersionCompoundUniqueInput = {
+    id: number
+    version: number
+  }
+
+  export type PurchaseRelationFilter = {
+    is?: PurchaseWhereInput
+    isNot?: PurchaseWhereInput
+  }
+
+  export type OfferRelationFilter = {
+    is?: OfferWhereInput
+    isNot?: OfferWhereInput
   }
 
   export type BoolFilter = {
@@ -15544,6 +17685,13 @@ export namespace Prisma {
     connect?: Enumerable<OfferWhereUniqueInput>
   }
 
+  export type PurchaseCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<Enumerable<PurchaseCreateWithoutCreatedByInput>, Enumerable<PurchaseUncheckedCreateWithoutCreatedByInput>>
+    connectOrCreate?: Enumerable<PurchaseCreateOrConnectWithoutCreatedByInput>
+    createMany?: PurchaseCreateManyCreatedByInputEnvelope
+    connect?: Enumerable<PurchaseWhereUniqueInput>
+  }
+
   export type InvitationCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<Enumerable<InvitationCreateWithoutCreatedByInput>, Enumerable<InvitationUncheckedCreateWithoutCreatedByInput>>
     connectOrCreate?: Enumerable<InvitationCreateOrConnectWithoutCreatedByInput>
@@ -15618,6 +17766,13 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<OfferCreateOrConnectWithoutCreatedByInput>
     createMany?: OfferCreateManyCreatedByInputEnvelope
     connect?: Enumerable<OfferWhereUniqueInput>
+  }
+
+  export type PurchaseUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<Enumerable<PurchaseCreateWithoutCreatedByInput>, Enumerable<PurchaseUncheckedCreateWithoutCreatedByInput>>
+    connectOrCreate?: Enumerable<PurchaseCreateOrConnectWithoutCreatedByInput>
+    createMany?: PurchaseCreateManyCreatedByInputEnvelope
+    connect?: Enumerable<PurchaseWhereUniqueInput>
   }
 
   export type InvitationUncheckedCreateNestedManyWithoutCreatedByInput = {
@@ -15723,6 +17878,20 @@ export namespace Prisma {
     update?: Enumerable<OfferUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<OfferUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<OfferScalarWhereInput>
+  }
+
+  export type PurchaseUpdateManyWithoutCreatedByInput = {
+    create?: XOR<Enumerable<PurchaseCreateWithoutCreatedByInput>, Enumerable<PurchaseUncheckedCreateWithoutCreatedByInput>>
+    connectOrCreate?: Enumerable<PurchaseCreateOrConnectWithoutCreatedByInput>
+    upsert?: Enumerable<PurchaseUpsertWithWhereUniqueWithoutCreatedByInput>
+    createMany?: PurchaseCreateManyCreatedByInputEnvelope
+    connect?: Enumerable<PurchaseWhereUniqueInput>
+    set?: Enumerable<PurchaseWhereUniqueInput>
+    disconnect?: Enumerable<PurchaseWhereUniqueInput>
+    delete?: Enumerable<PurchaseWhereUniqueInput>
+    update?: Enumerable<PurchaseUpdateWithWhereUniqueWithoutCreatedByInput>
+    updateMany?: Enumerable<PurchaseUpdateManyWithWhereWithoutCreatedByInput>
+    deleteMany?: Enumerable<PurchaseScalarWhereInput>
   }
 
   export type InvitationUpdateManyWithoutCreatedByInput = {
@@ -15873,6 +18042,20 @@ export namespace Prisma {
     update?: Enumerable<OfferUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<OfferUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<OfferScalarWhereInput>
+  }
+
+  export type PurchaseUncheckedUpdateManyWithoutCreatedByInput = {
+    create?: XOR<Enumerable<PurchaseCreateWithoutCreatedByInput>, Enumerable<PurchaseUncheckedCreateWithoutCreatedByInput>>
+    connectOrCreate?: Enumerable<PurchaseCreateOrConnectWithoutCreatedByInput>
+    upsert?: Enumerable<PurchaseUpsertWithWhereUniqueWithoutCreatedByInput>
+    createMany?: PurchaseCreateManyCreatedByInputEnvelope
+    connect?: Enumerable<PurchaseWhereUniqueInput>
+    set?: Enumerable<PurchaseWhereUniqueInput>
+    disconnect?: Enumerable<PurchaseWhereUniqueInput>
+    delete?: Enumerable<PurchaseWhereUniqueInput>
+    update?: Enumerable<PurchaseUpdateWithWhereUniqueWithoutCreatedByInput>
+    updateMany?: Enumerable<PurchaseUpdateManyWithWhereWithoutCreatedByInput>
+    deleteMany?: Enumerable<PurchaseScalarWhereInput>
   }
 
   export type InvitationUncheckedUpdateManyWithoutCreatedByInput = {
@@ -16073,12 +18256,138 @@ export namespace Prisma {
     connect?: ProfileWhereUniqueInput
   }
 
+  export type PurchaseLineCreateNestedManyWithoutProductInput = {
+    create?: XOR<Enumerable<PurchaseLineCreateWithoutProductInput>, Enumerable<PurchaseLineUncheckedCreateWithoutProductInput>>
+    connectOrCreate?: Enumerable<PurchaseLineCreateOrConnectWithoutProductInput>
+    createMany?: PurchaseLineCreateManyProductInputEnvelope
+    connect?: Enumerable<PurchaseLineWhereUniqueInput>
+  }
+
+  export type PurchaseLineUncheckedCreateNestedManyWithoutProductInput = {
+    create?: XOR<Enumerable<PurchaseLineCreateWithoutProductInput>, Enumerable<PurchaseLineUncheckedCreateWithoutProductInput>>
+    connectOrCreate?: Enumerable<PurchaseLineCreateOrConnectWithoutProductInput>
+    createMany?: PurchaseLineCreateManyProductInputEnvelope
+    connect?: Enumerable<PurchaseLineWhereUniqueInput>
+  }
+
   export type ProfileUpdateOneRequiredWithoutOffersInput = {
     create?: XOR<ProfileCreateWithoutOffersInput, ProfileUncheckedCreateWithoutOffersInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutOffersInput
     upsert?: ProfileUpsertWithoutOffersInput
     connect?: ProfileWhereUniqueInput
     update?: XOR<ProfileUpdateWithoutOffersInput, ProfileUncheckedUpdateWithoutOffersInput>
+  }
+
+  export type PurchaseLineUpdateManyWithoutProductInput = {
+    create?: XOR<Enumerable<PurchaseLineCreateWithoutProductInput>, Enumerable<PurchaseLineUncheckedCreateWithoutProductInput>>
+    connectOrCreate?: Enumerable<PurchaseLineCreateOrConnectWithoutProductInput>
+    upsert?: Enumerable<PurchaseLineUpsertWithWhereUniqueWithoutProductInput>
+    createMany?: PurchaseLineCreateManyProductInputEnvelope
+    connect?: Enumerable<PurchaseLineWhereUniqueInput>
+    set?: Enumerable<PurchaseLineWhereUniqueInput>
+    disconnect?: Enumerable<PurchaseLineWhereUniqueInput>
+    delete?: Enumerable<PurchaseLineWhereUniqueInput>
+    update?: Enumerable<PurchaseLineUpdateWithWhereUniqueWithoutProductInput>
+    updateMany?: Enumerable<PurchaseLineUpdateManyWithWhereWithoutProductInput>
+    deleteMany?: Enumerable<PurchaseLineScalarWhereInput>
+  }
+
+  export type PurchaseLineUncheckedUpdateManyWithoutProductInput = {
+    create?: XOR<Enumerable<PurchaseLineCreateWithoutProductInput>, Enumerable<PurchaseLineUncheckedCreateWithoutProductInput>>
+    connectOrCreate?: Enumerable<PurchaseLineCreateOrConnectWithoutProductInput>
+    upsert?: Enumerable<PurchaseLineUpsertWithWhereUniqueWithoutProductInput>
+    createMany?: PurchaseLineCreateManyProductInputEnvelope
+    connect?: Enumerable<PurchaseLineWhereUniqueInput>
+    set?: Enumerable<PurchaseLineWhereUniqueInput>
+    disconnect?: Enumerable<PurchaseLineWhereUniqueInput>
+    delete?: Enumerable<PurchaseLineWhereUniqueInput>
+    update?: Enumerable<PurchaseLineUpdateWithWhereUniqueWithoutProductInput>
+    updateMany?: Enumerable<PurchaseLineUpdateManyWithWhereWithoutProductInput>
+    deleteMany?: Enumerable<PurchaseLineScalarWhereInput>
+  }
+
+  export type ProfileCreateNestedOneWithoutPurchasesInput = {
+    create?: XOR<ProfileCreateWithoutPurchasesInput, ProfileUncheckedCreateWithoutPurchasesInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutPurchasesInput
+    connect?: ProfileWhereUniqueInput
+  }
+
+  export type PurchaseLineCreateNestedManyWithoutPurchaseInput = {
+    create?: XOR<Enumerable<PurchaseLineCreateWithoutPurchaseInput>, Enumerable<PurchaseLineUncheckedCreateWithoutPurchaseInput>>
+    connectOrCreate?: Enumerable<PurchaseLineCreateOrConnectWithoutPurchaseInput>
+    createMany?: PurchaseLineCreateManyPurchaseInputEnvelope
+    connect?: Enumerable<PurchaseLineWhereUniqueInput>
+  }
+
+  export type PurchaseLineUncheckedCreateNestedManyWithoutPurchaseInput = {
+    create?: XOR<Enumerable<PurchaseLineCreateWithoutPurchaseInput>, Enumerable<PurchaseLineUncheckedCreateWithoutPurchaseInput>>
+    connectOrCreate?: Enumerable<PurchaseLineCreateOrConnectWithoutPurchaseInput>
+    createMany?: PurchaseLineCreateManyPurchaseInputEnvelope
+    connect?: Enumerable<PurchaseLineWhereUniqueInput>
+  }
+
+  export type ProfileUpdateOneRequiredWithoutPurchasesInput = {
+    create?: XOR<ProfileCreateWithoutPurchasesInput, ProfileUncheckedCreateWithoutPurchasesInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutPurchasesInput
+    upsert?: ProfileUpsertWithoutPurchasesInput
+    connect?: ProfileWhereUniqueInput
+    update?: XOR<ProfileUpdateWithoutPurchasesInput, ProfileUncheckedUpdateWithoutPurchasesInput>
+  }
+
+  export type PurchaseLineUpdateManyWithoutPurchaseInput = {
+    create?: XOR<Enumerable<PurchaseLineCreateWithoutPurchaseInput>, Enumerable<PurchaseLineUncheckedCreateWithoutPurchaseInput>>
+    connectOrCreate?: Enumerable<PurchaseLineCreateOrConnectWithoutPurchaseInput>
+    upsert?: Enumerable<PurchaseLineUpsertWithWhereUniqueWithoutPurchaseInput>
+    createMany?: PurchaseLineCreateManyPurchaseInputEnvelope
+    connect?: Enumerable<PurchaseLineWhereUniqueInput>
+    set?: Enumerable<PurchaseLineWhereUniqueInput>
+    disconnect?: Enumerable<PurchaseLineWhereUniqueInput>
+    delete?: Enumerable<PurchaseLineWhereUniqueInput>
+    update?: Enumerable<PurchaseLineUpdateWithWhereUniqueWithoutPurchaseInput>
+    updateMany?: Enumerable<PurchaseLineUpdateManyWithWhereWithoutPurchaseInput>
+    deleteMany?: Enumerable<PurchaseLineScalarWhereInput>
+  }
+
+  export type PurchaseLineUncheckedUpdateManyWithoutPurchaseInput = {
+    create?: XOR<Enumerable<PurchaseLineCreateWithoutPurchaseInput>, Enumerable<PurchaseLineUncheckedCreateWithoutPurchaseInput>>
+    connectOrCreate?: Enumerable<PurchaseLineCreateOrConnectWithoutPurchaseInput>
+    upsert?: Enumerable<PurchaseLineUpsertWithWhereUniqueWithoutPurchaseInput>
+    createMany?: PurchaseLineCreateManyPurchaseInputEnvelope
+    connect?: Enumerable<PurchaseLineWhereUniqueInput>
+    set?: Enumerable<PurchaseLineWhereUniqueInput>
+    disconnect?: Enumerable<PurchaseLineWhereUniqueInput>
+    delete?: Enumerable<PurchaseLineWhereUniqueInput>
+    update?: Enumerable<PurchaseLineUpdateWithWhereUniqueWithoutPurchaseInput>
+    updateMany?: Enumerable<PurchaseLineUpdateManyWithWhereWithoutPurchaseInput>
+    deleteMany?: Enumerable<PurchaseLineScalarWhereInput>
+  }
+
+  export type PurchaseCreateNestedOneWithoutLinesInput = {
+    create?: XOR<PurchaseCreateWithoutLinesInput, PurchaseUncheckedCreateWithoutLinesInput>
+    connectOrCreate?: PurchaseCreateOrConnectWithoutLinesInput
+    connect?: PurchaseWhereUniqueInput
+  }
+
+  export type OfferCreateNestedOneWithoutPurchaseLinesInput = {
+    create?: XOR<OfferCreateWithoutPurchaseLinesInput, OfferUncheckedCreateWithoutPurchaseLinesInput>
+    connectOrCreate?: OfferCreateOrConnectWithoutPurchaseLinesInput
+    connect?: OfferWhereUniqueInput
+  }
+
+  export type PurchaseUpdateOneRequiredWithoutLinesInput = {
+    create?: XOR<PurchaseCreateWithoutLinesInput, PurchaseUncheckedCreateWithoutLinesInput>
+    connectOrCreate?: PurchaseCreateOrConnectWithoutLinesInput
+    upsert?: PurchaseUpsertWithoutLinesInput
+    connect?: PurchaseWhereUniqueInput
+    update?: XOR<PurchaseUpdateWithoutLinesInput, PurchaseUncheckedUpdateWithoutLinesInput>
+  }
+
+  export type OfferUpdateOneRequiredWithoutPurchaseLinesInput = {
+    create?: XOR<OfferCreateWithoutPurchaseLinesInput, OfferUncheckedCreateWithoutPurchaseLinesInput>
+    connectOrCreate?: OfferCreateOrConnectWithoutPurchaseLinesInput
+    upsert?: OfferUpsertWithoutPurchaseLinesInput
+    connect?: OfferWhereUniqueInput
+    update?: XOR<OfferUpdateWithoutPurchaseLinesInput, OfferUncheckedUpdateWithoutPurchaseLinesInput>
   }
 
   export type TagCreateNestedManyWithoutTypeInput = {
@@ -16638,6 +18947,7 @@ export namespace Prisma {
     newSafeAddress?: string | null
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -16672,6 +18982,7 @@ export namespace Prisma {
     newSafeAddress?: string | null
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -16715,6 +19026,7 @@ export namespace Prisma {
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -16749,6 +19061,7 @@ export namespace Prisma {
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -16783,6 +19096,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
@@ -16817,6 +19131,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
@@ -16855,6 +19170,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -16889,6 +19205,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -16927,6 +19244,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -16961,6 +19279,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -17029,6 +19348,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
@@ -17063,6 +19383,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
@@ -17101,6 +19422,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -17135,6 +19457,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -17173,6 +19496,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -17207,6 +19531,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -17268,6 +19593,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
@@ -17302,6 +19628,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
@@ -17379,6 +19706,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
@@ -17413,6 +19741,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
@@ -17480,6 +19809,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
@@ -17514,6 +19844,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
@@ -17557,6 +19888,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
@@ -17591,6 +19923,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
@@ -17670,23 +20003,27 @@ export namespace Prisma {
   }
 
   export type OfferCreateWithoutCreatedByInput = {
-    id: string
+    id?: number
+    version: number
     createdAt: Date | string
     title: string
     pictureUrl?: string | null
     pictureMimeType?: string | null
     description?: string | null
     pricePerUnit: string
+    purchaseLines?: PurchaseLineCreateNestedManyWithoutProductInput
   }
 
   export type OfferUncheckedCreateWithoutCreatedByInput = {
-    id: string
+    id?: number
+    version: number
     createdAt: Date | string
     title: string
     pictureUrl?: string | null
     pictureMimeType?: string | null
     description?: string | null
     pricePerUnit: string
+    purchaseLines?: PurchaseLineUncheckedCreateNestedManyWithoutProductInput
   }
 
   export type OfferCreateOrConnectWithoutCreatedByInput = {
@@ -17696,6 +20033,27 @@ export namespace Prisma {
 
   export type OfferCreateManyCreatedByInputEnvelope = {
     data: Enumerable<OfferCreateManyCreatedByInput>
+    skipDuplicates?: boolean
+  }
+
+  export type PurchaseCreateWithoutCreatedByInput = {
+    createdAt: Date | string
+    lines?: PurchaseLineCreateNestedManyWithoutPurchaseInput
+  }
+
+  export type PurchaseUncheckedCreateWithoutCreatedByInput = {
+    id?: number
+    createdAt: Date | string
+    lines?: PurchaseLineUncheckedCreateNestedManyWithoutPurchaseInput
+  }
+
+  export type PurchaseCreateOrConnectWithoutCreatedByInput = {
+    where: PurchaseWhereUniqueInput
+    create: XOR<PurchaseCreateWithoutCreatedByInput, PurchaseUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type PurchaseCreateManyCreatedByInputEnvelope = {
+    data: Enumerable<PurchaseCreateManyCreatedByInput>
     skipDuplicates?: boolean
   }
 
@@ -18035,7 +20393,8 @@ export namespace Prisma {
     AND?: Enumerable<OfferScalarWhereInput>
     OR?: Enumerable<OfferScalarWhereInput>
     NOT?: Enumerable<OfferScalarWhereInput>
-    id?: StringFilter | string
+    id?: IntFilter | number
+    version?: IntFilter | number
     createdByProfileId?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
     title?: StringFilter | string
@@ -18043,6 +20402,31 @@ export namespace Prisma {
     pictureMimeType?: StringNullableFilter | string | null
     description?: StringNullableFilter | string | null
     pricePerUnit?: StringFilter | string
+  }
+
+  export type PurchaseUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: PurchaseWhereUniqueInput
+    update: XOR<PurchaseUpdateWithoutCreatedByInput, PurchaseUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<PurchaseCreateWithoutCreatedByInput, PurchaseUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type PurchaseUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: PurchaseWhereUniqueInput
+    data: XOR<PurchaseUpdateWithoutCreatedByInput, PurchaseUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type PurchaseUpdateManyWithWhereWithoutCreatedByInput = {
+    where: PurchaseScalarWhereInput
+    data: XOR<PurchaseUpdateManyMutationInput, PurchaseUncheckedUpdateManyWithoutPurchasesInput>
+  }
+
+  export type PurchaseScalarWhereInput = {
+    AND?: Enumerable<PurchaseScalarWhereInput>
+    OR?: Enumerable<PurchaseScalarWhereInput>
+    NOT?: Enumerable<PurchaseScalarWhereInput>
+    id?: IntFilter | number
+    createdByProfileId?: IntFilter | number
+    createdAt?: DateTimeFilter | Date | string
   }
 
   export type InvitationUpsertWithWhereUniqueWithoutCreatedByInput = {
@@ -18230,6 +20614,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -18264,6 +20649,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -18302,6 +20688,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -18336,6 +20723,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -18374,6 +20762,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -18408,6 +20797,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -18451,6 +20841,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -18485,6 +20876,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -18523,6 +20915,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -18557,6 +20950,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -18595,6 +20989,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -18629,6 +21024,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -18706,6 +21102,7 @@ export namespace Prisma {
     newSafeAddress?: string | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -18740,6 +21137,7 @@ export namespace Prisma {
     newSafeAddress?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -18753,6 +21151,27 @@ export namespace Prisma {
   export type ProfileCreateOrConnectWithoutOffersInput = {
     where: ProfileWhereUniqueInput
     create: XOR<ProfileCreateWithoutOffersInput, ProfileUncheckedCreateWithoutOffersInput>
+  }
+
+  export type PurchaseLineCreateWithoutProductInput = {
+    amount: number
+    purchase: PurchaseCreateNestedOneWithoutLinesInput
+  }
+
+  export type PurchaseLineUncheckedCreateWithoutProductInput = {
+    id?: number
+    purchaseId: number
+    amount: number
+  }
+
+  export type PurchaseLineCreateOrConnectWithoutProductInput = {
+    where: PurchaseLineWhereUniqueInput
+    create: XOR<PurchaseLineCreateWithoutProductInput, PurchaseLineUncheckedCreateWithoutProductInput>
+  }
+
+  export type PurchaseLineCreateManyProductInputEnvelope = {
+    data: Enumerable<PurchaseLineCreateManyProductInput>
+    skipDuplicates?: boolean
   }
 
   export type ProfileUpsertWithoutOffersInput = {
@@ -18783,6 +21202,7 @@ export namespace Prisma {
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -18817,6 +21237,7 @@ export namespace Prisma {
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -18825,6 +21246,309 @@ export namespace Prisma {
     memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
+  }
+
+  export type PurchaseLineUpsertWithWhereUniqueWithoutProductInput = {
+    where: PurchaseLineWhereUniqueInput
+    update: XOR<PurchaseLineUpdateWithoutProductInput, PurchaseLineUncheckedUpdateWithoutProductInput>
+    create: XOR<PurchaseLineCreateWithoutProductInput, PurchaseLineUncheckedCreateWithoutProductInput>
+  }
+
+  export type PurchaseLineUpdateWithWhereUniqueWithoutProductInput = {
+    where: PurchaseLineWhereUniqueInput
+    data: XOR<PurchaseLineUpdateWithoutProductInput, PurchaseLineUncheckedUpdateWithoutProductInput>
+  }
+
+  export type PurchaseLineUpdateManyWithWhereWithoutProductInput = {
+    where: PurchaseLineScalarWhereInput
+    data: XOR<PurchaseLineUpdateManyMutationInput, PurchaseLineUncheckedUpdateManyWithoutPurchaseLinesInput>
+  }
+
+  export type PurchaseLineScalarWhereInput = {
+    AND?: Enumerable<PurchaseLineScalarWhereInput>
+    OR?: Enumerable<PurchaseLineScalarWhereInput>
+    NOT?: Enumerable<PurchaseLineScalarWhereInput>
+    id?: IntFilter | number
+    purchaseId?: IntFilter | number
+    amount?: IntFilter | number
+    productId?: IntFilter | number
+    productVersion?: IntFilter | number
+  }
+
+  export type ProfileCreateWithoutPurchasesInput = {
+    lastUpdateAt?: Date | string
+    emailAddress?: string | null
+    status?: string | null
+    type?: ProfileType | null
+    circlesAddress?: string | null
+    circlesSafeOwner?: string | null
+    circlesTokenAddress?: string | null
+    firstName: string
+    lastName?: string | null
+    avatarUrl?: string | null
+    avatarCid?: string | null
+    avatarMimeType?: string | null
+    dream?: string | null
+    country?: string | null
+    newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
+    cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
+    verifySafeChallenge?: string | null
+    newSafeAddress?: string | null
+    sessions?: SessionCreateNestedManyWithoutProfileInput
+    tags?: TagCreateNestedManyWithoutCreatedByInput
+    offers?: OfferCreateNestedManyWithoutCreatedByInput
+    invitations?: InvitationCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
+    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
+    redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
+    memberships?: MembershipCreateNestedManyWithoutMemberInput
+    members?: MembershipCreateNestedManyWithoutMemberAtInput
+    createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type ProfileUncheckedCreateWithoutPurchasesInput = {
+    id?: number
+    lastUpdateAt?: Date | string
+    emailAddress?: string | null
+    status?: string | null
+    type?: ProfileType | null
+    circlesAddress?: string | null
+    circlesSafeOwner?: string | null
+    circlesTokenAddress?: string | null
+    firstName: string
+    lastName?: string | null
+    avatarUrl?: string | null
+    avatarCid?: string | null
+    avatarMimeType?: string | null
+    dream?: string | null
+    country?: string | null
+    newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
+    cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
+    verifySafeChallenge?: string | null
+    newSafeAddress?: string | null
+    sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
+    tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
+    invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
+    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
+    redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
+    memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
+    members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
+    createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type ProfileCreateOrConnectWithoutPurchasesInput = {
+    where: ProfileWhereUniqueInput
+    create: XOR<ProfileCreateWithoutPurchasesInput, ProfileUncheckedCreateWithoutPurchasesInput>
+  }
+
+  export type PurchaseLineCreateWithoutPurchaseInput = {
+    amount: number
+    product: OfferCreateNestedOneWithoutPurchaseLinesInput
+  }
+
+  export type PurchaseLineUncheckedCreateWithoutPurchaseInput = {
+    id?: number
+    amount: number
+    productId: number
+    productVersion: number
+  }
+
+  export type PurchaseLineCreateOrConnectWithoutPurchaseInput = {
+    where: PurchaseLineWhereUniqueInput
+    create: XOR<PurchaseLineCreateWithoutPurchaseInput, PurchaseLineUncheckedCreateWithoutPurchaseInput>
+  }
+
+  export type PurchaseLineCreateManyPurchaseInputEnvelope = {
+    data: Enumerable<PurchaseLineCreateManyPurchaseInput>
+    skipDuplicates?: boolean
+  }
+
+  export type ProfileUpsertWithoutPurchasesInput = {
+    update: XOR<ProfileUpdateWithoutPurchasesInput, ProfileUncheckedUpdateWithoutPurchasesInput>
+    create: XOR<ProfileCreateWithoutPurchasesInput, ProfileUncheckedCreateWithoutPurchasesInput>
+  }
+
+  export type ProfileUpdateWithoutPurchasesInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    dream?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
+    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    sessions?: SessionUpdateManyWithoutProfileInput
+    tags?: TagUpdateManyWithoutCreatedByInput
+    offers?: OfferUpdateManyWithoutCreatedByInput
+    invitations?: InvitationUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
+    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
+    redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
+    memberships?: MembershipUpdateManyWithoutMemberInput
+    members?: MembershipUpdateManyWithoutMemberAtInput
+    createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
+  }
+
+  export type ProfileUncheckedUpdateWithoutPurchasesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    dream?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
+    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    sessions?: SessionUncheckedUpdateManyWithoutProfileInput
+    tags?: TagUncheckedUpdateManyWithoutCreatedByInput
+    offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
+    invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
+    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
+    redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
+    memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
+    members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
+    createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
+  }
+
+  export type PurchaseLineUpsertWithWhereUniqueWithoutPurchaseInput = {
+    where: PurchaseLineWhereUniqueInput
+    update: XOR<PurchaseLineUpdateWithoutPurchaseInput, PurchaseLineUncheckedUpdateWithoutPurchaseInput>
+    create: XOR<PurchaseLineCreateWithoutPurchaseInput, PurchaseLineUncheckedCreateWithoutPurchaseInput>
+  }
+
+  export type PurchaseLineUpdateWithWhereUniqueWithoutPurchaseInput = {
+    where: PurchaseLineWhereUniqueInput
+    data: XOR<PurchaseLineUpdateWithoutPurchaseInput, PurchaseLineUncheckedUpdateWithoutPurchaseInput>
+  }
+
+  export type PurchaseLineUpdateManyWithWhereWithoutPurchaseInput = {
+    where: PurchaseLineScalarWhereInput
+    data: XOR<PurchaseLineUpdateManyMutationInput, PurchaseLineUncheckedUpdateManyWithoutLinesInput>
+  }
+
+  export type PurchaseCreateWithoutLinesInput = {
+    createdAt: Date | string
+    createdBy: ProfileCreateNestedOneWithoutPurchasesInput
+  }
+
+  export type PurchaseUncheckedCreateWithoutLinesInput = {
+    id?: number
+    createdByProfileId: number
+    createdAt: Date | string
+  }
+
+  export type PurchaseCreateOrConnectWithoutLinesInput = {
+    where: PurchaseWhereUniqueInput
+    create: XOR<PurchaseCreateWithoutLinesInput, PurchaseUncheckedCreateWithoutLinesInput>
+  }
+
+  export type OfferCreateWithoutPurchaseLinesInput = {
+    id?: number
+    version: number
+    createdAt: Date | string
+    title: string
+    pictureUrl?: string | null
+    pictureMimeType?: string | null
+    description?: string | null
+    pricePerUnit: string
+    createdBy: ProfileCreateNestedOneWithoutOffersInput
+  }
+
+  export type OfferUncheckedCreateWithoutPurchaseLinesInput = {
+    id?: number
+    version: number
+    createdByProfileId: number
+    createdAt: Date | string
+    title: string
+    pictureUrl?: string | null
+    pictureMimeType?: string | null
+    description?: string | null
+    pricePerUnit: string
+  }
+
+  export type OfferCreateOrConnectWithoutPurchaseLinesInput = {
+    where: OfferWhereUniqueInput
+    create: XOR<OfferCreateWithoutPurchaseLinesInput, OfferUncheckedCreateWithoutPurchaseLinesInput>
+  }
+
+  export type PurchaseUpsertWithoutLinesInput = {
+    update: XOR<PurchaseUpdateWithoutLinesInput, PurchaseUncheckedUpdateWithoutLinesInput>
+    create: XOR<PurchaseCreateWithoutLinesInput, PurchaseUncheckedCreateWithoutLinesInput>
+  }
+
+  export type PurchaseUpdateWithoutLinesInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
+  }
+
+  export type PurchaseUncheckedUpdateWithoutLinesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OfferUpsertWithoutPurchaseLinesInput = {
+    update: XOR<OfferUpdateWithoutPurchaseLinesInput, OfferUncheckedUpdateWithoutPurchaseLinesInput>
+    create: XOR<OfferCreateWithoutPurchaseLinesInput, OfferUncheckedCreateWithoutPurchaseLinesInput>
+  }
+
+  export type OfferUpdateWithoutPurchaseLinesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    pictureUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    pricePerUnit?: StringFieldUpdateOperationsInput | string
+    createdBy?: ProfileUpdateOneRequiredWithoutOffersInput
+  }
+
+  export type OfferUncheckedUpdateWithoutPurchaseLinesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    pictureUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    pricePerUnit?: StringFieldUpdateOperationsInput | string
   }
 
   export type TagCreateWithoutTypeInput = {
@@ -18940,6 +21664,7 @@ export namespace Prisma {
     newSafeAddress?: string | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
@@ -18974,6 +21699,7 @@ export namespace Prisma {
     newSafeAddress?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
@@ -19065,6 +21791,7 @@ export namespace Prisma {
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutProfileInput
     offers?: OfferUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
@@ -19099,6 +21826,7 @@ export namespace Prisma {
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
@@ -19214,13 +21942,19 @@ export namespace Prisma {
   }
 
   export type OfferCreateManyCreatedByInput = {
-    id: string
+    id?: number
+    version: number
     createdAt: Date | string
     title: string
     pictureUrl?: string | null
     pictureMimeType?: string | null
     description?: string | null
     pricePerUnit: string
+  }
+
+  export type PurchaseCreateManyCreatedByInput = {
+    id?: number
+    createdAt: Date | string
   }
 
   export type InvitationCreateManyCreatedByInput = {
@@ -19381,17 +22115,32 @@ export namespace Prisma {
   }
 
   export type OfferUpdateWithoutCreatedByInput = {
-    id?: StringFieldUpdateOperationsInput | string
+    id?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: StringFieldUpdateOperationsInput | string
     pictureUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
+    purchaseLines?: PurchaseLineUpdateManyWithoutProductInput
   }
 
   export type OfferUncheckedUpdateWithoutCreatedByInput = {
-    id?: StringFieldUpdateOperationsInput | string
+    id?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    pictureUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    pricePerUnit?: StringFieldUpdateOperationsInput | string
+    purchaseLines?: PurchaseLineUncheckedUpdateManyWithoutProductInput
+  }
+
+  export type OfferUncheckedUpdateManyWithoutOffersInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: StringFieldUpdateOperationsInput | string
     pictureUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19400,14 +22149,20 @@ export namespace Prisma {
     pricePerUnit?: StringFieldUpdateOperationsInput | string
   }
 
-  export type OfferUncheckedUpdateManyWithoutOffersInput = {
-    id?: StringFieldUpdateOperationsInput | string
+  export type PurchaseUpdateWithoutCreatedByInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    title?: StringFieldUpdateOperationsInput | string
-    pictureUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    pricePerUnit?: StringFieldUpdateOperationsInput | string
+    lines?: PurchaseLineUpdateManyWithoutPurchaseInput
+  }
+
+  export type PurchaseUncheckedUpdateWithoutCreatedByInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lines?: PurchaseLineUncheckedUpdateManyWithoutPurchaseInput
+  }
+
+  export type PurchaseUncheckedUpdateManyWithoutPurchasesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type InvitationUpdateWithoutCreatedByInput = {
@@ -19685,6 +22440,55 @@ export namespace Prisma {
     transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
     value?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type PurchaseLineCreateManyProductInput = {
+    id?: number
+    purchaseId: number
+    amount: number
+  }
+
+  export type PurchaseLineUpdateWithoutProductInput = {
+    amount?: IntFieldUpdateOperationsInput | number
+    purchase?: PurchaseUpdateOneRequiredWithoutLinesInput
+  }
+
+  export type PurchaseLineUncheckedUpdateWithoutProductInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    purchaseId?: IntFieldUpdateOperationsInput | number
+    amount?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type PurchaseLineUncheckedUpdateManyWithoutPurchaseLinesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    purchaseId?: IntFieldUpdateOperationsInput | number
+    amount?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type PurchaseLineCreateManyPurchaseInput = {
+    id?: number
+    amount: number
+    productId: number
+    productVersion: number
+  }
+
+  export type PurchaseLineUpdateWithoutPurchaseInput = {
+    amount?: IntFieldUpdateOperationsInput | number
+    product?: OfferUpdateOneRequiredWithoutPurchaseLinesInput
+  }
+
+  export type PurchaseLineUncheckedUpdateWithoutPurchaseInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    amount?: IntFieldUpdateOperationsInput | number
+    productId?: IntFieldUpdateOperationsInput | number
+    productVersion?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type PurchaseLineUncheckedUpdateManyWithoutLinesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    amount?: IntFieldUpdateOperationsInput | number
+    productId?: IntFieldUpdateOperationsInput | number
+    productVersion?: IntFieldUpdateOperationsInput | number
   }
 
   export type TagCreateManyTypeInput = {

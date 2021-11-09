@@ -119,6 +119,7 @@ model Profile {
 
     tags Tag[]  @relation(name: "Tag_CreatedBy")
     offers Offer[]  @relation(name: "Offer_CreatedBy")
+    purchases Purchase[] @relation(name: "Purchase_CreatedBy")
 
     invitations Invitation[]  @relation(name: "Invitation_CreatedBy")
     invitationFunds InvitationFundsEOA? @relation(name: "Profile_InvitationFundsEOA")
@@ -187,7 +188,9 @@ model DelegatedChallenges {
 }
 
 model Offer {
-    id String @id
+    id Int @default(autoincrement())
+    version Int
+    @@id([ id, version ])
 
     createdBy Profile @relation(name: "Offer_CreatedBy", fields: [createdByProfileId], references: [id])
     createdByProfileId Int
@@ -199,6 +202,31 @@ model Offer {
     description String?
 
     pricePerUnit String
+
+    purchaseLines PurchaseLine[] @relation(name: "PurchaseLines_Product")
+}
+
+model Purchase {
+    id Int @id @default(autoincrement())
+
+    createdBy Profile @relation(name: "Purchase_CreatedBy", fields: [createdByProfileId], references: [id])
+    createdByProfileId Int
+    createdAt DateTime
+
+    lines PurchaseLine[] @relation(name: "Purchase_Lines")
+}
+
+model PurchaseLine {
+    id Int @id @default(autoincrement())
+
+    purchase Purchase @relation(name: "Purchase_Lines", fields: [purchaseId], references: [id])
+    purchaseId Int
+
+    amount Int
+
+    product Offer @relation(name: "PurchaseLines_Product", fields: [productId, productVersion], references: [id, version])
+    productId Int
+    productVersion Int
 }
 
 model TagType {

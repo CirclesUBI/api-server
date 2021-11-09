@@ -118,6 +118,7 @@ type ExchangeTokenResponse {
 
 type DepositChallengeResponse {
   success: Boolean!
+  success: Boolean!
   errorMessage: String
 }
 input DepositChallenge {
@@ -213,7 +214,8 @@ type City implements ICity {
 
 type Offer {
   # TODO: Keep offers immutable and add a version no.
-  id: String!
+  id: Int!
+  version: Int!
 
   createdBy: Profile
   createdByProfileId: Int!
@@ -223,8 +225,7 @@ type Offer {
   pictureUrl: String!
   pictureMimeType: String!
   description: String
-  categoryTag: Tag
-  categoryTagId: Int!
+
   pricePerUnit: String!
 }
 
@@ -244,7 +245,6 @@ type PurchaseLine {
 
   amount: Int!
   product: Offer!
-  # TODO: Add version
 }
 
 input QueryTagsInput {
@@ -420,6 +420,13 @@ type OrganisationCreated implements IEventPayload {
   organisation_profile: Organisation
 }
 
+# ${buyer} purchased ${amount} ${offer}(s)
+type Purchased implements IEventPayload {
+  transaction_hash: String
+  buyer: String!
+  buyer_profile: Profile
+}
+
 union EventPayload =
   CrcSignup
   | CrcTrust
@@ -437,6 +444,7 @@ union EventPayload =
   | InvitationRedeemed
   | OrganisationCreated
   | MemberAdded
+  | Purchased
 
 enum EventType {
   CrcSignup
@@ -455,6 +463,7 @@ enum EventType {
   , InvitationRedeemed
   , OrganisationCreated
   , MemberAdded
+  , Purchased
 }
 
 enum AggregateType {
@@ -463,6 +472,7 @@ enum AggregateType {
   Memberships
   Members
   Offers
+  Purchases
 }
 
 # All crc holdings of the user
