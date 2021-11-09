@@ -4,9 +4,10 @@ import {RpcGateway} from "./rpcGateway";
 import fetch from "cross-fetch";
 
 export type SafeProfileMap = {[safeAddress:string]:Profile|null};
+export type IdProfileMap = {[id:number]:Profile|null};
 
 export class ProfileLoader {
-  async queryCirclesLandById(prisma: PrismaClient, ids:number[]) : Promise<SafeProfileMap> {
+  async queryCirclesLandById(prisma: PrismaClient, ids:number[]) : Promise<{ safeProfileMap: SafeProfileMap, idProfileMap: IdProfileMap }> {
     const profiles = await prisma.profile.findMany({
       where: {
         id: {
@@ -25,7 +26,14 @@ export class ProfileLoader {
       return p;
     }, <SafeProfileMap>{});
 
-    return safeProfileMap;
+    const idProfileMap = profiles.reduce((p,c)=> {
+      if (!c.id)
+        return p;
+      p[c.id] = c;
+      return p;
+    }, <IdProfileMap>{});
+
+    return {safeProfileMap, idProfileMap};
   }
 
   async queryCirclesLandBySafeAddress(prisma: PrismaClient, safeAddresses:string[]) : Promise<SafeProfileMap> {

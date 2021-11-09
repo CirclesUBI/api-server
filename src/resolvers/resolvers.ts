@@ -239,7 +239,7 @@ export const resolvers: Resolvers = {
     initAggregateState: initAggregateState(),
     profilesById: async (parent, args, context:Context) => {
       const profiles = await new ProfileLoader().queryCirclesLandById(prisma_api_rw, args.ids);
-      return <Profile[]>Object.values(profiles).map(o => {
+      return <Profile[]>Object.values(profiles.idProfileMap).map(o => {
         // @ts-ignore
         delete o.newsletter;
         // @ts-ignore
