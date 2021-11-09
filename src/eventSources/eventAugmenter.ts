@@ -235,7 +235,16 @@ export class MembershipOfferAugmentation implements ProfileEventAugmentation<Mem
   }
   augment(payload: MembershipOffer, profiles: ProfilesBySafeAddressLookup): void {
     payload.createdBy_profile = profiles[payload.createdBy];
-    // TODO: payload.organisation_profile = profiles[payload.organisation];
+    const org = profiles[payload.organisation];
+    if (org) {
+      payload.organisation_profile = <any>{
+        __typename: "Organisation",
+        ...org,
+        name: org.firstName,
+        description: org.dream,
+        createdAt: new Date().toJSON() // TODO: Find the correct creation date
+      };
+    }
   }
 }
 
