@@ -74,6 +74,7 @@ import {MembersSource} from "../aggregateSources/api/membersSource";
 import {AggregateAugmenter} from "../aggregateSources/aggregateAugmenter";
 import {ProfileLoader} from "../profileLoader";
 import {OffersSource} from "../aggregateSources/api/offersSource";
+import {WelcomeMessageEventSource} from "../eventSources/api/welcomeMessageEventSource";
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
@@ -367,7 +368,7 @@ export const resolvers: Resolvers = {
           eventSources.push(new RejectedMembershipOfferEventSource());
         }
         if (isSelf && types[EventType.WelcomeMessage]) {
-          throw new Error(`Not implemented: WelcomeMessage`);
+          eventSources.push(new WelcomeMessageEventSource());
         }
         if (isSelf && types[EventType.InvitationCreated]) {
           eventSources.push(new CreatedInvitationsEventSource());
@@ -461,11 +462,13 @@ export const resolvers: Resolvers = {
         throw new Error(`You need a profile to purchase.`);
       }
 
-      const purchasedOffers = prisma_api_ro.offer.findMany({
-        where: {
-
-        }
-      });
+      const recentOffers = await prisma_api_ro.$queryRaw`
+        with "latest" as (
+          select id
+               , max(o.version) as latest_version
+          from "Offer" o
+          where id = ANY(${})
+          group by id`;
 
       prisma_api_rw.purchase.create({
         data: {
@@ -474,7 +477,7 @@ export const resolvers: Resolvers = {
           lines: {
             createMany: {
               data: {
-                productId
+                productId:
               }
             }
           }

@@ -1023,8 +1023,8 @@ export type Version = {
 export type WelcomeMessage = IEventPayload & {
   __typename?: 'WelcomeMessage';
   transaction_hash?: Maybe<Scalars['String']>;
-  member: Scalars['String'];
-  member_profile?: Maybe<Profile>;
+  invitedBy: Scalars['String'];
+  invitedBy_profile?: Maybe<Profile>;
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -1956,8 +1956,8 @@ export type VersionResolvers<ContextType = any, ParentType extends ResolversPare
 
 export type WelcomeMessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['WelcomeMessage'] = ResolversParentTypes['WelcomeMessage']> = ResolversObject<{
   transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  member?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  member_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  invitedBy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  invitedBy_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

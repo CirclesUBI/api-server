@@ -86,8 +86,6 @@ export class EventAugmenter
         .forEach(ex => {
           if (ev.contact_address) {
             ev.contact_address_profile = this._profiles[ev.contact_address]
-          } else {
-            console.log("Not");
           }
           ev.safe_address_profile = this._profiles[ev.safe_address];
 
@@ -313,10 +311,10 @@ export class WelcomeMessageAugmentation implements ProfileEventAugmentation<Welc
     return profileEvent.payload?.__typename === EventType.WelcomeMessage;
   }
   extractAddresses(payload: WelcomeMessage): string[] {
-    return [payload.member];
+    return [payload.invitedBy];
   }
   augment(payload: WelcomeMessage, profiles: ProfilesBySafeAddressLookup): void {
-    payload.member_profile = profiles[payload.member];
+    payload.invitedBy_profile = profiles[payload.invitedBy];
   }
 }
 

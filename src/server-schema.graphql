@@ -406,8 +406,8 @@ type InvitationRedeemed implements IEventPayload {
 # Do you want to trust ${member}?
 type WelcomeMessage implements IEventPayload {
   transaction_hash: String
-  member: String!
-  member_profile: Profile
+  invitedBy: String!
+  invitedBy_profile: Profile
 }
 
 # You created the ${name} organisation
