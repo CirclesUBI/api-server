@@ -1,5 +1,5 @@
 import {EventSource} from "../eventSource";
-import {Maybe, PaginationArgs, ProfileEvent, ProfileEventFilter, SortOrder} from "../../types";
+import {Direction, Maybe, PaginationArgs, ProfileEvent, ProfileEventFilter, SortOrder} from "../../types";
 import {getPool} from "../../resolvers/resolvers";
 
 export enum BlockchainEventType {
@@ -68,13 +68,27 @@ export class BlockchainIndexerEventSource implements EventSource
           ${_in}
       ), "out" as (
           ${_out}
-      ), "all" as (
+      )`;
+
+    if (!filter?.direction) {
+      sql += `, "all" as (
           select *
           from "in"
           union all
           select *
           from "out"
       )`;
+    } else if (filter?.direction == Direction.In) {
+      sql += `, "all" as (
+          select *
+          from "in"
+      )`;
+    } else if (filter?.direction == Direction.Out) {
+      sql += `, "all" as (
+          select *
+          from "out"
+      )`;
+    }
 
     sql += `
       select *

@@ -1,5 +1,5 @@
 import {EventSource} from "../eventSource";
-import {ChatMessage, Maybe, PaginationArgs, ProfileEvent, ProfileEventFilter} from "../../types";
+import {ChatMessage, Direction, Maybe, PaginationArgs, ProfileEvent, ProfileEventFilter} from "../../types";
 import {prisma_api_ro} from "../../apiDbClient";
 import {Prisma} from "../../api-db/client";
 import ChatMessageWhereInput = Prisma.ChatMessageWhereInput;
@@ -96,7 +96,17 @@ export class ChatMessageEventSource implements EventSource {
       take: pagination.limit ?? 50
     });
 
-    return chatMessages.map(r => {
+    return chatMessages.filter(o => {
+      // TODO: Move this filter to the query
+      const direction = o.from == forSafeAddress ? "out" : "in";
+      if (filter?.direction == Direction.Out && direction == "in") {
+        return false;
+      }
+      if (filter?.direction == Direction.In && direction == "out") {
+        return false;
+      }
+      return true;
+    }).map(r => {
       return <ProfileEvent> {
         __typename: "ProfileEvent",
         safe_address: forSafeAddress,
