@@ -56,6 +56,7 @@ export class AcceptedMembershipOfferEventSource implements EventSource {
         value: null,
         transaction_hash: null,
         transaction_index: null,
+        contact_address: r.member.circlesAddress,
         payload: <MembershipAccepted> {
           __typename: "MembershipAccepted",
           createdBy: r.createdBy.circlesAddress,

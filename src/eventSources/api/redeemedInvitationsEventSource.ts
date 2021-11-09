@@ -53,6 +53,7 @@ export class RedeemedInvitationsEventSource implements EventSource {
         value: null,
         transaction_hash: null,
         transaction_index: null,
+        contact_address: r.redeemedBy?.circlesAddress,
         payload: <InvitationRedeemed> {
           __typename: "InvitationRedeemed",
           name: r.name,

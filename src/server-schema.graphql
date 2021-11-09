@@ -690,7 +690,20 @@ type RemoveMemberResult {
   error: String
 }
 
+input PurchaseLineInput {
+  offerId: Int!
+  amount: Int!
+}
+
+type ProofPaymentResult {
+  acknowledged: Boolean!
+}
+
 type Mutation {
+
+  purchase(lines:[PurchaseLineInput!]!) : Purchase
+  proofPayment(purchaseId: Int!  transactionHash: String!) : ProofPaymentResult
+
   exchangeToken: ExchangeTokenResponse!
   authenticateAt(appId: String!): DelegateAuthInit!
   depositChallenge(jwt: String!): DepositChallengeResponse!

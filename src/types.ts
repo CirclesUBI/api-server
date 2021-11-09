@@ -422,6 +422,8 @@ export type Memberships = IAggregatePayload & {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  purchase?: Maybe<Purchase>;
+  proofPayment?: Maybe<ProofPaymentResult>;
   exchangeToken: ExchangeTokenResponse;
   authenticateAt: DelegateAuthInit;
   depositChallenge: DepositChallengeResponse;
@@ -447,6 +449,17 @@ export type Mutation = {
   sendMessage: SendMessageResult;
   requestSessionChallenge: Scalars['String'];
   verifySessionChallenge?: Maybe<ExchangeTokenResponse>;
+};
+
+
+export type MutationPurchaseArgs = {
+  lines: Array<PurchaseLineInput>;
+};
+
+
+export type MutationProofPaymentArgs = {
+  purchaseId: Scalars['Int'];
+  transactionHash: Scalars['String'];
 };
 
 
@@ -683,6 +696,11 @@ export type ProfileEventFilter = {
 
 export type ProfileOrOrganisation = Profile | Organisation;
 
+export type ProofPaymentResult = {
+  __typename?: 'ProofPaymentResult';
+  acknowledged: Scalars['Boolean'];
+};
+
 export type Purchase = {
   __typename?: 'Purchase';
   id: Scalars['Int'];
@@ -698,6 +716,11 @@ export type PurchaseLine = {
   id: Scalars['Int'];
   amount: Scalars['Int'];
   product: Offer;
+};
+
+export type PurchaseLineInput = {
+  offerId: Scalars['Int'];
+  amount: Scalars['Int'];
 };
 
 export type Purchased = IEventPayload & {
@@ -1152,8 +1175,10 @@ export type ResolversTypes = ResolversObject<{
   ProfileEvent: ResolverTypeWrapper<Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
   ProfileEventFilter: ProfileEventFilter;
   ProfileOrOrganisation: ResolversTypes['Profile'] | ResolversTypes['Organisation'];
+  ProofPaymentResult: ResolverTypeWrapper<ProofPaymentResult>;
   Purchase: ResolverTypeWrapper<Purchase>;
   PurchaseLine: ResolverTypeWrapper<PurchaseLine>;
+  PurchaseLineInput: PurchaseLineInput;
   Purchased: ResolverTypeWrapper<Purchased>;
   Purchases: ResolverTypeWrapper<Purchases>;
   Query: ResolverTypeWrapper<{}>;
@@ -1254,8 +1279,10 @@ export type ResolversParentTypes = ResolversObject<{
   ProfileEvent: Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversParentTypes['EventPayload']> };
   ProfileEventFilter: ProfileEventFilter;
   ProfileOrOrganisation: ResolversParentTypes['Profile'] | ResolversParentTypes['Organisation'];
+  ProofPaymentResult: ProofPaymentResult;
   Purchase: Purchase;
   PurchaseLine: PurchaseLine;
+  PurchaseLineInput: PurchaseLineInput;
   Purchased: Purchased;
   Purchases: Purchases;
   Query: {};
@@ -1645,6 +1672,8 @@ export type MembershipsResolvers<ContextType = any, ParentType extends Resolvers
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  purchase?: Resolver<Maybe<ResolversTypes['Purchase']>, ParentType, ContextType, RequireFields<MutationPurchaseArgs, 'lines'>>;
+  proofPayment?: Resolver<Maybe<ResolversTypes['ProofPaymentResult']>, ParentType, ContextType, RequireFields<MutationProofPaymentArgs, 'purchaseId' | 'transactionHash'>>;
   exchangeToken?: Resolver<ResolversTypes['ExchangeTokenResponse'], ParentType, ContextType>;
   authenticateAt?: Resolver<ResolversTypes['DelegateAuthInit'], ParentType, ContextType, RequireFields<MutationAuthenticateAtArgs, 'appId'>>;
   depositChallenge?: Resolver<ResolversTypes['DepositChallengeResponse'], ParentType, ContextType, RequireFields<MutationDepositChallengeArgs, 'jwt'>>;
@@ -1771,6 +1800,11 @@ export type ProfileEventResolvers<ContextType = any, ParentType extends Resolver
 
 export type ProfileOrOrganisationResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProfileOrOrganisation'] = ResolversParentTypes['ProfileOrOrganisation']> = ResolversObject<{
   __resolveType: TypeResolveFn<'Profile' | 'Organisation', ParentType, ContextType>;
+}>;
+
+export type ProofPaymentResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProofPaymentResult'] = ResolversParentTypes['ProofPaymentResult']> = ResolversObject<{
+  acknowledged?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type PurchaseResolvers<ContextType = any, ParentType extends ResolversParentTypes['Purchase'] = ResolversParentTypes['Purchase']> = ResolversObject<{
@@ -1981,6 +2015,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   ProfileAggregate?: ProfileAggregateResolvers<ContextType>;
   ProfileEvent?: ProfileEventResolvers<ContextType>;
   ProfileOrOrganisation?: ProfileOrOrganisationResolvers<ContextType>;
+  ProofPaymentResult?: ProofPaymentResultResolvers<ContextType>;
   Purchase?: PurchaseResolvers<ContextType>;
   PurchaseLine?: PurchaseLineResolvers<ContextType>;
   Purchased?: PurchasedResolvers<ContextType>;

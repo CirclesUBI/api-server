@@ -85,6 +85,8 @@ export class EventAugmenter
         .forEach(ex => {
           if (ev.contact_address) {
             ev.contact_address_profile = this._profiles[ev.contact_address]
+          } else {
+            console.log("Not");
           }
           ev.safe_address_profile = this._profiles[ev.safe_address];
 

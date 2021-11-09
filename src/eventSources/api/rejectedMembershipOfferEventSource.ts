@@ -49,6 +49,7 @@ export class RejectedMembershipOfferEventSource implements EventSource {
         value: null,
         transaction_hash: null,
         transaction_index: null,
+        contact_address: r.member.circlesAddress,
         payload: <MembershipRejected> {
           __typename: "MembershipRejected",
           member: r.member.circlesAddress,

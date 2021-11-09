@@ -117,6 +117,7 @@ export class ChatMessageEventSource implements EventSource {
         value: null,
         transaction_hash: null,
         transaction_index: null,
+        contact_address: r.from == forSafeAddress ? r.to : r.from,
         payload: <ChatMessage> {
           __typename: "ChatMessage",
           from: r.from,

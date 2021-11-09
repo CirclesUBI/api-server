@@ -454,6 +454,34 @@ export const resolvers: Resolvers = {
     }
   },
   Mutation: {
+    /*
+    purchase: async (parent, args, context:Context) => {
+      const callerProfile = await context.callerProfile;
+      if (!callerProfile) {
+        throw new Error(`You need a profile to purchase.`);
+      }
+
+      const purchasedOffers = prisma_api_ro.offer.findMany({
+        where: {
+
+        }
+      });
+
+      prisma_api_rw.purchase.create({
+        data: {
+          createdByProfileId: callerProfile.id,
+          createdAt: new Date(),
+          lines: {
+            createMany: {
+              data: {
+                productId
+              }
+            }
+          }
+        }
+      });
+    },
+     */
     upsertOrganisation: upsertOrganisation(prisma_api_rw, false),
     upsertRegion: upsertOrganisation(prisma_api_rw, true),
     exchangeToken: exchangeTokenResolver(prisma_api_rw),
