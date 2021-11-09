@@ -5,8 +5,8 @@ import {
   CrcSignup,
   CrcTokenTransfer,
   CrcTrust,
-  EthTransfer, GnosisSafeEthTransfer,
-  IEventPayload,
+  EthTransfer, EventType, GnosisSafeEthTransfer,
+  IEventPayload, InvitationRedeemed,
   MembershipAccepted,
   MembershipOffer,
   MembershipRejected, Profile,
@@ -36,7 +36,8 @@ export class EventAugmenter
     new MembershipOfferAugmentation(),
     new MembershipAcceptedAugmentation(),
     new MembershipRejectedAugmentation(),
-    new WelcomeMessageAugmentation()
+    new WelcomeMessageAugmentation(),
+    new InvitationRedeemedAugmentation()
   ];
 
   add(profileEvent: ProfileEvent) {
@@ -108,7 +109,7 @@ export interface ProfileEventAugmentation<TEventPayload extends IEventPayload> {
 
 export class CrcSignupAugmentation implements ProfileEventAugmentation<CrcSignup> {
   matches(profileEvent: ProfileEvent): boolean {
-    return profileEvent.payload?.__typename === "CrcSignup";
+    return profileEvent.payload?.__typename === EventType.CrcSignup;
   }
   extractAddresses(payload: CrcSignup): string[] {
     return [payload.user];
@@ -123,7 +124,7 @@ export class CrcSignupAugmentation implements ProfileEventAugmentation<CrcSignup
 
 export class CrcTrustAugmentation implements ProfileEventAugmentation<CrcTrust> {
   matches(profileEvent: ProfileEvent): boolean {
-    return profileEvent.payload?.__typename === "CrcTrust";
+    return profileEvent.payload?.__typename === EventType.CrcTrust;
   }
   extractAddresses(payload: CrcTrust): string[] {
     return [payload.address, payload.can_send_to];
@@ -139,7 +140,7 @@ export class CrcTrustAugmentation implements ProfileEventAugmentation<CrcTrust> 
 
 export class CrcTokenTransferAugmentation implements ProfileEventAugmentation<CrcTokenTransfer> {
   matches(profileEvent: ProfileEvent): boolean {
-    return profileEvent.payload?.__typename === "CrcTokenTransfer";
+    return profileEvent.payload?.__typename === EventType.CrcTokenTransfer;
   }
   extractAddresses(payload: CrcTokenTransfer): string[] {
     return [payload.from, payload.to];
@@ -155,7 +156,7 @@ export class CrcTokenTransferAugmentation implements ProfileEventAugmentation<Cr
 
 export class CrcHubTransferAugmentation implements ProfileEventAugmentation<CrcHubTransfer> {
   matches(profileEvent: ProfileEvent): boolean {
-    return profileEvent.payload?.__typename === "CrcHubTransfer";
+    return profileEvent.payload?.__typename === EventType.CrcHubTransfer;
   }
   extractAddresses(payload: CrcHubTransfer): string[] {
     const transferAddresses = payload.transfers.reduce((p,c) => {
@@ -182,7 +183,7 @@ export class CrcHubTransferAugmentation implements ProfileEventAugmentation<CrcH
 
 export class CrcMintingAugmentation implements ProfileEventAugmentation<CrcMinting> {
   matches(profileEvent: ProfileEvent): boolean {
-    return profileEvent.payload?.__typename === "CrcMinting";
+    return profileEvent.payload?.__typename === EventType.CrcMinting;
   }
   extractAddresses(payload: CrcMinting): string[] {
     return [payload.from, payload.to];
@@ -198,7 +199,7 @@ export class CrcMintingAugmentation implements ProfileEventAugmentation<CrcMinti
 
 export class EthTransferAugmentation implements ProfileEventAugmentation<EthTransfer> {
   matches(profileEvent: ProfileEvent): boolean {
-    return profileEvent.payload?.__typename === "EthTransfer";
+    return profileEvent.payload?.__typename === EventType.EthTransfer;
   }
   extractAddresses(payload: EthTransfer): string[] {
     return [payload.from, payload.to];
@@ -214,7 +215,7 @@ export class EthTransferAugmentation implements ProfileEventAugmentation<EthTran
 
 export class GnosisSafeEthTransferAugmentation implements ProfileEventAugmentation<GnosisSafeEthTransfer> {
   matches(profileEvent: ProfileEvent): boolean {
-    return profileEvent.payload?.__typename === "GnosisSafeEthTransfer";
+    return profileEvent.payload?.__typename === EventType.GnosisSafeEthTransfer;
   }
   extractAddresses(payload: GnosisSafeEthTransfer): string[] {
     return [payload.from, payload.to];
@@ -230,7 +231,7 @@ export class GnosisSafeEthTransferAugmentation implements ProfileEventAugmentati
 
 export class MembershipOfferAugmentation implements ProfileEventAugmentation<MembershipOffer> {
   matches(profileEvent: ProfileEvent): boolean {
-    return profileEvent.payload?.__typename === "MembershipOffer";
+    return profileEvent.payload?.__typename === EventType.MembershipOffer;
   }
   extractAddresses(payload: MembershipOffer): string[] {
     return [payload.createdBy, payload.organisation];
@@ -252,7 +253,7 @@ export class MembershipOfferAugmentation implements ProfileEventAugmentation<Mem
 
 export class MembershipAcceptedAugmentation implements ProfileEventAugmentation<MembershipAccepted> {
   matches(profileEvent: ProfileEvent): boolean {
-    return profileEvent.payload?.__typename === "MembershipAccepted";
+    return profileEvent.payload?.__typename === EventType.MembershipAccepted;
   }
   extractAddresses(payload: MembershipAccepted): string[] {
     return [payload.member, payload.organisation];
@@ -274,7 +275,7 @@ export class MembershipAcceptedAugmentation implements ProfileEventAugmentation<
 
 export class MembershipRejectedAugmentation implements ProfileEventAugmentation<MembershipRejected> {
   matches(profileEvent: ProfileEvent): boolean {
-    return profileEvent.payload?.__typename === "MembershipRejected";
+    return profileEvent.payload?.__typename === EventType.MembershipRejected;
   }
   extractAddresses(payload: MembershipRejected): string[] {
     return [payload.member, payload.organisation];
@@ -296,7 +297,7 @@ export class MembershipRejectedAugmentation implements ProfileEventAugmentation<
 
 export class ChatMessageAugmentation implements ProfileEventAugmentation<ChatMessage> {
   matches(profileEvent: ProfileEvent): boolean {
-    return profileEvent.payload?.__typename === "ChatMessage";
+    return profileEvent.payload?.__typename === EventType.ChatMessage;
   }
   extractAddresses(payload: ChatMessage): string[] {
     return [payload.from, payload.to];
@@ -309,13 +310,26 @@ export class ChatMessageAugmentation implements ProfileEventAugmentation<ChatMes
 
 export class WelcomeMessageAugmentation implements ProfileEventAugmentation<WelcomeMessage> {
   matches(profileEvent: ProfileEvent): boolean {
-    return profileEvent.payload?.__typename === "WelcomeMessage";
+    return profileEvent.payload?.__typename === EventType.WelcomeMessage;
   }
   extractAddresses(payload: WelcomeMessage): string[] {
     return [payload.member];
   }
   augment(payload: WelcomeMessage, profiles: ProfilesBySafeAddressLookup): void {
     payload.member_profile = profiles[payload.member];
-    // TODO: payload.organisation_profile = profiles[payload.organisation];
+  }
+}
+
+export class InvitationRedeemedAugmentation implements ProfileEventAugmentation<InvitationRedeemed> {
+  matches(profileEvent: ProfileEvent): boolean {
+    return profileEvent.payload?.__typename === EventType.InvitationRedeemed;
+  }
+  extractAddresses(payload: InvitationRedeemed): string[] {
+    return payload.redeemedBy ? [payload.redeemedBy] : [];
+  }
+  augment(payload: InvitationRedeemed, profiles: ProfilesBySafeAddressLookup): void {
+    if (payload.redeemedBy) {
+      payload.redeemedBy_profile = profiles[payload.redeemedBy];
+    }
   }
 }
