@@ -1,7 +1,7 @@
 import {AggregateSource} from "../aggregateSource";
 import {
   ContactDirection,
-  Contact2,
+  Contact,
   ContactPoint,
   Contacts,
   CrcTrust,
@@ -11,7 +11,7 @@ import {
 import {getPool} from "../../resolvers/resolvers";
 import {prisma_api_ro} from "../../apiDbClient";
 
-async function trustContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact2[]> {
+async function trustContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const start = new Date().getTime();
   const pool = getPool();
   try {
@@ -43,7 +43,7 @@ async function trustContacts(forSafeAddress: string, filter?: Maybe<ProfileAggre
     return trustContactsResult.rows.map(o => {
       const timestamps = o.timestamps.map((p:any) => new Date(p).getTime().toString());
       const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0);
-      return <Contact2> {
+      return <Contact> {
         metadata: [<ContactPoint>{
             name: "CrcTrust",
             directions: o.directions.map((p:string) => p == "in" ? ContactDirection.In : ContactDirection.Out),
@@ -61,7 +61,7 @@ async function trustContacts(forSafeAddress: string, filter?: Maybe<ProfileAggre
   }
 }
 
-async function hubTransferContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact2[]> {
+async function hubTransferContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const start = new Date().getTime();
   const pool = getPool();
   try {
@@ -103,7 +103,7 @@ async function hubTransferContacts(forSafeAddress: string, filter?: Maybe<Profil
     return hubTransferContactsResult.rows.map(o => {
       const timestamps = o.timestamps.map((p:any) => new Date(p).getTime().toString());
       const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0);
-      return <Contact2> {
+      return <Contact> {
         metadata: [<ContactPoint>{
           name: "CrcHubTransfer",
           directions: o.directions.map((p:string) => p == "in" ? ContactDirection.In : ContactDirection.Out),
@@ -121,7 +121,7 @@ async function hubTransferContacts(forSafeAddress: string, filter?: Maybe<Profil
   }
 }
 
-async function chatMessageContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact2[]> {
+async function chatMessageContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const start = new Date().getTime();
   const chatContactsResult = await prisma_api_ro.$queryRaw`
       with "in" as (
@@ -163,7 +163,7 @@ async function chatMessageContacts(forSafeAddress: string, filter?: Maybe<Profil
   const r = chatContactsResult.map((o:any) => {
     const timestamps = o.timestamps.map((p:any) => new Date(p).getTime().toString());
     const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0);
-    return <Contact2> {
+    return <Contact> {
       metadata: [<ContactPoint>{
         name: "ChatMessage",
         directions: o.directions.map((p:string) => p == "in" ? ContactDirection.In : ContactDirection.Out),
@@ -183,7 +183,7 @@ async function chatMessageContacts(forSafeAddress: string, filter?: Maybe<Profil
 
 // People who claimed my invitations
 // The person from which I claimed my invitation
-async function invitationContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact2[]> {
+async function invitationContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const start = new Date().getTime();
   const invitationContactsResult = await prisma_api_ro.$queryRaw`
       with "in" as (
@@ -218,7 +218,7 @@ async function invitationContacts(forSafeAddress: string, filter?: Maybe<Profile
   const r = invitationContactsResult.map((o:any) => {
     const timestamps = o.timestamps.map((p:any) => new Date(p).getTime().toString());
     const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0);
-    return <Contact2> {
+    return <Contact> {
       metadata: [<ContactPoint>{
         name: "Invitation",
         directions: o.directions.map((p:string) => p == "in" ? ContactDirection.In : ContactDirection.Out),
@@ -238,7 +238,7 @@ async function invitationContacts(forSafeAddress: string, filter?: Maybe<Profile
 
 // People who offered me (non-rejected) orga-invitations
 // People I offered orga invitations to
-async function membershipOfferContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact2[]> {
+async function membershipOfferContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const start = new Date().getTime();
   const membershipOfferContactsResult = await prisma_api_ro.$queryRaw`
       with "in" as (
@@ -286,7 +286,7 @@ async function membershipOfferContacts(forSafeAddress: string, filter?: Maybe<Pr
   const r = membershipOfferContactsResult.map((o:any) => {
     const timestamps = o.timestamps.map((p:any) => new Date(p).getTime().toString());
     const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0);
-    return <Contact2> {
+    return <Contact> {
       metadata: [<ContactPoint>{
         name: "MembershipOffer",
         directions: o.directions.map((p:string) => p == "in" ? ContactDirection.In : ContactDirection.Out),
@@ -325,7 +325,7 @@ export class ContactsSource implements AggregateSource {
       return p;
     }, <{ [x: string]: any }>{}) ?? {};
 
-    const contactSources: Promise<Contact2[]>[] = [];
+    const contactSources: Promise<Contact[]>[] = [];
     if (types[ContactPoints.CrcTrust]) {
       contactSources.push(trustContacts(forSafeAddress, filter));
     }
@@ -363,7 +363,7 @@ export class ContactsSource implements AggregateSource {
         };
       }
       return p;
-    }, <{ [x: string]:Contact2 }>{});
+    }, <{ [x: string]:Contact }>{});
 
     const duration = new Date().getTime() - start;
     console.log(`contact source took: ${duration} ms`);

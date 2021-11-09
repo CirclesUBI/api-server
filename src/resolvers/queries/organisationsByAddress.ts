@@ -41,7 +41,6 @@ export function organisationsByAddress() {
                     circlesAddress: p.circlesAddress,
                     avatarUrl: p.avatarUrl,
                     description: p.dream,
-                    trustsYou: p.trustsYou,
                     avatarMimeType: p.avatarMimeType
                 }
             });

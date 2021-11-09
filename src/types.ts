@@ -98,18 +98,6 @@ export type ConsumeDepositedChallengeResponse = {
 
 export type Contact = {
   __typename?: 'Contact';
-  safeAddress: Scalars['String'];
-  lastContactAt?: Maybe<Scalars['String']>;
-  safeAddressProfile?: Maybe<Profile>;
-  contactAddress: Scalars['String'];
-  contactAddressProfile?: Maybe<Profile>;
-  trustsYou?: Maybe<Scalars['Int']>;
-  youTrust?: Maybe<Scalars['Int']>;
-  lastEvent?: Maybe<ProfileEvent>;
-};
-
-export type Contact2 = {
-  __typename?: 'Contact2';
   metadata: Array<ContactPoint>;
   lastContactAt: Scalars['String'];
   contactAddress: Scalars['String'];
@@ -136,7 +124,7 @@ export type ContactPoint = {
 export type Contacts = IAggregatePayload & {
   __typename?: 'Contacts';
   lastUpdatedAt: Scalars['String'];
-  contacts: Array<Contact2>;
+  contacts: Array<Contact>;
 };
 
 export type CrcBalanceAggregateFilter = {
@@ -649,8 +637,6 @@ export type Profile = {
   displayTimeCircles?: Maybe<Scalars['Boolean']>;
   cityGeonameid?: Maybe<Scalars['Int']>;
   city?: Maybe<City>;
-  trustsYou?: Maybe<Scalars['Int']>;
-  youTrust?: Maybe<Scalars['Int']>;
   lastEvent?: Maybe<ProfileEvent>;
   claimedInvitation?: Maybe<ClaimedInvitation>;
   memberships?: Maybe<Array<Membership>>;
@@ -719,6 +705,7 @@ export type Purchased = IEventPayload & {
   transaction_hash?: Maybe<Scalars['String']>;
   buyer: Scalars['String'];
   buyer_profile?: Maybe<Profile>;
+  purchase?: Maybe<Purchase>;
 };
 
 export type Purchases = IAggregatePayload & {
@@ -1112,7 +1099,6 @@ export type ResolversTypes = ResolversObject<{
   CommonTrust: ResolverTypeWrapper<CommonTrust>;
   ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
   Contact: ResolverTypeWrapper<Contact>;
-  Contact2: ResolverTypeWrapper<Contact2>;
   ContactAggregateFilter: ContactAggregateFilter;
   ContactDirection: ContactDirection;
   ContactPoint: ResolverTypeWrapper<ContactPoint>;
@@ -1218,7 +1204,6 @@ export type ResolversParentTypes = ResolversObject<{
   CommonTrust: CommonTrust;
   ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
   Contact: Contact;
-  Contact2: Contact2;
   ContactAggregateFilter: ContactAggregateFilter;
   ContactPoint: ContactPoint;
   Contacts: Contacts;
@@ -1378,18 +1363,6 @@ export type ConsumeDepositedChallengeResponseResolvers<ContextType = any, Parent
 }>;
 
 export type ContactResolvers<ContextType = any, ParentType extends ResolversParentTypes['Contact'] = ResolversParentTypes['Contact']> = ResolversObject<{
-  safeAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  lastContactAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  safeAddressProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
-  contactAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  contactAddressProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
-  trustsYou?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  youTrust?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  lastEvent?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type Contact2Resolvers<ContextType = any, ParentType extends ResolversParentTypes['Contact2'] = ResolversParentTypes['Contact2']> = ResolversObject<{
   metadata?: Resolver<Array<ResolversTypes['ContactPoint']>, ParentType, ContextType>;
   lastContactAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   contactAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1407,7 +1380,7 @@ export type ContactPointResolvers<ContextType = any, ParentType extends Resolver
 
 export type ContactsResolvers<ContextType = any, ParentType extends ResolversParentTypes['Contacts'] = ResolversParentTypes['Contacts']> = ResolversObject<{
   lastUpdatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  contacts?: Resolver<Array<ResolversTypes['Contact2']>, ParentType, ContextType>;
+  contacts?: Resolver<Array<ResolversTypes['Contact']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1765,8 +1738,6 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   displayTimeCircles?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   cityGeonameid?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
-  trustsYou?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  youTrust?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   lastEvent?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
   memberships?: Resolver<Maybe<Array<ResolversTypes['Membership']>>, ParentType, ContextType>;
@@ -1823,6 +1794,7 @@ export type PurchasedResolvers<ContextType = any, ParentType extends ResolversPa
   transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   buyer?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   buyer_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  purchase?: Resolver<Maybe<ResolversTypes['Purchase']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1967,7 +1939,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   CommonTrust?: CommonTrustResolvers<ContextType>;
   ConsumeDepositedChallengeResponse?: ConsumeDepositedChallengeResponseResolvers<ContextType>;
   Contact?: ContactResolvers<ContextType>;
-  Contact2?: Contact2Resolvers<ContextType>;
   ContactPoint?: ContactPointResolvers<ContextType>;
   Contacts?: ContactsResolvers<ContextType>;
   CrcBalances?: CrcBalancesResolvers<ContextType>;

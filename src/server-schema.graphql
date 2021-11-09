@@ -19,8 +19,6 @@ type Profile {
   displayTimeCircles: Boolean
   cityGeonameid: Int
   city: City
-  trustsYou: Int # The trust relative to the safeAddress
-  youTrust: Int # The trust relative to the safeAddress
   lastEvent: ProfileEvent # The last event that concerns the safeAddress
   claimedInvitation: ClaimedInvitation,
   memberships: [Membership!]
@@ -424,6 +422,7 @@ type Purchased implements IEventPayload {
   transaction_hash: String
   buyer: String!
   buyer_profile: Profile
+  purchase: Purchase
 }
 
 union EventPayload =
@@ -482,7 +481,7 @@ type CrcBalances implements IAggregatePayload {
 
 type Contacts implements IAggregatePayload {
   lastUpdatedAt: String!
-  contacts: [Contact2!]!
+  contacts: [Contact!]!
 }
 
 type Memberships implements IAggregatePayload {
@@ -517,7 +516,7 @@ type ContactPoint {
   timestamps: [String!]!
 }
 
-type Contact2 {
+type Contact {
   metadata: [ContactPoint!]!
   lastContactAt: String!
   contactAddress: String!
@@ -625,17 +624,6 @@ type TrustRelation {
   otherSafeAddress: String!
   otherSafeAddressProfile: Profile
   direction: TrustDirection!
-}
-
-type Contact {
-  safeAddress: String!
-  lastContactAt: String
-  safeAddressProfile: Profile
-  contactAddress: String!
-  contactAddressProfile: Profile
-  trustsYou: Int # The trust relative to the safeAddress
-  youTrust: Int # The trust relative to the safeAddress
-  lastEvent: ProfileEvent # The last event that concerns the safeAddress
 }
 
 type CommonTrust {
