@@ -17,10 +17,8 @@ type Profile {
   avatarMimeType: String
   newsletter: Boolean
   displayTimeCircles: Boolean
-  #lastAcknowledged: String
   cityGeonameid: Int
   city: City
-  offers: [Offer!]
   trustsYou: Int # The trust relative to the safeAddress
   youTrust: Int # The trust relative to the safeAddress
   lastEvent: ProfileEvent # The last event that concerns the safeAddress
@@ -214,14 +212,12 @@ type City implements ICity {
 }
 
 type Offer {
+  # TODO: Keep offers immutable and add a version no.
   id: String!
 
   createdBy: Profile
   createdByProfileId: Int!
-
-  publishedAt: String!
-  unlistedAt: String
-  purchasedAt: String
+  createdAt: String!
 
   title: String!
   pictureUrl: String!
@@ -229,117 +225,26 @@ type Offer {
   description: String
   categoryTag: Tag
   categoryTagId: Int!
-
-  city: City
-  geonameid: Int!
-
   pricePerUnit: String!
-  unitTag: Tag
-  unitTagId: Int!
-  maxUnits: Int
-
-  deliveryTermsTag: Tag
-  deliveryTermsTagId: Int!
-}
-
-input UpsertOfferInput {
-  id: String
-  title: String!
-  pictureUrl: String
-  pictureMimeType: String
-  description: String
-  categoryTagId: Int!
-  geonameid: Int!
-
-  pricePerUnit: String!
-  unitTagId: Int!
-  maxUnits: Int
-
-  deliveryTermsTagId: Int!
-}
-
-input QueryOfferInput {
-  id: String
-  categoryTagId: Int
-  createdByProfileId: Int
-  publishedAt_lt: String
-  publishedAt_gt: String
-}
-
-input LockOfferInput {
-  offerId: String!
-}
-
-type LockOfferResult {
-  success: Boolean!
-  lockedUntil: String
-}
-
-input PaymentProof {
-  forOfferId: LockOfferInput!
-  transactionHash: String!
-}
-
-type ProvePaymentResult {
-  success: Boolean!
-}
-
-enum PurchaseStatus {
-  INVALID
-  ITEM_LOCKED
-  PAYMENT_PROVEN
 }
 
 type Purchase {
   id: Int!
 
-  purchasedAt: String!
-  status: PurchaseStatus!
+  createdBy: Profile
+  createdByProfileId: Int!
+  createdAt: String!
 
-  purchasedFrom: Profile!
-  purchasedFromProfileId: Int!
-
-  purchasedBy: Profile!
-  purchasedByProfileId: Int!
-
-  purchasedItem: Offer!
-  purchasedOfferId: String!
+  lines: [PurchaseLine!]!
+  paymentTransaction: ProfileEvent
 }
 
-input QueryPurchaseInput {
-  purchasedByProfileId: String!
-}
+type PurchaseLine {
+  id: Int!
 
-type CityStats implements ICity {
-  citizenCount: Int!
-  geonameid: Int!
-  name: String!
-  country: String!
-  population: Int!
-  latitude: Float!
-  longitude: Float!
-  feature_code: String!
-}
-
-type CountryStats {
-  name: String!
-  citizenCount: Int!
-}
-
-type Goal {
-  totalCitizens: Int!
-}
-
-type Stats {
-  totalCitizens: Int!
-  currentGoalFrom: Int!
-  currentGoal: Int!
-  nextGoalAt: Int!
-  inviteRank: Int!
-  cityRank: Int
-  goals: [Goal!]!
-  cities: [CityStats!]!
-  countries: [CountryStats!]!
+  amount: Int!
+  product: Offer!
+  # TODO: Add version
 }
 
 input QueryTagsInput {
@@ -557,6 +462,7 @@ enum AggregateType {
   Contacts
   Memberships
   Members
+  Offers
 }
 
 # All crc holdings of the user
@@ -578,6 +484,16 @@ type Memberships implements IAggregatePayload {
 type Members implements IAggregatePayload {
   lastUpdatedAt: String!
   members: [ProfileOrOrganisation!]!
+}
+
+type Offers implements IAggregatePayload {
+  lastUpdatedAt: String!
+  offers: [Offer!]!
+}
+
+type Purchases implements IAggregatePayload {
+  lastUpdatedAt: String!
+  purchases: [Purchase!]!
 }
 
 enum ContactDirection {
@@ -604,6 +520,8 @@ union AggregatePayload =
   | Contacts
   | Memberships
   | Members
+  | Offers
+  | Purchases
 
 type ProfileAggregate {
   type: String!
@@ -786,10 +704,6 @@ type Mutation {
   upsertProfile(data: UpsertProfileInput!): Profile!
   requestUpdateSafe(data: RequestUpdateSafeInput!): RequestUpdateSafeResponse!
   updateSafe(data: UpdateSafeInput!): UpdateSafeResponse!
-  upsertOffer(data: UpsertOfferInput!): Offer!
-  unlistOffer(offerId: LockOfferInput!): Boolean!
-  lockOffer(data: LockOfferInput!): LockOfferResult!
-  provePayment(data: PaymentProof!): ProvePaymentResult!
   upsertTag(data: UpsertTagInput!): Tag!
 
   upsertOrganisation(organisation: UpsertOrganisationInput!) : CreateOrganisationResult!
@@ -868,7 +782,6 @@ type Query {
   safeFundingTransaction: ProfileEvent
   hubSignupTransaction: ProfileEvent
   lastUBITransaction: String
-  stats: Stats
 
   events(types:[EventType!]! safeAddress: String! pagination:PaginationArgs! filter:ProfileEventFilter) : [ProfileEvent!]!
   aggregates(types:[AggregateType!]! safeAddress: String! filter:ProfileAggregateFilter) : [ProfileAggregate!]!
@@ -886,9 +799,10 @@ type Query {
   profilesBySafeAddress(safeAddresses: [String!]!): [Profile!]!
 
   findSafeAddressByOwner(owner: String!): [String!]!
+
   search(query: SearchInput!): [Profile!]!
+
   cities(query: QueryCitiesInput!): [City!]!
-  offers(query: QueryOfferInput!): [Offer!]!
   tags(query: QueryTagsInput!): [Tag!]!
   tagById(id: Int!): Tag
 }

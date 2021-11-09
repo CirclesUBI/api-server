@@ -16,28 +16,18 @@ import {depositChallengeResolver} from "./mutations/depositChallenge";
 import {authenticateAtResolver} from "./mutations/authenticateAt";
 import {consumeDepositedChallengeResolver} from "./mutations/consumeDepositedChallenge";
 import {search} from "./queries/search";
-import {upsertOfferResolver} from "./mutations/upsertOffer";
 import {requestUpdateSafe} from "./mutations/requestUpdateSafe";
 import {updateSafe} from "./mutations/updateSafe";
-import {profileOffers} from "./profile/offers";
 import {profileCity} from "./profile/city";
-import {offerCreatedBy} from "./offer/createdBy";
-import {offerCity} from "./offer/city";
 import {whoami} from "./queries/whoami";
 import {cities} from "./queries/citites";
 import {version} from "./queries/version";
-import {offers} from "./queries/offers";
-import {offerCategoryTag} from "./offer/offerCategoryTag";
-import {offerDeliveryTermsTag} from "./offer/offerDeliveryTermsTag";
-import {offerUnitTag} from "./offer/offerUnitTag";
 import {tags} from "./queries/tags";
-import {stats} from "./queries/stats";
 import {tagById} from "./queries/tagById";
 import {upsertTag} from "./mutations/upsertTag";
 import {claimedInvitation} from "./queries/claimedInvitation";
 import {Context} from "../context";
 import {ApiPubSub} from "../pubsub";
-import {balance} from "./queries/balance";
 import {trustRelations} from "./queries/trustRelations";
 import {Pool, PoolConfig} from "pg";
 import {commonTrust} from "./queries/commonTrust";
@@ -82,12 +72,7 @@ import {CrcBalanceSource} from "../aggregateSources/blockchain-indexer/crcBalanc
 import {MembershipsSource} from "../aggregateSources/api/membershipsSource";
 import {MembersSource} from "../aggregateSources/api/membersSource";
 import {AggregateAugmenter} from "../aggregateSources/aggregateAugmenter";
-import {open} from "lmdb-store";
-import {EventCache} from "../eventSources/cache/eventCache";
 import {ProfileLoader} from "../profileLoader";
-
-// const eventCache2 = new EventCache("eventCache2.lmdb");
-
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
@@ -173,7 +158,6 @@ const packageJson = require("../../package.json");
 
 export const resolvers: Resolvers = {
   Profile: {
-    offers: profileOffers(prisma_api_ro),
     city: profileCity,
     memberships: async (parent: Profile, args, context: Context) => {
       const memberships = await prisma_api_ro.membership.findMany({
@@ -207,13 +191,6 @@ export const resolvers: Resolvers = {
         }
       })
     }
-  },
-  Offer: {
-    createdBy: offerCreatedBy(prisma_api_ro),
-    categoryTag: offerCategoryTag(prisma_api_ro),
-    deliveryTermsTag: offerDeliveryTermsTag(prisma_api_ro),
-    unitTag: offerUnitTag(prisma_api_ro),
-    city: offerCity
   },
   ClaimedInvitation: {
     createdBy: (parent, args, context) => {
@@ -259,10 +236,8 @@ export const resolvers: Resolvers = {
     profilesBySafeAddress: profilesBySafeAddress(prisma_api_ro),
     search: search(prisma_api_ro),
     version: version(packageJson),
-    offers: offers(prisma_api_ro),
     tags: tags(prisma_api_ro),
     tagById: tagById(prisma_api_ro),
-    stats: stats(prisma_api_ro),
     trustRelations: trustRelations(prisma_api_ro),
     commonTrust: commonTrust(prisma_api_ro),
     lastUBITransaction: lastUbiTransaction(),
@@ -481,7 +456,6 @@ export const resolvers: Resolvers = {
   Mutation: {
     upsertOrganisation: upsertOrganisation(prisma_api_rw, false),
     upsertRegion: upsertOrganisation(prisma_api_rw, true),
-    upsertOffer: upsertOfferResolver(prisma_api_rw),
     exchangeToken: exchangeTokenResolver(prisma_api_rw),
     logout: logout(prisma_api_rw),
     upsertProfile: upsertProfileResolver(prisma_api_rw),
@@ -504,79 +478,6 @@ export const resolvers: Resolvers = {
     createTestInvitation: createTestInvitation(prisma_api_rw),
     addMember: addMemberResolver,
     removeMember: removeMemberResolver,
-    /**
-     * This mutation should create a new Offer (with a random id and set isPrivate-flag) which is only intended
-     * for the user who called the mutation.
-     * The offer should be persisted in the db as long as it's "valid".
-     * Offers which haven't purchased can be purged after their validTo date passed by.
-     */
-    /*
-    requestInvitationOffer: async (parent:any, args: MutationRequestInvitationOfferArgs, context:Context) => {
-
-      // TODO: while(foundRegion || end) {
-      //       }
-
-      // 1. Find the region of the currently logged on user:
-      //    TODO: First try the cityId of the user, then use coarser fallbacks.
-      const region = await prisma_api_ro.profile.findMany({
-        where: {
-          type: "REGION"
-        },
-        include: {
-          invitationFunds: true
-        },
-        take: 1
-      });
-
-      if (!region.length)
-        throw new Error(`Couldn't find a regional assembly that can provide you with new invites to the system.`);
-
-      const myRegion = region[0];
-      if (!myRegion.invitationFunds)
-        throw new Error(`Your region doesn't provide a pool to fund new invitations.`);
-
-      const account = RpcGateway.get().eth.accounts.privateKeyToAccount(myRegion.invitationFunds.privateKey);
-      const balance = new BN(await RpcGateway.get().eth.getBalance(account.address));
-
-      // TODO: Make configurable per Region:
-      const price = new BN(RpcGateway.get().utils.toWei("10", "ether"));
-      const maxAvailable = balance.div(price);
-      const effectiveBalance = balance.sub(maxAvailable.mul(new BN("21000")));
-      const effectiveMaxAvailable = effectiveBalance.div(price).toNumber();
-
-      // TODO: Why absoluteMax? Can be used to:
-      //       * Hide the EOA that's used to fund the invites (if balance always > 25 invites)
-      //       * Max. amount per user
-      //       * Guaranteed available amount (together with a 'validTo' date on the offer)
-      const absoluteMax = effectiveMaxAvailable > 25 ? 25 : effectiveMaxAvailable;
-
-      const offer = await prisma_api_rw.offer.create({
-        data: {
-          id: Generate.randomHexString(16),
-          isPrivate: true,
-          publishedAt: new Date().toJSON(),
-          createdByProfileId: 0,
-          geonameid: 0,
-          title: `1 Invite`,
-          description: `One invitation voucher`,
-          pictureUrl: `https://dev.circles.land/logos/circles.png`,
-          pictureMimeType: `image/png`,
-          categoryTagId: 2,
-          pricePerUnit: price.toString(),
-          unitTagId: 3,
-          maxUnits: Number.parseInt(absoluteMax.toFixed()),
-          deliveryTermsTagId: 4
-        }
-      });
-
-      return {
-        ...offer,
-        pictureUrl: offer.pictureUrl ?? "",
-        pictureMimeType: offer.pictureMimeType ?? "",
-        publishedAt: offer.publishedAt.toJSON(),
-        unlistedAt: offer.unlistedAt?.toJSON() ?? undefined
-      };
-    }*/
   },
   Subscription: {
     events: {
