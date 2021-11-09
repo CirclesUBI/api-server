@@ -140,7 +140,7 @@ export class BlockchainIndexerEventSource implements EventSource
         params
       );
 
-      return eventRows.rows.map((r:any) => {
+      const results = eventRows.rows.map((r:any) => {
         return <ProfileEvent>{
           __typename: "ProfileEvent",
           safe_address: r.safe_address,
@@ -159,6 +159,8 @@ export class BlockchainIndexerEventSource implements EventSource
           }
         };
       });
+
+      return results;
     } finally {
       await pool.end();
     }

@@ -151,7 +151,8 @@ export class ProfileLoader {
         id: 0,
         firstName: "Circles",
         lastName: "Land",
-        avatarUrl: "https://dev.circles.land/logos/circles.png"
+        avatarUrl: "https://dev.circles.land/logos/circles.png",
+        circlesAddress: "0x0000000000000000000000000000000000000000"
       };
     }
 

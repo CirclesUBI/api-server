@@ -455,21 +455,24 @@ export const resolvers: Resolvers = {
     }
   },
   Mutation: {
-    /*
     purchase: async (parent, args, context:Context) => {
-      const callerProfile = await context.callerProfile;
+      /*const callerProfile = await context.callerProfile;
       if (!callerProfile) {
         throw new Error(`You need a profile to purchase.`);
       }
+       */
 
-      const recentOffers = await prisma_api_ro.$queryRaw`
-        with "latest" as (
+      const purchaseLineProductIds = args.lines.map(o => o.offerId);
+      const recentOffers = await prisma_api_ro.$queryRaw(`
           select id
                , max(o.version) as latest_version
           from "Offer" o
-          where id = ANY(${})
-          group by id`;
+          where id = ANY($1)
+          group by id`, [purchaseLineProductIds]);
 
+
+      console.log(recentOffers);
+      /*
       prisma_api_rw.purchase.create({
         data: {
           createdByProfileId: callerProfile.id,
@@ -483,8 +486,10 @@ export const resolvers: Resolvers = {
           }
         }
       });
+       */
+
+      throw new Error(`Deine Mudda!`);
     },
-     */
     upsertOrganisation: upsertOrganisation(prisma_api_rw, false),
     upsertRegion: upsertOrganisation(prisma_api_rw, true),
     exchangeToken: exchangeTokenResolver(prisma_api_rw),
