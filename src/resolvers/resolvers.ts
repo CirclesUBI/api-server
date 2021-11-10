@@ -2,10 +2,10 @@ import {myProfile, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {
-  AggregateType, EventType,
+  AggregateType, EventType, Offer,
   Profile,
   ProfileEvent,
-  ProfileOrOrganisation,
+  ProfileOrOrganisation, Purchase,
   Resolvers,
   SortOrder
 } from "../types";
@@ -75,6 +75,7 @@ import {AggregateAugmenter} from "../aggregateSources/aggregateAugmenter";
 import {ProfileLoader} from "../profileLoader";
 import {OffersSource} from "../aggregateSources/api/offersSource";
 import {WelcomeMessageEventSource} from "../eventSources/api/welcomeMessageEventSource";
+import {PurchaseLine} from "../api-db/client";
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
@@ -238,7 +239,7 @@ export const resolvers: Resolvers = {
     commonTrust: commonTrust(prisma_api_ro),
     lastUBITransaction: lastUbiTransaction(),
     initAggregateState: initAggregateState(),
-    profilesById: async (parent, args, context:Context) => {
+    profilesById: async (parent, args, context: Context) => {
       const profiles = await new ProfileLoader().queryCirclesLandById(prisma_api_rw, args.ids);
       return <Profile[]>Object.values(profiles.idProfileMap).map(o => {
         // @ts-ignore
@@ -248,7 +249,7 @@ export const resolvers: Resolvers = {
         return o;
       });
     },
-    aggregates: async (parent, args, context:Context) => {
+    aggregates: async (parent, args, context: Context) => {
       const aggregateSources: AggregateSource[] = [];
       const types = args.types?.reduce((p, c) => {
         if (!c) return p;
@@ -264,7 +265,7 @@ export const resolvers: Resolvers = {
           ContactPoints.CrcHubTransfer,
           ContactPoints.CrcTrust
         ];
-        if (context.sessionId)  {
+        if (context.sessionId) {
           const callerProfile = await context.callerProfile;
           if (callerProfile?.circlesAddress == args.safeAddress.toLowerCase()) {
             contactPoints.push(ContactPoints.Invitation);
@@ -293,7 +294,7 @@ export const resolvers: Resolvers = {
 
       return aggregates;
     },
-    events: async (parent, args, context:Context) => {
+    events: async (parent, args, context: Context) => {
       const eventSources: EventSource[] = [];
       const types = args.types?.reduce((p, c) => {
         if (!c) return p;
@@ -349,7 +350,7 @@ export const resolvers: Resolvers = {
       //
       // private
       //
-      let callerProfile:Profile|null = null;
+      let callerProfile: Profile | null = null;
 
       if (Object.keys(types).length > 0 && context.sessionId) {
         callerProfile = await context.callerProfile;
@@ -407,13 +408,13 @@ export const resolvers: Resolvers = {
           args.pagination,
           args.filter ?? null);
 
-        events = events.sort((a,b) => {
+        events = events.sort((a, b) => {
           const aTime = new Date(a.timestamp).getTime();
           const bTime = new Date(b.timestamp).getTime();
           return (
             //args.pagination.order == SortOrder.Asc
-              /*?*/ aTime < bTime
-              //: aTime > bTime
+            /*?*/ aTime < bTime
+            //: aTime > bTime
           )
             ? -1
             : aTime < bTime
@@ -436,13 +437,13 @@ export const resolvers: Resolvers = {
       });
       events = await augmentation.augment();
 
-      events = events.sort((a,b) => {
+      events = events.sort((a, b) => {
         const aTime = new Date(a.timestamp).getTime();
         const bTime = new Date(b.timestamp).getTime();
         return (
           args.pagination.order == SortOrder.Asc
-          ? aTime < bTime
-          : aTime > bTime
+            ? aTime < bTime
+            : aTime > bTime
         )
           ? -1
           : aTime < bTime
@@ -455,40 +456,74 @@ export const resolvers: Resolvers = {
     }
   },
   Mutation: {
-    purchase: async (parent, args, context:Context) => {
-      /*const callerProfile = await context.callerProfile;
+    purchase: async (parent, args, context: Context) => {
+      const callerProfile = await context.callerProfile;
       if (!callerProfile) {
         throw new Error(`You need a profile to purchase.`);
       }
-       */
+      if (!callerProfile.circlesAddress) {
+        throw new Error(`You need a safe to purchase.`)
+      }
 
-      const purchaseLineProductIds = args.lines.map(o => o.offerId);
-      const recentOffers = await prisma_api_ro.$queryRaw(`
-          select id
-               , max(o.version) as latest_version
-          from "Offer" o
-          where id = ANY($1)
-          group by id`, [purchaseLineProductIds]);
+      const purchaseLines = await Promise.all(args.lines.map(async o => {
+        const maxVersion = await prisma_api_ro.$queryRaw(`
+            select id
+                 , max(o.version) as version
+            from "Offer" o
+            where id = $1
+            group by id`, o.offerId);
 
+        if (maxVersion.length == 0) {
+          throw new Error(`Couldn't find a offer with the id ${o.offerId}.`);
+        }
 
-      console.log(recentOffers);
-      /*
-      prisma_api_rw.purchase.create({
+        const offer = await prisma_api_ro.offer.findUnique({
+          where: {
+            id_version: {
+              id: o.offerId,
+              version: maxVersion[0].version
+            }
+          }
+        });
+
+        if (!offer) {
+          throw new Error(`Couldn't find a offer with the id ${o.offerId}.`);
+        }
+
+        return <PurchaseLine>{
+          amount: o.amount,
+          productId: offer.id,
+          productVersion: offer.version
+        }
+      }));
+
+      const purchase = await prisma_api_rw.purchase.create({
         data: {
           createdByProfileId: callerProfile.id,
           createdAt: new Date(),
           lines: {
             createMany: {
-              data: {
-                productId:
-              }
+              data: purchaseLines
             }
           }
         }
       });
-       */
 
-      throw new Error(`Deine Mudda!`);
+      const returnPurchase = await prisma_api_rw.purchase.findUnique({
+        where: {
+          id: purchase.id
+        },
+        include: {
+          createdBy: true,
+          lines: {
+            include: {
+              product: true
+            }
+          }
+        }
+      });
+
+      return <any>returnPurchase;
     },
     upsertOrganisation: upsertOrganisation(prisma_api_rw, false),
     upsertRegion: upsertOrganisation(prisma_api_rw, true),
