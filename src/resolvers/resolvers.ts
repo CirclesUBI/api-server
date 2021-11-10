@@ -523,6 +523,16 @@ export const resolvers: Resolvers = {
         }
       });
 
+      if (!returnPurchase)
+        throw new Error("Couldn't create the purchase.");
+
+      returnPurchase.lines = returnPurchase.lines.map(o => {
+        return {
+          ...o,
+          offer: o.product
+        }
+      });
+
       return <any>{
         ...returnPurchase,
         createdByAddress: callerProfile.circlesAddress
