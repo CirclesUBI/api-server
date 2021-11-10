@@ -708,6 +708,7 @@ export type Purchase = {
   createdByProfile?: Maybe<Profile>;
   createdByAddress: Scalars['String'];
   createdAt: Scalars['String'];
+  total: Scalars['String'];
   lines: Array<PurchaseLine>;
   paymentTransaction?: Maybe<ProfileEvent>;
 };
@@ -1813,6 +1814,7 @@ export type PurchaseResolvers<ContextType = any, ParentType extends ResolversPar
   createdByProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   createdByAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  total?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lines?: Resolver<Array<ResolversTypes['PurchaseLine']>, ParentType, ContextType>;
   paymentTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

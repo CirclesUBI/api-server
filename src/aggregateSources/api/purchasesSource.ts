@@ -40,8 +40,10 @@ export class PurchasesSource implements AggregateSource {
         __typename: "Purchases",
         lastUpdatedAt: lastUpdatedAt.toJSON(),
         purchases: <any>purchasesResult.map(o => {
+          const total = o.lines.reduce((p,c) => p + c.amount * parseFloat(c.product.pricePerUnit), 0).toString();
           return <any>{
             ...o,
+            total: total,
             lines: o.lines.map(o => {
               return {
                 ...o,

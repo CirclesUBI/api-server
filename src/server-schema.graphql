@@ -233,6 +233,7 @@ type Purchase {
   createdByAddress: String!
   createdAt: String!
 
+  total: String!
   lines: [PurchaseLine!]!
   paymentTransaction: ProfileEvent
 }
