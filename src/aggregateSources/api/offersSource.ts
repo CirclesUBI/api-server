@@ -45,7 +45,7 @@ export class OffersSource implements AggregateSource {
         from data
         where ($1 = ARRAY[]::integer[] or id = ANY($1))
           and ($2 = ARRAY[]::text[] or "createdByAddress" = ANY($2));`,
-      filter?.offers?.offerIds ?? [], []));
+      filter?.offers?.offerIds ?? [], filter?.offers?.createdByAddresses ?? []));
 
     const lastUpdatedAt = new Date(offersResult.reduce((p,c) => Math.max(p, new Date(c.created_at).getTime()), 0));
     const apiOffers = offersResult.map(o => {
