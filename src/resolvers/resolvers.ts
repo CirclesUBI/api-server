@@ -465,6 +465,11 @@ export const resolvers: Resolvers = {
         throw new Error(`You need a safe to purchase.`)
       }
 
+
+
+      // Group the single product lines by seller and then sum
+
+
       const purchaseLines = await Promise.all(args.lines.map(async o => {
         const maxVersion = await prisma_api_ro.$queryRaw(`
             select id

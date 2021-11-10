@@ -245,6 +245,25 @@ type PurchaseLine {
   offer: Offer!
 }
 
+#type Sale {
+#  id: Int!
+#
+#  createdByProfile: Profile
+#  createdByAddress: String!
+#  createdAt: String!
+#
+#  total: String!
+#  lines: [SalesLine!]!
+#  paymentTransaction: ProfileEvent
+#}
+#
+#type SalesLine {
+#  id: Int!
+#
+#  amount: Int!
+#  offer: Offer!
+#}
+
 input QueryTagsInput {
   typeId_in: [String!]!
   value_like: String
@@ -786,11 +805,16 @@ input PurchasesAggregateFilter {
   createdByAddresses: [String!]
   purchaseIds: [Int!]
 }
+input SalesAggregateFilter {
+  createdByAddresses: [String!]
+  salesIds: [Int!]
+}
 input ProfileAggregateFilter {
   contacts: ContactAggregateFilter
   crcBalance: CrcBalanceAggregateFilter
   offers: OffersAggregateFilter
   purchases: PurchasesAggregateFilter
+  sales: SalesAggregateFilter
 }
 
 type Query {

@@ -130,6 +130,9 @@ model Profile {
 
     members Membership[] @relation(name: "Membership_MemberAt")
     createdMemberships Membership[]  @relation(name: "Membership_CreatedBy")
+
+    payableInvoices Invoice[]  @relation(name: "Invoice_CustomerProfile")
+    receivableInvoices Invoice[]  @relation(name: "Invoice_SellerProfile")
 }
 
 model ExternalProfiles {
@@ -202,6 +205,7 @@ model Offer {
     pricePerUnit String
 
     purchaseLines PurchaseLine[] @relation(name: "PurchaseLines_Product")
+    invoiceLines InvoiceLine[] @relation(name: "InvoiceLines_Product")
 }
 
 model Purchase {
@@ -223,6 +227,33 @@ model PurchaseLine {
     amount Int
 
     product Offer @relation(name: "PurchaseLines_Product", fields: [productId, productVersion], references: [id, version])
+    productId Int
+    productVersion Int
+}
+
+model Invoice {
+    id Int @id @default(autoincrement())
+
+    customerProfile Profile @relation(name: "Invoice_CustomerProfile", fields: [customerProfileId], references: [id])
+    customerProfileId Int
+
+    sellerProfile Profile @relation(name: "Invoice_SellerProfile", fields: [sellerProfileId], references: [id])
+    sellerProfileId Int
+
+    lines InvoiceLine[] @relation(name: "Invoice_Lines")
+
+    total Int
+}
+
+model InvoiceLine {
+    id Int @id @default(autoincrement())
+
+    invoice Invoice @relation(name: "Invoice_Lines", fields: [invoiceId], references: [id])
+    invoiceId Int
+
+    amount Int
+
+    product Offer @relation(name: "InvoiceLines_Product", fields: [productId, productVersion], references: [id, version])
     productId Int
     productVersion Int
 }

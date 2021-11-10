@@ -669,6 +669,7 @@ export type ProfileAggregateFilter = {
   crcBalance?: Maybe<CrcBalanceAggregateFilter>;
   offers?: Maybe<OffersAggregateFilter>;
   purchases?: Maybe<PurchasesAggregateFilter>;
+  sales?: Maybe<SalesAggregateFilter>;
 };
 
 export type ProfileEvent = {
@@ -909,6 +910,11 @@ export type RequestUpdateSafeResponse = {
   success: Scalars['Boolean'];
   errorMessage?: Maybe<Scalars['String']>;
   challenge?: Maybe<Scalars['String']>;
+};
+
+export type SalesAggregateFilter = {
+  createdByAddresses?: Maybe<Array<Scalars['String']>>;
+  salesIds?: Maybe<Array<Scalars['Int']>>;
 };
 
 export type SearchInput = {
@@ -1202,6 +1208,7 @@ export type ResolversTypes = ResolversObject<{
   RemoveMemberResult: ResolverTypeWrapper<RemoveMemberResult>;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: ResolverTypeWrapper<RequestUpdateSafeResponse>;
+  SalesAggregateFilter: SalesAggregateFilter;
   SearchInput: SearchInput;
   SendMessageResult: ResolverTypeWrapper<SendMessageResult>;
   Server: ResolverTypeWrapper<Server>;
@@ -1307,6 +1314,7 @@ export type ResolversParentTypes = ResolversObject<{
   RemoveMemberResult: RemoveMemberResult;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: RequestUpdateSafeResponse;
+  SalesAggregateFilter: SalesAggregateFilter;
   SearchInput: SearchInput;
   SendMessageResult: SendMessageResult;
   Server: Server;
