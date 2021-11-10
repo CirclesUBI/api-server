@@ -557,6 +557,7 @@ export type MutationTagTransactionArgs = {
 
 
 export type MutationSendMessageArgs = {
+  fromSafeAddress?: Maybe<Scalars['String']>;
   toSafeAddress: Scalars['String'];
   content: Scalars['String'];
 };
@@ -715,7 +716,7 @@ export type PurchaseLine = {
   __typename?: 'PurchaseLine';
   id: Scalars['Int'];
   amount: Scalars['Int'];
-  product: Offer;
+  offer: Offer;
 };
 
 export type PurchaseLineInput = {
@@ -1820,7 +1821,7 @@ export type PurchaseResolvers<ContextType = any, ParentType extends ResolversPar
 export type PurchaseLineResolvers<ContextType = any, ParentType extends ResolversParentTypes['PurchaseLine'] = ResolversParentTypes['PurchaseLine']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  product?: Resolver<ResolversTypes['Offer'], ParentType, ContextType>;
+  offer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

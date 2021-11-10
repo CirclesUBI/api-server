@@ -241,7 +241,7 @@ type PurchaseLine {
   id: Int!
 
   amount: Int!
-  product: Offer!
+  offer: Offer!
 }
 
 input QueryTagsInput {
@@ -738,7 +738,7 @@ type Mutation {
     transactionHash: String!
     tag: CreateTagInput!
   ): TagTransactionResult!
-  sendMessage(toSafeAddress: String!, content: String!): SendMessageResult!
+  sendMessage(fromSafeAddress: String toSafeAddress: String!, content: String!): SendMessageResult!
 
   requestSessionChallenge(address: String!): String!
   verifySessionChallenge(

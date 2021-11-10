@@ -1,14 +1,15 @@
-import { ChatMessage, SendMessageResult } from "../../types";
+import {ChatMessage, EventType, MutationSendMessageArgs, SendMessageResult} from "../../types";
 import { Context } from "../../context";
 import { PrismaClient } from "../../api-db/client";
 import {ApiPubSub} from "../../pubsub";
 import {getPool} from "../resolvers";
 import {RpcGateway} from "../../rpcGateway";
+import {canAccess} from "../../canAccess";
 
 export function sendMessage(prisma: PrismaClient) {
   return async (
     parent: any,
-    args: { toSafeAddress: string; content: string },
+    args: MutationSendMessageArgs,
     context: Context
   ) => {
     const fromProfile = await context.callerProfile;
@@ -18,6 +19,16 @@ export function sendMessage(prisma: PrismaClient) {
         errorMessage: "You must have a complete profile to use this function.",
       };
     }
+
+    let from = fromProfile.circlesAddress;
+
+    if (args.fromSafeAddress && fromProfile.circlesAddress !== args.fromSafeAddress) {
+      // Writing in the name of an organisation?
+      from = (await canAccess(context, args.fromSafeAddress ?? ""))
+        ? args.fromSafeAddress
+        : fromProfile.circlesAddress;
+    }
+
     const toSafeAddress = args.toSafeAddress.toLowerCase();
     const toProfile = await prisma.profile.findFirst({
       where: { circlesAddress: toSafeAddress },
@@ -28,10 +39,10 @@ export function sendMessage(prisma: PrismaClient) {
     const message = await prisma.chatMessage.create({
       data: {
         createdAt: new Date(),
-        from: fromProfile.circlesAddress,
+        from: from,
         to: toSafeAddress,
         text: args.content,
-      },
+      }
     });
 
     if (toProfile.circlesAddress && RpcGateway.get().utils.isAddress(toProfile.circlesAddress)) {
@@ -51,13 +62,12 @@ export function sendMessage(prisma: PrismaClient) {
       event: {
         id: message.id,
         timestamp: message.createdAt.toJSON(),
-        type: "chat_message",
+        type: EventType.ChatMessage,
         direction: "out",
         safe_address: message.from,
         safe_address_profile: fromProfile,
-
         payload: <ChatMessage>{
-          __typename: "ChatMessage",
+          __typename: EventType.ChatMessage,
           id: message.id,
           from: message.from,
           from_profile: fromProfile,

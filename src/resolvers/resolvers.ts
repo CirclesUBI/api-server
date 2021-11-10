@@ -75,49 +75,7 @@ import {OffersSource} from "../aggregateSources/api/offersSource";
 import {WelcomeMessageEventSource} from "../eventSources/api/welcomeMessageEventSource";
 import {PurchaseLine} from "../api-db/client";
 import {PurchasesSource} from "../aggregateSources/api/purchasesSource";
-
-/**
- *
- * @param context
- * @param accessedSafeAddress
- */
-async function canAccess(context:Context, accessedSafeAddress:string) {
-  const callerProfile = await context.callerProfile;
-  if (callerProfile?.circlesAddress == accessedSafeAddress) {
-    return true;
-  }
-
-  // Could be that a user requests the data of an organisation
-  // Check if the user is either admin or owner and grant access
-  // if that's the case.
-  const requestedProfile = await prisma_api_rw.profile.findMany({
-    where: {
-      circlesAddress: accessedSafeAddress,
-      type: "ORGANISATION"
-    },
-    orderBy: {
-      id: "desc"
-    },
-    include: {
-      members: {
-        where: {
-          isAdmin: true
-        }
-      }
-    }
-  });
-  const orgaProfile = requestedProfile.length > 0 ? requestedProfile[0] : undefined;
-  if (orgaProfile) {
-    // Find out if the current user is an admin or owner ..
-    if (orgaProfile.members.find(o => o.memberId == callerProfile?.id)) {
-      return true;
-    }
-
-    // TODO: Check ownership too
-  }
-
-  return false;
-}
+import {canAccess} from "../canAccess";
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
