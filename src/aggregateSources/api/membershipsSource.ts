@@ -10,7 +10,7 @@ export class MembershipsSource implements AggregateSource {
       const membershipsResult = await prisma_api_ro.$queryRaw`
           select m."acceptedAt", member_at_profile."circlesAddress" group_address
           from "Membership" m
-                   join "Profile" member_profile on member_profile.id = m."memberId"
+                   join "Profile" member_profile on member_profile."circlesAddress" = m."memberAddress"
                    join "Profile" member_at_profile on member_at_profile.id = m."memberAtId"
           where member_profile."circlesAddress" = ${forSafeAddress.toLowerCase()}
             and m."acceptedAt" is not null

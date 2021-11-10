@@ -244,7 +244,7 @@ async function membershipOfferContacts(forSafeAddress: string, filter?: Maybe<Pr
       with "in" as (
           select max(m."createdAt") as last_contact_at, "createdByProfile"."circlesAddress" as contact_address
           from "Membership" m
-                   join "Profile" "memberProfile" on "memberProfile".id = m."memberId"
+                   join "Profile" "memberProfile" on "memberProfile"."circlesAddress" = m."memberAddress"
                    join "Profile" "createdByProfile" on "createdByProfile".id = m."createdByProfileId"
           where "rejectedAt" is null
             and "memberProfile"."circlesAddress" = ${forSafeAddress.toLowerCase()}
@@ -252,22 +252,22 @@ async function membershipOfferContacts(forSafeAddress: string, filter?: Maybe<Pr
       ), "out" as (
           select max(m."createdAt") as last_contact_at, "memberProfile"."circlesAddress" as contact_address
           from "Membership" m
-                   join "Profile" "memberProfile" on "memberProfile".id = m."memberId"
+                   join "Profile" "memberProfile" on "memberProfile"."circlesAddress" = m."memberAddress"
                    join "Profile" "createdByProfile" on "createdByProfile".id = m."createdByProfileId"
           where "createdByProfile"."circlesAddress" = ${forSafeAddress.toLowerCase()}
           group by "memberProfile"."circlesAddress"
       ), "in_with_member_at" as (
-          select "in".*, memberAtProfile."circlesAddress" as value
+          select "in".*, "memberAtProfile"."circlesAddress" as value
           from "in"
-                   join "Profile" memberProfile on memberProfile."circlesAddress" = "in".contact_address
-                   join "Membership" m on m."memberId" = memberProfile.id and m."createdAt" = "in".last_contact_at
-                   join "Profile" memberAtProfile on memberAtProfile.id = m."memberAtId"
+                   join "Profile" "memberProfile" on "memberProfile"."circlesAddress" = "in".contact_address
+                   join "Membership" m on m."memberAddress" = "memberProfile"."circlesAddress" and m."createdAt" = "in".last_contact_at
+                   join "Profile" "memberAtProfile" on "memberAtProfile".id = m."memberAtId"
       ), "out_with_member_at" as (
-          select "out".*, memberAtProfile."circlesAddress" as value
+          select "out".*, "memberAtProfile"."circlesAddress" as value
           from "out"
-                   join "Profile" memberProfile on memberProfile."circlesAddress" = "out".contact_address
-                   join "Membership" m on m."memberId" = memberProfile.id and m."createdAt" = "out".last_contact_at
-                   join "Profile" memberAtProfile on memberAtProfile.id = m."memberAtId"
+                   join "Profile" "memberProfile" on "memberProfile"."circlesAddress" = "out".contact_address
+                   join "Membership" m on m."memberAddress" = "memberProfile"."circlesAddress" and m."createdAt" = "out".last_contact_at
+                   join "Profile" "memberAtProfile" on "memberAtProfile".id = m."memberAtId"
       ), "all" as (
           select 'out' direction, *
           from "out_with_member_at"
