@@ -17,7 +17,7 @@ export type OfferRow = {
 
 export class OffersSource implements AggregateSource {
   async getAggregate(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>): Promise<ProfileAggregate[]> {
-    const offersResult = <OfferRow[]>(await prisma_api_ro.$queryRaw`
+    const offersResult = <OfferRow[]>(await prisma_api_ro.$queryRaw(`
         with "latest" as (
             select id
                  , max(o.version) as latest_version
@@ -42,7 +42,8 @@ export class OffersSource implements AggregateSource {
             where p."circlesAddress" is not null
         )
         select *
-        from data;`);
+        from data
+        where ($1 = ARRAY[]::integer[] or id = ANY($1));`, filter?.offers?.offerIds ?? []));
 
     const lastUpdatedAt = new Date(offersResult.reduce((p,c) => Math.max(p, new Date(c.created_at).getTime()), 0));
     const apiOffers = offersResult.map(o => {

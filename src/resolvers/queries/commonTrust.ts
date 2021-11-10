@@ -1,7 +1,6 @@
 import {Context} from "../../context";
 import {getPool} from "../resolvers";
-import {CommonTrust, Profile} from "../../types";
-import {profilesBySafeAddress} from "./profiles";
+import {CommonTrust} from "../../types";
 import {PrismaClient} from "../../api-db/client";
 import {ProfileLoader} from "../../profileLoader";
 
