@@ -76,8 +76,48 @@ import {WelcomeMessageEventSource} from "../eventSources/api/welcomeMessageEvent
 import {PurchaseLine} from "../api-db/client";
 import {PurchasesSource} from "../aggregateSources/api/purchasesSource";
 
+/**
+ *
+ * @param context
+ * @param accessedSafeAddress
+ */
+async function canAccess(context:Context, accessedSafeAddress:string) {
+  const callerProfile = await context.callerProfile;
+  if (callerProfile?.circlesAddress == accessedSafeAddress) {
+    return true;
+  }
 
-// function canAccess()
+  // Could be that a user requests the data of an organisation
+  // Check if the user is either admin or owner and grant access
+  // if that's the case.
+  const requestedProfile = await prisma_api_rw.profile.findMany({
+    where: {
+      circlesAddress: accessedSafeAddress,
+      type: "ORGANISATION"
+    },
+    orderBy: {
+      id: "desc"
+    },
+    include: {
+      members: {
+        where: {
+          isAdmin: true
+        }
+      }
+    }
+  });
+  const orgaProfile = requestedProfile.length > 0 ? requestedProfile[0] : undefined;
+  if (orgaProfile) {
+    // Find out if the current user is an admin or owner ..
+    if (orgaProfile.members.find(o => o.memberId == callerProfile?.id)) {
+      return true;
+    }
+
+    // TODO: Check ownership too
+  }
+
+  return false;
+}
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
@@ -271,8 +311,8 @@ export const resolvers: Resolvers = {
           ContactPoints.CrcTrust
         ];
         if (context.sessionId) {
-          const callerProfile = await context.callerProfile;
-          if (callerProfile?.circlesAddress == args.safeAddress.toLowerCase()) {
+          let canAccessPrivateDetails = await canAccess(context, args.safeAddress);
+          if (canAccessPrivateDetails) {
             contactPoints.push(ContactPoints.Invitation);
             contactPoints.push(ContactPoints.MembershipOffer);
             contactPoints.push(ContactPoints.ChatMessage);
@@ -355,39 +395,8 @@ export const resolvers: Resolvers = {
       //
       // private
       //
-      let callerProfile: Profile | null = null;
-
       if (Object.keys(types).length > 0 && context.sessionId) {
-        callerProfile = await context.callerProfile;
-        let canAccessPrivateDetails = callerProfile?.circlesAddress == args.safeAddress.toLowerCase();
-        if (!canAccessPrivateDetails) {
-          // Could be that a user requests the data of an organisation
-          // Check if the user is either admin or owner and grant access
-          // if that's the case.
-          const requestedProfile = await prisma_api_rw.profile.findMany({
-            where: {
-              circlesAddress: args.safeAddress.toLowerCase(),
-              type: "ORGANISATION"
-            },
-            orderBy: {
-              id: "desc"
-            },
-            include: {
-              members: {
-                where: {
-                  isAdmin: true
-                }
-              }
-            }
-          });
-          const orgaProfile = requestedProfile.length > 0 ? requestedProfile[0] : undefined;
-          if (orgaProfile) {
-            // Find out if the current user is an admin or owner ..
-            if (orgaProfile.members.find(o => o.memberId == callerProfile?.id)) {
-              canAccessPrivateDetails = true;
-            }
-          }
-        }
+        let canAccessPrivateDetails = await canAccess(context, args.safeAddress);
 
         if (canAccessPrivateDetails && types[EventType.ChatMessage]) {
           eventSources.push(new ChatMessageEventSource());
@@ -414,10 +423,11 @@ export const resolvers: Resolvers = {
 
       const aggregateEventSource = new CombinedEventSource(eventSources);
 
+      /*let callerProfile: Profile | null = null;
       if (context.sessionId && !callerProfile) {
         // Necessary to cache private items?!
         callerProfile = await context.callerProfile;
-      }
+      }*/
 
       let events: ProfileEvent[] = [];
 
