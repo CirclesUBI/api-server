@@ -125,7 +125,7 @@ export type Membership = {
   rejectedAt: Date | null
   validTo: Date | null
   isAdmin: boolean | null
-  memberId: number
+  memberAddress: string
   memberAtId: number
 }
 
@@ -5251,7 +5251,6 @@ export namespace Prisma {
     redeemInvitationRequests?: boolean | RedeemInvitationRequestFindManyArgs
     redeemedInvitations?: boolean | InvitationFindManyArgs
     claimedInvitations?: boolean | InvitationFindManyArgs
-    memberships?: boolean | MembershipFindManyArgs
     members?: boolean | MembershipFindManyArgs
     createdMemberships?: boolean | MembershipFindManyArgs
   }
@@ -5266,7 +5265,6 @@ export namespace Prisma {
     redeemInvitationRequests?: boolean | RedeemInvitationRequestFindManyArgs
     redeemedInvitations?: boolean | InvitationFindManyArgs
     claimedInvitations?: boolean | InvitationFindManyArgs
-    memberships?: boolean | MembershipFindManyArgs
     members?: boolean | MembershipFindManyArgs
     createdMemberships?: boolean | MembershipFindManyArgs
   }
@@ -5300,8 +5298,6 @@ export namespace Prisma {
         ? Array < InvitationGetPayload<S['include'][P]>>  :
         P extends 'claimedInvitations'
         ? Array < InvitationGetPayload<S['include'][P]>>  :
-        P extends 'memberships'
-        ? Array < MembershipGetPayload<S['include'][P]>>  :
         P extends 'members'
         ? Array < MembershipGetPayload<S['include'][P]>>  :
         P extends 'createdMemberships'
@@ -5329,8 +5325,6 @@ export namespace Prisma {
         ? Array < InvitationGetPayload<S['select'][P]>>  :
         P extends 'claimedInvitations'
         ? Array < InvitationGetPayload<S['select'][P]>>  :
-        P extends 'memberships'
-        ? Array < MembershipGetPayload<S['select'][P]>>  :
         P extends 'members'
         ? Array < MembershipGetPayload<S['select'][P]>>  :
         P extends 'createdMemberships'
@@ -5691,8 +5685,6 @@ export namespace Prisma {
     redeemedInvitations<T extends InvitationFindManyArgs = {}>(args?: Subset<T, InvitationFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Invitation>>, PrismaPromise<Array<InvitationGetPayload<T>>>>;
 
     claimedInvitations<T extends InvitationFindManyArgs = {}>(args?: Subset<T, InvitationFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Invitation>>, PrismaPromise<Array<InvitationGetPayload<T>>>>;
-
-    memberships<T extends MembershipFindManyArgs = {}>(args?: Subset<T, MembershipFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Membership>>, PrismaPromise<Array<MembershipGetPayload<T>>>>;
 
     members<T extends MembershipFindManyArgs = {}>(args?: Subset<T, MembershipFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Membership>>, PrismaPromise<Array<MembershipGetPayload<T>>>>;
 
@@ -6830,14 +6822,12 @@ export namespace Prisma {
   export type MembershipAvgAggregateOutputType = {
     id: number | null
     createdByProfileId: number | null
-    memberId: number | null
     memberAtId: number | null
   }
 
   export type MembershipSumAggregateOutputType = {
     id: number | null
     createdByProfileId: number | null
-    memberId: number | null
     memberAtId: number | null
   }
 
@@ -6849,7 +6839,7 @@ export namespace Prisma {
     rejectedAt: Date | null
     validTo: Date | null
     isAdmin: boolean | null
-    memberId: number | null
+    memberAddress: string | null
     memberAtId: number | null
   }
 
@@ -6861,7 +6851,7 @@ export namespace Prisma {
     rejectedAt: Date | null
     validTo: Date | null
     isAdmin: boolean | null
-    memberId: number | null
+    memberAddress: string | null
     memberAtId: number | null
   }
 
@@ -6873,7 +6863,7 @@ export namespace Prisma {
     rejectedAt: number
     validTo: number
     isAdmin: number
-    memberId: number
+    memberAddress: number
     memberAtId: number
     _all: number
   }
@@ -6882,14 +6872,12 @@ export namespace Prisma {
   export type MembershipAvgAggregateInputType = {
     id?: true
     createdByProfileId?: true
-    memberId?: true
     memberAtId?: true
   }
 
   export type MembershipSumAggregateInputType = {
     id?: true
     createdByProfileId?: true
-    memberId?: true
     memberAtId?: true
   }
 
@@ -6901,7 +6889,7 @@ export namespace Prisma {
     rejectedAt?: true
     validTo?: true
     isAdmin?: true
-    memberId?: true
+    memberAddress?: true
     memberAtId?: true
   }
 
@@ -6913,7 +6901,7 @@ export namespace Prisma {
     rejectedAt?: true
     validTo?: true
     isAdmin?: true
-    memberId?: true
+    memberAddress?: true
     memberAtId?: true
   }
 
@@ -6925,7 +6913,7 @@ export namespace Prisma {
     rejectedAt?: true
     validTo?: true
     isAdmin?: true
-    memberId?: true
+    memberAddress?: true
     memberAtId?: true
     _all?: true
   }
@@ -7050,7 +7038,7 @@ export namespace Prisma {
     rejectedAt: Date | null
     validTo: Date | null
     isAdmin: boolean | null
-    memberId: number
+    memberAddress: string
     memberAtId: number
     _count: MembershipCountAggregateOutputType | null
     _avg: MembershipAvgAggregateOutputType | null
@@ -7082,15 +7070,13 @@ export namespace Prisma {
     rejectedAt?: boolean
     validTo?: boolean
     isAdmin?: boolean
-    memberId?: boolean
-    member?: boolean | ProfileArgs
+    memberAddress?: boolean
     memberAtId?: boolean
     memberAt?: boolean | ProfileArgs
   }
 
   export type MembershipInclude = {
     createdBy?: boolean | ProfileArgs
-    member?: boolean | ProfileArgs
     memberAt?: boolean | ProfileArgs
   }
 
@@ -7107,8 +7093,6 @@ export namespace Prisma {
     [P in TrueKeys<S['include']>]: 
           P extends 'createdBy'
         ? ProfileGetPayload<S['include'][P]> :
-        P extends 'member'
-        ? ProfileGetPayload<S['include'][P]> :
         P extends 'memberAt'
         ? ProfileGetPayload<S['include'][P]> : never
   } 
@@ -7117,8 +7101,6 @@ export namespace Prisma {
     [P in TrueKeys<S['select']>]: P extends keyof Membership ?Membership [P]
   : 
           P extends 'createdBy'
-        ? ProfileGetPayload<S['select'][P]> :
-        P extends 'member'
         ? ProfileGetPayload<S['select'][P]> :
         P extends 'memberAt'
         ? ProfileGetPayload<S['select'][P]> : never
@@ -7462,8 +7444,6 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
     createdBy<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
-
-    member<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
 
     memberAt<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
 
@@ -15138,7 +15118,7 @@ export namespace Prisma {
     rejectedAt: 'rejectedAt',
     validTo: 'validTo',
     isAdmin: 'isAdmin',
-    memberId: 'memberId',
+    memberAddress: 'memberAddress',
     memberAtId: 'memberAtId'
   };
 
@@ -15480,7 +15460,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestListRelationFilter
     redeemedInvitations?: InvitationListRelationFilter
     claimedInvitations?: InvitationListRelationFilter
-    memberships?: MembershipListRelationFilter
     members?: MembershipListRelationFilter
     createdMemberships?: MembershipListRelationFilter
   }
@@ -15580,8 +15559,7 @@ export namespace Prisma {
     rejectedAt?: DateTimeNullableFilter | Date | string | null
     validTo?: DateTimeNullableFilter | Date | string | null
     isAdmin?: BoolNullableFilter | boolean | null
-    memberId?: IntFilter | number
-    member?: XOR<ProfileRelationFilter, ProfileWhereInput>
+    memberAddress?: StringFilter | string
     memberAtId?: IntFilter | number
     memberAt?: XOR<ProfileRelationFilter, ProfileWhereInput>
   }
@@ -15594,7 +15572,7 @@ export namespace Prisma {
     rejectedAt?: SortOrder
     validTo?: SortOrder
     isAdmin?: SortOrder
-    memberId?: SortOrder
+    memberAddress?: SortOrder
     memberAtId?: SortOrder
   }
 
@@ -15613,7 +15591,7 @@ export namespace Prisma {
     rejectedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
     validTo?: DateTimeNullableWithAggregatesFilter | Date | string | null
     isAdmin?: BoolNullableWithAggregatesFilter | boolean | null
-    memberId?: IntWithAggregatesFilter | number
+    memberAddress?: StringWithAggregatesFilter | string
     memberAtId?: IntWithAggregatesFilter | number
   }
 
@@ -16259,7 +16237,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
   }
@@ -16295,7 +16272,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -16330,7 +16306,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
   }
@@ -16366,7 +16341,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
   }
@@ -16490,8 +16464,8 @@ export namespace Prisma {
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
     isAdmin?: boolean | null
+    memberAddress: string
     createdBy?: ProfileCreateNestedOneWithoutCreatedMembershipsInput
-    member: ProfileCreateNestedOneWithoutMembershipsInput
     memberAt: ProfileCreateNestedOneWithoutMembersInput
   }
 
@@ -16503,7 +16477,7 @@ export namespace Prisma {
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
     isAdmin?: boolean | null
-    memberId: number
+    memberAddress: string
     memberAtId: number
   }
 
@@ -16513,8 +16487,8 @@ export namespace Prisma {
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    memberAddress?: StringFieldUpdateOperationsInput | string
     createdBy?: ProfileUpdateOneRequiredWithoutCreatedMembershipsInput
-    member?: ProfileUpdateOneRequiredWithoutMembershipsInput
     memberAt?: ProfileUpdateOneRequiredWithoutMembersInput
   }
 
@@ -16526,7 +16500,7 @@ export namespace Prisma {
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    memberId?: IntFieldUpdateOperationsInput | number
+    memberAddress?: StringFieldUpdateOperationsInput | string
     memberAtId?: IntFieldUpdateOperationsInput | number
   }
 
@@ -16538,7 +16512,7 @@ export namespace Prisma {
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
     isAdmin?: boolean | null
-    memberId: number
+    memberAddress: string
     memberAtId: number
   }
 
@@ -16548,6 +16522,7 @@ export namespace Prisma {
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    memberAddress?: StringFieldUpdateOperationsInput | string
   }
 
   export type MembershipUncheckedUpdateManyInput = {
@@ -16558,7 +16533,7 @@ export namespace Prisma {
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    memberId?: IntFieldUpdateOperationsInput | number
+    memberAddress?: StringFieldUpdateOperationsInput | string
     memberAtId?: IntFieldUpdateOperationsInput | number
   }
 
@@ -17726,13 +17701,6 @@ export namespace Prisma {
     connect?: Enumerable<InvitationWhereUniqueInput>
   }
 
-  export type MembershipCreateNestedManyWithoutMemberInput = {
-    create?: XOR<Enumerable<MembershipCreateWithoutMemberInput>, Enumerable<MembershipUncheckedCreateWithoutMemberInput>>
-    connectOrCreate?: Enumerable<MembershipCreateOrConnectWithoutMemberInput>
-    createMany?: MembershipCreateManyMemberInputEnvelope
-    connect?: Enumerable<MembershipWhereUniqueInput>
-  }
-
   export type MembershipCreateNestedManyWithoutMemberAtInput = {
     create?: XOR<Enumerable<MembershipCreateWithoutMemberAtInput>, Enumerable<MembershipUncheckedCreateWithoutMemberAtInput>>
     connectOrCreate?: Enumerable<MembershipCreateOrConnectWithoutMemberAtInput>
@@ -17807,13 +17775,6 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvitationCreateOrConnectWithoutClaimedByInput>
     createMany?: InvitationCreateManyClaimedByInputEnvelope
     connect?: Enumerable<InvitationWhereUniqueInput>
-  }
-
-  export type MembershipUncheckedCreateNestedManyWithoutMemberInput = {
-    create?: XOR<Enumerable<MembershipCreateWithoutMemberInput>, Enumerable<MembershipUncheckedCreateWithoutMemberInput>>
-    connectOrCreate?: Enumerable<MembershipCreateOrConnectWithoutMemberInput>
-    createMany?: MembershipCreateManyMemberInputEnvelope
-    connect?: Enumerable<MembershipWhereUniqueInput>
   }
 
   export type MembershipUncheckedCreateNestedManyWithoutMemberAtInput = {
@@ -17958,20 +17919,6 @@ export namespace Prisma {
     update?: Enumerable<InvitationUpdateWithWhereUniqueWithoutClaimedByInput>
     updateMany?: Enumerable<InvitationUpdateManyWithWhereWithoutClaimedByInput>
     deleteMany?: Enumerable<InvitationScalarWhereInput>
-  }
-
-  export type MembershipUpdateManyWithoutMemberInput = {
-    create?: XOR<Enumerable<MembershipCreateWithoutMemberInput>, Enumerable<MembershipUncheckedCreateWithoutMemberInput>>
-    connectOrCreate?: Enumerable<MembershipCreateOrConnectWithoutMemberInput>
-    upsert?: Enumerable<MembershipUpsertWithWhereUniqueWithoutMemberInput>
-    createMany?: MembershipCreateManyMemberInputEnvelope
-    connect?: Enumerable<MembershipWhereUniqueInput>
-    set?: Enumerable<MembershipWhereUniqueInput>
-    disconnect?: Enumerable<MembershipWhereUniqueInput>
-    delete?: Enumerable<MembershipWhereUniqueInput>
-    update?: Enumerable<MembershipUpdateWithWhereUniqueWithoutMemberInput>
-    updateMany?: Enumerable<MembershipUpdateManyWithWhereWithoutMemberInput>
-    deleteMany?: Enumerable<MembershipScalarWhereInput>
   }
 
   export type MembershipUpdateManyWithoutMemberAtInput = {
@@ -18124,20 +18071,6 @@ export namespace Prisma {
     deleteMany?: Enumerable<InvitationScalarWhereInput>
   }
 
-  export type MembershipUncheckedUpdateManyWithoutMemberInput = {
-    create?: XOR<Enumerable<MembershipCreateWithoutMemberInput>, Enumerable<MembershipUncheckedCreateWithoutMemberInput>>
-    connectOrCreate?: Enumerable<MembershipCreateOrConnectWithoutMemberInput>
-    upsert?: Enumerable<MembershipUpsertWithWhereUniqueWithoutMemberInput>
-    createMany?: MembershipCreateManyMemberInputEnvelope
-    connect?: Enumerable<MembershipWhereUniqueInput>
-    set?: Enumerable<MembershipWhereUniqueInput>
-    disconnect?: Enumerable<MembershipWhereUniqueInput>
-    delete?: Enumerable<MembershipWhereUniqueInput>
-    update?: Enumerable<MembershipUpdateWithWhereUniqueWithoutMemberInput>
-    updateMany?: Enumerable<MembershipUpdateManyWithWhereWithoutMemberInput>
-    deleteMany?: Enumerable<MembershipScalarWhereInput>
-  }
-
   export type MembershipUncheckedUpdateManyWithoutMemberAtInput = {
     create?: XOR<Enumerable<MembershipCreateWithoutMemberAtInput>, Enumerable<MembershipUncheckedCreateWithoutMemberAtInput>>
     connectOrCreate?: Enumerable<MembershipCreateOrConnectWithoutMemberAtInput>
@@ -18172,12 +18105,6 @@ export namespace Prisma {
     connect?: ProfileWhereUniqueInput
   }
 
-  export type ProfileCreateNestedOneWithoutMembershipsInput = {
-    create?: XOR<ProfileCreateWithoutMembershipsInput, ProfileUncheckedCreateWithoutMembershipsInput>
-    connectOrCreate?: ProfileCreateOrConnectWithoutMembershipsInput
-    connect?: ProfileWhereUniqueInput
-  }
-
   export type ProfileCreateNestedOneWithoutMembersInput = {
     create?: XOR<ProfileCreateWithoutMembersInput, ProfileUncheckedCreateWithoutMembersInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutMembersInput
@@ -18190,14 +18117,6 @@ export namespace Prisma {
     upsert?: ProfileUpsertWithoutCreatedMembershipsInput
     connect?: ProfileWhereUniqueInput
     update?: XOR<ProfileUpdateWithoutCreatedMembershipsInput, ProfileUncheckedUpdateWithoutCreatedMembershipsInput>
-  }
-
-  export type ProfileUpdateOneRequiredWithoutMembershipsInput = {
-    create?: XOR<ProfileCreateWithoutMembershipsInput, ProfileUncheckedCreateWithoutMembershipsInput>
-    connectOrCreate?: ProfileCreateOrConnectWithoutMembershipsInput
-    upsert?: ProfileUpsertWithoutMembershipsInput
-    connect?: ProfileWhereUniqueInput
-    update?: XOR<ProfileUpdateWithoutMembershipsInput, ProfileUncheckedUpdateWithoutMembershipsInput>
   }
 
   export type ProfileUpdateOneRequiredWithoutMembersInput = {
@@ -18953,7 +18872,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
   }
@@ -18988,7 +18906,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -19032,7 +18949,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
   }
@@ -19067,7 +18983,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
   }
@@ -19101,7 +19016,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
   }
@@ -19136,7 +19050,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -19175,7 +19088,6 @@ export namespace Prisma {
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
-    memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
   }
@@ -19210,7 +19122,6 @@ export namespace Prisma {
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -19249,7 +19160,6 @@ export namespace Prisma {
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
   }
@@ -19284,7 +19194,6 @@ export namespace Prisma {
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -19353,7 +19262,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
   }
@@ -19388,7 +19296,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
   }
@@ -19427,7 +19334,6 @@ export namespace Prisma {
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
-    memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
   }
@@ -19462,7 +19368,6 @@ export namespace Prisma {
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
-    memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
   }
@@ -19501,7 +19406,6 @@ export namespace Prisma {
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
   }
@@ -19536,7 +19440,6 @@ export namespace Prisma {
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
   }
@@ -19598,7 +19501,6 @@ export namespace Prisma {
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
   }
@@ -19633,7 +19535,6 @@ export namespace Prisma {
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -19711,7 +19612,6 @@ export namespace Prisma {
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
   }
@@ -19746,7 +19646,6 @@ export namespace Prisma {
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
   }
@@ -19814,7 +19713,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
   }
@@ -19849,7 +19747,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -19893,7 +19790,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
   }
@@ -19928,7 +19824,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
   }
@@ -20215,45 +20110,14 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type MembershipCreateWithoutMemberInput = {
-    createdAt?: Date | string
-    acceptedAt?: Date | string | null
-    rejectedAt?: Date | string | null
-    validTo?: Date | string | null
-    isAdmin?: boolean | null
-    createdBy?: ProfileCreateNestedOneWithoutCreatedMembershipsInput
-    memberAt: ProfileCreateNestedOneWithoutMembersInput
-  }
-
-  export type MembershipUncheckedCreateWithoutMemberInput = {
-    id?: number
-    createdAt?: Date | string
-    createdByProfileId?: number
-    acceptedAt?: Date | string | null
-    rejectedAt?: Date | string | null
-    validTo?: Date | string | null
-    isAdmin?: boolean | null
-    memberAtId: number
-  }
-
-  export type MembershipCreateOrConnectWithoutMemberInput = {
-    where: MembershipWhereUniqueInput
-    create: XOR<MembershipCreateWithoutMemberInput, MembershipUncheckedCreateWithoutMemberInput>
-  }
-
-  export type MembershipCreateManyMemberInputEnvelope = {
-    data: Enumerable<MembershipCreateManyMemberInput>
-    skipDuplicates?: boolean
-  }
-
   export type MembershipCreateWithoutMemberAtInput = {
     createdAt?: Date | string
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
     isAdmin?: boolean | null
+    memberAddress: string
     createdBy?: ProfileCreateNestedOneWithoutCreatedMembershipsInput
-    member: ProfileCreateNestedOneWithoutMembershipsInput
   }
 
   export type MembershipUncheckedCreateWithoutMemberAtInput = {
@@ -20264,7 +20128,7 @@ export namespace Prisma {
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
     isAdmin?: boolean | null
-    memberId: number
+    memberAddress: string
   }
 
   export type MembershipCreateOrConnectWithoutMemberAtInput = {
@@ -20283,7 +20147,7 @@ export namespace Prisma {
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
     isAdmin?: boolean | null
-    member: ProfileCreateNestedOneWithoutMembershipsInput
+    memberAddress: string
     memberAt: ProfileCreateNestedOneWithoutMembersInput
   }
 
@@ -20294,7 +20158,7 @@ export namespace Prisma {
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
     isAdmin?: boolean | null
-    memberId: number
+    memberAddress: string
     memberAtId: number
   }
 
@@ -20527,37 +20391,6 @@ export namespace Prisma {
     data: XOR<InvitationUpdateManyMutationInput, InvitationUncheckedUpdateManyWithoutClaimedInvitationsInput>
   }
 
-  export type MembershipUpsertWithWhereUniqueWithoutMemberInput = {
-    where: MembershipWhereUniqueInput
-    update: XOR<MembershipUpdateWithoutMemberInput, MembershipUncheckedUpdateWithoutMemberInput>
-    create: XOR<MembershipCreateWithoutMemberInput, MembershipUncheckedCreateWithoutMemberInput>
-  }
-
-  export type MembershipUpdateWithWhereUniqueWithoutMemberInput = {
-    where: MembershipWhereUniqueInput
-    data: XOR<MembershipUpdateWithoutMemberInput, MembershipUncheckedUpdateWithoutMemberInput>
-  }
-
-  export type MembershipUpdateManyWithWhereWithoutMemberInput = {
-    where: MembershipScalarWhereInput
-    data: XOR<MembershipUpdateManyMutationInput, MembershipUncheckedUpdateManyWithoutMembershipsInput>
-  }
-
-  export type MembershipScalarWhereInput = {
-    AND?: Enumerable<MembershipScalarWhereInput>
-    OR?: Enumerable<MembershipScalarWhereInput>
-    NOT?: Enumerable<MembershipScalarWhereInput>
-    id?: IntFilter | number
-    createdAt?: DateTimeFilter | Date | string
-    createdByProfileId?: IntFilter | number
-    acceptedAt?: DateTimeNullableFilter | Date | string | null
-    rejectedAt?: DateTimeNullableFilter | Date | string | null
-    validTo?: DateTimeNullableFilter | Date | string | null
-    isAdmin?: BoolNullableFilter | boolean | null
-    memberId?: IntFilter | number
-    memberAtId?: IntFilter | number
-  }
-
   export type MembershipUpsertWithWhereUniqueWithoutMemberAtInput = {
     where: MembershipWhereUniqueInput
     update: XOR<MembershipUpdateWithoutMemberAtInput, MembershipUncheckedUpdateWithoutMemberAtInput>
@@ -20572,6 +20405,21 @@ export namespace Prisma {
   export type MembershipUpdateManyWithWhereWithoutMemberAtInput = {
     where: MembershipScalarWhereInput
     data: XOR<MembershipUpdateManyMutationInput, MembershipUncheckedUpdateManyWithoutMembersInput>
+  }
+
+  export type MembershipScalarWhereInput = {
+    AND?: Enumerable<MembershipScalarWhereInput>
+    OR?: Enumerable<MembershipScalarWhereInput>
+    NOT?: Enumerable<MembershipScalarWhereInput>
+    id?: IntFilter | number
+    createdAt?: DateTimeFilter | Date | string
+    createdByProfileId?: IntFilter | number
+    acceptedAt?: DateTimeNullableFilter | Date | string | null
+    rejectedAt?: DateTimeNullableFilter | Date | string | null
+    validTo?: DateTimeNullableFilter | Date | string | null
+    isAdmin?: BoolNullableFilter | boolean | null
+    memberAddress?: StringFilter | string
+    memberAtId?: IntFilter | number
   }
 
   export type MembershipUpsertWithWhereUniqueWithoutCreatedByInput = {
@@ -20620,7 +20468,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
   }
 
@@ -20655,87 +20502,12 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
   }
 
   export type ProfileCreateOrConnectWithoutCreatedMembershipsInput = {
     where: ProfileWhereUniqueInput
     create: XOR<ProfileCreateWithoutCreatedMembershipsInput, ProfileUncheckedCreateWithoutCreatedMembershipsInput>
-  }
-
-  export type ProfileCreateWithoutMembershipsInput = {
-    lastUpdateAt?: Date | string
-    emailAddress?: string | null
-    status?: string | null
-    type?: ProfileType | null
-    circlesAddress?: string | null
-    circlesSafeOwner?: string | null
-    circlesTokenAddress?: string | null
-    firstName: string
-    lastName?: string | null
-    avatarUrl?: string | null
-    avatarCid?: string | null
-    avatarMimeType?: string | null
-    dream?: string | null
-    country?: string | null
-    newsletter?: boolean | null
-    displayTimeCircles?: boolean | null
-    cityGeonameid?: number | null
-    lastAcknowledged?: Date | string | null
-    verifySafeChallenge?: string | null
-    newSafeAddress?: string | null
-    sessions?: SessionCreateNestedManyWithoutProfileInput
-    tags?: TagCreateNestedManyWithoutCreatedByInput
-    offers?: OfferCreateNestedManyWithoutCreatedByInput
-    purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
-    invitations?: InvitationCreateNestedManyWithoutCreatedByInput
-    invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    members?: MembershipCreateNestedManyWithoutMemberAtInput
-    createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
-  }
-
-  export type ProfileUncheckedCreateWithoutMembershipsInput = {
-    id?: number
-    lastUpdateAt?: Date | string
-    emailAddress?: string | null
-    status?: string | null
-    type?: ProfileType | null
-    circlesAddress?: string | null
-    circlesSafeOwner?: string | null
-    circlesTokenAddress?: string | null
-    firstName: string
-    lastName?: string | null
-    avatarUrl?: string | null
-    avatarCid?: string | null
-    avatarMimeType?: string | null
-    dream?: string | null
-    country?: string | null
-    newsletter?: boolean | null
-    displayTimeCircles?: boolean | null
-    cityGeonameid?: number | null
-    lastAcknowledged?: Date | string | null
-    verifySafeChallenge?: string | null
-    newSafeAddress?: string | null
-    sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
-    tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
-    offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
-    purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
-    invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
-    invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
-    createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
-  }
-
-  export type ProfileCreateOrConnectWithoutMembershipsInput = {
-    where: ProfileWhereUniqueInput
-    create: XOR<ProfileCreateWithoutMembershipsInput, ProfileUncheckedCreateWithoutMembershipsInput>
   }
 
   export type ProfileCreateWithoutMembersInput = {
@@ -20768,7 +20540,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipCreateNestedManyWithoutMemberInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
   }
 
@@ -20803,7 +20574,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
@@ -20847,7 +20617,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
   }
 
@@ -20882,82 +20651,7 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
-  }
-
-  export type ProfileUpsertWithoutMembershipsInput = {
-    update: XOR<ProfileUpdateWithoutMembershipsInput, ProfileUncheckedUpdateWithoutMembershipsInput>
-    create: XOR<ProfileCreateWithoutMembershipsInput, ProfileUncheckedCreateWithoutMembershipsInput>
-  }
-
-  export type ProfileUpdateWithoutMembershipsInput = {
-    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
-    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    dream?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
-    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
-    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    sessions?: SessionUpdateManyWithoutProfileInput
-    tags?: TagUpdateManyWithoutCreatedByInput
-    offers?: OfferUpdateManyWithoutCreatedByInput
-    purchases?: PurchaseUpdateManyWithoutCreatedByInput
-    invitations?: InvitationUpdateManyWithoutCreatedByInput
-    invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    members?: MembershipUpdateManyWithoutMemberAtInput
-    createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
-  }
-
-  export type ProfileUncheckedUpdateWithoutMembershipsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
-    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    dream?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
-    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
-    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    sessions?: SessionUncheckedUpdateManyWithoutProfileInput
-    tags?: TagUncheckedUpdateManyWithoutCreatedByInput
-    offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
-    purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
-    invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
-    invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
-    redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
-    createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUpsertWithoutMembersInput = {
@@ -20995,7 +20689,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUpdateManyWithoutMemberInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
   }
 
@@ -21030,7 +20723,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
   }
 
@@ -21108,7 +20800,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
   }
@@ -21143,7 +20834,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -21208,7 +20898,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
   }
@@ -21243,7 +20932,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
   }
@@ -21304,7 +20992,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
   }
@@ -21339,7 +21026,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -21405,7 +21091,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
   }
@@ -21440,7 +21125,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
   }
@@ -21670,7 +21354,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipCreateNestedManyWithoutMemberInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
   }
@@ -21705,7 +21388,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedCreateNestedManyWithoutMemberInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
   }
@@ -21797,7 +21479,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUpdateManyWithoutMemberInput
     members?: MembershipUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
   }
@@ -21832,7 +21513,6 @@ export namespace Prisma {
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    memberships?: MembershipUncheckedUpdateManyWithoutMemberInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
   }
@@ -22007,17 +21687,6 @@ export namespace Prisma {
     key: string
   }
 
-  export type MembershipCreateManyMemberInput = {
-    id?: number
-    createdAt?: Date | string
-    createdByProfileId?: number
-    acceptedAt?: Date | string | null
-    rejectedAt?: Date | string | null
-    validTo?: Date | string | null
-    isAdmin?: boolean | null
-    memberAtId: number
-  }
-
   export type MembershipCreateManyMemberAtInput = {
     id?: number
     createdAt?: Date | string
@@ -22026,7 +21695,7 @@ export namespace Prisma {
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
     isAdmin?: boolean | null
-    memberId: number
+    memberAddress: string
   }
 
   export type MembershipCreateManyCreatedByInput = {
@@ -22036,7 +21705,7 @@ export namespace Prisma {
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
     isAdmin?: boolean | null
-    memberId: number
+    memberAddress: string
     memberAtId: number
   }
 
@@ -22317,46 +21986,14 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
   }
 
-  export type MembershipUpdateWithoutMemberInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    validTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    createdBy?: ProfileUpdateOneRequiredWithoutCreatedMembershipsInput
-    memberAt?: ProfileUpdateOneRequiredWithoutMembersInput
-  }
-
-  export type MembershipUncheckedUpdateWithoutMemberInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    validTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    memberAtId?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type MembershipUncheckedUpdateManyWithoutMembershipsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    validTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    memberAtId?: IntFieldUpdateOperationsInput | number
-  }
-
   export type MembershipUpdateWithoutMemberAtInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    memberAddress?: StringFieldUpdateOperationsInput | string
     createdBy?: ProfileUpdateOneRequiredWithoutCreatedMembershipsInput
-    member?: ProfileUpdateOneRequiredWithoutMembershipsInput
   }
 
   export type MembershipUncheckedUpdateWithoutMemberAtInput = {
@@ -22367,7 +22004,7 @@ export namespace Prisma {
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    memberId?: IntFieldUpdateOperationsInput | number
+    memberAddress?: StringFieldUpdateOperationsInput | string
   }
 
   export type MembershipUncheckedUpdateManyWithoutMembersInput = {
@@ -22378,7 +22015,7 @@ export namespace Prisma {
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    memberId?: IntFieldUpdateOperationsInput | number
+    memberAddress?: StringFieldUpdateOperationsInput | string
   }
 
   export type MembershipUpdateWithoutCreatedByInput = {
@@ -22387,7 +22024,7 @@ export namespace Prisma {
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    member?: ProfileUpdateOneRequiredWithoutMembershipsInput
+    memberAddress?: StringFieldUpdateOperationsInput | string
     memberAt?: ProfileUpdateOneRequiredWithoutMembersInput
   }
 
@@ -22398,7 +22035,7 @@ export namespace Prisma {
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    memberId?: IntFieldUpdateOperationsInput | number
+    memberAddress?: StringFieldUpdateOperationsInput | string
     memberAtId?: IntFieldUpdateOperationsInput | number
   }
 
@@ -22409,7 +22046,7 @@ export namespace Prisma {
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    memberId?: IntFieldUpdateOperationsInput | number
+    memberAddress?: StringFieldUpdateOperationsInput | string
     memberAtId?: IntFieldUpdateOperationsInput | number
   }
 

@@ -30,20 +30,13 @@ export class MembershipOfferEventSource implements EventSource {
             : {
                 lt: new Date(pagination.continueAt),
               },
-        member: {
-          circlesAddress: forSafeAddress,
-        },
+        memberAddress: forSafeAddress
       },
       include: {
         createdBy: {
           select: {
             circlesAddress: true,
           },
-        },
-        member: {
-          select: {
-            circlesAddress: true
-          }
         },
         memberAt: {
           select: {
@@ -71,7 +64,7 @@ export class MembershipOfferEventSource implements EventSource {
         value: null,
         transaction_hash: null,
         transaction_index: null,
-        contact_address: r.member.circlesAddress,
+        contact_address: r.memberAddress,
         payload: <MembershipOffer>{
           __typename: "MembershipOffer",
           createdBy: r.createdBy.circlesAddress,

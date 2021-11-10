@@ -510,7 +510,7 @@ export type MutationUpsertRegionArgs = {
 
 export type MutationAddMemberArgs = {
   groupId: Scalars['String'];
-  memberId: Scalars['Int'];
+  memberAddress: Scalars['String'];
 };
 
 
@@ -521,7 +521,7 @@ export type MutationAcceptMembershipArgs = {
 
 export type MutationRemoveMemberArgs = {
   groupId: Scalars['String'];
-  memberId: Scalars['Int'];
+  memberAddress: Scalars['String'];
 };
 
 
@@ -1687,9 +1687,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   upsertTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationUpsertTagArgs, 'data'>>;
   upsertOrganisation?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertOrganisationArgs, 'organisation'>>;
   upsertRegion?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertRegionArgs, 'organisation'>>;
-  addMember?: Resolver<Maybe<ResolversTypes['AddMemberResult']>, ParentType, ContextType, RequireFields<MutationAddMemberArgs, 'groupId' | 'memberId'>>;
+  addMember?: Resolver<Maybe<ResolversTypes['AddMemberResult']>, ParentType, ContextType, RequireFields<MutationAddMemberArgs, 'groupId' | 'memberAddress'>>;
   acceptMembership?: Resolver<Maybe<ResolversTypes['AcceptMembershipResult']>, ParentType, ContextType, RequireFields<MutationAcceptMembershipArgs, 'membershipId'>>;
-  removeMember?: Resolver<Maybe<ResolversTypes['RemoveMemberResult']>, ParentType, ContextType, RequireFields<MutationRemoveMemberArgs, 'groupId' | 'memberId'>>;
+  removeMember?: Resolver<Maybe<ResolversTypes['RemoveMemberResult']>, ParentType, ContextType, RequireFields<MutationRemoveMemberArgs, 'groupId' | 'memberAddress'>>;
   rejectMembership?: Resolver<Maybe<ResolversTypes['RejectMembershipResult']>, ParentType, ContextType, RequireFields<MutationRejectMembershipArgs, 'membershipId'>>;
   acknowledge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'until'>>;
   requestInvitationOffer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType, RequireFields<MutationRequestInvitationOfferArgs, 'for'>>;

@@ -21,7 +21,7 @@ export function createInvitations(prisma_api_rw:PrismaClient) {
           circlesAddress: HomoCirculusOrganisation,
           members: {
             some: {
-              memberId: profile.id
+              memberAddress: profile.circlesAddress
             }
           }
         }

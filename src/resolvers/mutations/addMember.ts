@@ -18,7 +18,7 @@ export async function findGroup(groupId: number|string, callerProfile: Profile) 
     include: {
       members: {
         where: {
-          memberId: callerProfile.id,
+          memberAddress: callerProfile.circlesAddress ?? "not",
           isAdmin: true
         }
       }
@@ -49,7 +49,7 @@ export const addMemberResolver = async (parent:any, args:MutationAddMemberArgs, 
       createdAt: new Date(),
       createdByProfileId: callerProfile.id,
       memberAtId: groupProfile.id,
-      memberId: args.memberId
+      memberAddress: args.memberAddress
     }
   });
 

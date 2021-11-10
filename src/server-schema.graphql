@@ -719,9 +719,9 @@ type Mutation {
   upsertOrganisation(organisation: UpsertOrganisationInput!) : CreateOrganisationResult!
   upsertRegion(organisation: UpsertOrganisationInput!) : CreateOrganisationResult!
 
-  addMember(groupId: String! memberId: Int!) : AddMemberResult
+  addMember(groupId: String! memberAddress: String!) : AddMemberResult
   acceptMembership(membershipId: Int!) : AcceptMembershipResult
-  removeMember(groupId: String! memberId: Int!) : RemoveMemberResult
+  removeMember(groupId: String! memberAddress: String!) : RemoveMemberResult
   rejectMembership(membershipId: Int!) : RejectMembershipResult
 
   acknowledge(until: String!): Boolean!

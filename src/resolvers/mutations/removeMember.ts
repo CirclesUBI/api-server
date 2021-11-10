@@ -16,7 +16,7 @@ export const removeMemberResolver =async (parent:any, args:MutationRemoveMemberA
 
   await prisma_api_rw.membership.deleteMany({
     where: {
-      memberId: args.memberId,
+      memberAddress: args.memberAddress,
       memberAtId: groupProfile.id,
     }
   });

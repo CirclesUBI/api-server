@@ -128,7 +128,6 @@ model Profile {
     redeemedInvitations Invitation[]  @relation(name: "Invitation_RedeemedBy")
     claimedInvitations Invitation[]  @relation(name: "Invitation_ClaimedBy")
 
-    memberships Membership[] @relation(name: "Membership_Member")
     members Membership[] @relation(name: "Membership_MemberAt")
     createdMemberships Membership[]  @relation(name: "Membership_CreatedBy")
 }
@@ -152,8 +151,7 @@ model Membership {
     validTo DateTime?    // Memberships are only valid if this property is null or lies in the future
     isAdmin Boolean?
 
-    memberId Int
-    member Profile @relation(name: "Membership_Member", fields: [memberId], references:[id])
+    memberAddress String
 
     memberAtId Int
     memberAt Profile @relation(name: "Membership_MemberAt", fields: [memberAtId], references:[id])

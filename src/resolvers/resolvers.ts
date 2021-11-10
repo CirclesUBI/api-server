@@ -159,7 +159,7 @@ export const resolvers: Resolvers = {
     memberships: async (parent: Profile, args, context: Context) => {
       const memberships = await prisma_api_ro.membership.findMany({
         where: {
-          memberId: parent.id
+          memberAddress: parent.circlesAddress ?? "not"
         },
         include: {
           memberAt: true
@@ -200,20 +200,19 @@ export const resolvers: Resolvers = {
   ProfileEvent: {},
   Organisation: {
     members: async (parent, args, context) => {
-      return (await prisma_api_ro.membership.findMany({
+      const memberships = (await prisma_api_ro.membership.findMany({
         where: {
           memberAtId: parent.id
-        },
-        include: {
-          member: true
         }
-      }))
-        .map(o => {
-          return <ProfileOrOrganisation>{
-            __typename: "Profile",
-            ...o.member
-          };
-        });
+      }));
+
+      const members = await new ProfileLoader().profilesBySafeAddress(prisma_api_ro, memberships.map(o => o.memberAddress));
+      return Object.values(members).map(o => {
+        return <ProfileOrOrganisation>{
+          __typename: "Profile",
+          ...o
+        };
+      });
     }
   },
   Query: {

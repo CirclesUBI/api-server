@@ -35,7 +35,7 @@ export async function canAccess(context:Context, accessedSafeAddress:string) {
   const orgaProfile = requestedProfile.length > 0 ? requestedProfile[0] : undefined;
   if (orgaProfile) {
     // Find out if the current user is an admin or owner ..
-    if (orgaProfile.members.find(o => o.memberId == callerProfile?.id)) {
+    if (orgaProfile.members.find(o => o.memberAddress == callerProfile?.circlesAddress)) {
       return true;
     }
 

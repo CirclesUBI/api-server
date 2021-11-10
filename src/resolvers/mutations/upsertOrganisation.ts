@@ -51,7 +51,7 @@ export function upsertOrganisation(prisma_api_rw:PrismaClient, isRegion:boolean)
             validTo: null,
             acceptedAt: new Date(),
             isAdmin: true,
-            memberId: ownProfile.id,
+            memberAddress: ownProfile.circlesAddress,
             memberAtId: organisationProfile.id
           }
         });

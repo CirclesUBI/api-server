@@ -21,11 +21,6 @@ export class RejectedMembershipOfferEventSource implements EventSource {
         }
       },
       include: {
-        member: {
-          select: {
-            circlesAddress: true
-          }
-        },
         memberAt: {
           select: {
             circlesAddress: true
@@ -49,10 +44,10 @@ export class RejectedMembershipOfferEventSource implements EventSource {
         value: null,
         transaction_hash: null,
         transaction_index: null,
-        contact_address: r.member.circlesAddress,
+        contact_address: r.memberAddress,
         payload: <MembershipRejected> {
           __typename: "MembershipRejected",
-          member: r.member.circlesAddress,
+          member: r.memberAddress,
           organisation: r.memberAt.circlesAddress
         }
       };
