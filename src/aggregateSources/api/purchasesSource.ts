@@ -34,6 +34,9 @@ export class PurchasesSource implements AggregateSource {
             product: true
           }
         }
+      },
+      orderBy: {
+        createdAt: "desc"
       }
     });
 
@@ -51,10 +54,10 @@ export class PurchasesSource implements AggregateSource {
           return <any>{
             ...o,
             total: total,
-            lines: o.lines.map(o => {
+            lines: o.lines.map(p => {
               return {
-                ...o,
-                offer: o.product
+                ...p,
+                offer: p.product
               }
             }),
             createdAt: o.createdAt.toJSON(),
