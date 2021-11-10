@@ -2,11 +2,9 @@ import {myProfile, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {
-  AggregateType, EventType, Offer,
-  Profile,
+  AggregateType, EventType, Profile,
   ProfileEvent,
-  ProfileOrOrganisation, Purchase,
-  Resolvers,
+  ProfileOrOrganisation, Resolvers,
   SortOrder
 } from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
@@ -77,6 +75,9 @@ import {OffersSource} from "../aggregateSources/api/offersSource";
 import {WelcomeMessageEventSource} from "../eventSources/api/welcomeMessageEventSource";
 import {PurchaseLine} from "../api-db/client";
 import {PurchasesSource} from "../aggregateSources/api/purchasesSource";
+
+
+// function canAccess()
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
@@ -358,27 +359,55 @@ export const resolvers: Resolvers = {
 
       if (Object.keys(types).length > 0 && context.sessionId) {
         callerProfile = await context.callerProfile;
-        const isSelf = callerProfile?.circlesAddress == args.safeAddress.toLowerCase();
+        let canAccessPrivateDetails = callerProfile?.circlesAddress == args.safeAddress.toLowerCase();
+        if (!canAccessPrivateDetails) {
+          // Could be that a user requests the data of an organisation
+          // Check if the user is either admin or owner and grant access
+          // if that's the case.
+          const requestedProfile = await prisma_api_rw.profile.findMany({
+            where: {
+              circlesAddress: args.safeAddress.toLowerCase(),
+              type: "ORGANISATION"
+            },
+            orderBy: {
+              id: "desc"
+            },
+            include: {
+              members: {
+                where: {
+                  isAdmin: true
+                }
+              }
+            }
+          });
+          const orgaProfile = requestedProfile.length > 0 ? requestedProfile[0] : undefined;
+          if (orgaProfile) {
+            // Find out if the current user is an admin or owner ..
+            if (orgaProfile.members.find(o => o.memberId == callerProfile?.id)) {
+              canAccessPrivateDetails = true;
+            }
+          }
+        }
 
-        if (isSelf && types[EventType.ChatMessage]) {
+        if (canAccessPrivateDetails && types[EventType.ChatMessage]) {
           eventSources.push(new ChatMessageEventSource());
         }
-        if (isSelf && types[EventType.MembershipOffer]) {
+        if (canAccessPrivateDetails && types[EventType.MembershipOffer]) {
           eventSources.push(new MembershipOfferEventSource());
         }
-        if (isSelf && types[EventType.MembershipAccepted]) {
+        if (canAccessPrivateDetails && types[EventType.MembershipAccepted]) {
           eventSources.push(new AcceptedMembershipOfferEventSource());
         }
-        if (isSelf && types[EventType.MembershipRejected]) {
+        if (canAccessPrivateDetails && types[EventType.MembershipRejected]) {
           eventSources.push(new RejectedMembershipOfferEventSource());
         }
-        if (isSelf && types[EventType.WelcomeMessage]) {
+        if (canAccessPrivateDetails && types[EventType.WelcomeMessage]) {
           eventSources.push(new WelcomeMessageEventSource());
         }
-        if (isSelf && types[EventType.InvitationCreated]) {
+        if (canAccessPrivateDetails && types[EventType.InvitationCreated]) {
           eventSources.push(new CreatedInvitationsEventSource());
         }
-        if (isSelf && types[EventType.InvitationRedeemed]) {
+        if (canAccessPrivateDetails && types[EventType.InvitationRedeemed]) {
           eventSources.push(new RedeemedInvitationsEventSource());
         }
       }

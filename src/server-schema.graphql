@@ -700,7 +700,6 @@ type ProofPaymentResult {
 }
 
 type Mutation {
-
   purchase(lines:[PurchaseLineInput!]!) : Purchase
   proofPayment(purchaseId: Int!  transactionHash: String!) : ProofPaymentResult
 
@@ -746,7 +745,6 @@ type Mutation {
     challenge: String!
     signature: String!
   ): ExchangeTokenResponse
-
 }
 
 enum SortOrder {
