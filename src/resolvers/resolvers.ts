@@ -76,6 +76,7 @@ import {ProfileLoader} from "../profileLoader";
 import {OffersSource} from "../aggregateSources/api/offersSource";
 import {WelcomeMessageEventSource} from "../eventSources/api/welcomeMessageEventSource";
 import {PurchaseLine} from "../api-db/client";
+import {PurchasesSource} from "../aggregateSources/api/purchasesSource";
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
@@ -259,6 +260,9 @@ export const resolvers: Resolvers = {
 
       if (types[AggregateType.CrcBalances]) {
         aggregateSources.push(new CrcBalanceSource());
+      }
+      if (types[AggregateType.Purchases]) {
+        aggregateSources.push(new PurchasesSource());
       }
       if (types[AggregateType.Contacts]) {
         const contactPoints = [
@@ -523,7 +527,10 @@ export const resolvers: Resolvers = {
         }
       });
 
-      return <any>returnPurchase;
+      return <any>{
+        ...returnPurchase,
+        createdByAddress: callerProfile.circlesAddress
+      };
     },
     upsertOrganisation: upsertOrganisation(prisma_api_rw, false),
     upsertRegion: upsertOrganisation(prisma_api_rw, true),
