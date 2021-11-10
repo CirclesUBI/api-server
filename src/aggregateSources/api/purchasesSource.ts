@@ -14,11 +14,18 @@ import {prisma_api_ro} from "../../apiDbClient";
 export class PurchasesSource implements AggregateSource {
   async getAggregate(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>): Promise<ProfileAggregate[]> {
 
+    const idFilter = filter?.purchases?.purchaseIds ? {
+      id: {
+        in: filter?.purchases?.purchaseIds ?? []
+      }
+    } : {};
+
     const purchasesResult = await prisma_api_ro.purchase.findMany({
       where: {
         createdBy: {
           circlesAddress: forSafeAddress
-        }
+        },
+        ...idFilter
       },
       include: {
         createdBy: true,

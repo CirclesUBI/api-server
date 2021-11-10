@@ -782,10 +782,15 @@ input OffersAggregateFilter {
   createdByAddresses: [String!]
   offerIds: [Int!]
 }
+input PurchasesAggregateFilter {
+  createdByAddresses: [String!]
+  purchaseIds: [Int!]
+}
 input ProfileAggregateFilter {
   contacts: ContactAggregateFilter
   crcBalance: CrcBalanceAggregateFilter
   offers: OffersAggregateFilter
+  purchases: PurchasesAggregateFilter
 }
 
 type Query {

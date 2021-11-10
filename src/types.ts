@@ -668,6 +668,7 @@ export type ProfileAggregateFilter = {
   contacts?: Maybe<ContactAggregateFilter>;
   crcBalance?: Maybe<CrcBalanceAggregateFilter>;
   offers?: Maybe<OffersAggregateFilter>;
+  purchases?: Maybe<PurchasesAggregateFilter>;
 };
 
 export type ProfileEvent = {
@@ -737,6 +738,11 @@ export type Purchases = IAggregatePayload & {
   __typename?: 'Purchases';
   lastUpdatedAt: Scalars['String'];
   purchases: Array<Purchase>;
+};
+
+export type PurchasesAggregateFilter = {
+  createdByAddresses?: Maybe<Array<Scalars['String']>>;
+  purchaseIds?: Maybe<Array<Scalars['Int']>>;
 };
 
 export type Query = {
@@ -1183,6 +1189,7 @@ export type ResolversTypes = ResolversObject<{
   PurchaseLineInput: PurchaseLineInput;
   Purchased: ResolverTypeWrapper<Purchased>;
   Purchases: ResolverTypeWrapper<Purchases>;
+  PurchasesAggregateFilter: PurchasesAggregateFilter;
   Query: ResolverTypeWrapper<{}>;
   QueryCitiesByGeonameIdInput: QueryCitiesByGeonameIdInput;
   QueryCitiesByNameInput: QueryCitiesByNameInput;
@@ -1287,6 +1294,7 @@ export type ResolversParentTypes = ResolversObject<{
   PurchaseLineInput: PurchaseLineInput;
   Purchased: Purchased;
   Purchases: Purchases;
+  PurchasesAggregateFilter: PurchasesAggregateFilter;
   Query: {};
   QueryCitiesByGeonameIdInput: QueryCitiesByGeonameIdInput;
   QueryCitiesByNameInput: QueryCitiesByNameInput;
