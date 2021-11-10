@@ -42,6 +42,12 @@ export class PurchasesSource implements AggregateSource {
         purchases: <any>purchasesResult.map(o => {
           return <any>{
             ...o,
+            lines: o.lines.map(o => {
+              return {
+                ...o,
+                offer: o.product
+              }
+            }),
             createdAt: o.createdAt.toJSON(),
             createdByAddress: o.createdBy.circlesAddress,
           }
