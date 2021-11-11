@@ -538,7 +538,11 @@ export const resolvers: Resolvers = {
           createdBy: true,
           lines: {
             include: {
-              product: true
+              product: {
+                include: {
+                  createdBy: true
+                }
+              }
             }
           }
         }
@@ -548,6 +552,7 @@ export const resolvers: Resolvers = {
         throw new Error("Couldn't create the purchase.");
 
       returnPurchase.lines = returnPurchase.lines.map(o => {
+        (<any>o.product).createdByAddress = o.product.createdBy.circlesAddress;
         return {
           ...o,
           offer: o.product

@@ -216,6 +216,7 @@ model Purchase {
     createdAt DateTime
 
     lines PurchaseLine[] @relation(name: "Purchase_Lines")
+    invoices Invoice[] @relation(name: "Purchase_Invoices")
 }
 
 model PurchaseLine {
@@ -239,6 +240,9 @@ model Invoice {
 
     sellerProfile Profile @relation(name: "Invoice_SellerProfile", fields: [sellerProfileId], references: [id])
     sellerProfileId Int
+
+    purchase Purchase @relation(name: "Purchase_Invoices", fields: [purchaseId], references: [id])
+    purchaseId Int
 
     lines InvoiceLine[] @relation(name: "Invoice_Lines")
 

@@ -205,6 +205,7 @@ export type Invoice = {
   id: number
   customerProfileId: number
   sellerProfileId: number
+  purchaseId: number
   paymentTransactionHash: string | null
 }
 
@@ -10823,11 +10824,13 @@ export namespace Prisma {
     createdByProfileId?: boolean
     createdAt?: boolean
     lines?: boolean | PurchaseLineFindManyArgs
+    invoices?: boolean | InvoiceFindManyArgs
   }
 
   export type PurchaseInclude = {
     createdBy?: boolean | ProfileArgs
     lines?: boolean | PurchaseLineFindManyArgs
+    invoices?: boolean | InvoiceFindManyArgs
   }
 
   export type PurchaseGetPayload<
@@ -10844,7 +10847,9 @@ export namespace Prisma {
           P extends 'createdBy'
         ? ProfileGetPayload<S['include'][P]> :
         P extends 'lines'
-        ? Array < PurchaseLineGetPayload<S['include'][P]>>  : never
+        ? Array < PurchaseLineGetPayload<S['include'][P]>>  :
+        P extends 'invoices'
+        ? Array < InvoiceGetPayload<S['include'][P]>>  : never
   } 
     : 'select' extends U
     ? {
@@ -10853,7 +10858,9 @@ export namespace Prisma {
           P extends 'createdBy'
         ? ProfileGetPayload<S['select'][P]> :
         P extends 'lines'
-        ? Array < PurchaseLineGetPayload<S['select'][P]>>  : never
+        ? Array < PurchaseLineGetPayload<S['select'][P]>>  :
+        P extends 'invoices'
+        ? Array < InvoiceGetPayload<S['select'][P]>>  : never
   } 
     : Purchase
   : Purchase
@@ -11196,6 +11203,8 @@ export namespace Prisma {
     createdBy<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
 
     lines<T extends PurchaseLineFindManyArgs = {}>(args?: Subset<T, PurchaseLineFindManyArgs>): CheckSelect<T, PrismaPromise<Array<PurchaseLine>>, PrismaPromise<Array<PurchaseLineGetPayload<T>>>>;
+
+    invoices<T extends InvoiceFindManyArgs = {}>(args?: Subset<T, InvoiceFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Invoice>>, PrismaPromise<Array<InvoiceGetPayload<T>>>>;
 
     private get _document();
     /**
@@ -12465,18 +12474,21 @@ export namespace Prisma {
     id: number | null
     customerProfileId: number | null
     sellerProfileId: number | null
+    purchaseId: number | null
   }
 
   export type InvoiceSumAggregateOutputType = {
     id: number | null
     customerProfileId: number | null
     sellerProfileId: number | null
+    purchaseId: number | null
   }
 
   export type InvoiceMinAggregateOutputType = {
     id: number | null
     customerProfileId: number | null
     sellerProfileId: number | null
+    purchaseId: number | null
     paymentTransactionHash: string | null
   }
 
@@ -12484,6 +12496,7 @@ export namespace Prisma {
     id: number | null
     customerProfileId: number | null
     sellerProfileId: number | null
+    purchaseId: number | null
     paymentTransactionHash: string | null
   }
 
@@ -12491,6 +12504,7 @@ export namespace Prisma {
     id: number
     customerProfileId: number
     sellerProfileId: number
+    purchaseId: number
     paymentTransactionHash: number
     _all: number
   }
@@ -12500,18 +12514,21 @@ export namespace Prisma {
     id?: true
     customerProfileId?: true
     sellerProfileId?: true
+    purchaseId?: true
   }
 
   export type InvoiceSumAggregateInputType = {
     id?: true
     customerProfileId?: true
     sellerProfileId?: true
+    purchaseId?: true
   }
 
   export type InvoiceMinAggregateInputType = {
     id?: true
     customerProfileId?: true
     sellerProfileId?: true
+    purchaseId?: true
     paymentTransactionHash?: true
   }
 
@@ -12519,6 +12536,7 @@ export namespace Prisma {
     id?: true
     customerProfileId?: true
     sellerProfileId?: true
+    purchaseId?: true
     paymentTransactionHash?: true
   }
 
@@ -12526,6 +12544,7 @@ export namespace Prisma {
     id?: true
     customerProfileId?: true
     sellerProfileId?: true
+    purchaseId?: true
     paymentTransactionHash?: true
     _all?: true
   }
@@ -12646,6 +12665,7 @@ export namespace Prisma {
     id: number
     customerProfileId: number
     sellerProfileId: number
+    purchaseId: number
     paymentTransactionHash: string | null
     _count: InvoiceCountAggregateOutputType | null
     _avg: InvoiceAvgAggregateOutputType | null
@@ -12674,6 +12694,8 @@ export namespace Prisma {
     customerProfileId?: boolean
     sellerProfile?: boolean | ProfileArgs
     sellerProfileId?: boolean
+    purchase?: boolean | PurchaseArgs
+    purchaseId?: boolean
     lines?: boolean | InvoiceLineFindManyArgs
     paymentTransaction?: boolean | TransactionArgs
     paymentTransactionHash?: boolean
@@ -12682,6 +12704,7 @@ export namespace Prisma {
   export type InvoiceInclude = {
     customerProfile?: boolean | ProfileArgs
     sellerProfile?: boolean | ProfileArgs
+    purchase?: boolean | PurchaseArgs
     lines?: boolean | InvoiceLineFindManyArgs
     paymentTransaction?: boolean | TransactionArgs
   }
@@ -12701,6 +12724,8 @@ export namespace Prisma {
         ? ProfileGetPayload<S['include'][P]> :
         P extends 'sellerProfile'
         ? ProfileGetPayload<S['include'][P]> :
+        P extends 'purchase'
+        ? PurchaseGetPayload<S['include'][P]> :
         P extends 'lines'
         ? Array < InvoiceLineGetPayload<S['include'][P]>>  :
         P extends 'paymentTransaction'
@@ -12714,6 +12739,8 @@ export namespace Prisma {
         ? ProfileGetPayload<S['select'][P]> :
         P extends 'sellerProfile'
         ? ProfileGetPayload<S['select'][P]> :
+        P extends 'purchase'
+        ? PurchaseGetPayload<S['select'][P]> :
         P extends 'lines'
         ? Array < InvoiceLineGetPayload<S['select'][P]>>  :
         P extends 'paymentTransaction'
@@ -13060,6 +13087,8 @@ export namespace Prisma {
     customerProfile<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
 
     sellerProfile<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
+
+    purchase<T extends PurchaseArgs = {}>(args?: Subset<T, PurchaseArgs>): CheckSelect<T, Prisma__PurchaseClient<Purchase | null >, Prisma__PurchaseClient<PurchaseGetPayload<T> | null >>;
 
     lines<T extends InvoiceLineFindManyArgs = {}>(args?: Subset<T, InvoiceLineFindManyArgs>): CheckSelect<T, PrismaPromise<Array<InvoiceLine>>, PrismaPromise<Array<InvoiceLineGetPayload<T>>>>;
 
@@ -17137,6 +17166,7 @@ export namespace Prisma {
     id: 'id',
     customerProfileId: 'customerProfileId',
     sellerProfileId: 'sellerProfileId',
+    purchaseId: 'purchaseId',
     paymentTransactionHash: 'paymentTransactionHash'
   };
 
@@ -17709,6 +17739,7 @@ export namespace Prisma {
     createdByProfileId?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
     lines?: PurchaseLineListRelationFilter
+    invoices?: InvoiceListRelationFilter
   }
 
   export type PurchaseOrderByInput = {
@@ -17775,6 +17806,8 @@ export namespace Prisma {
     customerProfileId?: IntFilter | number
     sellerProfile?: XOR<ProfileRelationFilter, ProfileWhereInput>
     sellerProfileId?: IntFilter | number
+    purchase?: XOR<PurchaseRelationFilter, PurchaseWhereInput>
+    purchaseId?: IntFilter | number
     lines?: InvoiceLineListRelationFilter
     paymentTransaction?: XOR<TransactionRelationFilter, TransactionWhereInput> | null
     paymentTransactionHash?: StringNullableFilter | string | null
@@ -17784,6 +17817,7 @@ export namespace Prisma {
     id?: SortOrder
     customerProfileId?: SortOrder
     sellerProfileId?: SortOrder
+    purchaseId?: SortOrder
     paymentTransactionHash?: SortOrder
   }
 
@@ -17798,6 +17832,7 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter | number
     customerProfileId?: IntWithAggregatesFilter | number
     sellerProfileId?: IntWithAggregatesFilter | number
+    purchaseId?: IntWithAggregatesFilter | number
     paymentTransactionHash?: StringNullableWithAggregatesFilter | string | null
   }
 
@@ -18833,6 +18868,7 @@ export namespace Prisma {
     createdAt: Date | string
     createdBy: ProfileCreateNestedOneWithoutPurchasesInput
     lines?: PurchaseLineCreateNestedManyWithoutPurchaseInput
+    invoices?: InvoiceCreateNestedManyWithoutPurchaseInput
   }
 
   export type PurchaseUncheckedCreateInput = {
@@ -18840,12 +18876,14 @@ export namespace Prisma {
     createdByProfileId: number
     createdAt: Date | string
     lines?: PurchaseLineUncheckedCreateNestedManyWithoutPurchaseInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutPurchaseInput
   }
 
   export type PurchaseUpdateInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
     lines?: PurchaseLineUpdateManyWithoutPurchaseInput
+    invoices?: InvoiceUpdateManyWithoutPurchaseInput
   }
 
   export type PurchaseUncheckedUpdateInput = {
@@ -18853,6 +18891,7 @@ export namespace Prisma {
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lines?: PurchaseLineUncheckedUpdateManyWithoutPurchaseInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutPurchaseInput
   }
 
   export type PurchaseCreateManyInput = {
@@ -18922,6 +18961,7 @@ export namespace Prisma {
   export type InvoiceCreateInput = {
     customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
     sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
+    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
     lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
     paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
   }
@@ -18930,6 +18970,7 @@ export namespace Prisma {
     id?: number
     customerProfileId: number
     sellerProfileId: number
+    purchaseId: number
     paymentTransactionHash?: string | null
     lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
@@ -18937,6 +18978,7 @@ export namespace Prisma {
   export type InvoiceUpdateInput = {
     customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
     sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
+    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
     lines?: InvoiceLineUpdateManyWithoutInvoiceInput
     paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
   }
@@ -18945,6 +18987,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     customerProfileId?: IntFieldUpdateOperationsInput | number
     sellerProfileId?: IntFieldUpdateOperationsInput | number
+    purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
@@ -18953,6 +18996,7 @@ export namespace Prisma {
     id?: number
     customerProfileId: number
     sellerProfileId: number
+    purchaseId: number
     paymentTransactionHash?: string | null
   }
 
@@ -18964,6 +19008,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     customerProfileId?: IntFieldUpdateOperationsInput | number
     sellerProfileId?: IntFieldUpdateOperationsInput | number
+    purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -20534,11 +20579,25 @@ export namespace Prisma {
     connect?: Enumerable<PurchaseLineWhereUniqueInput>
   }
 
+  export type InvoiceCreateNestedManyWithoutPurchaseInput = {
+    create?: XOR<Enumerable<InvoiceCreateWithoutPurchaseInput>, Enumerable<InvoiceUncheckedCreateWithoutPurchaseInput>>
+    connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutPurchaseInput>
+    createMany?: InvoiceCreateManyPurchaseInputEnvelope
+    connect?: Enumerable<InvoiceWhereUniqueInput>
+  }
+
   export type PurchaseLineUncheckedCreateNestedManyWithoutPurchaseInput = {
     create?: XOR<Enumerable<PurchaseLineCreateWithoutPurchaseInput>, Enumerable<PurchaseLineUncheckedCreateWithoutPurchaseInput>>
     connectOrCreate?: Enumerable<PurchaseLineCreateOrConnectWithoutPurchaseInput>
     createMany?: PurchaseLineCreateManyPurchaseInputEnvelope
     connect?: Enumerable<PurchaseLineWhereUniqueInput>
+  }
+
+  export type InvoiceUncheckedCreateNestedManyWithoutPurchaseInput = {
+    create?: XOR<Enumerable<InvoiceCreateWithoutPurchaseInput>, Enumerable<InvoiceUncheckedCreateWithoutPurchaseInput>>
+    connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutPurchaseInput>
+    createMany?: InvoiceCreateManyPurchaseInputEnvelope
+    connect?: Enumerable<InvoiceWhereUniqueInput>
   }
 
   export type ProfileUpdateOneRequiredWithoutPurchasesInput = {
@@ -20563,6 +20622,20 @@ export namespace Prisma {
     deleteMany?: Enumerable<PurchaseLineScalarWhereInput>
   }
 
+  export type InvoiceUpdateManyWithoutPurchaseInput = {
+    create?: XOR<Enumerable<InvoiceCreateWithoutPurchaseInput>, Enumerable<InvoiceUncheckedCreateWithoutPurchaseInput>>
+    connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutPurchaseInput>
+    upsert?: Enumerable<InvoiceUpsertWithWhereUniqueWithoutPurchaseInput>
+    createMany?: InvoiceCreateManyPurchaseInputEnvelope
+    connect?: Enumerable<InvoiceWhereUniqueInput>
+    set?: Enumerable<InvoiceWhereUniqueInput>
+    disconnect?: Enumerable<InvoiceWhereUniqueInput>
+    delete?: Enumerable<InvoiceWhereUniqueInput>
+    update?: Enumerable<InvoiceUpdateWithWhereUniqueWithoutPurchaseInput>
+    updateMany?: Enumerable<InvoiceUpdateManyWithWhereWithoutPurchaseInput>
+    deleteMany?: Enumerable<InvoiceScalarWhereInput>
+  }
+
   export type PurchaseLineUncheckedUpdateManyWithoutPurchaseInput = {
     create?: XOR<Enumerable<PurchaseLineCreateWithoutPurchaseInput>, Enumerable<PurchaseLineUncheckedCreateWithoutPurchaseInput>>
     connectOrCreate?: Enumerable<PurchaseLineCreateOrConnectWithoutPurchaseInput>
@@ -20575,6 +20648,20 @@ export namespace Prisma {
     update?: Enumerable<PurchaseLineUpdateWithWhereUniqueWithoutPurchaseInput>
     updateMany?: Enumerable<PurchaseLineUpdateManyWithWhereWithoutPurchaseInput>
     deleteMany?: Enumerable<PurchaseLineScalarWhereInput>
+  }
+
+  export type InvoiceUncheckedUpdateManyWithoutPurchaseInput = {
+    create?: XOR<Enumerable<InvoiceCreateWithoutPurchaseInput>, Enumerable<InvoiceUncheckedCreateWithoutPurchaseInput>>
+    connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutPurchaseInput>
+    upsert?: Enumerable<InvoiceUpsertWithWhereUniqueWithoutPurchaseInput>
+    createMany?: InvoiceCreateManyPurchaseInputEnvelope
+    connect?: Enumerable<InvoiceWhereUniqueInput>
+    set?: Enumerable<InvoiceWhereUniqueInput>
+    disconnect?: Enumerable<InvoiceWhereUniqueInput>
+    delete?: Enumerable<InvoiceWhereUniqueInput>
+    update?: Enumerable<InvoiceUpdateWithWhereUniqueWithoutPurchaseInput>
+    updateMany?: Enumerable<InvoiceUpdateManyWithWhereWithoutPurchaseInput>
+    deleteMany?: Enumerable<InvoiceScalarWhereInput>
   }
 
   export type PurchaseCreateNestedOneWithoutLinesInput = {
@@ -20617,6 +20704,12 @@ export namespace Prisma {
     connect?: ProfileWhereUniqueInput
   }
 
+  export type PurchaseCreateNestedOneWithoutInvoicesInput = {
+    create?: XOR<PurchaseCreateWithoutInvoicesInput, PurchaseUncheckedCreateWithoutInvoicesInput>
+    connectOrCreate?: PurchaseCreateOrConnectWithoutInvoicesInput
+    connect?: PurchaseWhereUniqueInput
+  }
+
   export type InvoiceLineCreateNestedManyWithoutInvoiceInput = {
     create?: XOR<Enumerable<InvoiceLineCreateWithoutInvoiceInput>, Enumerable<InvoiceLineUncheckedCreateWithoutInvoiceInput>>
     connectOrCreate?: Enumerable<InvoiceLineCreateOrConnectWithoutInvoiceInput>
@@ -20651,6 +20744,14 @@ export namespace Prisma {
     upsert?: ProfileUpsertWithoutReceivableInvoicesInput
     connect?: ProfileWhereUniqueInput
     update?: XOR<ProfileUpdateWithoutReceivableInvoicesInput, ProfileUncheckedUpdateWithoutReceivableInvoicesInput>
+  }
+
+  export type PurchaseUpdateOneRequiredWithoutInvoicesInput = {
+    create?: XOR<PurchaseCreateWithoutInvoicesInput, PurchaseUncheckedCreateWithoutInvoicesInput>
+    connectOrCreate?: PurchaseCreateOrConnectWithoutInvoicesInput
+    upsert?: PurchaseUpsertWithoutInvoicesInput
+    connect?: PurchaseWhereUniqueInput
+    update?: XOR<PurchaseUpdateWithoutInvoicesInput, PurchaseUncheckedUpdateWithoutInvoicesInput>
   }
 
   export type InvoiceLineUpdateManyWithoutInvoiceInput = {
@@ -22426,12 +22527,14 @@ export namespace Prisma {
   export type PurchaseCreateWithoutCreatedByInput = {
     createdAt: Date | string
     lines?: PurchaseLineCreateNestedManyWithoutPurchaseInput
+    invoices?: InvoiceCreateNestedManyWithoutPurchaseInput
   }
 
   export type PurchaseUncheckedCreateWithoutCreatedByInput = {
     id?: number
     createdAt: Date | string
     lines?: PurchaseLineUncheckedCreateNestedManyWithoutPurchaseInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutPurchaseInput
   }
 
   export type PurchaseCreateOrConnectWithoutCreatedByInput = {
@@ -22666,6 +22769,7 @@ export namespace Prisma {
 
   export type InvoiceCreateWithoutCustomerProfileInput = {
     sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
+    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
     lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
     paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
   }
@@ -22673,6 +22777,7 @@ export namespace Prisma {
   export type InvoiceUncheckedCreateWithoutCustomerProfileInput = {
     id?: number
     sellerProfileId: number
+    purchaseId: number
     paymentTransactionHash?: string | null
     lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
@@ -22689,6 +22794,7 @@ export namespace Prisma {
 
   export type InvoiceCreateWithoutSellerProfileInput = {
     customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
+    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
     lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
     paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
   }
@@ -22696,6 +22802,7 @@ export namespace Prisma {
   export type InvoiceUncheckedCreateWithoutSellerProfileInput = {
     id?: number
     customerProfileId: number
+    purchaseId: number
     paymentTransactionHash?: string | null
     lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
@@ -22999,6 +23106,7 @@ export namespace Prisma {
     id?: IntFilter | number
     customerProfileId?: IntFilter | number
     sellerProfileId?: IntFilter | number
+    purchaseId?: IntFilter | number
     paymentTransactionHash?: StringNullableFilter | string | null
   }
 
@@ -23713,6 +23821,31 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type InvoiceCreateWithoutPurchaseInput = {
+    customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
+    sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
+    lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
+    paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
+  }
+
+  export type InvoiceUncheckedCreateWithoutPurchaseInput = {
+    id?: number
+    customerProfileId: number
+    sellerProfileId: number
+    paymentTransactionHash?: string | null
+    lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
+  }
+
+  export type InvoiceCreateOrConnectWithoutPurchaseInput = {
+    where: InvoiceWhereUniqueInput
+    create: XOR<InvoiceCreateWithoutPurchaseInput, InvoiceUncheckedCreateWithoutPurchaseInput>
+  }
+
+  export type InvoiceCreateManyPurchaseInputEnvelope = {
+    data: Enumerable<InvoiceCreateManyPurchaseInput>
+    skipDuplicates?: boolean
+  }
+
   export type ProfileUpsertWithoutPurchasesInput = {
     update: XOR<ProfileUpdateWithoutPurchasesInput, ProfileUncheckedUpdateWithoutPurchasesInput>
     create: XOR<ProfileCreateWithoutPurchasesInput, ProfileUncheckedCreateWithoutPurchasesInput>
@@ -23805,15 +23938,33 @@ export namespace Prisma {
     data: XOR<PurchaseLineUpdateManyMutationInput, PurchaseLineUncheckedUpdateManyWithoutLinesInput>
   }
 
+  export type InvoiceUpsertWithWhereUniqueWithoutPurchaseInput = {
+    where: InvoiceWhereUniqueInput
+    update: XOR<InvoiceUpdateWithoutPurchaseInput, InvoiceUncheckedUpdateWithoutPurchaseInput>
+    create: XOR<InvoiceCreateWithoutPurchaseInput, InvoiceUncheckedCreateWithoutPurchaseInput>
+  }
+
+  export type InvoiceUpdateWithWhereUniqueWithoutPurchaseInput = {
+    where: InvoiceWhereUniqueInput
+    data: XOR<InvoiceUpdateWithoutPurchaseInput, InvoiceUncheckedUpdateWithoutPurchaseInput>
+  }
+
+  export type InvoiceUpdateManyWithWhereWithoutPurchaseInput = {
+    where: InvoiceScalarWhereInput
+    data: XOR<InvoiceUpdateManyMutationInput, InvoiceUncheckedUpdateManyWithoutInvoicesInput>
+  }
+
   export type PurchaseCreateWithoutLinesInput = {
     createdAt: Date | string
     createdBy: ProfileCreateNestedOneWithoutPurchasesInput
+    invoices?: InvoiceCreateNestedManyWithoutPurchaseInput
   }
 
   export type PurchaseUncheckedCreateWithoutLinesInput = {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutPurchaseInput
   }
 
   export type PurchaseCreateOrConnectWithoutLinesInput = {
@@ -23860,12 +24011,14 @@ export namespace Prisma {
   export type PurchaseUpdateWithoutLinesInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
+    invoices?: InvoiceUpdateManyWithoutPurchaseInput
   }
 
   export type PurchaseUncheckedUpdateWithoutLinesInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoices?: InvoiceUncheckedUpdateManyWithoutPurchaseInput
   }
 
   export type OfferUpsertWithoutPurchaseLinesInput = {
@@ -24049,6 +24202,24 @@ export namespace Prisma {
   export type ProfileCreateOrConnectWithoutReceivableInvoicesInput = {
     where: ProfileWhereUniqueInput
     create: XOR<ProfileCreateWithoutReceivableInvoicesInput, ProfileUncheckedCreateWithoutReceivableInvoicesInput>
+  }
+
+  export type PurchaseCreateWithoutInvoicesInput = {
+    createdAt: Date | string
+    createdBy: ProfileCreateNestedOneWithoutPurchasesInput
+    lines?: PurchaseLineCreateNestedManyWithoutPurchaseInput
+  }
+
+  export type PurchaseUncheckedCreateWithoutInvoicesInput = {
+    id?: number
+    createdByProfileId: number
+    createdAt: Date | string
+    lines?: PurchaseLineUncheckedCreateNestedManyWithoutPurchaseInput
+  }
+
+  export type PurchaseCreateOrConnectWithoutInvoicesInput = {
+    where: PurchaseWhereUniqueInput
+    create: XOR<PurchaseCreateWithoutInvoicesInput, PurchaseUncheckedCreateWithoutInvoicesInput>
   }
 
   export type InvoiceLineCreateWithoutInvoiceInput = {
@@ -24240,6 +24411,24 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
   }
 
+  export type PurchaseUpsertWithoutInvoicesInput = {
+    update: XOR<PurchaseUpdateWithoutInvoicesInput, PurchaseUncheckedUpdateWithoutInvoicesInput>
+    create: XOR<PurchaseCreateWithoutInvoicesInput, PurchaseUncheckedCreateWithoutInvoicesInput>
+  }
+
+  export type PurchaseUpdateWithoutInvoicesInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
+    lines?: PurchaseLineUpdateManyWithoutPurchaseInput
+  }
+
+  export type PurchaseUncheckedUpdateWithoutInvoicesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lines?: PurchaseLineUncheckedUpdateManyWithoutPurchaseInput
+  }
+
   export type InvoiceLineUpsertWithWhereUniqueWithoutInvoiceInput = {
     where: InvoiceLineWhereUniqueInput
     update: XOR<InvoiceLineUpdateWithoutInvoiceInput, InvoiceLineUncheckedUpdateWithoutInvoiceInput>
@@ -24274,6 +24463,7 @@ export namespace Prisma {
   export type InvoiceCreateWithoutLinesInput = {
     customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
     sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
+    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
     paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
   }
 
@@ -24281,6 +24471,7 @@ export namespace Prisma {
     id?: number
     customerProfileId: number
     sellerProfileId: number
+    purchaseId: number
     paymentTransactionHash?: string | null
   }
 
@@ -24328,6 +24519,7 @@ export namespace Prisma {
   export type InvoiceUpdateWithoutLinesInput = {
     customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
     sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
+    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
     paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
   }
 
@@ -24335,6 +24527,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     customerProfileId?: IntFieldUpdateOperationsInput | number
     sellerProfileId?: IntFieldUpdateOperationsInput | number
+    purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -24446,6 +24639,7 @@ export namespace Prisma {
   export type InvoiceCreateWithoutPaymentTransactionInput = {
     customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
     sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
+    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
     lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
   }
 
@@ -24453,6 +24647,7 @@ export namespace Prisma {
     id?: number
     customerProfileId: number
     sellerProfileId: number
+    purchaseId: number
     lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
@@ -24485,6 +24680,7 @@ export namespace Prisma {
   export type InvoiceUpdateWithoutPaymentTransactionInput = {
     customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
     sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
+    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
     lines?: InvoiceLineUpdateManyWithoutInvoiceInput
   }
 
@@ -24492,6 +24688,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     customerProfileId?: IntFieldUpdateOperationsInput | number
     sellerProfileId?: IntFieldUpdateOperationsInput | number
+    purchaseId?: IntFieldUpdateOperationsInput | number
     lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
@@ -24894,12 +25091,14 @@ export namespace Prisma {
   export type InvoiceCreateManyCustomerProfileInput = {
     id?: number
     sellerProfileId: number
+    purchaseId: number
     paymentTransactionHash?: string | null
   }
 
   export type InvoiceCreateManySellerProfileInput = {
     id?: number
     customerProfileId: number
+    purchaseId: number
     paymentTransactionHash?: string | null
   }
 
@@ -25017,12 +25216,14 @@ export namespace Prisma {
   export type PurchaseUpdateWithoutCreatedByInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lines?: PurchaseLineUpdateManyWithoutPurchaseInput
+    invoices?: InvoiceUpdateManyWithoutPurchaseInput
   }
 
   export type PurchaseUncheckedUpdateWithoutCreatedByInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lines?: PurchaseLineUncheckedUpdateManyWithoutPurchaseInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutPurchaseInput
   }
 
   export type PurchaseUncheckedUpdateManyWithoutPurchasesInput = {
@@ -25248,6 +25449,7 @@ export namespace Prisma {
 
   export type InvoiceUpdateWithoutCustomerProfileInput = {
     sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
+    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
     lines?: InvoiceLineUpdateManyWithoutInvoiceInput
     paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
   }
@@ -25255,6 +25457,7 @@ export namespace Prisma {
   export type InvoiceUncheckedUpdateWithoutCustomerProfileInput = {
     id?: IntFieldUpdateOperationsInput | number
     sellerProfileId?: IntFieldUpdateOperationsInput | number
+    purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
@@ -25262,11 +25465,13 @@ export namespace Prisma {
   export type InvoiceUncheckedUpdateManyWithoutPayableInvoicesInput = {
     id?: IntFieldUpdateOperationsInput | number
     sellerProfileId?: IntFieldUpdateOperationsInput | number
+    purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type InvoiceUpdateWithoutSellerProfileInput = {
     customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
+    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
     lines?: InvoiceLineUpdateManyWithoutInvoiceInput
     paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
   }
@@ -25274,6 +25479,7 @@ export namespace Prisma {
   export type InvoiceUncheckedUpdateWithoutSellerProfileInput = {
     id?: IntFieldUpdateOperationsInput | number
     customerProfileId?: IntFieldUpdateOperationsInput | number
+    purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
@@ -25281,6 +25487,7 @@ export namespace Prisma {
   export type InvoiceUncheckedUpdateManyWithoutReceivableInvoicesInput = {
     id?: IntFieldUpdateOperationsInput | number
     customerProfileId?: IntFieldUpdateOperationsInput | number
+    purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -25366,6 +25573,13 @@ export namespace Prisma {
     productVersion: number
   }
 
+  export type InvoiceCreateManyPurchaseInput = {
+    id?: number
+    customerProfileId: number
+    sellerProfileId: number
+    paymentTransactionHash?: string | null
+  }
+
   export type PurchaseLineUpdateWithoutPurchaseInput = {
     amount?: IntFieldUpdateOperationsInput | number
     product?: OfferUpdateOneRequiredWithoutPurchaseLinesInput
@@ -25383,6 +25597,28 @@ export namespace Prisma {
     amount?: IntFieldUpdateOperationsInput | number
     productId?: IntFieldUpdateOperationsInput | number
     productVersion?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type InvoiceUpdateWithoutPurchaseInput = {
+    customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
+    sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
+    lines?: InvoiceLineUpdateManyWithoutInvoiceInput
+    paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
+  }
+
+  export type InvoiceUncheckedUpdateWithoutPurchaseInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    customerProfileId?: IntFieldUpdateOperationsInput | number
+    sellerProfileId?: IntFieldUpdateOperationsInput | number
+    paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
+  }
+
+  export type InvoiceUncheckedUpdateManyWithoutInvoicesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    customerProfileId?: IntFieldUpdateOperationsInput | number
+    sellerProfileId?: IntFieldUpdateOperationsInput | number
+    paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type InvoiceLineCreateManyInvoiceInput = {
