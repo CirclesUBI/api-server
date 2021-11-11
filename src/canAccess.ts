@@ -24,11 +24,11 @@ export async function canAccess(context:Context, accessedSafeAddress:string) {
       id: "desc"
     },
     include: {
-      members: {
+      members: true /* {
         where: {
           isAdmin: true
         }
-      }
+      }*/
     }
   });
 

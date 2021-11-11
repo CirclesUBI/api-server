@@ -175,7 +175,7 @@ export class BlockchainEventSource implements ProfileEventSource {
 
               const amount = invoice.lines.reduce((p,c) =>  p + c.amount * parseFloat(c.product.pricePerUnit), 0);
               const code = Generate.randomHexString(6);
-/*
+
               let matchingTransactions = eventsInMessage.rows.filter(event => event.type === EventType.CrcHubTransfer);
               const event = matchingTransactions.find(o => o.address1 == invoice.customerProfile.circlesAddress
                                                         || o.address2 == invoice.sellerProfile.circlesAddress);
@@ -192,7 +192,6 @@ export class BlockchainEventSource implements ProfileEventSource {
                   }
                 });
               }
- */
             }
           }
         }
