@@ -348,6 +348,26 @@ export type InvitationRedeemed = IEventPayload & {
   redeemedBy_profile?: Maybe<Profile>;
 };
 
+export type Invoice = {
+  __typename?: 'Invoice';
+  id: Scalars['Int'];
+  purchaseId: Scalars['Int'];
+  purchase?: Maybe<Purchase>;
+  sellerAddress: Scalars['String'];
+  sellerProfile?: Maybe<Profile>;
+  buyerAddress: Scalars['String'];
+  buyerProfile?: Maybe<Profile>;
+  lines: Array<InvoiceLine>;
+  paymentTransactionHash?: Maybe<Scalars['String']>;
+};
+
+export type InvoiceLine = {
+  __typename?: 'InvoiceLine';
+  id: Scalars['Int'];
+  amount: Scalars['Int'];
+  offer: Offer;
+};
+
 export type LogoutResponse = {
   __typename?: 'LogoutResponse';
   success: Scalars['Boolean'];
@@ -422,7 +442,7 @@ export type Memberships = IAggregatePayload & {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  purchase?: Maybe<Purchase>;
+  purchase: Array<Invoice>;
   proofPayment?: Maybe<ProofPaymentResult>;
   exchangeToken: ExchangeTokenResponse;
   authenticateAt: DelegateAuthInit;
@@ -1167,6 +1187,8 @@ export type ResolversTypes = ResolversObject<{
   InitAggregateState: ResolverTypeWrapper<InitAggregateState>;
   InvitationCreated: ResolverTypeWrapper<InvitationCreated>;
   InvitationRedeemed: ResolverTypeWrapper<InvitationRedeemed>;
+  Invoice: ResolverTypeWrapper<Invoice>;
+  InvoiceLine: ResolverTypeWrapper<InvoiceLine>;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
   MemberAdded: ResolverTypeWrapper<MemberAdded>;
   Members: ResolverTypeWrapper<Omit<Members, 'members'> & { members: Array<ResolversTypes['ProfileOrOrganisation']> }>;
@@ -1273,6 +1295,8 @@ export type ResolversParentTypes = ResolversObject<{
   InitAggregateState: InitAggregateState;
   InvitationCreated: InvitationCreated;
   InvitationRedeemed: InvitationRedeemed;
+  Invoice: Invoice;
+  InvoiceLine: InvoiceLine;
   LogoutResponse: LogoutResponse;
   MemberAdded: MemberAdded;
   Members: Omit<Members, 'members'> & { members: Array<ResolversParentTypes['ProfileOrOrganisation']> };
@@ -1617,6 +1641,26 @@ export type InvitationRedeemedResolvers<ContextType = any, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type InvoiceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Invoice'] = ResolversParentTypes['Invoice']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  purchaseId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  purchase?: Resolver<Maybe<ResolversTypes['Purchase']>, ParentType, ContextType>;
+  sellerAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  sellerProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  buyerAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  buyerProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  lines?: Resolver<Array<ResolversTypes['InvoiceLine']>, ParentType, ContextType>;
+  paymentTransactionHash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type InvoiceLineResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvoiceLine'] = ResolversParentTypes['InvoiceLine']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  amount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  offer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type LogoutResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['LogoutResponse'] = ResolversParentTypes['LogoutResponse']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1690,7 +1734,7 @@ export type MembershipsResolvers<ContextType = any, ParentType extends Resolvers
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
-  purchase?: Resolver<Maybe<ResolversTypes['Purchase']>, ParentType, ContextType, RequireFields<MutationPurchaseArgs, 'lines'>>;
+  purchase?: Resolver<Array<ResolversTypes['Invoice']>, ParentType, ContextType, RequireFields<MutationPurchaseArgs, 'lines'>>;
   proofPayment?: Resolver<Maybe<ResolversTypes['ProofPaymentResult']>, ParentType, ContextType, RequireFields<MutationProofPaymentArgs, 'purchaseId' | 'transactionHash'>>;
   exchangeToken?: Resolver<ResolversTypes['ExchangeTokenResponse'], ParentType, ContextType>;
   authenticateAt?: Resolver<ResolversTypes['DelegateAuthInit'], ParentType, ContextType, RequireFields<MutationAuthenticateAtArgs, 'appId'>>;
@@ -2016,6 +2060,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   InitAggregateState?: InitAggregateStateResolvers<ContextType>;
   InvitationCreated?: InvitationCreatedResolvers<ContextType>;
   InvitationRedeemed?: InvitationRedeemedResolvers<ContextType>;
+  Invoice?: InvoiceResolvers<ContextType>;
+  InvoiceLine?: InvoiceLineResolvers<ContextType>;
   LogoutResponse?: LogoutResponseResolvers<ContextType>;
   MemberAdded?: MemberAddedResolvers<ContextType>;
   Members?: MembersResolvers<ContextType>;

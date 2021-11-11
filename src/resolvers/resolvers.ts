@@ -76,6 +76,7 @@ import {WelcomeMessageEventSource} from "../eventSources/api/welcomeMessageEvent
 import {PurchaseLine} from "../api-db/client";
 import {PurchasesSource} from "../aggregateSources/api/purchasesSource";
 import {canAccess} from "../canAccess";
+import {purchaseResolver} from "./mutations/purchase";
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
@@ -472,98 +473,7 @@ export const resolvers: Resolvers = {
     }
   },
   Mutation: {
-    purchase: async (parent, args, context: Context) => {
-      const callerProfile = await context.callerProfile;
-      if (!callerProfile) {
-        throw new Error(`You need a profile to purchase.`);
-      }
-      if (!callerProfile.circlesAddress) {
-        throw new Error(`You need a safe to purchase.`)
-      }
-
-
-
-      // Group the single product lines by seller and then sum
-
-
-      const purchaseLines = await Promise.all(args.lines.map(async o => {
-        const maxVersion = await prisma_api_ro.$queryRaw(`
-            select id
-                 , max(o.version) as version
-            from "Offer" o
-            where id = $1
-            group by id`, o.offerId);
-
-        if (maxVersion.length == 0) {
-          throw new Error(`Couldn't find a offer with the id ${o.offerId}.`);
-        }
-
-        const offer = await prisma_api_ro.offer.findUnique({
-          where: {
-            id_version: {
-              id: o.offerId,
-              version: maxVersion[0].version
-            }
-          }
-        });
-
-        if (!offer) {
-          throw new Error(`Couldn't find a offer with the id ${o.offerId}.`);
-        }
-
-        return <PurchaseLine>{
-          amount: o.amount,
-          productId: offer.id,
-          productVersion: offer.version
-        }
-      }));
-
-      const purchase = await prisma_api_rw.purchase.create({
-        data: {
-          createdByProfileId: callerProfile.id,
-          createdAt: new Date(),
-          lines: {
-            createMany: {
-              data: purchaseLines
-            }
-          }
-        }
-      });
-
-      const returnPurchase = await prisma_api_rw.purchase.findUnique({
-        where: {
-          id: purchase.id
-        },
-        include: {
-          createdBy: true,
-          lines: {
-            include: {
-              product: {
-                include: {
-                  createdBy: true
-                }
-              }
-            }
-          }
-        }
-      });
-
-      if (!returnPurchase)
-        throw new Error("Couldn't create the purchase.");
-
-      returnPurchase.lines = returnPurchase.lines.map(o => {
-        (<any>o.product).createdByAddress = o.product.createdBy.circlesAddress;
-        return {
-          ...o,
-          offer: o.product
-        }
-      });
-
-      return <any>{
-        ...returnPurchase,
-        createdByAddress: callerProfile.circlesAddress
-      };
-    },
+    purchase: purchaseResolver,
     upsertOrganisation: upsertOrganisation(prisma_api_rw, false),
     upsertRegion: upsertOrganisation(prisma_api_rw, true),
     exchangeToken: exchangeTokenResolver(prisma_api_rw),

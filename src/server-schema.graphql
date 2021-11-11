@@ -245,24 +245,29 @@ type PurchaseLine {
   offer: Offer!
 }
 
-#type Sale {
-#  id: Int!
-#
-#  createdByProfile: Profile
-#  createdByAddress: String!
-#  createdAt: String!
-#
-#  total: String!
-#  lines: [SalesLine!]!
-#  paymentTransaction: ProfileEvent
-#}
-#
-#type SalesLine {
-#  id: Int!
-#
-#  amount: Int!
-#  offer: Offer!
-#}
+type Invoice {
+  id: Int!
+
+  purchaseId: Int!
+  purchase: Purchase
+
+  sellerAddress: String!
+  sellerProfile: Profile
+
+  buyerAddress: String!
+  buyerProfile: Profile
+
+  lines: [InvoiceLine!]!
+
+  paymentTransactionHash: String
+}
+
+type InvoiceLine {
+  id: Int!
+
+  amount: Int!
+  offer: Offer!
+}
 
 input QueryTagsInput {
   typeId_in: [String!]!
@@ -720,7 +725,7 @@ type ProofPaymentResult {
 }
 
 type Mutation {
-  purchase(lines:[PurchaseLineInput!]!) : Purchase
+  purchase(lines:[PurchaseLineInput!]!) : [Invoice!]!
   proofPayment(purchaseId: Int!  transactionHash: String!) : ProofPaymentResult
 
   exchangeToken: ExchangeTokenResponse!
