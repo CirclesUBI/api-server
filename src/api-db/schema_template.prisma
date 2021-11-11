@@ -242,7 +242,8 @@ model Invoice {
 
     lines InvoiceLine[] @relation(name: "Invoice_Lines")
 
-    total Int
+    paymentTransaction Transaction? @relation(name: "Invoice_PaymentTransaction", fields: [paymentTransactionHash], references: [transactionHash])
+    paymentTransactionHash String?
 }
 
 model InvoiceLine {
@@ -266,6 +267,8 @@ model TagType {
 model Transaction {
     transactionHash String @unique @id
     tags Tag[] @relation(name: "Transaction_Tag")
+
+    payedInvoice Invoice? @relation(name: "Invoice_PaymentTransaction")
 }
 
 model Tag {
