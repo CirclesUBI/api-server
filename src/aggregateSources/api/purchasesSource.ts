@@ -31,7 +31,11 @@ export class PurchasesSource implements AggregateSource {
         createdBy: true,
         lines: {
           include: {
-            product: true
+            product: {
+              include: {
+                createdBy: true
+              }
+            }
           }
         }
       },
@@ -55,6 +59,7 @@ export class PurchasesSource implements AggregateSource {
             ...o,
             total: total,
             lines: o.lines.map(p => {
+              (<any>p.product).createdByAddress = p.product.createdBy.circlesAddress;
               return {
                 ...p,
                 offer: p.product

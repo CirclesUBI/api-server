@@ -53,7 +53,8 @@ export class OffersSource implements AggregateSource {
         ...o,
         pictureUrl: o.pictureUrl ? o.pictureUrl : "",
         pictureMimeType: o.pictureMimeType ? o.pictureMimeType : "",
-        createdAt: o.created_at
+        createdAt: o.created_at,
+        createdByAddress: o.createdByAddress
       }
     });
 
