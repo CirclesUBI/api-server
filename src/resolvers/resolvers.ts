@@ -198,6 +198,22 @@ export const resolvers: Resolvers = {
     }
   },
   ProfileEvent: {},
+  Offer: {
+    createdByProfile: async (parent, args, context) => {
+      if (!parent.createdByAddress) {
+        return null;
+      }
+
+      const profilesResult = await new ProfileLoader().profilesBySafeAddress(prisma_api_ro, [parent.createdByAddress]);
+      const profiles = Object.values(profilesResult);
+      if (profiles.length != 1)
+      {
+        return null;
+      }
+
+      return profiles[0];
+    }
+  },
   Organisation: {
     members: async (parent, args, context) => {
       const memberships = (await prisma_api_ro.membership.findMany({
