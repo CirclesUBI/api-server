@@ -85,7 +85,7 @@ export class BlockchainEventSource implements ProfileEventSource {
       const pool = getPool();
       try {
         const cur = this.i++;
-        console.log(`Message ${cur} received:`, JSON.stringify(message, null, 2));
+        console.log(`Message ${cur} received`);
 
         // Find all blockchainEvents in the reported new range
         const affectedAddressesQuery = `with a as (
@@ -150,7 +150,8 @@ export class BlockchainEventSource implements ProfileEventSource {
                 customerProfile: {
                   circlesAddress: address
                 }
-              }]
+              }],
+              paymentTransactionHash: null
             },
             include: {
               customerProfile: true,
@@ -179,7 +180,6 @@ export class BlockchainEventSource implements ProfileEventSource {
               let matchingTransactions = eventsInMessage.rows.filter(event => event.type === EventType.CrcHubTransfer);
               const event = matchingTransactions.find(o => o.address1 == invoice.customerProfile.circlesAddress
                                                         || o.address2 == invoice.sellerProfile.circlesAddress);
-
 
               if (event) {
                 await prisma_api_rw.invoice.update({
