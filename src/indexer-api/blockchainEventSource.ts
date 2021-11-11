@@ -1,6 +1,9 @@
 import WebSocket from 'ws';
 import {ApiPubSub} from "../pubsub";
 import {getPool} from "../resolvers/resolvers";
+import {prisma_api_rw} from "../apiDbClient";
+import {Generate} from "../generate";
+import {EventType} from "../types";
 
 
 export interface ProfileEventSource {
@@ -82,29 +85,29 @@ export class BlockchainEventSource implements ProfileEventSource {
       const pool = getPool();
       try {
         const cur = this.i++;
+        console.log(`Message ${cur} received:`, JSON.stringify(message, null, 2));
 
-        console.log(`Message ${cur} received.`);
         // Find all blockchainEvents in the reported new range
         const affectedAddressesQuery = `with a as (
-            select hash, "user" as address1, null as address2, null as address3
+            select 'CrcSignup' as type, hash, "user" as address1, null as address2, null as address3
             from crc_signup_2
             union all
-            select hash, address as address1, can_send_to as address2, null as address3
+            select 'CrcTrust' as type, hash, address as address1, can_send_to as address2, null as address3
             from crc_trust_2
             union all
-            select hash, organisation as address1, null as address2, null as address3
+            select 'CrcOrganisationSignup' as type, hash, organisation as address1, null as address2, null as address3
             from crc_organisation_signup_2
             union all
-            select hash, "from" as address1, "to" as address2, null as address3
+            select 'CrcHubTransfer' as type, hash, "from" as address1, "to" as address2, null as address3
             from crc_hub_transfer_2
             union all
-            select hash, "from" as address1, "to" as address2, null as address3
+            select 'Erc20Transfer' as type, hash, "from" as address1, "to" as address2, null as address3
             from erc20_transfer_2
             union all
-            select hash, "from" as address1, "to" as address2, null as address3
+            select 'EthTransfer' as type, hash, "from" as address1, "to" as address2, null as address3
             from eth_transfer_2
             union all
-            select hash, "initiator" as address1, "from" as address2, "to" as address3
+            select 'GnosisSafeEthTransfer' as type, hash, "initiator" as address1, "from" as address2, "to" as address3
             from gnosis_safe_eth_transfer_2
         )
         select hash, address1, address2, address3
@@ -135,6 +138,63 @@ export class BlockchainEventSource implements ProfileEventSource {
               type: "blockchain_event"
             }
           });
+
+          // Check if there are open invoices which match the buyer, seller and amount
+          const invoices = await prisma_api_rw.invoice.findMany({
+            where: {
+              OR: [{
+                sellerProfile: {
+                  circlesAddress: address
+                }
+              },{
+                customerProfile: {
+                  circlesAddress: address
+                }
+              }]
+            },
+            include: {
+              customerProfile: true,
+              sellerProfile: true,
+              lines: {
+                include: {
+                  product: {
+                    include: {
+                      createdBy: true
+                    }
+                  }
+                }
+              }
+            }
+          });
+
+          if (invoices.length > 0) {
+            for (let invoice of invoices) {
+              console.log(`Found open invoices for partner ${address}:`, JSON.stringify(invoices, null, 2));
+              // Check if this is a crc_hub_transfer and if the amount is correct
+              // within certain limits:
+
+              const amount = invoice.lines.reduce((p,c) =>  p + c.amount * parseFloat(c.product.pricePerUnit), 0);
+              const code = Generate.randomHexString(6);
+/*
+              let matchingTransactions = eventsInMessage.rows.filter(event => event.type === EventType.CrcHubTransfer);
+              const event = matchingTransactions.find(o => o.address1 == invoice.customerProfile.circlesAddress
+                                                        || o.address2 == invoice.sellerProfile.circlesAddress);
+
+
+              if (event) {
+                await prisma_api_rw.invoice.update({
+                  where: {
+                    id: invoice.id
+                  },
+                  data: {
+                    paymentTransactionHash: event.hash,
+                    pickupCode: code
+                  }
+                });
+              }
+ */
+            }
+          }
         }
       } finally {
         await pool.end();

@@ -248,6 +248,8 @@ model Invoice {
 
     paymentTransaction Transaction? @relation(name: "Invoice_PaymentTransaction", fields: [paymentTransactionHash], references: [transactionHash])
     paymentTransactionHash String?
+
+    pickupCode String?
 }
 
 model InvoiceLine {
