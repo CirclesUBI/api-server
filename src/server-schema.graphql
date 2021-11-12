@@ -4,6 +4,7 @@ type Server {
 
 type Profile {
   id: Int!
+  type: String
   status: String
   circlesAddress: String
   circlesSafeOwner: String

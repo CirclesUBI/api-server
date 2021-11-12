@@ -19,9 +19,12 @@ export class RedeemedInvitationsEventSource implements EventSource {
         } : {
           lt: new Date(pagination.continueAt)
         },
-        // redeemedBy: {
-        //   isNot: null
-        // }
+        // TODO: redeemedAt doesn't work as filter for RedeemedInvitation events because there will be no profile at the time of redemption
+        redeemedBy: {
+          circlesAddress: {
+            not: null
+          }
+        }
       },
       orderBy: {
         createdAt: pagination.order == "ASC" ? Prisma.SortOrder.asc : Prisma.SortOrder.desc
