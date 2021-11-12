@@ -2,9 +2,9 @@ import {myProfile, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {
-  AggregateType, EventType, Profile,
+  AggregateType, EventType, Invoice, InvoiceLine, Profile,
   ProfileEvent,
-  ProfileOrOrganisation, Resolvers,
+  ProfileOrOrganisation, Purchase, Resolvers,
   SortOrder
 } from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
@@ -188,6 +188,54 @@ export const resolvers: Resolvers = {
           isAdmin: o.isAdmin ?? false
         }
       })
+    }
+  },
+  Purchase: {
+    invoices: async (parent:Purchase, args:any, context:Context) => {
+      const caller = await context.callerProfile;
+      if (!caller)
+        return [];
+
+      const invoices = await prisma_api_rw.invoice.findMany({
+        where: {
+          purchase: {
+            id: parent.id,
+            createdBy: {
+              circlesAddress: caller.circlesAddress
+            }
+          }
+        },
+        include: {
+          customerProfile: true,
+          sellerProfile: true,
+          lines: {
+            include: {
+              product: {
+                include: {
+                  createdBy: true
+                }
+              }
+            }
+          }
+        }
+      });
+      return invoices.map(o => {
+        return <Invoice> {
+          ...o,
+          buyerAddress: o.customerProfile.circlesAddress,
+          sellerAddress: o.sellerProfile.circlesAddress,
+          lines: o.lines.map(l => {
+            return <InvoiceLine>{
+              ...l,
+              offer: {
+                ...l.product,
+                createdByAddress: l.product.createdBy.circlesAddress,
+                createdAt: l.product.createdAt.toJSON()
+              }
+            }
+          })
+        }
+      });
     }
   },
   ClaimedInvitation: {

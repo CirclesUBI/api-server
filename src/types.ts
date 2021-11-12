@@ -358,6 +358,7 @@ export type Invoice = {
   buyerAddress: Scalars['String'];
   buyerProfile?: Maybe<Profile>;
   lines: Array<InvoiceLine>;
+  pickupCode?: Maybe<Scalars['String']>;
   paymentTransactionHash?: Maybe<Scalars['String']>;
 };
 
@@ -733,6 +734,7 @@ export type Purchase = {
   total: Scalars['String'];
   lines: Array<PurchaseLine>;
   paymentTransaction?: Maybe<ProfileEvent>;
+  invoices: Array<Invoice>;
 };
 
 export type PurchaseLine = {
@@ -1650,6 +1652,7 @@ export type InvoiceResolvers<ContextType = any, ParentType extends ResolversPare
   buyerAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   buyerProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   lines?: Resolver<Array<ResolversTypes['InvoiceLine']>, ParentType, ContextType>;
+  pickupCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   paymentTransactionHash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -1877,6 +1880,7 @@ export type PurchaseResolvers<ContextType = any, ParentType extends ResolversPar
   total?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lines?: Resolver<Array<ResolversTypes['PurchaseLine']>, ParentType, ContextType>;
   paymentTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
+  invoices?: Resolver<Array<ResolversTypes['Invoice']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

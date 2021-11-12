@@ -236,6 +236,8 @@ type Purchase {
   total: String!
   lines: [PurchaseLine!]!
   paymentTransaction: ProfileEvent
+
+  invoices: [Invoice!]!
 }
 
 type PurchaseLine {
@@ -259,6 +261,7 @@ type Invoice {
 
   lines: [InvoiceLine!]!
 
+  pickupCode: String
   paymentTransactionHash: String
 }
 
