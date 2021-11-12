@@ -4,6 +4,9 @@ import {getPool} from "../resolvers/resolvers";
 import {prisma_api_rw} from "../apiDbClient";
 import {Generate} from "../generate";
 import {EventType} from "../types";
+import BN from "bn.js";
+import {RpcGateway} from "../rpcGateway";
+import {convertTimeCirclesToCircles} from "../timeCircles";
 
 
 export interface ProfileEventSource {
@@ -110,7 +113,7 @@ export class BlockchainEventSource implements ProfileEventSource {
             select 'GnosisSafeEthTransfer' as type, hash, "initiator" as address1, "from" as address2, "to" as address3
             from gnosis_safe_eth_transfer_2
         )
-        select hash, address1, address2, address3
+        select type, hash, address1, address2, address3
         from a
         where hash = ANY ($1);`;
 
@@ -181,16 +184,32 @@ export class BlockchainEventSource implements ProfileEventSource {
               const event = matchingTransactions.find(o => o.address1 == invoice.customerProfile.circlesAddress
                                                         || o.address2 == invoice.sellerProfile.circlesAddress);
 
+              const pool = await getPool();
+              let hubTransfer:any;
               if (event) {
-                await prisma_api_rw.invoice.update({
-                  where: {
-                    id: invoice.id
-                  },
-                  data: {
-                    paymentTransactionHash: event.hash,
-                    pickupCode: code
-                  }
-                });
+                hubTransfer = await pool.query(`select * from crc_hub_transfer_2 where hash = $1`, [event.hash]);
+              }
+
+              if (hubTransfer && hubTransfer.rows.length == 1) {
+                const tcAmount = convertTimeCirclesToCircles(amount, hubTransfer.rows[0].timestamp.toJSON());
+                const minVal = new BN(RpcGateway.get().utils.toWei(tcAmount.toString(), "ether")).sub(new BN("10000"));
+                const maxVal = new BN(RpcGateway.get().utils.toWei(tcAmount.toString(), "ether")).add(new BN("10000"));
+
+                const actualValue = new BN(hubTransfer.rows[0].value);
+                const matches = actualValue.gte(minVal) && actualValue.lte(maxVal);
+
+                if (matches) {
+                  // TODO: Currently all running processes will update the invoice with a different pickupCode but with the same transaction hash. Maybe this should be synchronized?
+                  await prisma_api_rw.invoice.update({
+                    where: {
+                      id: invoice.id
+                    },
+                    data: {
+                      paymentTransactionHash: event.hash,
+                      pickupCode: code
+                    }
+                  });
+                }
               }
             }
           }
