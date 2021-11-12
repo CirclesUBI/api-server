@@ -550,17 +550,23 @@ export const resolvers: Resolvers = {
   Subscription: {
     events: {
       subscribe: async (parent, args, context: Context) => {
-        const profile = await context.callerProfile;
-        if (!profile)
-          throw new Error(`You need a profile to subscribe`);
+        try {
+          const session = await context.verifySession();
+          const callerProfile = await context.callerProfile;
+          if (!callerProfile)
+            throw new Error(`You need a profile to subscribe`);
 
-        if (!profile.circlesAddress && profile.circlesSafeOwner) {
-          return ApiPubSub.instance.pubSub.asyncIterator([`events_${profile.circlesSafeOwner.toLowerCase()}`]);
-        } else if (profile.circlesAddress) {
-          return ApiPubSub.instance.pubSub.asyncIterator([`events_${profile.circlesAddress.toLowerCase()}`]);
-        } else {
-          throw new Error(`Cannot subscribe without an eoa- or safe-address.`)
+          if (!callerProfile.circlesAddress && session.ethAddress) {
+            return ApiPubSub.instance.pubSub.asyncIterator([`events_${session.ethAddress.toLowerCase()}`]);
+          } else if (callerProfile.circlesAddress) {
+            return ApiPubSub.instance.pubSub.asyncIterator([`events_${callerProfile.circlesAddress.toLowerCase()}`]);
+          } else {
+            throw new Error(`Cannot subscribe without an eoa- or safe-address.`)
+          }
+        } catch (e) {
+          console.error(e);
         }
+        return ApiPubSub.instance.pubSub.asyncIterator([`~~~NEVER~~~`]);
       }
     }
   }

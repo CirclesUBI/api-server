@@ -87,7 +87,7 @@ export class Session
 
         await prisma.session.create({
             data: {
-                ethAddress: address,
+                ethAddress: address.toLowerCase(),
                 createdAt: new Date(),
                 issuedBy: process.env.APP_ID ?? "api-server",
                 maxLifetime: process.env.SESSION_LIIFETIME ? parseInt(process.env.SESSION_LIIFETIME) : 60 * 60 * 24 * 30,
