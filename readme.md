@@ -3,30 +3,32 @@
 ## Api-Schema:
 
 ```graphql
-type Query
-{
-    server : Server
-    profiles(query:QueryProfileInput!) : [Profile!]!
-    circlesWallets(query:QueryCirclesWalletInput!):[CirclesWallet!]!
+type Query {
+  server: Server
+  profiles(query: QueryProfileInput!): [Profile!]!
+  circlesWallets(query: QueryCirclesWalletInput!): [CirclesWallet!]!
 }
 
-type Mutation
-{
-    exchangeToken : ExchangeTokenResponse!
-    upsertProfile(data:UpsertProfileInput!):Profile!
-    addCirclesWallet(data:AddCirclesWalletInput!) : CirclesWallet!
-    addCirclesToken(data:AddCirclesTokenInput!) : CirclesToken!
-    addCirclesTrustRelation(data:AddCirclesTrustRelationInput!) : CirclesTrustRelation!
-    addCirclesTokenTransfer(data:IndexTransferInput!) : CirclesTokenTransfer!
+type Mutation {
+  exchangeToken: ExchangeTokenResponse!
+  upsertProfile(data: UpsertProfileInput!): Profile!
+  addCirclesWallet(data: AddCirclesWalletInput!): CirclesWallet!
+  addCirclesToken(data: AddCirclesTokenInput!): CirclesToken!
+  addCirclesTrustRelation(
+    data: AddCirclesTrustRelationInput!
+  ): CirclesTrustRelation!
+  addCirclesTokenTransfer(data: IndexTransferInput!): CirclesTokenTransfer!
 }
 ```
+
 ## Database:
+
 ```shell
 # Create a new directory as working space
 mkdir omo-central-server-db
 cd omo-central-server-db
 
-# Get the schema
+# Get the schema manually
 wget https://raw.githubusercontent.com/circlesland/api-server/master/schema_template.prisma
 
 # Insert your connection string
@@ -40,9 +42,11 @@ npm i prisma_api_rw
 # Deploy to your server using prisma_api_rw cli
 npx --no-install prisma_api_rw db push --schema schema_template.prisma_api_rw  --preview-feature
 ```
+
 ## Environment variables:
+
 ```shell
-EXTERNAL_DOMAIN='my-domain.com' # Is used for the 'domain' attribute of the session cookie 
+EXTERNAL_DOMAIN='my-domain.com' # Is used for the 'domain' attribute of the session cookie
 DEBUG=''                        # Optional: If set to any value, the cookie will be sent via non-https connections
 CONNECTION_STRING_RW=''         # A prisma compatible db connection string (read/write)
 CONNECTION_STRING_RO=''         # A prisma compatible db connection string (readonly)
