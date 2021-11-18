@@ -29,6 +29,8 @@ export function createTestInvitation(prisma_api_rw:PrismaClient) {
     const gasPrice = new BN(await web3.eth.getGasPrice());
     const nonce = await web3.eth.getTransactionCount(invitationFundsEoa.address);
 
+    console.log(`Transferring 0.2 eth to invitation EOA ${invitationFundsEoa.address} (nonce: ${nonce}, gasPrice: ${gasPrice.toString()})`)
+
     const signedTx = await invitationFundsEoa.signTransaction({
       from: invitationFundsEoa.address,
       to: invitation.address,
@@ -37,6 +39,8 @@ export function createTestInvitation(prisma_api_rw:PrismaClient) {
       gas: gas,
       nonce: nonce
     });
+
+    console.log("Signed the transaction: ", signedTx.transactionHash);
 
     if (!signedTx?.rawTransaction) {
       throw new Error(`Couldn't send the invitation transaction`);

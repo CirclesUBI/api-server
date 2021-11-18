@@ -24,23 +24,31 @@ export function search(prisma: PrismaClient) {
             dream: string,
             country?: string
         }[] =
-            await prisma.$queryRaw`SELECT id,
-                                          "status",
-                                          "circlesAddress",
-                                          "circlesSafeOwner",
-                                          "circlesTokenAddress",
-                                          "firstName",
-                                          "lastName",
-                                          "avatarCid",
-                                          "avatarUrl",
-                                          "avatarMimeType",
-                                          dream,
-                                          country
-                                   FROM "Profile"
-                                   WHERE "circlesAddress" LIKE ${searchCirclesAddress}
-                                      OR "firstName" ILIKE ${searchFirstName}
-                                      OR "lastName" ILIKE ${searchLastName}
-                                   ORDER BY "firstName", "lastName" LIMIT 100`;
+            await prisma.$queryRaw`with most_current as (
+                SELECT max(id) as id,
+                       "circlesAddress"
+                FROM "Profile"
+                where "circlesAddress" is not null
+                group by "circlesAddress"
+            )
+            select p.id,
+                   p."status",
+                   p."circlesAddress",
+                   p."circlesSafeOwner",
+                   p."circlesTokenAddress",
+                   p."firstName",
+                   p."lastName",
+                   p."avatarCid",
+                   p."avatarUrl",
+                   p."avatarMimeType",
+                   p.dream,
+                   p.country
+            from most_current
+                     join "Profile" p on most_current.id = p.id
+            where p."circlesAddress" LIKE ${searchCirclesAddress}
+               or p."firstName" ILIKE ${searchFirstName}
+               or p."lastName" ILIKE ${searchLastName}
+            order by p."firstName", p."lastName" limit 100`;
         return result.map(o => {
             return {
                 ...o,

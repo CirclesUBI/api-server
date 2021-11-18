@@ -69,9 +69,9 @@ export class EventAugmenter
   async augment() : Promise<ProfileEvent[]> {
     // Find the profiles for the collected addresses
 
-    const requests = [
-      await new ProfileLoader().profilesBySafeAddress(prisma_api_ro, Object.keys(this._profiles)),
-      await new TagLoader().tagsByTransactionHash(prisma_api_ro, Object.keys(this._tags))
+    const requests: Promise<any>[] = [
+      new ProfileLoader().profilesBySafeAddress(prisma_api_ro, Object.keys(this._profiles)),
+      new TagLoader().tagsByTransactionHash(prisma_api_ro, Object.keys(this._tags))
     ]
 
     const results = await Promise.all(requests);
