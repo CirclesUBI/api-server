@@ -5,7 +5,7 @@ import {
   AggregateType, EventType, Invoice, InvoiceLine, Profile,
   ProfileEvent,
   ProfileOrOrganisation, Purchase, Resolvers,
-  SortOrder
+  SortOrder, TransitivePath, TransitiveTransfer
 } from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
@@ -77,6 +77,8 @@ import {PurchaseLine} from "../api-db/client";
 import {PurchasesSource} from "../aggregateSources/api/purchasesSource";
 import {canAccess} from "../canAccess";
 import {purchaseResolver} from "./mutations/purchase";
+import BN from "bn.js";
+import {symbolExecutionDispatcherWillResolveField} from "apollo-server-core/dist/utils/schemaInstrumentation";
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
@@ -191,7 +193,7 @@ export const resolvers: Resolvers = {
     }
   },
   Purchase: {
-    invoices: async (parent:Purchase, args:any, context:Context) => {
+    invoices: async (parent: Purchase, args: any, context: Context) => {
       const caller = await context.callerProfile;
       if (!caller)
         return [];
@@ -220,7 +222,7 @@ export const resolvers: Resolvers = {
         }
       });
       return invoices.map(o => {
-        return <Invoice> {
+        return <Invoice>{
           ...o,
           buyerAddress: o.customerProfile.circlesAddress,
           sellerAddress: o.sellerProfile.circlesAddress,
@@ -255,8 +257,7 @@ export const resolvers: Resolvers = {
 
       const profilesResult = await new ProfileLoader().profilesBySafeAddress(prisma_api_ro, [parent.createdByAddress]);
       const profiles = Object.values(profilesResult);
-      if (profiles.length != 1)
-      {
+      if (profiles.length != 1) {
         return null;
       }
 
@@ -518,6 +519,87 @@ export const resolvers: Resolvers = {
       events = events.slice(0, Math.min(events.length, args.pagination.limit));
 
       return events;
+    },
+    directPath: async (parent, args, context) => {
+      const sql = ` with my_tokens as (
+                        select token
+                        from crc_balances_by_safe_and_token_2
+                        where safe_address = $1
+                    ),
+                    accepted_tokens as (
+                        select user_token as token
+                        from crc_current_trust_2
+                        where can_send_to = $2
+                    ),
+                    intersection as (
+                        select *
+                        from my_tokens
+                        intersect
+                        select *
+                        from accepted_tokens
+                    ),
+                    relevant_balances as (
+                        select b.token, b.token_owner, b.balance
+                        from intersection i
+                                 join crc_balances_by_safe_and_token_2 b on i.token = b.token
+                        where safe_address = $1
+                    )
+               select *
+               from relevant_balances
+               order by balance asc;`;
+
+      const pool = await getPool();
+      const result = await pool.query(sql, [args.from, args.to]);
+
+      const stack: { token: string, tokenOwner: string, balance: BN }[] = [];
+      result.rows.forEach(o => stack.push({
+        token: o.token,
+        tokenOwner: o.token_owner,
+        balance: new BN(o.balance)
+      }));
+
+      let remainingAmount = new BN(args.amount);
+      const segments = [];
+      const zero = new BN("0");
+      while (stack.length > 0 && remainingAmount.gt(zero)) {
+        const currentToken = stack.pop();
+        if (!currentToken)
+          break;
+
+        const _remainingAmount = currentToken.balance.sub(remainingAmount);
+
+        if (_remainingAmount.isNeg()) {
+          // amount of current tokens is not enough for this step, use the max possible amount for this step and continue
+          segments.push(currentToken);
+          remainingAmount = _remainingAmount.abs()
+        } else {
+          // amount of current tokens is enough for this step, continue
+          //segments.push(currentToken);
+          const usedAmount = currentToken.balance.sub(_remainingAmount);
+          segments.push({
+            ...currentToken,
+            balance: usedAmount
+          });
+          break;
+        }
+      }
+
+      const flow = segments.reduce((p,c) => p.add(c.balance), new BN("0"));
+      // const correct = flow.eq(new BN(args.amount));
+
+      return <TransitivePath>{
+        requestedAmount: args.amount,
+        flow: flow.toString(),
+        transfers: segments.map(o => {
+          return <TransitiveTransfer> {
+            token: o.token,
+            from: args.from,
+            to: args.to,
+            tokenOwner: o.tokenOwner,
+            value: o.balance.toString()
+          }
+        })
+      };
     }
   },
   Mutation: {

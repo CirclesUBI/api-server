@@ -863,6 +863,22 @@ type Query {
   cities(query: QueryCitiesInput!): [City!]!
   tags(query: QueryTagsInput!): [Tag!]!
   tagById(id: Int!): Tag
+
+  directPath(from:String! to:String! amount:String!): TransitivePath!
+}
+
+type TransitiveTransfer {
+  from: String!
+  to: String!
+  token: String!
+  tokenOwner: String!
+  value: String!
+}
+
+type TransitivePath {
+  requestedAmount: String!
+  flow: String!
+  transfers: [TransitiveTransfer!]!
 }
 
 type Subscription {

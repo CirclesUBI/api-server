@@ -796,6 +796,7 @@ export type Query = {
   cities: Array<City>;
   tags: Array<Tag>;
   tagById?: Maybe<Tag>;
+  directPath: TransitivePath;
 };
 
 
@@ -872,6 +873,13 @@ export type QueryTagsArgs = {
 
 export type QueryTagByIdArgs = {
   id: Scalars['Int'];
+};
+
+
+export type QueryDirectPathArgs = {
+  from: Scalars['String'];
+  to: Scalars['String'];
+  amount: Scalars['String'];
 };
 
 export type QueryCitiesByGeonameIdInput = {
@@ -987,6 +995,22 @@ export type TagTransactionResult = {
   success: Scalars['Boolean'];
   error?: Maybe<Scalars['String']>;
   tag?: Maybe<Tag>;
+};
+
+export type TransitivePath = {
+  __typename?: 'TransitivePath';
+  requestedAmount: Scalars['String'];
+  flow: Scalars['String'];
+  transfers: Array<TransitiveTransfer>;
+};
+
+export type TransitiveTransfer = {
+  __typename?: 'TransitiveTransfer';
+  from: Scalars['String'];
+  to: Scalars['String'];
+  token: Scalars['String'];
+  tokenOwner: Scalars['String'];
+  value: Scalars['String'];
 };
 
 export enum TrustDirection {
@@ -1242,6 +1266,8 @@ export type ResolversTypes = ResolversObject<{
   Subscription: ResolverTypeWrapper<{}>;
   Tag: ResolverTypeWrapper<Tag>;
   TagTransactionResult: ResolverTypeWrapper<TagTransactionResult>;
+  TransitivePath: ResolverTypeWrapper<TransitivePath>;
+  TransitiveTransfer: ResolverTypeWrapper<TransitiveTransfer>;
   TrustDirection: TrustDirection;
   TrustRelation: ResolverTypeWrapper<TrustRelation>;
   UpdateSafeInput: UpdateSafeInput;
@@ -1349,6 +1375,8 @@ export type ResolversParentTypes = ResolversObject<{
   Subscription: {};
   Tag: Tag;
   TagTransactionResult: TagTransactionResult;
+  TransitivePath: TransitivePath;
+  TransitiveTransfer: TransitiveTransfer;
   TrustRelation: TrustRelation;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: UpdateSafeResponse;
@@ -1933,6 +1961,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, 'query'>>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsArgs, 'query'>>;
   tagById?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagByIdArgs, 'id'>>;
+  directPath?: Resolver<ResolversTypes['TransitivePath'], ParentType, ContextType, RequireFields<QueryDirectPathArgs, 'from' | 'to' | 'amount'>>;
 }>;
 
 export type RedeemClaimedInvitationResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['RedeemClaimedInvitationResult'] = ResolversParentTypes['RedeemClaimedInvitationResult']> = ResolversObject<{
@@ -1997,6 +2026,22 @@ export type TagTransactionResultResolvers<ContextType = any, ParentType extends 
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   tag?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type TransitivePathResolvers<ContextType = any, ParentType extends ResolversParentTypes['TransitivePath'] = ResolversParentTypes['TransitivePath']> = ResolversObject<{
+  requestedAmount?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  flow?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  transfers?: Resolver<Array<ResolversTypes['TransitiveTransfer']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type TransitiveTransferResolvers<ContextType = any, ParentType extends ResolversParentTypes['TransitiveTransfer'] = ResolversParentTypes['TransitiveTransfer']> = ResolversObject<{
+  from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tokenOwner?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2102,6 +2147,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Subscription?: SubscriptionResolvers<ContextType>;
   Tag?: TagResolvers<ContextType>;
   TagTransactionResult?: TagTransactionResultResolvers<ContextType>;
+  TransitivePath?: TransitivePathResolvers<ContextType>;
+  TransitiveTransfer?: TransitiveTransferResolvers<ContextType>;
   TrustRelation?: TrustRelationResolvers<ContextType>;
   UpdateSafeResponse?: UpdateSafeResponseResolvers<ContextType>;
   Version?: VersionResolvers<ContextType>;
