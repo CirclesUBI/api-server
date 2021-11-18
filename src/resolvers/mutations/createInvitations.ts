@@ -4,9 +4,9 @@ import {prisma_api_ro, prisma_api_rw} from "../../apiDbClient";
 import {RpcGateway} from "../../rpcGateway";
 import {Session} from "../../session";
 import {CreateInvitationResult} from "../../types";
+import {fundEoa} from "./createTestInvitation";
 
-const MunichRegionAddress = "0x735e74cd911f267938821a1cb028887c1e7396ff";
-const HomoCirculusOrganisation = "0x0bf90ba0311bbfc6aec49591e2dae44b4b867adc";
+const TestOrga = "0xc5a786eafefcf703c114558c443e4f17969d9573";
 
 export function createInvitations(prisma_api_rw:PrismaClient) {
     return async (parent:any, args:{for:string[]}, context:Context) => {
@@ -18,7 +18,7 @@ export function createInvitations(prisma_api_rw:PrismaClient) {
 
       const homoCirculus = prisma_api_ro.profile.findFirst({
         where: {
-          circlesAddress: HomoCirculusOrganisation,
+          circlesAddress: TestOrga,
           members: {
             some: {
               memberAddress: profile.circlesAddress
@@ -28,7 +28,7 @@ export function createInvitations(prisma_api_rw:PrismaClient) {
       });
 
       if (!homoCirculus) {
-        throw new Error(`You are not a member of organisation ${HomoCirculusOrganisation}. Only members of this organisation can create invitations at the moment.`);
+        throw new Error(`You are not a member of organisation ${TestOrga}. Only members of this organisation can create invitations at the moment.`);
       }
 
       // Creates as many invitations as there are recipients in the arguments
@@ -46,7 +46,7 @@ export function createInvitations(prisma_api_rw:PrismaClient) {
           }
         });
 
-        return invitation;
+        return (await fundEoa(RpcGateway.get(), invitation)).createdInviteEoas[0];
       }));
 
       return <CreateInvitationResult>{
@@ -55,7 +55,7 @@ export function createInvitations(prisma_api_rw:PrismaClient) {
           return {
             createdBy: profile,
             createdByProfileId: profile.id,
-            createdAt: o.createdAt.toJSON(),
+            createdAt: o.createdAt,
             name: o.name,
             address: o.address,
             balance: "0",

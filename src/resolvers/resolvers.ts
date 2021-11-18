@@ -525,6 +525,9 @@ export const resolvers: Resolvers = {
       return events;
     },
     directPath: async (parent, args, context) => {
+      const from = args.from.toLowerCase();
+      const to = args.to.toLowerCase();
+
       const sql = ` with my_tokens as (
                         select token
                         from crc_balances_by_safe_and_token_2
@@ -553,7 +556,7 @@ export const resolvers: Resolvers = {
                order by balance asc;`;
 
       const pool = await getPool();
-      const result = await pool.query(sql, [args.from, args.to]);
+      const result = await pool.query(sql, [from, to]);
 
       const stack: { token: string, tokenOwner: string, balance: BN }[] = [];
       result.rows.forEach(o => stack.push({
