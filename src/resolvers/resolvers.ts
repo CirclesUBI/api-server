@@ -385,6 +385,10 @@ export const resolvers: Resolvers = {
         delete types[EventType.CrcHubTransfer];
         eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.CrcHubTransfer]));
       }
+      if (types[EventType.HmnTransfer]) {
+        delete types[EventType.HmnTransfer];
+        eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.HmnTransfer]));
+      }
       if (types[EventType.CrcMinting]) {
         delete types[EventType.CrcMinting];
         eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.CrcMinting]));

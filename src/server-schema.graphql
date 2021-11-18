@@ -480,6 +480,7 @@ enum EventType {
   , CrcHubTransfer
   , CrcMinting
   , EthTransfer
+  , HmnTransfer
   , GnosisSafeEthTransfer
   , ChatMessage
   , MembershipOffer

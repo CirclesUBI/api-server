@@ -8,7 +8,8 @@ export enum BlockchainEventType {
   CrcTrust = "CrcTrust",
   CrcMinting = "CrcMinting",
   EthTransfer = "EthTransfer",
-  GnosisSafeEthTransfer = "GnosisSafeEthTransfer"
+  GnosisSafeEthTransfer = "GnosisSafeEthTransfer",
+  HmnTransfer = "HmnTransfer"
 }
 
 export class BlockchainIndexerEventSource implements EventSource

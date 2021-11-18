@@ -274,6 +274,7 @@ export enum EventType {
   CrcHubTransfer = 'CrcHubTransfer',
   CrcMinting = 'CrcMinting',
   EthTransfer = 'EthTransfer',
+  HmnTransfer = 'HmnTransfer',
   GnosisSafeEthTransfer = 'GnosisSafeEthTransfer',
   ChatMessage = 'ChatMessage',
   MembershipOffer = 'MembershipOffer',
