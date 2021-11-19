@@ -798,6 +798,7 @@ export type Query = {
   tags: Array<Tag>;
   tagById?: Maybe<Tag>;
   directPath: TransitivePath;
+  mostRecentUbiSafeOfAccount?: Maybe<Scalars['String']>;
 };
 
 
@@ -881,6 +882,11 @@ export type QueryDirectPathArgs = {
   from: Scalars['String'];
   to: Scalars['String'];
   amount: Scalars['String'];
+};
+
+
+export type QueryMostRecentUbiSafeOfAccountArgs = {
+  account: Scalars['String'];
 };
 
 export type QueryCitiesByGeonameIdInput = {
@@ -1963,6 +1969,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsArgs, 'query'>>;
   tagById?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagByIdArgs, 'id'>>;
   directPath?: Resolver<ResolversTypes['TransitivePath'], ParentType, ContextType, RequireFields<QueryDirectPathArgs, 'from' | 'to' | 'amount'>>;
+  mostRecentUbiSafeOfAccount?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryMostRecentUbiSafeOfAccountArgs, 'account'>>;
 }>;
 
 export type RedeemClaimedInvitationResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['RedeemClaimedInvitationResult'] = ResolversParentTypes['RedeemClaimedInvitationResult']> = ResolversObject<{

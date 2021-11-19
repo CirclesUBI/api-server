@@ -866,6 +866,7 @@ type Query {
   tagById(id: Int!): Tag
 
   directPath(from:String! to:String! amount:String!): TransitivePath!
+  mostRecentUbiSafeOfAccount(account: String!) : String
 }
 
 type TransitiveTransfer {

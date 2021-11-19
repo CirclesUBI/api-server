@@ -580,8 +580,7 @@ export const resolvers: Resolvers = {
           segments.push(currentToken);
           remainingAmount = _remainingAmount.abs()
         } else {
-          // amount of current tokens is enough for this step, continue
-          //segments.push(currentToken);
+          // amount of current tokens is enough for this step. Stop here.
           const usedAmount = currentToken.balance.sub(_remainingAmount);
           segments.push({
             ...currentToken,
@@ -607,6 +606,34 @@ export const resolvers: Resolvers = {
           }
         })
       };
+    },
+    mostRecentUbiSafeOfAccount: async (parent, args, context) => {
+      const findSafeOfOwnerSql = `select "user"
+                                  from crc_signup_2
+                                  where "owners" @> $1::text[];`;
+
+      const pool = await getPool();
+      const safesResult = await pool.query(findSafeOfOwnerSql, [[args.account]]);
+      if (safesResult.rows.length == 0){
+        return null;
+      }
+      const safeAddresses = safesResult.rows.map(o => o.user);
+
+      const lastActiveSafeSql = `
+          select st.safe_address, max(st.timestamp)
+          from crc_safe_timeline_2 st
+          where st.safe_address = ANY($1::text[])
+            and st.type = 'CrcMinting'
+          group by st.safe_address
+          order by max(st.timestamp) desc
+          limit 1;`;
+
+      const activeSafeResult = await pool.query(lastActiveSafeSql, [safeAddresses]);
+      if (activeSafeResult.rows.length == 0){
+        return null;
+      }
+
+      return activeSafeResult.rows[0].safe_address;
     }
   },
   Mutation: {
