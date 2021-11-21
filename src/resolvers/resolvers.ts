@@ -373,25 +373,26 @@ export const resolvers: Resolvers = {
       //
       // public
       //
+      const blockChainEventTypes:BlockchainEventType[] = [];
       if (types[EventType.CrcSignup]) {
         delete types[EventType.CrcSignup];
-        eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.CrcSignup]));
+        blockChainEventTypes.push(BlockchainEventType.CrcSignup);
       }
       if (types[EventType.CrcTrust]) {
         delete types[EventType.CrcTrust];
-        eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.CrcTrust]));
+        blockChainEventTypes.push(BlockchainEventType.CrcTrust);
       }
       if (types[EventType.CrcHubTransfer]) {
         delete types[EventType.CrcHubTransfer];
-        eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.CrcHubTransfer]));
+        blockChainEventTypes.push(BlockchainEventType.CrcHubTransfer);
       }
       if (types[EventType.Erc20Transfer]) {
         delete types[EventType.Erc20Transfer];
-        eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.Erc20Transfer]));
+        blockChainEventTypes.push(BlockchainEventType.Erc20Transfer);
       }
       if (types[EventType.CrcMinting]) {
         delete types[EventType.CrcMinting];
-        eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.CrcMinting]));
+        blockChainEventTypes.push(BlockchainEventType.CrcMinting);
       }
       if (types[EventType.CrcTokenTransfer]) {
         delete types[EventType.CrcTokenTransfer];
@@ -412,12 +413,13 @@ export const resolvers: Resolvers = {
        */
       if (types[EventType.EthTransfer]) {
         delete types[EventType.EthTransfer];
-        eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.EthTransfer]));
+        blockChainEventTypes.push(BlockchainEventType.EthTransfer);
       }
       if (types[EventType.GnosisSafeEthTransfer]) {
         delete types[EventType.GnosisSafeEthTransfer];
-        eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.GnosisSafeEthTransfer]));
       }
+
+      eventSources.push(new BlockchainIndexerEventSource(blockChainEventTypes));
 
       //
       // private
@@ -528,80 +530,114 @@ export const resolvers: Resolvers = {
       const from = args.from.toLowerCase();
       const to = args.to.toLowerCase();
 
-      const sql = ` with my_tokens as (
-                        select token
-                        from crc_balances_by_safe_and_token_2
-                        where safe_address = $1
-                    ),
-                    accepted_tokens as (
-                        select user_token as token
-                        from crc_current_trust_2
-                        where can_send_to = $2
-                    ),
-                    intersection as (
-                        select *
-                        from my_tokens
-                        intersect
-                        select *
-                        from accepted_tokens
-                    ),
-                    relevant_balances as (
-                        select b.token, b.token_owner, b.balance
-                        from intersection i
-                                 join crc_balances_by_safe_and_token_2 b on i.token = b.token
-                        where safe_address = $1
-                    )
-               select *
-               from relevant_balances
-               order by balance asc;`;
+      const sql = `
+        with my_tokens as (
+          select token
+          from crc_balances_by_safe_and_token_2
+          where safe_address = $1
+      ),
+      accepted_tokens as (
+           select user_token as token
+           from crc_current_trust_2
+           where can_send_to = $2
+      ),
+      intersection as (
+           select *
+           from my_tokens
+           intersect
+           select *
+           from accepted_tokens
+      ),
+      relevant_balances as (
+           select b.token, b.token_owner, b.balance as balance
+           from intersection i
+           join crc_balances_by_safe_and_token_2 b on i.token = b.token
+           where safe_address = $1
+             and balance > 0
+           order by b.balance desc
+           limit 30
+      ),
+      total as (
+           select sum(balance) as total
+           from relevant_balances
+      ),
+      distribution as (
+           select *, ((1 / (select total from total)) * balance) as weight
+           from relevant_balances
+      ),
+      price as (
+           select $3::numeric as price
+      ),
+      weighted_price_parts as (
+           select *
+                , (select * from price) as price
+                , (select * from price) * weight as weighted_price_part
+                , trunc((select * from price) * weight, 0) as weighted_price_part_int
+           from distribution
+      ),
+      weighted_price_parts_sum as (
+           select sum(weighted_price_part_int) as weighted_price_part_sum_int
+                , sum(weighted_price_part) as weighted_price_part_sum
+                , max(price) - sum(weighted_price_part_int) as weighted_price_error
+                , max(balance) as max_balance
+           from weighted_price_parts
+      ),
+      result as (
+           select token
+                , token_owner
+                , balance
+                , case
+                    when (balance = (select max_balance from weighted_price_parts_sum))
+                        -- The token with the maximum balance must pay for previous rounding errors
+                        then weighted_price_part_int + (select weighted_price_error from weighted_price_parts_sum)
+                        -- all others use the calculated int part
+                        else weighted_price_part_int
+                  end as weighted_price_part
+           from weighted_price_parts
+           order by weight asc
+      )
+      select token
+           , token_owner
+           , balance
+           , weighted_price_part as amount
+      from result;`;
 
-      const result = await getPool().query(sql, [from, to]);
+      let requestedAmount = new BN(args.amount);
 
-      const stack: { token: string, tokenOwner: string, balance: BN }[] = [];
-      result.rows.forEach(o => stack.push({
-        token: o.token,
-        tokenOwner: o.token_owner,
-        balance: new BN(o.balance)
-      }));
+      const result = await getPool().query(sql, [from, to, requestedAmount.toString()]);
+      const transfers: { token: string, tokenOwner: string, balance: BN, weighted_price_part: BN  }[] = [];
 
-      let remainingAmount = new BN(args.amount);
-      const segments = [];
-      const zero = new BN("0");
-      while (stack.length > 0 && remainingAmount.gt(zero)) {
-        const currentToken = stack.pop();
-        if (!currentToken)
-          break;
+      result.rows.forEach(o => {
+        const item = {
+          token: o.token,
+          tokenOwner: o.token_owner,
+          balance: new BN(o.balance),
+          weighted_price_part: new BN(o.amount),
+        };
+        transfers.push(item);
+      });
 
-        const _remainingAmount = currentToken.balance.sub(remainingAmount);
-
-        if (_remainingAmount.isNeg()) {
-          // amount of current tokens is not enough for this step, use the max possible amount for this step and continue
-          segments.push(currentToken);
-          remainingAmount = _remainingAmount.abs()
-        } else {
-          // amount of current tokens is enough for this step. Stop here.
-          const usedAmount = currentToken.balance.sub(_remainingAmount);
-          segments.push({
-            ...currentToken,
-            balance: usedAmount
-          });
-          break;
-        }
+      const totalBalance = transfers.reduce((p,c) => p.add(c.balance), new BN("0"));
+      if (requestedAmount.gt(totalBalance)) {
+        // Not enough balance to perform the transaction
+        return <TransitivePath>{
+          requestedAmount: args.amount,
+          flow: totalBalance.toString(),
+          transfers: []
+        };
       }
 
-      const flow = segments.reduce((p,c) => p.add(c.balance), new BN("0"));
-      // const correct = flow.eq(new BN(args.amount));
-
+      const flow = transfers.reduce((p,c) => p.add(c.balance), new BN("0"));
       return <TransitivePath>{
-        requestedAmount: args.amount,
+        requestedAmount: requestedAmount.toString(),
         flow: flow.toString(),
-        transfers: segments.map(o => {
+        transfers: transfers.map(o => {
           return <TransitiveTransfer> {
             token: o.token,
             from: args.from,
             to: args.to,
             tokenOwner: o.tokenOwner,
-            value: o.balance.toString()
+            value: o.weighted_price_part.toString()
           }
         })
       };
