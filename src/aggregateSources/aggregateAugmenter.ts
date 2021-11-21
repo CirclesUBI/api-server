@@ -1,10 +1,10 @@
 import {
   AggregateType,
   Contacts,
-  CrcBalances,
+  CrcBalances, Erc20Balances,
   IAggregatePayload,
   Members,
-  Memberships, Offers,
+  Memberships, Offers, Profile,
   ProfileAggregate, Purchases
 } from "../types";
 import {ProfilesBySafeAddressLookup} from "../resolvers/queries/profiles";
@@ -16,12 +16,13 @@ export class AggregateAugmenter
   private _profiles: ProfilesBySafeAddressLookup = {};
   private _aggregates: ProfileAggregate[] = [];
   private _extractors: AggregateAugmentation<any>[] = [
-    new CrcBalanceAugmentation(),
+    new CrcBalancesAugmentation(),
     new ContactsAugmentation(),
     new MembersAugmentation(),
     new MembershipsAugmentation(),
     new OffersAugmentation(),
-    new PurchasesAugmentation()
+    new PurchasesAugmentation(),
+    new Erc20BalancesAugmentation()
   ];
 
   add(profileAggregate: ProfileAggregate) {
@@ -50,25 +51,53 @@ export class AggregateAugmenter
     this._aggregates.forEach(ev => {
       this._extractors
         .filter(ex => ex.matches(ev))
-        .forEach(ex => ex.augmentProfiles(ev.payload, this._profiles))
+        .forEach(ex => ex.augmentPayload(ev.payload, this._profiles))
     });
 
     return this._aggregates;
   }
 }
 
+export type TokenInfoByAddress = {
+  [safeAddress: string]: {
+    symbol: string,
+    name: string,
+    deployedInBlockHash: string,
+    deployedInBlockNo: string,
+    deployedAt: string
+  } | null;
+};
+
 export interface AggregateAugmentation<TAggregatePayload extends IAggregatePayload> {
   matches(profileAggregate:ProfileAggregate) : boolean;
   extractAddresses(payload: TAggregatePayload): string[];
-  augmentProfiles(payload: TAggregatePayload, profiles: ProfilesBySafeAddressLookup) : void;
+  extractTokenAddresses?(payload: TAggregatePayload): string[];
+  augmentPayload(payload: TAggregatePayload, profiles: ProfilesBySafeAddressLookup, tokens?: TokenInfoByAddress) : void;
 }
 
-export class CrcBalanceAugmentation implements AggregateAugmentation<CrcBalances> {
+export class Erc20BalancesAugmentation implements AggregateAugmentation<Erc20Balances> {
+  matches(profileAggregate: ProfileAggregate) {
+    return profileAggregate.type == AggregateType.Erc20Balances;
+  }
+
+  augmentPayload(payload: Erc20Balances, profiles: ProfilesBySafeAddressLookup, tokens?: TokenInfoByAddress): void {
+  }
+
+  extractTokenAddresses(payload: Erc20Balances): string[] {
+    return payload.balances.map(o => o.token_address);
+  }
+
+  extractAddresses(payload: Erc20Balances): string[] {
+    return [];
+  }
+}
+
+export class CrcBalancesAugmentation implements AggregateAugmentation<CrcBalances> {
   matches(profileAggregate: ProfileAggregate) {
     return profileAggregate.type == AggregateType.CrcBalances;
   }
 
-  augmentProfiles(payload: CrcBalances, profiles: ProfilesBySafeAddressLookup): void {
+  augmentPayload(payload: CrcBalances, profiles: ProfilesBySafeAddressLookup): void {
     payload.balances.forEach(b => b.token_owner_profile = profiles[b.token_owner_address]);
   }
 
@@ -82,7 +111,7 @@ export class ContactsAugmentation implements AggregateAugmentation<Contacts> {
     return profileAggregate.type == AggregateType.Contacts;
   }
 
-  augmentProfiles(payload: Contacts, profiles: ProfilesBySafeAddressLookup): void {
+  augmentPayload(payload: Contacts, profiles: ProfilesBySafeAddressLookup): void {
     payload.contacts.forEach(c => c.contactAddress_Profile = profiles[c.contactAddress]);
   }
 
@@ -96,7 +125,7 @@ export class MembersAugmentation implements AggregateAugmentation<Members> {
     return profileAggregate.type == AggregateType.Members;
   }
 
-  augmentProfiles(payload: Members, profiles: ProfilesBySafeAddressLookup): void {
+  augmentPayload(payload: Members, profiles: ProfilesBySafeAddressLookup): void {
     // TODO: Fix Orga/Profile union type handling
     payload.members = <any>payload.members.map(o => {
       return {
@@ -116,7 +145,7 @@ export class MembershipsAugmentation implements AggregateAugmentation<Membership
     return profileAggregate.type == AggregateType.Memberships;
   }
 
-  augmentProfiles(payload: Memberships, profiles: ProfilesBySafeAddressLookup): void {
+  augmentPayload(payload: Memberships, profiles: ProfilesBySafeAddressLookup): void {
     payload.organisations = <any>payload.organisations.map(o => {
       return {
         ...o,
@@ -139,7 +168,7 @@ export class OffersAugmentation implements AggregateAugmentation<Offers> {
     return profileAggregate.type == AggregateType.Offers;
   }
 
-  augmentProfiles(payload: Offers, profiles: ProfilesBySafeAddressLookup): void {
+  augmentPayload(payload: Offers, profiles: ProfilesBySafeAddressLookup): void {
     payload.offers = <any>payload.offers.map(o => {
       o.createdByProfile = profiles[o.createdByAddress];
       return o;
@@ -156,7 +185,7 @@ export class PurchasesAugmentation implements AggregateAugmentation<Purchases> {
     return profileAggregate.type == AggregateType.Purchases;
   }
 
-  augmentProfiles(payload: Purchases, profiles: ProfilesBySafeAddressLookup): void {
+  augmentPayload(payload: Purchases, profiles: ProfilesBySafeAddressLookup): void {
     payload.purchases = payload.purchases.map(o => {
       o.createdByProfile = profiles[o.createdByAddress];
       return o;

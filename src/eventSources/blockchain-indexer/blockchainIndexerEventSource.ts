@@ -9,7 +9,7 @@ export enum BlockchainEventType {
   CrcMinting = "CrcMinting",
   EthTransfer = "EthTransfer",
   GnosisSafeEthTransfer = "GnosisSafeEthTransfer",
-  HmnTransfer = "HmnTransfer"
+  Erc20Transfer = "Erc20Transfer"
 }
 
 export class BlockchainIndexerEventSource implements EventSource
@@ -118,52 +118,47 @@ export class BlockchainIndexerEventSource implements EventSource
   }
 
   async getEvents(forSafeAddress: string, pagination:PaginationArgs, filter: Maybe<ProfileEventFilter>): Promise<ProfileEvent[]> {
-    const pool = getPool();
-    try {
-      const inSql = this._in();
-      const outSql = this._out();
-      const baseQuery = this.cte(inSql, outSql, filter);
-      const queryWithFilter = (<any>baseQuery).replaceAll("~~SORT_ORDER~~", pagination.order == SortOrder.Asc ? "asc" : "desc");
+    const inSql = this._in();
+    const outSql = this._out();
+    const baseQuery = this.cte(inSql, outSql, filter);
+    const queryWithFilter = (<any>baseQuery).replaceAll("~~SORT_ORDER~~", pagination.order == SortOrder.Asc ? "asc" : "desc");
 
-      const params = [
-        this._types,
-        forSafeAddress,
-        pagination.continueAt,
-        pagination.limit,
-        filter?.from ?? "",
-        filter?.to ?? "",
-        filter?.with ?? "",
-        filter?.transactionHash ?? ""
-      ];
+    const params = [
+      this._types,
+      forSafeAddress,
+      pagination.continueAt,
+      pagination.limit,
+      filter?.from ?? "",
+      filter?.to ?? "",
+      filter?.with ?? "",
+      filter?.transactionHash ?? ""
+    ];
 
-      const eventRows = await pool.query(
-        queryWithFilter,
-        params
-      );
+    const eventRows = await getPool().query(
+      queryWithFilter,
+      params
+    );
 
-      const results = eventRows.rows.map((r:any) => {
-        return <ProfileEvent>{
-          __typename: "ProfileEvent",
-          safe_address: r.safe_address,
-          contact_address: r.contact_address,
-          type: r.type,
-          block_number: r.block_number,
-          direction: r.direction,
-          timestamp: r.timestamp.toJSON(),
-          value: r.value,
+    const results = eventRows.rows.map((r:any) => {
+      return <ProfileEvent>{
+        __typename: "ProfileEvent",
+        safe_address: r.safe_address,
+        contact_address: r.contact_address,
+        type: r.type,
+        block_number: r.block_number,
+        direction: r.direction,
+        timestamp: r.timestamp.toJSON(),
+        value: r.value,
+        transaction_hash: r.transaction_hash,
+        transaction_index: r.transaction_index,
+        payload: {
+          __typename: r.type,
           transaction_hash: r.transaction_hash,
-          transaction_index: r.transaction_index,
-          payload: {
-            __typename: r.type,
-            transaction_hash: r.transaction_hash,
-            ...(Array.isArray(r.payload) ? r.payload[0] : r.payload),
-          }
-        };
-      });
+          ...(Array.isArray(r.payload) ? r.payload[0] : r.payload),
+        }
+      };
+    });
 
-      return results;
-    } finally {
-      await pool.end();
-    }
+    return results;
   }
 }

@@ -31,50 +31,45 @@ export function invitationTransaction(prisma_api_ro:PrismaClient) {
             return null;
         }
 
-        const pool = getPool();
-        try {
-            const redeemInvitationTransactionQuery = `
+        const redeemInvitationTransactionQuery = `
             select b.timestamp, t.*
             from transaction_2 t
             join block b on t.block_number = b.number
             where t.hash = $1`;
 
-            const redeemInvitationTransactionQueryParams = [
-                claimedInvitation.redeemTxHash
-            ];
-            const redeemResult = await pool.query(
-              redeemInvitationTransactionQuery,
-              redeemInvitationTransactionQueryParams);
+        const redeemInvitationTransactionQueryParams = [
+            claimedInvitation.redeemTxHash
+        ];
+        const redeemResult = await getPool().query(
+          redeemInvitationTransactionQuery,
+          redeemInvitationTransactionQueryParams);
 
-            if (redeemResult.rows.length == 0) {
-                return null;
-            }
-
-            const redeemTransaction = redeemResult.rows[0];
-
-            return <ProfileEvent>{
-                safe_address: profile.circlesSafeOwner?.toLowerCase(),
-                transaction_index: redeemTransaction.index,
-                value: redeemTransaction.value,
-                direction: "in",
-                transaction_hash: redeemTransaction.hash,
-                type: "EthTransfer",
-                block_number: redeemTransaction.block_number,
-                timestamp: redeemTransaction.timestamp.toJSON(),
-                safe_address_profile: profile,
-                payload: {
-                    __typename: "EthTransfer",
-                    transaction_hash: redeemTransaction.redeemTxHash,
-                    from: redeemTransaction.from,
-                    from_profile: claimedInvitation.createdBy,
-                    to: redeemTransaction.to,
-                    to_profile: profile,
-                    value: redeemTransaction.value,
-                    tags: []
-                }
-            };
-        } finally {
-            await pool.end();
+        if (redeemResult.rows.length == 0) {
+            return null;
         }
+
+        const redeemTransaction = redeemResult.rows[0];
+
+        return <ProfileEvent>{
+            safe_address: profile.circlesSafeOwner?.toLowerCase(),
+            transaction_index: redeemTransaction.index,
+            value: redeemTransaction.value,
+            direction: "in",
+            transaction_hash: redeemTransaction.hash,
+            type: "EthTransfer",
+            block_number: redeemTransaction.block_number,
+            timestamp: redeemTransaction.timestamp.toJSON(),
+            safe_address_profile: profile,
+            payload: {
+                __typename: "EthTransfer",
+                transaction_hash: redeemTransaction.redeemTxHash,
+                from: redeemTransaction.from,
+                from_profile: claimedInvitation.createdBy,
+                to: redeemTransaction.to,
+                to_profile: profile,
+                value: redeemTransaction.value,
+                tags: []
+            }
+        };
     }
 }

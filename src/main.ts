@@ -13,6 +13,7 @@ import {Error} from "apollo-server-core/src/plugin/schemaReporting/operations";
 import {BlockchainEventSource} from "./indexer-api/blockchainEventSource";
 import {ApiPubSub} from "./pubsub";
 import {RpcGateway} from "./rpcGateway";
+import {PoolClient} from "pg";
 
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
 
@@ -21,7 +22,6 @@ if (!process.env.CORS_ORIGNS) {
 }
 
 const corsOrigins = process.env.CORS_ORIGNS.split(";").map(o => o.trim());
-const activeWsClients = [];
 
 const errorLogger = {
     async didEncounterErrors(requestContext: any) {
@@ -109,6 +109,8 @@ export class Main {
                     }
                 }
 
+                console.log("New websocket connection:", connectionParams);
+
                 return new Context(
                   contextId,
                   isSubscription,
@@ -117,10 +119,6 @@ export class Main {
                   originHeaderValue,
                   sessionId,
                   "");
-
-                // lookup userId by token, etc.
-                console.log("New websocket connection:", connectionParams);
-                return { userId: 0 };
             },
         }, {
             server: httpServer,
@@ -137,38 +135,75 @@ export class Main {
             console.warn(`No BLOCKCHAIN_INDEX_WS_URL environment variable was provided. Cannot subscribe to blockchain events.`)
         }
 
-        const notifyConnection = await getPool().connect();
-
-        // Listen for all pg_notify channel messages
-        notifyConnection.on('notification', async function(msg) {
-            if (msg.channel != "new_message")
-                return;
-            if (!msg.payload)
-                return;
-            const payload = JSON.parse(msg.payload);
-            if (!payload.to)
-                return;
-
-            const to:string = payload.to;
-            if (!RpcGateway.get().utils.isAddress(to))
-                return;
-
-            await ApiPubSub.instance.pubSub.publish(`events_${to}`, {
-                events: {
-                    type: "new_message"
-                }
-            });
-            console.log(payload);
-        });
-
-        // Designate which channels we are listening on. Add additional channels with multiple lines.
-        await notifyConnection.query('LISTEN new_message');
+        this.listenForDbEvents()
+          .catch(e => {
+              console.error(`The notifyConnection died:`, e);
+          });
 
 
         const PORT = 8989;
             httpServer.listen(PORT, () =>
               console.log(`Server is now running on http://localhost:${PORT}/graphql`)
             );
+    }
+
+    private async listenForDbEvents() {
+        while (true) {
+            let notifyConnection: PoolClient|null = null;
+            console.log(`Trying to create the notifyConnection ..`);
+            try {
+                notifyConnection = await getPool().connect();
+                await new Promise(async (resolve, reject) => {
+                    if (!notifyConnection) {
+                        reject(new Error(`The notifyConnection couldn't be established and is 'null'.`));
+                        return;
+                    }
+                    // Listen for all pg_notify channel messages
+                    notifyConnection.on("error", async function (err) {
+                        reject(err);
+                    });
+                    notifyConnection.on('notification', async function (msg) {
+                        if (msg.channel != "new_message")
+                            return;
+                        if (!msg.payload)
+                            return;
+
+                        const payload = JSON.parse(msg.payload);
+                        if (!payload.to)
+                            return;
+
+                        const to: string = payload.to;
+                        if (!RpcGateway.get().utils.isAddress(to))
+                            return;
+
+                        await ApiPubSub.instance.pubSub.publish(`events_${to}`, {
+                            events: {
+                                type: "new_message"
+                            }
+                        });
+                        console.log(`Received 'new_message' from notifyConnection: `, payload);
+                    });
+
+                    console.error(`notifyConnection established.`);
+
+                    // Designate which channels we are listening on. Add additional channels with multiple lines.
+                    await notifyConnection.query('LISTEN new_message');
+                });
+            } catch (e) {
+                console.error(`The notifyConnection experienced an error: `, e);
+            } finally {
+                try {
+                    notifyConnection?.release();
+                } catch (e) {
+                    console.error(`Couldn't release the notifyConnection on error:`, e);
+                }
+            }
+
+            console.log(`Retrying notifyConnection in 10 sec. ..`);
+            await new Promise((resolve) => {
+                setTimeout(resolve, 10000);
+            });
+        }
     }
 }
 

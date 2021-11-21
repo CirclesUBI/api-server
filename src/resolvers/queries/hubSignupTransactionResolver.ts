@@ -19,46 +19,42 @@ export async function hubSignupTransactionResolver (parent:any, args:any, contex
   if (!profile?.circlesAddress || !profile?.circlesSafeOwner) {
     return null;
   }
-  const pool = getPool();
-  try {
-    const hubSignupTransactionQuery = `
-            select * from crc_signup_2 where "user" = $1`;
 
-    const hubSignupTransactionQueryParams = [
-      profile.circlesAddress.toLowerCase()
-    ];
-    const hubSignupTransactionResult = await pool.query(
-      hubSignupTransactionQuery,
-      hubSignupTransactionQueryParams);
+  const hubSignupTransactionQuery = `
+          select * from crc_signup_2 where "user" = $1`;
 
-    console.log(`Searching for the hub signup transaction for ${profile.circlesAddress.toLowerCase()} took ${new Date().getTime() - now.getTime()} ms.`)
+  const hubSignupTransactionQueryParams = [
+    profile.circlesAddress.toLowerCase()
+  ];
+  const hubSignupTransactionResult = await getPool().query(
+    hubSignupTransactionQuery,
+    hubSignupTransactionQueryParams);
 
-    if (hubSignupTransactionResult.rows.length == 0) {
-      return null;
-    }
+  console.log(`Searching for the hub signup transaction for ${profile.circlesAddress.toLowerCase()} took ${new Date().getTime() - now.getTime()} ms.`)
 
-    const hubSignupTransaction = hubSignupTransactionResult.rows[0];
-
-    return <ProfileEvent>{
-      id: hubSignupTransaction.id,
-      safe_address: profile.circlesAddress.toLowerCase(),
-      transaction_index: hubSignupTransaction.index,
-      value: hubSignupTransaction.value,
-      direction: "out",
-      transaction_hash: hubSignupTransaction.hash,
-      type: "CrcSignup",
-      block_number: hubSignupTransaction.block_number,
-      timestamp: hubSignupTransaction.timestamp.toJSON(),
-      safe_address_profile: profile,
-      payload: {
-        __typename: "CrcSignup",
-        user: hubSignupTransaction.user,
-        token: hubSignupTransaction.token,
-        transaction_hash: hubSignupTransaction.hash,
-        user_profile: profile
-      }
-    };
-  } finally {
-    await pool.end();
+  if (hubSignupTransactionResult.rows.length == 0) {
+    return null;
   }
-};
+
+  const hubSignupTransaction = hubSignupTransactionResult.rows[0];
+
+  return <ProfileEvent>{
+    id: hubSignupTransaction.id,
+    safe_address: profile.circlesAddress.toLowerCase(),
+    transaction_index: hubSignupTransaction.index,
+    value: hubSignupTransaction.value,
+    direction: "out",
+    transaction_hash: hubSignupTransaction.hash,
+    type: "CrcSignup",
+    block_number: hubSignupTransaction.block_number,
+    timestamp: hubSignupTransaction.timestamp.toJSON(),
+    safe_address_profile: profile,
+    payload: {
+      __typename: "CrcSignup",
+      user: hubSignupTransaction.user,
+      token: hubSignupTransaction.token,
+      transaction_hash: hubSignupTransaction.hash,
+      user_profile: profile
+    }
+  };
+}

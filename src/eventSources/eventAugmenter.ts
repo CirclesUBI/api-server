@@ -2,6 +2,7 @@ import {
   ChatMessage,
   CrcHubTransfer,
   CrcMinting,
+  Erc20Transfer,
   CrcSignup,
   CrcTokenTransfer,
   CrcTrust,
@@ -9,9 +10,7 @@ import {
   IEventPayload, InvitationRedeemed,
   MembershipAccepted,
   MembershipOffer,
-  MembershipRejected, Profile,
-  ProfileEvent, Tag,
-  WelcomeMessage
+  MembershipRejected, ProfileEvent, WelcomeMessage
 } from "../types";
 import {ProfilesBySafeAddressLookup} from "../resolvers/queries/profiles";
 import {ProfileLoader, SafeProfileMap} from "../profileLoader";
@@ -37,7 +36,8 @@ export class EventAugmenter
     new MembershipAcceptedAugmentation(),
     new MembershipRejectedAugmentation(),
     new WelcomeMessageAugmentation(),
-    new InvitationRedeemedAugmentation()
+    new InvitationRedeemedAugmentation(),
+    new Erc20TransferAugmentation()
   ];
 
   add(profileEvent: ProfileEvent) {
@@ -133,6 +133,22 @@ export class CrcTrustAugmentation implements ProfileEventAugmentation<CrcTrust> 
   augment(payload: CrcTrust, profiles: ProfilesBySafeAddressLookup): void {
     payload.address_profile = profiles[payload.address];
     payload.can_send_to_profile = profiles[payload.can_send_to];
+  }
+}
+
+export class Erc20TransferAugmentation implements ProfileEventAugmentation<Erc20Transfer> {
+  matches(profileEvent: ProfileEvent): boolean {
+    return profileEvent.payload?.__typename === EventType.Erc20Transfer;
+  }
+  extractAddresses(payload: Erc20Transfer): string[] {
+    return [payload.from, payload.to];
+  }
+  extractTransactionHashes(payload: Erc20Transfer) {
+    return [payload.transaction_hash];
+  }
+  augment(payload: Erc20Transfer, profiles: ProfilesBySafeAddressLookup): void {
+    payload.from_profile = profiles[payload.from];
+    payload.to_profile = profiles[payload.to];
   }
 }
 

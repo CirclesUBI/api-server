@@ -304,6 +304,16 @@ type CrcTrust implements IEventPayload {
   limit: Int!
 }
 
+type Erc20Transfer implements IEventPayload {
+  transaction_hash: String!
+  from: String!
+  from_profile: Profile
+  to: String!
+  to_profile: Profile
+  token: String!
+  value: String!
+}
+
 # ${from} sent ${value} CRC to ${to}
 type CrcTokenTransfer implements IEventPayload {
   transaction_hash: String!
@@ -461,6 +471,7 @@ union EventPayload =
   | CrcHubTransfer
   | CrcMinting
   | EthTransfer
+  | Erc20Transfer
   | GnosisSafeEthTransfer
   | ChatMessage
   | MembershipOffer
@@ -478,9 +489,9 @@ enum EventType {
   , CrcTrust
   , CrcTokenTransfer
   , CrcHubTransfer
+  , Erc20Transfer
   , CrcMinting
   , EthTransfer
-  , HmnTransfer
   , GnosisSafeEthTransfer
   , ChatMessage
   , MembershipOffer
@@ -496,6 +507,7 @@ enum EventType {
 
 enum AggregateType {
   CrcBalances
+  Erc20Balances
   Contacts
   Memberships
   Members
@@ -505,6 +517,12 @@ enum AggregateType {
 
 # All crc holdings of the user
 type CrcBalances implements IAggregatePayload {
+  lastUpdatedAt: String!
+  balances: [AssetBalance!]!
+}
+
+# All crc holdings of the user
+type Erc20Balances implements IAggregatePayload {
   lastUpdatedAt: String!
   balances: [AssetBalance!]!
 }
@@ -555,6 +573,7 @@ type Contact {
 
 union AggregatePayload =
     CrcBalances
+  | Erc20Balances
   | Contacts
   | Memberships
   | Members
@@ -664,6 +683,7 @@ type CommonTrust {
 }
 
 type AssetBalance {
+  token_symbol: String
   token_address: String!
   token_owner_address: String!
   token_owner_profile: Profile

@@ -46,13 +46,8 @@ export function sendMessage(prisma: PrismaClient) {
     });
 
     if (toProfile.circlesAddress && RpcGateway.get().utils.isAddress(toProfile.circlesAddress)) {
-      const pool = getPool();
-      try {
-        await pool.query(
-          `call publish_event('new_message', '{"to":"${toProfile.circlesAddress.toLowerCase()}"}');`);
-      } finally {
-        await pool.end();
-      }
+      await getPool().query(
+        `call publish_event('new_message', '{"to":"${toProfile.circlesAddress.toLowerCase()}"}');`);
     } else {
       const err = new Error();
       console.warn("A message was sent to a recipient without safe at:", err.stack);

@@ -1,14 +1,11 @@
-import {Pool, PoolClient} from "pg";
+import {Pool} from "pg";
 import {City} from "../types";
 
-const pool = new Pool({
+let pool = new Pool({
     connectionString: process.env.UTILITY_DB_CONNECTION_STRING
-})
-
-pool.on('error', (err:Error, client:PoolClient) => {
-    console.error('Unexpected error on idle client', err)
-    process.exit(-1)
-})
+}).on('error', (err) => {
+    console.error('An idle client has experienced an error', err.stack)
+});
 
 export class Query {
     static async placesById(ids:number[]) : Promise<City[]> {
@@ -32,6 +29,9 @@ export class Query {
         limit 50`;
 
         return new Promise((resolve, reject) => {
+            if (!pool) {
+                throw new Error(`The utility-db is not available.`)
+            }
             pool.query(query, ids, (err, res) => {
                 if (err) {
                     reject(err);
@@ -131,6 +131,9 @@ export class Query {
         const isoAlpha2Language_ = isoAlpha2Language.toLowerCase();
 
         return new Promise((resolve, reject) => {
+            if (!pool) {
+                throw new Error(`The utility-db is not available.`)
+            }
             pool.query(query, [searchPattern_, isoAlpha2Language_], (err, res) => {
                 if (err) {
                     reject(err);

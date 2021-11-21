@@ -13,9 +13,8 @@ import {prisma_api_ro} from "../../apiDbClient";
 
 async function trustContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const start = new Date().getTime();
-  const pool = getPool();
   try {
-    const trustContactsResult = await pool.query(`
+    const trustContactsResult = await getPool().query(`
                 with "out" as (
                     select max(timestamp) last_contact_at, array_agg("limit") as limits, address
                     from crc_trust_2
@@ -55,7 +54,6 @@ async function trustContacts(forSafeAddress: string, filter?: Maybe<ProfileAggre
       };
     })
   } finally {
-    await pool.end();
     const duration = new Date().getTime() - start;
     console.log(`contact source 'trustContacts' took: ${duration} ms`);
   }
@@ -63,9 +61,8 @@ async function trustContacts(forSafeAddress: string, filter?: Maybe<ProfileAggre
 
 async function hubTransferContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const start = new Date().getTime();
-  const pool = getPool();
   try {
-    const hubTransferContactsResult = await pool.query(`
+    const hubTransferContactsResult = await getPool().query(`
                 with "out" as (
                     select max(timestamp) last_contact_at, "to" as contact_address
                     from crc_hub_transfer_2
@@ -115,7 +112,6 @@ async function hubTransferContacts(forSafeAddress: string, filter?: Maybe<Profil
       };
     })
   } finally {
-    await pool.end();
     const duration = new Date().getTime() - start;
     console.log(`contact source 'hubTransferContacts' took: ${duration} ms`);
   }

@@ -73,12 +73,11 @@ import {AggregateAugmenter} from "../aggregateSources/aggregateAugmenter";
 import {ProfileLoader} from "../profileLoader";
 import {OffersSource} from "../aggregateSources/api/offersSource";
 import {WelcomeMessageEventSource} from "../eventSources/api/welcomeMessageEventSource";
-import {PurchaseLine} from "../api-db/client";
 import {PurchasesSource} from "../aggregateSources/api/purchasesSource";
 import {canAccess} from "../canAccess";
 import {purchaseResolver} from "./mutations/purchase";
 import BN from "bn.js";
-import {symbolExecutionDispatcherWillResolveField} from "apollo-server-core/dist/utils/schemaInstrumentation";
+import {Erc20BalancesSource} from "../aggregateSources/blockchain-indexer/erc20BalancesSource";
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
@@ -92,66 +91,64 @@ export const safeFundingTransactionResolver = (async (parent: any, args: any, co
   if (!profile?.circlesAddress || !profile?.circlesSafeOwner) {
     return null;
   }
-  const pool = getPool();
-  try {
-    const safeFundingTransactionQuery = `
-        select *
-        from transaction_2
-        where "from" = $1
-          and "to" = $2`;
 
-    const safeFundingTransactionQueryParams = [
-      profile.circlesSafeOwner.toLowerCase(),
-      profile.circlesAddress.toLowerCase()
-    ];
-    const safeFundingTransactionResult = await pool.query(
-      safeFundingTransactionQuery,
-      safeFundingTransactionQueryParams);
+  const safeFundingTransactionQuery = `
+      select *
+      from transaction_2
+      where "from" = $1
+        and "to" = $2`;
 
-    console.log(`Searching for the safe funding transaction from ${profile.circlesSafeOwner.toLowerCase()} to ${profile.circlesAddress.toLowerCase()} took ${new Date().getTime() - now.getTime()} ms.`)
+  const safeFundingTransactionQueryParams = [
+    profile.circlesSafeOwner.toLowerCase(),
+    profile.circlesAddress.toLowerCase()
+  ];
+  const safeFundingTransactionResult = await getPool().query(
+    safeFundingTransactionQuery,
+    safeFundingTransactionQueryParams);
 
-    if (safeFundingTransactionResult.rows.length == 0) {
-      return null;
-    }
+  console.log(`Searching for the safe funding transaction from ${profile.circlesSafeOwner.toLowerCase()} to ${profile.circlesAddress.toLowerCase()} took ${new Date().getTime() - now.getTime()} ms.`)
 
-    const safeFundingTransaction = safeFundingTransactionResult.rows[0];
-
-    return <ProfileEvent>{
-      id: safeFundingTransaction.id,
-      safe_address: profile.circlesSafeOwner?.toLowerCase(),
-      transaction_index: safeFundingTransaction.index,
-      value: safeFundingTransaction.value,
-      direction: "in",
-      transaction_hash: safeFundingTransaction.hash,
-      type: "EthTransfer",
-      block_number: safeFundingTransaction.block_number,
-      timestamp: safeFundingTransaction.timestamp.toJSON(),
-      safe_address_profile: profile,
-      payload: {
-        __typename: "EthTransfer",
-        transaction_hash: safeFundingTransaction.hash,
-        from: safeFundingTransaction.from,
-        from_profile: profile,
-        to: safeFundingTransaction.to,
-        to_profile: profile,
-        value: safeFundingTransaction.value,
-        tags: []
-      }
-    };
-  } finally {
-    await pool.end();
+  if (safeFundingTransactionResult.rows.length == 0) {
+    return null;
   }
+
+  const safeFundingTransaction = safeFundingTransactionResult.rows[0];
+
+  return <ProfileEvent>{
+    id: safeFundingTransaction.id,
+    safe_address: profile.circlesSafeOwner?.toLowerCase(),
+    transaction_index: safeFundingTransaction.index,
+    value: safeFundingTransaction.value,
+    direction: "in",
+    transaction_hash: safeFundingTransaction.hash,
+    type: "EthTransfer",
+    block_number: safeFundingTransaction.block_number,
+    timestamp: safeFundingTransaction.timestamp.toJSON(),
+    safe_address_profile: profile,
+    payload: {
+      __typename: "EthTransfer",
+      transaction_hash: safeFundingTransaction.hash,
+      from: safeFundingTransaction.from,
+      from_profile: profile,
+      to: safeFundingTransaction.to,
+      to_profile: profile,
+      value: safeFundingTransaction.value,
+      tags: []
+    }
+  };
+
 });
 
 
+const pool = new Pool(<PoolConfig>{
+  connectionString: process.env.BLOCKCHAIN_INDEX_DB_CONNECTION_STRING,
+  ssl: {
+    rejectUnauthorized: false,
+    // ca: cert
+  }
+});
 export function getPool() {
-  return new Pool(<PoolConfig>{
-    connectionString: process.env.BLOCKCHAIN_INDEX_DB_CONNECTION_STRING,
-    ssl: {
-      rejectUnauthorized: false,
-      // ca: cert
-    }
-  });
+  return pool;
 }
 
 const packageJson = require("../../package.json");
@@ -325,6 +322,9 @@ export const resolvers: Resolvers = {
       if (types[AggregateType.CrcBalances]) {
         aggregateSources.push(new CrcBalanceSource());
       }
+      if (types[AggregateType.Erc20Balances]) {
+        aggregateSources.push(new Erc20BalancesSource());
+      }
       if (types[AggregateType.Purchases]) {
         aggregateSources.push(new PurchasesSource());
       }
@@ -385,9 +385,9 @@ export const resolvers: Resolvers = {
         delete types[EventType.CrcHubTransfer];
         eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.CrcHubTransfer]));
       }
-      if (types[EventType.HmnTransfer]) {
-        delete types[EventType.HmnTransfer];
-        eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.HmnTransfer]));
+      if (types[EventType.Erc20Transfer]) {
+        delete types[EventType.Erc20Transfer];
+        eventSources.push(new BlockchainIndexerEventSource([BlockchainEventType.Erc20Transfer]));
       }
       if (types[EventType.CrcMinting]) {
         delete types[EventType.CrcMinting];
@@ -555,8 +555,7 @@ export const resolvers: Resolvers = {
                from relevant_balances
                order by balance asc;`;
 
-      const pool = await getPool();
-      const result = await pool.query(sql, [from, to]);
+      const result = await getPool().query(sql, [from, to]);
 
       const stack: { token: string, tokenOwner: string, balance: BN }[] = [];
       result.rows.forEach(o => stack.push({
@@ -612,8 +611,7 @@ export const resolvers: Resolvers = {
                                   from crc_signup_2
                                   where "owners" @> $1::text[];`;
 
-      const pool = await getPool();
-      const safesResult = await pool.query(findSafeOfOwnerSql, [[args.account]]);
+      const safesResult = await getPool().query(findSafeOfOwnerSql, [[args.account]]);
       if (safesResult.rows.length == 0){
         return null;
       }
@@ -628,7 +626,7 @@ export const resolvers: Resolvers = {
           order by max(st.timestamp) desc
           limit 1;`;
 
-      const activeSafeResult = await pool.query(lastActiveSafeSql, [safeAddresses]);
+      const activeSafeResult = await getPool().query(lastActiveSafeSql, [safeAddresses]);
       if (activeSafeResult.rows.length == 0){
         return null;
       }
