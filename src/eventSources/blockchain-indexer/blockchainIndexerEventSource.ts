@@ -140,6 +140,7 @@ export class BlockchainIndexerEventSource implements EventSource
     );
 
     const results = eventRows.rows.map((r:any) => {
+      const offset = r.timestamp.getTimezoneOffset() * 60 * 1000;
       return <ProfileEvent>{
         __typename: "ProfileEvent",
         safe_address: r.safe_address,
@@ -147,7 +148,7 @@ export class BlockchainIndexerEventSource implements EventSource
         type: r.type,
         block_number: r.block_number,
         direction: r.direction,
-        timestamp: r.timestamp.toJSON(),
+        timestamp: new Date(r.timestamp.getTime() - offset).toJSON(),
         value: r.value,
         transaction_hash: r.transaction_hash,
         transaction_index: r.transaction_index,
