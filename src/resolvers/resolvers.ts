@@ -78,6 +78,7 @@ import {canAccess} from "../canAccess";
 import {purchaseResolver} from "./mutations/purchase";
 import BN from "bn.js";
 import {Erc20BalancesSource} from "../aggregateSources/blockchain-indexer/erc20BalancesSource";
+import {SalesSource} from "../aggregateSources/api/salesSource";
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
@@ -325,9 +326,6 @@ export const resolvers: Resolvers = {
       if (types[AggregateType.Erc20Balances]) {
         aggregateSources.push(new Erc20BalancesSource());
       }
-      if (types[AggregateType.Purchases]) {
-        aggregateSources.push(new PurchasesSource());
-      }
       if (types[AggregateType.Contacts]) {
         const contactPoints = [
           ContactPoints.CrcHubTransfer,
@@ -343,6 +341,19 @@ export const resolvers: Resolvers = {
         }
         aggregateSources.push(new ContactsSource(contactPoints));
       }
+
+      if (context.sessionId) {
+        let canAccessPrivateDetails = await canAccess(context, args.safeAddress);
+        if (canAccessPrivateDetails) {
+          if (types[AggregateType.Purchases]) {
+            aggregateSources.push(new PurchasesSource());
+          }
+          if (types[AggregateType.Sales]) {
+            aggregateSources.push(new SalesSource());
+          }
+        }
+      }
+
       if (types[AggregateType.Memberships]) {
         aggregateSources.push(new MembershipsSource());
       }

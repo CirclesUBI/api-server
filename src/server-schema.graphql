@@ -227,6 +227,31 @@ type Offer {
   pricePerUnit: String!
 }
 
+type Sale {
+  id: Int!
+
+  sellerAddress: String!
+  sellerProfile: Profile
+
+  buyerAddress: String!
+  buyerProfile: Profile
+  createdAt: String!
+
+  total: String!
+  lines: [SalesLine!]!
+
+  paymentTransaction: ProfileEvent
+
+  invoices: [Invoice!]!
+}
+
+type SalesLine {
+  id: Int!
+
+  amount: Int!
+  offer: Offer!
+}
+
 type Purchase {
   id: Int!
 
@@ -513,6 +538,7 @@ enum AggregateType {
   Members
   Offers
   Purchases
+  Sales
 }
 
 # All crc holdings of the user
@@ -552,6 +578,11 @@ type Purchases implements IAggregatePayload {
   purchases: [Purchase!]!
 }
 
+type Sales implements IAggregatePayload {
+  lastUpdatedAt: String!
+  sales: [Sale!]!
+}
+
 enum ContactDirection {
   In
   Out
@@ -578,6 +609,7 @@ union AggregatePayload =
   | Memberships
   | Members
   | Offers
+  | Sales
   | Purchases
 
 type ProfileAggregate {

@@ -4,8 +4,7 @@ import {
   CrcBalances, Erc20Balances,
   IAggregatePayload,
   Members,
-  Memberships, Offers, Profile,
-  ProfileAggregate, Purchases
+  Memberships, Offers, ProfileAggregate, Purchases, Sales
 } from "../types";
 import {ProfilesBySafeAddressLookup} from "../resolvers/queries/profiles";
 import {ProfileLoader} from "../profileLoader";
@@ -22,6 +21,7 @@ export class AggregateAugmenter
     new MembershipsAugmentation(),
     new OffersAugmentation(),
     new PurchasesAugmentation(),
+    new SalesAugmentation(),
     new Erc20BalancesAugmentation()
   ];
 
@@ -194,5 +194,23 @@ export class PurchasesAugmentation implements AggregateAugmentation<Purchases> {
 
   extractAddresses(payload: Purchases): string[] {
     return payload.purchases.map(o => o.createdByAddress);
+  }
+}
+
+export class SalesAugmentation implements AggregateAugmentation<Sales> {
+  matches(profileAggregate: ProfileAggregate) {
+    return profileAggregate.type == AggregateType.Sales;
+  }
+
+  augmentPayload(payload: Sales, profiles: ProfilesBySafeAddressLookup): void {
+    payload.sales = payload.sales.map(o => {
+      o.sellerProfile = profiles[o.sellerAddress];
+      o.buyerProfile = profiles[o.buyerAddress];
+      return o;
+    });
+  }
+
+  extractAddresses(payload: Sales): string[] {
+    return payload.sales.flatMap(o => [o.sellerAddress, o.buyerAddress]);
   }
 }
