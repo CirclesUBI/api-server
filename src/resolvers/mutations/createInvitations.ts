@@ -34,19 +34,23 @@ export function createInvitations(prisma_api_rw:PrismaClient) {
       // Creates as many invitations as there are recipients in the arguments
       const createdInvitations = await Promise.all(args.for.map(async invitationFor => {
         const invitationEoa = RpcGateway.get().eth.accounts.create();
+        const invitationData = {
+          name: invitationFor,
+          createdAt: new Date(),
+          createdByProfileId: profile.id,
+          address: invitationEoa.address,
+          key: invitationEoa.privateKey,
+          code: Session.generateRandomBase64String(16)
+        };
 
+        const createdInvitation = (await fundEoa(RpcGateway.get(), invitationData)).createdInviteEoas[0];
         const invitation = await prisma_api_rw.invitation.create({
           data: {
-            name: invitationFor,
-            createdAt: new Date(),
-            createdByProfileId: profile.id,
-            address: invitationEoa.address,
-            key: invitationEoa.privateKey,
-            code: Session.generateRandomBase64String(16)
+            ...invitationData
           }
         });
 
-        return (await fundEoa(RpcGateway.get(), invitation)).createdInviteEoas[0];
+        return createdInvitation;
       }));
 
       return <CreateInvitationResult>{
