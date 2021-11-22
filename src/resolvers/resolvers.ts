@@ -2,7 +2,7 @@ import {myProfile, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {
-  AggregateType, EventType, Invoice, InvoiceLine, Profile,
+  AggregateType, Contacts, EventType, Invoice, InvoiceLine, Profile,
   ProfileEvent,
   ProfileOrOrganisation, Purchase, Resolvers,
   SortOrder, TransitivePath, TransitiveTransfer
@@ -360,6 +360,11 @@ export const resolvers: Resolvers = {
       aggregates.forEach(e => augmentation.add(e));
       aggregates = await augmentation.augment();
 
+      const contacts = aggregates.find(o => o.type === AggregateType.Contacts);
+      if (contacts) {
+        (<Contacts>contacts.payload).contacts = (<Contacts>contacts.payload).contacts.filter(o => o.contactAddress_Profile?.firstName);
+      }
+
       return aggregates;
     },
     events: async (parent, args, context: Context) => {
@@ -703,12 +708,12 @@ export const resolvers: Resolvers = {
         try {
           const session = await context.verifySession();
           const callerProfile = await context.callerProfile;
-          if (!callerProfile)
-            throw new Error(`You need a profile to subscribe`);
+          if (!callerProfile && !session.ethAddress)
+            throw new Error(`You need a registration to subscribe`);
 
-          if (!callerProfile.circlesAddress && session.ethAddress) {
+          if (!callerProfile?.circlesAddress && session.ethAddress) {
             return ApiPubSub.instance.pubSub.asyncIterator([`events_${session.ethAddress.toLowerCase()}`]);
-          } else if (callerProfile.circlesAddress) {
+          } else if (callerProfile?.circlesAddress) {
             return ApiPubSub.instance.pubSub.asyncIterator([`events_${callerProfile.circlesAddress.toLowerCase()}`]);
           } else {
             throw new Error(`Cannot subscribe without an eoa- or safe-address.`)

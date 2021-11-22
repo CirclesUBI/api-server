@@ -92,6 +92,7 @@ export class Main {
                     key: `protocol`,
                     value: `ws`
                 }];
+
                 const logger = newLogger(defaultTags);
                 isSubscription = true;
 
