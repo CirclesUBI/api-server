@@ -83,16 +83,16 @@ export const purchaseMachine = createMachine<PurchaseContext, PurchaseEvents>({
     getLastUbiRetrievalDate: () => async (callback) => {
       const apiClient = await window.o.apiClient.client.subscribeToResult();
       const result = await apiClient.query({
-        query: LastUbiTransactionDocument
+        query: ubiInfoDocument
       });
-      if ((result.errors && result.errors.length) || !result.data.lastUBITransaction) {
+      if ((result.errors && result.errors.length) || !result.data.ubiInfo) {
         callback({
           type: "NO_PREVIOUS_PAYOUT"
         });
       } else {
         callback({
           type: "GOT_PREVIOUS_PAYOUT",
-          lastPayoutAt: new Date(Date.parse(result.data.lastUBITransaction))
+          lastPayoutAt: new Date(Date.parse(result.data.ubiInfo))
         });
       }
     }

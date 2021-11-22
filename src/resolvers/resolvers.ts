@@ -39,7 +39,7 @@ import {redeemClaimedInvitation} from "./mutations/redeemClaimedInvitation";
 import {invitationTransaction} from "./queries/invitationTransaction";
 import {verifySessionChallengeResolver} from "./mutations/verifySessionChallengeResolver";
 import {organisations} from "./queries/organisations";
-import {lastUbiTransaction} from "./queries/lastUbiTransaction";
+import {ubiInfo} from "./queries/ubiInfo";
 import {initAggregateState} from "./queries/initAggregateState";
 import {hubSignupTransactionResolver} from "./queries/hubSignupTransactionResolver";
 import {upsertOrganisation} from "./mutations/upsertOrganisation";
@@ -300,7 +300,7 @@ export const resolvers: Resolvers = {
     tagById: tagById(prisma_api_ro),
     trustRelations: trustRelations(prisma_api_ro),
     commonTrust: commonTrust(prisma_api_ro),
-    lastUBITransaction: lastUbiTransaction(),
+    ubiInfo: ubiInfo(),
     initAggregateState: initAggregateState(),
     profilesById: async (parent, args, context: Context) => {
       const profiles = await new ProfileLoader().queryCirclesLandById(prisma_api_rw, args.ids);

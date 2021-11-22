@@ -800,7 +800,7 @@ export type Query = {
   invitationTransaction?: Maybe<ProfileEvent>;
   safeFundingTransaction?: Maybe<ProfileEvent>;
   hubSignupTransaction?: Maybe<ProfileEvent>;
-  lastUBITransaction?: Maybe<Scalars['String']>;
+  ubiInfo: UbiInfo;
   events: Array<ProfileEvent>;
   aggregates: Array<ProfileAggregate>;
   organisations: Array<Organisation>;
@@ -1082,6 +1082,12 @@ export type TrustRelation = {
   direction: TrustDirection;
 };
 
+export type UbiInfo = {
+  __typename?: 'UbiInfo';
+  lastTransactionAt?: Maybe<Scalars['String']>;
+  tokenAddress?: Maybe<Scalars['String']>;
+};
+
 export type UpdateSafeInput = {
   signature: Scalars['String'];
 };
@@ -1329,6 +1335,7 @@ export type ResolversTypes = ResolversObject<{
   TransitiveTransfer: ResolverTypeWrapper<TransitiveTransfer>;
   TrustDirection: TrustDirection;
   TrustRelation: ResolverTypeWrapper<TrustRelation>;
+  UbiInfo: ResolverTypeWrapper<UbiInfo>;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: ResolverTypeWrapper<UpdateSafeResponse>;
   UpsertOrganisationInput: UpsertOrganisationInput;
@@ -1442,6 +1449,7 @@ export type ResolversParentTypes = ResolversObject<{
   TransitivePath: TransitivePath;
   TransitiveTransfer: TransitiveTransfer;
   TrustRelation: TrustRelation;
+  UbiInfo: UbiInfo;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: UpdateSafeResponse;
   UpsertOrganisationInput: UpsertOrganisationInput;
@@ -2026,7 +2034,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   safeFundingTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
-  lastUBITransaction?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  ubiInfo?: Resolver<ResolversTypes['UbiInfo'], ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'types' | 'safeAddress' | 'pagination'>>;
   aggregates?: Resolver<Array<ResolversTypes['ProfileAggregate']>, ParentType, ContextType, RequireFields<QueryAggregatesArgs, 'types' | 'safeAddress'>>;
   organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsArgs, never>>;
@@ -2164,6 +2172,12 @@ export type TrustRelationResolvers<ContextType = any, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type UbiInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['UbiInfo'] = ResolversParentTypes['UbiInfo']> = ResolversObject<{
+  lastTransactionAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  tokenAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type UpdateSafeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpdateSafeResponse'] = ResolversParentTypes['UpdateSafeResponse']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2265,6 +2279,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   TransitivePath?: TransitivePathResolvers<ContextType>;
   TransitiveTransfer?: TransitiveTransferResolvers<ContextType>;
   TrustRelation?: TrustRelationResolvers<ContextType>;
+  UbiInfo?: UbiInfoResolvers<ContextType>;
   UpdateSafeResponse?: UpdateSafeResponseResolvers<ContextType>;
   Version?: VersionResolvers<ContextType>;
   WelcomeMessage?: WelcomeMessageResolvers<ContextType>;

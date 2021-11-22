@@ -879,6 +879,11 @@ input ProfileAggregateFilter {
   sales: SalesAggregateFilter
 }
 
+type UbiInfo {
+  lastTransactionAt: String
+  tokenAddress: String
+}
+
 type Query {
   whoami: String
   version: Version!
@@ -892,7 +897,7 @@ type Query {
   invitationTransaction: ProfileEvent
   safeFundingTransaction: ProfileEvent
   hubSignupTransaction: ProfileEvent
-  lastUBITransaction: String
+  ubiInfo: UbiInfo!
 
   events(types:[EventType!]! safeAddress: String! pagination:PaginationArgs! filter:ProfileEventFilter) : [ProfileEvent!]!
   aggregates(types:[AggregateType!]! safeAddress: String! filter:ProfileAggregateFilter) : [ProfileAggregate!]!
