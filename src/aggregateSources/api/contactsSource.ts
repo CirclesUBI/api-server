@@ -10,6 +10,7 @@ import {
 } from "../../types";
 import {getPool} from "../../resolvers/resolvers";
 import {prisma_api_ro} from "../../apiDbClient";
+import {getDateWithOffset} from "../../indexer-api/blockchainEventSource";
 
 async function trustContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const start = new Date().getTime();
@@ -40,8 +41,8 @@ async function trustContacts(forSafeAddress: string, filter?: Maybe<ProfileAggre
       [forSafeAddress.toLowerCase(), filter?.contacts?.addresses ?? []]);
 
     return trustContactsResult.rows.map(o => {
-      const timestamps = o.timestamps.map((p:any) => new Date(p).getTime().toString());
-      const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0);
+      const timestamps = o.timestamps.map((p:any) => getDateWithOffset(new Date(p)).getTime().toString());
+      const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0)
       return <Contact> {
         metadata: [<ContactPoint>{
             name: "CrcTrust",
@@ -98,7 +99,7 @@ async function hubTransferContacts(forSafeAddress: string, filter?: Maybe<Profil
       [forSafeAddress.toLowerCase(), filter?.contacts?.addresses ?? []]);
 
     return hubTransferContactsResult.rows.map(o => {
-      const timestamps = o.timestamps.map((p:any) => new Date(p).getTime().toString());
+      const timestamps = o.timestamps.map((p:any) => getDateWithOffset(new Date(p)).getTime().toString());
       const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0);
       return <Contact> {
         metadata: [<ContactPoint>{

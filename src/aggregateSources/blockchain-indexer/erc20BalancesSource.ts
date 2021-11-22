@@ -6,6 +6,7 @@ import {
   ProfileAggregateFilter
 } from "../../types";
 import {getPool} from "../../resolvers/resolvers";
+import {getDateWithOffset} from "../../indexer-api/blockchainEventSource";
 
 // All ERC20 balances of a safe
 export class Erc20BalancesSource implements AggregateSource {
@@ -24,13 +25,14 @@ export class Erc20BalancesSource implements AggregateSource {
     }
 
     const lastChangeAt = erc20BalancesResult.rows.reduce((p,c) => Math.max(new Date(c.last_changed_at).getTime(), p) ,0);
+    const lastChangeAtTs = getDateWithOffset(lastChangeAt);
 
     return [<ProfileAggregate>{
       safe_address: forSafeAddress.toLowerCase(),
       type: "Erc20Balances",
       payload: <Erc20Balances> {
         __typename: "Erc20Balances",
-        lastUpdatedAt: lastChangeAt,
+        lastUpdatedAt: lastChangeAtTs.toJSON(),
         balances: erc20BalancesResult.rows.map((o: any) => {
           return <AssetBalance> {
             token_address: o.token,

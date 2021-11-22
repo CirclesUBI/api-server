@@ -17,6 +17,11 @@ export interface ProfileEventSource {
   //yieldEvent(message: string) : void;
 }
 
+export function getDateWithOffset(timestamp:Date) {
+  const timeOffset = new Date(timestamp).getTimezoneOffset() * 60 * 1000;
+  return new Date(new Date(timestamp).getTime() - timeOffset);
+}
+
 /**
  * This class can be used to listen to new transaction blockchainEvents from
  * the https://github.com/circlesland/blockchain-indexer service.
@@ -191,8 +196,7 @@ export class BlockchainEventSource implements ProfileEventSource {
               }
 
               if (hubTransfer && hubTransfer.rows.length == 1) {
-                const timeOffset = new Date(hubTransfer.rows[0].timestamp).getTimezoneOffset() * 60 * 1000;
-                const timestamp = new Date(new Date(hubTransfer.rows[0].timestamp).getTime() - timeOffset);
+                const timestamp = getDateWithOffset(hubTransfer.rows[0].timestamp);
                 const tcAmount = convertTimeCirclesToCircles(amount, timestamp.toJSON());
                 const minVal = new BN(RpcGateway.get().utils.toWei(tcAmount.toString(), "ether")).sub(new BN("10000"));
                 const maxVal = new BN(RpcGateway.get().utils.toWei(tcAmount.toString(), "ether")).add(new BN("10000"));

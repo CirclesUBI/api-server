@@ -1,6 +1,7 @@
 import {EventSource} from "../eventSource";
 import {Direction, Maybe, PaginationArgs, ProfileEvent, ProfileEventFilter, SortOrder} from "../../types";
 import {getPool} from "../../resolvers/resolvers";
+import {getDateWithOffset} from "../../indexer-api/blockchainEventSource";
 
 export enum BlockchainEventType {
   CrcSignup = "CrcSignup",
@@ -140,7 +141,7 @@ export class BlockchainIndexerEventSource implements EventSource
     );
 
     const results = eventRows.rows.map((r:any) => {
-      const offset = r.timestamp.getTimezoneOffset() * 60 * 1000;
+      const ts = getDateWithOffset(r.timestamp);
       return <ProfileEvent>{
         __typename: "ProfileEvent",
         safe_address: r.safe_address,
@@ -148,7 +149,7 @@ export class BlockchainIndexerEventSource implements EventSource
         type: r.type,
         block_number: r.block_number,
         direction: r.direction,
-        timestamp: new Date(r.timestamp.getTime() - offset).toJSON(),
+        timestamp: ts.toJSON(),
         value: r.value,
         transaction_hash: r.transaction_hash,
         transaction_index: r.transaction_index,

@@ -1,6 +1,6 @@
 {
   "name": "@o-platform/api-server",
-  "version": "0.1.167",
+  "version": "0.1.168",
   "description": "",
   "main": "dist/index.js",
   "prepublish": "tsc",
@@ -37,8 +37,8 @@
     "nodemailer": "^6.6.3",
     "pg": "^8.7.1",
     "subscriptions-transport-ws": "^0.9.19",
-    "web3": "^1.5.2",
-    "ws": "^8.2.1",
+    "web3": "^1.6.1",
+    "ws": "^8.2.3",
     "xstate": "^4.25.0"
   },
   "devDependencies": {
