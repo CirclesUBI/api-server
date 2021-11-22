@@ -14,16 +14,16 @@ export class RedeemedInvitationsEventSource implements EventSource {
         createdBy: {
           circlesAddress: forSafeAddress
         },
+        // TODO: redeemedAt doesn't work immediately as a filter for RedeemedInvitation events because there will be no profile at the time of redemption
         redeemedAt: pagination.order == "ASC" ? {
           gt: new Date(pagination.continueAt)
         } : {
           lt: new Date(pagination.continueAt)
         },
-        // TODO: redeemedAt doesn't work as filter for RedeemedInvitation events because there will be no profile at the time of redemption
         redeemedBy: {
-          circlesAddress: {
+          circlesAddress: !filter?.with ? {
             not: null
-          }
+          } : filter.with
         }
       },
       orderBy: {

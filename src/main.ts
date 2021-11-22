@@ -210,4 +210,4 @@ export class Main {
 
 new Main()
     .run2()
-    .then(() => "Running");
+    .then(() => "Started");

@@ -233,6 +233,48 @@ async function invitationContacts(forSafeAddress: string, filter?: Maybe<Profile
   return r;
 }
 
+async function invitationRedeemedContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
+  const start = new Date().getTime();
+  const invitationContactsResult = await prisma_api_ro.$queryRaw`
+      with "in" as (
+          select max(i."redeemedAt") last_contact_at, "redeemedByProfile"."circlesAddress" as contact_address
+          from "Invitation" i
+                   join "Profile" "creatorProfile" on "creatorProfile".id = i."createdByProfileId"
+                   join "Profile" "redeemedByProfile" on "redeemedByProfile".id = i."redeemedByProfileId"
+          where "creatorProfile"."circlesAddress" = ${forSafeAddress}
+            and "redeemedByProfile"."circlesAddress" is not null
+          group by "redeemedByProfile"."circlesAddress"
+      ), "all" as (
+          select 'in' direction, *
+          from "in"
+      )
+      select array_agg(direction) as directions,
+             array_agg(last_contact_at) as timestamps,
+             contact_address
+      from "all"
+      group by contact_address`;
+
+  const r = invitationContactsResult.map((o:any) => {
+    const timestamps = o.timestamps.map((p:any) => new Date(p).getTime().toString());
+    const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0);
+    return <Contact> {
+      metadata: [<ContactPoint>{
+        name: "InvitationRedeemed",
+        directions: o.directions.map((p:string) => p == "in" ? ContactDirection.In : ContactDirection.Out),
+        values: [],
+        timestamps: timestamps
+      }],
+      contactAddress: o.contact_address,
+      lastContactAt: lastContactAt
+    };
+  });
+
+  const duration = new Date().getTime() - start;
+  console.log(`contact source 'invitationContacts' took: ${duration} ms`);
+
+  return r;
+}
+
 // People who offered me (non-rejected) orga-invitations
 // People I offered orga invitations to
 async function membershipOfferContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
@@ -307,6 +349,7 @@ export enum ContactPoints {
   ChatMessage = "ChatMessage",
   Invitation = "Invitation",
   MembershipOffer = "MembershipOffer",
+  InvitationRedeemed = "InvitationRedeemed",
 }
 
 export class ContactsSource implements AggregateSource {
@@ -337,6 +380,9 @@ export class ContactsSource implements AggregateSource {
     }
     if (types[ContactPoints.MembershipOffer]) {
       contactSources.push(membershipOfferContacts(forSafeAddress, filter));
+    }
+    if (types[ContactPoints.InvitationRedeemed]) {
+      contactSources.push(invitationRedeemedContacts(forSafeAddress, filter));
     }
 
     const results = await Promise.all(contactSources);
