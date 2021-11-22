@@ -171,42 +171,50 @@ export class BlockchainEventSource implements ProfileEventSource {
 
         if (invoices.length > 0) {
           for (let invoice of invoices) {
-            console.log(`Found open invoices for partner ${address}:`, JSON.stringify(invoices, null, 2));
-            // Check if this is a crc_hub_transfer and if the amount is correct
-            // within certain limits:
+            try {
+              console.log(`Found open invoices for partner ${address}:`, JSON.stringify(invoices, null, 2));
+              // Check if this is a crc_hub_transfer and if the amount is correct
+              // within certain limits:
 
-            const amount = invoice.lines.reduce((p,c) =>  p + c.amount * parseFloat(c.product.pricePerUnit), 0);
-            const code = Generate.randomHexString(6);
+              const amount = invoice.lines.reduce((p, c) => p + c.amount * parseFloat(c.product.pricePerUnit), 0);
+              const code = Generate.randomHexString(6);
 
-            let matchingTransactions = eventsInMessage.rows.filter(event => event.type === EventType.CrcHubTransfer);
-            const event = matchingTransactions.find(o => o.address1 == invoice.customerProfile.circlesAddress
-                                                      || o.address2 == invoice.sellerProfile.circlesAddress);
+              let matchingTransactions = eventsInMessage.rows.filter(event => event.type === EventType.CrcHubTransfer);
+              const event = matchingTransactions.find(o => o.address1 == invoice.customerProfile.circlesAddress
+                || o.address2 == invoice.sellerProfile.circlesAddress);
 
-            let hubTransfer:any;
-            if (event) {
-              hubTransfer = await getPool().query(`select * from crc_hub_transfer_2 where hash = $1`, [event.hash]);
-            }
-
-            if (hubTransfer && hubTransfer.rows.length == 1) {
-              const tcAmount = convertTimeCirclesToCircles(amount, hubTransfer.rows[0].timestamp.toJSON());
-              const minVal = new BN(RpcGateway.get().utils.toWei(tcAmount.toString(), "ether")).sub(new BN("10000"));
-              const maxVal = new BN(RpcGateway.get().utils.toWei(tcAmount.toString(), "ether")).add(new BN("10000"));
-
-              const actualValue = new BN(hubTransfer.rows[0].value);
-              const matches = actualValue.gte(minVal) && actualValue.lte(maxVal);
-
-              if (matches) {
-                // TODO: Currently all running processes will update the invoice with a different pickupCode but with the same transaction hash. Maybe this should be synchronized?
-                await prisma_api_rw.invoice.update({
-                  where: {
-                    id: invoice.id
-                  },
-                  data: {
-                    paymentTransactionHash: event.hash,
-                    pickupCode: code
-                  }
-                });
+              let hubTransfer: any;
+              if (event) {
+                hubTransfer = await getPool().query(`select *
+                                                     from crc_hub_transfer_2
+                                                     where hash = $1`, [event.hash]);
               }
+
+              if (hubTransfer && hubTransfer.rows.length == 1) {
+                const timeOffset = new Date(hubTransfer.rows[0].timestamp).getTimezoneOffset() * 60 * 1000;
+                const timestamp = new Date(new Date(hubTransfer.rows[0].timestamp).getTime() - timeOffset);
+                const tcAmount = convertTimeCirclesToCircles(amount, timestamp.toJSON());
+                const minVal = new BN(RpcGateway.get().utils.toWei(tcAmount.toString(), "ether")).sub(new BN("10000"));
+                const maxVal = new BN(RpcGateway.get().utils.toWei(tcAmount.toString(), "ether")).add(new BN("10000"));
+
+                const actualValue = new BN(hubTransfer.rows[0].value);
+                const matches = actualValue.gte(minVal) && actualValue.lte(maxVal);
+
+                if (matches) {
+                  // TODO: Currently all running processes will update the invoice with a different pickupCode but with the same transaction hash. Maybe this should be synchronized?
+                  await prisma_api_rw.invoice.update({
+                    where: {
+                      id: invoice.id
+                    },
+                    data: {
+                      paymentTransactionHash: hubTransfer.rows[0].hash,
+                      pickupCode: code
+                    }
+                  });
+                }
+              }
+            } catch (e) {
+              console.error(`Cannot match invoice ${invoice.id} with payment:`, e);
             }
           }
         }
