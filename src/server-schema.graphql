@@ -827,6 +827,8 @@ type Mutation {
     challenge: String!
     signature: String!
   ): ExchangeTokenResponse
+
+  importOrganisationsOfAccount(ownerAddress: String!) : [Organisation!]!
 }
 
 enum SortOrder {
@@ -884,6 +886,11 @@ type UbiInfo {
   tokenAddress: String
 }
 
+type SafeAddressByOwnerResult {
+  type: String!
+  safeAddress: String!
+}
+
 type Query {
   whoami: String
   version: Version!
@@ -914,7 +921,7 @@ type Query {
   profilesById(ids: [Int!]!): [Profile!]!
   profilesBySafeAddress(safeAddresses: [String!]!): [Profile!]!
 
-  findSafeAddressByOwner(owner: String!): [String!]!
+  findSafeAddressByOwner(owner: String!): [SafeAddressByOwnerResult!]!
 
   search(query: SearchInput!): [Profile!]!
 

@@ -712,6 +712,10 @@ export const resolvers: Resolvers = {
     createTestInvitation: createTestInvitation(prisma_api_rw),
     addMember: addMemberResolver,
     removeMember: removeMemberResolver,
+    importOrganisationsOfAccount: async (parent, args, context) => {
+
+      return [];
+    }
   },
   Subscription: {
     events: {

@@ -491,6 +491,7 @@ export type Mutation = {
   sendMessage: SendMessageResult;
   requestSessionChallenge: Scalars['String'];
   verifySessionChallenge?: Maybe<ExchangeTokenResponse>;
+  importOrganisationsOfAccount: Array<Organisation>;
 };
 
 
@@ -613,6 +614,11 @@ export type MutationRequestSessionChallengeArgs = {
 export type MutationVerifySessionChallengeArgs = {
   challenge: Scalars['String'];
   signature: Scalars['String'];
+};
+
+
+export type MutationImportOrganisationsOfAccountArgs = {
+  ownerAddress: Scalars['String'];
 };
 
 export type NotificationEvent = {
@@ -812,7 +818,7 @@ export type Query = {
   myProfile?: Maybe<Profile>;
   profilesById: Array<Profile>;
   profilesBySafeAddress: Array<Profile>;
-  findSafeAddressByOwner: Array<Scalars['String']>;
+  findSafeAddressByOwner: Array<SafeAddressByOwnerResult>;
   search: Array<Profile>;
   cities: Array<City>;
   tags: Array<Tag>;
@@ -968,6 +974,12 @@ export type RequestUpdateSafeResponse = {
   success: Scalars['Boolean'];
   errorMessage?: Maybe<Scalars['String']>;
   challenge?: Maybe<Scalars['String']>;
+};
+
+export type SafeAddressByOwnerResult = {
+  __typename?: 'SafeAddressByOwnerResult';
+  type: Scalars['String'];
+  safeAddress: Scalars['String'];
 };
 
 export type Sale = {
@@ -1319,6 +1331,7 @@ export type ResolversTypes = ResolversObject<{
   RemoveMemberResult: ResolverTypeWrapper<RemoveMemberResult>;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: ResolverTypeWrapper<RequestUpdateSafeResponse>;
+  SafeAddressByOwnerResult: ResolverTypeWrapper<SafeAddressByOwnerResult>;
   Sale: ResolverTypeWrapper<Sale>;
   Sales: ResolverTypeWrapper<Sales>;
   SalesAggregateFilter: SalesAggregateFilter;
@@ -1435,6 +1448,7 @@ export type ResolversParentTypes = ResolversObject<{
   RemoveMemberResult: RemoveMemberResult;
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: RequestUpdateSafeResponse;
+  SafeAddressByOwnerResult: SafeAddressByOwnerResult;
   Sale: Sale;
   Sales: Sales;
   SalesAggregateFilter: SalesAggregateFilter;
@@ -1883,6 +1897,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   sendMessage?: Resolver<ResolversTypes['SendMessageResult'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'toSafeAddress' | 'content'>>;
   requestSessionChallenge?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationRequestSessionChallengeArgs, 'address'>>;
   verifySessionChallenge?: Resolver<Maybe<ResolversTypes['ExchangeTokenResponse']>, ParentType, ContextType, RequireFields<MutationVerifySessionChallengeArgs, 'challenge' | 'signature'>>;
+  importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<MutationImportOrganisationsOfAccountArgs, 'ownerAddress'>>;
 }>;
 
 export type NotificationEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['NotificationEvent'] = ResolversParentTypes['NotificationEvent']> = ResolversObject<{
@@ -2046,7 +2061,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   myProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   profilesById?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesByIdArgs, 'ids'>>;
   profilesBySafeAddress?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesBySafeAddressArgs, 'safeAddresses'>>;
-  findSafeAddressByOwner?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryFindSafeAddressByOwnerArgs, 'owner'>>;
+  findSafeAddressByOwner?: Resolver<Array<ResolversTypes['SafeAddressByOwnerResult']>, ParentType, ContextType, RequireFields<QueryFindSafeAddressByOwnerArgs, 'owner'>>;
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, 'query'>>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsArgs, 'query'>>;
@@ -2078,6 +2093,12 @@ export type RequestUpdateSafeResponseResolvers<ContextType = any, ParentType ext
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   challenge?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SafeAddressByOwnerResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['SafeAddressByOwnerResult'] = ResolversParentTypes['SafeAddressByOwnerResult']> = ResolversObject<{
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  safeAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2267,6 +2288,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   RejectMembershipResult?: RejectMembershipResultResolvers<ContextType>;
   RemoveMemberResult?: RemoveMemberResultResolvers<ContextType>;
   RequestUpdateSafeResponse?: RequestUpdateSafeResponseResolvers<ContextType>;
+  SafeAddressByOwnerResult?: SafeAddressByOwnerResultResolvers<ContextType>;
   Sale?: SaleResolvers<ContextType>;
   Sales?: SalesResolvers<ContextType>;
   SalesLine?: SalesLineResolvers<ContextType>;

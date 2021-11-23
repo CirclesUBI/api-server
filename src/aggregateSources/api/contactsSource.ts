@@ -90,7 +90,7 @@ async function hubTransferContacts(forSafeAddress: string, filter?: Maybe<Profil
                     from "in_with_value"
                 )
                 select array_agg(direction) as directions,
-                       array_agg(value) as values,
+                       array_agg(value::text) as values,
                        array_agg(last_contact_at) as timestamps,
                        contact_address
                 from "all"
