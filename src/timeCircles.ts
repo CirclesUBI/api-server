@@ -53,10 +53,10 @@ export function convertTimeCirclesToCircles(amount: number, date: string) {
   //   "AND BACK Converted: ",
   //   convertCirclesToTimeCircles(result, date)
   // );
-  return (
+  return parseFloat((
     (amount / 24) *
     lerp(previousCirclesPerDayValue, perDayValue, dayInCurrentCycle / 365.25)
-  );
+  ).toFixed(12));
 }
 
 export function convertCirclesToTimeCircles(amount: number, date: string) {
@@ -91,7 +91,7 @@ export function displayCirclesAmount(
   timeCircles: boolean = true
 ) {
   const dateTime = date ? dayjs(date) : dayjs();
-  let value: number;
+  let value: number = 0;
   if (timeCircles) {
     value = convertCirclesToTimeCircles(
       Number.parseFloat(Web3.utils.fromWei(amount, "ether")),
