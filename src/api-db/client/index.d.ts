@@ -208,7 +208,10 @@ export type Invoice = {
   purchaseId: number
   paymentTransactionHash: string | null
   pickupCode: string | null
-  isPickedUp: boolean | null
+  buyerSignature: boolean | null
+  buyerSignedDate: Date | null
+  sellerSignature: boolean | null
+  sellerSignedDate: Date | null
 }
 
 /**
@@ -12493,7 +12496,10 @@ export namespace Prisma {
     purchaseId: number | null
     paymentTransactionHash: string | null
     pickupCode: string | null
-    isPickedUp: boolean | null
+    buyerSignature: boolean | null
+    buyerSignedDate: Date | null
+    sellerSignature: boolean | null
+    sellerSignedDate: Date | null
   }
 
   export type InvoiceMaxAggregateOutputType = {
@@ -12503,7 +12509,10 @@ export namespace Prisma {
     purchaseId: number | null
     paymentTransactionHash: string | null
     pickupCode: string | null
-    isPickedUp: boolean | null
+    buyerSignature: boolean | null
+    buyerSignedDate: Date | null
+    sellerSignature: boolean | null
+    sellerSignedDate: Date | null
   }
 
   export type InvoiceCountAggregateOutputType = {
@@ -12513,7 +12522,10 @@ export namespace Prisma {
     purchaseId: number
     paymentTransactionHash: number
     pickupCode: number
-    isPickedUp: number
+    buyerSignature: number
+    buyerSignedDate: number
+    sellerSignature: number
+    sellerSignedDate: number
     _all: number
   }
 
@@ -12539,7 +12551,10 @@ export namespace Prisma {
     purchaseId?: true
     paymentTransactionHash?: true
     pickupCode?: true
-    isPickedUp?: true
+    buyerSignature?: true
+    buyerSignedDate?: true
+    sellerSignature?: true
+    sellerSignedDate?: true
   }
 
   export type InvoiceMaxAggregateInputType = {
@@ -12549,7 +12564,10 @@ export namespace Prisma {
     purchaseId?: true
     paymentTransactionHash?: true
     pickupCode?: true
-    isPickedUp?: true
+    buyerSignature?: true
+    buyerSignedDate?: true
+    sellerSignature?: true
+    sellerSignedDate?: true
   }
 
   export type InvoiceCountAggregateInputType = {
@@ -12559,7 +12577,10 @@ export namespace Prisma {
     purchaseId?: true
     paymentTransactionHash?: true
     pickupCode?: true
-    isPickedUp?: true
+    buyerSignature?: true
+    buyerSignedDate?: true
+    sellerSignature?: true
+    sellerSignedDate?: true
     _all?: true
   }
 
@@ -12682,7 +12703,10 @@ export namespace Prisma {
     purchaseId: number
     paymentTransactionHash: string | null
     pickupCode: string | null
-    isPickedUp: boolean | null
+    buyerSignature: boolean | null
+    buyerSignedDate: Date | null
+    sellerSignature: boolean | null
+    sellerSignedDate: Date | null
     _count: InvoiceCountAggregateOutputType | null
     _avg: InvoiceAvgAggregateOutputType | null
     _sum: InvoiceSumAggregateOutputType | null
@@ -12716,7 +12740,10 @@ export namespace Prisma {
     paymentTransaction?: boolean | TransactionArgs
     paymentTransactionHash?: boolean
     pickupCode?: boolean
-    isPickedUp?: boolean
+    buyerSignature?: boolean
+    buyerSignedDate?: boolean
+    sellerSignature?: boolean
+    sellerSignedDate?: boolean
   }
 
   export type InvoiceInclude = {
@@ -17187,7 +17214,10 @@ export namespace Prisma {
     purchaseId: 'purchaseId',
     paymentTransactionHash: 'paymentTransactionHash',
     pickupCode: 'pickupCode',
-    isPickedUp: 'isPickedUp'
+    buyerSignature: 'buyerSignature',
+    buyerSignedDate: 'buyerSignedDate',
+    sellerSignature: 'sellerSignature',
+    sellerSignedDate: 'sellerSignedDate'
   };
 
   export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
@@ -17832,7 +17862,10 @@ export namespace Prisma {
     paymentTransaction?: XOR<TransactionRelationFilter, TransactionWhereInput> | null
     paymentTransactionHash?: StringNullableFilter | string | null
     pickupCode?: StringNullableFilter | string | null
-    isPickedUp?: BoolNullableFilter | boolean | null
+    buyerSignature?: BoolNullableFilter | boolean | null
+    buyerSignedDate?: DateTimeNullableFilter | Date | string | null
+    sellerSignature?: BoolNullableFilter | boolean | null
+    sellerSignedDate?: DateTimeNullableFilter | Date | string | null
   }
 
   export type InvoiceOrderByInput = {
@@ -17842,7 +17875,10 @@ export namespace Prisma {
     purchaseId?: SortOrder
     paymentTransactionHash?: SortOrder
     pickupCode?: SortOrder
-    isPickedUp?: SortOrder
+    buyerSignature?: SortOrder
+    buyerSignedDate?: SortOrder
+    sellerSignature?: SortOrder
+    sellerSignedDate?: SortOrder
   }
 
   export type InvoiceWhereUniqueInput = {
@@ -17859,7 +17895,10 @@ export namespace Prisma {
     purchaseId?: IntWithAggregatesFilter | number
     paymentTransactionHash?: StringNullableWithAggregatesFilter | string | null
     pickupCode?: StringNullableWithAggregatesFilter | string | null
-    isPickedUp?: BoolNullableWithAggregatesFilter | boolean | null
+    buyerSignature?: BoolNullableWithAggregatesFilter | boolean | null
+    buyerSignedDate?: DateTimeNullableWithAggregatesFilter | Date | string | null
+    sellerSignature?: BoolNullableWithAggregatesFilter | boolean | null
+    sellerSignedDate?: DateTimeNullableWithAggregatesFilter | Date | string | null
   }
 
   export type InvoiceLineWhereInput = {
@@ -18986,7 +19025,10 @@ export namespace Prisma {
 
   export type InvoiceCreateInput = {
     pickupCode?: string | null
-    isPickedUp?: boolean | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
     customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
     sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
     purchase: PurchaseCreateNestedOneWithoutInvoicesInput
@@ -19001,13 +19043,19 @@ export namespace Prisma {
     purchaseId: number
     paymentTransactionHash?: string | null
     pickupCode?: string | null
-    isPickedUp?: boolean | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
     lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
   export type InvoiceUpdateInput = {
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
-    isPickedUp?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
     sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
     purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
@@ -19022,7 +19070,10 @@ export namespace Prisma {
     purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
-    isPickedUp?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
@@ -19033,12 +19084,18 @@ export namespace Prisma {
     purchaseId: number
     paymentTransactionHash?: string | null
     pickupCode?: string | null
-    isPickedUp?: boolean | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
   }
 
   export type InvoiceUpdateManyMutationInput = {
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
-    isPickedUp?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type InvoiceUncheckedUpdateManyInput = {
@@ -19048,7 +19105,10 @@ export namespace Prisma {
     purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
-    isPickedUp?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type InvoiceLineCreateInput = {
@@ -22808,7 +22868,10 @@ export namespace Prisma {
 
   export type InvoiceCreateWithoutCustomerProfileInput = {
     pickupCode?: string | null
-    isPickedUp?: boolean | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
     sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
     purchase: PurchaseCreateNestedOneWithoutInvoicesInput
     lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
@@ -22821,7 +22884,10 @@ export namespace Prisma {
     purchaseId: number
     paymentTransactionHash?: string | null
     pickupCode?: string | null
-    isPickedUp?: boolean | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
     lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
@@ -22837,7 +22903,10 @@ export namespace Prisma {
 
   export type InvoiceCreateWithoutSellerProfileInput = {
     pickupCode?: string | null
-    isPickedUp?: boolean | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
     customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
     purchase: PurchaseCreateNestedOneWithoutInvoicesInput
     lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
@@ -22850,7 +22919,10 @@ export namespace Prisma {
     purchaseId: number
     paymentTransactionHash?: string | null
     pickupCode?: string | null
-    isPickedUp?: boolean | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
     lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
@@ -23156,7 +23228,10 @@ export namespace Prisma {
     purchaseId?: IntFilter | number
     paymentTransactionHash?: StringNullableFilter | string | null
     pickupCode?: StringNullableFilter | string | null
-    isPickedUp?: BoolNullableFilter | boolean | null
+    buyerSignature?: BoolNullableFilter | boolean | null
+    buyerSignedDate?: DateTimeNullableFilter | Date | string | null
+    sellerSignature?: BoolNullableFilter | boolean | null
+    sellerSignedDate?: DateTimeNullableFilter | Date | string | null
   }
 
   export type InvoiceUpsertWithWhereUniqueWithoutSellerProfileInput = {
@@ -23872,7 +23947,10 @@ export namespace Prisma {
 
   export type InvoiceCreateWithoutPurchaseInput = {
     pickupCode?: string | null
-    isPickedUp?: boolean | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
     customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
     sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
     lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
@@ -23885,7 +23963,10 @@ export namespace Prisma {
     sellerProfileId: number
     paymentTransactionHash?: string | null
     pickupCode?: string | null
-    isPickedUp?: boolean | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
     lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
@@ -24515,7 +24596,10 @@ export namespace Prisma {
 
   export type InvoiceCreateWithoutLinesInput = {
     pickupCode?: string | null
-    isPickedUp?: boolean | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
     customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
     sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
     purchase: PurchaseCreateNestedOneWithoutInvoicesInput
@@ -24529,7 +24613,10 @@ export namespace Prisma {
     purchaseId: number
     paymentTransactionHash?: string | null
     pickupCode?: string | null
-    isPickedUp?: boolean | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
   }
 
   export type InvoiceCreateOrConnectWithoutLinesInput = {
@@ -24575,7 +24662,10 @@ export namespace Prisma {
 
   export type InvoiceUpdateWithoutLinesInput = {
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
-    isPickedUp?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
     sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
     purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
@@ -24589,7 +24679,10 @@ export namespace Prisma {
     purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
-    isPickedUp?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type OfferUpsertWithoutInvoiceLinesInput = {
@@ -24699,7 +24792,10 @@ export namespace Prisma {
 
   export type InvoiceCreateWithoutPaymentTransactionInput = {
     pickupCode?: string | null
-    isPickedUp?: boolean | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
     customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
     sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
     purchase: PurchaseCreateNestedOneWithoutInvoicesInput
@@ -24712,7 +24808,10 @@ export namespace Prisma {
     sellerProfileId: number
     purchaseId: number
     pickupCode?: string | null
-    isPickedUp?: boolean | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
     lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
@@ -24744,7 +24843,10 @@ export namespace Prisma {
 
   export type InvoiceUpdateWithoutPaymentTransactionInput = {
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
-    isPickedUp?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
     sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
     purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
@@ -24757,7 +24859,10 @@ export namespace Prisma {
     sellerProfileId?: IntFieldUpdateOperationsInput | number
     purchaseId?: IntFieldUpdateOperationsInput | number
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
-    isPickedUp?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
@@ -25163,7 +25268,10 @@ export namespace Prisma {
     purchaseId: number
     paymentTransactionHash?: string | null
     pickupCode?: string | null
-    isPickedUp?: boolean | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
   }
 
   export type InvoiceCreateManySellerProfileInput = {
@@ -25172,7 +25280,10 @@ export namespace Prisma {
     purchaseId: number
     paymentTransactionHash?: string | null
     pickupCode?: string | null
-    isPickedUp?: boolean | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
   }
 
   export type SessionUpdateWithoutProfileInput = {
@@ -25522,7 +25633,10 @@ export namespace Prisma {
 
   export type InvoiceUpdateWithoutCustomerProfileInput = {
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
-    isPickedUp?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
     purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
     lines?: InvoiceLineUpdateManyWithoutInvoiceInput
@@ -25535,7 +25649,10 @@ export namespace Prisma {
     purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
-    isPickedUp?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
@@ -25545,12 +25662,18 @@ export namespace Prisma {
     purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
-    isPickedUp?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type InvoiceUpdateWithoutSellerProfileInput = {
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
-    isPickedUp?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
     purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
     lines?: InvoiceLineUpdateManyWithoutInvoiceInput
@@ -25563,7 +25686,10 @@ export namespace Prisma {
     purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
-    isPickedUp?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
@@ -25573,7 +25699,10 @@ export namespace Prisma {
     purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
-    isPickedUp?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type TagCreateManyChatMessageInput = {
@@ -25664,7 +25793,10 @@ export namespace Prisma {
     sellerProfileId: number
     paymentTransactionHash?: string | null
     pickupCode?: string | null
-    isPickedUp?: boolean | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
   }
 
   export type PurchaseLineUpdateWithoutPurchaseInput = {
@@ -25688,7 +25820,10 @@ export namespace Prisma {
 
   export type InvoiceUpdateWithoutPurchaseInput = {
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
-    isPickedUp?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
     sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
     lines?: InvoiceLineUpdateManyWithoutInvoiceInput
@@ -25701,7 +25836,10 @@ export namespace Prisma {
     sellerProfileId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
-    isPickedUp?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
@@ -25711,7 +25849,10 @@ export namespace Prisma {
     sellerProfileId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
-    isPickedUp?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type InvoiceLineCreateManyInvoiceInput = {

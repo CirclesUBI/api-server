@@ -21,7 +21,7 @@ type Profile {
   cityGeonameid: Int
   city: City
   lastEvent: ProfileEvent # The last event that concerns the safeAddress
-  claimedInvitation: ClaimedInvitation,
+  claimedInvitation: ClaimedInvitation
   memberships: [Membership!]
 }
 
@@ -55,9 +55,7 @@ type Organisation {
   trustsYou: Int # The trust relative to the safeAddress
 }
 
-union ProfileOrOrganisation =
-  Profile
-  | Organisation
+union ProfileOrOrganisation = Profile | Organisation
 
 input QueryUniqueProfileInput {
   id: Int!
@@ -287,7 +285,11 @@ type Invoice {
 
   lines: [InvoiceLine!]!
 
-  pickupCode: String
+  buyerSignature: Boolean
+  buyerSignedDate: String
+  sellerSignature: Boolean
+  sellerSignedDate: String
+
   paymentTransactionHash: String
 }
 
@@ -490,7 +492,7 @@ type Purchased implements IEventPayload {
 }
 
 union EventPayload =
-  CrcSignup
+    CrcSignup
   | CrcTrust
   | CrcTokenTransfer
   | CrcHubTransfer
@@ -511,23 +513,23 @@ union EventPayload =
 
 enum EventType {
   CrcSignup
-  , CrcTrust
-  , CrcTokenTransfer
-  , CrcHubTransfer
-  , Erc20Transfer
-  , CrcMinting
-  , EthTransfer
-  , GnosisSafeEthTransfer
-  , ChatMessage
-  , MembershipOffer
-  , MembershipAccepted
-  , MembershipRejected
-  , WelcomeMessage
-  , InvitationCreated
-  , InvitationRedeemed
-  , OrganisationCreated
-  , MemberAdded
-  , Purchased
+  CrcTrust
+  CrcTokenTransfer
+  CrcHubTransfer
+  Erc20Transfer
+  CrcMinting
+  EthTransfer
+  GnosisSafeEthTransfer
+  ChatMessage
+  MembershipOffer
+  MembershipAccepted
+  MembershipRejected
+  WelcomeMessage
+  InvitationCreated
+  InvitationRedeemed
+  OrganisationCreated
+  MemberAdded
+  Purchased
 }
 
 enum AggregateType {
@@ -782,8 +784,8 @@ type ProofPaymentResult {
 }
 
 type Mutation {
-  purchase(lines:[PurchaseLineInput!]!) : [Invoice!]!
-  proofPayment(purchaseId: Int!  transactionHash: String!) : ProofPaymentResult
+  purchase(lines: [PurchaseLineInput!]!): [Invoice!]!
+  proofPayment(purchaseId: Int!, transactionHash: String!): ProofPaymentResult
 
   exchangeToken: ExchangeTokenResponse!
   authenticateAt(appId: String!): DelegateAuthInit!
@@ -797,13 +799,17 @@ type Mutation {
   updateSafe(data: UpdateSafeInput!): UpdateSafeResponse!
   upsertTag(data: UpsertTagInput!): Tag!
 
-  upsertOrganisation(organisation: UpsertOrganisationInput!) : CreateOrganisationResult!
-  upsertRegion(organisation: UpsertOrganisationInput!) : CreateOrganisationResult!
+  upsertOrganisation(
+    organisation: UpsertOrganisationInput!
+  ): CreateOrganisationResult!
+  upsertRegion(
+    organisation: UpsertOrganisationInput!
+  ): CreateOrganisationResult!
 
-  addMember(groupId: String! memberAddress: String!) : AddMemberResult
-  acceptMembership(membershipId: Int!) : AcceptMembershipResult
-  removeMember(groupId: String! memberAddress: String!) : RemoveMemberResult
-  rejectMembership(membershipId: Int!) : RejectMembershipResult
+  addMember(groupId: String!, memberAddress: String!): AddMemberResult
+  acceptMembership(membershipId: Int!): AcceptMembershipResult
+  removeMember(groupId: String!, memberAddress: String!): RemoveMemberResult
+  rejectMembership(membershipId: Int!): RejectMembershipResult
 
   acknowledge(until: String!): Boolean!
 
@@ -820,7 +826,11 @@ type Mutation {
     transactionHash: String!
     tag: CreateTagInput!
   ): TagTransactionResult!
-  sendMessage(fromSafeAddress: String toSafeAddress: String!, content: String!): SendMessageResult!
+  sendMessage(
+    fromSafeAddress: String
+    toSafeAddress: String!
+    content: String!
+  ): SendMessageResult!
 
   requestSessionChallenge(address: String!): String!
   verifySessionChallenge(
@@ -828,7 +838,7 @@ type Mutation {
     signature: String!
   ): ExchangeTokenResponse
 
-  importOrganisationsOfAccount(ownerAddress: String!) : [Organisation!]!
+  importOrganisationsOfAccount(ownerAddress: String!): [Organisation!]!
 }
 
 enum SortOrder {
@@ -848,7 +858,7 @@ enum Direction {
 }
 
 input ProfileEventFilter {
-  direction: Direction,
+  direction: Direction
   from: String
   to: String
   with: String
@@ -906,12 +916,21 @@ type Query {
   hubSignupTransaction: ProfileEvent
   ubiInfo: UbiInfo!
 
-  events(types:[EventType!]! safeAddress: String! pagination:PaginationArgs! filter:ProfileEventFilter) : [ProfileEvent!]!
-  aggregates(types:[AggregateType!]! safeAddress: String! filter:ProfileAggregateFilter) : [ProfileAggregate!]!
+  events(
+    types: [EventType!]!
+    safeAddress: String!
+    pagination: PaginationArgs!
+    filter: ProfileEventFilter
+  ): [ProfileEvent!]!
+  aggregates(
+    types: [AggregateType!]!
+    safeAddress: String!
+    filter: ProfileAggregateFilter
+  ): [ProfileAggregate!]!
 
   organisations(pagination: PaginationArgs): [Organisation!]!
   regions(pagination: PaginationArgs): [Organisation!]!
-  organisationsByAddress(addresses:[String!]!): [Organisation!]!
+  organisationsByAddress(addresses: [String!]!): [Organisation!]!
 
   # Gets the created (noty invitations of the currently logged on user
   myInvitations: [CreatedInvitation!]!
@@ -929,8 +948,8 @@ type Query {
   tags(query: QueryTagsInput!): [Tag!]!
   tagById(id: Int!): Tag
 
-  directPath(from:String! to:String! amount:String!): TransitivePath!
-  mostRecentUbiSafeOfAccount(account: String!) : String
+  directPath(from: String!, to: String!, amount: String!): TransitivePath!
+  mostRecentUbiSafeOfAccount(account: String!): String
 }
 
 type TransitiveTransfer {

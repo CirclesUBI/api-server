@@ -251,7 +251,11 @@ model Invoice {
 
     pickupCode String?
 
-    isPickedUp Boolean?
+    buyerSignature Boolean?
+    buyerSignedDate DateTime?
+    sellerSignature Boolean?
+    sellerSignedDate DateTime?
+
 }
 
 model InvoiceLine {
