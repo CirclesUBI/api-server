@@ -1,6 +1,7 @@
 import {Context} from "../../context";
 import {getPool} from "../resolvers";
 import {UbiInfo} from "../../types";
+import {Generate} from "../../generate";
 
 export function ubiInfo() {
     return async (parent:any, args:any, context:Context) => {
@@ -36,7 +37,7 @@ export function ubiInfo() {
             __typename: "UbiInfo",
             lastTransactionAt: lastMintingResult.length > 0 ? lastMintingResult[0].timestamp : null,
             tokenAddress: tokenAddressResult.length > 0 ? tokenAddressResult[0].token : null,
-            randomValue: profile.session.sessionId[0]
+            randomValue: Generate.randomBase64String(1)[0]
         };
     }
 }

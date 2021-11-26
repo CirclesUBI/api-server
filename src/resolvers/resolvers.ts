@@ -81,6 +81,7 @@ import {Erc20BalancesSource} from "../aggregateSources/blockchain-indexer/erc20B
 import {SalesSource} from "../aggregateSources/api/salesSource";
 import {SalesEventSource} from "../eventSources/api/salesEventSource";
 import {parentPort} from "worker_threads";
+import AWS from "aws-sdk";
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
@@ -150,6 +151,7 @@ const pool = new Pool(<PoolConfig>{
     // ca: cert
   }
 });
+
 export function getPool() {
   return pool;
 }
@@ -391,7 +393,7 @@ export const resolvers: Resolvers = {
       //
       // public
       //
-      const blockChainEventTypes:BlockchainEventType[] = [];
+      const blockChainEventTypes: BlockchainEventType[] = [];
       if (types[EventType.CrcSignup]) {
         delete types[EventType.CrcSignup];
         blockChainEventTypes.push(BlockchainEventType.CrcSignup);
@@ -552,81 +554,82 @@ export const resolvers: Resolvers = {
       const to = args.to.toLowerCase();
 
       const sql = `
-        with my_tokens as (
+          with my_tokens as (
+              select token
+              from crc_balances_by_safe_and_token_2
+              where safe_address = $1
+          ),
+               accepted_tokens as (
+                   select user_token as token
+                   from crc_current_trust_2
+                   where can_send_to = $2
+               ),
+               intersection as (
+                   select *
+                   from my_tokens
+                   intersect
+                   select *
+                   from accepted_tokens
+               ),
+               relevant_balances as (
+                   select b.token, b.token_owner, b.balance as balance
+                   from intersection i
+                            join crc_balances_by_safe_and_token_2 b on i.token = b.token
+                   where safe_address = $1
+                     and balance > 0
+                   order by b.balance desc
+                   limit 30
+               ),
+               total as (
+                   select sum(balance) as total
+                   from relevant_balances
+               ),
+               distribution as (
+                   select *, ((1 / (select total from total)) * balance) as weight
+                   from relevant_balances
+               ),
+               price as (
+                   select $3::numeric as price
+               ),
+               weighted_price_parts as (
+                   select *
+                        , (select * from price)                    as price
+                        , (select * from price) * weight           as weighted_price_part
+                        , trunc((select * from price) * weight, 0) as weighted_price_part_int
+                   from distribution
+               ),
+               weighted_price_parts_sum as (
+                   select sum(weighted_price_part_int)              as weighted_price_part_sum_int
+                        , sum(weighted_price_part)                  as weighted_price_part_sum
+                        , max(price) - sum(weighted_price_part_int) as weighted_price_error
+                        , max(balance)                              as max_balance
+                   from weighted_price_parts
+               ),
+               result as (
+                   select token
+                        , token_owner
+                        , balance
+                        , case
+                              when (balance = (select max_balance from weighted_price_parts_sum))
+                                  -- The token with the maximum balance must pay for previous rounding errors
+                                  then weighted_price_part_int +
+                                       (select weighted_price_error from weighted_price_parts_sum)
+                       -- all others use the calculated int part
+                              else weighted_price_part_int
+                       end as weighted_price_part
+                   from weighted_price_parts
+                   order by weight asc
+               )
           select token
-          from crc_balances_by_safe_and_token_2
-          where safe_address = $1
-      ),
-      accepted_tokens as (
-           select user_token as token
-           from crc_current_trust_2
-           where can_send_to = $2
-      ),
-      intersection as (
-           select *
-           from my_tokens
-           intersect
-           select *
-           from accepted_tokens
-      ),
-      relevant_balances as (
-           select b.token, b.token_owner, b.balance as balance
-           from intersection i
-           join crc_balances_by_safe_and_token_2 b on i.token = b.token
-           where safe_address = $1
-             and balance > 0
-           order by b.balance desc
-           limit 30
-      ),
-      total as (
-           select sum(balance) as total
-           from relevant_balances
-      ),
-      distribution as (
-           select *, ((1 / (select total from total)) * balance) as weight
-           from relevant_balances
-      ),
-      price as (
-           select $3::numeric as price
-      ),
-      weighted_price_parts as (
-           select *
-                , (select * from price) as price
-                , (select * from price) * weight as weighted_price_part
-                , trunc((select * from price) * weight, 0) as weighted_price_part_int
-           from distribution
-      ),
-      weighted_price_parts_sum as (
-           select sum(weighted_price_part_int) as weighted_price_part_sum_int
-                , sum(weighted_price_part) as weighted_price_part_sum
-                , max(price) - sum(weighted_price_part_int) as weighted_price_error
-                , max(balance) as max_balance
-           from weighted_price_parts
-      ),
-      result as (
-           select token
-                , token_owner
-                , balance
-                , case
-                    when (balance = (select max_balance from weighted_price_parts_sum))
-                        -- The token with the maximum balance must pay for previous rounding errors
-                        then weighted_price_part_int + (select weighted_price_error from weighted_price_parts_sum)
-                        -- all others use the calculated int part
-                        else weighted_price_part_int
-                  end as weighted_price_part
-           from weighted_price_parts
-           order by weight asc
-      )
-      select token
-           , token_owner
-           , balance
-           , weighted_price_part as amount
-      from result;`;
+               , token_owner
+               , balance
+               , weighted_price_part as amount
+          from result;`;
 
       let requestedAmount = new BN(args.amount);
 
       const result = await getPool().query(sql, [from, to, requestedAmount.toString()]);
-      const transfers: { token: string, tokenOwner: string, balance: BN, weighted_price_part: BN  }[] = [];
+      const transfers: { token: string, tokenOwner: string, balance: BN, weighted_price_part: BN }[] = [];
 
       result.rows.forEach(o => {
         const item = {
@@ -638,7 +641,7 @@ export const resolvers: Resolvers = {
         transfers.push(item);
       });
 
-      const totalBalance = transfers.reduce((p,c) => p.add(c.balance), new BN("0"));
+      const totalBalance = transfers.reduce((p, c) => p.add(c.balance), new BN("0"));
       if (requestedAmount.gt(totalBalance)) {
         // Not enough balance to perform the transaction
         return <TransitivePath>{
@@ -648,12 +651,12 @@ export const resolvers: Resolvers = {
         };
       }
 
-      const flow = transfers.reduce((p,c) => p.add(c.balance), new BN("0"));
+      const flow = transfers.reduce((p, c) => p.add(c.balance), new BN("0"));
       return <TransitivePath>{
         requestedAmount: requestedAmount.toString(),
         flow: flow.toString(),
         transfers: transfers.map(o => {
-          return <TransitiveTransfer> {
+          return <TransitiveTransfer>{
             token: o.token,
             from: args.from,
             to: args.to,
@@ -669,7 +672,7 @@ export const resolvers: Resolvers = {
                                   where "owners" @> $1::text[];`;
 
       const safesResult = await getPool().query(findSafeOfOwnerSql, [[args.account]]);
-      if (safesResult.rows.length == 0){
+      if (safesResult.rows.length == 0) {
         return null;
       }
       const safeAddresses = safesResult.rows.map(o => o.user);
@@ -677,21 +680,58 @@ export const resolvers: Resolvers = {
       const lastActiveSafeSql = `
           select st.safe_address, max(st.timestamp)
           from crc_safe_timeline_2 st
-          where st.safe_address = ANY($1::text[])
+          where st.safe_address = ANY ($1::text[])
             and st.type = 'CrcMinting'
           group by st.safe_address
           order by max(st.timestamp) desc
           limit 1;`;
 
       const activeSafeResult = await getPool().query(lastActiveSafeSql, [safeAddresses]);
-      if (activeSafeResult.rows.length == 0){
+      if (activeSafeResult.rows.length == 0) {
         return null;
       }
 
       return activeSafeResult.rows[0].safe_address;
     },
-    invoice: async (parent:any, args, context:Context) => {
-      return <any>{};
+    invoice: async (parent: any, args, context: Context) => {
+      try {
+        if (!process.env.DIGITALOCEAN_SPACES_ENDPOINT)
+          throw new Error(`Missing configuration: process.env.DIGITALOCEAN_SPACES_ENDPOINT`);
+
+        const spacesEndpoint = new AWS.Endpoint(process.env.DIGITALOCEAN_SPACES_ENDPOINT);
+        const s3 = new AWS.S3({
+          endpoint: spacesEndpoint,
+          accessKeyId: process.env.DIGITALOCEAN_SPACES_KEY,
+          secretAccessKey: process.env.DIGITALOCEAN_SPACES_SECRET
+        });
+
+        const invoice = await prisma_api_ro.invoice.findUnique({
+          where: {
+            id: args.invoiceId
+          },
+          include: {
+            sellerProfile: true
+          }
+        });
+
+        if (!invoice) {
+          return null;
+        }
+
+        const invoicePdfObj = await s3.getObject({
+          Bucket: "circlesland-invoices",
+          Key: `${invoice.sellerProfile.circlesAddress}/${invoice.invoiceNo}.pdf`
+        }).promise();
+
+        if (!invoicePdfObj.Body) {
+          return null;
+        }
+
+        return invoicePdfObj.Body.toString("base64");
+      } catch (e) {
+        console.error(e);
+      }
+      return null;
     }
   },
   Mutation: {
@@ -720,11 +760,11 @@ export const resolvers: Resolvers = {
     createTestInvitation: createTestInvitation(prisma_api_rw),
     addMember: addMemberResolver,
     removeMember: removeMemberResolver,
-    importOrganisationsOfAccount: async (parent, args, context:Context) => {
+    importOrganisationsOfAccount: async (parent, args, context: Context) => {
       const sql = `
-        select organisation
-        from crc_organisation_signup_2
-        where owners @> $1::text[];`;
+          select organisation
+          from crc_organisation_signup_2
+          where owners @> $1::text[];`;
 
       const session = await context.verifySession();
       const organisationSignups = await getPool().query(sql, [[session.ethAddress]]);

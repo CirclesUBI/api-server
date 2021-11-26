@@ -952,7 +952,7 @@ type Query {
 
   directPath(from: String!, to: String!, amount: String!): TransitivePath!
   mostRecentUbiSafeOfAccount(account: String!): String
-  invoice(purchaseId: Int!): String
+  invoice(invoiceId: Int!): String
 }
 
 type TransitiveTransfer {

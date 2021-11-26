@@ -909,7 +909,7 @@ export type QueryMostRecentUbiSafeOfAccountArgs = {
 
 
 export type QueryInvoiceArgs = {
-  purchaseId: Scalars['Int'];
+  invoiceId: Scalars['Int'];
 };
 
 export type QueryCitiesByGeonameIdInput = {
@@ -2070,7 +2070,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   tagById?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagByIdArgs, 'id'>>;
   directPath?: Resolver<ResolversTypes['TransitivePath'], ParentType, ContextType, RequireFields<QueryDirectPathArgs, 'from' | 'to' | 'amount'>>;
   mostRecentUbiSafeOfAccount?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryMostRecentUbiSafeOfAccountArgs, 'account'>>;
-  invoice?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryInvoiceArgs, 'purchaseId'>>;
+  invoice?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryInvoiceArgs, 'invoiceId'>>;
 }>;
 
 export type RedeemClaimedInvitationResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['RedeemClaimedInvitationResult'] = ResolversParentTypes['RedeemClaimedInvitationResult']> = ResolversObject<{
