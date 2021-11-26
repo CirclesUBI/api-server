@@ -79,6 +79,7 @@ import {purchaseResolver} from "./mutations/purchase";
 import BN from "bn.js";
 import {Erc20BalancesSource} from "../aggregateSources/blockchain-indexer/erc20BalancesSource";
 import {SalesSource} from "../aggregateSources/api/salesSource";
+import {SalesEventSource} from "../eventSources/api/salesEventSource";
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
@@ -463,6 +464,9 @@ export const resolvers: Resolvers = {
         }
         if (canAccessPrivateDetails && types[EventType.InvitationRedeemed]) {
           eventSources.push(new RedeemedInvitationsEventSource());
+        }
+        if (canAccessPrivateDetails && types[EventType.SaleEvent]) {
+          eventSources.push(new SalesEventSource());
         }
       }
 

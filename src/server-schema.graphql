@@ -485,11 +485,11 @@ type OrganisationCreated implements IEventPayload {
 }
 
 # ${buyer} purchased ${amount} ${offer}(s)
-type Purchased implements IEventPayload {
+type SaleEvent implements IEventPayload {
   transaction_hash: String
   buyer: String!
   buyer_profile: Profile
-  purchase: Purchase
+  invoice: Invoice
 }
 
 union EventPayload =
@@ -510,7 +510,7 @@ union EventPayload =
   | InvitationRedeemed
   | OrganisationCreated
   | MemberAdded
-  | Purchased
+  | SaleEvent
 
 enum EventType {
   CrcSignup
@@ -530,7 +530,7 @@ enum EventType {
   InvitationRedeemed
   OrganisationCreated
   MemberAdded
-  Purchased
+  SaleEvent
 }
 
 enum AggregateType {
