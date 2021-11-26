@@ -4,8 +4,8 @@ import {PrismaClient} from "../../api-db/client";
 
 export function tagTransaction(prisma_api_rw:PrismaClient) {
   return async (parent: any, args: { transactionHash: string, tag: CreateTagInput }, context: Context) => {
-    const profile = await context.callerProfile;
-    if (!profile) {
+    const callerInfo = await context.callerInfo;
+    if (!callerInfo?.profile) {
       return {
         success: false,
         errorMessage: "You must have a complete profile to use this function."
@@ -22,7 +22,7 @@ export function tagTransaction(prisma_api_rw:PrismaClient) {
     // 2. Create the tag
     const tag = await prisma_api_rw.tag.create({
       data: {
-        createdByProfileId: profile.id,
+        createdByProfileId: callerInfo.profile.id,
         transactionHash: args.transactionHash,
         typeId: args.tag.typeId,
         value: args.tag.value,

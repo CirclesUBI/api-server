@@ -12,21 +12,21 @@ export function sendMessage(prisma: PrismaClient) {
     args: MutationSendMessageArgs,
     context: Context
   ) => {
-    const fromProfile = await context.callerProfile;
-    if (!fromProfile || !fromProfile.circlesAddress) {
+    const fromProfile = await context.callerInfo;
+    if (!fromProfile || !fromProfile.profile?.circlesAddress) {
       return {
         success: false,
         errorMessage: "You must have a complete profile to use this function.",
       };
     }
 
-    let from = fromProfile.circlesAddress;
+    let from = fromProfile.profile?.circlesAddress;
 
-    if (args.fromSafeAddress && fromProfile.circlesAddress !== args.fromSafeAddress) {
+    if (args.fromSafeAddress && fromProfile.profile?.circlesAddress !== args.fromSafeAddress) {
       // Writing in the name of an organisation?
       from = (await canAccess(context, args.fromSafeAddress ?? ""))
         ? args.fromSafeAddress
-        : fromProfile.circlesAddress;
+        : fromProfile.profile?.circlesAddress;
     }
 
     const toSafeAddress = args.toSafeAddress.toLowerCase();
@@ -60,12 +60,12 @@ export function sendMessage(prisma: PrismaClient) {
         type: EventType.ChatMessage,
         direction: "out",
         safe_address: message.from,
-        safe_address_profile: fromProfile,
+        safe_address_profile: fromProfile.profile,
         payload: <ChatMessage>{
           __typename: EventType.ChatMessage,
           id: message.id,
           from: message.from,
-          from_profile: fromProfile,
+          from_profile: fromProfile.profile,
           to: message.to,
           to_profile: toProfile,
           text: message.text,

@@ -895,6 +895,7 @@ input ProfileAggregateFilter {
 type UbiInfo {
   lastTransactionAt: String
   tokenAddress: String
+  randomValue: String
 }
 
 type SafeAddressByOwnerResult {
@@ -951,6 +952,7 @@ type Query {
 
   directPath(from: String!, to: String!, amount: String!): TransitivePath!
   mostRecentUbiSafeOfAccount(account: String!): String
+  invoice(purchaseId: Int!): String
 }
 
 type TransitiveTransfer {

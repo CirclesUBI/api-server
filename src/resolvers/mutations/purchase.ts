@@ -21,11 +21,11 @@ export type OfferLookup = {
 export type CreatedDbPurchase = ( DbPurchase & {createdBy: Profile, lines: (DbPurchaseLine & {product:  DbOffer & {createdBy: Profile}})[]});
 
 export async function purchaseResolver(parent: any, args: MutationPurchaseArgs, context: Context) : Promise<Invoice[]> {
-  const callerProfile = await context.callerProfile;
-  if (!callerProfile) {
+  const callerInfo = await context.callerInfo;
+  if (!callerInfo) {
     throw new Error(`You need a profile to purchase.`);
   }
-  if (!callerProfile.circlesAddress) {
+  if (!callerInfo.profile?.circlesAddress) {
     throw new Error(`You need a safe to purchase.`)
   }
 
@@ -35,7 +35,7 @@ export async function purchaseResolver(parent: any, args: MutationPurchaseArgs, 
   const openInvoices = await prisma_api_rw.purchase.findMany({
     where: {
       createdBy: {
-        circlesAddress: callerProfile.circlesAddress
+        circlesAddress: callerInfo.profile.circlesAddress
       },
       invoices: {
         some: {
@@ -51,8 +51,8 @@ export async function purchaseResolver(parent: any, args: MutationPurchaseArgs, 
   }
 
   const purchasedOffers = await lookupOffers(args);
-  const purchase = await createPurchase(callerProfile, args, purchasedOffers);
-  const invoices = await createInvoices(callerProfile, args, purchasedOffers, purchase);
+  const purchase = await createPurchase(callerInfo.profile, args, purchasedOffers);
+  const invoices = await createInvoices(callerInfo.profile, args, purchasedOffers, purchase);
 
   const apiInvoices = invoices.map(o => {
     return <Invoice> {

@@ -7,8 +7,8 @@ import {prisma_api_rw} from "./apiDbClient";
  * @param accessedSafeAddress
  */
 export async function canAccess(context:Context, accessedSafeAddress:string) {
-  const callerProfile = await context.callerProfile;
-  if (callerProfile?.circlesAddress == accessedSafeAddress) {
+  const callerInfo = await context.callerInfo;
+  if (callerInfo?.profile?.circlesAddress == accessedSafeAddress) {
     return true;
   }
 
@@ -35,7 +35,7 @@ export async function canAccess(context:Context, accessedSafeAddress:string) {
   const orgaProfile = requestedProfile.length > 0 ? requestedProfile[0] : undefined;
   if (orgaProfile) {
     // Find out if the current user is an admin or owner ..
-    if (orgaProfile.members.find(o => o.memberAddress == callerProfile?.circlesAddress)) {
+    if (orgaProfile.members.find(o => o.memberAddress == callerInfo?.profile?.circlesAddress)) {
       return true;
     }
 

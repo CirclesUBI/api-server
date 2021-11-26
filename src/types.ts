@@ -816,6 +816,7 @@ export type Query = {
   tagById?: Maybe<Tag>;
   directPath: TransitivePath;
   mostRecentUbiSafeOfAccount?: Maybe<Scalars['String']>;
+  invoice?: Maybe<Scalars['String']>;
 };
 
 
@@ -904,6 +905,11 @@ export type QueryDirectPathArgs = {
 
 export type QueryMostRecentUbiSafeOfAccountArgs = {
   account: Scalars['String'];
+};
+
+
+export type QueryInvoiceArgs = {
+  purchaseId: Scalars['Int'];
 };
 
 export type QueryCitiesByGeonameIdInput = {
@@ -1097,6 +1103,7 @@ export type UbiInfo = {
   __typename?: 'UbiInfo';
   lastTransactionAt?: Maybe<Scalars['String']>;
   tokenAddress?: Maybe<Scalars['String']>;
+  randomValue?: Maybe<Scalars['String']>;
 };
 
 export type UpdateSafeInput = {
@@ -2063,6 +2070,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   tagById?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagByIdArgs, 'id'>>;
   directPath?: Resolver<ResolversTypes['TransitivePath'], ParentType, ContextType, RequireFields<QueryDirectPathArgs, 'from' | 'to' | 'amount'>>;
   mostRecentUbiSafeOfAccount?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryMostRecentUbiSafeOfAccountArgs, 'account'>>;
+  invoice?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryInvoiceArgs, 'purchaseId'>>;
 }>;
 
 export type RedeemClaimedInvitationResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['RedeemClaimedInvitationResult'] = ResolversParentTypes['RedeemClaimedInvitationResult']> = ResolversObject<{
@@ -2199,6 +2207,7 @@ export type TrustRelationResolvers<ContextType = any, ParentType extends Resolve
 export type UbiInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['UbiInfo'] = ResolversParentTypes['UbiInfo']> = ResolversObject<{
   lastTransactionAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   tokenAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  randomValue?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

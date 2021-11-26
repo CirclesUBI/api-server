@@ -14,14 +14,14 @@ export async function isOrgAdmin(prisma_api_rw:PrismaClient, userAddress:string,
 
 export function upsertOrganisation(prisma_api_rw:PrismaClient, isRegion:boolean) {
     return async (parent:any, args:MutationUpsertOrganisationArgs, context:Context) => {
-      const ownProfile = await context.callerProfile;
+      const callerInfo = await context.callerInfo;
 
-      if (!ownProfile?.circlesAddress) {
+      if (!callerInfo?.profile?.circlesAddress) {
         throw new Error(`You need a completed profile to use this feature.`);
       }
 
       let organisationProfile:Profile;
-      if (args.organisation.id && await isOrgAdmin(prisma_api_rw, ownProfile.circlesAddress, args.organisation.id)) {
+      if (args.organisation.id && await isOrgAdmin(prisma_api_rw, callerInfo.profile.circlesAddress, args.organisation.id)) {
         organisationProfile = await prisma_api_rw.profile.update({
           where: {
             id: args.organisation.id
@@ -56,11 +56,11 @@ export function upsertOrganisation(prisma_api_rw:PrismaClient, isRegion:boolean)
         await prisma_api_rw.membership.create({
           data: {
             createdAt: new Date(),
-            createdByProfileId: ownProfile.id,
+            createdByProfileId: callerInfo.profile.id,
             validTo: null,
             acceptedAt: new Date(),
             isAdmin: true,
-            memberAddress: ownProfile.circlesAddress,
+            memberAddress: callerInfo.profile.circlesAddress,
             memberAtId: organisationProfile.id
           }
         });

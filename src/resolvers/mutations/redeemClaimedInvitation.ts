@@ -6,20 +6,20 @@ import {RedeemClaimedInvitationResult} from "../../types";
 
 export function redeemClaimedInvitation(prisma_api_ro:PrismaClient, prisma_api_rw:PrismaClient) {
   return async (parent: any, args: any, context: Context) => {
-    const profile = await context.callerProfile;
+    const callerInfo = await context.callerInfo;
 
-    if (!profile?.circlesSafeOwner) {
+    if (!callerInfo?.profile?.circlesSafeOwner) {
       throw new Error(`You need a profile and EOA to redeem a claimed invitation.`);
     }
 
     const claimedInvitation = await prisma_api_ro.invitation.findFirst({
       where: {
-        claimedByProfileId: profile.id
+        claimedByProfileId: callerInfo.profile.id
       }
     });
 
     if (!claimedInvitation) {
-      throw new Error(`No claimed invitation for profile ${profile.id}`);
+      throw new Error(`No claimed invitation for profile ${callerInfo.profile.id}`);
     }
 
     try {
@@ -43,7 +43,7 @@ export function redeemClaimedInvitation(prisma_api_ro:PrismaClient, prisma_api_r
       const account = web3.eth.accounts.privateKeyToAccount(claimedInvitation.key);
       const signedTx = await account.signTransaction({
         from: claimedInvitation.address,
-        to: profile.circlesSafeOwner?.toLowerCase(),
+        to: callerInfo.profile.circlesSafeOwner?.toLowerCase(),
         value: availableForTransfer,
         gasPrice: gasPrice,
         gas: gas,
@@ -59,7 +59,7 @@ export function redeemClaimedInvitation(prisma_api_ro:PrismaClient, prisma_api_r
       await prisma_api_rw.invitation.updateMany({
         data: {
           redeemedAt: new Date(),
-          redeemedByProfileId: profile.id,
+          redeemedByProfileId: callerInfo.profile.id,
           redeemTxHash: receipt.transactionHash
         },
         where: {

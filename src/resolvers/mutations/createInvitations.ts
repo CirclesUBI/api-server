@@ -10,9 +10,9 @@ const TestOrga = "0xc5a786eafefcf703c114558c443e4f17969d9573";
 
 export function createInvitations(prisma_api_rw:PrismaClient) {
     return async (parent:any, args:{for:string[]}, context:Context) => {
-      const profile = await context.callerProfile;
+      const callerInfo = await context.callerInfo;
 
-      if (!profile?.circlesAddress) {
+      if (!callerInfo?.profile?.circlesAddress) {
         throw new Error(`You need a completed profile to use this feature.`);
       }
 
@@ -21,7 +21,7 @@ export function createInvitations(prisma_api_rw:PrismaClient) {
           circlesAddress: TestOrga,
           members: {
             some: {
-              memberAddress: profile.circlesAddress
+              memberAddress: callerInfo.profile.circlesAddress
             }
           }
         }
@@ -37,7 +37,7 @@ export function createInvitations(prisma_api_rw:PrismaClient) {
         const invitationData = {
           name: invitationFor,
           createdAt: new Date(),
-          createdByProfileId: profile.id,
+          createdByProfileId: callerInfo.profile?.id ?? -1,
           address: invitationEoa.address,
           key: invitationEoa.privateKey,
           code: Session.generateRandomBase64String(16)
@@ -57,8 +57,8 @@ export function createInvitations(prisma_api_rw:PrismaClient) {
         success: true,
         createdInviteEoas: createdInvitations.map(o => {
           return {
-            createdBy: profile,
-            createdByProfileId: profile.id,
+            createdBy: callerInfo.profile,
+            createdByProfileId: callerInfo.profile?.id,
             createdAt: o.createdAt,
             name: o.name,
             address: o.address,

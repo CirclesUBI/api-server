@@ -3,6 +3,7 @@ import {Profile, ProfileEvent} from "../../types";
 import {Context} from "../../context";
 import murmur from "murmurhash-js";
 import {Generate} from "../../generate";
+import {Session as PrismaSession} from "../../api-db/client";
 
 
 export class LmdbWrapper {
@@ -146,9 +147,9 @@ export class EventCache {
     let eventJson = JSON.stringify(event);
     let contentHash = murmur.murmur3(eventJson, this._hashSeed);
 
-    let callerProfile: Profile|null = null;
+    let callerInfo: { session: PrismaSession, profile: Profile|null }|null = null;
     if (context.sessionId) {
-      callerProfile = await context.callerProfile;
+      callerInfo = await context.callerInfo;
     }
 
     const promises:Promise<any>[] = [];
@@ -158,7 +159,7 @@ export class EventCache {
       const publicCacheKey = await this.generatePublicCacheKey(event);
       promises.push(this._db.put(publicCacheKey.toKeyArray(), contentHash));
     }
-    if (callerProfile && callerProfile.circlesAddress == event.safe_address) {
+    if (callerInfo && callerInfo.profile?.circlesAddress == event.safe_address) {
       const privateCacheKey = await this.generatePrivateCacheKey(context, event);
       promises.push(this._db.put(privateCacheKey.toKeyArray(), contentHash));
     }
@@ -223,15 +224,15 @@ export class EventCache {
   }
 
   private async generatePrivateCacheKey(context:Context, event:ProfileEvent) : Promise<CacheKey> {
-    const callerProfile = await context.callerProfile;
-    if (!callerProfile) {
-      throw new Error(`The context must be able to resolve a 'callerProfile' to generate a private cache key.`);
+    const callerInfo = await context.callerInfo;
+    if (!callerInfo) {
+      throw new Error(`The context must be able to resolve a 'callerInfo' to generate a private cache key.`);
     }
-    if (!callerProfile.circlesAddress) {
+    if (!callerInfo.profile?.circlesAddress) {
       throw new Error(`The caller must have a circlesAddress to generate a private cache key.`);
     }
     return CacheKey.create(
-      `private:${callerProfile.circlesAddress}`,
+      `private:${callerInfo.profile.circlesAddress}`,
       event.safe_address,
       event.type,
       new Date(event.timestamp).getTime(),

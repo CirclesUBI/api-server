@@ -80,6 +80,7 @@ import BN from "bn.js";
 import {Erc20BalancesSource} from "../aggregateSources/blockchain-indexer/erc20BalancesSource";
 import {SalesSource} from "../aggregateSources/api/salesSource";
 import {SalesEventSource} from "../eventSources/api/salesEventSource";
+import {parentPort} from "worker_threads";
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
@@ -193,8 +194,8 @@ export const resolvers: Resolvers = {
   },
   Purchase: {
     invoices: async (parent: Purchase, args: any, context: Context) => {
-      const caller = await context.callerProfile;
-      if (!caller)
+      const caller = await context.callerInfo;
+      if (!caller?.profile)
         return [];
 
       const invoices = await prisma_api_rw.invoice.findMany({
@@ -202,7 +203,7 @@ export const resolvers: Resolvers = {
           purchase: {
             id: parent.id,
             createdBy: {
-              circlesAddress: caller.circlesAddress
+              circlesAddress: caller.profile.circlesAddress
             }
           }
         },
@@ -472,10 +473,10 @@ export const resolvers: Resolvers = {
 
       const aggregateEventSource = new CombinedEventSource(eventSources);
 
-      /*let callerProfile: Profile | null = null;
-      if (context.sessionId && !callerProfile) {
+      /*let callerInfo: Profile | null = null;
+      if (context.sessionId && !callerInfo) {
         // Necessary to cache private items?!
-        callerProfile = await context.callerProfile;
+        callerInfo = await context.callerInfo;
       }*/
 
       let events: ProfileEvent[] = [];
@@ -688,6 +689,9 @@ export const resolvers: Resolvers = {
       }
 
       return activeSafeResult.rows[0].safe_address;
+    },
+    invoice: async (parent:any, args, context:Context) => {
+      return <any>{};
     }
   },
   Mutation: {
@@ -753,15 +757,14 @@ export const resolvers: Resolvers = {
     events: {
       subscribe: async (parent, args, context: Context) => {
         try {
-          const session = await context.verifySession();
-          const callerProfile = await context.callerProfile;
-          if (!callerProfile && !session.ethAddress)
+          const callerInfo = await context.callerInfo;
+          if (!callerInfo?.profile && !callerInfo?.session.ethAddress)
             throw new Error(`You need a registration to subscribe`);
 
-          if (!callerProfile?.circlesAddress && session.ethAddress) {
-            return ApiPubSub.instance.pubSub.asyncIterator([`events_${session.ethAddress.toLowerCase()}`]);
-          } else if (callerProfile?.circlesAddress) {
-            return ApiPubSub.instance.pubSub.asyncIterator([`events_${callerProfile.circlesAddress.toLowerCase()}`]);
+          if (!callerInfo.profile?.circlesAddress && callerInfo.session.ethAddress) {
+            return ApiPubSub.instance.pubSub.asyncIterator([`events_${callerInfo.session.ethAddress.toLowerCase()}`]);
+          } else if (callerInfo.profile?.circlesAddress) {
+            return ApiPubSub.instance.pubSub.asyncIterator([`events_${callerInfo.profile?.circlesAddress.toLowerCase()}`]);
           } else {
             throw new Error(`Cannot subscribe without an eoa- or safe-address.`)
           }
