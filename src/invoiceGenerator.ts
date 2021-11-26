@@ -155,7 +155,7 @@ export async function createInvoice(invoice: PdfInvoice, path:string) {
     ACL: string
   } = {
     Bucket: "circlesland-invoices",
-    Key: `${invoice.seller.address}/_${invoice.invoice_nr}.pdf`,
+    Key: `${invoice.seller.safe_address}/_${invoice.invoice_nr}.pdf`,
     ACL: 'private'
   };
 
@@ -171,7 +171,7 @@ export async function createInvoice(invoice: PdfInvoice, path:string) {
   });
   doc.on('end', async _ => {
     const buffer = Buffer.concat(pdfBytes);
-    params.Body = buffer.toString("base64");
+    params.Body = buffer;
     await s3.putObject(params).promise();
   });
 }
