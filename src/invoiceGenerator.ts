@@ -110,7 +110,7 @@ export async function createPdfForInvoice(invoiceId: number, path: string) {
     invoice_date: dayjs(invoiceFromDb.createdAt).format("YYYY-MM-DD HH:MM:ss"),
     invoice_nr: invoiceFromDb.invoiceNo,
     transactionHash: paymentTransaction?.hash ?? "",
-    transferTime: paymentTransaction?.timestamp?.toString() ?? "",
+    transferTime: paymentTransaction ? dayjs(paymentTransaction.timestamp).format("YYYY-MM-DD HH:MM:ss") : "",
     items: items,
     subtotal: total,
     salesTax: [{
@@ -155,7 +155,7 @@ export async function createInvoice(invoice: PdfInvoice, path:string) {
     ACL: string
   } = {
     Bucket: "circlesland-invoices",
-    Key: `${invoice.seller.safe_address}/_${invoice.invoice_nr}.pdf`,
+    Key: `${invoice.seller.safe_address}/${invoice.invoice_nr}.pdf`,
     ACL: 'private'
   };
 
