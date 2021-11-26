@@ -133,6 +133,9 @@ model Profile {
 
     payableInvoices Invoice[]  @relation(name: "Invoice_CustomerProfile")
     receivableInvoices Invoice[]  @relation(name: "Invoice_SellerProfile")
+
+    lastInvoiceNo Int? // Is used in organisations only and represents the current value of the invoice number series.
+    lastRefundNo Int? // Is used in organisations only and represents the current value of the refund number series.
 }
 
 model ExternalProfiles {
@@ -235,6 +238,9 @@ model PurchaseLine {
 model Invoice {
     id Int @id @default(autoincrement())
 
+    createdAt DateTime @default(now())
+    invoiceNo String
+
     customerProfile Profile @relation(name: "Invoice_CustomerProfile", fields: [customerProfileId], references: [id])
     customerProfileId Int
 
@@ -253,9 +259,9 @@ model Invoice {
 
     buyerSignature Boolean?
     buyerSignedDate DateTime?
+
     sellerSignature Boolean?
     sellerSignedDate DateTime?
-
 }
 
 model InvoiceLine {
