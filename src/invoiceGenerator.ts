@@ -1,9 +1,20 @@
-import fs from "fs";
 import PDFDocument from "pdfkit";
+import {prisma_api_ro} from "./apiDbClient";
+import dayjs from "dayjs";
+import {getPool} from "./resolvers/resolvers";
+import AWS from "aws-sdk";
 
 const margin = 30;
 const marginx = 50;
 const lineMargin = 15;
+
+export type PdfInvoiceLine = {
+  amount: number
+  offer: {
+    title: string,
+    pricePerUnit: number
+  }
+};
 
 export type PdfInvoice =  {
   invoice_nr: string,
@@ -22,60 +33,103 @@ export type PdfInvoice =  {
   seller: {
     postal_code: string, name: string, address: string, city: string, country: string, safe_address: string
   },
-  items: {
-    amount: number
-    offer: {
-      title: string,
-      pricePerUnit: number
-    }
-  }[]
+  items: PdfInvoiceLine[]
 };
 
 let top = margin;
 let path = ""; // PATH TO PDF FILE.
 let invoice:PdfInvoice;
 
-// invoiceData = {
-//   buyer: {
-//     name: displayableName(
-//       purchase.createdByProfile.firstName,
-//       purchase.createdByProfile.lastName
-//     ),
-//     address: "",
-//     city: "",
-//     state: "",
-//     country: "",
-//     postal_code: "",
-//     safe_address: purchase.createdByAddress,
-//   },
-//   seller: {
-//     name: displayableName(sellerProfile.firstName, sellerProfile.lastName),
-//     address: "Reifenstuehlstr. 9",
-//     city: "München",
-//     state: "",
-//     country: "Deutschland",
-//     postal_code: "80469",
-//     safe_address: sellerProfile.circlesAddress,
-//     phone: "089-38466851",
-//     email: "lab@circles.name",
-//   },
-//   items: purchase.lines,
-//   salesTax: [],
-//   subtotal: purchase.total,
-//   timeCirclesTotal: purchase.total,
-//   invoice_nr: purchase.id,
-//   invoice_date: dayjs(purchase.createdAt).format("DD.MM.YYYY"),
-//   transferTime: "TBD",
-//   transactionHash: "TBD",
-// };
+export async function createPdfForInvoice(invoiceId: number, path: string) {
+  const invoiceFromDb = await prisma_api_ro.invoice.findUnique({
+    where: {
+      id: invoiceId
+    },
+    include: {
+      customerProfile: true,
+      sellerProfile: true,
+      lines: {
+        include: {
+          product: true
+        }
+      }
+    }
+  });
 
-function createInvoice(invoice: PdfInvoice, path:string) {
+  if (!invoiceFromDb) {
+    throw new Error(`Couldn't find the invoice with id ${invoiceId} for pdf generation.`)
+  }
+
+  const buyer = invoiceFromDb.customerProfile;
+  const seller = invoiceFromDb.sellerProfile;
+
+  let paymentTransaction: any;
+  if (invoiceFromDb.paymentTransactionHash) {
+    const transactionsResult = await getPool().query(
+      `select *
+        from transaction_2
+        where hash = $1`,
+      [invoiceFromDb.paymentTransactionHash])
+    if (transactionsResult.rows.length > 0) {
+      paymentTransaction = transactionsResult.rows[0];
+    }
+  }
+
+  if (!buyer.circlesAddress || !seller.circlesAddress) {
+    throw new Error(`Couldn't create a pdf for invoice ${invoiceFromDb.invoiceNo} because the seller or buyer has no circlesAddress.`);
+  }
+
+  const items = invoiceFromDb.lines.map(o => {
+    return <PdfInvoiceLine>{
+      offer: {
+        pricePerUnit: parseFloat(o.product.pricePerUnit),
+        title: o.product.title
+      },
+      amount: o.amount
+    }
+  });
+  const total = items.reduce((p,c) => p + c.amount * c.offer.pricePerUnit, 0);
+
+  createInvoice({
+    buyer: {
+      safe_address: buyer.circlesAddress,
+      name: displayableName(buyer.firstName, buyer.lastName),
+      address: "",
+      city: "",
+      country: "",
+      postal_code: ""
+    },
+    seller: {
+      name: displayableName(seller.firstName, seller.lastName),
+      address: "Reifenstuehlstr. 9",
+      city: "München",
+      country: "Deutschland",
+      postal_code: "80469",
+      safe_address: seller.circlesAddress
+    },
+    invoice_date: dayjs(invoiceFromDb.createdAt).format("YYYY-MM-DD HH:MM:ss"),
+    invoice_nr: invoiceFromDb.invoiceNo,
+    transactionHash: paymentTransaction?.hash ?? "",
+    transferTime: paymentTransaction?.timestamp?.toString() ?? "",
+    items: items,
+    subtotal: total,
+    salesTax: [{
+      name: "",
+      value: 19
+    }],
+    timeCirclesTotal: 0
+  }, path);
+}
+
+export async function createInvoice(invoice: PdfInvoice, path:string) {
   let doc = new PDFDocument({
     size: "A4",
     margins: { top: margin, left: margin, bottom: 10, right: 50 },
   });
 
-  generateHeader(doc, invoice);
+  const logo = "static/logo.png";
+
+  generateHeader(doc, logo, invoice);
   generateCustomerInformation(doc, invoice);
   generateInvoiceTable(doc, invoice);
   generateSubtotalTable(doc, invoice);
@@ -83,7 +137,43 @@ function createInvoice(invoice: PdfInvoice, path:string) {
   generateFooter(doc, invoice);
 
   doc.end();
-  doc.pipe(fs.createWriteStream(path));
+
+  if (!process.env.DIGITALOCEAN_SPACES_ENDPOINT)
+    throw new Error(`Missing configuration: process.env.DIGITALOCEAN_SPACES_ENDPOINT`);
+
+  const spacesEndpoint = new AWS.Endpoint(process.env.DIGITALOCEAN_SPACES_ENDPOINT);
+  const s3 = new AWS.S3({
+    endpoint: spacesEndpoint,
+    accessKeyId: process.env.DIGITALOCEAN_SPACES_KEY,
+    secretAccessKey: process.env.DIGITALOCEAN_SPACES_SECRET
+  });
+
+  var params:{
+    Bucket: string,
+    Body?: any,
+    Key: string,
+    ACL: string
+  } = {
+    Bucket: "circlesland-invoices",
+    Key: `${invoice.seller.address}/_${invoice.invoice_nr}.pdf`,
+    ACL: 'private'
+  };
+
+  let pdfBytes:any[] = [];
+  doc.on('readable', _ => {
+    while(true) {
+      let buffer = doc.read();
+      if (!buffer) {
+        break;
+      }
+      pdfBytes.push(buffer);
+    }
+  });
+  doc.on('end', async _ => {
+    const buffer = Buffer.concat(pdfBytes);
+    params.Body = buffer.toString("base64");
+    await s3.putObject(params).promise();
+  });
 }
 
 function newPageCheck(doc:(typeof PDFDocument), invoice: any, itemsHeader = false) {
@@ -103,12 +193,12 @@ function newPageCheck(doc:(typeof PDFDocument), invoice: any, itemsHeader = fals
   }
 }
 
-function generateHeader(doc:(typeof PDFDocument), invoice: {invoice_nr: string, invoice_date: string}) {
+function generateHeader(doc:(typeof PDFDocument), sellerLogo: string, invoice: { invoice_nr: string, invoice_date: string}) {
   let sectionTop = top;
   doc
     .rect(0, 0, doc.page.width, 120)
     .fill("#F8F8FA")
-    .image("logo.png", marginx, top, { width: 134 })
+    .image(sellerLogo, marginx, top, { width: 134 })
     .fillColor("#333333")
     .fontSize(20)
     .text("Invoice", 300, top)
@@ -424,6 +514,6 @@ function formatDate(date:Date) {
   return year + "/" + month + "/" + day;
 }
 
-module.exports = {
-  createInvoice,
-};
+export function displayableName(firstName: string, lastName?: string|null) {
+  return `${firstName} ${lastName ? lastName : ""}`;
+}

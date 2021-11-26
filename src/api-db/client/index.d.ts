@@ -101,6 +101,8 @@ export type Profile = {
   lastAcknowledged: Date | null
   verifySafeChallenge: string | null
   newSafeAddress: string | null
+  lastInvoiceNo: number | null
+  lastRefundNo: number | null
 }
 
 /**
@@ -203,6 +205,8 @@ export type PurchaseLine = {
 
 export type Invoice = {
   id: number
+  createdAt: Date
+  invoiceNo: string
   customerProfileId: number
   sellerProfileId: number
   purchaseId: number
@@ -4952,11 +4956,15 @@ export namespace Prisma {
   export type ProfileAvgAggregateOutputType = {
     id: number | null
     cityGeonameid: number | null
+    lastInvoiceNo: number | null
+    lastRefundNo: number | null
   }
 
   export type ProfileSumAggregateOutputType = {
     id: number | null
     cityGeonameid: number | null
+    lastInvoiceNo: number | null
+    lastRefundNo: number | null
   }
 
   export type ProfileMinAggregateOutputType = {
@@ -4981,6 +4989,8 @@ export namespace Prisma {
     lastAcknowledged: Date | null
     verifySafeChallenge: string | null
     newSafeAddress: string | null
+    lastInvoiceNo: number | null
+    lastRefundNo: number | null
   }
 
   export type ProfileMaxAggregateOutputType = {
@@ -5005,6 +5015,8 @@ export namespace Prisma {
     lastAcknowledged: Date | null
     verifySafeChallenge: string | null
     newSafeAddress: string | null
+    lastInvoiceNo: number | null
+    lastRefundNo: number | null
   }
 
   export type ProfileCountAggregateOutputType = {
@@ -5029,6 +5041,8 @@ export namespace Prisma {
     lastAcknowledged: number
     verifySafeChallenge: number
     newSafeAddress: number
+    lastInvoiceNo: number
+    lastRefundNo: number
     _all: number
   }
 
@@ -5036,11 +5050,15 @@ export namespace Prisma {
   export type ProfileAvgAggregateInputType = {
     id?: true
     cityGeonameid?: true
+    lastInvoiceNo?: true
+    lastRefundNo?: true
   }
 
   export type ProfileSumAggregateInputType = {
     id?: true
     cityGeonameid?: true
+    lastInvoiceNo?: true
+    lastRefundNo?: true
   }
 
   export type ProfileMinAggregateInputType = {
@@ -5065,6 +5083,8 @@ export namespace Prisma {
     lastAcknowledged?: true
     verifySafeChallenge?: true
     newSafeAddress?: true
+    lastInvoiceNo?: true
+    lastRefundNo?: true
   }
 
   export type ProfileMaxAggregateInputType = {
@@ -5089,6 +5109,8 @@ export namespace Prisma {
     lastAcknowledged?: true
     verifySafeChallenge?: true
     newSafeAddress?: true
+    lastInvoiceNo?: true
+    lastRefundNo?: true
   }
 
   export type ProfileCountAggregateInputType = {
@@ -5113,6 +5135,8 @@ export namespace Prisma {
     lastAcknowledged?: true
     verifySafeChallenge?: true
     newSafeAddress?: true
+    lastInvoiceNo?: true
+    lastRefundNo?: true
     _all?: true
   }
 
@@ -5250,6 +5274,8 @@ export namespace Prisma {
     lastAcknowledged: Date | null
     verifySafeChallenge: string | null
     newSafeAddress: string | null
+    lastInvoiceNo: number | null
+    lastRefundNo: number | null
     _count: ProfileCountAggregateOutputType | null
     _avg: ProfileAvgAggregateOutputType | null
     _sum: ProfileSumAggregateOutputType | null
@@ -5306,6 +5332,8 @@ export namespace Prisma {
     createdMemberships?: boolean | MembershipFindManyArgs
     payableInvoices?: boolean | InvoiceFindManyArgs
     receivableInvoices?: boolean | InvoiceFindManyArgs
+    lastInvoiceNo?: boolean
+    lastRefundNo?: boolean
   }
 
   export type ProfileInclude = {
@@ -12491,6 +12519,8 @@ export namespace Prisma {
 
   export type InvoiceMinAggregateOutputType = {
     id: number | null
+    createdAt: Date | null
+    invoiceNo: string | null
     customerProfileId: number | null
     sellerProfileId: number | null
     purchaseId: number | null
@@ -12504,6 +12534,8 @@ export namespace Prisma {
 
   export type InvoiceMaxAggregateOutputType = {
     id: number | null
+    createdAt: Date | null
+    invoiceNo: string | null
     customerProfileId: number | null
     sellerProfileId: number | null
     purchaseId: number | null
@@ -12517,6 +12549,8 @@ export namespace Prisma {
 
   export type InvoiceCountAggregateOutputType = {
     id: number
+    createdAt: number
+    invoiceNo: number
     customerProfileId: number
     sellerProfileId: number
     purchaseId: number
@@ -12546,6 +12580,8 @@ export namespace Prisma {
 
   export type InvoiceMinAggregateInputType = {
     id?: true
+    createdAt?: true
+    invoiceNo?: true
     customerProfileId?: true
     sellerProfileId?: true
     purchaseId?: true
@@ -12559,6 +12595,8 @@ export namespace Prisma {
 
   export type InvoiceMaxAggregateInputType = {
     id?: true
+    createdAt?: true
+    invoiceNo?: true
     customerProfileId?: true
     sellerProfileId?: true
     purchaseId?: true
@@ -12572,6 +12610,8 @@ export namespace Prisma {
 
   export type InvoiceCountAggregateInputType = {
     id?: true
+    createdAt?: true
+    invoiceNo?: true
     customerProfileId?: true
     sellerProfileId?: true
     purchaseId?: true
@@ -12698,6 +12738,8 @@ export namespace Prisma {
 
   export type InvoiceGroupByOutputType = {
     id: number
+    createdAt: Date
+    invoiceNo: string
     customerProfileId: number
     sellerProfileId: number
     purchaseId: number
@@ -12730,6 +12772,8 @@ export namespace Prisma {
 
   export type InvoiceSelect = {
     id?: boolean
+    createdAt?: boolean
+    invoiceNo?: boolean
     customerProfile?: boolean | ProfileArgs
     customerProfileId?: boolean
     sellerProfile?: boolean | ProfileArgs
@@ -17114,7 +17158,9 @@ export namespace Prisma {
     cityGeonameid: 'cityGeonameid',
     lastAcknowledged: 'lastAcknowledged',
     verifySafeChallenge: 'verifySafeChallenge',
-    newSafeAddress: 'newSafeAddress'
+    newSafeAddress: 'newSafeAddress',
+    lastInvoiceNo: 'lastInvoiceNo',
+    lastRefundNo: 'lastRefundNo'
   };
 
   export type ProfileScalarFieldEnum = (typeof ProfileScalarFieldEnum)[keyof typeof ProfileScalarFieldEnum]
@@ -17209,6 +17255,8 @@ export namespace Prisma {
 
   export const InvoiceScalarFieldEnum: {
     id: 'id',
+    createdAt: 'createdAt',
+    invoiceNo: 'invoiceNo',
     customerProfileId: 'customerProfileId',
     sellerProfileId: 'sellerProfileId',
     purchaseId: 'purchaseId',
@@ -17510,6 +17558,8 @@ export namespace Prisma {
     createdMemberships?: MembershipListRelationFilter
     payableInvoices?: InvoiceListRelationFilter
     receivableInvoices?: InvoiceListRelationFilter
+    lastInvoiceNo?: IntNullableFilter | number | null
+    lastRefundNo?: IntNullableFilter | number | null
   }
 
   export type ProfileOrderByInput = {
@@ -17534,6 +17584,8 @@ export namespace Prisma {
     lastAcknowledged?: SortOrder
     verifySafeChallenge?: SortOrder
     newSafeAddress?: SortOrder
+    lastInvoiceNo?: SortOrder
+    lastRefundNo?: SortOrder
   }
 
   export type ProfileWhereUniqueInput = {
@@ -17565,6 +17617,8 @@ export namespace Prisma {
     lastAcknowledged?: DateTimeNullableWithAggregatesFilter | Date | string | null
     verifySafeChallenge?: StringNullableWithAggregatesFilter | string | null
     newSafeAddress?: StringNullableWithAggregatesFilter | string | null
+    lastInvoiceNo?: IntNullableWithAggregatesFilter | number | null
+    lastRefundNo?: IntNullableWithAggregatesFilter | number | null
   }
 
   export type ExternalProfilesWhereInput = {
@@ -17852,6 +17906,8 @@ export namespace Prisma {
     OR?: Enumerable<InvoiceWhereInput>
     NOT?: Enumerable<InvoiceWhereInput>
     id?: IntFilter | number
+    createdAt?: DateTimeFilter | Date | string
+    invoiceNo?: StringFilter | string
     customerProfile?: XOR<ProfileRelationFilter, ProfileWhereInput>
     customerProfileId?: IntFilter | number
     sellerProfile?: XOR<ProfileRelationFilter, ProfileWhereInput>
@@ -17870,6 +17926,8 @@ export namespace Prisma {
 
   export type InvoiceOrderByInput = {
     id?: SortOrder
+    createdAt?: SortOrder
+    invoiceNo?: SortOrder
     customerProfileId?: SortOrder
     sellerProfileId?: SortOrder
     purchaseId?: SortOrder
@@ -17890,6 +17948,8 @@ export namespace Prisma {
     OR?: Enumerable<InvoiceScalarWhereWithAggregatesInput>
     NOT?: Enumerable<InvoiceScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    invoiceNo?: StringWithAggregatesFilter | string
     customerProfileId?: IntWithAggregatesFilter | number
     sellerProfileId?: IntWithAggregatesFilter | number
     purchaseId?: IntWithAggregatesFilter | number
@@ -18369,6 +18429,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -18406,6 +18468,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -18442,6 +18506,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -18479,6 +18545,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -18516,6 +18584,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
   }
 
   export type ProfileUpdateManyMutationInput = {
@@ -18539,6 +18609,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type ProfileUncheckedUpdateManyInput = {
@@ -18563,6 +18635,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type ExternalProfilesCreateInput = {
@@ -19024,6 +19098,8 @@ export namespace Prisma {
   }
 
   export type InvoiceCreateInput = {
+    createdAt: Date | string
+    invoiceNo: string
     pickupCode?: string | null
     buyerSignature?: boolean | null
     buyerSignedDate?: Date | string | null
@@ -19038,6 +19114,8 @@ export namespace Prisma {
 
   export type InvoiceUncheckedCreateInput = {
     id?: number
+    createdAt: Date | string
+    invoiceNo: string
     customerProfileId: number
     sellerProfileId: number
     purchaseId: number
@@ -19051,6 +19129,8 @@ export namespace Prisma {
   }
 
   export type InvoiceUpdateInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
     buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -19065,6 +19145,8 @@ export namespace Prisma {
 
   export type InvoiceUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
     customerProfileId?: IntFieldUpdateOperationsInput | number
     sellerProfileId?: IntFieldUpdateOperationsInput | number
     purchaseId?: IntFieldUpdateOperationsInput | number
@@ -19079,6 +19161,8 @@ export namespace Prisma {
 
   export type InvoiceCreateManyInput = {
     id?: number
+    createdAt: Date | string
+    invoiceNo: string
     customerProfileId: number
     sellerProfileId: number
     purchaseId: number
@@ -19091,6 +19175,8 @@ export namespace Prisma {
   }
 
   export type InvoiceUpdateManyMutationInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
     buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -19100,6 +19186,8 @@ export namespace Prisma {
 
   export type InvoiceUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
     customerProfileId?: IntFieldUpdateOperationsInput | number
     sellerProfileId?: IntFieldUpdateOperationsInput | number
     purchaseId?: IntFieldUpdateOperationsInput | number
@@ -21506,6 +21594,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
@@ -21542,6 +21632,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
@@ -21587,6 +21679,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
@@ -21623,6 +21717,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
@@ -21658,6 +21754,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -21694,6 +21792,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -21734,6 +21834,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -21770,6 +21872,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -21810,6 +21914,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -21846,6 +21952,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -21916,6 +22024,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -21952,6 +22062,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -21992,6 +22104,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -22028,6 +22142,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -22068,6 +22184,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -22104,6 +22222,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -22167,6 +22287,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -22203,6 +22325,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -22282,6 +22406,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -22318,6 +22444,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -22387,6 +22515,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -22423,6 +22553,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -22468,6 +22600,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -22504,6 +22638,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -22867,6 +23003,8 @@ export namespace Prisma {
   }
 
   export type InvoiceCreateWithoutCustomerProfileInput = {
+    createdAt: Date | string
+    invoiceNo: string
     pickupCode?: string | null
     buyerSignature?: boolean | null
     buyerSignedDate?: Date | string | null
@@ -22880,6 +23018,8 @@ export namespace Prisma {
 
   export type InvoiceUncheckedCreateWithoutCustomerProfileInput = {
     id?: number
+    createdAt: Date | string
+    invoiceNo: string
     sellerProfileId: number
     purchaseId: number
     paymentTransactionHash?: string | null
@@ -22902,6 +23042,8 @@ export namespace Prisma {
   }
 
   export type InvoiceCreateWithoutSellerProfileInput = {
+    createdAt: Date | string
+    invoiceNo: string
     pickupCode?: string | null
     buyerSignature?: boolean | null
     buyerSignedDate?: Date | string | null
@@ -22915,6 +23057,8 @@ export namespace Prisma {
 
   export type InvoiceUncheckedCreateWithoutSellerProfileInput = {
     id?: number
+    createdAt: Date | string
+    invoiceNo: string
     customerProfileId: number
     purchaseId: number
     paymentTransactionHash?: string | null
@@ -23223,6 +23367,8 @@ export namespace Prisma {
     OR?: Enumerable<InvoiceScalarWhereInput>
     NOT?: Enumerable<InvoiceScalarWhereInput>
     id?: IntFilter | number
+    createdAt?: DateTimeFilter | Date | string
+    invoiceNo?: StringFilter | string
     customerProfileId?: IntFilter | number
     sellerProfileId?: IntFilter | number
     purchaseId?: IntFilter | number
@@ -23271,6 +23417,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -23307,6 +23455,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -23347,6 +23497,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -23383,6 +23535,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -23428,6 +23582,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -23464,6 +23620,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -23504,6 +23662,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -23540,6 +23700,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -23620,6 +23782,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
@@ -23656,6 +23820,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
@@ -23743,6 +23909,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
@@ -23779,6 +23947,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
@@ -23868,6 +24038,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -23904,6 +24076,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -23946,6 +24120,8 @@ export namespace Prisma {
   }
 
   export type InvoiceCreateWithoutPurchaseInput = {
+    createdAt: Date | string
+    invoiceNo: string
     pickupCode?: string | null
     buyerSignature?: boolean | null
     buyerSignedDate?: Date | string | null
@@ -23959,6 +24135,8 @@ export namespace Prisma {
 
   export type InvoiceUncheckedCreateWithoutPurchaseInput = {
     id?: number
+    createdAt: Date | string
+    invoiceNo: string
     customerProfileId: number
     sellerProfileId: number
     paymentTransactionHash?: string | null
@@ -24006,6 +24184,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -24042,6 +24222,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -24207,6 +24389,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -24243,6 +24427,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -24283,6 +24469,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -24319,6 +24507,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -24419,6 +24609,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -24455,6 +24647,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -24495,6 +24689,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -24531,6 +24727,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -24595,6 +24793,8 @@ export namespace Prisma {
   }
 
   export type InvoiceCreateWithoutLinesInput = {
+    createdAt: Date | string
+    invoiceNo: string
     pickupCode?: string | null
     buyerSignature?: boolean | null
     buyerSignedDate?: Date | string | null
@@ -24608,6 +24808,8 @@ export namespace Prisma {
 
   export type InvoiceUncheckedCreateWithoutLinesInput = {
     id?: number
+    createdAt: Date | string
+    invoiceNo: string
     customerProfileId: number
     sellerProfileId: number
     purchaseId: number
@@ -24661,6 +24863,8 @@ export namespace Prisma {
   }
 
   export type InvoiceUpdateWithoutLinesInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
     buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -24674,6 +24878,8 @@ export namespace Prisma {
 
   export type InvoiceUncheckedUpdateWithoutLinesInput = {
     id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
     customerProfileId?: IntFieldUpdateOperationsInput | number
     sellerProfileId?: IntFieldUpdateOperationsInput | number
     purchaseId?: IntFieldUpdateOperationsInput | number
@@ -24791,6 +24997,8 @@ export namespace Prisma {
   }
 
   export type InvoiceCreateWithoutPaymentTransactionInput = {
+    createdAt: Date | string
+    invoiceNo: string
     pickupCode?: string | null
     buyerSignature?: boolean | null
     buyerSignedDate?: Date | string | null
@@ -24804,6 +25012,8 @@ export namespace Prisma {
 
   export type InvoiceUncheckedCreateWithoutPaymentTransactionInput = {
     id?: number
+    createdAt: Date | string
+    invoiceNo: string
     customerProfileId: number
     sellerProfileId: number
     purchaseId: number
@@ -24842,6 +25052,8 @@ export namespace Prisma {
   }
 
   export type InvoiceUpdateWithoutPaymentTransactionInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
     buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -24855,6 +25067,8 @@ export namespace Prisma {
 
   export type InvoiceUncheckedUpdateWithoutPaymentTransactionInput = {
     id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
     customerProfileId?: IntFieldUpdateOperationsInput | number
     sellerProfileId?: IntFieldUpdateOperationsInput | number
     purchaseId?: IntFieldUpdateOperationsInput | number
@@ -24887,6 +25101,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionCreateNestedManyWithoutProfileInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
@@ -24923,6 +25139,8 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    lastInvoiceNo?: number | null
+    lastRefundNo?: number | null
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
@@ -25018,6 +25236,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUpdateManyWithoutProfileInput
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
@@ -25054,6 +25274,8 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
@@ -25264,6 +25486,8 @@ export namespace Prisma {
 
   export type InvoiceCreateManyCustomerProfileInput = {
     id?: number
+    createdAt: Date | string
+    invoiceNo: string
     sellerProfileId: number
     purchaseId: number
     paymentTransactionHash?: string | null
@@ -25276,6 +25500,8 @@ export namespace Prisma {
 
   export type InvoiceCreateManySellerProfileInput = {
     id?: number
+    createdAt: Date | string
+    invoiceNo: string
     customerProfileId: number
     purchaseId: number
     paymentTransactionHash?: string | null
@@ -25632,6 +25858,8 @@ export namespace Prisma {
   }
 
   export type InvoiceUpdateWithoutCustomerProfileInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
     buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -25645,6 +25873,8 @@ export namespace Prisma {
 
   export type InvoiceUncheckedUpdateWithoutCustomerProfileInput = {
     id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
     sellerProfileId?: IntFieldUpdateOperationsInput | number
     purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25658,6 +25888,8 @@ export namespace Prisma {
 
   export type InvoiceUncheckedUpdateManyWithoutPayableInvoicesInput = {
     id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
     sellerProfileId?: IntFieldUpdateOperationsInput | number
     purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25669,6 +25901,8 @@ export namespace Prisma {
   }
 
   export type InvoiceUpdateWithoutSellerProfileInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
     buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -25682,6 +25916,8 @@ export namespace Prisma {
 
   export type InvoiceUncheckedUpdateWithoutSellerProfileInput = {
     id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
     customerProfileId?: IntFieldUpdateOperationsInput | number
     purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25695,6 +25931,8 @@ export namespace Prisma {
 
   export type InvoiceUncheckedUpdateManyWithoutReceivableInvoicesInput = {
     id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
     customerProfileId?: IntFieldUpdateOperationsInput | number
     purchaseId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25789,6 +26027,8 @@ export namespace Prisma {
 
   export type InvoiceCreateManyPurchaseInput = {
     id?: number
+    createdAt: Date | string
+    invoiceNo: string
     customerProfileId: number
     sellerProfileId: number
     paymentTransactionHash?: string | null
@@ -25819,6 +26059,8 @@ export namespace Prisma {
   }
 
   export type InvoiceUpdateWithoutPurchaseInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
     buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -25832,6 +26074,8 @@ export namespace Prisma {
 
   export type InvoiceUncheckedUpdateWithoutPurchaseInput = {
     id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
     customerProfileId?: IntFieldUpdateOperationsInput | number
     sellerProfileId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25845,6 +26089,8 @@ export namespace Prisma {
 
   export type InvoiceUncheckedUpdateManyWithoutInvoicesInput = {
     id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
     customerProfileId?: IntFieldUpdateOperationsInput | number
     sellerProfileId?: IntFieldUpdateOperationsInput | number
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null

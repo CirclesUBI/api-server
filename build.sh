@@ -15,4 +15,8 @@ cp -f src/auth-client/* dist/auth-client
 mkdir dist/api-db
 cp -r -f src/api-db/* dist/api-db
 
+mkdir dist/static
+cp src/logo.png dist/static/logo.png
+
 npx --no-install tsc || exit
+

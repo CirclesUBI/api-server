@@ -46,7 +46,9 @@ export function upsertOrganisation(prisma_api_rw:PrismaClient, isRegion:boolean)
             avatarUrl: args.organisation.avatarUrl,
             avatarMimeType: args.organisation.avatarMimeType,
             type: isRegion ? "REGION" : "ORGANISATION",
-            cityGeonameid: args.organisation.cityGeonameid
+            cityGeonameid: args.organisation.cityGeonameid,
+            lastInvoiceNo: 0,
+            lastRefundNo: 0
           }
         });
 

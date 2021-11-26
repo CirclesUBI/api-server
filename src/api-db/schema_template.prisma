@@ -238,7 +238,7 @@ model PurchaseLine {
 model Invoice {
     id Int @id @default(autoincrement())
 
-    createdAt DateTime @default(now())
+    createdAt DateTime
     invoiceNo String
 
     customerProfile Profile @relation(name: "Invoice_CustomerProfile", fields: [customerProfileId], references: [id])

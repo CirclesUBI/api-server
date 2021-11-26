@@ -719,7 +719,6 @@ export const resolvers: Resolvers = {
         where owners @> $1::text[];`;
 
       const session = await context.verifySession();
-
       const organisationSignups = await getPool().query(sql, [[session.ethAddress]]);
       const orgSafeAddresses = organisationSignups.rows.map(o => o.organisation);
       const existingOrgProfiles = await new ProfileLoader().queryCirclesLandBySafeAddress(prisma_api_rw, orgSafeAddresses);

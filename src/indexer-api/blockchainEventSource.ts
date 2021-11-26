@@ -7,7 +7,7 @@ import {EventType} from "../types";
 import BN from "bn.js";
 import {RpcGateway} from "../rpcGateway";
 import {convertTimeCirclesToCircles} from "../timeCircles";
-
+import {createPdfForInvoice} from "../invoiceGenerator";
 
 export interface ProfileEventSource {
   /**
@@ -196,15 +196,15 @@ export class BlockchainEventSource implements ProfileEventSource {
               }
 
               if (hubTransfer && hubTransfer.rows.length == 1) {
-                const timestamp = getDateWithOffset(hubTransfer.rows[0].timestamp);
-                const tcAmount = convertTimeCirclesToCircles(amount, timestamp.toJSON());
+                const transactionTimestamp = getDateWithOffset(hubTransfer.rows[0].timestamp);
+                const tcAmount = convertTimeCirclesToCircles(amount, transactionTimestamp.toJSON());
                 const minVal = new BN(RpcGateway.get().utils.toWei(tcAmount.toString(), "ether")).sub(new BN("10000"));
                 const maxVal = new BN(RpcGateway.get().utils.toWei(tcAmount.toString(), "ether")).add(new BN("10000"));
 
                 const actualValue = new BN(hubTransfer.rows[0].value);
-                const matches = actualValue.gte(minVal) && actualValue.lte(maxVal);
+                const amountMatches = actualValue.gte(minVal) && actualValue.lte(maxVal);
 
-                if (matches) {
+                if (amountMatches) {
                   // TODO: Currently all running processes will update the invoice with a different pickupCode but with the same transaction hash. Maybe this should be synchronized?
                   await prisma_api_rw.invoice.update({
                     where: {
@@ -215,6 +215,8 @@ export class BlockchainEventSource implements ProfileEventSource {
                       pickupCode: code
                     }
                   });
+
+                  await createPdfForInvoice(invoice.id, `/home/daniel/Desktop/invoices/${invoice.invoiceNo}.pdf`);
                 }
               }
             } catch (e) {

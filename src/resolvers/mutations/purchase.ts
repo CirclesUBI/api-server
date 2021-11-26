@@ -7,6 +7,7 @@ import {
 } from "../../api-db/client";
 import {prisma_api_ro, prisma_api_rw} from "../../apiDbClient";
 import {Context} from "../../context";
+import {createPdfForInvoice} from "../../invoiceGenerator";
 
 export type OfferLookup = {
   [id: number]: {
@@ -26,6 +27,27 @@ export async function purchaseResolver(parent: any, args: MutationPurchaseArgs, 
   }
   if (!callerProfile.circlesAddress) {
     throw new Error(`You need a safe to purchase.`)
+  }
+
+  // If there are pending payments for this user then
+  // don't allow to create a new purchase until the previous
+  // one is paid.
+  const openInvoices = await prisma_api_rw.purchase.findMany({
+    where: {
+      createdBy: {
+        circlesAddress: callerProfile.circlesAddress
+      },
+      invoices: {
+        some: {
+          paymentTransactionHash: null
+        }
+      }
+    }
+  });
+
+  if (openInvoices.length > 0)
+  {
+    throw new Error(`You cannot make another purchase until your last purchase is processed.`)
   }
 
   const purchasedOffers = await lookupOffers(args);
@@ -132,6 +154,17 @@ async function createPurchase(caller:Profile, args: MutationPurchaseArgs, offers
   return purchase;
 }
 
+async function getNextInvoiceNo(profileId: number) : Promise<number> {
+  const p = await prisma_api_rw.$queryRaw(`
+      WITH updated AS (
+        UPDATE "Profile" SET "lastInvoiceNo" = "lastInvoiceNo" + 1
+            WHERE id = ${profileId} RETURNING "lastInvoiceNo"
+    )
+    SELECT "lastInvoiceNo" as invoice_no FROM updated;`);
+
+  return p[0].invoice_no;
+}
+
 async function createInvoices(caller:Profile, args: MutationPurchaseArgs, offersLookup: OfferLookup, purchase: CreatedDbPurchase)
   : Promise<(DbInvoice & {customerProfile: Profile, sellerProfile: Profile, lines: (InvoiceLine & {product:  DbOffer & {createdBy: Profile}})[]})[]> {
   const sellersLines: {[sellerAddress:string]:DbPurchaseLine[]} = {};
@@ -156,11 +189,15 @@ async function createInvoices(caller:Profile, args: MutationPurchaseArgs, offers
     }
     const sellerLines = sellersLines[seller.circlesAddress];
 
+    // TODO: Generate invoice no.
+    const invoiceNo = await getNextInvoiceNo(seller.id);
     const invoice = prisma_api_rw.invoice.create({
       data: {
         sellerProfileId: seller.id,
         customerProfileId: caller.id,
         purchaseId: purchase.id,
+        createdAt: new Date(),
+        invoiceNo: invoiceNo.toString().padStart(8, "0"),
         lines: {
           create: sellerLines.map(l => {
             return {
