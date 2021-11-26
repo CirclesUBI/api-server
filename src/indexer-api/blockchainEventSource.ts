@@ -177,7 +177,7 @@ export class BlockchainEventSource implements ProfileEventSource {
         if (invoices.length > 0) {
           for (let invoice of invoices) {
             try {
-              console.log(`Found open invoices for partner ${address}:`, JSON.stringify(invoices, null, 2));
+              console.log(`Found open invoices for partner ${address}:`, JSON.stringify(invoice, null, 2));
               // Check if this is a crc_hub_transfer and if the amount is correct
               // within certain limits:
 

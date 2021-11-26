@@ -1,7 +1,16 @@
 import {Context} from "../../context";
 import {PrismaClient} from "../../api-db/client";
 import {MutationUpsertOrganisationArgs, Profile} from "../../types";
-import {prisma_api_ro, prisma_api_rw} from "../../apiDbClient";
+
+export async function isOrgAdmin(prisma_api_rw:PrismaClient, userAddress:string, orgId: number) : Promise<boolean> {
+  return !!(await prisma_api_rw.membership.findFirst({
+    where: {
+      memberAddress: userAddress,
+      memberAtId: orgId,
+      isAdmin: true
+    }
+  }));
+}
 
 export function upsertOrganisation(prisma_api_rw:PrismaClient, isRegion:boolean) {
     return async (parent:any, args:MutationUpsertOrganisationArgs, context:Context) => {
@@ -12,10 +21,7 @@ export function upsertOrganisation(prisma_api_rw:PrismaClient, isRegion:boolean)
       }
 
       let organisationProfile:Profile;
-      if (args.organisation.id) {
-
-        // TODO: Only admins can upsert an organisation
-
+      if (args.organisation.id && await isOrgAdmin(prisma_api_rw, ownProfile.circlesAddress, args.organisation.id)) {
         organisationProfile = await prisma_api_rw.profile.update({
           where: {
             id: args.organisation.id
@@ -31,6 +37,7 @@ export function upsertOrganisation(prisma_api_rw:PrismaClient, isRegion:boolean)
           }
         });
       } else {
+        // TODO: Check if the user is the owner of the safe
         organisationProfile = await prisma_api_rw.profile.create({
           data: {
             firstName: args.organisation.name,

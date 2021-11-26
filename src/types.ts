@@ -379,6 +379,7 @@ export type Invoice = {
   buyerAddress: Scalars['String'];
   buyerProfile?: Maybe<Profile>;
   lines: Array<InvoiceLine>;
+  pickupCode?: Maybe<Scalars['String']>;
   buyerSignature?: Maybe<Scalars['Boolean']>;
   buyerSignedDate?: Maybe<Scalars['String']>;
   sellerSignature?: Maybe<Scalars['Boolean']>;
@@ -617,11 +618,6 @@ export type MutationRequestSessionChallengeArgs = {
 export type MutationVerifySessionChallengeArgs = {
   challenge: Scalars['String'];
   signature: Scalars['String'];
-};
-
-
-export type MutationImportOrganisationsOfAccountArgs = {
-  ownerAddress: Scalars['String'];
 };
 
 export type NotificationEvent = {
@@ -1788,6 +1784,7 @@ export type InvoiceResolvers<ContextType = any, ParentType extends ResolversPare
   buyerAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   buyerProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   lines?: Resolver<Array<ResolversTypes['InvoiceLine']>, ParentType, ContextType>;
+  pickupCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   buyerSignature?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   buyerSignedDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   sellerSignature?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -1903,7 +1900,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   sendMessage?: Resolver<ResolversTypes['SendMessageResult'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'toSafeAddress' | 'content'>>;
   requestSessionChallenge?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationRequestSessionChallengeArgs, 'address'>>;
   verifySessionChallenge?: Resolver<Maybe<ResolversTypes['ExchangeTokenResponse']>, ParentType, ContextType, RequireFields<MutationVerifySessionChallengeArgs, 'challenge' | 'signature'>>;
-  importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<MutationImportOrganisationsOfAccountArgs, 'ownerAddress'>>;
+  importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
 }>;
 
 export type NotificationEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['NotificationEvent'] = ResolversParentTypes['NotificationEvent']> = ResolversObject<{

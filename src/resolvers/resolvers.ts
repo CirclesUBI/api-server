@@ -2,7 +2,7 @@ import {myProfile, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {
-  AggregateType, Contacts, EventType, Invoice, InvoiceLine, Profile,
+  AggregateType, Contacts, CreateOrganisationResult, EventType, Invoice, InvoiceLine, Profile,
   ProfileEvent,
   ProfileOrOrganisation, Purchase, Resolvers,
   SortOrder, TransitivePath, TransitiveTransfer
@@ -712,9 +712,38 @@ export const resolvers: Resolvers = {
     createTestInvitation: createTestInvitation(prisma_api_rw),
     addMember: addMemberResolver,
     removeMember: removeMemberResolver,
-    importOrganisationsOfAccount: async (parent, args, context) => {
+    importOrganisationsOfAccount: async (parent, args, context:Context) => {
+      const sql = `
+        select organisation
+        from crc_organisation_signup_2
+        where owners @> $1::text[];`;
 
-      return [];
+      const session = await context.verifySession();
+
+      const organisationSignups = await getPool().query(sql, [[session.ethAddress]]);
+      const orgSafeAddresses = organisationSignups.rows.map(o => o.organisation);
+      const existingOrgProfiles = await new ProfileLoader().queryCirclesLandBySafeAddress(prisma_api_rw, orgSafeAddresses);
+      const missingOrgProfiles = orgSafeAddresses.filter(o => !existingOrgProfiles[o]);
+      const missingOrgProfilesFromCirclesGarden = await new ProfileLoader().queryCirclesGardenRemote(prisma_api_rw, missingOrgProfiles);
+
+      const importResults = await Promise.all(missingOrgProfiles.map(async org => {
+        const createOrgMutation = upsertOrganisation(prisma_api_rw, false);
+        const circlesGardenProfile = missingOrgProfilesFromCirclesGarden[org];
+        if (circlesGardenProfile) {
+          const importOrgResult = await createOrgMutation(null, {
+            organisation: {
+              circlesAddress: org,
+              name: circlesGardenProfile.firstName,
+              avatarUrl: circlesGardenProfile.avatarUrl
+            }
+          }, context);
+
+          return importOrgResult;
+        }
+      }));
+
+      // @ts-ignore
+      return importResults.filter(o => o && o.organisation).map((o) => o.organisation);
     }
   },
   Subscription: {
