@@ -154,7 +154,7 @@ async function createPurchase(caller:Profile, args: MutationPurchaseArgs, offers
   return purchase;
 }
 
-async function getNextInvoiceNo(profileId: number) : Promise<number> {
+export async function getNextInvoiceNo(profileId: number) : Promise<number> {
   const p = await prisma_api_rw.$queryRaw(`
       WITH updated AS (
         UPDATE "Profile" SET "lastInvoiceNo" = "lastInvoiceNo" + 1
@@ -189,15 +189,13 @@ async function createInvoices(caller:Profile, args: MutationPurchaseArgs, offers
     }
     const sellerLines = sellersLines[seller.circlesAddress];
 
-    // TODO: Generate invoice no.
-    const invoiceNo = await getNextInvoiceNo(seller.id);
     const invoice = prisma_api_rw.invoice.create({
       data: {
         sellerProfileId: seller.id,
         customerProfileId: caller.id,
         purchaseId: purchase.id,
         createdAt: new Date(),
-        invoiceNo: invoiceNo.toString().padStart(8, "0"),
+        invoiceNo: "",
         lines: {
           create: sellerLines.map(l => {
             return {

@@ -8,6 +8,7 @@ import BN from "bn.js";
 import {RpcGateway} from "../rpcGateway";
 import {convertTimeCirclesToCircles} from "../timeCircles";
 import {createPdfForInvoice} from "../invoiceGenerator";
+import {getNextInvoiceNo} from "../resolvers/mutations/purchase";
 
 export interface ProfileEventSource {
   /**
@@ -206,13 +207,15 @@ export class BlockchainEventSource implements ProfileEventSource {
 
                 if (amountMatches) {
                   // TODO: Currently all running processes will update the invoice with a different pickupCode but with the same transaction hash. Maybe this should be synchronized?
+                  const invoiceNo = await getNextInvoiceNo(invoice.sellerProfile.id);
                   await prisma_api_rw.invoice.update({
                     where: {
                       id: invoice.id
                     },
                     data: {
                       paymentTransactionHash: hubTransfer.rows[0].hash,
-                      pickupCode: code
+                      pickupCode: code,
+                      invoiceNo: invoiceNo.toString().padStart(8, "0")
                     }
                   });
 
