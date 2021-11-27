@@ -694,44 +694,48 @@ export const resolvers: Resolvers = {
       return activeSafeResult.rows[0].safe_address;
     },
     invoice: async (parent: any, args, context: Context) => {
-      try {
-        if (!process.env.DIGITALOCEAN_SPACES_ENDPOINT)
-          throw new Error(`Missing configuration: process.env.DIGITALOCEAN_SPACES_ENDPOINT`);
+      const caller = await context.callerInfo;
+      if (!caller?.profile)
+        throw new Error(`You need a profile to use this feature.`);
 
-        const spacesEndpoint = new AWS.Endpoint(process.env.DIGITALOCEAN_SPACES_ENDPOINT);
-        const s3 = new AWS.S3({
-          endpoint: spacesEndpoint,
-          accessKeyId: process.env.DIGITALOCEAN_SPACES_KEY,
-          secretAccessKey: process.env.DIGITALOCEAN_SPACES_SECRET
-        });
+      if (!process.env.DIGITALOCEAN_SPACES_ENDPOINT)
+        throw new Error(`Missing configuration: process.env.DIGITALOCEAN_SPACES_ENDPOINT`);
 
-        const invoice = await prisma_api_ro.invoice.findUnique({
-          where: {
-            id: args.invoiceId
-          },
-          include: {
-            sellerProfile: true
-          }
-        });
+      const spacesEndpoint = new AWS.Endpoint(process.env.DIGITALOCEAN_SPACES_ENDPOINT);
+      const s3 = new AWS.S3({
+        endpoint: spacesEndpoint,
+        accessKeyId: process.env.DIGITALOCEAN_SPACES_KEY,
+        secretAccessKey: process.env.DIGITALOCEAN_SPACES_SECRET
+      });
 
-        if (!invoice) {
-          return null;
+      const invoice = await prisma_api_ro.invoice.findFirst({
+        where: {
+          id: args.invoiceId,
+          OR:[{
+            customerProfileId: caller.profile.id
+          }, {
+            sellerProfileId: caller.profile.id
+          }]
+        },
+        include: {
+          sellerProfile: true
         }
+      });
 
-        const invoicePdfObj = await s3.getObject({
-          Bucket: "circlesland-invoices",
-          Key: `${invoice.sellerProfile.circlesAddress}/${invoice.invoiceNo}.pdf`
-        }).promise();
-
-        if (!invoicePdfObj.Body) {
-          return null;
-        }
-
-        return invoicePdfObj.Body.toString("base64");
-      } catch (e) {
-        console.error(e);
+      if (!invoice) {
+        return null;
       }
-      return null;
+
+      const invoicePdfObj = await s3.getObject({
+        Bucket: "circlesland-invoices",
+        Key: `${invoice.sellerProfile.circlesAddress}/${invoice.invoiceNo}.pdf`
+      }).promise();
+
+      if (!invoicePdfObj.Body) {
+        return null;
+      }
+
+      return invoicePdfObj.Body.toString("base64");
     }
   },
   Mutation: {
