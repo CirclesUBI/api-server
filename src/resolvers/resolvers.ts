@@ -578,7 +578,7 @@ export const resolvers: Resolvers = {
                    where safe_address = $1
                      and balance > 0
                    order by b.balance desc
-                   limit 30
+                   limit 10
                ),
                total as (
                    select sum(balance) as total
