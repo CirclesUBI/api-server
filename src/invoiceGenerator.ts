@@ -107,10 +107,10 @@ export async function createPdfForInvoice(invoiceId: number, path: string) {
       postal_code: "80469",
       safe_address: seller.circlesAddress
     },
-    invoice_date: dayjs(invoiceFromDb.createdAt).format("YYYY-MM-DD HH:MM:ss"),
+    invoice_date: dayjs(invoiceFromDb.createdAt).format("YYYY-MM-DD HH:mm:ss"),
     invoice_nr: invoiceFromDb.invoiceNo,
     transactionHash: paymentTransaction?.hash ?? "",
-    transferTime: paymentTransaction ? dayjs(paymentTransaction.timestamp).format("YYYY-MM-DD HH:MM:ss") : "",
+    transferTime: paymentTransaction ? dayjs(paymentTransaction.timestamp).format("YYYY-MM-DD HH:mm:ss") : "",
     items: items,
     subtotal: total,
     salesTax: [{
