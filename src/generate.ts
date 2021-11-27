@@ -15,8 +15,7 @@ export class Generate
   }
 
   static randomBase64String(length: number) {
-    const randomData = new Uint8Array(length);
-    window.crypto.getRandomValues(randomData);
+    const randomData = crypto.randomBytes(length)
     const randomDataBuffer = Buffer.from(randomData);
     return randomDataBuffer.toString("hex");
   }
