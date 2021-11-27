@@ -2,7 +2,7 @@ import {myProfile, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {
-  AggregateType, Contacts, CreateOrganisationResult, EventType, Invoice, InvoiceLine, Profile,
+  AggregateType, Contacts, EventType, Invoice, InvoiceLine, Profile,
   ProfileEvent,
   ProfileOrOrganisation, Purchase, Resolvers,
   SortOrder, TransitivePath, TransitiveTransfer
@@ -80,8 +80,11 @@ import BN from "bn.js";
 import {Erc20BalancesSource} from "../aggregateSources/blockchain-indexer/erc20BalancesSource";
 import {SalesSource} from "../aggregateSources/api/salesSource";
 import {SalesEventSource} from "../eventSources/api/salesEventSource";
-import {parentPort} from "worker_threads";
 import AWS from "aws-sdk";
+import {RpcGateway} from "../rpcGateway";
+import type {AbiItem} from "web3-utils";
+
+export const HUB_ADDRESS = "0x29b9a7fBb8995b2423a71cC17cf9810798F6C543";
 
 export const safeFundingTransactionResolver = (async (parent: any, args: any, context: Context) => {
   const session = await context.verifySession();
@@ -553,6 +556,63 @@ export const resolvers: Resolvers = {
       const from = args.from.toLowerCase();
       const to = args.to.toLowerCase();
 
+
+      let validateTransfers = async function(transfers:TransitivePath) {
+        var token = [];
+        var from = [];
+        var to = [];
+        var value = [];
+        for (let step of transfers.transfers) {
+          token.push(step.tokenOwner);
+          from.push(step.from);
+          to.push(step.to);
+          value.push(step.value);
+        }
+
+        const abiItem:AbiItem = {
+          "inputs": [
+            {
+              "internalType": "address[]",
+              "name": "tokenOwners",
+              "type": "address[]"
+            },
+            {
+              "internalType": "address[]",
+              "name": "srcs",
+              "type": "address[]"
+            },
+            {
+              "internalType": "address[]",
+              "name": "dests",
+              "type": "address[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "wads",
+              "type": "uint256[]"
+            }
+          ],
+          "name": "transferThrough",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        };
+
+        const callData = RpcGateway.get().eth.abi.encodeFunctionSignature(abiItem)
+          + RpcGateway.get().eth.abi.encodeParameters([
+            "address[]", "address[]", "address[]", "uint256[]"
+          ], [
+            token, from, to, value
+          ]).substr(2)/* remove preceding 0x */;
+          
+        try {
+          await RpcGateway.get().eth.call({from: from[0], to: HUB_ADDRESS, data: callData});
+          return true;
+        } catch {
+          throw new Error("Cannot validate the following path: " + JSON.stringify(transfers, null, 2));
+        }
+      };
+
       const sql = `
           with my_tokens as (
               select token
@@ -578,7 +638,7 @@ export const resolvers: Resolvers = {
                    where safe_address = $1
                      and balance > 0
                    order by b.balance desc
-                   limit 10
+                   limit 5
                ),
                total as (
                    select sum(balance) as total
@@ -652,7 +712,7 @@ export const resolvers: Resolvers = {
       }
 
       const flow = transfers.reduce((p, c) => p.add(c.balance), new BN("0"));
-      return <TransitivePath>{
+      const path = <TransitivePath>{
         requestedAmount: requestedAmount.toString(),
         flow: flow.toString(),
         transfers: transfers.map(o => {
@@ -665,6 +725,10 @@ export const resolvers: Resolvers = {
           }
         })
       };
+
+      await validateTransfers(path);
+
+      return path;
     },
     mostRecentUbiSafeOfAccount: async (parent, args, context) => {
       const findSafeOfOwnerSql = `select "user"
