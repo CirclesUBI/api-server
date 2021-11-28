@@ -164,18 +164,22 @@ export class Main {
                         reject(err);
                     });
                     notifyConnection.on('notification', async function (msg) {
-                        if (msg.channel != "new_message")
+                        if (msg.channel != "new_message") {
                             return;
-                        if (!msg.payload)
+                        }
+                        if (!msg.payload) {
                             return;
+                        }
 
                         const payload = JSON.parse(msg.payload);
-                        if (!payload.to)
+                        if (!payload.to) {
                             return;
+                        }
 
                         const to: string = payload.to;
-                        if (!RpcGateway.get().utils.isAddress(to))
+                        if (!RpcGateway.get().utils.isAddress(to)) {
                             return;
+                        }
 
                         await ApiPubSub.instance.pubSub.publish(`events_${to}`, {
                             events: {
@@ -185,9 +189,8 @@ export class Main {
                         console.log(`Received 'new_message' from notifyConnection: `, payload);
                     });
 
-                    console.error(`notifyConnection established.`);
+                    console.log(`notifyConnection established.`);
 
-                    // Designate which channels we are listening on. Add additional channels with multiple lines.
                     await notifyConnection.query('LISTEN new_message');
                 });
             } catch (e) {

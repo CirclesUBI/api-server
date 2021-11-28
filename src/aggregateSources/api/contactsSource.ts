@@ -118,6 +118,68 @@ async function hubTransferContacts(forSafeAddress: string, filter?: Maybe<Profil
   }
 }
 
+async function erc20TransferContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
+  const start = new Date().getTime();
+  try {
+    const erc20TransferContactsResult = await getPool().query(`
+                with "out" as (
+                    select max(t.timestamp) last_contact_at, t."to" as contact_address
+                    from erc20_transfer_2 t
+                             left join crc_signup_2 c on t.token = c.token
+                    where "from" = $1
+                      and c.token is null
+                    group by "to"
+                ), "out_with_value" as (
+                    select "out".*, ct.value
+                    from crc_hub_transfer_2 ct
+                             join "out" on ct."to" = "out".contact_address and ct.timestamp = "out".last_contact_at
+                ), "in" as (
+                    select max(t.timestamp) last_contact_at, t."from" as contact_address
+                    from erc20_transfer_2 t
+                             left join crc_signup_2 c on t.token = c.token
+                    where "to" = $1
+                      and c.token is null
+                    group by "from"
+                ), "in_with_value" as (
+                    select "in".*, ct.value
+                    from erc20_transfer_2 ct
+                             join "in" on ct."from" = "in".contact_address and ct.timestamp = "in".last_contact_at
+                ), "all" as (
+                    select 'out' direction, *
+                    from "out_with_value"
+                    union all
+                    select 'in' direction, *
+                    from "in_with_value"
+                )
+                select array_agg(direction) as directions,
+                       array_agg(value::text) as values,
+                       array_agg(last_contact_at) as timestamps,
+                       contact_address
+                from "all"
+                where $2=ARRAY[]::text[] or contact_address=ANY($2)
+                group by contact_address;`,
+      [forSafeAddress.toLowerCase(), filter?.contacts?.addresses ?? []]);
+
+    return erc20TransferContactsResult.rows.map(o => {
+      const timestamps = o.timestamps.map((p:any) => getDateWithOffset(new Date(p)).getTime().toString());
+      const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0);
+      return <Contact> {
+        metadata: [<ContactPoint>{
+          name: "Erc20Transfer",
+          directions: o.directions.map((p:string) => p == "in" ? ContactDirection.In : ContactDirection.Out),
+          values: o.values,
+          timestamps: timestamps
+        }],
+        contactAddress: o.contact_address,
+        lastContactAt: lastContactAt
+      };
+    })
+  } finally {
+    const duration = new Date().getTime() - start;
+    console.log(`contact source 'hubTransferContacts' took: ${duration} ms`);
+  }
+}
+
 async function chatMessageContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const start = new Date().getTime();
   const chatContactsResult = await prisma_api_ro.$queryRaw`
@@ -346,6 +408,7 @@ async function membershipOfferContacts(forSafeAddress: string, filter?: Maybe<Pr
 export enum ContactPoints {
   CrcTrust = "CrcTrust",
   CrcHubTransfer = "CrcHubTransfer",
+  Erc20Transfers = "Erc20Transfers",
   ChatMessage = "ChatMessage",
   Invitation = "Invitation",
   MembershipOffer = "MembershipOffer",
@@ -371,6 +434,9 @@ export class ContactsSource implements AggregateSource {
     }
     if (types[ContactPoints.CrcHubTransfer]) {
       contactSources.push(hubTransferContacts(forSafeAddress, filter));
+    }
+    if (types[ContactPoints.Erc20Transfers]) {
+      contactSources.push(erc20TransferContacts(forSafeAddress, filter));
     }
     if (types[ContactPoints.ChatMessage]) {
       contactSources.push(chatMessageContacts(forSafeAddress, filter));

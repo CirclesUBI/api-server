@@ -336,7 +336,8 @@ export const resolvers: Resolvers = {
       if (types[AggregateType.Contacts]) {
         const contactPoints = [
           ContactPoints.CrcHubTransfer,
-          ContactPoints.CrcTrust
+          ContactPoints.CrcTrust,
+          ContactPoints.Erc20Transfers
         ];
         if (context.sessionId) {
           let canAccessPrivateDetails = await canAccess(context, args.safeAddress);
