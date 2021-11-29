@@ -175,6 +175,7 @@ export type Offer = {
   pictureMimeType: string | null
   description: string | null
   pricePerUnit: string
+  timeCirclesPriceShare: number
 }
 
 /**
@@ -9693,12 +9694,14 @@ export namespace Prisma {
     id: number | null
     version: number | null
     createdByProfileId: number | null
+    timeCirclesPriceShare: number | null
   }
 
   export type OfferSumAggregateOutputType = {
     id: number | null
     version: number | null
     createdByProfileId: number | null
+    timeCirclesPriceShare: number | null
   }
 
   export type OfferMinAggregateOutputType = {
@@ -9711,6 +9714,7 @@ export namespace Prisma {
     pictureMimeType: string | null
     description: string | null
     pricePerUnit: string | null
+    timeCirclesPriceShare: number | null
   }
 
   export type OfferMaxAggregateOutputType = {
@@ -9723,6 +9727,7 @@ export namespace Prisma {
     pictureMimeType: string | null
     description: string | null
     pricePerUnit: string | null
+    timeCirclesPriceShare: number | null
   }
 
   export type OfferCountAggregateOutputType = {
@@ -9735,6 +9740,7 @@ export namespace Prisma {
     pictureMimeType: number
     description: number
     pricePerUnit: number
+    timeCirclesPriceShare: number
     _all: number
   }
 
@@ -9743,12 +9749,14 @@ export namespace Prisma {
     id?: true
     version?: true
     createdByProfileId?: true
+    timeCirclesPriceShare?: true
   }
 
   export type OfferSumAggregateInputType = {
     id?: true
     version?: true
     createdByProfileId?: true
+    timeCirclesPriceShare?: true
   }
 
   export type OfferMinAggregateInputType = {
@@ -9761,6 +9769,7 @@ export namespace Prisma {
     pictureMimeType?: true
     description?: true
     pricePerUnit?: true
+    timeCirclesPriceShare?: true
   }
 
   export type OfferMaxAggregateInputType = {
@@ -9773,6 +9782,7 @@ export namespace Prisma {
     pictureMimeType?: true
     description?: true
     pricePerUnit?: true
+    timeCirclesPriceShare?: true
   }
 
   export type OfferCountAggregateInputType = {
@@ -9785,6 +9795,7 @@ export namespace Prisma {
     pictureMimeType?: true
     description?: true
     pricePerUnit?: true
+    timeCirclesPriceShare?: true
     _all?: true
   }
 
@@ -9910,6 +9921,7 @@ export namespace Prisma {
     pictureMimeType: string | null
     description: string | null
     pricePerUnit: string
+    timeCirclesPriceShare: number
     _count: OfferCountAggregateOutputType | null
     _avg: OfferAvgAggregateOutputType | null
     _sum: OfferSumAggregateOutputType | null
@@ -9942,6 +9954,7 @@ export namespace Prisma {
     pictureMimeType?: boolean
     description?: boolean
     pricePerUnit?: boolean
+    timeCirclesPriceShare?: boolean
     purchaseLines?: boolean | PurchaseLineFindManyArgs
     invoiceLines?: boolean | InvoiceLineFindManyArgs
   }
@@ -17227,7 +17240,8 @@ export namespace Prisma {
     pictureUrl: 'pictureUrl',
     pictureMimeType: 'pictureMimeType',
     description: 'description',
-    pricePerUnit: 'pricePerUnit'
+    pricePerUnit: 'pricePerUnit',
+    timeCirclesPriceShare: 'timeCirclesPriceShare'
   };
 
   export type OfferScalarFieldEnum = (typeof OfferScalarFieldEnum)[keyof typeof OfferScalarFieldEnum]
@@ -17799,6 +17813,7 @@ export namespace Prisma {
     pictureMimeType?: StringNullableFilter | string | null
     description?: StringNullableFilter | string | null
     pricePerUnit?: StringFilter | string
+    timeCirclesPriceShare?: IntFilter | number
     purchaseLines?: PurchaseLineListRelationFilter
     invoiceLines?: InvoiceLineListRelationFilter
   }
@@ -17813,6 +17828,7 @@ export namespace Prisma {
     pictureMimeType?: SortOrder
     description?: SortOrder
     pricePerUnit?: SortOrder
+    timeCirclesPriceShare?: SortOrder
   }
 
   export type OfferWhereUniqueInput = {
@@ -17832,6 +17848,7 @@ export namespace Prisma {
     pictureMimeType?: StringNullableWithAggregatesFilter | string | null
     description?: StringNullableWithAggregatesFilter | string | null
     pricePerUnit?: StringWithAggregatesFilter | string
+    timeCirclesPriceShare?: IntWithAggregatesFilter | number
   }
 
   export type PurchaseWhereInput = {
@@ -18921,6 +18938,7 @@ export namespace Prisma {
     pictureMimeType?: string | null
     description?: string | null
     pricePerUnit: string
+    timeCirclesPriceShare: number
     createdBy: ProfileCreateNestedOneWithoutOffersInput
     purchaseLines?: PurchaseLineCreateNestedManyWithoutProductInput
     invoiceLines?: InvoiceLineCreateNestedManyWithoutProductInput
@@ -18936,6 +18954,7 @@ export namespace Prisma {
     pictureMimeType?: string | null
     description?: string | null
     pricePerUnit: string
+    timeCirclesPriceShare: number
     purchaseLines?: PurchaseLineUncheckedCreateNestedManyWithoutProductInput
     invoiceLines?: InvoiceLineUncheckedCreateNestedManyWithoutProductInput
   }
@@ -18949,6 +18968,7 @@ export namespace Prisma {
     pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
+    timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
     createdBy?: ProfileUpdateOneRequiredWithoutOffersInput
     purchaseLines?: PurchaseLineUpdateManyWithoutProductInput
     invoiceLines?: InvoiceLineUpdateManyWithoutProductInput
@@ -18964,6 +18984,7 @@ export namespace Prisma {
     pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
+    timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
     purchaseLines?: PurchaseLineUncheckedUpdateManyWithoutProductInput
     invoiceLines?: InvoiceLineUncheckedUpdateManyWithoutProductInput
   }
@@ -18978,6 +18999,7 @@ export namespace Prisma {
     pictureMimeType?: string | null
     description?: string | null
     pricePerUnit: string
+    timeCirclesPriceShare: number
   }
 
   export type OfferUpdateManyMutationInput = {
@@ -18989,6 +19011,7 @@ export namespace Prisma {
     pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
+    timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
   }
 
   export type OfferUncheckedUpdateManyInput = {
@@ -19001,6 +19024,7 @@ export namespace Prisma {
     pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
+    timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
   }
 
   export type PurchaseCreateInput = {
@@ -22732,6 +22756,7 @@ export namespace Prisma {
     pictureMimeType?: string | null
     description?: string | null
     pricePerUnit: string
+    timeCirclesPriceShare: number
     purchaseLines?: PurchaseLineCreateNestedManyWithoutProductInput
     invoiceLines?: InvoiceLineCreateNestedManyWithoutProductInput
   }
@@ -22745,6 +22770,7 @@ export namespace Prisma {
     pictureMimeType?: string | null
     description?: string | null
     pricePerUnit: string
+    timeCirclesPriceShare: number
     purchaseLines?: PurchaseLineUncheckedCreateNestedManyWithoutProductInput
     invoiceLines?: InvoiceLineUncheckedCreateNestedManyWithoutProductInput
   }
@@ -23174,6 +23200,7 @@ export namespace Prisma {
     pictureMimeType?: StringNullableFilter | string | null
     description?: StringNullableFilter | string | null
     pricePerUnit?: StringFilter | string
+    timeCirclesPriceShare?: IntFilter | number
   }
 
   export type PurchaseUpsertWithWhereUniqueWithoutCreatedByInput = {
@@ -24297,6 +24324,7 @@ export namespace Prisma {
     pictureMimeType?: string | null
     description?: string | null
     pricePerUnit: string
+    timeCirclesPriceShare: number
     createdBy: ProfileCreateNestedOneWithoutOffersInput
     invoiceLines?: InvoiceLineCreateNestedManyWithoutProductInput
   }
@@ -24311,6 +24339,7 @@ export namespace Prisma {
     pictureMimeType?: string | null
     description?: string | null
     pricePerUnit: string
+    timeCirclesPriceShare: number
     invoiceLines?: InvoiceLineUncheckedCreateNestedManyWithoutProductInput
   }
 
@@ -24351,6 +24380,7 @@ export namespace Prisma {
     pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
+    timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
     createdBy?: ProfileUpdateOneRequiredWithoutOffersInput
     invoiceLines?: InvoiceLineUpdateManyWithoutProductInput
   }
@@ -24365,6 +24395,7 @@ export namespace Prisma {
     pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
+    timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
     invoiceLines?: InvoiceLineUncheckedUpdateManyWithoutProductInput
   }
 
@@ -24835,6 +24866,7 @@ export namespace Prisma {
     pictureMimeType?: string | null
     description?: string | null
     pricePerUnit: string
+    timeCirclesPriceShare: number
     createdBy: ProfileCreateNestedOneWithoutOffersInput
     purchaseLines?: PurchaseLineCreateNestedManyWithoutProductInput
   }
@@ -24849,6 +24881,7 @@ export namespace Prisma {
     pictureMimeType?: string | null
     description?: string | null
     pricePerUnit: string
+    timeCirclesPriceShare: number
     purchaseLines?: PurchaseLineUncheckedCreateNestedManyWithoutProductInput
   }
 
@@ -24905,6 +24938,7 @@ export namespace Prisma {
     pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
+    timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
     createdBy?: ProfileUpdateOneRequiredWithoutOffersInput
     purchaseLines?: PurchaseLineUpdateManyWithoutProductInput
   }
@@ -24919,6 +24953,7 @@ export namespace Prisma {
     pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
+    timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
     purchaseLines?: PurchaseLineUncheckedUpdateManyWithoutProductInput
   }
 
@@ -25405,6 +25440,7 @@ export namespace Prisma {
     pictureMimeType?: string | null
     description?: string | null
     pricePerUnit: string
+    timeCirclesPriceShare: number
   }
 
   export type PurchaseCreateManyCreatedByInput = {
@@ -25595,6 +25631,7 @@ export namespace Prisma {
     pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
+    timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
     purchaseLines?: PurchaseLineUpdateManyWithoutProductInput
     invoiceLines?: InvoiceLineUpdateManyWithoutProductInput
   }
@@ -25608,6 +25645,7 @@ export namespace Prisma {
     pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
+    timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
     purchaseLines?: PurchaseLineUncheckedUpdateManyWithoutProductInput
     invoiceLines?: InvoiceLineUncheckedUpdateManyWithoutProductInput
   }
@@ -25621,6 +25659,7 @@ export namespace Prisma {
     pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
+    timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
   }
 
   export type PurchaseUpdateWithoutCreatedByInput = {

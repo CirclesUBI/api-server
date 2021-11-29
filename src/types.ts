@@ -637,6 +637,7 @@ export type Offer = {
   pictureMimeType: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   pricePerUnit: Scalars['String'];
+  timeCirclesPriceShare: Scalars['Int'];
 };
 
 export type Offers = IAggregatePayload & {
@@ -1926,6 +1927,7 @@ export type OfferResolvers<ContextType = any, ParentType extends ResolversParent
   pictureMimeType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   pricePerUnit?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  timeCirclesPriceShare?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

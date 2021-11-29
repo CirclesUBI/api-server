@@ -13,6 +13,7 @@ export type OfferRow = {
   pictureMimeType: string
   description: string
   pricePerUnit: string
+  timeCirclesPriceShare: number
 };
 
 export class OffersSource implements AggregateSource {
@@ -36,6 +37,7 @@ export class OffersSource implements AggregateSource {
                  , o."pictureMimeType"
                  , o."description"
                  , o."pricePerUnit"
+                 , o."timeCirclesPriceShare"
             from "Offer" o
                      join "Profile" p on p.id = o."createdByProfileId"
                      join "latest" l on o.id = l.id and o.version = l.latest_version

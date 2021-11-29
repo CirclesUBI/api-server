@@ -25,7 +25,7 @@ export class BlockchainIndexerEventSource implements EventSource
            , safe_address
            , contact_address
            , direction
-           , value
+           , value::text
            , obj as payload
       from crc_safe_timeline_2
       where direction = 'in'`;
@@ -49,7 +49,7 @@ export class BlockchainIndexerEventSource implements EventSource
            , safe_address
            , contact_address
            , direction
-           , value
+           , value::text
            , obj as payload
       from crc_safe_timeline_2
       where direction = 'out'`;
