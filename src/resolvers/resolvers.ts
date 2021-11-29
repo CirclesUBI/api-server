@@ -1022,12 +1022,9 @@ export const resolvers: Resolvers = {
       if (!callerInfo?.profile) {
         throw new Error(`You must have a profile to use this function.`);
       }
-      const invoice = await prisma_api_ro.invoice.findFirst({
+      let invoice = await prisma_api_ro.invoice.findFirst({
         where: {
-          id: args.invoiceId,
-          sellerProfile: {
-            circlesAddress: callerInfo.profile.circlesAddress
-          }
+          id: args.invoiceId
         },
         include: {
           sellerProfile: true,
@@ -1043,7 +1040,15 @@ export const resolvers: Resolvers = {
           }
         }
       });
+
       if (!invoice) {
+        throw new Error(`Couldn't find a invoice with id ${args.invoiceId}.`);
+      }
+      if (!invoice.sellerProfile.circlesAddress) {
+        throw new Error(`The seller profile of invoice ${invoice.id} has no safe address.`)
+      }
+      let canActAsOrganisation = await canAccess(context, invoice.sellerProfile.circlesAddress);
+      if (!canActAsOrganisation) {
         throw new Error(`Couldn't find a invoice with id ${args.invoiceId}.`);
       }
       if (invoice.sellerSignature) {
