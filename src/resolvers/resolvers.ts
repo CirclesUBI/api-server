@@ -159,16 +159,16 @@ const pool = new Pool(<PoolConfig>{
 export function getPool() {
   return pool;
 }
-/*
+
 setInterval(() => {
   const now = new Date();
   Object.keys(purchaseInvoicesDataLoaders)
     .filter(key => purchaseInvoicesDataLoaders[key].timestamp.getTime() < now.getTime() - 1000)
     .forEach(key => delete purchaseInvoicesDataLoaders[key]);
 }, 1000);
- */
 
-const offerCreatedByLoader = new DataLoader(async (keys:readonly any[]) => {
+
+const offerCreatedByLoader = new DataLoader(async (keys: readonly any[]) => {
   console.log(keys);
   const result = await new ProfileLoader().profilesBySafeAddress(prisma_api_ro, keys.map(o => o));
   const r = keys.map(safeAddress => {
@@ -185,21 +185,21 @@ const offerCreatedByLoader = new DataLoader(async (keys:readonly any[]) => {
   cache: false
 });
 
-/*
-const purchaseInvoicesDataLoaders:{
-  [callerSafeAddress:string]:{
+
+const purchaseInvoicesDataLoaders: {
+  [callerSafeAddress: string]: {
     timestamp: Date,
     dataLoader: DataLoader<number, Invoice[]>
   }
 } = {};
 
-function getPurchaseInvoicesDataLoader(forCaller:string) : DataLoader<number, Invoice[]> {
+function getPurchaseInvoicesDataLoader(forCaller: string): DataLoader<number, Invoice[]> {
   let cachedEntry = purchaseInvoicesDataLoaders[forCaller];
   if (!cachedEntry) {
     cachedEntry = {
       timestamp: new Date(),
       dataLoader: new DataLoader<number, Invoice[]>(async (keys) => {
-       const invoices = await prisma_api_rw.invoice.findMany({
+        const invoices = await prisma_api_rw.invoice.findMany({
           where: {
             purchase: {
               id: {
@@ -224,23 +224,32 @@ function getPurchaseInvoicesDataLoader(forCaller:string) : DataLoader<number, In
             }
           }
         });
-       return invoices.map(i => {
-           return <Invoice>{
-             ...i,
-             buyerAddress: i.customerProfile.circlesAddress,
-             sellerAddress: i.sellerProfile.circlesAddress,
-             lines: i.lines.map(l => {
-               return <InvoiceLine>{
-                 ...l,
-                 offer: {
-                   ...l.product,
-                   createdByAddress: l.product.createdBy.circlesAddress,
-                   createdAt: l.product.createdAt.toJSON()
-                 }
-               }
-             })
-           }
-         });
+        const formattedInvoices = invoices.map(i => {
+          return <Invoice>{
+            ...i,
+            buyerAddress: i.customerProfile.circlesAddress,
+            buyerProfile: i.customerProfile,
+            sellerProfile: i.sellerProfile,
+            sellerAddress: i.sellerProfile.circlesAddress,
+            lines: i.lines.map(l => {
+              return <InvoiceLine>{
+                ...l,
+                offer: {
+                  ...l.product,
+                  createdByAddress: l.product.createdBy.circlesAddress,
+                  createdAt: l.product.createdAt.toJSON()
+                }
+              }
+            })
+          }
+        })
+        .reduce((p, c) => {
+          p[c.purchaseId] = c;
+          return p;
+        }, <{[x:number]:any}>{});
+
+        const returnValue = keys.map(o => formattedInvoices[o]).filter(o => !!o);
+        return returnValue;
       }, {
         cache: false
       })
@@ -250,7 +259,7 @@ function getPurchaseInvoicesDataLoader(forCaller:string) : DataLoader<number, In
 
   return cachedEntry.dataLoader;
 }
- */
+
 
 const packageJson = require("../../package.json");
 
@@ -292,13 +301,14 @@ export const resolvers: Resolvers = {
   },
   Purchase: {
     invoices: async (parent: Purchase, args: any, context: Context) => {
-      /*
+
       const caller = await context.callerInfo;
       if (!caller?.profile?.circlesAddress)
         throw new Error(`You need a safe to perform this query.`)
 
-      return getPurchaseInvoicesDataLoader(caller.profile.circlesAddress).load(parent.id);
-       */
+      const invoices = await getPurchaseInvoicesDataLoader(caller.profile.circlesAddress).load(parent.id);
+      return Array.isArray(invoices) ? invoices : [invoices];
+      /*
       const caller = await context.callerInfo;
       if (!caller?.profile)
         return [];
@@ -343,6 +353,7 @@ export const resolvers: Resolvers = {
           })
         }
       });
+       */
     }
   },
   ClaimedInvitation: {
@@ -648,7 +659,7 @@ export const resolvers: Resolvers = {
       const to = args.to.toLowerCase();
 
 
-      let validateTransfers = async function(transfers:TransitivePath) {
+      let validateTransfers = async function (transfers: TransitivePath) {
         var token = [];
         var from = [];
         var to = [];
@@ -660,7 +671,7 @@ export const resolvers: Resolvers = {
           value.push(step.value);
         }
 
-        const abiItem:AbiItem = {
+        const abiItem: AbiItem = {
           "inputs": [
             {
               "internalType": "address[]",
@@ -695,7 +706,7 @@ export const resolvers: Resolvers = {
           ], [
             token, from, to, value
           ]).substr(2)/* remove preceding 0x */;
-          
+
         try {
           await RpcGateway.get().eth.call({from: from[0], to: HUB_ADDRESS, data: callData});
           return true;
@@ -866,7 +877,7 @@ export const resolvers: Resolvers = {
       const invoice = await prisma_api_ro.invoice.findFirst({
         where: {
           id: args.invoiceId,
-          OR:[{
+          OR: [{
             customerProfileId: caller.profile.id
           }, {
             sellerProfileId: caller.profile.id
