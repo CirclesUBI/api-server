@@ -4,9 +4,15 @@ import {PrismaClient} from "../../api-db/client";
 
 export function search(prisma: PrismaClient) {
     return async (parent: any, args: QuerySearchArgs, context: Context) => {
-        const searchCirclesAddress: string = args.query.searchString.toLowerCase() + "%";
-        const searchFirstName = args.query.searchString + "%";
-        const searchLastName = args.query.searchString + "%";
+        const searchWords = args.query.searchString
+          .toLowerCase()
+          .replace("%", "")
+          .split(/\s+/)
+          .map(o => o.trim())
+          .filter(o => o != "")
+          .map(o => o + "%");
+
+        const searchWords2 = searchWords.map(o => o.replace("%", ""));
         const result: {
             id: number,
             "status"?: string,
@@ -28,25 +34,78 @@ export function search(prisma: PrismaClient) {
                     FROM "Profile"
                     where "circlesAddress" is not null
                     group by "circlesAddress"
+                ), "landProfiles" as (
+                    select p.id,
+                           p."status",
+                           p."circlesAddress",
+                           p."circlesSafeOwner",
+                           p."circlesTokenAddress",
+                           p."firstName",
+                           p."lastName",
+                           p."avatarCid",
+                           p."avatarUrl",
+                           p."avatarMimeType",
+                           p.dream,
+                           p.country
+                    from most_current
+                             join "Profile" p on most_current.id = p.id
+                    where p."firstName" ILIKE ANY(${searchWords})
+                       or p."lastName" ILIKE ANY(${searchWords})
+                    order by p."firstName", p."lastName"
+                    limit 100
+                ), "gardenProfiles" as (
+                    select p."circlesAddress",
+                           p."name",
+                           p."avatarUrl"
+                    from "ExternalProfiles" p
+                    where p."name" ILIKE ANY(${searchWords})
+                    order by p."name"
+                    limit 100
+                ), "all" as (
+                    select 0 as source, *
+                    from "landProfiles"
+                    union all
+                    select 1 as source, 
+                           -1 as id,
+                           '' as "status",
+                           "circlesAddress",
+                           null as "circlesSafeOwner",
+                           null as "circlesTokenAddress",
+                           "name" as "firstName",
+                           null as "lastName",
+                           null as "avatarCid",
+                           "avatarUrl",
+                           null as "avatarMimeType",
+                           null as dream,
+                           null as country
+                    from "gardenProfiles"
+                ), nearest_source as (
+                    select min(source) source, max(id) id, "circlesAddress"
+                    from "all"
+                    group by "circlesAddress"
+                ), result as (
+                    SELECT to_tsvector(a."firstName" || ' ' || a."lastName") as tsvector, a.*
+                    from nearest_source ns
+                    join "all" a on a.source = ns.source and a."circlesAddress" = ns."circlesAddress" and a.id = ns.id
+                ), fts as (
+                    select r.id,
+                           r."status",
+                           r."circlesAddress",
+                           r."circlesSafeOwner",
+                           r."circlesTokenAddress",
+                           r."firstName",
+                           r."lastName",
+                           r."avatarCid",
+                           r."avatarUrl",
+                           r."avatarMimeType",
+                           r.dream,
+                           r.country
+                    from "result" r
+                    where r.tsvector @@ to_tsquery(array_to_string(${searchWords2.map(o => o + ":*")}::text[], ' & '))
                 )
-                select p.id,
-                       p."status",
-                       p."circlesAddress",
-                       p."circlesSafeOwner",
-                       p."circlesTokenAddress",
-                       p."firstName",
-                       p."lastName",
-                       p."avatarCid",
-                       p."avatarUrl",
-                       p."avatarMimeType",
-                       p.dream,
-                       p.country
-                from most_current
-                         join "Profile" p on most_current.id = p.id
-                where p."circlesAddress" ILIKE ${searchCirclesAddress}
-                   or p."firstName" ILIKE ${searchFirstName}
-                   or p."lastName" ILIKE ${searchLastName}
-                order by p."firstName", p."lastName" limit 100`;
+                select * 
+                from fts 
+                order by "firstName", "lastName";`;
 
         return result.map(o => {
             return {

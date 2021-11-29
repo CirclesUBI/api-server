@@ -16,7 +16,6 @@ import {consumeDepositedChallengeResolver} from "./mutations/consumeDepositedCha
 import {search} from "./queries/search";
 import {requestUpdateSafe} from "./mutations/requestUpdateSafe";
 import {updateSafe} from "./mutations/updateSafe";
-import {profileCity} from "./profile/city";
 import {whoami} from "./queries/whoami";
 import {cities} from "./queries/citites";
 import {version} from "./queries/version";
