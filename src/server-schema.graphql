@@ -267,6 +267,7 @@ type Purchase {
 
   total: String!
   lines: [PurchaseLine!]!
+
   paymentTransaction: ProfileEvent
 
   invoices: [Invoice!]!
@@ -294,8 +295,10 @@ type Invoice {
   lines: [InvoiceLine!]!
 
   pickupCode: String
+
   buyerSignature: Boolean
   buyerSignedDate: String
+
   sellerSignature: Boolean
   sellerSignedDate: String
 
@@ -794,6 +797,9 @@ type ProofPaymentResult {
 
 type Mutation {
   purchase(lines: [PurchaseLineInput!]!): [Invoice!]!
+  completePurchase(invoiceId: Int!) : Invoice!
+  completeSale(invoiceId: Int!) : Invoice!
+
   proofPayment(purchaseId: Int!, transactionHash: String!): ProofPaymentResult
 
   exchangeToken: ExchangeTokenResponse!

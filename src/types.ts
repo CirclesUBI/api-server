@@ -475,6 +475,8 @@ export type Memberships = IAggregatePayload & {
 export type Mutation = {
   __typename?: 'Mutation';
   purchase: Array<Invoice>;
+  completePurchase: Invoice;
+  completeSale: Invoice;
   proofPayment?: Maybe<ProofPaymentResult>;
   exchangeToken: ExchangeTokenResponse;
   authenticateAt: DelegateAuthInit;
@@ -507,6 +509,16 @@ export type Mutation = {
 
 export type MutationPurchaseArgs = {
   lines: Array<PurchaseLineInput>;
+};
+
+
+export type MutationCompletePurchaseArgs = {
+  invoiceId: Scalars['Int'];
+};
+
+
+export type MutationCompleteSaleArgs = {
+  invoiceId: Scalars['Int'];
 };
 
 
@@ -1890,6 +1902,8 @@ export type MembershipsResolvers<ContextType = any, ParentType extends Resolvers
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   purchase?: Resolver<Array<ResolversTypes['Invoice']>, ParentType, ContextType, RequireFields<MutationPurchaseArgs, 'lines'>>;
+  completePurchase?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<MutationCompletePurchaseArgs, 'invoiceId'>>;
+  completeSale?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<MutationCompleteSaleArgs, 'invoiceId'>>;
   proofPayment?: Resolver<Maybe<ResolversTypes['ProofPaymentResult']>, ParentType, ContextType, RequireFields<MutationProofPaymentArgs, 'purchaseId' | 'transactionHash'>>;
   exchangeToken?: Resolver<ResolversTypes['ExchangeTokenResponse'], ParentType, ContextType>;
   authenticateAt?: Resolver<ResolversTypes['DelegateAuthInit'], ParentType, ContextType, RequireFields<MutationAuthenticateAtArgs, 'appId'>>;

@@ -950,6 +950,142 @@ export const resolvers: Resolvers = {
 
       // @ts-ignore
       return importResults.filter(o => o && o.organisation).map((o) => o.organisation);
+    },
+    completePurchase: async (parent, args, context) => {
+      const callerInfo = await context.callerInfo;
+      if (!callerInfo?.profile) {
+        throw new Error(`You must have a profile to use this function.`);
+      }
+      const invoice = await prisma_api_ro.invoice.findFirst({
+        where: {
+          id: args.invoiceId,
+          customerProfile: {
+            circlesAddress: callerInfo.profile.circlesAddress
+          }
+        },
+        include: {
+          sellerProfile: true,
+          customerProfile: true,
+          lines: {
+            include: {
+              product: {
+                include: {
+                  createdBy: true
+                }
+              }
+            }
+          }
+        }
+      });
+      if (!invoice) {
+        throw new Error(`Couldn't find a invoice with id ${args.invoiceId}.`);
+      }
+      if (invoice.buyerSignature) {
+        throw new Error(`The purchase is already completed.`)
+      }
+      const data = {
+        buyerSignature: true,
+        buyerSignedDate: new Date()
+      };
+      await prisma_api_rw.invoice.update({
+        where: {
+          id: args.invoiceId
+        },
+        data: data
+      });
+      invoice.buyerSignature = data.buyerSignature;
+      invoice.buyerSignedDate = data.buyerSignedDate;
+
+      return {
+        ...invoice,
+        buyerAddress: invoice.customerProfile.circlesAddress ?? "",
+        sellerAddress: invoice.sellerProfile.circlesAddress ?? "",
+        buyerProfile: ProfileLoader.withDisplayCurrency(invoice.customerProfile),
+        sellerProfile: ProfileLoader.withDisplayCurrency(invoice.sellerProfile),
+        buyerSignedDate: invoice.buyerSignedDate?.toJSON(),
+        sellerSignedDate: invoice.sellerSignedDate?.toJSON(),
+        lines: invoice.lines.map(l => {
+          return {
+            ...l,
+            offer: {
+              ...l.product,
+              pictureUrl: l.product.pictureUrl ?? "",
+              pictureMimeType: l.product.pictureMimeType ?? "",
+              createdAt: l.product.createdAt.toJSON(),
+              createdByAddress: l.product.createdBy.circlesAddress ?? "",
+              createdByProfile: ProfileLoader.withDisplayCurrency(l.product.createdBy)
+            }
+          }
+        })
+      };
+    },
+    completeSale: async (parent, args, context) => {
+      const callerInfo = await context.callerInfo;
+      if (!callerInfo?.profile) {
+        throw new Error(`You must have a profile to use this function.`);
+      }
+      const invoice = await prisma_api_ro.invoice.findFirst({
+        where: {
+          id: args.invoiceId,
+          sellerProfile: {
+            circlesAddress: callerInfo.profile.circlesAddress
+          }
+        },
+        include: {
+          sellerProfile: true,
+          customerProfile: true,
+          lines: {
+            include: {
+              product: {
+                include: {
+                  createdBy: true
+                }
+              }
+            }
+          }
+        }
+      });
+      if (!invoice) {
+        throw new Error(`Couldn't find a invoice with id ${args.invoiceId}.`);
+      }
+      if (invoice.sellerSignature) {
+        throw new Error(`The purchase is already completed.`)
+      }
+      const data = {
+        sellerSignature: true,
+        sellerSignedDate: new Date()
+      };
+      await prisma_api_rw.invoice.update({
+        where: {
+          id: args.invoiceId
+        },
+        data: data
+      });
+      invoice.sellerSignature = data.sellerSignature;
+      invoice.sellerSignedDate = data.sellerSignedDate;
+
+      return {
+        ...invoice,
+        buyerAddress: invoice.customerProfile.circlesAddress ?? "",
+        sellerAddress: invoice.sellerProfile.circlesAddress ?? "",
+        buyerProfile: ProfileLoader.withDisplayCurrency(invoice.customerProfile),
+        sellerProfile: ProfileLoader.withDisplayCurrency(invoice.sellerProfile),
+        buyerSignedDate: invoice.buyerSignedDate?.toJSON(),
+        sellerSignedDate: invoice.sellerSignedDate?.toJSON(),
+        lines: invoice.lines.map(l => {
+          return {
+            ...l,
+            offer: {
+              ...l.product,
+              pictureUrl: l.product.pictureUrl ?? "",
+              pictureMimeType: l.product.pictureMimeType ?? "",
+              createdAt: l.product.createdAt.toJSON(),
+              createdByAddress: l.product.createdBy.circlesAddress ?? "",
+              createdByProfile: ProfileLoader.withDisplayCurrency(l.product.createdBy)
+            }
+          }
+        })
+      };
     }
   },
   Subscription: {
