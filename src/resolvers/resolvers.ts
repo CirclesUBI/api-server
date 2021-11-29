@@ -2,7 +2,7 @@ import {myProfile, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {
-  AggregateType, Contacts, EventType, Invoice, InvoiceLine, Profile,
+  AggregateType, City, Contacts, EventType, Invoice, InvoiceLine, Membership, Profile,
   ProfileEvent,
   ProfileOrOrganisation, Purchase, Resolvers,
   SortOrder, TransitivePath, TransitiveTransfer
@@ -84,6 +84,8 @@ import AWS from "aws-sdk";
 import {RpcGateway} from "../rpcGateway";
 import type {AbiItem} from "web3-utils";
 import DataLoader from "dataloader";
+import {Query} from "../utility_db/query";
+import {parentPort} from "worker_threads";
 
 export const HUB_ADDRESS = "0x29b9a7fBb8995b2423a71cC17cf9810798F6C543";
 
@@ -244,12 +246,14 @@ function getPurchaseInvoicesDataLoader(forCaller: string): DataLoader<number, In
           }
         })
         .reduce((p, c) => {
-          p[c.purchaseId] = c;
+          if (!p[c.purchaseId]) {
+            p[c.purchaseId] = [];
+          }
+          p[c.purchaseId].push(c);
           return p;
-        }, <{[x:number]:any}>{});
+        }, <{[x:number]:Invoice[]}>{});
 
-        const returnValue = keys.map(o => formattedInvoices[o]).filter(o => !!o);
-        return returnValue;
+        return keys.map(o => formattedInvoices[o]).filter(o => !!o);
       }, {
         cache: false
       })
@@ -260,100 +264,83 @@ function getPurchaseInvoicesDataLoader(forCaller: string): DataLoader<number, In
   return cachedEntry.dataLoader;
 }
 
+const profileMembershipsDataLoader = new DataLoader<string, Membership[]>(async (keys) => {
+    const memberships = await prisma_api_ro.membership.findMany({
+      where: {
+        memberAddress: {
+          in: keys.map(o => o)
+        }
+      },
+      include: {
+        memberAt: true
+      }
+    });
+
+    const formattedMemberships = memberships.map(o => {
+      return {
+        organisation: {
+          id: o.memberAt.id,
+          name: o.memberAt.firstName,
+          cityGeonameid: o.memberAt.cityGeonameid,
+          avatarUrl: o.memberAt.avatarUrl,
+          avatarMimeType: o.memberAt.avatarMimeType,
+          circlesSafeOwner: o.memberAt.circlesSafeOwner?.toLowerCase(),
+          description: o.memberAt.dream,
+          createdAt: o.createdAt.toJSON(), // TODO: This is the creation date of the membership, not the one of the organisation
+          circlesAddress: o.memberAt.circlesAddress
+        },
+        createdByProfileId: o.createdByProfileId,
+        memberAddress: o.memberAddress,
+        createdAt: o.createdAt.toJSON(),
+        acceptedAt: o.acceptedAt?.toJSON(),
+        rejectedAt: o.rejectedAt?.toJSON(),
+        validTo: o.validTo?.toJSON(),
+        isAdmin: o.isAdmin ?? false
+      }
+    }).reduce((p,c) => {
+      if (!p[c.memberAddress]) {
+        p[c.memberAddress] = [];
+      }
+      p[c.memberAddress].push(c);
+      return p;
+    }, <{[x:string]:Membership[]}>{});
+
+    return keys.map(o => formattedMemberships[o]);
+  });
+
+const profileCityDataLoader = new DataLoader<number, City>(async keys => {
+  const results = await Query.placesById(keys.map(o => o));
+  const resultsById = results.reduce((p,c) => {
+    p[c.geonameid] = c;
+    return p;
+  }, <{[id:number]:City}>{});
+
+  return keys.map(o => resultsById[o]);
+});
 
 const packageJson = require("../../package.json");
 
 export const resolvers: Resolvers = {
   Profile: {
-    city: profileCity,
+    city: async (parent: Profile) => {
+      if (!parent.cityGeonameid)
+        return null;
+      return await profileCityDataLoader.load(parent.cityGeonameid);
+    },
     memberships: async (parent: Profile, args, context: Context) => {
-      const memberships = await prisma_api_ro.membership.findMany({
-        where: {
-          memberAddress: parent.circlesAddress ?? "not"
-        },
-        include: {
-          memberAt: true
-        }
-      });
-
-      return memberships.map(o => {
-        return {
-          organisation: {
-            id: o.memberAt.id,
-            name: o.memberAt.firstName,
-            cityGeonameid: o.memberAt.cityGeonameid,
-            avatarUrl: o.memberAt.avatarUrl,
-            avatarMimeType: o.memberAt.avatarMimeType,
-            circlesSafeOwner: o.memberAt.circlesSafeOwner?.toLowerCase(),
-            description: o.memberAt.dream,
-            createdAt: o.createdAt.toJSON(), // TODO: This is the creation date of the membership, not the one of the organisation
-            circlesAddress: o.memberAt.circlesAddress
-          },
-          createdByProfileId: o.createdByProfileId,
-          createdAt: o.createdAt.toJSON(),
-          acceptedAt: o.acceptedAt?.toJSON(),
-          rejectedAt: o.rejectedAt?.toJSON(),
-          validTo: o.validTo?.toJSON(),
-          isAdmin: o.isAdmin ?? false
-        }
-      })
+      if (!parent.circlesAddress) {
+        return [];
+      }
+      return await profileMembershipsDataLoader.load(parent.circlesAddress);
     }
   },
   Purchase: {
     invoices: async (parent: Purchase, args: any, context: Context) => {
-
       const caller = await context.callerInfo;
       if (!caller?.profile?.circlesAddress)
         throw new Error(`You need a safe to perform this query.`)
 
-      const invoices = await getPurchaseInvoicesDataLoader(caller.profile.circlesAddress).load(parent.id);
-      return Array.isArray(invoices) ? invoices : [invoices];
-      /*
-      const caller = await context.callerInfo;
-      if (!caller?.profile)
-        return [];
-
-      const invoices = await prisma_api_rw.invoice.findMany({
-        where: {
-          purchase: {
-            id: parent.id,
-            createdBy: {
-              circlesAddress: caller.profile.circlesAddress
-            }
-          }
-        },
-        include: {
-          customerProfile: true,
-          sellerProfile: true,
-          lines: {
-            include: {
-              product: {
-                include: {
-                  createdBy: true
-                }
-              }
-            }
-          }
-        }
-      });
-      return invoices.map(o => {
-        return <Invoice>{
-          ...o,
-          buyerAddress: o.customerProfile.circlesAddress,
-          sellerAddress: o.sellerProfile.circlesAddress,
-          lines: o.lines.map(l => {
-            return <InvoiceLine>{
-              ...l,
-              offer: {
-                ...l.product,
-                createdByAddress: l.product.createdBy.circlesAddress,
-                createdAt: l.product.createdAt.toJSON()
-              }
-            }
-          })
-        }
-      });
-       */
+      return await getPurchaseInvoicesDataLoader(caller.profile.circlesAddress).load(parent.id);
     }
   },
   ClaimedInvitation: {
