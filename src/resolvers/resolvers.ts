@@ -318,6 +318,44 @@ const profileCityDataLoader = new DataLoader<number, City>(async keys => {
   return keys.map(o => resultsById[o]);
 });
 
+const organisationMembersDataLoader = new DataLoader<number, ProfileOrOrganisation[]>(async (organisationIds) => {
+  const memberships = (await prisma_api_ro.membership.findMany({
+    where: {
+      memberAtId: {
+        in: organisationIds.map(o => o)
+      }
+    },
+    include: {
+      memberAt: true
+    }
+  }));
+
+  const membersBySafeAddress = await new ProfileLoader().profilesBySafeAddress(prisma_api_ro, memberships.map(o => o.memberAddress));
+  const memberProfilesByOrganisation = memberships.map(o => {
+      return  {
+        memberProfile: <any>{
+          ...membersBySafeAddress[o.memberAddress],
+          __typename: "Profile"
+        },
+        membership: o
+      }
+    })
+    .reduce((p,c) => {
+      if (!p[c.membership.memberAtId]) {
+        p[c.membership.memberAtId] = [];
+      }
+      if (c.memberProfile) {
+        p[c.membership.memberAtId].push(c.memberProfile);
+      }
+      return p;
+    }, <{[organisationId: number]: ProfileOrOrganisation[]}>{});
+
+  return organisationIds.map(o => {
+    const members = memberProfilesByOrganisation[o];
+    return members ?? [];
+  });
+});
+
 const packageJson = require("../../package.json");
 
 export const resolvers: Resolvers = {
@@ -359,19 +397,7 @@ export const resolvers: Resolvers = {
   },
   Organisation: {
     members: async (parent, args, context) => {
-      const memberships = (await prisma_api_ro.membership.findMany({
-        where: {
-          memberAtId: parent.id
-        }
-      }));
-
-      const members = await new ProfileLoader().profilesBySafeAddress(prisma_api_ro, memberships.map(o => o.memberAddress));
-      return Object.values(members).map(o => {
-        return <ProfileOrOrganisation>{
-          __typename: "Profile",
-          ...o
-        };
-      });
+      return organisationMembersDataLoader.load(parent.id);
     }
   },
   Query: {
@@ -431,6 +457,7 @@ export const resolvers: Resolvers = {
           let canAccessPrivateDetails = await canAccess(context, args.safeAddress);
           if (canAccessPrivateDetails) {
             contactPoints.push(ContactPoints.Invitation);
+            contactPoints.push(ContactPoints.InvitationRedeemed);
             contactPoints.push(ContactPoints.MembershipOffer);
             contactPoints.push(ContactPoints.ChatMessage);
           }
@@ -978,12 +1005,12 @@ export const resolvers: Resolvers = {
       if (!invoice) {
         throw new Error(`Couldn't find a invoice with id ${args.invoiceId}.`);
       }
-      if (invoice.buyerSignature) {
-        throw new Error(`The purchase is already completed.`)
+      if (invoice.buyerSignature && invoice.sellerSignature) {
+        throw new Error(`The purchase is already accepted by both parties.`)
       }
       const data = {
-        buyerSignature: true,
-        buyerSignedDate: new Date()
+        buyerSignature: !args.revoke,
+        buyerSignedDate: !args.revoke ? new Date() : null
       };
       await prisma_api_rw.invoice.update({
         where: {
@@ -1051,12 +1078,12 @@ export const resolvers: Resolvers = {
       if (!canActAsOrganisation) {
         throw new Error(`Couldn't find a invoice with id ${args.invoiceId}.`);
       }
-      if (invoice.sellerSignature) {
-        throw new Error(`The purchase is already completed.`)
+      if (invoice.buyerSignature && invoice.sellerSignature) {
+        throw new Error(`The purchase is already accepted by both parties.`)
       }
       const data = {
-        sellerSignature: true,
-        sellerSignedDate: new Date()
+        sellerSignature: !args.revoke,
+        sellerSignedDate: !args.revoke ? new Date() : null
       };
       await prisma_api_rw.invoice.update({
         where: {

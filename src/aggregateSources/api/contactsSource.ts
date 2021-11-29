@@ -6,7 +6,7 @@ import {
   Contacts,
   CrcTrust,
   ProfileAggregate,
-  ProfileAggregateFilter, Maybe
+  ProfileAggregateFilter, Maybe, EventType
 } from "../../types";
 import {getPool} from "../../resolvers/resolvers";
 import {prisma_api_ro} from "../../apiDbClient";
@@ -321,7 +321,7 @@ async function invitationRedeemedContacts(forSafeAddress: string, filter?: Maybe
     const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0);
     return <Contact> {
       metadata: [<ContactPoint>{
-        name: "InvitationRedeemed",
+        name: EventType.InvitationRedeemed,
         directions: o.directions.map((p:string) => p == "in" ? ContactDirection.In : ContactDirection.Out),
         values: [],
         timestamps: timestamps

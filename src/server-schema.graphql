@@ -797,10 +797,8 @@ type ProofPaymentResult {
 
 type Mutation {
   purchase(lines: [PurchaseLineInput!]!): [Invoice!]!
-  completePurchase(invoiceId: Int!) : Invoice!
-  completeSale(invoiceId: Int!) : Invoice!
-
-  proofPayment(purchaseId: Int!, transactionHash: String!): ProofPaymentResult
+  completePurchase(invoiceId: Int! revoke:Boolean) : Invoice!
+  completeSale(invoiceId: Int! revoke:Boolean) : Invoice!
 
   exchangeToken: ExchangeTokenResponse!
   authenticateAt(appId: String!): DelegateAuthInit!
