@@ -208,6 +208,7 @@ export class BlockchainEventSource implements ProfileEventSource {
                 if (amountMatches) {
                   // TODO: Currently all running processes will update the invoice with a different pickupCode but with the same transaction hash. Maybe this should be synchronized?
                   const invoiceNo = await getNextInvoiceNo(invoice.sellerProfile.id);
+                  const invoiceNoStr = (invoice.sellerProfile.invoiceNoPrefix ?? "") + invoiceNo.toString().padStart(8, "0")
                   await prisma_api_rw.invoice.update({
                     where: {
                       id: invoice.id
@@ -215,7 +216,7 @@ export class BlockchainEventSource implements ProfileEventSource {
                     data: {
                       paymentTransactionHash: hubTransfer.rows[0].hash,
                       pickupCode: code,
-                      invoiceNo: invoiceNo.toString().padStart(8, "0")
+                      invoiceNo: invoiceNoStr
                     }
                   });
 

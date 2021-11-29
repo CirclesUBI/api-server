@@ -101,7 +101,9 @@ export type Profile = {
   lastAcknowledged: Date | null
   verifySafeChallenge: string | null
   newSafeAddress: string | null
+  invoiceNoPrefix: string | null
   lastInvoiceNo: number | null
+  refundNoPrefix: string | null
   lastRefundNo: number | null
   displayCurrency: string
 }
@@ -4991,7 +4993,9 @@ export namespace Prisma {
     lastAcknowledged: Date | null
     verifySafeChallenge: string | null
     newSafeAddress: string | null
+    invoiceNoPrefix: string | null
     lastInvoiceNo: number | null
+    refundNoPrefix: string | null
     lastRefundNo: number | null
     displayCurrency: string | null
   }
@@ -5018,7 +5022,9 @@ export namespace Prisma {
     lastAcknowledged: Date | null
     verifySafeChallenge: string | null
     newSafeAddress: string | null
+    invoiceNoPrefix: string | null
     lastInvoiceNo: number | null
+    refundNoPrefix: string | null
     lastRefundNo: number | null
     displayCurrency: string | null
   }
@@ -5045,7 +5051,9 @@ export namespace Prisma {
     lastAcknowledged: number
     verifySafeChallenge: number
     newSafeAddress: number
+    invoiceNoPrefix: number
     lastInvoiceNo: number
+    refundNoPrefix: number
     lastRefundNo: number
     displayCurrency: number
     _all: number
@@ -5088,7 +5096,9 @@ export namespace Prisma {
     lastAcknowledged?: true
     verifySafeChallenge?: true
     newSafeAddress?: true
+    invoiceNoPrefix?: true
     lastInvoiceNo?: true
+    refundNoPrefix?: true
     lastRefundNo?: true
     displayCurrency?: true
   }
@@ -5115,7 +5125,9 @@ export namespace Prisma {
     lastAcknowledged?: true
     verifySafeChallenge?: true
     newSafeAddress?: true
+    invoiceNoPrefix?: true
     lastInvoiceNo?: true
+    refundNoPrefix?: true
     lastRefundNo?: true
     displayCurrency?: true
   }
@@ -5142,7 +5154,9 @@ export namespace Prisma {
     lastAcknowledged?: true
     verifySafeChallenge?: true
     newSafeAddress?: true
+    invoiceNoPrefix?: true
     lastInvoiceNo?: true
+    refundNoPrefix?: true
     lastRefundNo?: true
     displayCurrency?: true
     _all?: true
@@ -5282,7 +5296,9 @@ export namespace Prisma {
     lastAcknowledged: Date | null
     verifySafeChallenge: string | null
     newSafeAddress: string | null
+    invoiceNoPrefix: string | null
     lastInvoiceNo: number | null
+    refundNoPrefix: string | null
     lastRefundNo: number | null
     displayCurrency: string
     _count: ProfileCountAggregateOutputType | null
@@ -5341,7 +5357,9 @@ export namespace Prisma {
     createdMemberships?: boolean | MembershipFindManyArgs
     payableInvoices?: boolean | InvoiceFindManyArgs
     receivableInvoices?: boolean | InvoiceFindManyArgs
+    invoiceNoPrefix?: boolean
     lastInvoiceNo?: boolean
+    refundNoPrefix?: boolean
     lastRefundNo?: boolean
     displayCurrency?: boolean
   }
@@ -17181,7 +17199,9 @@ export namespace Prisma {
     lastAcknowledged: 'lastAcknowledged',
     verifySafeChallenge: 'verifySafeChallenge',
     newSafeAddress: 'newSafeAddress',
+    invoiceNoPrefix: 'invoiceNoPrefix',
     lastInvoiceNo: 'lastInvoiceNo',
+    refundNoPrefix: 'refundNoPrefix',
     lastRefundNo: 'lastRefundNo',
     displayCurrency: 'displayCurrency'
   };
@@ -17582,7 +17602,9 @@ export namespace Prisma {
     createdMemberships?: MembershipListRelationFilter
     payableInvoices?: InvoiceListRelationFilter
     receivableInvoices?: InvoiceListRelationFilter
+    invoiceNoPrefix?: StringNullableFilter | string | null
     lastInvoiceNo?: IntNullableFilter | number | null
+    refundNoPrefix?: StringNullableFilter | string | null
     lastRefundNo?: IntNullableFilter | number | null
     displayCurrency?: StringFilter | string
   }
@@ -17609,7 +17631,9 @@ export namespace Prisma {
     lastAcknowledged?: SortOrder
     verifySafeChallenge?: SortOrder
     newSafeAddress?: SortOrder
+    invoiceNoPrefix?: SortOrder
     lastInvoiceNo?: SortOrder
+    refundNoPrefix?: SortOrder
     lastRefundNo?: SortOrder
     displayCurrency?: SortOrder
   }
@@ -17643,7 +17667,9 @@ export namespace Prisma {
     lastAcknowledged?: DateTimeNullableWithAggregatesFilter | Date | string | null
     verifySafeChallenge?: StringNullableWithAggregatesFilter | string | null
     newSafeAddress?: StringNullableWithAggregatesFilter | string | null
+    invoiceNoPrefix?: StringNullableWithAggregatesFilter | string | null
     lastInvoiceNo?: IntNullableWithAggregatesFilter | number | null
+    refundNoPrefix?: StringNullableWithAggregatesFilter | string | null
     lastRefundNo?: IntNullableWithAggregatesFilter | number | null
     displayCurrency?: StringWithAggregatesFilter | string
   }
@@ -18459,7 +18485,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -18499,7 +18527,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -18538,7 +18568,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -18578,7 +18610,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -18618,7 +18652,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
   }
@@ -18644,7 +18680,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
   }
@@ -18671,7 +18709,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
   }
@@ -21638,7 +21678,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     tags?: TagCreateNestedManyWithoutCreatedByInput
@@ -21677,7 +21719,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
@@ -21725,7 +21769,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     tags?: TagUpdateManyWithoutCreatedByInput
@@ -21764,7 +21810,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
@@ -21802,7 +21850,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -21841,7 +21891,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -21884,7 +21936,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -21923,7 +21977,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -21966,7 +22022,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -22005,7 +22063,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -22078,7 +22138,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -22117,7 +22179,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -22160,7 +22224,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -22199,7 +22265,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -22242,7 +22310,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -22281,7 +22351,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -22347,7 +22419,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -22386,7 +22460,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -22468,7 +22544,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -22507,7 +22585,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -22579,7 +22659,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -22618,7 +22700,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -22666,7 +22750,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -22705,7 +22791,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -23488,7 +23576,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -23527,7 +23617,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -23570,7 +23662,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -23609,7 +23703,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -23657,7 +23753,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -23696,7 +23794,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -23739,7 +23839,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -23778,7 +23880,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -23861,7 +23965,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -23900,7 +24006,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -23990,7 +24098,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -24029,7 +24139,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -24121,7 +24233,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -24160,7 +24274,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -24269,7 +24385,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -24308,7 +24426,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -24480,7 +24600,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -24519,7 +24641,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -24562,7 +24686,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -24601,7 +24727,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -24704,7 +24832,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -24743,7 +24873,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -24786,7 +24918,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -24825,7 +24959,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
@@ -25204,7 +25340,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
@@ -25243,7 +25381,9 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
     lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
     lastRefundNo?: number | null
     displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
@@ -25341,7 +25481,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
@@ -25380,7 +25522,9 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
     lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
     displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput

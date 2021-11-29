@@ -134,7 +134,9 @@ model Profile {
     payableInvoices Invoice[]  @relation(name: "Invoice_CustomerProfile")
     receivableInvoices Invoice[]  @relation(name: "Invoice_SellerProfile")
 
+    invoiceNoPrefix String?
     lastInvoiceNo Int? // Is used in organisations only and represents the current value of the invoice number series.
+    refundNoPrefix String?
     lastRefundNo Int? // Is used in organisations only and represents the current value of the refund number series.
 
     displayCurrency String @default(value: "EURS")
