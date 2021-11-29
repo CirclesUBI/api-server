@@ -4,6 +4,7 @@ import {Context} from "../../context";
 import murmur from "murmurhash-js";
 import {Generate} from "../../generate";
 import {Session as PrismaSession} from "../../api-db/client";
+import {ProfileLoader} from "../../profileLoader";
 
 
 export class LmdbWrapper {
@@ -148,8 +149,12 @@ export class EventCache {
     let contentHash = murmur.murmur3(eventJson, this._hashSeed);
 
     let callerInfo: { session: PrismaSession, profile: Profile|null }|null = null;
-    if (context.sessionId) {
-      callerInfo = await context.callerInfo;
+    const ci = await context.callerInfo;
+    if (ci && ci.session) {
+      callerInfo = {
+        profile: ProfileLoader.withDisplayCurrency(ci.profile),
+        session: ci.session
+      };
     }
 
     const promises:Promise<any>[] = [];

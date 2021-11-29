@@ -83,6 +83,7 @@ import {SalesEventSource} from "../eventSources/api/salesEventSource";
 import AWS from "aws-sdk";
 import {RpcGateway} from "../rpcGateway";
 import type {AbiItem} from "web3-utils";
+import DataLoader from "dataloader";
 
 export const HUB_ADDRESS = "0x29b9a7fBb8995b2423a71cC17cf9810798F6C543";
 
@@ -158,6 +159,98 @@ const pool = new Pool(<PoolConfig>{
 export function getPool() {
   return pool;
 }
+/*
+setInterval(() => {
+  const now = new Date();
+  Object.keys(purchaseInvoicesDataLoaders)
+    .filter(key => purchaseInvoicesDataLoaders[key].timestamp.getTime() < now.getTime() - 1000)
+    .forEach(key => delete purchaseInvoicesDataLoaders[key]);
+}, 1000);
+ */
+
+const offerCreatedByLoader = new DataLoader(async (keys:readonly any[]) => {
+  console.log(keys);
+  const result = await new ProfileLoader().profilesBySafeAddress(prisma_api_ro, keys.map(o => o));
+  const r = keys.map(safeAddress => {
+    return result[safeAddress]
+      ?? {
+        id: -1,
+        firstName: safeAddress,
+        circlesAddress: safeAddress
+      }
+  });
+
+  return r;
+}, {
+  cache: false
+});
+
+/*
+const purchaseInvoicesDataLoaders:{
+  [callerSafeAddress:string]:{
+    timestamp: Date,
+    dataLoader: DataLoader<number, Invoice[]>
+  }
+} = {};
+
+function getPurchaseInvoicesDataLoader(forCaller:string) : DataLoader<number, Invoice[]> {
+  let cachedEntry = purchaseInvoicesDataLoaders[forCaller];
+  if (!cachedEntry) {
+    cachedEntry = {
+      timestamp: new Date(),
+      dataLoader: new DataLoader<number, Invoice[]>(async (keys) => {
+       const invoices = await prisma_api_rw.invoice.findMany({
+          where: {
+            purchase: {
+              id: {
+                in: keys.map(o => o)
+              },
+              createdBy: {
+                circlesAddress: forCaller
+              }
+            }
+          },
+          include: {
+            customerProfile: true,
+            sellerProfile: true,
+            lines: {
+              include: {
+                product: {
+                  include: {
+                    createdBy: true
+                  }
+                }
+              }
+            }
+          }
+        });
+       return invoices.map(i => {
+           return <Invoice>{
+             ...i,
+             buyerAddress: i.customerProfile.circlesAddress,
+             sellerAddress: i.sellerProfile.circlesAddress,
+             lines: i.lines.map(l => {
+               return <InvoiceLine>{
+                 ...l,
+                 offer: {
+                   ...l.product,
+                   createdByAddress: l.product.createdBy.circlesAddress,
+                   createdAt: l.product.createdAt.toJSON()
+                 }
+               }
+             })
+           }
+         });
+      }, {
+        cache: false
+      })
+    }
+    purchaseInvoicesDataLoaders[forCaller] = cachedEntry;
+  }
+
+  return cachedEntry.dataLoader;
+}
+ */
 
 const packageJson = require("../../package.json");
 
@@ -199,6 +292,13 @@ export const resolvers: Resolvers = {
   },
   Purchase: {
     invoices: async (parent: Purchase, args: any, context: Context) => {
+      /*
+      const caller = await context.callerInfo;
+      if (!caller?.profile?.circlesAddress)
+        throw new Error(`You need a safe to perform this query.`)
+
+      return getPurchaseInvoicesDataLoader(caller.profile.circlesAddress).load(parent.id);
+       */
       const caller = await context.callerInfo;
       if (!caller?.profile)
         return [];
@@ -256,17 +356,7 @@ export const resolvers: Resolvers = {
   ProfileEvent: {},
   Offer: {
     createdByProfile: async (parent, args, context) => {
-      if (!parent.createdByAddress) {
-        return null;
-      }
-
-      const profilesResult = await new ProfileLoader().profilesBySafeAddress(prisma_api_ro, [parent.createdByAddress]);
-      const profiles = Object.values(profilesResult);
-      if (profiles.length != 1) {
-        return null;
-      }
-
-      return profiles[0];
+      return offerCreatedByLoader.load(parent.createdByAddress);
     }
   },
   Organisation: {

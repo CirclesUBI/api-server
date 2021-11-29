@@ -1,6 +1,7 @@
 import {Context} from "../../context";
 import {PrismaClient} from "../../api-db/client";
 import {MutationUpsertOrganisationArgs, Profile} from "../../types";
+import {ProfileLoader} from "../../profileLoader";
 
 export async function isOrgAdmin(prisma_api_rw:PrismaClient, userAddress:string, orgId: number) : Promise<boolean> {
   return !!(await prisma_api_rw.membership.findFirst({
@@ -22,7 +23,7 @@ export function upsertOrganisation(prisma_api_rw:PrismaClient, isRegion:boolean)
 
       let organisationProfile:Profile;
       if (args.organisation.id && await isOrgAdmin(prisma_api_rw, callerInfo.profile.circlesAddress, args.organisation.id)) {
-        organisationProfile = await prisma_api_rw.profile.update({
+        organisationProfile = ProfileLoader.withDisplayCurrency(await prisma_api_rw.profile.update({
           where: {
             id: args.organisation.id
           },
@@ -35,10 +36,10 @@ export function upsertOrganisation(prisma_api_rw:PrismaClient, isRegion:boolean)
             avatarMimeType: args.organisation.avatarMimeType,
             cityGeonameid: args.organisation.cityGeonameid
           }
-        });
+        }));
       } else {
         // TODO: Check if the user is the owner of the safe
-        organisationProfile = await prisma_api_rw.profile.create({
+        organisationProfile = ProfileLoader.withDisplayCurrency(await prisma_api_rw.profile.create({
           data: {
             firstName: args.organisation.name,
             dream: args.organisation.description,
@@ -50,7 +51,7 @@ export function upsertOrganisation(prisma_api_rw:PrismaClient, isRegion:boolean)
             lastInvoiceNo: 0,
             lastRefundNo: 0
           }
-        });
+        }));
 
         // Automatically create an accepted admin membership for the creator.
         await prisma_api_rw.membership.create({

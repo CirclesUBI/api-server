@@ -8,6 +8,7 @@ import {
 import {prisma_api_ro, prisma_api_rw} from "../../apiDbClient";
 import {Context} from "../../context";
 import {createPdfForInvoice} from "../../invoiceGenerator";
+import {ProfileLoader} from "../../profileLoader";
 
 export type OfferLookup = {
   [id: number]: {
@@ -51,8 +52,8 @@ export async function purchaseResolver(parent: any, args: MutationPurchaseArgs, 
   }
 
   const purchasedOffers = await lookupOffers(args);
-  const purchase = await createPurchase(callerInfo.profile, args, purchasedOffers);
-  const invoices = await createInvoices(callerInfo.profile, args, purchasedOffers, purchase);
+  const purchase = await createPurchase(ProfileLoader.withDisplayCurrency(callerInfo.profile), args, purchasedOffers);
+  const invoices = await createInvoices(ProfileLoader.withDisplayCurrency(callerInfo.profile), args, purchasedOffers, purchase);
 
   const apiInvoices = invoices.map(o => {
     return <Invoice> {
@@ -151,7 +152,19 @@ async function createPurchase(caller:Profile, args: MutationPurchaseArgs, offers
     }
   });
 
-  return purchase;
+  return {
+    ...purchase,
+    createdBy: ProfileLoader.withDisplayCurrency(purchase.createdBy),
+    lines: purchase.lines.map(l => {
+      return {
+        ...l,
+        product: {
+          ...l.product,
+          createdBy: ProfileLoader.withDisplayCurrency(l.product.createdBy)
+        }
+      }
+    })
+  };
 }
 
 export async function getNextInvoiceNo(profileId: number) : Promise<number> {
@@ -224,5 +237,20 @@ async function createInvoices(caller:Profile, args: MutationPurchaseArgs, offers
     return invoice;
   }));
 
-  return invoices;
+  return invoices.map(i => {
+    return {
+      ...i,
+      customerProfile: ProfileLoader.withDisplayCurrency(i.customerProfile),
+      sellerProfile: ProfileLoader.withDisplayCurrency(i.sellerProfile),
+      lines: i.lines.map(l => {
+        return {
+          ...l,
+          product: {
+            ...l.product,
+            createdBy: ProfileLoader.withDisplayCurrency(l.product.createdBy)
+          }
+        }
+      })
+    }
+  });
 }

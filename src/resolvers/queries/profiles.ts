@@ -39,6 +39,6 @@ export function myProfile(prisma: PrismaClient) {
     if (rows.length != 1) {
       return null;
     }
-    return rows[0];
+    return ProfileLoader.withDisplayCurrency(rows[0]);
   };
 }

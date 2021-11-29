@@ -23,6 +23,13 @@ type Profile {
   lastEvent: ProfileEvent # The last event that concerns the safeAddress
   claimedInvitation: ClaimedInvitation
   memberships: [Membership!]
+  displayCurrency: DisplayCurrency
+}
+
+enum DisplayCurrency {
+  CRC,
+  TIME_CRC,
+  EURS
 }
 
 type Membership {

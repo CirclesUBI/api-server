@@ -2,6 +2,7 @@ import {MutationUpsertProfileArgs, Profile} from "../../types";
 import {Context} from "../../context";
 import {Session} from "../../session";
 import {PrismaClient} from "../../api-db/client";
+import {ProfileLoader} from "../../profileLoader";
 
 export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
     return async (parent:any, args:MutationUpsertProfileArgs, context:Context) => {
@@ -24,7 +25,7 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
             if (args.data.id != session.profileId) {
                 throw new Error(`'${session.sessionId}' (profile id: ${session.profileId ?? "<undefined>"}) can not upsert other profile '${args.data.id}'.`);
             }
-            profile = await prisma_api_rw.profile.update({
+            profile = ProfileLoader.withDisplayCurrency(await prisma_api_rw.profile.update({
                 where: {
                     id: args.data.id
                 },
@@ -35,13 +36,13 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
                     emailAddress: session.emailAddress ?? undefined,
                     circlesSafeOwner: session.ethAddress?.toLowerCase()
                 }
-            });
+            }));
         } else {
             context.logger?.debug([{
                 key: `call`,
                 value: `/resolvers/mutation/upsertProfile.ts/upsertProfileResolver(parent:any, args:MutationUpsertProfileArgs, context:Context)`
             }], `Creating profile`);
-            profile = await prisma_api_rw.profile.create({
+            profile = ProfileLoader.withDisplayCurrency(await prisma_api_rw.profile.create({
                 data: {
                     ...args.data,
                     id: undefined,
@@ -52,7 +53,7 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
                     lastInvoiceNo: 0,
                     lastRefundNo: 0
                 }
-            });
+            }));
             await Session.assignProfile(prisma_api_rw, session.sessionId, profile.id, context);
         }
         return profile;

@@ -1,6 +1,7 @@
 import {MutationAddMemberArgs, Profile} from "../../types";
 import {Context} from "../../context";
 import {prisma_api_rw} from "../../apiDbClient";
+import {ProfileLoader} from "../../profileLoader";
 
 export async function findGroup(groupId: number|string, callerInfo: Profile) {
   const where = Number.isInteger(groupId)
@@ -37,7 +38,7 @@ export const addMemberResolver = async (parent:any, args:MutationAddMemberArgs, 
   if (!callerInfo?.profile) {
     throw new Error(`!callerInfo?.profile`);
   }
-  const groupProfile = await findGroup(args.groupId, callerInfo.profile);
+  const groupProfile = await findGroup(args.groupId, ProfileLoader.withDisplayCurrency(callerInfo.profile));
 
   if (groupProfile?.members.length != 1) {
     throw new Error(`You are not an admin of this group.`);

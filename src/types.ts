@@ -257,6 +257,12 @@ export enum Direction {
   Out = 'out'
 }
 
+export enum DisplayCurrency {
+  Crc = 'CRC',
+  TimeCrc = 'TIME_CRC',
+  Eurs = 'EURS'
+}
+
 export type Erc20Balances = IAggregatePayload & {
   __typename?: 'Erc20Balances';
   lastUpdatedAt: Scalars['String'];
@@ -703,6 +709,7 @@ export type Profile = {
   lastEvent?: Maybe<ProfileEvent>;
   claimedInvitation?: Maybe<ClaimedInvitation>;
   memberships?: Maybe<Array<Membership>>;
+  displayCurrency?: Maybe<DisplayCurrency>;
 };
 
 export type ProfileAggregate = {
@@ -1282,6 +1289,7 @@ export type ResolversTypes = ResolversObject<{
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
   Direction: Direction;
+  DisplayCurrency: DisplayCurrency;
   Erc20Balances: ResolverTypeWrapper<Erc20Balances>;
   Erc20Transfer: ResolverTypeWrapper<Erc20Transfer>;
   EthTransfer: ResolverTypeWrapper<EthTransfer>;
@@ -1982,6 +1990,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   lastEvent?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
   memberships?: Resolver<Maybe<Array<ResolversTypes['Membership']>>, ParentType, ContextType>;
+  displayCurrency?: Resolver<Maybe<ResolversTypes['DisplayCurrency']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

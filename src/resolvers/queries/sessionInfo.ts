@@ -2,6 +2,7 @@ import {Context} from "../../context";
 import {SessionInfo} from "../../types";
 import {prisma_api_rw} from "../../apiDbClient";
 import {Profile} from "../../api-db/client";
+import {ProfileLoader} from "../../profileLoader";
 
 export const sessionInfo = async (parent:any, args:any, context:Context) : Promise<SessionInfo> => {
     try {
@@ -20,7 +21,7 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
             isLoggedOn: true,
             hasProfile: !!session.profileId,
             profileId: session.profileId,
-            profile: profile,
+            profile: ProfileLoader.withDisplayCurrency(profile),
             lastAcknowledgedAt: profile?.lastAcknowledged?.toJSON()
         }
     } catch(e) {

@@ -1,5 +1,5 @@
 import {PrismaClient} from "./api-db/client";
-import {Profile} from "./types";
+import {DisplayCurrency, Profile} from "./types";
 import {RpcGateway} from "./rpcGateway";
 import fetch from "cross-fetch";
 
@@ -22,18 +22,34 @@ export class ProfileLoader {
     const safeProfileMap = profiles.reduce((p,c)=> {
       if (!c.circlesAddress)
         return p;
-      p[c.circlesAddress] = c;
+      p[c.circlesAddress] = ProfileLoader.withDisplayCurrency(c);
       return p;
     }, <SafeProfileMap>{});
 
     const idProfileMap = profiles.reduce((p,c)=> {
       if (!c.id)
         return p;
-      p[c.id] = c;
+      p[c.id] = ProfileLoader.withDisplayCurrency(c);
       return p;
     }, <IdProfileMap>{});
 
     return {safeProfileMap, idProfileMap};
+  }
+
+  static getDisplayCurrency(profile: any) : DisplayCurrency {
+    switch (profile.displayCurrency){
+      case "CRC": return DisplayCurrency.Crc;
+      case "TIME_CRC": return  DisplayCurrency.TimeCrc;
+      case "EURS": return DisplayCurrency.Eurs;
+      default: return DisplayCurrency.Eurs;
+    }
+  }
+
+  static withDisplayCurrency(profile:any) : Profile {
+    return {
+      ...profile,
+      displayCurrency: ProfileLoader.getDisplayCurrency(profile)
+    };
   }
 
   async queryCirclesLandBySafeAddress(prisma: PrismaClient, safeAddresses:string[]) : Promise<SafeProfileMap> {
@@ -51,7 +67,7 @@ export class ProfileLoader {
     const safeProfileMap = profiles.reduce((p,c)=> {
       if (!c.circlesAddress)
         return p;
-      p[c.circlesAddress] = c;
+      p[c.circlesAddress] = ProfileLoader.withDisplayCurrency(c);
       return p;
     }, <SafeProfileMap>{});
 

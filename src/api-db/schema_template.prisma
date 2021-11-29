@@ -136,6 +136,8 @@ model Profile {
 
     lastInvoiceNo Int? // Is used in organisations only and represents the current value of the invoice number series.
     lastRefundNo Int? // Is used in organisations only and represents the current value of the refund number series.
+
+    displayCurrency String @default(value: "EURS")
 }
 
 model ExternalProfiles {
