@@ -17,12 +17,12 @@ async function trustContacts(forSafeAddress: string, filter?: Maybe<ProfileAggre
   try {
     const trustContactsResult = await getPool().query(`
                 with "out" as (
-                    select max(timestamp) last_contact_at, array_agg("limit") as limits, address
+                    select max(timestamp) last_contact_at, array_agg("limit" order by timestamp) as limits, address
                     from crc_trust_2
                     where can_send_to = $1
                     group by address
                 ), "in" as (
-                    select max(timestamp) last_contact_at, array_agg("limit") as limits, can_send_to
+                    select max(timestamp) last_contact_at, array_agg("limit" order by timestamp) as limits, can_send_to
                     from crc_trust_2
                     where address = $1
                     group by can_send_to
@@ -30,6 +30,7 @@ async function trustContacts(forSafeAddress: string, filter?: Maybe<ProfileAggre
                     select 'out' direction, * from "out"
                     union all
                     select 'in' direction, * from "in"
+                    order by last_contact_at
                 )
                 select array_agg(direction) as directions,
                        array_agg(limits[array_upper(limits, 1)]) as limits,
