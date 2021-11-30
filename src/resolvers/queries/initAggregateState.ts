@@ -1,10 +1,10 @@
 import {Context} from "../../context";
-import {safeFundingTransactionResolver} from "../resolvers";
 import {Profile} from "../../types";
 import {Invitation} from "../../api-db/client";
 import {prisma_api_ro} from "../../apiDbClient";
 import {hubSignupTransactionResolver} from "./hubSignupTransactionResolver";
 import {ProfileLoader} from "../../profileLoader";
+import {safeFundingTransactionResolver} from "./safeFundingTransaction";
 
 export function initAggregateState() {
   return async (parent: any, args: any, context: Context) => {
