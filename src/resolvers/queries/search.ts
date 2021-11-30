@@ -13,6 +13,7 @@ export function search(prisma: PrismaClient) {
           .map(o => o + "%");
 
         const searchWords2 = searchWords.map(o => o.replace("%", ""));
+        const fteSearch = `"${searchWords2.join("+")}":*`;
         const result: {
             id: number,
             "status"?: string,
@@ -84,7 +85,7 @@ export function search(prisma: PrismaClient) {
                     from "all"
                     group by "circlesAddress"
                 ), result as (
-                    SELECT to_tsvector(a."firstName" || ' ' || a."lastName") as tsvector, a.*
+                    SELECT to_tsvector(a."firstName" || ' ' || COALESCE(a."lastName", '')) as tsvector, a.*
                     from nearest_source ns
                     join "all" a on a.source = ns.source and a."circlesAddress" = ns."circlesAddress" and a.id = ns.id
                 ), fts as (
@@ -101,7 +102,7 @@ export function search(prisma: PrismaClient) {
                            r.dream,
                            r.country
                     from "result" r
-                    where r.tsvector @@ to_tsquery(array_to_string(${searchWords2.map(o => o + ":*")}::text[], ' & '))
+                    where r.tsvector @@ to_tsquery(${fteSearch})
                 )
                 select * 
                 from fts 
