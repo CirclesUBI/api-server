@@ -302,8 +302,10 @@ const profileMembershipsDataLoader = new DataLoader<string, Membership[]>(async 
         p[c.memberAddress] = [];
       }
       p[c.memberAddress].push({
-        ...c, organisation: {
-          ...c.organisation, displayCurrency: <DisplayCurrency>c.organisation.displayCurrency
+        ...c,
+        organisation: {
+          ...c.organisation,
+          displayCurrency: ProfileLoader.getDisplayCurrency(c)
         }
       });
       return p;

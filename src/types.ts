@@ -675,6 +675,7 @@ export type Organisation = {
   avatarUrl?: Maybe<Scalars['String']>;
   avatarMimeType?: Maybe<Scalars['String']>;
   cityGeonameid?: Maybe<Scalars['Int']>;
+  displayCurrency?: Maybe<DisplayCurrency>;
   city?: Maybe<City>;
   offers?: Maybe<Array<Offer>>;
   members?: Maybe<Array<ProfileOrOrganisation>>;
@@ -1963,6 +1964,7 @@ export type OrganisationResolvers<ContextType = any, ParentType extends Resolver
   avatarUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarMimeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cityGeonameid?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  displayCurrency?: Resolver<Maybe<ResolversTypes['DisplayCurrency']>, ParentType, ContextType>;
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
   offers?: Resolver<Maybe<Array<ResolversTypes['Offer']>>, ParentType, ContextType>;
   members?: Resolver<Maybe<Array<ResolversTypes['ProfileOrOrganisation']>>, ParentType, ContextType>;
