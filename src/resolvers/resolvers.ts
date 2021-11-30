@@ -286,7 +286,8 @@ const profileMembershipsDataLoader = new DataLoader<string, Membership[]>(async 
           circlesSafeOwner: o.memberAt.circlesSafeOwner?.toLowerCase(),
           description: o.memberAt.dream,
           createdAt: o.createdAt.toJSON(), // TODO: This is the creation date of the membership, not the one of the organisation
-          circlesAddress: o.memberAt.circlesAddress
+          circlesAddress: o.memberAt.circlesAddress,
+          displayCurrency: o.memberAt.displayCurrency
         },
         createdByProfileId: o.createdByProfileId,
         memberAddress: o.memberAddress,
@@ -300,7 +301,11 @@ const profileMembershipsDataLoader = new DataLoader<string, Membership[]>(async 
       if (!p[c.memberAddress]) {
         p[c.memberAddress] = [];
       }
-      p[c.memberAddress].push(c);
+      p[c.memberAddress].push({
+        ...c, organisation: {
+          ...c.organisation, displayCurrency: <DisplayCurrency>c.organisation.displayCurrency
+        }
+      });
       return p;
     }, <{[x:string]:Membership[]}>{});
 
