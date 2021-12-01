@@ -4,21 +4,10 @@ import {PrismaClient} from "../../api-db/client";
 
 export function claimInvitation(prisma_api_rw:PrismaClient) {
     return async (parent:any, args:{code:string}, context:Context) => {
-        context.logger?.info([{
-            key: `call`,
-            value: `/resolvers/mutation/claimInvitation.ts/claimInvitation`
-        }]);
-
         const session = await context.verifySession();
 
         if (!session.profileId) {
-            context.logger?.warning([{
-                key: `call`,
-                value: `/resolvers/mutation/claimInvitation.ts/claimInvitation`
-            }], "A user with session but without profile tried to claim an invitation.");
-            return <ClaimInvitationResult>{
-                success: false
-            };
+            throw new Error("A user with session but without profile tried to claim an invitation.");
         }
 
         const now = new Date();
@@ -34,10 +23,6 @@ export function claimInvitation(prisma_api_rw:PrismaClient) {
 
         if (updatedCount.count > 1) {
             const msg = `A user claimed more than one invitation with the same code: ${args.code}`;
-            context.logger?.error([{
-                key: `call`,
-                value: `/resolvers/mutation/claimInvitation.ts/claimInvitation`
-            }], msg);
             throw new Error(msg);
         }
         if (updatedCount.count != 1) {

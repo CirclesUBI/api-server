@@ -1,6 +1,6 @@
 {
   "name": "@o-platform/api-server",
-  "version": "0.1.210",
+  "version": "0.1.211",
   "description": "",
   "main": "dist/index.js",
   "prepublish": "tsc",
@@ -22,6 +22,7 @@
     "apollo-server-core": "^3.3.0",
     "apollo-server-express": "^3.3.0",
     "apollo-server-plugin-http-headers": "^0.1.4",
+    "ix": "^4.5.2",
     "bn.js": "^5.2.0",
     "dataloader": "^2.0.0",
     "dayjs": "^1.10.7",

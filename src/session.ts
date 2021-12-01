@@ -23,14 +23,6 @@ export class Session
             }
         });
 
-        context.logger?.debug([{
-            key: "sessionId",
-            value: sessionId
-        },{
-            key: `call`,
-            value: `/session.ts/logout(sessionId:string)`
-        }], "Logged out");
-
         return result;
     }
 
@@ -159,11 +151,6 @@ export class Session
     static async createSessionFromJWT(prisma:PrismaClient, context: Context)
     {
         if (!context.jwt || context.jwt.trim() == "") {
-            context.logger?.error([{
-                key: `call`,
-                value: `/session.ts/createSessionFromJWT(prisma:PrismaClient, context: Context)`
-            }], "No jwt was supplied");
-
             throw new Error("No jwt was supplied");
         }
 
@@ -178,14 +165,6 @@ export class Session
         const tokenPayload = await authClient.verify(context.jwt);
         if (!tokenPayload)
         {
-            context.logger?.error([{
-                key: `call`,
-                value: `/session.ts/createSessionFromJWT(prisma:PrismaClient, context: Context)`
-            }, {
-                key: `jwt`,
-                value: context.jwt
-            }], "Couldn't decode the supplied JWT.");
-
             throw new Error("Couldn't decode the supplied JWT.")
         }
 
@@ -205,25 +184,10 @@ export class Session
             }
         });
 
-        context.logger?.debug([{
-            key: `call`,
-            value: `/session.ts/createSessionFromJWT(prisma:PrismaClient, context: Context)`
-        }], "New session", {
-            createdAt: session.createdAt,
-            profileId: session.profileId,
-            issuedBy: session.issuedBy,
-            maxLifetime: session.maxLifetime,
-            jti: session.jti
-        });
-
         return session;
     }
 
     static async assignProfile(prisma_api_rw:PrismaClient, sessionId: string, profileId: number, context:Context) {
-        context.logger?.debug([{
-            key: `call`,
-            value: `/session.ts/assignProfile(prisma_api_rw:PrismaClient, sessionId: string, profileId: number, context:Context)`
-        }]);
         await prisma_api_rw.session.update({
             where: {sessionId: sessionId},
             data: {profileId: profileId}

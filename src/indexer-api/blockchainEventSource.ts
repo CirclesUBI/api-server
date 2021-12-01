@@ -35,6 +35,7 @@ export class BlockchainEventSource implements ProfileEventSource {
 
   private _ws?: WebSocket;
   private _isOpen: boolean = false;
+  private _messageNo: number = 0;
 
   constructor(url: string) {
     this._url = url;
@@ -85,14 +86,14 @@ export class BlockchainEventSource implements ProfileEventSource {
     }, 5000);
   }
 
-  i = 1;
-
   async onMessage(message: string) {
     try {
       const transactionHashes: string[] = JSON.parse(message);
 
-      const cur = this.i++;
-      console.log(`Message ${cur} received`);
+      const now = new Date();
+      const no = ++this._messageNo;
+
+      console.log(` *-> [${now.toJSON()}] [${no}] [${this._url}] [BlockchainEventSource.onMessage]: ${JSON.stringify(transactionHashes)}`);
 
       // Find all blockchainEvents in the reported new range
       const affectedAddressesQuery = `with a as (
@@ -136,10 +137,8 @@ export class BlockchainEventSource implements ProfileEventSource {
       }, <{ [address: string]: any }>{});
 
       for(let address of Object.keys(affectedAddresses)) {
-
         // TODO: Clear cached profiles if cache is in use
         // profilesBySafeAddressCache.del(address)
-
         await ApiPubSub.instance.pubSub.publish(`events_${address}`, {
           events: {
             type: "blockchain_event"

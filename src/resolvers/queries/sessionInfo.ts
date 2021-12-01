@@ -12,11 +12,6 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
             profile = await prisma_api_rw.profile.findUnique({where:{id: session.profileId}});
         }
 
-        context.logger?.info([{
-            key: `call`,
-            value: `/resolvers/queries/sessionInfo.ts/async (parent:any, args:any, context:Context)`
-        }], `Session valid until ${new Date(new Date(session.createdAt).getTime() + session.maxLifetime).toJSON()}`);
-
         return {
             isLoggedOn: true,
             hasProfile: !!session.profileId,
@@ -25,11 +20,6 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
             lastAcknowledgedAt: profile?.lastAcknowledged?.toJSON()
         }
     } catch(e) {
-        context.logger?.error([{
-            key: `call`,
-            value: `/resolvers/queries/sessionInfo.ts/async (parent:any, args:any, context:Context)`
-        }], `No valid session.`, e);
-
         // When the session is invalid, make sure that the user doesn't keep the cookie
         const expires = new Date();
         /// See https://www.npmjs.com/package/apollo-server-plugin-http-headers for the magic that happens below ;)

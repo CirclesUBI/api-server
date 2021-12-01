@@ -8,12 +8,12 @@ import {getPool, resolvers} from "./resolvers/resolvers";
 import {importSchema} from "graphql-import";
 import {Context} from "./context";
 import {Session} from "./session";
-import {newLogger} from "./logger";
 import {Error} from "apollo-server-core/src/plugin/schemaReporting/operations";
 import {BlockchainEventSource} from "./indexer-api/blockchainEventSource";
 import {ApiPubSub} from "./pubsub";
 import {RpcGateway} from "./rpcGateway";
 import {PoolClient} from "pg";
+import {GqlLogger} from "./gqlLogger";
 
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
 
@@ -54,7 +54,8 @@ export class Main {
                 }
             },
             ApolloServerPluginLandingPageGraphQLPlayground(),
-            errorLogger],
+            errorLogger,
+            new GqlLogger()],
         });
 
         await server.start();
@@ -93,7 +94,6 @@ export class Main {
                     value: `ws`
                 }];
 
-                const logger = newLogger(defaultTags);
                 isSubscription = true;
 
                 let sessionId:string|undefined = undefined;
@@ -115,7 +115,6 @@ export class Main {
                 return new Context(
                   contextId,
                   isSubscription,
-                  logger,
                   authorizationHeaderValue,
                   originHeaderValue,
                   sessionId,

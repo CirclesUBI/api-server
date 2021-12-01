@@ -63,6 +63,9 @@ import {importOrganisationsOfAccount} from "./mutations/importOrganisationsOfAcc
 import {completePurchase} from "./mutations/completePurchase";
 import {completeSale} from "./mutations/completeSale";
 import {verifySafe} from "./mutations/verifySafe";
+import {from} from "ix/iterable";
+import {filter, map} from "ix/iterable/operators";
+import {AsyncIterable} from "ix/Ix";
 
 export const HUB_ADDRESS = "0x29b9a7fBb8995b2423a71cC17cf9810798F6C543";
 
@@ -225,23 +228,28 @@ export const resolvers: Resolvers = {
   Subscription: {
     events: {
       subscribe: async (parent, args, context: Context) => {
-        try {
-          const callerInfo = await context.callerInfo;
-          if (!callerInfo?.profile && !callerInfo?.session.ethAddress)
-            throw new Error(`You need a registration to subscribe`);
+        const callerInfo = await context.callerInfo;
+        if (!callerInfo?.profile && !callerInfo?.session.ethAddress)
+          throw new Error(`You need a registration to subscribe`);
 
-          if (!callerInfo.profile?.circlesAddress && callerInfo.session.ethAddress) {
-            return ApiPubSub.instance.pubSub.asyncIterator([`events_${callerInfo.session.ethAddress.toLowerCase()}`]);
-          } else if (callerInfo.profile?.circlesAddress) {
-            return ApiPubSub.instance.pubSub.asyncIterator([`events_${callerInfo.profile?.circlesAddress.toLowerCase()}`]);
-          } else {
-            throw new Error(`Cannot subscribe without an eoa- or safe-address.`)
-          }
-        } catch (e) {
-          console.error(e);
+        if (!callerInfo.profile?.circlesAddress && callerInfo.session.ethAddress) {
+          const ai = ApiPubSub.instance.pubSub.asyncIterator([`events_${callerInfo.session.ethAddress.toLowerCase()}`]);
+          return logSubscriptionEvents(context, ai);
+        } else if (callerInfo.profile?.circlesAddress) {
+          const ai = ApiPubSub.instance.pubSub.asyncIterator([`events_${callerInfo.profile?.circlesAddress.toLowerCase()}`]);
+          return logSubscriptionEvents(context, ai);
         }
-        return ApiPubSub.instance.pubSub.asyncIterator([`~~~NEVER~~~`]);
+
+        console.error(`Err: [${new Date().toJSON()}] [${context.id}] [${context.ipAddress}] [Subscription.events]: Cannot subscribe without an eoa- or safe-address`);
+        throw new Error(`Cannot subscribe without an eoa- or safe-address.`);
       }
     }
   }
 };
+
+async function* logSubscriptionEvents(context:Context, eventStream:any) {
+  for await (let item of eventStream) {
+    console.log(` <-* [${new Date().toJSON()}] [${context.id}] [${context.ipAddress}] [Subscription.events]: ${JSON.stringify(item)}`);
+    yield item;
+  }
+}

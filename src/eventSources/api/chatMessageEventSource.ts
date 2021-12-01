@@ -86,8 +86,6 @@ export class ChatMessageEventSource implements EventSource {
       }
     };
 
-    console.log(compositeFilter);
-
     const chatMessages = await prisma_api_ro.chatMessage.findMany({
       where: compositeFilter,
       orderBy: {

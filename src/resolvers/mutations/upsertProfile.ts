@@ -6,10 +6,6 @@ import {ProfileLoader} from "../../profileLoader";
 
 export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
     return async (parent:any, args:MutationUpsertProfileArgs, context:Context) => {
-        context.logger?.info([{
-            key: `call`,
-            value: `/resolvers/mutation/upsertProfile.ts/upsertProfileResolver(parent:any, args:MutationUpsertProfileArgs, context:Context)`
-        }]);
         const session = await context.verifySession();
         let profile:Profile;
 
@@ -18,10 +14,6 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
         }
 
         if (args.data.id) {
-            context.logger?.debug([{
-                key: `call`,
-                value: `/resolvers/mutation/upsertProfile.ts/upsertProfileResolver(parent:any, args:MutationUpsertProfileArgs, context:Context)`
-            }], `Updating profile`);
             if (args.data.id != session.profileId) {
                 throw new Error(`'${session.sessionId}' (profile id: ${session.profileId ?? "<undefined>"}) can not upsert other profile '${args.data.id}'.`);
             }
@@ -39,10 +31,6 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
                 }
             }));
         } else {
-            context.logger?.debug([{
-                key: `call`,
-                value: `/resolvers/mutation/upsertProfile.ts/upsertProfileResolver(parent:any, args:MutationUpsertProfileArgs, context:Context)`
-            }], `Creating profile`);
             profile = ProfileLoader.withDisplayCurrency(await prisma_api_rw.profile.create({
                 data: {
                     ...args.data,
