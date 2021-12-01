@@ -1141,6 +1141,7 @@ export type UpsertOrganisationInput = {
   avatarUrl?: Maybe<Scalars['String']>;
   avatarMimeType?: Maybe<Scalars['String']>;
   cityGeonameid?: Maybe<Scalars['Int']>;
+  displayCurrency?: Maybe<DisplayCurrency>;
 };
 
 export type UpsertProfileInput = {
@@ -1160,6 +1161,7 @@ export type UpsertProfileInput = {
   newsletter?: Maybe<Scalars['Boolean']>;
   displayTimeCircles?: Maybe<Scalars['Boolean']>;
   cityGeonameid?: Maybe<Scalars['Int']>;
+  displayCurrency?: Maybe<DisplayCurrency>;
 };
 
 export type UpsertTagInput = {

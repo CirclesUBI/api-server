@@ -97,6 +97,7 @@ input UpsertProfileInput {
   newsletter: Boolean
   displayTimeCircles: Boolean
   cityGeonameid: Int
+  displayCurrency: DisplayCurrency
 }
 
 type Tag {
@@ -765,6 +766,7 @@ input UpsertOrganisationInput {
   avatarUrl: String
   avatarMimeType: String
   cityGeonameid: Int
+  displayCurrency: DisplayCurrency
 }
 
 type AddMemberResult {

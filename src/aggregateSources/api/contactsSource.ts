@@ -183,6 +183,8 @@ async function erc20TransferContacts(forSafeAddress: string, filter?: Maybe<Prof
 
 async function chatMessageContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const start = new Date().getTime();
+  const _filter = filter?.contacts?.addresses ?? [];
+
   const chatContactsResult = await prisma_api_ro.$queryRaw`
       with "in" as (
           select max("createdAt") last_contact_at, "from" as contact_address
@@ -214,7 +216,7 @@ async function chatMessageContacts(forSafeAddress: string, filter?: Maybe<Profil
                  array_agg(last_contact_at) as timestamps,
                  contact_address
           from "all"
-          where ${filter?.contacts?.addresses ?? []}=ARRAY[]::text[] or contact_address=ANY(${filter?.contacts?.addresses ?? []})
+          where ${_filter}=ARRAY[]::text[] or contact_address=ANY(${_filter})
           group by contact_address
       )
       select *
@@ -245,6 +247,8 @@ async function chatMessageContacts(forSafeAddress: string, filter?: Maybe<Profil
 // The person from which I claimed my invitation
 async function invitationContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const start = new Date().getTime();
+  const _filter = filter?.contacts?.addresses ?? [];
+
   const invitationContactsResult = await prisma_api_ro.$queryRaw`
       with "in" as (
           select max(i."createdAt") last_contact_at, "creatorProfile"."circlesAddress" as contact_address
@@ -272,7 +276,7 @@ async function invitationContacts(forSafeAddress: string, filter?: Maybe<Profile
              array_agg(last_contact_at) as timestamps,
              contact_address
       from "all"
-      where ${filter?.contacts?.addresses ?? []}=ARRAY[]::text[] or contact_address=ANY(${filter?.contacts?.addresses ?? []})
+      where ${_filter}=ARRAY[]::text[] or contact_address=ANY(${_filter})
       group by contact_address`;
 
   const r = invitationContactsResult.map((o:any) => {
@@ -298,6 +302,8 @@ async function invitationContacts(forSafeAddress: string, filter?: Maybe<Profile
 
 async function invitationRedeemedContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const start = new Date().getTime();
+  const _filter = filter?.contacts?.addresses ?? [];
+
   const invitationContactsResult = await prisma_api_ro.$queryRaw`
       with "in" as (
           select max(i."redeemedAt") last_contact_at, "redeemedByProfile"."circlesAddress" as contact_address
@@ -315,6 +321,7 @@ async function invitationRedeemedContacts(forSafeAddress: string, filter?: Maybe
              array_agg(last_contact_at) as timestamps,
              contact_address
       from "all"
+      where ${_filter}=ARRAY[]::text[] or contact_address=ANY(${_filter})
       group by contact_address`;
 
   const r = invitationContactsResult.map((o:any) => {
@@ -342,6 +349,8 @@ async function invitationRedeemedContacts(forSafeAddress: string, filter?: Maybe
 // People I offered orga invitations to
 async function membershipOfferContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const start = new Date().getTime();
+  const _filter = filter?.contacts?.addresses ?? [];
+
   const membershipOfferContactsResult = await prisma_api_ro.$queryRaw`
       with "in" as (
           select max(m."createdAt") as last_contact_at, "createdByProfile"."circlesAddress" as contact_address
@@ -382,7 +391,7 @@ async function membershipOfferContacts(forSafeAddress: string, filter?: Maybe<Pr
              array_agg(value) as values,
              contact_address
       from "all"
-      where ${filter?.contacts?.addresses ?? []}=ARRAY[]::text[] or contact_address=ANY(${filter?.contacts?.addresses ?? []})
+      where ${_filter}=ARRAY[]::text[] or contact_address=ANY(${_filter})
       group by contact_address;`;
 
   const r = membershipOfferContactsResult.map((o:any) => {

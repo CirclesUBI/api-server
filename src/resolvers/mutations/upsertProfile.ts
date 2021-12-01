@@ -1,4 +1,4 @@
-import {MutationUpsertProfileArgs, Profile} from "../../types";
+import {DisplayCurrency, MutationUpsertProfileArgs, Profile} from "../../types";
 import {Context} from "../../context";
 import {Session} from "../../session";
 import {PrismaClient} from "../../api-db/client";
@@ -34,7 +34,8 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
                     id: args.data.id,
                     lastUpdateAt: new Date(),
                     emailAddress: session.emailAddress ?? undefined,
-                    circlesSafeOwner: session.ethAddress?.toLowerCase()
+                    circlesSafeOwner: session.ethAddress?.toLowerCase(),
+                    displayCurrency: <DisplayCurrency>args.data.displayCurrency
                 }
             }));
         } else {
@@ -51,7 +52,8 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
                     circlesSafeOwner: session.ethAddress?.toLowerCase(),
                     lastAcknowledged: new Date(),
                     lastInvoiceNo: 0,
-                    lastRefundNo: 0
+                    lastRefundNo: 0,
+                    displayCurrency: <DisplayCurrency>args.data.displayCurrency
                 }
             }));
             await Session.assignProfile(prisma_api_rw, session.sessionId, profile.id, context);
