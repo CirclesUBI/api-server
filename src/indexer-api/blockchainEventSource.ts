@@ -93,7 +93,7 @@ export class BlockchainEventSource implements ProfileEventSource {
       const now = new Date();
       const no = ++this._messageNo;
 
-      console.log(` *-> [${now.toJSON()}] [${no}] [${this._url}] [BlockchainEventSource.onMessage]: ${JSON.stringify(transactionHashes)}`);
+      console.log(` *-> [${now.toJSON()}] [${no}] [${this._url}] [BlockchainEventSource.onMessage]: Received ${transactionHashes.length} tx-hashes`);
 
       // Find all blockchainEvents in the reported new range
       const affectedAddressesQuery = `with a as (

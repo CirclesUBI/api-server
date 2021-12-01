@@ -86,14 +86,6 @@ export class Main {
                 const upgradeRequest = webSocket.upgradeReq;
                 const cookieValue = upgradeRequest.headers["cookie"];
 
-                const defaultTags = [{
-                    key: `contextId`,
-                    value: contextId
-                }, {
-                    key: `protocol`,
-                    value: `ws`
-                }];
-
                 isSubscription = true;
 
                 let sessionId:string|undefined = undefined;
@@ -110,7 +102,7 @@ export class Main {
                     }
                 }
 
-                console.log("New websocket connection:", connectionParams);
+                console.log(`-->] [${new Date().toJSON()}] [${contextId}] [${webSocket._socket.remoteAddress}] [subscriptionServer.onConnect]: New websocket subscription client.`);
 
                 return new Context(
                   contextId,
@@ -118,7 +110,7 @@ export class Main {
                   authorizationHeaderValue,
                   originHeaderValue,
                   sessionId,
-                  "");
+                  webSocket._socket.remoteAddress);
             },
         }, {
             server: httpServer,
@@ -180,12 +172,12 @@ export class Main {
                             return;
                         }
 
+                        console.log(` *-> [${new Date().toJSON()}] [] [] [listenForDbEvents.onNotification]: ${JSON.stringify(payload)}`);
                         await ApiPubSub.instance.pubSub.publish(`events_${to}`, {
                             events: {
                                 type: "new_message"
                             }
                         });
-                        console.log(`Received 'new_message' from notifyConnection: `, payload);
                     });
 
                     console.log(`notifyConnection established.`);
