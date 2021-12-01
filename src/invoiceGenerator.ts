@@ -234,7 +234,7 @@ function generateHeader(
   doc
     .rect(0, 0, doc.page.width, 120)
     .fill("#F8F8FA")
-    .image(sellerLogo, marginx, top, { width: 134 })
+    .image(sellerLogo, marginx, top - 5, { width: 250 })
     .fillColor("#333333")
     .fontSize(20)
     .text("Invoice", 300, top)
