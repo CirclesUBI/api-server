@@ -16,6 +16,7 @@ import {RedeemedInvitationsEventSource} from "../../eventSources/api/redeemedInv
 import {SalesEventSource} from "../../eventSources/api/salesEventSource";
 import {CombinedEventSource} from "../../eventSources/combinedEventSource";
 import {EventAugmenter} from "../../eventSources/eventAugmenter";
+import {SafeVerifiedEventSource} from "../../eventSources/api/safeVerifiedEventSource";
 
 export const events = async (parent:any, args:QueryEventsArgs, context: Context) => {
   const eventSources: EventSource[] = [];
@@ -82,6 +83,9 @@ export const events = async (parent:any, args:QueryEventsArgs, context: Context)
   if (Object.keys(types).length > 0 && context.sessionId) {
     let canAccessPrivateDetails = await canAccess(context, args.safeAddress);
 
+    if (canAccessPrivateDetails && types[EventType.SafeVerified]) {
+      eventSources.push(new SafeVerifiedEventSource());
+    }
     if (canAccessPrivateDetails && types[EventType.ChatMessage]) {
       eventSources.push(new ChatMessageEventSource());
     }

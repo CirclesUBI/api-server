@@ -505,6 +505,14 @@ type SaleEvent implements IEventPayload {
   invoice: Invoice
 }
 
+# ${organisation} verified your safe ${safe_address}
+type SafeVerified implements IEventPayload {
+  transaction_hash: String
+  organisation: String!
+  organisation_profile: Organisation,
+  safe_address: String!
+}
+
 union EventPayload =
     CrcSignup
   | CrcTrust
@@ -524,6 +532,7 @@ union EventPayload =
   | OrganisationCreated
   | MemberAdded
   | SaleEvent
+  | SafeVerified
 
 enum EventType {
   CrcSignup
@@ -544,6 +553,7 @@ enum EventType {
   OrganisationCreated
   MemberAdded
   SaleEvent
+  SafeVerified
 }
 
 enum AggregateType {
@@ -649,6 +659,17 @@ type ProfileEvent {
   value: String
   payload: EventPayload
   tags: [Tag!]
+}
+
+type PublicEvent {
+  timestamp: String!
+  block_number: Int
+  transaction_index: Int
+  transaction_hash: String
+  type: String!
+  contact_address: String
+  contact_address_profile: Profile
+  payload: EventPayload
 }
 
 type NotificationEvent {
@@ -923,6 +944,11 @@ type SafeAddressByOwnerResult {
   safeAddress: String!
 }
 
+input VerifiedSafesFilter {
+  after: String
+  addresses: [String!]
+}
+
 type Query {
   whoami: String
   version: Version!
@@ -936,6 +962,8 @@ type Query {
   invitationTransaction: ProfileEvent
   hubSignupTransaction: ProfileEvent
   ubiInfo: UbiInfo!
+
+  verifiedSafes(filter:VerifiedSafesFilter) : [PublicEvent!]!
 
   events(
     types: [EventType!]!

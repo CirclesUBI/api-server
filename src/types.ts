@@ -291,7 +291,7 @@ export type EthTransfer = IEventPayload & {
   tags: Array<Tag>;
 };
 
-export type EventPayload = CrcSignup | CrcTrust | CrcTokenTransfer | CrcHubTransfer | CrcMinting | EthTransfer | Erc20Transfer | GnosisSafeEthTransfer | ChatMessage | MembershipOffer | MembershipAccepted | MembershipRejected | WelcomeMessage | InvitationCreated | InvitationRedeemed | OrganisationCreated | MemberAdded | SaleEvent;
+export type EventPayload = CrcSignup | CrcTrust | CrcTokenTransfer | CrcHubTransfer | CrcMinting | EthTransfer | Erc20Transfer | GnosisSafeEthTransfer | ChatMessage | MembershipOffer | MembershipAccepted | MembershipRejected | WelcomeMessage | InvitationCreated | InvitationRedeemed | OrganisationCreated | MemberAdded | SaleEvent | SafeVerified;
 
 export enum EventType {
   CrcSignup = 'CrcSignup',
@@ -311,7 +311,8 @@ export enum EventType {
   InvitationRedeemed = 'InvitationRedeemed',
   OrganisationCreated = 'OrganisationCreated',
   MemberAdded = 'MemberAdded',
-  SaleEvent = 'SaleEvent'
+  SaleEvent = 'SaleEvent',
+  SafeVerified = 'SafeVerified'
 }
 
 export type ExchangeTokenResponse = {
@@ -773,6 +774,18 @@ export type ProofPaymentResult = {
   acknowledged: Scalars['Boolean'];
 };
 
+export type PublicEvent = {
+  __typename?: 'PublicEvent';
+  timestamp: Scalars['String'];
+  block_number?: Maybe<Scalars['Int']>;
+  transaction_index?: Maybe<Scalars['Int']>;
+  transaction_hash?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+  contact_address?: Maybe<Scalars['String']>;
+  contact_address_profile?: Maybe<Profile>;
+  payload?: Maybe<EventPayload>;
+};
+
 export type Purchase = {
   __typename?: 'Purchase';
   id: Scalars['Int'];
@@ -818,6 +831,7 @@ export type Query = {
   invitationTransaction?: Maybe<ProfileEvent>;
   hubSignupTransaction?: Maybe<ProfileEvent>;
   ubiInfo: UbiInfo;
+  verifiedSafes: Array<PublicEvent>;
   events: Array<ProfileEvent>;
   aggregates: Array<ProfileAggregate>;
   organisations: Array<Organisation>;
@@ -837,6 +851,11 @@ export type Query = {
   directPath: TransitivePath;
   mostRecentUbiSafeOfAccount?: Maybe<Scalars['String']>;
   invoice?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryVerifiedSafesArgs = {
+  filter?: Maybe<VerifiedSafesFilter>;
 };
 
 
@@ -997,6 +1016,14 @@ export type SafeAddressByOwnerResult = {
   __typename?: 'SafeAddressByOwnerResult';
   type: Scalars['String'];
   safeAddress: Scalars['String'];
+};
+
+export type SafeVerified = IEventPayload & {
+  __typename?: 'SafeVerified';
+  transaction_hash?: Maybe<Scalars['String']>;
+  organisation: Scalars['String'];
+  organisation_profile?: Maybe<Organisation>;
+  safe_address: Scalars['String'];
 };
 
 export type Sale = {
@@ -1174,6 +1201,11 @@ export type UpsertTagInput = {
   value?: Maybe<Scalars['String']>;
 };
 
+export type VerifiedSafesFilter = {
+  after?: Maybe<Scalars['String']>;
+  addresses?: Maybe<Array<Scalars['String']>>;
+};
+
 export type VerifySafeResult = {
   __typename?: 'VerifySafeResult';
   success: Scalars['Boolean'];
@@ -1312,13 +1344,13 @@ export type ResolversTypes = ResolversObject<{
   Erc20Balances: ResolverTypeWrapper<Erc20Balances>;
   Erc20Transfer: ResolverTypeWrapper<Erc20Transfer>;
   EthTransfer: ResolverTypeWrapper<EthTransfer>;
-  EventPayload: ResolversTypes['CrcSignup'] | ResolversTypes['CrcTrust'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['EthTransfer'] | ResolversTypes['Erc20Transfer'] | ResolversTypes['GnosisSafeEthTransfer'] | ResolversTypes['ChatMessage'] | ResolversTypes['MembershipOffer'] | ResolversTypes['MembershipAccepted'] | ResolversTypes['MembershipRejected'] | ResolversTypes['WelcomeMessage'] | ResolversTypes['InvitationCreated'] | ResolversTypes['InvitationRedeemed'] | ResolversTypes['OrganisationCreated'] | ResolversTypes['MemberAdded'] | ResolversTypes['SaleEvent'];
+  EventPayload: ResolversTypes['CrcSignup'] | ResolversTypes['CrcTrust'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['EthTransfer'] | ResolversTypes['Erc20Transfer'] | ResolversTypes['GnosisSafeEthTransfer'] | ResolversTypes['ChatMessage'] | ResolversTypes['MembershipOffer'] | ResolversTypes['MembershipAccepted'] | ResolversTypes['MembershipRejected'] | ResolversTypes['WelcomeMessage'] | ResolversTypes['InvitationCreated'] | ResolversTypes['InvitationRedeemed'] | ResolversTypes['OrganisationCreated'] | ResolversTypes['MemberAdded'] | ResolversTypes['SaleEvent'] | ResolversTypes['SafeVerified'];
   EventType: EventType;
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
   GnosisSafeEthTransfer: ResolverTypeWrapper<GnosisSafeEthTransfer>;
   IAggregatePayload: ResolversTypes['Contacts'] | ResolversTypes['CrcBalances'] | ResolversTypes['Erc20Balances'] | ResolversTypes['Members'] | ResolversTypes['Memberships'] | ResolversTypes['Offers'] | ResolversTypes['Purchases'] | ResolversTypes['Sales'];
   ICity: ResolversTypes['City'];
-  IEventPayload: ResolversTypes['ChatMessage'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['CrcSignup'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcTrust'] | ResolversTypes['Erc20Transfer'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'] | ResolversTypes['InvitationCreated'] | ResolversTypes['InvitationRedeemed'] | ResolversTypes['MemberAdded'] | ResolversTypes['MembershipAccepted'] | ResolversTypes['MembershipOffer'] | ResolversTypes['MembershipRejected'] | ResolversTypes['OrganisationCreated'] | ResolversTypes['SaleEvent'] | ResolversTypes['WelcomeMessage'];
+  IEventPayload: ResolversTypes['ChatMessage'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['CrcSignup'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcTrust'] | ResolversTypes['Erc20Transfer'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'] | ResolversTypes['InvitationCreated'] | ResolversTypes['InvitationRedeemed'] | ResolversTypes['MemberAdded'] | ResolversTypes['MembershipAccepted'] | ResolversTypes['MembershipOffer'] | ResolversTypes['MembershipRejected'] | ResolversTypes['OrganisationCreated'] | ResolversTypes['SafeVerified'] | ResolversTypes['SaleEvent'] | ResolversTypes['WelcomeMessage'];
   InitAggregateState: ResolverTypeWrapper<InitAggregateState>;
   InvitationCreated: ResolverTypeWrapper<InvitationCreated>;
   InvitationRedeemed: ResolverTypeWrapper<InvitationRedeemed>;
@@ -1347,6 +1379,7 @@ export type ResolversTypes = ResolversObject<{
   ProfileEventFilter: ProfileEventFilter;
   ProfileOrOrganisation: ResolversTypes['Profile'] | ResolversTypes['Organisation'];
   ProofPaymentResult: ResolverTypeWrapper<ProofPaymentResult>;
+  PublicEvent: ResolverTypeWrapper<Omit<PublicEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
   Purchase: ResolverTypeWrapper<Purchase>;
   PurchaseLine: ResolverTypeWrapper<PurchaseLine>;
   PurchaseLineInput: PurchaseLineInput;
@@ -1365,6 +1398,7 @@ export type ResolversTypes = ResolversObject<{
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: ResolverTypeWrapper<RequestUpdateSafeResponse>;
   SafeAddressByOwnerResult: ResolverTypeWrapper<SafeAddressByOwnerResult>;
+  SafeVerified: ResolverTypeWrapper<SafeVerified>;
   Sale: ResolverTypeWrapper<Sale>;
   SaleEvent: ResolverTypeWrapper<SaleEvent>;
   Sales: ResolverTypeWrapper<Sales>;
@@ -1388,6 +1422,7 @@ export type ResolversTypes = ResolversObject<{
   UpsertOrganisationInput: UpsertOrganisationInput;
   UpsertProfileInput: UpsertProfileInput;
   UpsertTagInput: UpsertTagInput;
+  VerifiedSafesFilter: VerifiedSafesFilter;
   VerifySafeResult: ResolverTypeWrapper<VerifySafeResult>;
   Version: ResolverTypeWrapper<Version>;
   WelcomeMessage: ResolverTypeWrapper<WelcomeMessage>;
@@ -1431,12 +1466,12 @@ export type ResolversParentTypes = ResolversObject<{
   Erc20Balances: Erc20Balances;
   Erc20Transfer: Erc20Transfer;
   EthTransfer: EthTransfer;
-  EventPayload: ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['Erc20Transfer'] | ResolversParentTypes['GnosisSafeEthTransfer'] | ResolversParentTypes['ChatMessage'] | ResolversParentTypes['MembershipOffer'] | ResolversParentTypes['MembershipAccepted'] | ResolversParentTypes['MembershipRejected'] | ResolversParentTypes['WelcomeMessage'] | ResolversParentTypes['InvitationCreated'] | ResolversParentTypes['InvitationRedeemed'] | ResolversParentTypes['OrganisationCreated'] | ResolversParentTypes['MemberAdded'] | ResolversParentTypes['SaleEvent'];
+  EventPayload: ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['Erc20Transfer'] | ResolversParentTypes['GnosisSafeEthTransfer'] | ResolversParentTypes['ChatMessage'] | ResolversParentTypes['MembershipOffer'] | ResolversParentTypes['MembershipAccepted'] | ResolversParentTypes['MembershipRejected'] | ResolversParentTypes['WelcomeMessage'] | ResolversParentTypes['InvitationCreated'] | ResolversParentTypes['InvitationRedeemed'] | ResolversParentTypes['OrganisationCreated'] | ResolversParentTypes['MemberAdded'] | ResolversParentTypes['SaleEvent'] | ResolversParentTypes['SafeVerified'];
   ExchangeTokenResponse: ExchangeTokenResponse;
   GnosisSafeEthTransfer: GnosisSafeEthTransfer;
   IAggregatePayload: ResolversParentTypes['Contacts'] | ResolversParentTypes['CrcBalances'] | ResolversParentTypes['Erc20Balances'] | ResolversParentTypes['Members'] | ResolversParentTypes['Memberships'] | ResolversParentTypes['Offers'] | ResolversParentTypes['Purchases'] | ResolversParentTypes['Sales'];
   ICity: ResolversParentTypes['City'];
-  IEventPayload: ResolversParentTypes['ChatMessage'] | ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['Erc20Transfer'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'] | ResolversParentTypes['InvitationCreated'] | ResolversParentTypes['InvitationRedeemed'] | ResolversParentTypes['MemberAdded'] | ResolversParentTypes['MembershipAccepted'] | ResolversParentTypes['MembershipOffer'] | ResolversParentTypes['MembershipRejected'] | ResolversParentTypes['OrganisationCreated'] | ResolversParentTypes['SaleEvent'] | ResolversParentTypes['WelcomeMessage'];
+  IEventPayload: ResolversParentTypes['ChatMessage'] | ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['Erc20Transfer'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'] | ResolversParentTypes['InvitationCreated'] | ResolversParentTypes['InvitationRedeemed'] | ResolversParentTypes['MemberAdded'] | ResolversParentTypes['MembershipAccepted'] | ResolversParentTypes['MembershipOffer'] | ResolversParentTypes['MembershipRejected'] | ResolversParentTypes['OrganisationCreated'] | ResolversParentTypes['SafeVerified'] | ResolversParentTypes['SaleEvent'] | ResolversParentTypes['WelcomeMessage'];
   InitAggregateState: InitAggregateState;
   InvitationCreated: InvitationCreated;
   InvitationRedeemed: InvitationRedeemed;
@@ -1465,6 +1500,7 @@ export type ResolversParentTypes = ResolversObject<{
   ProfileEventFilter: ProfileEventFilter;
   ProfileOrOrganisation: ResolversParentTypes['Profile'] | ResolversParentTypes['Organisation'];
   ProofPaymentResult: ProofPaymentResult;
+  PublicEvent: Omit<PublicEvent, 'payload'> & { payload?: Maybe<ResolversParentTypes['EventPayload']> };
   Purchase: Purchase;
   PurchaseLine: PurchaseLine;
   PurchaseLineInput: PurchaseLineInput;
@@ -1483,6 +1519,7 @@ export type ResolversParentTypes = ResolversObject<{
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: RequestUpdateSafeResponse;
   SafeAddressByOwnerResult: SafeAddressByOwnerResult;
+  SafeVerified: SafeVerified;
   Sale: Sale;
   SaleEvent: SaleEvent;
   Sales: Sales;
@@ -1504,6 +1541,7 @@ export type ResolversParentTypes = ResolversObject<{
   UpsertOrganisationInput: UpsertOrganisationInput;
   UpsertProfileInput: UpsertProfileInput;
   UpsertTagInput: UpsertTagInput;
+  VerifiedSafesFilter: VerifiedSafesFilter;
   VerifySafeResult: VerifySafeResult;
   Version: Version;
   WelcomeMessage: WelcomeMessage;
@@ -1745,7 +1783,7 @@ export type EthTransferResolvers<ContextType = any, ParentType extends Resolvers
 }>;
 
 export type EventPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['EventPayload'] = ResolversParentTypes['EventPayload']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'CrcSignup' | 'CrcTrust' | 'CrcTokenTransfer' | 'CrcHubTransfer' | 'CrcMinting' | 'EthTransfer' | 'Erc20Transfer' | 'GnosisSafeEthTransfer' | 'ChatMessage' | 'MembershipOffer' | 'MembershipAccepted' | 'MembershipRejected' | 'WelcomeMessage' | 'InvitationCreated' | 'InvitationRedeemed' | 'OrganisationCreated' | 'MemberAdded' | 'SaleEvent', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'CrcSignup' | 'CrcTrust' | 'CrcTokenTransfer' | 'CrcHubTransfer' | 'CrcMinting' | 'EthTransfer' | 'Erc20Transfer' | 'GnosisSafeEthTransfer' | 'ChatMessage' | 'MembershipOffer' | 'MembershipAccepted' | 'MembershipRejected' | 'WelcomeMessage' | 'InvitationCreated' | 'InvitationRedeemed' | 'OrganisationCreated' | 'MemberAdded' | 'SaleEvent' | 'SafeVerified', ParentType, ContextType>;
 }>;
 
 export type ExchangeTokenResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['ExchangeTokenResponse'] = ResolversParentTypes['ExchangeTokenResponse']> = ResolversObject<{
@@ -1783,7 +1821,7 @@ export type ICityResolvers<ContextType = any, ParentType extends ResolversParent
 }>;
 
 export type IEventPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['IEventPayload'] = ResolversParentTypes['IEventPayload']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'ChatMessage' | 'CrcHubTransfer' | 'CrcMinting' | 'CrcSignup' | 'CrcTokenTransfer' | 'CrcTrust' | 'Erc20Transfer' | 'EthTransfer' | 'GnosisSafeEthTransfer' | 'InvitationCreated' | 'InvitationRedeemed' | 'MemberAdded' | 'MembershipAccepted' | 'MembershipOffer' | 'MembershipRejected' | 'OrganisationCreated' | 'SaleEvent' | 'WelcomeMessage', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'ChatMessage' | 'CrcHubTransfer' | 'CrcMinting' | 'CrcSignup' | 'CrcTokenTransfer' | 'CrcTrust' | 'Erc20Transfer' | 'EthTransfer' | 'GnosisSafeEthTransfer' | 'InvitationCreated' | 'InvitationRedeemed' | 'MemberAdded' | 'MembershipAccepted' | 'MembershipOffer' | 'MembershipRejected' | 'OrganisationCreated' | 'SafeVerified' | 'SaleEvent' | 'WelcomeMessage', ParentType, ContextType>;
   transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
@@ -2051,6 +2089,18 @@ export type ProofPaymentResultResolvers<ContextType = any, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type PublicEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['PublicEvent'] = ResolversParentTypes['PublicEvent']> = ResolversObject<{
+  timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  block_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  transaction_index?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  contact_address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  contact_address_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  payload?: Resolver<Maybe<ResolversTypes['EventPayload']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type PurchaseResolvers<ContextType = any, ParentType extends ResolversParentTypes['Purchase'] = ResolversParentTypes['Purchase']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   createdByProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
@@ -2085,6 +2135,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   ubiInfo?: Resolver<ResolversTypes['UbiInfo'], ParentType, ContextType>;
+  verifiedSafes?: Resolver<Array<ResolversTypes['PublicEvent']>, ParentType, ContextType, RequireFields<QueryVerifiedSafesArgs, never>>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'types' | 'safeAddress' | 'pagination'>>;
   aggregates?: Resolver<Array<ResolversTypes['ProfileAggregate']>, ParentType, ContextType, RequireFields<QueryAggregatesArgs, 'types' | 'safeAddress'>>;
   organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsArgs, never>>;
@@ -2135,6 +2186,14 @@ export type RequestUpdateSafeResponseResolvers<ContextType = any, ParentType ext
 export type SafeAddressByOwnerResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['SafeAddressByOwnerResult'] = ResolversParentTypes['SafeAddressByOwnerResult']> = ResolversObject<{
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   safeAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SafeVerifiedResolvers<ContextType = any, ParentType extends ResolversParentTypes['SafeVerified'] = ResolversParentTypes['SafeVerified']> = ResolversObject<{
+  transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organisation?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  organisation_profile?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType>;
+  safe_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2329,6 +2388,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   ProfileEvent?: ProfileEventResolvers<ContextType>;
   ProfileOrOrganisation?: ProfileOrOrganisationResolvers<ContextType>;
   ProofPaymentResult?: ProofPaymentResultResolvers<ContextType>;
+  PublicEvent?: PublicEventResolvers<ContextType>;
   Purchase?: PurchaseResolvers<ContextType>;
   PurchaseLine?: PurchaseLineResolvers<ContextType>;
   Purchases?: PurchasesResolvers<ContextType>;
@@ -2338,6 +2398,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   RemoveMemberResult?: RemoveMemberResultResolvers<ContextType>;
   RequestUpdateSafeResponse?: RequestUpdateSafeResponseResolvers<ContextType>;
   SafeAddressByOwnerResult?: SafeAddressByOwnerResultResolvers<ContextType>;
+  SafeVerified?: SafeVerifiedResolvers<ContextType>;
   Sale?: SaleResolvers<ContextType>;
   SaleEvent?: SaleEventResolvers<ContextType>;
   Sales?: SalesResolvers<ContextType>;

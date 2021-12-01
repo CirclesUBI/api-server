@@ -2,9 +2,8 @@ import {myProfile, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {
-  MutationVerifySafeArgs,
-  Profile,
-  Purchase, Resolvers,
+  Profile, PublicEvent,
+  Purchase, QueryVerifiedSafesArgs, Resolvers, SafeVerified,
 } from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
@@ -63,7 +62,7 @@ import {requestSessionChallenge} from "./mutations/requestSessionChallenge";
 import {importOrganisationsOfAccount} from "./mutations/importOrganisationsOfAccount";
 import {completePurchase} from "./mutations/completePurchase";
 import {completeSale} from "./mutations/completeSale";
-import {isBILMember} from "../canAccess";
+import {verifySafe} from "./mutations/verifySafe";
 
 export const HUB_ADDRESS = "0x29b9a7fBb8995b2423a71cC17cf9810798F6C543";
 
@@ -150,7 +149,49 @@ export const resolvers: Resolvers = {
     events: events,
     directPath: directPath,
     mostRecentUbiSafeOfAccount: mostRecentUbiSafeOfAccount,
-    invoice: invoice
+    invoice: invoice,
+    verifiedSafes: async (parent:any, args:QueryVerifiedSafesArgs, context:Context) => {
+      const where:any = { };
+      if (args.filter?.after) {
+        where.createdAt = {
+          gt: new Date(args.filter.after)
+        };
+      }
+      if (args.filter?.addresses) {
+        where.safeAddress = {
+          in: args.filter?.addresses
+        };
+      }
+      const result = await prisma_api_ro.verifiedSafe.findMany({
+        where: where,
+        select: {
+          createdAt: true,
+          safeAddress: true,
+          createdByOrganisation: {
+            select: {
+              circlesAddress: true
+            }
+          }
+        },
+        take: 500,
+        orderBy: {
+          createdAt: "desc"
+        }
+      });
+
+      return result.map(o => {
+        return <PublicEvent>{
+          __typename: "PublicEvent",
+          timestamp: o.createdAt.toJSON(),
+          type: "SafeVerified",
+          payload: <SafeVerified> {
+            __typename: "SafeVerified",
+            safe_address: o.safeAddress,
+            organisation: o.createdByOrganisation.circlesAddress
+          }
+        }
+      })
+    }
   },
   Mutation: {
     purchase: purchaseResolver,
@@ -179,13 +220,7 @@ export const resolvers: Resolvers = {
     importOrganisationsOfAccount: importOrganisationsOfAccount,
     completePurchase: completePurchase,
     completeSale: completeSale,
-    /*verifySafe: async (parent:any, args:MutationVerifySafeArgs, context: Context) => {
-      const callerInfo = await context.callerInfo;
-      const isBilMember = await isBILMember(callerInfo);
-      if (!isBILMember) {
-        throw new Error(`Not allowed`);
-      }
-    }*/
+    verifySafe: verifySafe
   },
   Subscription: {
     events: {

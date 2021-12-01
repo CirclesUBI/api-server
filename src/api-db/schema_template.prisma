@@ -90,8 +90,10 @@ model InvitationFundsEOA {
 model VerifiedSafe {
     safeAddress String @id
     createdAt DateTime @default(now())
-    createdBy Profile @relation(name: "VerifiedSafe_CreatedBy", fields: [createdByProfileId], references: [id])
+    createdBy Profile @relation(name: "VerifiedSafe_CreatedByPerson", fields: [createdByProfileId], references: [id])
     createdByProfileId Int
+    createdByOrganisation Profile @relation(name: "VerifiedSafe_CreatedByOrganisation", fields: [createdByOrganisationId], references: [id])
+    createdByOrganisationId Int
 }
 
 model Profile {
@@ -147,7 +149,8 @@ model Profile {
     lastRefundNo Int? // Is used in organisations only and represents the current value of the refund number series.
 
     displayCurrency String @default(value: "EURS")
-    verifiedSafes VerifiedSafe[]  @relation(name: "VerifiedSafe_CreatedBy")
+    safesVerifiedByPerson VerifiedSafe[]  @relation(name: "VerifiedSafe_CreatedByPerson")
+    safesVerifiedByOrganisation VerifiedSafe[]  @relation(name: "VerifiedSafe_CreatedByOrganisation")
 }
 
 model ExternalProfiles {
