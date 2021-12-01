@@ -2,6 +2,7 @@ import {myProfile, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {
+  MutationVerifySafeArgs,
   Profile,
   Purchase, Resolvers,
 } from "../types";
@@ -62,6 +63,7 @@ import {requestSessionChallenge} from "./mutations/requestSessionChallenge";
 import {importOrganisationsOfAccount} from "./mutations/importOrganisationsOfAccount";
 import {completePurchase} from "./mutations/completePurchase";
 import {completeSale} from "./mutations/completeSale";
+import {isBILMember} from "../canAccess";
 
 export const HUB_ADDRESS = "0x29b9a7fBb8995b2423a71cC17cf9810798F6C543";
 
@@ -176,7 +178,14 @@ export const resolvers: Resolvers = {
     removeMember: removeMemberResolver,
     importOrganisationsOfAccount: importOrganisationsOfAccount,
     completePurchase: completePurchase,
-    completeSale: completeSale
+    completeSale: completeSale,
+    /*verifySafe: async (parent:any, args:MutationVerifySafeArgs, context: Context) => {
+      const callerInfo = await context.callerInfo;
+      const isBilMember = await isBILMember(callerInfo);
+      if (!isBILMember) {
+        throw new Error(`Not allowed`);
+      }
+    }*/
   },
   Subscription: {
     events: {

@@ -1,5 +1,28 @@
 import {Context} from "./context";
-import {prisma_api_rw} from "./apiDbClient";
+import {prisma_api_ro, prisma_api_rw} from "./apiDbClient";
+import {Session, Profile} from "./api-db/client";
+
+export const BIL_ORGA = "0xc5a786eafefcf703c114558c443e4f17969d9573";
+
+export async function isBILMember(sessionInfo: {session: Session, profile: Profile | null}|null) {
+  if (!sessionInfo)
+    return false;
+  if (!sessionInfo.profile?.circlesAddress)
+    return false;
+
+  const orga = await prisma_api_ro.profile.findFirst({
+    where: {
+      circlesAddress: BIL_ORGA,
+      members: {
+        some: {
+          memberAddress: sessionInfo.profile.circlesAddress
+        }
+      }
+    }
+  });
+
+  return !!orga;
+}
 
 /**
  *

@@ -76,6 +76,16 @@ export type InvitationFundsEOA = {
 }
 
 /**
+ * Model VerifiedSafe
+ */
+
+export type VerifiedSafe = {
+  safeAddress: string
+  createdAt: Date
+  createdByProfileId: number
+}
+
+/**
  * Model Profile
  */
 
@@ -443,6 +453,16 @@ export class PrismaClient<
     * ```
     */
   get invitationFundsEOA(): Prisma.InvitationFundsEOADelegate<GlobalReject>;
+
+  /**
+   * `prisma.verifiedSafe`: Exposes CRUD operations for the **VerifiedSafe** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more VerifiedSafes
+    * const verifiedSafes = await prisma.verifiedSafe.findMany()
+    * ```
+    */
+  get verifiedSafe(): Prisma.VerifiedSafeDelegate<GlobalReject>;
 
   /**
    * `prisma.profile`: Exposes CRUD operations for the **Profile** model.
@@ -947,6 +967,7 @@ export namespace Prisma {
     Invitation: 'Invitation',
     RedeemInvitationRequest: 'RedeemInvitationRequest',
     InvitationFundsEOA: 'InvitationFundsEOA',
+    VerifiedSafe: 'VerifiedSafe',
     Profile: 'Profile',
     ExternalProfiles: 'ExternalProfiles',
     Membership: 'Membership',
@@ -4940,6 +4961,900 @@ export namespace Prisma {
 
 
   /**
+   * Model VerifiedSafe
+   */
+
+
+  export type AggregateVerifiedSafe = {
+    _count: VerifiedSafeCountAggregateOutputType | null
+    count: VerifiedSafeCountAggregateOutputType | null
+    _avg: VerifiedSafeAvgAggregateOutputType | null
+    avg: VerifiedSafeAvgAggregateOutputType | null
+    _sum: VerifiedSafeSumAggregateOutputType | null
+    sum: VerifiedSafeSumAggregateOutputType | null
+    _min: VerifiedSafeMinAggregateOutputType | null
+    min: VerifiedSafeMinAggregateOutputType | null
+    _max: VerifiedSafeMaxAggregateOutputType | null
+    max: VerifiedSafeMaxAggregateOutputType | null
+  }
+
+  export type VerifiedSafeAvgAggregateOutputType = {
+    createdByProfileId: number | null
+  }
+
+  export type VerifiedSafeSumAggregateOutputType = {
+    createdByProfileId: number | null
+  }
+
+  export type VerifiedSafeMinAggregateOutputType = {
+    safeAddress: string | null
+    createdAt: Date | null
+    createdByProfileId: number | null
+  }
+
+  export type VerifiedSafeMaxAggregateOutputType = {
+    safeAddress: string | null
+    createdAt: Date | null
+    createdByProfileId: number | null
+  }
+
+  export type VerifiedSafeCountAggregateOutputType = {
+    safeAddress: number
+    createdAt: number
+    createdByProfileId: number
+    _all: number
+  }
+
+
+  export type VerifiedSafeAvgAggregateInputType = {
+    createdByProfileId?: true
+  }
+
+  export type VerifiedSafeSumAggregateInputType = {
+    createdByProfileId?: true
+  }
+
+  export type VerifiedSafeMinAggregateInputType = {
+    safeAddress?: true
+    createdAt?: true
+    createdByProfileId?: true
+  }
+
+  export type VerifiedSafeMaxAggregateInputType = {
+    safeAddress?: true
+    createdAt?: true
+    createdByProfileId?: true
+  }
+
+  export type VerifiedSafeCountAggregateInputType = {
+    safeAddress?: true
+    createdAt?: true
+    createdByProfileId?: true
+    _all?: true
+  }
+
+  export type VerifiedSafeAggregateArgs = {
+    /**
+     * Filter which VerifiedSafe to aggregate.
+     * 
+    **/
+    where?: VerifiedSafeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VerifiedSafes to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<VerifiedSafeOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     * 
+    **/
+    cursor?: VerifiedSafeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VerifiedSafes from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VerifiedSafes.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned VerifiedSafes
+    **/
+    _count?: true | VerifiedSafeCountAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_count`
+    **/
+    count?: true | VerifiedSafeCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: VerifiedSafeAvgAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_avg`
+    **/
+    avg?: VerifiedSafeAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: VerifiedSafeSumAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_sum`
+    **/
+    sum?: VerifiedSafeSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: VerifiedSafeMinAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_min`
+    **/
+    min?: VerifiedSafeMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: VerifiedSafeMaxAggregateInputType
+    /**
+     * @deprecated since 2.23.0 please use `_max`
+    **/
+    max?: VerifiedSafeMaxAggregateInputType
+  }
+
+  export type GetVerifiedSafeAggregateType<T extends VerifiedSafeAggregateArgs> = {
+        [P in keyof T & keyof AggregateVerifiedSafe]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateVerifiedSafe[P]>
+      : GetScalarType<T[P], AggregateVerifiedSafe[P]>
+  }
+
+
+    
+    
+  export type VerifiedSafeGroupByArgs = {
+    where?: VerifiedSafeWhereInput
+    orderBy?: Enumerable<VerifiedSafeOrderByInput>
+    by: Array<VerifiedSafeScalarFieldEnum>
+    having?: VerifiedSafeScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: VerifiedSafeCountAggregateInputType | true
+    _avg?: VerifiedSafeAvgAggregateInputType
+    _sum?: VerifiedSafeSumAggregateInputType
+    _min?: VerifiedSafeMinAggregateInputType
+    _max?: VerifiedSafeMaxAggregateInputType
+  }
+
+
+  export type VerifiedSafeGroupByOutputType = {
+    safeAddress: string
+    createdAt: Date
+    createdByProfileId: number
+    _count: VerifiedSafeCountAggregateOutputType | null
+    _avg: VerifiedSafeAvgAggregateOutputType | null
+    _sum: VerifiedSafeSumAggregateOutputType | null
+    _min: VerifiedSafeMinAggregateOutputType | null
+    _max: VerifiedSafeMaxAggregateOutputType | null
+  }
+
+  type GetVerifiedSafeGroupByPayload<T extends VerifiedSafeGroupByArgs> = Promise<
+    Array<
+      PickArray<VerifiedSafeGroupByOutputType, T['by']> & 
+        {
+          [P in ((keyof T) & (keyof VerifiedSafeGroupByOutputType))]: P extends '_count' 
+            ? T[P] extends boolean 
+              ? number 
+              : GetScalarType<T[P], VerifiedSafeGroupByOutputType[P]> 
+            : GetScalarType<T[P], VerifiedSafeGroupByOutputType[P]>
+        }
+      > 
+    >
+
+
+  export type VerifiedSafeSelect = {
+    safeAddress?: boolean
+    createdAt?: boolean
+    createdBy?: boolean | ProfileArgs
+    createdByProfileId?: boolean
+  }
+
+  export type VerifiedSafeInclude = {
+    createdBy?: boolean | ProfileArgs
+  }
+
+  export type VerifiedSafeGetPayload<
+    S extends boolean | null | undefined | VerifiedSafeArgs,
+    U = keyof S
+      > = S extends true
+        ? VerifiedSafe
+    : S extends undefined
+    ? never
+    : S extends VerifiedSafeArgs | VerifiedSafeFindManyArgs
+    ?'include' extends U
+    ? VerifiedSafe  & {
+    [P in TrueKeys<S['include']>]: 
+          P extends 'createdBy'
+        ? ProfileGetPayload<S['include'][P]> : never
+  } 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]: P extends keyof VerifiedSafe ?VerifiedSafe [P]
+  : 
+          P extends 'createdBy'
+        ? ProfileGetPayload<S['select'][P]> : never
+  } 
+    : VerifiedSafe
+  : VerifiedSafe
+
+
+  type VerifiedSafeCountArgs = Merge<
+    Omit<VerifiedSafeFindManyArgs, 'select' | 'include'> & {
+      select?: VerifiedSafeCountAggregateInputType | true
+    }
+  >
+
+  export interface VerifiedSafeDelegate<GlobalRejectSettings> {
+    /**
+     * Find zero or one VerifiedSafe that matches the filter.
+     * @param {VerifiedSafeFindUniqueArgs} args - Arguments to find a VerifiedSafe
+     * @example
+     * // Get one VerifiedSafe
+     * const verifiedSafe = await prisma.verifiedSafe.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends VerifiedSafeFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, VerifiedSafeFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'VerifiedSafe'> extends True ? CheckSelect<T, Prisma__VerifiedSafeClient<VerifiedSafe>, Prisma__VerifiedSafeClient<VerifiedSafeGetPayload<T>>> : CheckSelect<T, Prisma__VerifiedSafeClient<VerifiedSafe | null >, Prisma__VerifiedSafeClient<VerifiedSafeGetPayload<T> | null >>
+
+    /**
+     * Find the first VerifiedSafe that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VerifiedSafeFindFirstArgs} args - Arguments to find a VerifiedSafe
+     * @example
+     * // Get one VerifiedSafe
+     * const verifiedSafe = await prisma.verifiedSafe.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends VerifiedSafeFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, VerifiedSafeFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'VerifiedSafe'> extends True ? CheckSelect<T, Prisma__VerifiedSafeClient<VerifiedSafe>, Prisma__VerifiedSafeClient<VerifiedSafeGetPayload<T>>> : CheckSelect<T, Prisma__VerifiedSafeClient<VerifiedSafe | null >, Prisma__VerifiedSafeClient<VerifiedSafeGetPayload<T> | null >>
+
+    /**
+     * Find zero or more VerifiedSafes that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VerifiedSafeFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all VerifiedSafes
+     * const verifiedSafes = await prisma.verifiedSafe.findMany()
+     * 
+     * // Get first 10 VerifiedSafes
+     * const verifiedSafes = await prisma.verifiedSafe.findMany({ take: 10 })
+     * 
+     * // Only select the `safeAddress`
+     * const verifiedSafeWithSafeAddressOnly = await prisma.verifiedSafe.findMany({ select: { safeAddress: true } })
+     * 
+    **/
+    findMany<T extends VerifiedSafeFindManyArgs>(
+      args?: SelectSubset<T, VerifiedSafeFindManyArgs>
+    ): CheckSelect<T, PrismaPromise<Array<VerifiedSafe>>, PrismaPromise<Array<VerifiedSafeGetPayload<T>>>>
+
+    /**
+     * Create a VerifiedSafe.
+     * @param {VerifiedSafeCreateArgs} args - Arguments to create a VerifiedSafe.
+     * @example
+     * // Create one VerifiedSafe
+     * const VerifiedSafe = await prisma.verifiedSafe.create({
+     *   data: {
+     *     // ... data to create a VerifiedSafe
+     *   }
+     * })
+     * 
+    **/
+    create<T extends VerifiedSafeCreateArgs>(
+      args: SelectSubset<T, VerifiedSafeCreateArgs>
+    ): CheckSelect<T, Prisma__VerifiedSafeClient<VerifiedSafe>, Prisma__VerifiedSafeClient<VerifiedSafeGetPayload<T>>>
+
+    /**
+     * Create many VerifiedSafes.
+     *     @param {VerifiedSafeCreateManyArgs} args - Arguments to create many VerifiedSafes.
+     *     @example
+     *     // Create many VerifiedSafes
+     *     const verifiedSafe = await prisma.verifiedSafe.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends VerifiedSafeCreateManyArgs>(
+      args?: SelectSubset<T, VerifiedSafeCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a VerifiedSafe.
+     * @param {VerifiedSafeDeleteArgs} args - Arguments to delete one VerifiedSafe.
+     * @example
+     * // Delete one VerifiedSafe
+     * const VerifiedSafe = await prisma.verifiedSafe.delete({
+     *   where: {
+     *     // ... filter to delete one VerifiedSafe
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends VerifiedSafeDeleteArgs>(
+      args: SelectSubset<T, VerifiedSafeDeleteArgs>
+    ): CheckSelect<T, Prisma__VerifiedSafeClient<VerifiedSafe>, Prisma__VerifiedSafeClient<VerifiedSafeGetPayload<T>>>
+
+    /**
+     * Update one VerifiedSafe.
+     * @param {VerifiedSafeUpdateArgs} args - Arguments to update one VerifiedSafe.
+     * @example
+     * // Update one VerifiedSafe
+     * const verifiedSafe = await prisma.verifiedSafe.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends VerifiedSafeUpdateArgs>(
+      args: SelectSubset<T, VerifiedSafeUpdateArgs>
+    ): CheckSelect<T, Prisma__VerifiedSafeClient<VerifiedSafe>, Prisma__VerifiedSafeClient<VerifiedSafeGetPayload<T>>>
+
+    /**
+     * Delete zero or more VerifiedSafes.
+     * @param {VerifiedSafeDeleteManyArgs} args - Arguments to filter VerifiedSafes to delete.
+     * @example
+     * // Delete a few VerifiedSafes
+     * const { count } = await prisma.verifiedSafe.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends VerifiedSafeDeleteManyArgs>(
+      args?: SelectSubset<T, VerifiedSafeDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more VerifiedSafes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VerifiedSafeUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many VerifiedSafes
+     * const verifiedSafe = await prisma.verifiedSafe.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends VerifiedSafeUpdateManyArgs>(
+      args: SelectSubset<T, VerifiedSafeUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one VerifiedSafe.
+     * @param {VerifiedSafeUpsertArgs} args - Arguments to update or create a VerifiedSafe.
+     * @example
+     * // Update or create a VerifiedSafe
+     * const verifiedSafe = await prisma.verifiedSafe.upsert({
+     *   create: {
+     *     // ... data to create a VerifiedSafe
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the VerifiedSafe we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends VerifiedSafeUpsertArgs>(
+      args: SelectSubset<T, VerifiedSafeUpsertArgs>
+    ): CheckSelect<T, Prisma__VerifiedSafeClient<VerifiedSafe>, Prisma__VerifiedSafeClient<VerifiedSafeGetPayload<T>>>
+
+    /**
+     * Count the number of VerifiedSafes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VerifiedSafeCountArgs} args - Arguments to filter VerifiedSafes to count.
+     * @example
+     * // Count the number of VerifiedSafes
+     * const count = await prisma.verifiedSafe.count({
+     *   where: {
+     *     // ... the filter for the VerifiedSafes we want to count
+     *   }
+     * })
+    **/
+    count<T extends VerifiedSafeCountArgs>(
+      args?: Subset<T, VerifiedSafeCountArgs>,
+    ): PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], VerifiedSafeCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a VerifiedSafe.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VerifiedSafeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends VerifiedSafeAggregateArgs>(args: Subset<T, VerifiedSafeAggregateArgs>): PrismaPromise<GetVerifiedSafeAggregateType<T>>
+
+    /**
+     * Group by VerifiedSafe.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VerifiedSafeGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends VerifiedSafeGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: VerifiedSafeGroupByArgs['orderBy'] }
+        : { orderBy?: VerifiedSafeGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, VerifiedSafeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetVerifiedSafeGroupByPayload<T> : Promise<InputErrors>
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for VerifiedSafe.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in 
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__VerifiedSafeClient<T> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+
+    createdBy<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+  // Custom InputTypes
+
+  /**
+   * VerifiedSafe findUnique
+   */
+  export type VerifiedSafeFindUniqueArgs = {
+    /**
+     * Select specific fields to fetch from the VerifiedSafe
+     * 
+    **/
+    select?: VerifiedSafeSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: VerifiedSafeInclude | null
+    /**
+     * Throw an Error if a VerifiedSafe can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which VerifiedSafe to fetch.
+     * 
+    **/
+    where: VerifiedSafeWhereUniqueInput
+  }
+
+
+  /**
+   * VerifiedSafe findFirst
+   */
+  export type VerifiedSafeFindFirstArgs = {
+    /**
+     * Select specific fields to fetch from the VerifiedSafe
+     * 
+    **/
+    select?: VerifiedSafeSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: VerifiedSafeInclude | null
+    /**
+     * Throw an Error if a VerifiedSafe can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which VerifiedSafe to fetch.
+     * 
+    **/
+    where?: VerifiedSafeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VerifiedSafes to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<VerifiedSafeOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for VerifiedSafes.
+     * 
+    **/
+    cursor?: VerifiedSafeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VerifiedSafes from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VerifiedSafes.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of VerifiedSafes.
+     * 
+    **/
+    distinct?: Enumerable<VerifiedSafeScalarFieldEnum>
+  }
+
+
+  /**
+   * VerifiedSafe findMany
+   */
+  export type VerifiedSafeFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the VerifiedSafe
+     * 
+    **/
+    select?: VerifiedSafeSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: VerifiedSafeInclude | null
+    /**
+     * Filter, which VerifiedSafes to fetch.
+     * 
+    **/
+    where?: VerifiedSafeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VerifiedSafes to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<VerifiedSafeOrderByInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing VerifiedSafes.
+     * 
+    **/
+    cursor?: VerifiedSafeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VerifiedSafes from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VerifiedSafes.
+     * 
+    **/
+    skip?: number
+    distinct?: Enumerable<VerifiedSafeScalarFieldEnum>
+  }
+
+
+  /**
+   * VerifiedSafe create
+   */
+  export type VerifiedSafeCreateArgs = {
+    /**
+     * Select specific fields to fetch from the VerifiedSafe
+     * 
+    **/
+    select?: VerifiedSafeSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: VerifiedSafeInclude | null
+    /**
+     * The data needed to create a VerifiedSafe.
+     * 
+    **/
+    data: XOR<VerifiedSafeCreateInput, VerifiedSafeUncheckedCreateInput>
+  }
+
+
+  /**
+   * VerifiedSafe createMany
+   */
+  export type VerifiedSafeCreateManyArgs = {
+    data: Enumerable<VerifiedSafeCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * VerifiedSafe update
+   */
+  export type VerifiedSafeUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the VerifiedSafe
+     * 
+    **/
+    select?: VerifiedSafeSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: VerifiedSafeInclude | null
+    /**
+     * The data needed to update a VerifiedSafe.
+     * 
+    **/
+    data: XOR<VerifiedSafeUpdateInput, VerifiedSafeUncheckedUpdateInput>
+    /**
+     * Choose, which VerifiedSafe to update.
+     * 
+    **/
+    where: VerifiedSafeWhereUniqueInput
+  }
+
+
+  /**
+   * VerifiedSafe updateMany
+   */
+  export type VerifiedSafeUpdateManyArgs = {
+    data: XOR<VerifiedSafeUpdateManyMutationInput, VerifiedSafeUncheckedUpdateManyInput>
+    where?: VerifiedSafeWhereInput
+  }
+
+
+  /**
+   * VerifiedSafe upsert
+   */
+  export type VerifiedSafeUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the VerifiedSafe
+     * 
+    **/
+    select?: VerifiedSafeSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: VerifiedSafeInclude | null
+    /**
+     * The filter to search for the VerifiedSafe to update in case it exists.
+     * 
+    **/
+    where: VerifiedSafeWhereUniqueInput
+    /**
+     * In case the VerifiedSafe found by the `where` argument doesn't exist, create a new VerifiedSafe with this data.
+     * 
+    **/
+    create: XOR<VerifiedSafeCreateInput, VerifiedSafeUncheckedCreateInput>
+    /**
+     * In case the VerifiedSafe was found with the provided `where` argument, update it with this data.
+     * 
+    **/
+    update: XOR<VerifiedSafeUpdateInput, VerifiedSafeUncheckedUpdateInput>
+  }
+
+
+  /**
+   * VerifiedSafe delete
+   */
+  export type VerifiedSafeDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the VerifiedSafe
+     * 
+    **/
+    select?: VerifiedSafeSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: VerifiedSafeInclude | null
+    /**
+     * Filter which VerifiedSafe to delete.
+     * 
+    **/
+    where: VerifiedSafeWhereUniqueInput
+  }
+
+
+  /**
+   * VerifiedSafe deleteMany
+   */
+  export type VerifiedSafeDeleteManyArgs = {
+    where?: VerifiedSafeWhereInput
+  }
+
+
+  /**
+   * VerifiedSafe without action
+   */
+  export type VerifiedSafeArgs = {
+    /**
+     * Select specific fields to fetch from the VerifiedSafe
+     * 
+    **/
+    select?: VerifiedSafeSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: VerifiedSafeInclude | null
+  }
+
+
+
+  /**
    * Model Profile
    */
 
@@ -5362,6 +6277,7 @@ export namespace Prisma {
     refundNoPrefix?: boolean
     lastRefundNo?: boolean
     displayCurrency?: boolean
+    verifiedSafes?: boolean | VerifiedSafeFindManyArgs
   }
 
   export type ProfileInclude = {
@@ -5378,6 +6294,7 @@ export namespace Prisma {
     createdMemberships?: boolean | MembershipFindManyArgs
     payableInvoices?: boolean | InvoiceFindManyArgs
     receivableInvoices?: boolean | InvoiceFindManyArgs
+    verifiedSafes?: boolean | VerifiedSafeFindManyArgs
   }
 
   export type ProfileGetPayload<
@@ -5416,7 +6333,9 @@ export namespace Prisma {
         P extends 'payableInvoices'
         ? Array < InvoiceGetPayload<S['include'][P]>>  :
         P extends 'receivableInvoices'
-        ? Array < InvoiceGetPayload<S['include'][P]>>  : never
+        ? Array < InvoiceGetPayload<S['include'][P]>>  :
+        P extends 'verifiedSafes'
+        ? Array < VerifiedSafeGetPayload<S['include'][P]>>  : never
   } 
     : 'select' extends U
     ? {
@@ -5447,7 +6366,9 @@ export namespace Prisma {
         P extends 'payableInvoices'
         ? Array < InvoiceGetPayload<S['select'][P]>>  :
         P extends 'receivableInvoices'
-        ? Array < InvoiceGetPayload<S['select'][P]>>  : never
+        ? Array < InvoiceGetPayload<S['select'][P]>>  :
+        P extends 'verifiedSafes'
+        ? Array < VerifiedSafeGetPayload<S['select'][P]>>  : never
   } 
     : Profile
   : Profile
@@ -5812,6 +6733,8 @@ export namespace Prisma {
     payableInvoices<T extends InvoiceFindManyArgs = {}>(args?: Subset<T, InvoiceFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Invoice>>, PrismaPromise<Array<InvoiceGetPayload<T>>>>;
 
     receivableInvoices<T extends InvoiceFindManyArgs = {}>(args?: Subset<T, InvoiceFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Invoice>>, PrismaPromise<Array<InvoiceGetPayload<T>>>>;
+
+    verifiedSafes<T extends VerifiedSafeFindManyArgs = {}>(args?: Subset<T, VerifiedSafeFindManyArgs>): CheckSelect<T, PrismaPromise<Array<VerifiedSafe>>, PrismaPromise<Array<VerifiedSafeGetPayload<T>>>>;
 
     private get _document();
     /**
@@ -17177,6 +18100,15 @@ export namespace Prisma {
   export type InvitationFundsEOAScalarFieldEnum = (typeof InvitationFundsEOAScalarFieldEnum)[keyof typeof InvitationFundsEOAScalarFieldEnum]
 
 
+  export const VerifiedSafeScalarFieldEnum: {
+    safeAddress: 'safeAddress',
+    createdAt: 'createdAt',
+    createdByProfileId: 'createdByProfileId'
+  };
+
+  export type VerifiedSafeScalarFieldEnum = (typeof VerifiedSafeScalarFieldEnum)[keyof typeof VerifiedSafeScalarFieldEnum]
+
+
   export const ProfileScalarFieldEnum: {
     id: 'id',
     lastUpdateAt: 'lastUpdateAt',
@@ -17564,6 +18496,35 @@ export namespace Prisma {
     profileId?: IntWithAggregatesFilter | number
   }
 
+  export type VerifiedSafeWhereInput = {
+    AND?: Enumerable<VerifiedSafeWhereInput>
+    OR?: Enumerable<VerifiedSafeWhereInput>
+    NOT?: Enumerable<VerifiedSafeWhereInput>
+    safeAddress?: StringFilter | string
+    createdAt?: DateTimeFilter | Date | string
+    createdBy?: XOR<ProfileRelationFilter, ProfileWhereInput>
+    createdByProfileId?: IntFilter | number
+  }
+
+  export type VerifiedSafeOrderByInput = {
+    safeAddress?: SortOrder
+    createdAt?: SortOrder
+    createdByProfileId?: SortOrder
+  }
+
+  export type VerifiedSafeWhereUniqueInput = {
+    safeAddress?: string
+  }
+
+  export type VerifiedSafeScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<VerifiedSafeScalarWhereWithAggregatesInput>
+    OR?: Enumerable<VerifiedSafeScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<VerifiedSafeScalarWhereWithAggregatesInput>
+    safeAddress?: StringWithAggregatesFilter | string
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    createdByProfileId?: IntWithAggregatesFilter | number
+  }
+
   export type ProfileWhereInput = {
     AND?: Enumerable<ProfileWhereInput>
     OR?: Enumerable<ProfileWhereInput>
@@ -17607,6 +18568,7 @@ export namespace Prisma {
     refundNoPrefix?: StringNullableFilter | string | null
     lastRefundNo?: IntNullableFilter | number | null
     displayCurrency?: StringFilter | string
+    verifiedSafes?: VerifiedSafeListRelationFilter
   }
 
   export type ProfileOrderByInput = {
@@ -18464,6 +19426,47 @@ export namespace Prisma {
     profileId?: IntFieldUpdateOperationsInput | number
   }
 
+  export type VerifiedSafeCreateInput = {
+    safeAddress: string
+    createdAt?: Date | string
+    createdBy: ProfileCreateNestedOneWithoutVerifiedSafesInput
+  }
+
+  export type VerifiedSafeUncheckedCreateInput = {
+    safeAddress: string
+    createdAt?: Date | string
+    createdByProfileId: number
+  }
+
+  export type VerifiedSafeUpdateInput = {
+    safeAddress?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: ProfileUpdateOneRequiredWithoutVerifiedSafesInput
+  }
+
+  export type VerifiedSafeUncheckedUpdateInput = {
+    safeAddress?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type VerifiedSafeCreateManyInput = {
+    safeAddress: string
+    createdAt?: Date | string
+    createdByProfileId: number
+  }
+
+  export type VerifiedSafeUpdateManyMutationInput = {
+    safeAddress?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VerifiedSafeUncheckedUpdateManyInput = {
+    safeAddress?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+  }
+
   export type ProfileCreateInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
@@ -18503,6 +19506,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedCreateInput = {
@@ -18545,6 +19549,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileUpdateInput = {
@@ -18586,6 +19591,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedUpdateInput = {
@@ -18628,6 +19634,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileCreateManyInput = {
@@ -18765,14 +19772,14 @@ export namespace Prisma {
     validTo?: Date | string | null
     isAdmin?: boolean | null
     memberAddress: string
-    createdBy?: ProfileCreateNestedOneWithoutCreatedMembershipsInput
+    createdBy: ProfileCreateNestedOneWithoutCreatedMembershipsInput
     memberAt: ProfileCreateNestedOneWithoutMembersInput
   }
 
   export type MembershipUncheckedCreateInput = {
     id?: number
     createdAt?: Date | string
-    createdByProfileId?: number
+    createdByProfileId: number
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
@@ -18807,7 +19814,7 @@ export namespace Prisma {
   export type MembershipCreateManyInput = {
     id?: number
     createdAt?: Date | string
-    createdByProfileId?: number
+    createdByProfileId: number
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
@@ -19824,6 +20831,12 @@ export namespace Prisma {
     none?: InvoiceWhereInput
   }
 
+  export type VerifiedSafeListRelationFilter = {
+    every?: VerifiedSafeWhereInput
+    some?: VerifiedSafeWhereInput
+    none?: VerifiedSafeWhereInput
+  }
+
   export type EnumProfileTypeNullableWithAggregatesFilter = {
     equals?: ProfileType | null
     in?: Enumerable<ProfileType> | null
@@ -20125,6 +21138,20 @@ export namespace Prisma {
     update?: XOR<ProfileUpdateWithoutInvitationFundsInput, ProfileUncheckedUpdateWithoutInvitationFundsInput>
   }
 
+  export type ProfileCreateNestedOneWithoutVerifiedSafesInput = {
+    create?: XOR<ProfileCreateWithoutVerifiedSafesInput, ProfileUncheckedCreateWithoutVerifiedSafesInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutVerifiedSafesInput
+    connect?: ProfileWhereUniqueInput
+  }
+
+  export type ProfileUpdateOneRequiredWithoutVerifiedSafesInput = {
+    create?: XOR<ProfileCreateWithoutVerifiedSafesInput, ProfileUncheckedCreateWithoutVerifiedSafesInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutVerifiedSafesInput
+    upsert?: ProfileUpsertWithoutVerifiedSafesInput
+    connect?: ProfileWhereUniqueInput
+    update?: XOR<ProfileUpdateWithoutVerifiedSafesInput, ProfileUncheckedUpdateWithoutVerifiedSafesInput>
+  }
+
   export type SessionCreateNestedManyWithoutProfileInput = {
     create?: XOR<Enumerable<SessionCreateWithoutProfileInput>, Enumerable<SessionUncheckedCreateWithoutProfileInput>>
     connectOrCreate?: Enumerable<SessionCreateOrConnectWithoutProfileInput>
@@ -20215,6 +21242,13 @@ export namespace Prisma {
     connect?: Enumerable<InvoiceWhereUniqueInput>
   }
 
+  export type VerifiedSafeCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<Enumerable<VerifiedSafeCreateWithoutCreatedByInput>, Enumerable<VerifiedSafeUncheckedCreateWithoutCreatedByInput>>
+    connectOrCreate?: Enumerable<VerifiedSafeCreateOrConnectWithoutCreatedByInput>
+    createMany?: VerifiedSafeCreateManyCreatedByInputEnvelope
+    connect?: Enumerable<VerifiedSafeWhereUniqueInput>
+  }
+
   export type SessionUncheckedCreateNestedManyWithoutProfileInput = {
     create?: XOR<Enumerable<SessionCreateWithoutProfileInput>, Enumerable<SessionUncheckedCreateWithoutProfileInput>>
     connectOrCreate?: Enumerable<SessionCreateOrConnectWithoutProfileInput>
@@ -20303,6 +21337,13 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutSellerProfileInput>
     createMany?: InvoiceCreateManySellerProfileInputEnvelope
     connect?: Enumerable<InvoiceWhereUniqueInput>
+  }
+
+  export type VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<Enumerable<VerifiedSafeCreateWithoutCreatedByInput>, Enumerable<VerifiedSafeUncheckedCreateWithoutCreatedByInput>>
+    connectOrCreate?: Enumerable<VerifiedSafeCreateOrConnectWithoutCreatedByInput>
+    createMany?: VerifiedSafeCreateManyCreatedByInputEnvelope
+    connect?: Enumerable<VerifiedSafeWhereUniqueInput>
   }
 
   export type NullableEnumProfileTypeFieldUpdateOperationsInput = {
@@ -20491,6 +21532,20 @@ export namespace Prisma {
     deleteMany?: Enumerable<InvoiceScalarWhereInput>
   }
 
+  export type VerifiedSafeUpdateManyWithoutCreatedByInput = {
+    create?: XOR<Enumerable<VerifiedSafeCreateWithoutCreatedByInput>, Enumerable<VerifiedSafeUncheckedCreateWithoutCreatedByInput>>
+    connectOrCreate?: Enumerable<VerifiedSafeCreateOrConnectWithoutCreatedByInput>
+    upsert?: Enumerable<VerifiedSafeUpsertWithWhereUniqueWithoutCreatedByInput>
+    createMany?: VerifiedSafeCreateManyCreatedByInputEnvelope
+    connect?: Enumerable<VerifiedSafeWhereUniqueInput>
+    set?: Enumerable<VerifiedSafeWhereUniqueInput>
+    disconnect?: Enumerable<VerifiedSafeWhereUniqueInput>
+    delete?: Enumerable<VerifiedSafeWhereUniqueInput>
+    update?: Enumerable<VerifiedSafeUpdateWithWhereUniqueWithoutCreatedByInput>
+    updateMany?: Enumerable<VerifiedSafeUpdateManyWithWhereWithoutCreatedByInput>
+    deleteMany?: Enumerable<VerifiedSafeScalarWhereInput>
+  }
+
   export type SessionUncheckedUpdateManyWithoutProfileInput = {
     create?: XOR<Enumerable<SessionCreateWithoutProfileInput>, Enumerable<SessionUncheckedCreateWithoutProfileInput>>
     connectOrCreate?: Enumerable<SessionCreateOrConnectWithoutProfileInput>
@@ -20667,6 +21722,20 @@ export namespace Prisma {
     update?: Enumerable<InvoiceUpdateWithWhereUniqueWithoutSellerProfileInput>
     updateMany?: Enumerable<InvoiceUpdateManyWithWhereWithoutSellerProfileInput>
     deleteMany?: Enumerable<InvoiceScalarWhereInput>
+  }
+
+  export type VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput = {
+    create?: XOR<Enumerable<VerifiedSafeCreateWithoutCreatedByInput>, Enumerable<VerifiedSafeUncheckedCreateWithoutCreatedByInput>>
+    connectOrCreate?: Enumerable<VerifiedSafeCreateOrConnectWithoutCreatedByInput>
+    upsert?: Enumerable<VerifiedSafeUpsertWithWhereUniqueWithoutCreatedByInput>
+    createMany?: VerifiedSafeCreateManyCreatedByInputEnvelope
+    connect?: Enumerable<VerifiedSafeWhereUniqueInput>
+    set?: Enumerable<VerifiedSafeWhereUniqueInput>
+    disconnect?: Enumerable<VerifiedSafeWhereUniqueInput>
+    delete?: Enumerable<VerifiedSafeWhereUniqueInput>
+    update?: Enumerable<VerifiedSafeUpdateWithWhereUniqueWithoutCreatedByInput>
+    updateMany?: Enumerable<VerifiedSafeUpdateManyWithWhereWithoutCreatedByInput>
+    deleteMany?: Enumerable<VerifiedSafeScalarWhereInput>
   }
 
   export type ProfileCreateNestedOneWithoutCreatedMembershipsInput = {
@@ -21695,6 +22764,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedCreateWithoutSessionsInput = {
@@ -21736,6 +22806,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileCreateOrConnectWithoutSessionsInput = {
@@ -21786,6 +22857,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedUpdateWithoutSessionsInput = {
@@ -21827,6 +22899,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileCreateWithoutInvitationsInput = {
@@ -21867,6 +22940,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedCreateWithoutInvitationsInput = {
@@ -21908,6 +22982,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileCreateOrConnectWithoutInvitationsInput = {
@@ -21953,6 +23028,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedCreateWithoutClaimedInvitationsInput = {
@@ -21994,6 +23070,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileCreateOrConnectWithoutClaimedInvitationsInput = {
@@ -22039,6 +23116,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedCreateWithoutRedeemedInvitationsInput = {
@@ -22080,6 +23158,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileCreateOrConnectWithoutRedeemedInvitationsInput = {
@@ -22155,6 +23234,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedUpdateWithoutInvitationsInput = {
@@ -22196,6 +23276,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUpsertWithoutClaimedInvitationsInput = {
@@ -22241,6 +23322,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedUpdateWithoutClaimedInvitationsInput = {
@@ -22282,6 +23364,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUpsertWithoutRedeemedInvitationsInput = {
@@ -22327,6 +23410,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedUpdateWithoutRedeemedInvitationsInput = {
@@ -22368,6 +23452,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
   }
 
   export type RedeemInvitationRequestUpsertWithWhereUniqueWithoutInvitationToRedeemInput = {
@@ -22436,6 +23521,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedCreateWithoutRedeemInvitationRequestsInput = {
@@ -22477,6 +23563,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileCreateOrConnectWithoutRedeemInvitationRequestsInput = {
@@ -22561,6 +23648,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedUpdateWithoutRedeemInvitationRequestsInput = {
@@ -22602,6 +23690,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
   }
 
   export type InvitationUpsertWithoutIndexedTransactionsInput = {
@@ -22676,6 +23765,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedCreateWithoutInvitationFundsInput = {
@@ -22717,6 +23807,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileCreateOrConnectWithoutInvitationFundsInput = {
@@ -22767,6 +23858,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedUpdateWithoutInvitationFundsInput = {
@@ -22801,6 +23893,183 @@ export namespace Prisma {
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
+    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
+    redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
+    members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
+    createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
+    payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
+    receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
+  }
+
+  export type ProfileCreateWithoutVerifiedSafesInput = {
+    lastUpdateAt?: Date | string
+    emailAddress?: string | null
+    status?: string | null
+    type?: ProfileType | null
+    circlesAddress?: string | null
+    circlesSafeOwner?: string | null
+    circlesTokenAddress?: string | null
+    firstName: string
+    lastName?: string | null
+    avatarUrl?: string | null
+    avatarCid?: string | null
+    avatarMimeType?: string | null
+    dream?: string | null
+    country?: string | null
+    newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
+    cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
+    verifySafeChallenge?: string | null
+    newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
+    sessions?: SessionCreateNestedManyWithoutProfileInput
+    tags?: TagCreateNestedManyWithoutCreatedByInput
+    offers?: OfferCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
+    invitations?: InvitationCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
+    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
+    redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
+    members?: MembershipCreateNestedManyWithoutMemberAtInput
+    createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
+    payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
+    receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+  }
+
+  export type ProfileUncheckedCreateWithoutVerifiedSafesInput = {
+    id?: number
+    lastUpdateAt?: Date | string
+    emailAddress?: string | null
+    status?: string | null
+    type?: ProfileType | null
+    circlesAddress?: string | null
+    circlesSafeOwner?: string | null
+    circlesTokenAddress?: string | null
+    firstName: string
+    lastName?: string | null
+    avatarUrl?: string | null
+    avatarCid?: string | null
+    avatarMimeType?: string | null
+    dream?: string | null
+    country?: string | null
+    newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
+    cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
+    verifySafeChallenge?: string | null
+    newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
+    sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
+    tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
+    invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
+    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
+    redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
+    members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
+    createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
+    payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
+    receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+  }
+
+  export type ProfileCreateOrConnectWithoutVerifiedSafesInput = {
+    where: ProfileWhereUniqueInput
+    create: XOR<ProfileCreateWithoutVerifiedSafesInput, ProfileUncheckedCreateWithoutVerifiedSafesInput>
+  }
+
+  export type ProfileUpsertWithoutVerifiedSafesInput = {
+    update: XOR<ProfileUpdateWithoutVerifiedSafesInput, ProfileUncheckedUpdateWithoutVerifiedSafesInput>
+    create: XOR<ProfileCreateWithoutVerifiedSafesInput, ProfileUncheckedCreateWithoutVerifiedSafesInput>
+  }
+
+  export type ProfileUpdateWithoutVerifiedSafesInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    dream?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
+    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
+    sessions?: SessionUpdateManyWithoutProfileInput
+    tags?: TagUpdateManyWithoutCreatedByInput
+    offers?: OfferUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUpdateManyWithoutCreatedByInput
+    invitations?: InvitationUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
+    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
+    redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
+    members?: MembershipUpdateManyWithoutMemberAtInput
+    createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
+    payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
+    receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+  }
+
+  export type ProfileUncheckedUpdateWithoutVerifiedSafesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    dream?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
+    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
+    sessions?: SessionUncheckedUpdateManyWithoutProfileInput
+    tags?: TagUncheckedUpdateManyWithoutCreatedByInput
+    offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
+    invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
     redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
@@ -23105,13 +24374,13 @@ export namespace Prisma {
     validTo?: Date | string | null
     isAdmin?: boolean | null
     memberAddress: string
-    createdBy?: ProfileCreateNestedOneWithoutCreatedMembershipsInput
+    createdBy: ProfileCreateNestedOneWithoutCreatedMembershipsInput
   }
 
   export type MembershipUncheckedCreateWithoutMemberAtInput = {
     id?: number
     createdAt?: Date | string
-    createdByProfileId?: number
+    createdByProfileId: number
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
@@ -23235,6 +24504,26 @@ export namespace Prisma {
 
   export type InvoiceCreateManySellerProfileInputEnvelope = {
     data: Enumerable<InvoiceCreateManySellerProfileInput>
+    skipDuplicates?: boolean
+  }
+
+  export type VerifiedSafeCreateWithoutCreatedByInput = {
+    safeAddress: string
+    createdAt?: Date | string
+  }
+
+  export type VerifiedSafeUncheckedCreateWithoutCreatedByInput = {
+    safeAddress: string
+    createdAt?: Date | string
+  }
+
+  export type VerifiedSafeCreateOrConnectWithoutCreatedByInput = {
+    where: VerifiedSafeWhereUniqueInput
+    create: XOR<VerifiedSafeCreateWithoutCreatedByInput, VerifiedSafeUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type VerifiedSafeCreateManyCreatedByInputEnvelope = {
+    data: Enumerable<VerifiedSafeCreateManyCreatedByInput>
     skipDuplicates?: boolean
   }
 
@@ -23555,6 +24844,31 @@ export namespace Prisma {
     data: XOR<InvoiceUpdateManyMutationInput, InvoiceUncheckedUpdateManyWithoutReceivableInvoicesInput>
   }
 
+  export type VerifiedSafeUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: VerifiedSafeWhereUniqueInput
+    update: XOR<VerifiedSafeUpdateWithoutCreatedByInput, VerifiedSafeUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<VerifiedSafeCreateWithoutCreatedByInput, VerifiedSafeUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type VerifiedSafeUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: VerifiedSafeWhereUniqueInput
+    data: XOR<VerifiedSafeUpdateWithoutCreatedByInput, VerifiedSafeUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type VerifiedSafeUpdateManyWithWhereWithoutCreatedByInput = {
+    where: VerifiedSafeScalarWhereInput
+    data: XOR<VerifiedSafeUpdateManyMutationInput, VerifiedSafeUncheckedUpdateManyWithoutVerifiedSafesInput>
+  }
+
+  export type VerifiedSafeScalarWhereInput = {
+    AND?: Enumerable<VerifiedSafeScalarWhereInput>
+    OR?: Enumerable<VerifiedSafeScalarWhereInput>
+    NOT?: Enumerable<VerifiedSafeScalarWhereInput>
+    safeAddress?: StringFilter | string
+    createdAt?: DateTimeFilter | Date | string
+    createdByProfileId?: IntFilter | number
+  }
+
   export type ProfileCreateWithoutCreatedMembershipsInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
@@ -23593,6 +24907,7 @@ export namespace Prisma {
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedCreateWithoutCreatedMembershipsInput = {
@@ -23634,6 +24949,7 @@ export namespace Prisma {
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileCreateOrConnectWithoutCreatedMembershipsInput = {
@@ -23679,6 +24995,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedCreateWithoutMembersInput = {
@@ -23720,6 +25037,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileCreateOrConnectWithoutMembersInput = {
@@ -23770,6 +25088,7 @@ export namespace Prisma {
     members?: MembershipUpdateManyWithoutMemberAtInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedUpdateWithoutCreatedMembershipsInput = {
@@ -23811,6 +25130,7 @@ export namespace Prisma {
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUpsertWithoutMembersInput = {
@@ -23856,6 +25176,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedUpdateWithoutMembersInput = {
@@ -23897,6 +25218,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
   }
 
   export type TagCreateWithoutChatMessageInput = {
@@ -23982,6 +25304,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedCreateWithoutOffersInput = {
@@ -24023,6 +25346,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileCreateOrConnectWithoutOffersInput = {
@@ -24115,6 +25439,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedUpdateWithoutOffersInput = {
@@ -24156,6 +25481,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
   }
 
   export type PurchaseLineUpsertWithWhereUniqueWithoutProductInput = {
@@ -24250,6 +25576,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedCreateWithoutPurchasesInput = {
@@ -24291,6 +25618,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileCreateOrConnectWithoutPurchasesInput = {
@@ -24402,6 +25730,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedUpdateWithoutPurchasesInput = {
@@ -24443,6 +25772,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
   }
 
   export type PurchaseLineUpsertWithWhereUniqueWithoutPurchaseInput = {
@@ -24617,6 +25947,7 @@ export namespace Prisma {
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedCreateWithoutPayableInvoicesInput = {
@@ -24658,6 +25989,7 @@ export namespace Prisma {
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileCreateOrConnectWithoutPayableInvoicesInput = {
@@ -24703,6 +26035,7 @@ export namespace Prisma {
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
+    verifiedSafes?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedCreateWithoutReceivableInvoicesInput = {
@@ -24744,6 +26077,7 @@ export namespace Prisma {
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileCreateOrConnectWithoutReceivableInvoicesInput = {
@@ -24849,6 +26183,7 @@ export namespace Prisma {
     members?: MembershipUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedUpdateWithoutPayableInvoicesInput = {
@@ -24890,6 +26225,7 @@ export namespace Prisma {
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUpsertWithoutReceivableInvoicesInput = {
@@ -24935,6 +26271,7 @@ export namespace Prisma {
     members?: MembershipUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
+    verifiedSafes?: VerifiedSafeUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedUpdateWithoutReceivableInvoicesInput = {
@@ -24976,6 +26313,7 @@ export namespace Prisma {
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
   }
 
   export type PurchaseUpsertWithoutInvoicesInput = {
@@ -25357,6 +26695,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedCreateWithoutTagsInput = {
@@ -25398,6 +26737,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
   export type ProfileCreateOrConnectWithoutTagsInput = {
@@ -25498,6 +26838,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUpdateManyWithoutCreatedByInput
   }
 
   export type ProfileUncheckedUpdateWithoutTagsInput = {
@@ -25539,6 +26880,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    verifiedSafes?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
   }
 
   export type TransactionUpsertWithoutTagsInput = {
@@ -25717,7 +27059,7 @@ export namespace Prisma {
   export type MembershipCreateManyMemberAtInput = {
     id?: number
     createdAt?: Date | string
-    createdByProfileId?: number
+    createdByProfileId: number
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
@@ -25762,6 +27104,11 @@ export namespace Prisma {
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
+  }
+
+  export type VerifiedSafeCreateManyCreatedByInput = {
+    safeAddress: string
+    createdAt?: Date | string
   }
 
   export type SessionUpdateWithoutProfileInput = {
@@ -26196,6 +27543,21 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type VerifiedSafeUpdateWithoutCreatedByInput = {
+    safeAddress?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VerifiedSafeUncheckedUpdateWithoutCreatedByInput = {
+    safeAddress?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VerifiedSafeUncheckedUpdateManyWithoutVerifiedSafesInput = {
+    safeAddress?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TagCreateManyChatMessageInput = {

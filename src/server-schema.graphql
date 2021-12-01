@@ -854,6 +854,12 @@ type Mutation {
   ): ExchangeTokenResponse
 
   importOrganisationsOfAccount: [Organisation!]!
+
+  verifySafe(safeAddress: String!) : VerifySafeResult!
+}
+
+type VerifySafeResult {
+  success: Boolean!
 }
 
 enum SortOrder {

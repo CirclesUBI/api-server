@@ -502,6 +502,7 @@ export type Mutation = {
   requestSessionChallenge: Scalars['String'];
   verifySessionChallenge?: Maybe<ExchangeTokenResponse>;
   importOrganisationsOfAccount: Array<Organisation>;
+  verifySafe: VerifySafeResult;
 };
 
 
@@ -630,6 +631,11 @@ export type MutationRequestSessionChallengeArgs = {
 export type MutationVerifySessionChallengeArgs = {
   challenge: Scalars['String'];
   signature: Scalars['String'];
+};
+
+
+export type MutationVerifySafeArgs = {
+  safeAddress: Scalars['String'];
 };
 
 export type NotificationEvent = {
@@ -1168,6 +1174,11 @@ export type UpsertTagInput = {
   value?: Maybe<Scalars['String']>;
 };
 
+export type VerifySafeResult = {
+  __typename?: 'VerifySafeResult';
+  success: Scalars['Boolean'];
+};
+
 export type Version = {
   __typename?: 'Version';
   major: Scalars['Int'];
@@ -1377,6 +1388,7 @@ export type ResolversTypes = ResolversObject<{
   UpsertOrganisationInput: UpsertOrganisationInput;
   UpsertProfileInput: UpsertProfileInput;
   UpsertTagInput: UpsertTagInput;
+  VerifySafeResult: ResolverTypeWrapper<VerifySafeResult>;
   Version: ResolverTypeWrapper<Version>;
   WelcomeMessage: ResolverTypeWrapper<WelcomeMessage>;
 }>;
@@ -1492,6 +1504,7 @@ export type ResolversParentTypes = ResolversObject<{
   UpsertOrganisationInput: UpsertOrganisationInput;
   UpsertProfileInput: UpsertProfileInput;
   UpsertTagInput: UpsertTagInput;
+  VerifySafeResult: VerifySafeResult;
   Version: Version;
   WelcomeMessage: WelcomeMessage;
 }>;
@@ -1925,6 +1938,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   requestSessionChallenge?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationRequestSessionChallengeArgs, 'address'>>;
   verifySessionChallenge?: Resolver<Maybe<ResolversTypes['ExchangeTokenResponse']>, ParentType, ContextType, RequireFields<MutationVerifySessionChallengeArgs, 'challenge' | 'signature'>>;
   importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
+  verifySafe?: Resolver<ResolversTypes['VerifySafeResult'], ParentType, ContextType, RequireFields<MutationVerifySafeArgs, 'safeAddress'>>;
 }>;
 
 export type NotificationEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['NotificationEvent'] = ResolversParentTypes['NotificationEvent']> = ResolversObject<{
@@ -2237,6 +2251,11 @@ export type UpdateSafeResponseResolvers<ContextType = any, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type VerifySafeResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['VerifySafeResult'] = ResolversParentTypes['VerifySafeResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type VersionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Version'] = ResolversParentTypes['Version']> = ResolversObject<{
   major?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   minor?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -2334,6 +2353,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   TrustRelation?: TrustRelationResolvers<ContextType>;
   UbiInfo?: UbiInfoResolvers<ContextType>;
   UpdateSafeResponse?: UpdateSafeResponseResolvers<ContextType>;
+  VerifySafeResult?: VerifySafeResultResolvers<ContextType>;
   Version?: VersionResolvers<ContextType>;
   WelcomeMessage?: WelcomeMessageResolvers<ContextType>;
 }>;

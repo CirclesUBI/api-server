@@ -1,12 +1,10 @@
 import {Context} from "../../context";
 import {PrismaClient} from "../../api-db/client";
-import {prisma_api_ro, prisma_api_rw} from "../../apiDbClient";
 import {RpcGateway} from "../../rpcGateway";
 import {Session} from "../../session";
 import {CreateInvitationResult} from "../../types";
 import {fundEoa} from "./createTestInvitation";
-
-const TestOrga = "0xc5a786eafefcf703c114558c443e4f17969d9573";
+import {BIL_ORGA, isBILMember} from "../../canAccess";
 
 export function createInvitations(prisma_api_rw:PrismaClient) {
     return async (parent:any, args:{for:string[]}, context:Context) => {
@@ -16,19 +14,9 @@ export function createInvitations(prisma_api_rw:PrismaClient) {
         throw new Error(`You need a completed profile to use this feature.`);
       }
 
-      const homoCirculus = prisma_api_ro.profile.findFirst({
-        where: {
-          circlesAddress: TestOrga,
-          members: {
-            some: {
-              memberAddress: callerInfo.profile.circlesAddress
-            }
-          }
-        }
-      });
-
-      if (!homoCirculus) {
-        throw new Error(`You are not a member of organisation ${TestOrga}. Only members of this organisation can create invitations at the moment.`);
+      const isBilMember = await isBILMember(callerInfo);
+      if (!isBilMember) {
+        throw new Error(`You are not a member of organisation ${BIL_ORGA}. Only members of this organisation can create invitations at the moment.`);
       }
 
       // Creates as many invitations as there are recipients in the arguments
@@ -44,6 +32,7 @@ export function createInvitations(prisma_api_rw:PrismaClient) {
         };
 
         const createdInvitation = (await fundEoa(RpcGateway.get(), invitationData)).createdInviteEoas[0];
+
         const invitation = await prisma_api_rw.invitation.create({
           data: {
             ...invitationData
