@@ -51,7 +51,6 @@ import {profileCityDataLoader} from "./data-loaders/profileCityDataLoader";
 import {profileMembershipsDataLoader} from "./data-loaders/profileMembershipsDataLoader";
 import {getPurchaseInvoicesDataLoader} from "./data-loaders/purchaseInvoicesDataLoader";
 import {organisationMembersDataLoader} from "./data-loaders/organisationMembersDataLoader";
-import {safeFundingTransactionResolver} from "./queries/safeFundingTransaction";
 import {profilesById} from "./queries/profilesById";
 import {aggregates} from "./queries/aggregates";
 import {events} from "./queries/events";
@@ -130,7 +129,6 @@ export const resolvers: Resolvers = {
     findSafeAddressByOwner: findSafeAddressByOwnerResolver,
     invitationTransaction: invitationTransaction(prisma_api_ro),
     hubSignupTransaction: hubSignupTransactionResolver,
-    safeFundingTransaction: safeFundingTransactionResolver,
     myProfile: myProfile(prisma_api_rw),
     myInvitations: myInvitations(),
     organisations: organisations(prisma_api_ro),

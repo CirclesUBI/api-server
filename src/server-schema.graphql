@@ -748,7 +748,6 @@ type InitAggregateState {
   registration: Profile
   invitation: ClaimedInvitation
   invitationTransaction: String
-  safeFundingTransaction: String
   hubSignupTransaction: String
 }
 
@@ -929,7 +928,6 @@ type Query {
   # A user can claim and redeem only one invitation ever.
   claimedInvitation: ClaimedInvitation
   invitationTransaction: ProfileEvent
-  safeFundingTransaction: ProfileEvent
   hubSignupTransaction: ProfileEvent
   ubiInfo: UbiInfo!
 

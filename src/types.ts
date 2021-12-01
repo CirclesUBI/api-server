@@ -355,7 +355,6 @@ export type InitAggregateState = {
   registration?: Maybe<Profile>;
   invitation?: Maybe<ClaimedInvitation>;
   invitationTransaction?: Maybe<Scalars['String']>;
-  safeFundingTransaction?: Maybe<Scalars['String']>;
   hubSignupTransaction?: Maybe<Scalars['String']>;
 };
 
@@ -811,7 +810,6 @@ export type Query = {
   initAggregateState?: Maybe<InitAggregateState>;
   claimedInvitation?: Maybe<ClaimedInvitation>;
   invitationTransaction?: Maybe<ProfileEvent>;
-  safeFundingTransaction?: Maybe<ProfileEvent>;
   hubSignupTransaction?: Maybe<ProfileEvent>;
   ubiInfo: UbiInfo;
   events: Array<ProfileEvent>;
@@ -1780,7 +1778,6 @@ export type InitAggregateStateResolvers<ContextType = any, ParentType extends Re
   registration?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   invitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  safeFundingTransaction?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -2072,7 +2069,6 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   initAggregateState?: Resolver<Maybe<ResolversTypes['InitAggregateState']>, ParentType, ContextType>;
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
-  safeFundingTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   ubiInfo?: Resolver<ResolversTypes['UbiInfo'], ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'types' | 'safeAddress' | 'pagination'>>;
