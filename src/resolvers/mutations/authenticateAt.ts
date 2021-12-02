@@ -10,7 +10,7 @@ export function authenticateAtResolver(prisma_api_rw:PrismaClient) {
         const delegatedChallengeRequest = await prisma_api_rw.delegatedChallenges.create({
             data: {
                 createdAt: now,
-                sessionId: session.sessionId,
+                sessionId: session.sessionToken,
                 appId: args.appId,
                 delegateAuthCode: Session.generateRandomBase64String(16),
                 requestValidTo: new Date(now.getTime() + 1000 * 10)

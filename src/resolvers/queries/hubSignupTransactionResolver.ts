@@ -30,8 +30,6 @@ export async function hubSignupTransactionResolver (parent:any, args:any, contex
     hubSignupTransactionQuery,
     hubSignupTransactionQueryParams);
 
-  console.log(`Searching for the hub signup transaction for ${profile.circlesAddress.toLowerCase()} took ${new Date().getTime() - now.getTime()} ms.`)
-
   if (hubSignupTransactionResult.rows.length == 0) {
     return null;
   }

@@ -9,8 +9,8 @@ generator client {
 }
 
 model Session {
-  //id Int @id @default(autoincrement())
-  sessionId String @unique
+  id String @id
+  sessionToken String @unique
   // Who is identified by the session?
   emailAddress String?
   // Who is identified by the session?

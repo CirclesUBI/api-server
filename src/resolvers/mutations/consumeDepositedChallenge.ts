@@ -21,7 +21,7 @@ export function consumeDepositedChallengeResolver(prisma:PrismaClient) {
             const msg =`The deposited challenge for delegateAuthCode '${args.delegateAuthCode}' isn't valid anymore.`;
             throw new Error(msg)
         }
-        if (depositedChallenge.sessionId != session.sessionId) {
+        if (depositedChallenge.sessionId != session.sessionToken) {
             const msg =`Deposited challenges must be read from the same session from which they've been requested.`;
             throw new Error(msg)
         }

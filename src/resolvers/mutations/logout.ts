@@ -5,10 +5,10 @@ import {PrismaClient} from "../../api-db/client";
 export function logout(prisma_api_rw:PrismaClient) {
     return async (parent: any, args: any, context: Context) => {
         const session = await context.verifySession();
-        const loggedOutSession = await Session.logout(context, prisma_api_rw, session.sessionId);
+        const loggedOutSession = await Session.logout(context, prisma_api_rw, session.sessionToken);
         context.setCookies.push({
             name: "session",
-            value: session.sessionId,
+            value: session.sessionToken,
             options: {
                 domain: process.env.EXTERNAL_DOMAIN,
                 httpOnly: true,

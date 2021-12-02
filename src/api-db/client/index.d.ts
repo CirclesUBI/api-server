@@ -17,7 +17,8 @@ type UnwrapTuple<Tuple extends readonly unknown[]> = {
  */
 
 export type Session = {
-  sessionId: string
+  id: string
+  sessionToken: string
   emailAddress: string | null
   ethAddress: string | null
   challengeHash: string | null
@@ -1170,7 +1171,8 @@ export namespace Prisma {
   }
 
   export type SessionMinAggregateOutputType = {
-    sessionId: string | null
+    id: string | null
+    sessionToken: string | null
     emailAddress: string | null
     ethAddress: string | null
     challengeHash: string | null
@@ -1186,7 +1188,8 @@ export namespace Prisma {
   }
 
   export type SessionMaxAggregateOutputType = {
-    sessionId: string | null
+    id: string | null
+    sessionToken: string | null
     emailAddress: string | null
     ethAddress: string | null
     challengeHash: string | null
@@ -1202,7 +1205,8 @@ export namespace Prisma {
   }
 
   export type SessionCountAggregateOutputType = {
-    sessionId: number
+    id: number
+    sessionToken: number
     emailAddress: number
     ethAddress: number
     challengeHash: number
@@ -1230,7 +1234,8 @@ export namespace Prisma {
   }
 
   export type SessionMinAggregateInputType = {
-    sessionId?: true
+    id?: true
+    sessionToken?: true
     emailAddress?: true
     ethAddress?: true
     challengeHash?: true
@@ -1246,7 +1251,8 @@ export namespace Prisma {
   }
 
   export type SessionMaxAggregateInputType = {
-    sessionId?: true
+    id?: true
+    sessionToken?: true
     emailAddress?: true
     ethAddress?: true
     challengeHash?: true
@@ -1262,7 +1268,8 @@ export namespace Prisma {
   }
 
   export type SessionCountAggregateInputType = {
-    sessionId?: true
+    id?: true
+    sessionToken?: true
     emailAddress?: true
     ethAddress?: true
     challengeHash?: true
@@ -1391,7 +1398,8 @@ export namespace Prisma {
 
 
   export type SessionGroupByOutputType = {
-    sessionId: string
+    id: string
+    sessionToken: string
     emailAddress: string | null
     ethAddress: string | null
     challengeHash: string | null
@@ -1426,7 +1434,8 @@ export namespace Prisma {
 
 
   export type SessionSelect = {
-    sessionId?: boolean
+    id?: boolean
+    sessionToken?: boolean
     emailAddress?: boolean
     ethAddress?: boolean
     challengeHash?: boolean
@@ -1522,8 +1531,8 @@ export namespace Prisma {
      * // Get first 10 Sessions
      * const sessions = await prisma.session.findMany({ take: 10 })
      * 
-     * // Only select the `sessionId`
-     * const sessionWithSessionIdOnly = await prisma.session.findMany({ select: { sessionId: true } })
+     * // Only select the `id`
+     * const sessionWithIdOnly = await prisma.session.findMany({ select: { id: true } })
      * 
     **/
     findMany<T extends SessionFindManyArgs>(
@@ -18071,7 +18080,8 @@ export namespace Prisma {
   // https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
 
   export const SessionScalarFieldEnum: {
-    sessionId: 'sessionId',
+    id: 'id',
+    sessionToken: 'sessionToken',
     emailAddress: 'emailAddress',
     ethAddress: 'ethAddress',
     challengeHash: 'challengeHash',
@@ -18341,7 +18351,8 @@ export namespace Prisma {
     AND?: Enumerable<SessionWhereInput>
     OR?: Enumerable<SessionWhereInput>
     NOT?: Enumerable<SessionWhereInput>
-    sessionId?: StringFilter | string
+    id?: StringFilter | string
+    sessionToken?: StringFilter | string
     emailAddress?: StringNullableFilter | string | null
     ethAddress?: StringNullableFilter | string | null
     challengeHash?: StringNullableFilter | string | null
@@ -18358,7 +18369,8 @@ export namespace Prisma {
   }
 
   export type SessionOrderByInput = {
-    sessionId?: SortOrder
+    id?: SortOrder
+    sessionToken?: SortOrder
     emailAddress?: SortOrder
     ethAddress?: SortOrder
     challengeHash?: SortOrder
@@ -18374,14 +18386,16 @@ export namespace Prisma {
   }
 
   export type SessionWhereUniqueInput = {
-    sessionId?: string
+    id?: string
+    sessionToken?: string
   }
 
   export type SessionScalarWhereWithAggregatesInput = {
     AND?: Enumerable<SessionScalarWhereWithAggregatesInput>
     OR?: Enumerable<SessionScalarWhereWithAggregatesInput>
     NOT?: Enumerable<SessionScalarWhereWithAggregatesInput>
-    sessionId?: StringWithAggregatesFilter | string
+    id?: StringWithAggregatesFilter | string
+    sessionToken?: StringWithAggregatesFilter | string
     emailAddress?: StringNullableWithAggregatesFilter | string | null
     ethAddress?: StringNullableWithAggregatesFilter | string | null
     challengeHash?: StringNullableWithAggregatesFilter | string | null
@@ -19145,7 +19159,8 @@ export namespace Prisma {
   }
 
   export type SessionCreateInput = {
-    sessionId: string
+    id: string
+    sessionToken: string
     emailAddress?: string | null
     ethAddress?: string | null
     challengeHash?: string | null
@@ -19161,7 +19176,8 @@ export namespace Prisma {
   }
 
   export type SessionUncheckedCreateInput = {
-    sessionId: string
+    id: string
+    sessionToken: string
     emailAddress?: string | null
     ethAddress?: string | null
     challengeHash?: string | null
@@ -19177,7 +19193,8 @@ export namespace Prisma {
   }
 
   export type SessionUpdateInput = {
-    sessionId?: StringFieldUpdateOperationsInput | string
+    id?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ethAddress?: NullableStringFieldUpdateOperationsInput | string | null
     challengeHash?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19193,7 +19210,8 @@ export namespace Prisma {
   }
 
   export type SessionUncheckedUpdateInput = {
-    sessionId?: StringFieldUpdateOperationsInput | string
+    id?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ethAddress?: NullableStringFieldUpdateOperationsInput | string | null
     challengeHash?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19209,7 +19227,8 @@ export namespace Prisma {
   }
 
   export type SessionCreateManyInput = {
-    sessionId: string
+    id: string
+    sessionToken: string
     emailAddress?: string | null
     ethAddress?: string | null
     challengeHash?: string | null
@@ -19225,7 +19244,8 @@ export namespace Prisma {
   }
 
   export type SessionUpdateManyMutationInput = {
-    sessionId?: StringFieldUpdateOperationsInput | string
+    id?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ethAddress?: NullableStringFieldUpdateOperationsInput | string | null
     challengeHash?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19240,7 +19260,8 @@ export namespace Prisma {
   }
 
   export type SessionUncheckedUpdateManyInput = {
-    sessionId?: StringFieldUpdateOperationsInput | string
+    id?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ethAddress?: NullableStringFieldUpdateOperationsInput | string | null
     challengeHash?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24389,7 +24410,8 @@ export namespace Prisma {
   }
 
   export type SessionCreateWithoutProfileInput = {
-    sessionId: string
+    id: string
+    sessionToken: string
     emailAddress?: string | null
     ethAddress?: string | null
     challengeHash?: string | null
@@ -24404,7 +24426,8 @@ export namespace Prisma {
   }
 
   export type SessionUncheckedCreateWithoutProfileInput = {
-    sessionId: string
+    id: string
+    sessionToken: string
     emailAddress?: string | null
     ethAddress?: string | null
     challengeHash?: string | null
@@ -24880,7 +24903,8 @@ export namespace Prisma {
     AND?: Enumerable<SessionScalarWhereInput>
     OR?: Enumerable<SessionScalarWhereInput>
     NOT?: Enumerable<SessionScalarWhereInput>
-    sessionId?: StringFilter | string
+    id?: StringFilter | string
+    sessionToken?: StringFilter | string
     emailAddress?: StringNullableFilter | string | null
     ethAddress?: StringNullableFilter | string | null
     challengeHash?: StringNullableFilter | string | null
@@ -27343,7 +27367,8 @@ export namespace Prisma {
   }
 
   export type SessionCreateManyProfileInput = {
-    sessionId: string
+    id: string
+    sessionToken: string
     emailAddress?: string | null
     ethAddress?: string | null
     challengeHash?: string | null
@@ -27497,7 +27522,8 @@ export namespace Prisma {
   }
 
   export type SessionUpdateWithoutProfileInput = {
-    sessionId?: StringFieldUpdateOperationsInput | string
+    id?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ethAddress?: NullableStringFieldUpdateOperationsInput | string | null
     challengeHash?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27512,7 +27538,8 @@ export namespace Prisma {
   }
 
   export type SessionUncheckedUpdateWithoutProfileInput = {
-    sessionId?: StringFieldUpdateOperationsInput | string
+    id?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ethAddress?: NullableStringFieldUpdateOperationsInput | string | null
     challengeHash?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27527,7 +27554,8 @@ export namespace Prisma {
   }
 
   export type SessionUncheckedUpdateManyWithoutSessionsInput = {
-    sessionId?: StringFieldUpdateOperationsInput | string
+    id?: StringFieldUpdateOperationsInput | string
+    sessionToken?: StringFieldUpdateOperationsInput | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     ethAddress?: NullableStringFieldUpdateOperationsInput | string | null
     challengeHash?: NullableStringFieldUpdateOperationsInput | string | null

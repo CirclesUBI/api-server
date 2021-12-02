@@ -76,7 +76,7 @@ export class Main {
             schema,
             execute,
             subscribe,
-            onConnect(connectionParams:any, webSocket:any) {
+            async onConnect(connectionParams:any, webSocket:any) {
                 // WS
                 const contextId = Session.generateRandomBase64String(8);
                 let isSubscription = false;
@@ -85,10 +85,13 @@ export class Main {
 
                 const upgradeRequest = webSocket.upgradeReq;
                 const cookieValue = upgradeRequest.headers["cookie"];
+                const ip = upgradeRequest.headers['forwarded-for']
+                  ?? upgradeRequest.headers['x-forwarded-for']
+                  ?? upgradeRequest.connection.remoteAddress;
 
                 isSubscription = true;
 
-                let sessionId:string|undefined = undefined;
+                let sessionToken:string|undefined = undefined;
                 if (cookieValue) {
                     const cookies = cookieValue.split(";")
                                                 .map((o:string) => o.trim()
@@ -98,19 +101,27 @@ export class Main {
                                                     return p
                                                 }, {});
                     if (cookies["session"]) {
-                        sessionId = decodeURIComponent(cookies["session"]);
+                        sessionToken = decodeURIComponent(cookies["session"]);
                     }
                 }
 
-                console.log(`-->] [${new Date().toJSON()}] [${contextId}] [${webSocket._socket.remoteAddress}] [subscriptionServer.onConnect]: New websocket subscription client.`);
-
-                return new Context(
+                const context = new Context(
                   contextId,
                   isSubscription,
                   authorizationHeaderValue,
                   originHeaderValue,
-                  sessionId,
-                  webSocket._socket.remoteAddress);
+                  sessionToken,
+                  ip);
+
+                if (sessionToken) {
+                    const sessionInfo = await context.verifySession();
+                    console.log(`-->] [${new Date().toJSON()}] [${sessionInfo.id}] [${contextId}] [${ip}] [subscriptionServer.onConnect]: New websocket subscription client.`);
+                } else {
+                    console.log(`-->] [${new Date().toJSON()}] [] [${contextId}] [${ip}] [subscriptionServer.onConnect]: New websocket subscription client.`);
+                }
+
+
+                return context;
             },
         }, {
             server: httpServer,

@@ -11,11 +11,11 @@ export class Session
         return crypto.randomBytes(length).toString('base64').substr(0, length);
     }
 
-    static async logout(context:Context, prisma:PrismaClient, sessionId:string)
+    static async logout(context:Context, prisma:PrismaClient, sessionToken:string)
     {
         const result = await prisma.session.update({
             where: {
-                sessionId: sessionId
+                sessionToken: sessionToken
             },
             data: {
                 endedAt: new Date(),
@@ -26,11 +26,11 @@ export class Session
         return result;
     }
 
-    static async findSessionBySessionId(prisma:PrismaClient, sessionId: string)
+    static async findSessionBysessionToken(prisma:PrismaClient, sessionToken: string)
     {
         const session = await prisma.session.findUnique({
             where: {
-                sessionId
+                sessionToken
             }
         });
 
@@ -61,7 +61,7 @@ export class Session
         //
         await prisma.session.update({
             where: {
-                sessionId: session.sessionId
+                sessionToken: session.sessionToken
             },
             data: {
                 ...session,
@@ -79,11 +79,12 @@ export class Session
 
         await prisma.session.create({
             data: {
+                id: Session.generateRandomBase64String(8),
                 ethAddress: address.toLowerCase(),
                 createdAt: new Date(),
                 issuedBy: process.env.APP_ID ?? "api-server",
                 maxLifetime: process.env.SESSION_LIIFETIME ? parseInt(process.env.SESSION_LIIFETIME) : 60 * 60 * 24 * 30,
-                sessionId: Session.generateRandomBase64String(64),
+                sessionToken: Session.generateRandomBase64String(64),
                 challengeHash: ch
             }
         });
@@ -173,12 +174,13 @@ export class Session
 
         const session = await prisma.session.create({
             data: {
+                id: Session.generateRandomBase64String(8),
                 profileId: profile?.id,
                 issuedBy: tokenPayload.iss,
                 createdAt: new Date(),
                 validFrom: new Date(),
                 maxLifetime: process.env.SESSION_LIIFETIME ? parseInt(process.env.SESSION_LIIFETIME) : 60 * 60 * 24 * 30,
-                sessionId: Session.generateRandomBase64String(64),
+                sessionToken: Session.generateRandomBase64String(64),
                 emailAddress: tokenPayload.sub,
                 jti: tokenPayload.jti
             }
@@ -187,9 +189,9 @@ export class Session
         return session;
     }
 
-    static async assignProfile(prisma_api_rw:PrismaClient, sessionId: string, profileId: number, context:Context) {
+    static async assignProfile(prisma_api_rw:PrismaClient, sessionToken: string, profileId: number, context:Context) {
         await prisma_api_rw.session.update({
-            where: {sessionId: sessionId},
+            where: {sessionToken: sessionToken},
             data: {profileId: profileId}
         });
     }

@@ -80,7 +80,7 @@ export const events = async (parent:any, args:QueryEventsArgs, context: Context)
   //
   // private
   //
-  if (Object.keys(types).length > 0 && context.sessionId) {
+  if (Object.keys(types).length > 0 && context.sessionToken) {
     let canAccessPrivateDetails = await canAccess(context, args.safeAddress);
 
     if (canAccessPrivateDetails && types[EventType.SafeVerified]) {
@@ -115,7 +115,7 @@ export const events = async (parent:any, args:QueryEventsArgs, context: Context)
   const aggregateEventSource = new CombinedEventSource(eventSources);
 
   /*let callerInfo: Profile | null = null;
-  if (context.sessionId && !callerInfo) {
+  if (context.sessionToken && !callerInfo) {
     // Necessary to cache private items?!
     callerInfo = await context.callerInfo;
   }*/

@@ -17,7 +17,7 @@ export function updateSafe(prisma:PrismaClient) {
         }
         const currentProfile = await prisma_api_ro.profile.findUnique({where: {id: session.profileId}});
         if (!currentProfile) {
-            throw new Error(`Couldn't find the profile (${session.profileId}) that was associated with session '${session.sessionId}'.`);
+            throw new Error(`Couldn't find the profile (${session.profileId}) that was associated with session '${session.sessionToken}'.`);
         }
         if (!currentProfile.verifySafeChallenge || !currentProfile.newSafeAddress) {
             return {

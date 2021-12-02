@@ -15,7 +15,7 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
 
         if (args.data.id) {
             if (args.data.id != session.profileId) {
-                throw new Error(`'${session.sessionId}' (profile id: ${session.profileId ?? "<undefined>"}) can not upsert other profile '${args.data.id}'.`);
+                throw new Error(`'${session.sessionToken}' (profile id: ${session.profileId ?? "<undefined>"}) can not upsert other profile '${args.data.id}'.`);
             }
             profile = ProfileLoader.withDisplayCurrency(await prisma_api_rw.profile.update({
                 where: {
@@ -44,7 +44,7 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
                     displayCurrency: <DisplayCurrency>args.data.displayCurrency
                 }
             }));
-            await Session.assignProfile(prisma_api_rw, session.sessionId, profile.id, context);
+            await Session.assignProfile(prisma_api_rw, session.sessionToken, profile.id, context);
         }
         return profile;
     };

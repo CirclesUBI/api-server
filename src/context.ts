@@ -11,7 +11,7 @@ export class Context {
 
     readonly jwt?: string;
     readonly originHeaderValue?: string;
-    readonly sessionId?: string;
+    readonly sessionToken?: string;
     readonly ipAddress?:string;
 
     readonly setCookies:Array<any> = [];
@@ -20,11 +20,11 @@ export class Context {
     readonly res?: Response;
 
 
-    constructor(id: string, isSubscription: boolean, jwt?: string, originHeaderValue?: string, sessionId?: string, ipAddress?:string, req?: Request, res?: Response) {
+    constructor(id: string, isSubscription: boolean, jwt?: string, originHeaderValue?: string, sessionToken?: string, ipAddress?:string, req?: Request, res?: Response) {
         this.isSubscription = isSubscription;
         this.jwt = jwt;
         this.originHeaderValue = originHeaderValue;
-        this.sessionId = sessionId;
+        this.sessionToken = sessionToken;
         this.ipAddress = ipAddress;
         this.id = id;
         this.req = req;
@@ -54,11 +54,11 @@ export class Context {
             authorizationHeaderValue = arg.connection.context.authorization;
         }
 
-        let sessionId:string|undefined = undefined;
+        let sessionToken:string|undefined = undefined;
         if (cookieValue) {
             const cookies = cookieValue.split(";").map(o => o.trim().split("=")).reduce((p:{[key:string]:any},c) => { p[c[0]] = c[1]; return p}, {});
             if (cookies["session"]) {
-                sessionId = decodeURIComponent(cookies["session"]);
+                sessionToken = decodeURIComponent(cookies["session"]);
             }
         }
 
@@ -67,20 +67,20 @@ export class Context {
             isSubscription,
             authorizationHeaderValue,
             originHeaderValue,
-            sessionId,
+            sessionToken,
             remoteIp,
             arg.req,
             arg.res);
     }
 
     async verifySession(extendIfValid?:boolean) : Promise<PrismaSession> {
-        if (!this.sessionId) {
+        if (!this.sessionToken) {
             throw new Error("No session id on context.");
         }
 
-        const validSession = await Session.findSessionBySessionId(prisma_api_ro, this.sessionId)
+        const validSession = await Session.findSessionBysessionToken(prisma_api_ro, this.sessionToken)
         if (!validSession) {
-            const errorMsg = `No session could be found for the supplied sessionId ('${this.sessionId ?? "<undefined or null>"}')`;
+            const errorMsg = `No session could be found for the supplied sessionToken ('${this.sessionToken ?? "<undefined or null>"}')`;
             throw new Error(errorMsg);
         }
 
