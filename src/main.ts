@@ -107,12 +107,8 @@ export class Main {
                 }
 
 
-                let session: PrismaSession|null = null;
-                if (sessionToken) {
-                    session = await Context.getSession(sessionToken);
-                    if (!session) {
-                        throw new Error(`!session`)
-                    }
+                let session: PrismaSession|null = await Context.findSession(sessionToken);
+                if (session) {
                     console.log(`-->] [${new Date().toJSON()}] [${session.id}] [${contextId}] [${ip}] [subscriptionServer.onConnect]: New websocket subscription client.`);
                 } else {
                     console.log(`-->] [${new Date().toJSON()}] [] [${contextId}] [${ip}] [subscriptionServer.onConnect]: New websocket subscription client.`);

@@ -63,7 +63,7 @@ export class Context {
             const cookies = cookieValue.split(";").map(o => o.trim().split("=")).reduce((p:{[key:string]:any},c) => { p[c[0]] = c[1]; return p}, {});
             if (cookies["session"]) {
                 sessionToken = decodeURIComponent(cookies["session"]);
-                session = await Context.getSession(sessionToken);
+                session = await Context.findSession(sessionToken);
             }
         }
 
@@ -97,18 +97,9 @@ export class Context {
         return validSession;
     }
 
-    static async getSession(sessionToken:string) : Promise<PrismaSession> {
-        if (!sessionToken) {
-            throw new Error("The 'sessionToken' is null or undefined.");
-        }
-
-        const validSession = await Session.findSessionBysessionToken(prisma_api_ro, sessionToken)
-        if (!validSession) {
-            const errorMsg = `No session could be found for the supplied sessionToken ('${sessionToken ?? "<undefined or null>"}')`;
-            throw new Error(errorMsg);
-        }
-
-        return validSession;
+    static async findSession(sessionToken?:string) : Promise<PrismaSession|null> {
+        if (!sessionToken) return null;
+        return await Session.findSessionBysessionToken(prisma_api_ro, sessionToken)
     }
 
     private _callerInfo:{ session: PrismaSession, profile: Profile|null }|null = null;
