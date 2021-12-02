@@ -7,13 +7,14 @@ import {ApolloServer} from "apollo-server-express";
 import {getPool, resolvers} from "./resolvers/resolvers";
 import {importSchema} from "graphql-import";
 import {Context} from "./context";
-import {Session} from "./session";
 import {Error} from "apollo-server-core/src/plugin/schemaReporting/operations";
 import {BlockchainEventSource} from "./indexer-api/blockchainEventSource";
 import {ApiPubSub} from "./pubsub";
 import {RpcGateway} from "./rpcGateway";
 import {PoolClient} from "pg";
 import {GqlLogger} from "./gqlLogger";
+import {Session as PrismaSession, PrismaClient} from "./api-db/client";
+import {Session} from "./session";
 
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
 
@@ -105,21 +106,28 @@ export class Main {
                     }
                 }
 
+
+                let session: PrismaSession|null = null;
+                if (sessionToken) {
+                    session = await Context.getSession(sessionToken);
+                    if (!session) {
+                        throw new Error(`!session`)
+                    }
+                    console.log(`-->] [${new Date().toJSON()}] [${session.id}] [${contextId}] [${ip}] [subscriptionServer.onConnect]: New websocket subscription client.`);
+                } else {
+                    console.log(`-->] [${new Date().toJSON()}] [] [${contextId}] [${ip}] [subscriptionServer.onConnect]: New websocket subscription client.`);
+                }
+
                 const context = new Context(
                   contextId,
                   isSubscription,
                   authorizationHeaderValue,
                   originHeaderValue,
                   sessionToken,
-                  ip);
-
-                if (sessionToken) {
-                    const sessionInfo = await context.verifySession();
-                    console.log(`-->] [${new Date().toJSON()}] [${sessionInfo.id}] [${contextId}] [${ip}] [subscriptionServer.onConnect]: New websocket subscription client.`);
-                } else {
-                    console.log(`-->] [${new Date().toJSON()}] [] [${contextId}] [${ip}] [subscriptionServer.onConnect]: New websocket subscription client.`);
-                }
-
+                  ip,
+                  undefined,
+                  undefined,
+                  session?.id);
 
                 return context;
             },

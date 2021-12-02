@@ -34,9 +34,9 @@ export class GqlLogger {
         begin: now
       };
 
-      console.log(`  -> [${now.toJSON()}] [${context.id}] [${ipAddr}] [${operationName ?? ""}]: ${JSON.stringify(args.request.variables)}`);
+      console.log(`  -> [${now.toJSON()}] [${context.sessionId}] [${context.id}] [${ipAddr}] [${operationName ?? ""}]: ${JSON.stringify(args.request.variables)}`);
     } else {
-      console.log(`  -> [${now.toJSON()}] [] [] [${operationName ?? ""}]: ${JSON.stringify(args.request.variables)}`);
+      console.log(`  -> [${now.toJSON()}] [no-session] [no-context] [${operationName ?? ""}]: ${JSON.stringify(args.request.variables)}`);
     }
 
     return {
@@ -53,13 +53,13 @@ export class GqlLogger {
             ? now.getTime() - pendingRequest?.begin?.getTime()
             : -1;
 
-          console.log(` <-  [${now.toJSON()}] [${context.id}] [${ipAddr}] [${operationName ?? ""}]: took ${duration} ms.`);
+          console.log(` <-  [${now.toJSON()}] [${context.sessionId}] [${context.id}] [${ipAddr}] [${operationName ?? ""}]: took ${duration} ms.`);
 
           if (pendingRequest) {
             delete _pendingRequests[context.id]
           }
         } else {
-          console.log(` <-  [${now.toJSON()}] [] [] [${operationName ?? ""}]`);
+          console.log(` <-  [${now.toJSON()}] [no-session] [no-context] [${operationName ?? ""}]`);
         }
       },
       didEncounterErrors(requestContext: any) {

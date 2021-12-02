@@ -11,6 +11,7 @@ export class Context {
 
     readonly jwt?: string;
     readonly originHeaderValue?: string;
+    readonly sessionId?: string;
     readonly sessionToken?: string;
     readonly ipAddress?:string;
 
@@ -20,7 +21,7 @@ export class Context {
     readonly res?: Response;
 
 
-    constructor(id: string, isSubscription: boolean, jwt?: string, originHeaderValue?: string, sessionToken?: string, ipAddress?:string, req?: Request, res?: Response) {
+    constructor(id: string, isSubscription: boolean, jwt?: string, originHeaderValue?: string, sessionToken?: string, ipAddress?:string, req?: Request, res?: Response, sessionId?:string) {
         this.isSubscription = isSubscription;
         this.jwt = jwt;
         this.originHeaderValue = originHeaderValue;
@@ -29,9 +30,10 @@ export class Context {
         this.id = id;
         this.req = req;
         this.res = res;
+        this.sessionId = sessionId;
     }
 
-    public static create(arg: { req?: Request, connection?: ExecutionParams, res?: Response }): Context {
+    public static async create(arg: { req?: Request, connection?: ExecutionParams, res?: Response }): Promise<Context> {
         const contextId = Session.generateRandomBase64String(8);
         const remoteIp = (arg.req?.header('x-forwarded-for') || arg.req?.connection.remoteAddress) ?? "<unknown ip>";
 
@@ -55,10 +57,13 @@ export class Context {
         }
 
         let sessionToken:string|undefined = undefined;
+        let session:PrismaSession|null = null;
+
         if (cookieValue) {
             const cookies = cookieValue.split(";").map(o => o.trim().split("=")).reduce((p:{[key:string]:any},c) => { p[c[0]] = c[1]; return p}, {});
             if (cookies["session"]) {
                 sessionToken = decodeURIComponent(cookies["session"]);
+                session = await Context.getSession(sessionToken);
             }
         }
 
@@ -70,7 +75,8 @@ export class Context {
             sessionToken,
             remoteIp,
             arg.req,
-            arg.res);
+            arg.res,
+            session?.id);
     }
 
     async verifySession(extendIfValid?:boolean) : Promise<PrismaSession> {
@@ -86,6 +92,20 @@ export class Context {
 
         if (extendIfValid) {
             await Session.extendSession(prisma_api_rw, validSession);
+        }
+
+        return validSession;
+    }
+
+    static async getSession(sessionToken:string) : Promise<PrismaSession> {
+        if (!sessionToken) {
+            throw new Error("The 'sessionToken' is null or undefined.");
+        }
+
+        const validSession = await Session.findSessionBysessionToken(prisma_api_ro, sessionToken)
+        if (!validSession) {
+            const errorMsg = `No session could be found for the supplied sessionToken ('${sessionToken ?? "<undefined or null>"}')`;
+            throw new Error(errorMsg);
         }
 
         return validSession;
