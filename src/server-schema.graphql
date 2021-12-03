@@ -145,8 +145,13 @@ type SessionInfo {
   capabilities: [Capability!]!
 }
 
+enum CapabilityType {
+  Verify
+  Invite
+}
+
 type Capability {
-  key: String!
+  type: CapabilityType
 }
 
 type DelegateAuthInit {

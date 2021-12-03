@@ -50,8 +50,13 @@ export type AssetBalance = {
 
 export type Capability = {
   __typename?: 'Capability';
-  key: Scalars['String'];
+  type?: Maybe<CapabilityType>;
 };
+
+export enum CapabilityType {
+  Verify = 'Verify',
+  Invite = 'Invite'
+}
 
 export type ChatMessage = IEventPayload & {
   __typename?: 'ChatMessage';
@@ -1321,6 +1326,7 @@ export type ResolversTypes = ResolversObject<{
   AggregateType: AggregateType;
   AssetBalance: ResolverTypeWrapper<AssetBalance>;
   Capability: ResolverTypeWrapper<Capability>;
+  CapabilityType: CapabilityType;
   ChatMessage: ResolverTypeWrapper<ChatMessage>;
   City: ResolverTypeWrapper<City>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
@@ -1584,7 +1590,7 @@ export type AssetBalanceResolvers<ContextType = any, ParentType extends Resolver
 }>;
 
 export type CapabilityResolvers<ContextType = any, ParentType extends ResolversParentTypes['Capability'] = ResolversParentTypes['Capability']> = ResolversObject<{
-  key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  type?: Resolver<Maybe<ResolversTypes['CapabilityType']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
