@@ -7,18 +7,15 @@ import {EventType} from "../types";
 import BN from "bn.js";
 import {RpcGateway} from "../rpcGateway";
 import {convertTimeCirclesToCircles} from "../timeCircles";
-import {createPdfForInvoice} from "../invoiceGenerator";
+import {
+  InvoicePdfGenerator,
+  PdfDbInvoiceData,
+  pdfInvoiceDataFromDbInvoice,
+  PdfInvoicePaymentTransaction
+} from "../invoiceGenerator";
 import {getNextInvoiceNo} from "../resolvers/mutations/purchase";
 
-export interface ProfileEventSource {
-  /**
-   * Takes a json string, interprets it and creates ProfileEvents if applicable.
-   * @param message
-   */
-  //yieldEvent(message: string) : void;
-}
-
-export function getDateWithOffset(timestamp:Date) {
+export function getDateWithOffset(timestamp: Date) {
   const timeOffset = new Date(timestamp).getTimezoneOffset() * 60 * 1000;
   return new Date(new Date(timestamp).getTime() - timeOffset);
 }
@@ -30,7 +27,7 @@ export function getDateWithOffset(timestamp:Date) {
  * It's the BlockchainEventSource's job to make sense of the hashes and
  * to dispatch the resulting blockchainEvents to the right recipients.
  */
-export class BlockchainEventSource implements ProfileEventSource {
+export class BlockchainEventSource {
   private readonly _url: string;
 
   private _ws?: WebSocket;
@@ -48,13 +45,13 @@ export class BlockchainEventSource implements ProfileEventSource {
     this._ws.on("open", () => {
       this.onOpen();
     });
-    this._ws.on("message", (e:any) => {
+    this._ws.on("message", (e: any) => {
       this.onMessage(e.toString());
     });
-    this._ws.on("error", (e:any) => {
+    this._ws.on("error", (e: any) => {
       console.log("Websocket error: ", e);
     });
-    this._ws.on("close", (e:any) => {
+    this._ws.on("close", (e: any) => {
       console.log("Websocket closed: ", e);
       this.onClose();
     });
@@ -87,149 +84,276 @@ export class BlockchainEventSource implements ProfileEventSource {
   }
 
   async onMessage(message: string) {
+    const messageNo = ++this._messageNo;
+    const serverUrl = this._url;
+
+    function log(str: string, prefix?: string) {
+      console.log(`${prefix ?? "     "}[${new Date().toJSON()}] [${messageNo}] [${serverUrl}] [BlockchainEventSource.onMessage]: ${str}`);
+    }
+
+    function logErr(str: string, prefix?: string) {
+      console.error(`${prefix ?? "     "}[${new Date().toJSON()}] [${messageNo}] [${serverUrl}] [BlockchainEventSource.onMessage]: ${str}`);
+    }
+
+    async function matchInvoiceWithPayment(invoice: PdfDbInvoiceData, relatedHubTransfers:{
+      type: string,
+      hash: string,
+      address1: string,
+      address2: string
+    }[]) : Promise<{
+        invoice: PdfDbInvoiceData,
+        paymentTransaction:{
+          hash: string,
+          timestamp: Date,
+          invoiceTotalInTC: number,
+          value: BN,
+          minValue: BN,
+          maxValue: BN
+        }
+      }|null> {
+        const customerToSellerTransfers = relatedHubTransfers.filter(o => o.address1 == invoice.customerProfile.circlesAddress
+          && o.address2 == invoice.sellerProfile.circlesAddress);
+
+        if (customerToSellerTransfers.length == 0) {
+        return null;
+      }
+
+      const candidateTxHashes = customerToSellerTransfers.map(o => o.hash);
+
+      log(`Found ${customerToSellerTransfers.length} CrcHubTransfer candidate(s) for invoice ${invoice.id} `
+        + `(from: '${invoice.customerProfile.circlesAddress}', `
+        + `to: '${invoice.sellerProfile.circlesAddress}'): ${candidateTxHashes.join(", ")}`);
+
+      // Query the full CrcHubTransfer events
+      const hubTransferRows = await getPool().query(`
+                      select *
+                      from crc_hub_transfer_2
+                      where hash = ANY ($1)`,
+        [candidateTxHashes]);
+
+      const invoiceTotal = invoice.lines.reduce((p, c) => p + c.amount * parseFloat(c.product.pricePerUnit), 0);
+
+      const hubTransfers = hubTransferRows.rows.map(o => {
+        const transactionTimestamp = getDateWithOffset(o.timestamp);
+        const invoiceTotalInTC = convertTimeCirclesToCircles(invoiceTotal, transactionTimestamp.toJSON());
+        const minVal = new BN(RpcGateway.get().utils.toWei(invoiceTotalInTC.toString(), "ether")).sub(new BN("10000"));
+        const maxVal = new BN(RpcGateway.get().utils.toWei(invoiceTotalInTC.toString(), "ether")).add(new BN("10000"));
+        const actualValue = new BN(o.value);
+
+        return {
+          hash: o.hash,
+          timestamp: transactionTimestamp,
+          invoiceTotalInTC: invoiceTotalInTC,
+          value: actualValue,
+          minValue: minVal,
+          maxValue: maxVal
+        }
+      });
+
+      const hubTransfersWithMatchingAmount = hubTransfers.filter(o => {
+        return o.value.gte(o.minValue) && o.value.lte(o.maxValue)
+      });
+
+      if (hubTransfersWithMatchingAmount.length == 0) {
+        return null;
+      }
+
+      if (hubTransfersWithMatchingAmount.length > 1) {
+        logErr(`Found ${hubTransfersWithMatchingAmount.length} CrcHubTransfers with matching amounts for invoice ${invoice.id}: `
+          + `: ${JSON.stringify(hubTransfersWithMatchingAmount)}`);
+        return null;
+      }
+
+      const paymentTransaction = hubTransfersWithMatchingAmount[0];
+      return {
+        invoice: invoice,
+        paymentTransaction
+      };
+    }
+
     try {
       const transactionHashes: string[] = JSON.parse(message);
+      const {events: relatedEvents, addresses} = await this.findRelatedData(transactionHashes);
+      const relatedHubTransfers = relatedEvents.filter(event => event.type === EventType.CrcHubTransfer);
 
-      const now = new Date();
-      const no = ++this._messageNo;
+      log(`Received ${transactionHashes.length} tx-hashes. Found related: ${addresses.length} addresses, ${relatedEvents.length} events`,
+        " *-> ");
 
-      console.log(` *-> [${now.toJSON()}] [${no}] [${this._url}] [BlockchainEventSource.onMessage]: Received ${transactionHashes.length} tx-hashes`);
+      await this.notifyClients(addresses);
 
-      // Find all blockchainEvents in the reported new range
-      const affectedAddressesQuery = `with a as (
-          select 'CrcSignup' as type, hash, "user" as address1, null as address2, null as address3
-          from crc_signup_2
-          union all
-          select 'CrcTrust' as type, hash, address as address1, can_send_to as address2, null as address3
-          from crc_trust_2
-          union all
-          select 'CrcOrganisationSignup' as type, hash, organisation as address1, null as address2, null as address3
-          from crc_organisation_signup_2
-          union all
-          select 'CrcHubTransfer' as type, hash, "from" as address1, "to" as address2, null as address3
-          from crc_hub_transfer_2
-          union all
-          select 'Erc20Transfer' as type, hash, "from" as address1, "to" as address2, null as address3
-          from erc20_transfer_2
-          union all
-          select 'EthTransfer' as type, hash, "from" as address1, "to" as address2, null as address3
-          from eth_transfer_2
-          union all
-          select 'GnosisSafeEthTransfer' as type, hash, "initiator" as address1, "from" as address2, "to" as address3
-          from gnosis_safe_eth_transfer_2
-      )
-      select type, hash, address1, address2, address3
-      from a
-      where hash = ANY ($1);`;
+      const invoicesByCustomerAddress = await this.findOpenInvoices(addresses)
+      const customerCount = Object.keys(invoicesByCustomerAddress).length;
+      const invoices = Object.values(invoicesByCustomerAddress).flatMap(o => o);
 
-      const eventsInMessage = await getPool().query(affectedAddressesQuery, [transactionHashes]);
-      const affectedAddresses = eventsInMessage.rows.reduce((p, c) => {
-        if (c.address1) {
-          p[c.address1] = true;
+      if (invoices.length == 0) {
+        return;
+      }
+
+      log(`Found ${invoices.length} open invoices for ${customerCount} different safes: ${invoices.map(o => o.id).join(", ")}`);
+
+
+
+      for (let invoice of invoices) {
+
+        // Find payments from the customer to the seller
+        const match = await matchInvoiceWithPayment(invoice, relatedHubTransfers);
+        if (!match) {
+          continue;
         }
-        if (c.address2) {
-          p[c.address2] = true;
-        }
-        if (c.address3) {
-          p[c.address3] = true;
-        }
-        return p;
-      }, <{ [address: string]: any }>{});
 
-      for(let address of Object.keys(affectedAddresses)) {
-        // TODO: Clear cached profiles if cache is in use
-        // profilesBySafeAddressCache.del(address)
-        await ApiPubSub.instance.pubSub.publish(`events_${address}`, {
-          events: {
-            type: "blockchain_event"
-          }
-        });
+        const pickupCode = Generate.randomHexString(6);
 
-        // Check if there are open invoices which match the buyer, seller and amount
-        const invoices = await prisma_api_rw.invoice.findMany({
+        // TODO: Currently all running processes will update the invoice with a different pickupCode but with the same transaction hash. Maybe this should be synchronized?
+        const invoiceNo = await getNextInvoiceNo(invoice.sellerProfile.id);
+        const invoiceNoStr = (invoice.sellerProfile.invoiceNoPrefix ?? "") + invoiceNo.toString().padStart(8, "0")
+
+        const updateInvoiceResult = await prisma_api_rw.invoice.update({
           where: {
-            OR: [{
-              sellerProfile: {
-                circlesAddress: address
-              }
-            },{
-              customerProfile: {
-                circlesAddress: address
-              }
-            }],
-            paymentTransactionHash: null
+            id: invoice.id
+          },
+          data: {
+            paymentTransactionHash: match.paymentTransaction.hash,
+            pickupCode: pickupCode,
+            invoiceNo: invoiceNoStr
           },
           include: {
             customerProfile: true,
             sellerProfile: true,
             lines: {
               include: {
-                product: {
-                  include: {
-                    createdBy: true
-                  }
-                }
-              }
-            }
+                product: true,
+              },
+            },
           }
         });
 
-        if (invoices.length > 0) {
-          for (let invoice of invoices) {
-            try {
-              console.log(`Found open invoices for partner ${address}:`, JSON.stringify(invoice, null, 2));
-              // Check if this is a crc_hub_transfer and if the amount is correct
-              // within certain limits:
+        log(`Updated invoice ${updateInvoiceResult.id}. `
+          +`Invoice no.: ${updateInvoiceResult.invoiceNo}, `
+          +`Payment transaction: '${updateInvoiceResult.paymentTransactionHash}', `
+          +`Pickup code: '${updateInvoiceResult.pickupCode}'.`);
 
-              const amount = invoice.lines.reduce((p, c) => p + c.amount * parseFloat(c.product.pricePerUnit), 0);
-              const code = Generate.randomHexString(6);
+        const paymentPdfData: PdfInvoicePaymentTransaction = {
+          hash: match.paymentTransaction.hash,
+          timestamp: match.paymentTransaction.timestamp
+        };
+        const invoicePdfData = pdfInvoiceDataFromDbInvoice(updateInvoiceResult, paymentPdfData);
+        const invoiceGenerator = new InvoicePdfGenerator(invoicePdfData);
+        const invoicePdfDocument = invoiceGenerator.generate();
+        const saveResult = await invoiceGenerator.savePdfToS3(invoicePdfData.storageKey, invoicePdfDocument);
 
-              let matchingTransactions = eventsInMessage.rows.filter(event => event.type === EventType.CrcHubTransfer);
-              const event = matchingTransactions.find(o => o.address1 == invoice.customerProfile.circlesAddress
-                || o.address2 == invoice.sellerProfile.circlesAddress);
+        if (saveResult.$response.error) {
+          const errMessage = `An error occurred while saving the pdf of invoice '${updateInvoiceResult.invoiceNo}' `
+            +`(id: ${updateInvoiceResult.id}) to ${process.env.DIGITALOCEAN_SPACES_ENDPOINT}: ${JSON.stringify(saveResult.$response.error)}`;
+          console.error(errMessage);
+        }
+      }
+    } catch (e) {
+      console.error(`The received websocket message couldn't be processed:`, message, `Exception was:`, e);
+    }
+  }
 
-              let hubTransfer: any;
-              if (event) {
-                hubTransfer = await getPool().query(`select *
-                                                     from crc_hub_transfer_2
-                                                     where hash = $1`, [event.hash]);
+  private async notifyClients(addresses: string[]) {
+    for (let address of addresses) {
+      // TODO: Clear cached profiles if cache is in use
+      // profilesBySafeAddressCache.del(address)
+      await ApiPubSub.instance.pubSub.publish(`events_${address}`, {
+        events: {
+          type: "blockchain_event"
+        }
+      });
+    }
+  }
+
+  private async findRelatedData(transactionHashes: string[]) {
+    // Find all blockchainEvents in the reported new range
+    const affectedAddressesQuery = `with a as (
+        select 'CrcSignup' as type, hash, "user" as address1, null as address2, null as address3
+        from crc_signup_2
+        union all
+        select 'CrcTrust' as type, hash, address as address1, can_send_to as address2, null as address3
+        from crc_trust_2
+        union all
+        select 'CrcOrganisationSignup' as type, hash, organisation as address1, null as address2, null as address3
+        from crc_organisation_signup_2
+        union all
+        select 'CrcHubTransfer' as type, hash, "from" as address1, "to" as address2, null as address3
+        from crc_hub_transfer_2
+        union all
+        select 'Erc20Transfer' as type, hash, "from" as address1, "to" as address2, null as address3
+        from erc20_transfer_2
+        union all
+        select 'EthTransfer' as type, hash, "from" as address1, "to" as address2, null as address3
+        from eth_transfer_2
+        union all
+        select 'GnosisSafeEthTransfer' as type, hash, "initiator" as address1, "from" as address2, "to" as address3
+        from gnosis_safe_eth_transfer_2
+    )
+                                    select type, hash, address1, address2, address3
+                                    from a
+                                    where hash = ANY ($1);`;
+
+    const relatedEvents = await getPool().query(affectedAddressesQuery, [transactionHashes]);
+    const relatedAddresses: { [safeAddress: string]: any } = relatedEvents.rows.reduce((p, c) => {
+      if (c.address1) {
+        p[c.address1] = true;
+      }
+      if (c.address2) {
+        p[c.address2] = true;
+      }
+      if (c.address3) {
+        p[c.address3] = true;
+      }
+      return p;
+    }, <{ [address: string]: any }>{});
+
+    return {
+      addresses: Object.keys(relatedAddresses),
+      events: relatedEvents.rows.map(o => {
+        return {
+          type: o.type,
+          hash: o.hash,
+          address1: o.address1,
+          address2: o.address2
+        };
+      }),
+    };
+  }
+
+  private async findOpenInvoices(addresses: string[]): Promise<{ [safeAddress: string]: PdfDbInvoiceData[] }> {
+    const invoices = await prisma_api_rw.invoice.findMany({
+      where: {
+        customerProfile: {
+          circlesAddress: {
+            in: addresses
+          }
+        },
+        paymentTransactionHash: null
+      },
+      include: {
+        customerProfile: true,
+        sellerProfile: true,
+        lines: {
+          include: {
+            product: {
+              include: {
+                createdBy: true
               }
-
-              if (hubTransfer && hubTransfer.rows.length == 1) {
-                const transactionTimestamp = getDateWithOffset(hubTransfer.rows[0].timestamp);
-                const tcAmount = convertTimeCirclesToCircles(amount, transactionTimestamp.toJSON());
-                const minVal = new BN(RpcGateway.get().utils.toWei(tcAmount.toString(), "ether")).sub(new BN("10000"));
-                const maxVal = new BN(RpcGateway.get().utils.toWei(tcAmount.toString(), "ether")).add(new BN("10000"));
-
-                const actualValue = new BN(hubTransfer.rows[0].value);
-                const amountMatches = actualValue.gte(minVal) && actualValue.lte(maxVal);
-
-                if (amountMatches) {
-                  // TODO: Currently all running processes will update the invoice with a different pickupCode but with the same transaction hash. Maybe this should be synchronized?
-                  const invoiceNo = await getNextInvoiceNo(invoice.sellerProfile.id);
-                  const invoiceNoStr = (invoice.sellerProfile.invoiceNoPrefix ?? "") + invoiceNo.toString().padStart(8, "0")
-                  await prisma_api_rw.invoice.update({
-                    where: {
-                      id: invoice.id
-                    },
-                    data: {
-                      paymentTransactionHash: hubTransfer.rows[0].hash,
-                      pickupCode: code,
-                      invoiceNo: invoiceNoStr
-                    }
-                  });
-
-                  await createPdfForInvoice(invoice.id, `/home/daniel/Desktop/invoices/${invoice.invoiceNo}.pdf`);
-                }
-              }
-            } catch (e) {
-              console.error(`Cannot match invoice ${invoice.id} with payment:`, e);
             }
           }
         }
       }
-    } catch (e) {
-      console.error(`The received websocket message was not understood:`, message, `Exception was: ${e}`);
-    }
+    });
+
+    return invoices.reduce((p, c) => {
+      if (!c.customerProfile?.circlesAddress) {
+        console.error(`Encountered an invoice without 'customerProfile' or the customer profile has no 'circlesAddress':`, JSON.stringify(c, null, 2));
+        return p;
+      }
+      if (!p[c.customerProfile.circlesAddress]) {
+        p[c.customerProfile.circlesAddress] = [];
+      }
+      p[c.customerProfile.circlesAddress].push(c);
+      return p;
+    }, <{ [safeAddress: string]: PdfDbInvoiceData[] }>{});
   }
 }

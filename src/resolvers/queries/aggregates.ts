@@ -33,7 +33,7 @@ export const aggregates = async (parent:any, args:QueryAggregatesArgs, context: 
         ContactPoints.CrcTrust,
         ContactPoints.Erc20Transfers
       ];
-      if (context.sessionToken) {
+      if (context.session) {
         let canAccessPrivateDetails = await canAccess(context, args.safeAddress);
         if (canAccessPrivateDetails) {
           contactPoints.push(ContactPoints.Invitation);
@@ -45,7 +45,7 @@ export const aggregates = async (parent:any, args:QueryAggregatesArgs, context: 
       aggregateSources.push(new ContactsSource(contactPoints));
     }
 
-    if (context.sessionToken) {
+    if (context.session) {
       let canAccessPrivateDetails = await canAccess(context, args.safeAddress);
       if (canAccessPrivateDetails) {
         if (types[AggregateType.Purchases]) {

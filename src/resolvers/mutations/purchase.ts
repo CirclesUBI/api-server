@@ -7,7 +7,6 @@ import {
 } from "../../api-db/client";
 import {prisma_api_ro, prisma_api_rw} from "../../apiDbClient";
 import {Context} from "../../context";
-import {createPdfForInvoice} from "../../invoiceGenerator";
 import {ProfileLoader} from "../../profileLoader";
 
 export type OfferLookup = {

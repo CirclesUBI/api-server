@@ -24,9 +24,8 @@ export function profilesBySafeAddress(
 export function myProfile(prisma: PrismaClient) {
   return async (parent: any, args: any, context: Context) => {
     let ownProfileId: number | null = null;
-    if (context.sessionToken) {
-      const session = await context.verifySession();
-      ownProfileId = session.profileId;
+    if (context.session) {
+      ownProfileId = context.session.profileId;
     }
     if (!ownProfileId) {
       return null;

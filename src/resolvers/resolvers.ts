@@ -2,8 +2,7 @@ import {myProfile, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
 import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {
-  Profile, PublicEvent,
-  Purchase, QueryVerifiedSafesArgs, Resolvers, SafeVerified,
+  Profile, Purchase, Resolvers,
 } from "../types";
 import {exchangeTokenResolver} from "./mutations/exchangeToken";
 import {logout} from "./mutations/logout";
@@ -36,7 +35,6 @@ import {invitationTransaction} from "./queries/invitationTransaction";
 import {verifySessionChallengeResolver} from "./mutations/verifySessionChallengeResolver";
 import {organisations} from "./queries/organisations";
 import {ubiInfo} from "./queries/ubiInfo";
-import {initAggregateState} from "./queries/initAggregateState";
 import {hubSignupTransactionResolver} from "./queries/hubSignupTransactionResolver";
 import {upsertOrganisation} from "./mutations/upsertOrganisation";
 import {myInvitations} from "./queries/myInvitations";
@@ -63,9 +61,7 @@ import {importOrganisationsOfAccount} from "./mutations/importOrganisationsOfAcc
 import {completePurchase} from "./mutations/completePurchase";
 import {completeSale} from "./mutations/completeSale";
 import {verifySafe} from "./mutations/verifySafe";
-import {from} from "ix/iterable";
-import {filter, map} from "ix/iterable/operators";
-import {AsyncIterable} from "ix/Ix";
+import {verifications} from "./queries/verifications";
 
 export const HUB_ADDRESS = "0x29b9a7fBb8995b2423a71cC17cf9810798F6C543";
 
@@ -146,55 +142,13 @@ export const resolvers: Resolvers = {
     trustRelations: trustRelations(prisma_api_ro),
     commonTrust: commonTrust(prisma_api_ro),
     ubiInfo: ubiInfo(),
-    initAggregateState: initAggregateState(),
     profilesById: profilesById,
     aggregates: aggregates,
     events: events,
     directPath: directPath,
     mostRecentUbiSafeOfAccount: mostRecentUbiSafeOfAccount,
     invoice: invoice,
-    verifiedSafes: async (parent:any, args:QueryVerifiedSafesArgs, context:Context) => {
-      const where:any = { };
-      if (args.filter?.after) {
-        where.createdAt = {
-          gt: new Date(args.filter.after)
-        };
-      }
-      if (args.filter?.addresses) {
-        where.safeAddress = {
-          in: args.filter?.addresses
-        };
-      }
-      const result = await prisma_api_ro.verifiedSafe.findMany({
-        where: where,
-        select: {
-          createdAt: true,
-          safeAddress: true,
-          createdByOrganisation: {
-            select: {
-              circlesAddress: true
-            }
-          }
-        },
-        take: 500,
-        orderBy: {
-          createdAt: "desc"
-        }
-      });
-
-      return result.map(o => {
-        return <PublicEvent>{
-          __typename: "PublicEvent",
-          timestamp: o.createdAt.toJSON(),
-          type: "SafeVerified",
-          payload: <SafeVerified> {
-            __typename: "SafeVerified",
-            safe_address: o.safeAddress,
-            organisation: o.createdByOrganisation.circlesAddress
-          }
-        }
-      })
-    }
+    verifications: verifications
   },
   Mutation: {
     purchase: purchaseResolver,
@@ -227,17 +181,47 @@ export const resolvers: Resolvers = {
   },
   Subscription: {
     events: {
-      subscribe: async (parent, args, context: Context) => {
+      subscribe: async function subscribe (parent, args, context: Context) {
         const callerInfo = await context.callerInfo;
         if (!callerInfo?.profile && !callerInfo?.session.ethAddress)
           throw new Error(`You need a registration to subscribe`);
 
+        const subscriberInfo = callerInfo.profile?.circlesAddress
+          ? 'subscriber circlesAddress: ' + callerInfo.profile?.circlesAddress
+          : 'subscriber ethAddress: ' + callerInfo.session.ethAddress;
+
+        console.log(`-->: [${new Date().toJSON()}] [${context.session?.id}] [${context.id}] [${context.ipAddress}] [Subscription.events.subscribe]: ${subscriberInfo}`);
+
         if (!callerInfo.profile?.circlesAddress && callerInfo.session.ethAddress) {
-          const ai = ApiPubSub.instance.pubSub.asyncIterator([`events_${callerInfo.session.ethAddress.toLowerCase()}`]);
-          return logSubscriptionEvents(context, ai);
+          return ApiPubSub.instance.pubSub.asyncIterator([`events_${callerInfo.session.ethAddress.toLowerCase()}`]);
+          // return logSubscriptionEvents(context, subscriberInfo, ai);
+/*
+          let n:any;
+          while (n = await ai.next()) {
+            console.log(` <-* [${new Date().toJSON()}] [${context.id}] [${context.ipAddress}] [Subscription.events]: Sending event to '${subscriberInfo}': ${JSON.stringify(n)}`);
+            yield n;
+          }
+/*
+          for await (let item of ai) {
+            console.log(` <-* [${new Date().toJSON()}] [${context.id}] [${context.ipAddress}] [Subscription.events]: Sending event to '${subscriberInfo}': ${JSON.stringify(item)}`);
+            yield item;
+          }
+ */
         } else if (callerInfo.profile?.circlesAddress) {
-          const ai = ApiPubSub.instance.pubSub.asyncIterator([`events_${callerInfo.profile?.circlesAddress.toLowerCase()}`]);
-          return logSubscriptionEvents(context, ai);
+          return ApiPubSub.instance.pubSub.asyncIterator([`events_${callerInfo.profile?.circlesAddress.toLowerCase()}`]);
+/*
+          let n:any;
+          while (n = await ai.next()) {
+            console.log(` <-* [${new Date().toJSON()}] [${context.id}] [${context.ipAddress}] [Subscription.events]: Sending event to '${subscriberInfo}': ${JSON.stringify(n)}`);
+            yield n;
+          }
+          // return logSubscriptionEvents(context, subscriberInfo, ai);
+/*
+          for await (let item of ai) {
+            console.log(` <-* [${new Date().toJSON()}] [${context.id}] [${context.ipAddress}] [Subscription.events]: Sending event to '${subscriberInfo}': ${JSON.stringify(item)}`);
+            yield item;
+          }
+ */
         }
 
         console.error(`Err: [${new Date().toJSON()}] [${context.id}] [${context.ipAddress}] [Subscription.events]: Cannot subscribe without an eoa- or safe-address`);
@@ -246,10 +230,3 @@ export const resolvers: Resolvers = {
     }
   }
 };
-
-async function* logSubscriptionEvents(context:Context, eventStream:any) {
-  for await (let item of eventStream) {
-    console.log(` <-* [${new Date().toJSON()}] [${context.id}] [${context.ipAddress}] [Subscription.events]: ${JSON.stringify(item)}`);
-    yield item;
-  }
-}

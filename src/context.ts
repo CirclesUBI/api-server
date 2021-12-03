@@ -11,8 +11,6 @@ export class Context {
 
     readonly jwt?: string;
     readonly originHeaderValue?: string;
-    readonly sessionId?: string;
-    readonly sessionToken?: string;
     readonly ipAddress?:string;
 
     readonly setCookies:Array<any> = [];
@@ -20,17 +18,17 @@ export class Context {
     readonly req?: Request;
     readonly res?: Response;
 
+    session?: PrismaSession|null;
 
-    constructor(id: string, isSubscription: boolean, jwt?: string, originHeaderValue?: string, sessionToken?: string, ipAddress?:string, req?: Request, res?: Response, sessionId?:string) {
+    constructor(id: string, isSubscription: boolean, jwt?: string, originHeaderValue?: string, session?: PrismaSession|null, ipAddress?:string, req?: Request, res?: Response, sessionId?:string) {
         this.isSubscription = isSubscription;
         this.jwt = jwt;
         this.originHeaderValue = originHeaderValue;
-        this.sessionToken = sessionToken;
         this.ipAddress = ipAddress;
         this.id = id;
         this.req = req;
         this.res = res;
-        this.sessionId = sessionId;
+        this.session = session;
     }
 
     public static async create(arg: { req?: Request, connection?: ExecutionParams, res?: Response }): Promise<Context> {
@@ -72,27 +70,24 @@ export class Context {
             isSubscription,
             authorizationHeaderValue,
             originHeaderValue,
-            sessionToken,
+            session,
             remoteIp,
             arg.req,
-            arg.res,
-            session?.id);
+            arg.res);
     }
 
-    async verifySession(extendIfValid?:boolean) : Promise<PrismaSession> {
-        if (!this.sessionToken) {
-            throw new Error("No session id on context.");
+    async verifySession() : Promise<PrismaSession> {
+        if (!this.session) {
+            throw new Error("No session on context.");
         }
 
-        const validSession = await Session.findSessionBysessionToken(prisma_api_ro, this.sessionToken)
+        const validSession = await Session.findSessionBysessionToken(prisma_api_ro, this.session.sessionToken)
         if (!validSession) {
-            const errorMsg = `No session could be found for the supplied sessionToken ('${this.sessionToken ?? "<undefined or null>"}')`;
+            const errorMsg = `No session could be found for the supplied sessionToken.')`;
             throw new Error(errorMsg);
         }
 
-        if (extendIfValid) {
-            await Session.extendSession(prisma_api_rw, validSession);
-        }
+        this.session = validSession;
 
         return validSession;
     }

@@ -765,13 +765,6 @@ type TagTransactionResult {
   tag: Tag
 }
 
-type InitAggregateState {
-  registration: Profile
-  invitation: ClaimedInvitation
-  invitationTransaction: String
-  hubSignupTransaction: String
-}
-
 type CreateOrganisationResult {
   success: Boolean!
   error: String
@@ -883,6 +876,19 @@ type VerifySafeResult {
   success: Boolean!
 }
 
+type Verification {
+  createdAt: String!
+
+  verifierSafeAddress: String!
+  verifierProfile: Organisation
+
+  verifiedSafeAddress: String!
+  verifiedProfile: Profile
+
+  verificationRewardTransactionHash: String!
+  verificationRewardTransaction: ProfileEvent
+}
+
 enum SortOrder {
   ASC
   DESC
@@ -945,7 +951,6 @@ type SafeAddressByOwnerResult {
 }
 
 input VerifiedSafesFilter {
-  after: String
   addresses: [String!]
 }
 
@@ -954,8 +959,6 @@ type Query {
   version: Version!
   sessionInfo: SessionInfo!
 
-  initAggregateState: InitAggregateState
-
   # Tries to find a claimed invitation for the logged-on user.
   # A user can claim and redeem only one invitation ever.
   claimedInvitation: ClaimedInvitation
@@ -963,7 +966,7 @@ type Query {
   hubSignupTransaction: ProfileEvent
   ubiInfo: UbiInfo!
 
-  verifiedSafes(filter:VerifiedSafesFilter) : [PublicEvent!]!
+  verifications(pagination: PaginationArgs, filter:VerifiedSafesFilter) : [Verification!]!
 
   events(
     types: [EventType!]!

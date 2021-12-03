@@ -351,14 +351,6 @@ export type IEventPayload = {
   transaction_hash?: Maybe<Scalars['String']>;
 };
 
-export type InitAggregateState = {
-  __typename?: 'InitAggregateState';
-  registration?: Maybe<Profile>;
-  invitation?: Maybe<ClaimedInvitation>;
-  invitationTransaction?: Maybe<Scalars['String']>;
-  hubSignupTransaction?: Maybe<Scalars['String']>;
-};
-
 export type InvitationCreated = IEventPayload & {
   __typename?: 'InvitationCreated';
   transaction_hash?: Maybe<Scalars['String']>;
@@ -826,12 +818,11 @@ export type Query = {
   whoami?: Maybe<Scalars['String']>;
   version: Version;
   sessionInfo: SessionInfo;
-  initAggregateState?: Maybe<InitAggregateState>;
   claimedInvitation?: Maybe<ClaimedInvitation>;
   invitationTransaction?: Maybe<ProfileEvent>;
   hubSignupTransaction?: Maybe<ProfileEvent>;
   ubiInfo: UbiInfo;
-  verifiedSafes: Array<PublicEvent>;
+  verifications: Array<Verification>;
   events: Array<ProfileEvent>;
   aggregates: Array<ProfileAggregate>;
   organisations: Array<Organisation>;
@@ -854,7 +845,8 @@ export type Query = {
 };
 
 
-export type QueryVerifiedSafesArgs = {
+export type QueryVerificationsArgs = {
+  pagination?: Maybe<PaginationArgs>;
   filter?: Maybe<VerifiedSafesFilter>;
 };
 
@@ -1201,8 +1193,18 @@ export type UpsertTagInput = {
   value?: Maybe<Scalars['String']>;
 };
 
+export type Verification = {
+  __typename?: 'Verification';
+  createdAt: Scalars['String'];
+  verifierSafeAddress: Scalars['String'];
+  verifierProfile?: Maybe<Organisation>;
+  verifiedSafeAddress: Scalars['String'];
+  verifiedProfile?: Maybe<Profile>;
+  verificationRewardTransactionHash: Scalars['String'];
+  verificationRewardTransaction?: Maybe<ProfileEvent>;
+};
+
 export type VerifiedSafesFilter = {
-  after?: Maybe<Scalars['String']>;
   addresses?: Maybe<Array<Scalars['String']>>;
 };
 
@@ -1351,7 +1353,6 @@ export type ResolversTypes = ResolversObject<{
   IAggregatePayload: ResolversTypes['Contacts'] | ResolversTypes['CrcBalances'] | ResolversTypes['Erc20Balances'] | ResolversTypes['Members'] | ResolversTypes['Memberships'] | ResolversTypes['Offers'] | ResolversTypes['Purchases'] | ResolversTypes['Sales'];
   ICity: ResolversTypes['City'];
   IEventPayload: ResolversTypes['ChatMessage'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['CrcSignup'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcTrust'] | ResolversTypes['Erc20Transfer'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'] | ResolversTypes['InvitationCreated'] | ResolversTypes['InvitationRedeemed'] | ResolversTypes['MemberAdded'] | ResolversTypes['MembershipAccepted'] | ResolversTypes['MembershipOffer'] | ResolversTypes['MembershipRejected'] | ResolversTypes['OrganisationCreated'] | ResolversTypes['SafeVerified'] | ResolversTypes['SaleEvent'] | ResolversTypes['WelcomeMessage'];
-  InitAggregateState: ResolverTypeWrapper<InitAggregateState>;
   InvitationCreated: ResolverTypeWrapper<InvitationCreated>;
   InvitationRedeemed: ResolverTypeWrapper<InvitationRedeemed>;
   Invoice: ResolverTypeWrapper<Invoice>;
@@ -1422,6 +1423,7 @@ export type ResolversTypes = ResolversObject<{
   UpsertOrganisationInput: UpsertOrganisationInput;
   UpsertProfileInput: UpsertProfileInput;
   UpsertTagInput: UpsertTagInput;
+  Verification: ResolverTypeWrapper<Verification>;
   VerifiedSafesFilter: VerifiedSafesFilter;
   VerifySafeResult: ResolverTypeWrapper<VerifySafeResult>;
   Version: ResolverTypeWrapper<Version>;
@@ -1472,7 +1474,6 @@ export type ResolversParentTypes = ResolversObject<{
   IAggregatePayload: ResolversParentTypes['Contacts'] | ResolversParentTypes['CrcBalances'] | ResolversParentTypes['Erc20Balances'] | ResolversParentTypes['Members'] | ResolversParentTypes['Memberships'] | ResolversParentTypes['Offers'] | ResolversParentTypes['Purchases'] | ResolversParentTypes['Sales'];
   ICity: ResolversParentTypes['City'];
   IEventPayload: ResolversParentTypes['ChatMessage'] | ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['Erc20Transfer'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'] | ResolversParentTypes['InvitationCreated'] | ResolversParentTypes['InvitationRedeemed'] | ResolversParentTypes['MemberAdded'] | ResolversParentTypes['MembershipAccepted'] | ResolversParentTypes['MembershipOffer'] | ResolversParentTypes['MembershipRejected'] | ResolversParentTypes['OrganisationCreated'] | ResolversParentTypes['SafeVerified'] | ResolversParentTypes['SaleEvent'] | ResolversParentTypes['WelcomeMessage'];
-  InitAggregateState: InitAggregateState;
   InvitationCreated: InvitationCreated;
   InvitationRedeemed: InvitationRedeemed;
   Invoice: Invoice;
@@ -1541,6 +1542,7 @@ export type ResolversParentTypes = ResolversObject<{
   UpsertOrganisationInput: UpsertOrganisationInput;
   UpsertProfileInput: UpsertProfileInput;
   UpsertTagInput: UpsertTagInput;
+  Verification: Verification;
   VerifiedSafesFilter: VerifiedSafesFilter;
   VerifySafeResult: VerifySafeResult;
   Version: Version;
@@ -1823,14 +1825,6 @@ export type ICityResolvers<ContextType = any, ParentType extends ResolversParent
 export type IEventPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['IEventPayload'] = ResolversParentTypes['IEventPayload']> = ResolversObject<{
   __resolveType: TypeResolveFn<'ChatMessage' | 'CrcHubTransfer' | 'CrcMinting' | 'CrcSignup' | 'CrcTokenTransfer' | 'CrcTrust' | 'Erc20Transfer' | 'EthTransfer' | 'GnosisSafeEthTransfer' | 'InvitationCreated' | 'InvitationRedeemed' | 'MemberAdded' | 'MembershipAccepted' | 'MembershipOffer' | 'MembershipRejected' | 'OrganisationCreated' | 'SafeVerified' | 'SaleEvent' | 'WelcomeMessage', ParentType, ContextType>;
   transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-}>;
-
-export type InitAggregateStateResolvers<ContextType = any, ParentType extends ResolversParentTypes['InitAggregateState'] = ResolversParentTypes['InitAggregateState']> = ResolversObject<{
-  registration?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
-  invitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
-  invitationTransaction?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  hubSignupTransaction?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type InvitationCreatedResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvitationCreated'] = ResolversParentTypes['InvitationCreated']> = ResolversObject<{
@@ -2130,12 +2124,11 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   whoami?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   version?: Resolver<ResolversTypes['Version'], ParentType, ContextType>;
   sessionInfo?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
-  initAggregateState?: Resolver<Maybe<ResolversTypes['InitAggregateState']>, ParentType, ContextType>;
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   ubiInfo?: Resolver<ResolversTypes['UbiInfo'], ParentType, ContextType>;
-  verifiedSafes?: Resolver<Array<ResolversTypes['PublicEvent']>, ParentType, ContextType, RequireFields<QueryVerifiedSafesArgs, never>>;
+  verifications?: Resolver<Array<ResolversTypes['Verification']>, ParentType, ContextType, RequireFields<QueryVerificationsArgs, never>>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'types' | 'safeAddress' | 'pagination'>>;
   aggregates?: Resolver<Array<ResolversTypes['ProfileAggregate']>, ParentType, ContextType, RequireFields<QueryAggregatesArgs, 'types' | 'safeAddress'>>;
   organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsArgs, never>>;
@@ -2310,6 +2303,17 @@ export type UpdateSafeResponseResolvers<ContextType = any, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type VerificationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Verification'] = ResolversParentTypes['Verification']> = ResolversObject<{
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  verifierSafeAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  verifierProfile?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType>;
+  verifiedSafeAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  verifiedProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  verificationRewardTransactionHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  verificationRewardTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type VerifySafeResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['VerifySafeResult'] = ResolversParentTypes['VerifySafeResult']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -2364,7 +2368,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   IAggregatePayload?: IAggregatePayloadResolvers<ContextType>;
   ICity?: ICityResolvers<ContextType>;
   IEventPayload?: IEventPayloadResolvers<ContextType>;
-  InitAggregateState?: InitAggregateStateResolvers<ContextType>;
   InvitationCreated?: InvitationCreatedResolvers<ContextType>;
   InvitationRedeemed?: InvitationRedeemedResolvers<ContextType>;
   Invoice?: InvoiceResolvers<ContextType>;
@@ -2414,6 +2417,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   TrustRelation?: TrustRelationResolvers<ContextType>;
   UbiInfo?: UbiInfoResolvers<ContextType>;
   UpdateSafeResponse?: UpdateSafeResponseResolvers<ContextType>;
+  Verification?: VerificationResolvers<ContextType>;
   VerifySafeResult?: VerifySafeResultResolvers<ContextType>;
   Version?: VersionResolvers<ContextType>;
   WelcomeMessage?: WelcomeMessageResolvers<ContextType>;

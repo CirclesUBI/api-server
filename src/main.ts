@@ -15,6 +15,7 @@ import {PoolClient} from "pg";
 import {GqlLogger} from "./gqlLogger";
 import {Session as PrismaSession, PrismaClient} from "./api-db/client";
 import {Session} from "./session";
+import {Server, ServerOptions} from "ws";
 
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
 
@@ -77,6 +78,14 @@ export class Main {
             schema,
             execute,
             subscribe,
+            async onDisconnect(options:ServerOptions, socketOptionsOrServer:Server) {
+                const upgradeRequest = (<any>options).upgradeReq;
+                const ip = upgradeRequest.headers['forwarded-for']
+                  ?? upgradeRequest.headers['x-forwarded-for']
+                  ?? upgradeRequest.connection.remoteAddress;
+
+                console.log(`-->X [${new Date().toJSON()}] [] [] [${ip}] [subscriptionServer.onConnect]: Websocket connection closed.`);
+            },
             async onConnect(connectionParams:any, webSocket:any) {
                 // WS
                 const contextId = Session.generateRandomBase64String(8);
@@ -91,21 +100,7 @@ export class Main {
                   ?? upgradeRequest.connection.remoteAddress;
 
                 isSubscription = true;
-
-                let sessionToken:string|undefined = undefined;
-                if (cookieValue) {
-                    const cookies = cookieValue.split(";")
-                                                .map((o:string) => o.trim()
-                                                  .split("="))
-                                                .reduce((p:{[key:string]:any}, c:string) => {
-                                                    p[c[0]] = c[1];
-                                                    return p
-                                                }, {});
-                    if (cookies["session"]) {
-                        sessionToken = decodeURIComponent(cookies["session"]);
-                    }
-                }
-
+                let sessionToken = Main.tryGetSessionToken(cookieValue);
 
                 let session: PrismaSession|null = await Context.findSession(sessionToken);
                 if (session) {
@@ -119,11 +114,8 @@ export class Main {
                   isSubscription,
                   authorizationHeaderValue,
                   originHeaderValue,
-                  sessionToken,
-                  ip,
-                  undefined,
-                  undefined,
-                  session?.id);
+                  session,
+                  ip);
 
                 return context;
             },
@@ -152,6 +144,22 @@ export class Main {
             httpServer.listen(PORT, () =>
               console.log(`Server is now running on http://localhost:${PORT}/graphql`)
             );
+    }
+
+    private static tryGetSessionToken(cookieValue?:string) {
+        let sessionToken: string | undefined = undefined;
+        if (cookieValue) {
+            const cookies = cookieValue.split(";")
+              .map((o: string) => o.trim().split("="))
+              .reduce((p: { [key: string]: any }, c: string[]) => {
+                  p[c[0]] = c[1];
+                  return p
+              }, {});
+            if (cookies["session"]) {
+                sessionToken = decodeURIComponent(cookies["session"]);
+            }
+        }
+        return sessionToken;
     }
 
     private async listenForDbEvents() {

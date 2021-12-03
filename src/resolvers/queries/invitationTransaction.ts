@@ -1,9 +1,10 @@
 import {getPool} from "../resolvers";
 import {PrismaClient} from "../../api-db/client";
 import {ProfileEvent} from "../../types";
+import {Context} from "../../context";
 
 export function invitationTransaction(prisma_api_ro:PrismaClient) {
-    return async (parent:any, args:any, context:any) => {
+    return async (parent:any, args:any, context:Context) => {
         const session = await context.verifySession();
         const profile = await prisma_api_ro.profile.findFirst({
             where:{

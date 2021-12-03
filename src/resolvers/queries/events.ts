@@ -80,7 +80,7 @@ export const events = async (parent:any, args:QueryEventsArgs, context: Context)
   //
   // private
   //
-  if (Object.keys(types).length > 0 && context.sessionToken) {
+  if (Object.keys(types).length > 0 && context.session) {
     let canAccessPrivateDetails = await canAccess(context, args.safeAddress);
 
     if (canAccessPrivateDetails && types[EventType.SafeVerified]) {
