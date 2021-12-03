@@ -10,10 +10,12 @@ export const verifications = async (parent:any, args:QueryVerificationsArgs, con
     ? args.pagination.limit
     : 50) : 50;
 
-  if (args.pagination?.continueAt) {
+  if (args.pagination?.continueAt && args.pagination?.order) {
     const continueAtDate = new Date(Date.parse(args.pagination.continueAt));
-    where.createdAt = {
+    where.createdAt = args.pagination?.order == SortOrder.Asc ? {
       gt: continueAtDate
+    } : {
+      lt: continueAtDate
     };
   }
   if (args.filter?.addresses) {

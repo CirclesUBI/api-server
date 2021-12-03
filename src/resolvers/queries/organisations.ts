@@ -32,13 +32,13 @@ export function organisations(prisma: PrismaClient) {
       return [];
     }
 
-    const allSafeAddresses = organisationSignupsResult.rows.reduce((p,c) => {
-      p[c.organisation] = c.timestamp;
+    const allCreationDates = organisationSignupsResult.rows.reduce((p,c) => {
+      p[c.organisation] = new Date(c.timestamp);
       return p;
     },{});
 
     const profileLoader = new ProfileLoader();
-    const profiles = await profileLoader.profilesBySafeAddress(prisma, Object.keys(allSafeAddresses));
+    const profiles = await profileLoader.profilesBySafeAddress(prisma, Object.keys(allCreationDates));
 
     return organisationSignupsResult.rows.map(o => {
       const p:Profile = profiles[o.organisation] ?? {
@@ -49,7 +49,7 @@ export function organisations(prisma: PrismaClient) {
 
       return <Organisation>{
         id: p.id,
-        createdAt: allSafeAddresses[p.circlesAddress ?? ""],
+        createdAt: allCreationDates[p.circlesAddress ?? ""].toJSON(),
         name: p.firstName,
         cityGeonameid: p.cityGeonameid,
         circlesAddress: p.circlesAddress,
