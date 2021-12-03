@@ -48,6 +48,11 @@ export type AssetBalance = {
   token_balance: Scalars['String'];
 };
 
+export type Capability = {
+  __typename?: 'Capability';
+  key: Scalars['String'];
+};
+
 export type ChatMessage = IEventPayload & {
   __typename?: 'ChatMessage';
   transaction_hash?: Maybe<Scalars['String']>;
@@ -716,6 +721,7 @@ export type Profile = {
   claimedInvitation?: Maybe<ClaimedInvitation>;
   memberships?: Maybe<Array<Membership>>;
   displayCurrency?: Maybe<DisplayCurrency>;
+  verifications?: Maybe<Array<Verification>>;
 };
 
 export type ProfileAggregate = {
@@ -1081,6 +1087,7 @@ export type SessionInfo = {
   profileId?: Maybe<Scalars['Int']>;
   lastAcknowledgedAt?: Maybe<Scalars['String']>;
   profile?: Maybe<Profile>;
+  capabilities: Array<Capability>;
 };
 
 export enum SortOrder {
@@ -1313,6 +1320,7 @@ export type ResolversTypes = ResolversObject<{
   AggregatePayload: ResolversTypes['CrcBalances'] | ResolversTypes['Erc20Balances'] | ResolversTypes['Contacts'] | ResolversTypes['Memberships'] | ResolversTypes['Members'] | ResolversTypes['Offers'] | ResolversTypes['Sales'] | ResolversTypes['Purchases'];
   AggregateType: AggregateType;
   AssetBalance: ResolverTypeWrapper<AssetBalance>;
+  Capability: ResolverTypeWrapper<Capability>;
   ChatMessage: ResolverTypeWrapper<ChatMessage>;
   City: ResolverTypeWrapper<City>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
@@ -1438,6 +1446,7 @@ export type ResolversParentTypes = ResolversObject<{
   AddMemberResult: AddMemberResult;
   AggregatePayload: ResolversParentTypes['CrcBalances'] | ResolversParentTypes['Erc20Balances'] | ResolversParentTypes['Contacts'] | ResolversParentTypes['Memberships'] | ResolversParentTypes['Members'] | ResolversParentTypes['Offers'] | ResolversParentTypes['Sales'] | ResolversParentTypes['Purchases'];
   AssetBalance: AssetBalance;
+  Capability: Capability;
   ChatMessage: ChatMessage;
   City: City;
   Int: Scalars['Int'];
@@ -1571,6 +1580,11 @@ export type AssetBalanceResolvers<ContextType = any, ParentType extends Resolver
   token_owner_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   token_owner_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   token_balance?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CapabilityResolvers<ContextType = any, ParentType extends ResolversParentTypes['Capability'] = ResolversParentTypes['Capability']> = ResolversObject<{
+  key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2046,6 +2060,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
   memberships?: Resolver<Maybe<Array<ResolversTypes['Membership']>>, ParentType, ContextType>;
   displayCurrency?: Resolver<Maybe<ResolversTypes['DisplayCurrency']>, ParentType, ContextType>;
+  verifications?: Resolver<Maybe<Array<ResolversTypes['Verification']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2243,6 +2258,7 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
   profileId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   lastAcknowledgedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  capabilities?: Resolver<Array<ResolversTypes['Capability']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2338,6 +2354,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   AddMemberResult?: AddMemberResultResolvers<ContextType>;
   AggregatePayload?: AggregatePayloadResolvers<ContextType>;
   AssetBalance?: AssetBalanceResolvers<ContextType>;
+  Capability?: CapabilityResolvers<ContextType>;
   ChatMessage?: ChatMessageResolvers<ContextType>;
   City?: CityResolvers<ContextType>;
   ClaimInvitationResult?: ClaimInvitationResultResolvers<ContextType>;

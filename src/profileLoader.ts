@@ -1,5 +1,5 @@
-import {PrismaClient} from "./api-db/client";
-import {DisplayCurrency, Profile} from "./types";
+import {PrismaClient, VerifiedSafe} from "./api-db/client";
+import {DisplayCurrency, Organisation, Profile, Verification} from "./types";
 import {RpcGateway} from "./rpcGateway";
 import fetch from "cross-fetch";
 
@@ -53,7 +53,7 @@ export class ProfileLoader {
   }
 
   async queryCirclesLandBySafeAddress(prisma: PrismaClient, safeAddresses:string[]) : Promise<SafeProfileMap> {
-    const profiles = await prisma.profile.findMany({
+    const profilesPromise = prisma.profile.findMany({
       where: {
         circlesAddress: {
           in: safeAddresses
@@ -64,10 +64,61 @@ export class ProfileLoader {
       }
     });
 
+    const safeVerificationsPromise = prisma.verifiedSafe.findMany({
+      where: {
+        safeAddress: {
+          in: safeAddresses
+        }
+      },
+      include: {
+        createdByOrganisation: true
+      }
+    });
+
+    const promiseResults = await Promise.all([
+      safeVerificationsPromise,
+      profilesPromise
+    ]);
+
+    const safeVerifications = promiseResults[0];
+    const safeVerificationsMap = safeVerifications.reduce((p,c) => {
+      p[c.safeAddress] = {
+        ...c,
+        createdByOrganisation: ProfileLoader.withDisplayCurrency(c.createdByOrganisation)
+      };
+      return p;
+    }, <{[address:string]: VerifiedSafe & {createdByOrganisation: Profile}}>{});
+
+    const profiles = promiseResults[1];
     const safeProfileMap = profiles.reduce((p,c)=> {
       if (!c.circlesAddress)
         return p;
-      p[c.circlesAddress] = ProfileLoader.withDisplayCurrency(c);
+
+      let verifications:Verification[] = [];
+      if (safeVerificationsMap[c.circlesAddress]) {
+        const safeVerification = safeVerificationsMap[c.circlesAddress];
+        if (safeVerification.createdByOrganisation && safeVerification.createdByOrganisation.circlesAddress) {
+          verifications.push({
+            __typename: "Verification",
+            verifierProfile: <Organisation>{
+              ...safeVerification.createdByOrganisation,
+              name: safeVerification.createdByOrganisation.firstName,
+              createdAt: ""
+            },
+            verificationRewardTransactionHash: "",
+            verificationRewardTransaction: null,
+            verifierSafeAddress: safeVerification.createdByOrganisation.circlesAddress,
+            createdAt: safeVerification.createdAt.toJSON(),
+            verifiedSafeAddress: c.circlesAddress,
+            verifiedProfile: ProfileLoader.withDisplayCurrency(c)
+          })
+        }
+      }
+
+      p[c.circlesAddress] = {
+        ...ProfileLoader.withDisplayCurrency(c),
+        verifications: verifications
+      };
       return p;
     }, <SafeProfileMap>{});
 

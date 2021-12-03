@@ -24,6 +24,7 @@ type Profile {
   claimedInvitation: ClaimedInvitation
   memberships: [Membership!]
   displayCurrency: DisplayCurrency
+  verifications: [Verification!]
 }
 
 enum DisplayCurrency {
@@ -141,6 +142,11 @@ type SessionInfo {
   profileId: Int
   lastAcknowledgedAt: String
   profile: Profile
+  capabilities: [Capability!]!
+}
+
+type Capability {
+  key: String!
 }
 
 type DelegateAuthInit {

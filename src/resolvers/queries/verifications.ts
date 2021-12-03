@@ -1,13 +1,19 @@
-import {QueryVerificationsArgs, Verification} from "../../types";
+import {QueryVerificationsArgs, SortOrder, Verification} from "../../types";
 import {Context} from "../../context";
 import {prisma_api_ro} from "../../apiDbClient";
 import {ProfileLoader} from "../../profileLoader";
 
 export const verifications = async (parent:any, args:QueryVerificationsArgs, context:Context) => {
   const where:any = { };
+
+  const limit = args.pagination ? (Number.isInteger(args.pagination.limit) && args.pagination.limit > 0 && args.pagination.limit <= 100
+    ? args.pagination.limit
+    : 50) : 50;
+
   if (args.pagination?.continueAt) {
+    const continueAtDate = new Date(Date.parse(args.pagination.continueAt));
     where.createdAt = {
-      gt: new Date(args.pagination.continueAt)
+      gt: continueAtDate
     };
   }
   if (args.filter?.addresses) {
@@ -27,9 +33,9 @@ export const verifications = async (parent:any, args:QueryVerificationsArgs, con
         }
       }
     },
-    take: args.pagination?.limit ?? 50,
+    take: limit,
     orderBy: {
-      createdAt: "desc"
+      createdAt: args.pagination?.order == SortOrder.Asc ? "asc" : "desc"
     }
   });
 
@@ -43,7 +49,19 @@ export const verifications = async (parent:any, args:QueryVerificationsArgs, con
 
   const profiles = await new ProfileLoader().profilesBySafeAddress(prisma_api_ro, Object.keys(safeAddresses));
 
-  return result.map(o => {
+  return result.sort((a,b) => {
+    return args.pagination?.order == SortOrder.Asc || !args.pagination
+      ? a.createdAt.getTime() > b.createdAt.getTime()
+        ? 1
+        : a.createdAt.getTime() < b.createdAt.getTime()
+          ? -1
+          : 0
+      : a.createdAt.getTime() > b.createdAt.getTime()
+        ? -1
+        : a.createdAt.getTime() < b.createdAt.getTime()
+          ? 1
+          : 0
+  }).map(o => {
     return <Verification>{
       __typename: "Verification",
       createdAt: o.createdAt.toJSON(),

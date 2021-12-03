@@ -58,6 +58,5 @@ export function organisations(prisma: PrismaClient) {
         avatarMimeType: p.avatarMimeType
       }
     });
-
   }
 }

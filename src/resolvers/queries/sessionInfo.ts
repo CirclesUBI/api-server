@@ -17,7 +17,8 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
             hasProfile: !!session.profileId,
             profileId: session.profileId,
             profile: ProfileLoader.withDisplayCurrency(profile),
-            lastAcknowledgedAt: profile?.lastAcknowledged?.toJSON()
+            lastAcknowledgedAt: profile?.lastAcknowledged?.toJSON(),
+            capabilities: []
         }
     } catch(e) {
         // When the session is invalid, make sure that the user doesn't keep the cookie
@@ -37,7 +38,8 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
         });
 
         return {
-            isLoggedOn: false
+            isLoggedOn: false,
+            capabilities: []
         }
     }
 }

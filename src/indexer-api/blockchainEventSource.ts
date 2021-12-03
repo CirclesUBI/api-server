@@ -189,9 +189,7 @@ export class BlockchainEventSource {
         return;
       }
 
-      log(`Found ${invoices.length} open invoices for ${customerCount} different safes: ${invoices.map(o => o.id).join(", ")}`);
-
-
+      log(`Found ${invoices.length} open invoice(s) for ${customerCount} different safe(s): ${invoices.map(o => o.id).join(", ")}`);
 
       for (let invoice of invoices) {
 
@@ -203,7 +201,8 @@ export class BlockchainEventSource {
 
         const pickupCode = Generate.randomHexString(6);
 
-        // TODO: Currently all running processes will update the invoice with a different pickupCode but with the same transaction hash. Maybe this should be synchronized?
+        // TODO: Currently all running processes will update the invoice with a different pickupCode but with the same transaction hash.
+        //       Maybe this should be synchronized?
         const invoiceNo = await getNextInvoiceNo(invoice.sellerProfile.id);
         const invoiceNoStr = (invoice.sellerProfile.invoiceNoPrefix ?? "") + invoiceNo.toString().padStart(8, "0")
 
