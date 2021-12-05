@@ -2,7 +2,7 @@ import {ExecutionParams} from "subscriptions-transport-ws";
 import {Request, Response} from "express";
 import {Session as PrismaSession} from "./api-db/client";
 import {Session} from "./session";
-import {prisma_api_ro, prisma_api_rw} from "./apiDbClient";
+import {prisma_api_rw} from "./apiDbClient";
 import {Profile} from "./api-db/client";
 
 export class Context {
@@ -29,6 +29,10 @@ export class Context {
         this.req = req;
         this.res = res;
         this.session = session;
+    }
+
+    log(str: string, prefix?: string) {
+        console.log(`${prefix ?? "     "}[${new Date().toJSON()}] [${this.session?.id ?? ""}] [${this.id ?? ""}] [BlockchainEventSource.onMessage]: ${str}`);
     }
 
     public static async create(arg: { req?: Request, connection?: ExecutionParams, res?: Response }): Promise<Context> {
@@ -81,7 +85,7 @@ export class Context {
             throw new Error("No session on context.");
         }
 
-        const validSession = await Session.findSessionBysessionToken(prisma_api_ro, this.session.sessionToken)
+        const validSession = await Session.findSessionBysessionToken(prisma_api_rw, this.session.sessionToken)
         if (!validSession) {
             const errorMsg = `No session could be found for the supplied sessionToken.')`;
             throw new Error(errorMsg);
@@ -94,26 +98,20 @@ export class Context {
 
     static async findSession(sessionToken?:string) : Promise<PrismaSession|null> {
         if (!sessionToken) return null;
-        return await Session.findSessionBysessionToken(prisma_api_ro, sessionToken)
+        return await Session.findSessionBysessionToken(prisma_api_rw, sessionToken)
     }
 
-    private _callerInfo:{ session: PrismaSession, profile: Profile|null }|null = null;
     get callerInfo() : Promise<{ session: PrismaSession, profile: Profile|null }|null> {
-        if (this._callerInfo === null) {
-            return this.verifySession().then(async session => {
-                const p = await prisma_api_ro.profile.findUnique({
-                    where: {
-                        id: session.profileId ?? undefined
-                    }
-                });
-                this._callerInfo = {
-                    session: session,
-                    profile: p
-                };
-                return this._callerInfo;
-            });
-        } else {
-            return Promise.resolve(this._callerInfo);
-        }
+        return this.verifySession().then(async session => {
+            const p = session.profileId ? (await prisma_api_rw.profile.findUnique({
+                where: {
+                    id: session.profileId
+                }
+            })) : null;
+            return  {
+                session: session,
+                profile: p
+            };
+        });
     }
 }

@@ -33,11 +33,13 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
             isLoggedOn: true,
             hasProfile: !!callerInfo?.profile,
             profileId: callerInfo?.profile?.id,
-            profile: ProfileLoader.withDisplayCurrency(profile),
+            profile: profile ? ProfileLoader.withDisplayCurrency(profile) : null,
             lastAcknowledgedAt: profile?.lastAcknowledged?.toJSON(),
             capabilities: capabilities
         }
     } catch(e) {
+        context.log(JSON.stringify(e));
+
         // When the session is invalid, make sure that the user doesn't keep the cookie
         const expires = new Date();
         /// See https://www.npmjs.com/package/apollo-server-plugin-http-headers for the magic that happens below ;)
