@@ -1,9 +1,9 @@
 import DataLoader from "dataloader";
 import {ProfileLoader} from "../../profileLoader";
-import {prisma_api_ro} from "../../apiDbClient";
+import {Environment} from "../../environment";
 
 export const offerCreatedByLoader = new DataLoader(async (keys: readonly any[]) => {
-  const result = await new ProfileLoader().profilesBySafeAddress(prisma_api_ro, keys.map(o => o));
+  const result = await new ProfileLoader().profilesBySafeAddress(Environment.readonlyApiDb, keys.map(o => o));
   const r = keys.map(safeAddress => {
     return result[safeAddress]
       ?? {

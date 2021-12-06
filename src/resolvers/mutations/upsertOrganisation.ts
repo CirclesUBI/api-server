@@ -1,10 +1,10 @@
 import {Context} from "../../context";
-import {PrismaClient} from "../../api-db/client";
 import {MutationUpsertOrganisationArgs, Profile} from "../../types";
 import {ProfileLoader} from "../../profileLoader";
+import {Environment} from "../../environment";
 
-export async function isOrgAdmin(prisma_api_rw:PrismaClient, userAddress:string, orgId: number) : Promise<boolean> {
-  return !!(await prisma_api_rw.membership.findFirst({
+export async function isOrgAdmin(userAddress:string, orgId: number) : Promise<boolean> {
+  return !!(await Environment.readWriteApiDb.membership.findFirst({
     where: {
       memberAddress: userAddress,
       memberAtId: orgId,
@@ -13,7 +13,7 @@ export async function isOrgAdmin(prisma_api_rw:PrismaClient, userAddress:string,
   }));
 }
 
-export function upsertOrganisation(prisma_api_rw:PrismaClient, isRegion:boolean) {
+export function upsertOrganisation(isRegion:boolean) {
     return async (parent:any, args:MutationUpsertOrganisationArgs, context:Context) => {
       const callerInfo = await context.callerInfo;
 
@@ -22,8 +22,8 @@ export function upsertOrganisation(prisma_api_rw:PrismaClient, isRegion:boolean)
       }
 
       let organisationProfile:Profile;
-      if (args.organisation.id && await isOrgAdmin(prisma_api_rw, callerInfo.profile.circlesAddress, args.organisation.id)) {
-        organisationProfile = ProfileLoader.withDisplayCurrency(await prisma_api_rw.profile.update({
+      if (args.organisation.id && await isOrgAdmin(callerInfo.profile.circlesAddress, args.organisation.id)) {
+        organisationProfile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({
           where: {
             id: args.organisation.id
           },
@@ -39,7 +39,7 @@ export function upsertOrganisation(prisma_api_rw:PrismaClient, isRegion:boolean)
         }));
       } else {
         // TODO: Check if the user is the owner of the safe
-        organisationProfile = ProfileLoader.withDisplayCurrency(await prisma_api_rw.profile.create({
+        organisationProfile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.create({
           data: {
             firstName: args.organisation.name,
             dream: args.organisation.description,
@@ -54,7 +54,7 @@ export function upsertOrganisation(prisma_api_rw:PrismaClient, isRegion:boolean)
         }));
 
         // Automatically create an accepted admin membership for the creator.
-        await prisma_api_rw.membership.create({
+        await Environment.readWriteApiDb.membership.create({
           data: {
             createdAt: new Date(),
             createdByProfileId: callerInfo.profile.id,

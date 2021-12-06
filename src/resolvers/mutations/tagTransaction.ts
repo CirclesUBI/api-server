@@ -1,8 +1,8 @@
 import {CreateTagInput} from "../../types";
 import {Context} from "../../context";
-import {PrismaClient} from "../../api-db/client";
+import {Environment} from "../../environment";
 
-export function tagTransaction(prisma_api_rw:PrismaClient) {
+export function tagTransaction() {
   return async (parent: any, args: { transactionHash: string, tag: CreateTagInput }, context: Context) => {
     const callerInfo = await context.callerInfo;
     if (!callerInfo?.profile) {
@@ -13,14 +13,14 @@ export function tagTransaction(prisma_api_rw:PrismaClient) {
     }
 
     // 1. Check if the transaction anchor entry already exists
-    let transaction = await prisma_api_rw.transaction.findUnique({where: {transactionHash: args.transactionHash}});
+    let transaction = await Environment.readWriteApiDb.transaction.findUnique({where: {transactionHash: args.transactionHash}});
     if (!transaction?.transactionHash) {
       // 1.1 If not create it
-      await prisma_api_rw.transaction.create({data: {transactionHash: args.transactionHash}});
+      await Environment.readWriteApiDb.transaction.create({data: {transactionHash: args.transactionHash}});
     }
 
     // 2. Create the tag
-    const tag = await prisma_api_rw.tag.create({
+    const tag = await Environment.readWriteApiDb.tag.create({
       data: {
         createdByProfileId: callerInfo.profile.id,
         transactionHash: args.transactionHash,

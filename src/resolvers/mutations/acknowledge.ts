@@ -1,7 +1,7 @@
 import {Context} from "../../context";
-import {PrismaClient} from "../../api-db/client";
+import {Environment} from "../../environment";
 
-export function acknowledge(prisma_api_rw:PrismaClient) {
+export function acknowledge() {
     return async (parent:any, args:{until:string}, context:Context) => {
         if (!context.session?.profileId)
         {
@@ -9,7 +9,7 @@ export function acknowledge(prisma_api_rw:PrismaClient) {
         }
 
         const until = new Date(args.until);
-        await prisma_api_rw.profile.update({
+        await Environment.readWriteApiDb.profile.update({
           where: {
             id: context.session.profileId
           },

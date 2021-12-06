@@ -1,8 +1,8 @@
 import {EventSource} from "../eventSource";
 import {ChatMessage, Direction, Maybe, PaginationArgs, ProfileEvent, ProfileEventFilter} from "../../types";
-import {prisma_api_ro} from "../../apiDbClient";
 import {Prisma} from "../../api-db/client";
 import ChatMessageWhereInput = Prisma.ChatMessageWhereInput;
+import {Environment} from "../../environment";
 
 export class ChatMessageEventSource implements EventSource {
   async getEvents(forSafeAddress: string, pagination: PaginationArgs, filter: Maybe<ProfileEventFilter>): Promise<ProfileEvent[]> {
@@ -86,7 +86,7 @@ export class ChatMessageEventSource implements EventSource {
       }
     };
 
-    const chatMessages = await prisma_api_ro.chatMessage.findMany({
+    const chatMessages = await Environment.readonlyApiDb.chatMessage.findMany({
       where: compositeFilter,
       orderBy: {
         createdAt: pagination.order == "ASC" ? Prisma.SortOrder.asc : Prisma.SortOrder.desc

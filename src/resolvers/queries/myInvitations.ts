@@ -1,6 +1,6 @@
 import {Context} from "../../context";
-import {prisma_api_ro} from "../../apiDbClient";
 import {CreatedInvitation} from "../../types";
+import {Environment} from "../../environment";
 
 export function myInvitations() {
     return async (parent:any, args:any, context:Context) => {
@@ -8,7 +8,7 @@ export function myInvitations() {
         if (!session.profileId)
             throw new Error(`You need a profile to use this feature.`);
 
-        const invitations = await prisma_api_ro.invitation.findMany({
+        const invitations = await Environment.readonlyApiDb.invitation.findMany({
             where: {
                 createdByProfileId: session.profileId
             },

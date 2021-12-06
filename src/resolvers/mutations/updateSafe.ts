@@ -1,10 +1,10 @@
 import {Context} from "../../context";
 import {MutationUpdateSafeArgs} from "../../types";
-import {prisma_api_ro} from "../../apiDbClient";
 import Web3 from "web3";
 import {GnosisSafeProxy} from "../../web3Contract";
 import {RpcGateway} from "../../rpcGateway";
 import {PrismaClient} from "../../api-db/client";
+import {Environment} from "../../environment";
 
 export function updateSafe(prisma:PrismaClient) {
     return async (parent: any, args:MutationUpdateSafeArgs, context: Context) => {
@@ -15,7 +15,7 @@ export function updateSafe(prisma:PrismaClient) {
                 errorMessage: "You must have a complete profile to use this function."
             };
         }
-        const currentProfile = await prisma_api_ro.profile.findUnique({where: {id: session.profileId}});
+        const currentProfile = await Environment.readonlyApiDb.profile.findUnique({where: {id: session.profileId}});
         if (!currentProfile) {
             throw new Error(`Couldn't find the profile (${session.profileId}) that was associated with session '${session.sessionToken}'.`);
         }

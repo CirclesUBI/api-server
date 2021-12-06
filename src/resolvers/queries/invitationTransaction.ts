@@ -1,19 +1,13 @@
-import {PrismaClient} from "../../api-db/client";
 import {ProfileEvent} from "../../types";
 import {Context} from "../../context";
 import {Environment} from "../../environment";
 
-export function invitationTransaction(prisma_api_ro:PrismaClient) {
+export function invitationTransaction() {
     return async (parent:any, args:any, context:Context) => {
         const session = await context.verifySession();
-        const profile = await prisma_api_ro.profile.findFirst({
+        const profile = await Environment.readonlyApiDb.profile.findFirst({
             where:{
-                //OR:[{
-//                    emailAddress: null,
-                    circlesSafeOwner: session.ethAddress?.toLowerCase()
-//                }, {
-//                    emailAddress: session.emailAddress
-//                }]
+                circlesSafeOwner: session.ethAddress?.toLowerCase()
             },
             include: {
                 claimedInvitations: {

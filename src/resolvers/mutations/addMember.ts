@@ -1,7 +1,7 @@
 import {MutationAddMemberArgs, Profile} from "../../types";
 import {Context} from "../../context";
-import {prisma_api_rw} from "../../apiDbClient";
 import {ProfileLoader} from "../../profileLoader";
+import {Environment} from "../../environment";
 
 export async function findGroup(groupId: number|string, callerInfo: Profile) {
   const where = Number.isInteger(groupId)
@@ -12,7 +12,7 @@ export async function findGroup(groupId: number|string, callerInfo: Profile) {
       circlesAddress: groupId
     };
 
-  const groupProfiles = await prisma_api_rw.profile.findMany({
+  const groupProfiles = await Environment.readWriteApiDb.profile.findMany({
     where: {
       ...<any>where
     },
@@ -45,7 +45,7 @@ export const addMemberResolver = async (parent:any, args:MutationAddMemberArgs, 
   }
 
   // Create a membership that must be accepted by the member.
-  await prisma_api_rw.membership.create({
+  await Environment.readWriteApiDb.membership.create({
     data: {
       createdAt: new Date(),
       createdByProfileId: callerInfo.profile.id,

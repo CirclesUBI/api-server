@@ -8,7 +8,7 @@ import {
 } from "../types";
 import {ProfilesBySafeAddressLookup} from "../resolvers/queries/profiles";
 import {ProfileLoader} from "../profileLoader";
-import {prisma_api_ro} from "../apiDbClient";
+import {Environment} from "../environment";
 
 export class AggregateAugmenter
 {
@@ -45,7 +45,7 @@ export class AggregateAugmenter
   async augment() : Promise<ProfileAggregate[]> {
     // Find the profiles for the collected addresses
     this._profiles = await new ProfileLoader()
-      .profilesBySafeAddress(prisma_api_ro, Object.keys(this._profiles))
+      .profilesBySafeAddress(Environment.readonlyApiDb, Object.keys(this._profiles))
 
     // Apply the profiles
     this._aggregates.forEach(ev => {

@@ -1,14 +1,14 @@
-import {prisma_api_ro, prisma_api_rw} from "../../apiDbClient";
 import {ProfileLoader} from "../../profileLoader";
 import {MutationCompletePurchaseArgs} from "../../types";
 import {Context} from "../../context";
+import {Environment} from "../../environment";
 
 export const completePurchase = async (parent:any, args:MutationCompletePurchaseArgs, context:Context) => {
   const callerInfo = await context.callerInfo;
   if (!callerInfo?.profile) {
     throw new Error(`You must have a profile to use this function.`);
   }
-  const invoice = await prisma_api_ro.invoice.findFirst({
+  const invoice = await Environment.readonlyApiDb.invoice.findFirst({
     where: {
       id: args.invoiceId,
       customerProfile: {
@@ -39,7 +39,7 @@ export const completePurchase = async (parent:any, args:MutationCompletePurchase
     buyerSignature: !args.revoke,
     buyerSignedDate: !args.revoke ? new Date() : null
   };
-  await prisma_api_rw.invoice.update({
+  await Environment.readWriteApiDb.invoice.update({
     where: {
       id: args.invoiceId
     },

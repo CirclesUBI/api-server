@@ -1,5 +1,4 @@
 import {RpcGateway} from "./rpcGateway";
-import {prisma_api_ro} from "./apiDbClient";
 import {crcabi} from "./crcabi";
 import {Environment} from "./environment";
 
@@ -75,7 +74,7 @@ export async function ninetyDaysLater() {
     throw new Error(`No INVITE_EOA_KEY`);
 
   const executingEoa = RpcGateway.get().eth.accounts.privateKeyToAccount(process.env.INVITE_EOA_KEY);
-  const profiles = await prisma_api_ro.profile.findMany({
+  const profiles = await Environment.readonlyApiDb.profile.findMany({
     where: {
       circlesAddress: {
         not: null

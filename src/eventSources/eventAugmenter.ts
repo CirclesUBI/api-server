@@ -14,8 +14,8 @@ import {
 } from "../types";
 import {ProfilesBySafeAddressLookup} from "../resolvers/queries/profiles";
 import {ProfileLoader, SafeProfileMap} from "../profileLoader";
-import {prisma_api_ro} from "../apiDbClient";
 import {TagLoader, TagsByTxHashLookup} from "../tagLoader";
+import {Environment} from "../environment";
 
 export class EventAugmenter
 {
@@ -70,8 +70,8 @@ export class EventAugmenter
     // Find the profiles for the collected addresses
 
     const requests: Promise<any>[] = [
-      new ProfileLoader().profilesBySafeAddress(prisma_api_ro, Object.keys(this._profiles)),
-      new TagLoader().tagsByTransactionHash(prisma_api_ro, Object.keys(this._tags))
+      new ProfileLoader().profilesBySafeAddress(Environment.readonlyApiDb, Object.keys(this._profiles)),
+      new TagLoader().tagsByTransactionHash(Environment.readonlyApiDb, Object.keys(this._tags))
     ]
 
     const results = await Promise.all(requests);

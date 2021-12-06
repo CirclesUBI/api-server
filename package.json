@@ -1,6 +1,6 @@
 {
   "name": "@o-platform/api-server",
-  "version": "0.1.221",
+  "version": "0.1.222",
   "description": "",
   "main": "dist/index.js",
   "prepublish": "tsc",
@@ -35,7 +35,8 @@
     "lru-cache": "^6.0.0",
     "murmurhash-js": "^1.0.0",
     "mustache": "^4.2.0",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.6",
+    "@types/node-fetch": "^2.5.12",
     "nodemailer": "^6.6.3",
     "pdfkit": "^0.13.0",
     "pg": "^8.7.1",

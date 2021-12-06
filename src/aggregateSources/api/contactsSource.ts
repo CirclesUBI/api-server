@@ -8,7 +8,6 @@ import {
   ProfileAggregate,
   ProfileAggregateFilter, Maybe, EventType
 } from "../../types";
-import {prisma_api_ro} from "../../apiDbClient";
 import {getDateWithOffset} from "../../indexer-api/blockchainEventSource";
 import {Environment} from "../../environment";
 
@@ -165,7 +164,7 @@ async function erc20TransferContacts(forSafeAddress: string, filter?: Maybe<Prof
 
 async function chatMessageContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const _filter = filter?.contacts?.addresses ?? [];
-  const chatContactsResult = await prisma_api_ro.$queryRaw`
+  const chatContactsResult = await Environment.readonlyApiDb.$queryRaw`
       with "in" as (
           select max("createdAt") last_contact_at, "from" as contact_address
           from "ChatMessage"
@@ -225,7 +224,7 @@ async function chatMessageContacts(forSafeAddress: string, filter?: Maybe<Profil
 async function invitationContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const _filter = filter?.contacts?.addresses ?? [];
 
-  const invitationContactsResult = await prisma_api_ro.$queryRaw`
+  const invitationContactsResult = await Environment.readonlyApiDb.$queryRaw`
       with "in" as (
           select max(i."createdAt") last_contact_at, "creatorProfile"."circlesAddress" as contact_address
           from "Invitation" i
@@ -275,7 +274,7 @@ async function invitationContacts(forSafeAddress: string, filter?: Maybe<Profile
 async function invitationRedeemedContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const _filter = filter?.contacts?.addresses ?? [];
 
-  const invitationContactsResult = await prisma_api_ro.$queryRaw`
+  const invitationContactsResult = await Environment.readonlyApiDb.$queryRaw`
       with "in" as (
           select max(i."redeemedAt") last_contact_at, "redeemedByProfile"."circlesAddress" as contact_address
           from "Invitation" i
@@ -318,7 +317,7 @@ async function invitationRedeemedContacts(forSafeAddress: string, filter?: Maybe
 async function membershipOfferContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const _filter = filter?.contacts?.addresses ?? [];
 
-  const membershipOfferContactsResult = await prisma_api_ro.$queryRaw`
+  const membershipOfferContactsResult = await Environment.readonlyApiDb.$queryRaw`
       with "in" as (
           select max(m."createdAt") as last_contact_at, "createdByProfile"."circlesAddress" as contact_address
           from "Membership" m

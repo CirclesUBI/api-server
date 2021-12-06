@@ -1,6 +1,4 @@
 import {Context} from "../../context";
-import AWS from "aws-sdk";
-import {prisma_api_ro} from "../../apiDbClient";
 import {QueryInvoiceArgs} from "../../types";
 import {Environment} from "../../environment";
 
@@ -9,7 +7,7 @@ export const invoice = async (parent: any, args:QueryInvoiceArgs, context: Conte
   if (!caller?.profile)
     throw new Error(`You need a profile to use this feature.`);
 
-  const invoice = await prisma_api_ro.invoice.findFirst({
+  const invoice = await Environment.readonlyApiDb.invoice.findFirst({
     where: {
       id: args.invoiceId,
       OR: [{

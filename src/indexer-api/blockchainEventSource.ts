@@ -1,6 +1,5 @@
 import WebSocket from 'ws';
 import {ApiPubSub} from "../pubsub";
-import {prisma_api_rw} from "../apiDbClient";
 import {Generate} from "../generate";
 import {EventType} from "../types";
 import BN from "bn.js";
@@ -206,7 +205,7 @@ export class BlockchainEventSource {
         const invoiceNo = await getNextInvoiceNo(invoice.sellerProfile.id);
         const invoiceNoStr = (invoice.sellerProfile.invoiceNoPrefix ?? "") + invoiceNo.toString().padStart(8, "0")
 
-        const updateInvoiceResult = await prisma_api_rw.invoice.update({
+        const updateInvoiceResult = await Environment.readWriteApiDb.invoice.update({
           where: {
             id: invoice.id
           },
@@ -319,7 +318,7 @@ export class BlockchainEventSource {
   }
 
   private async findOpenInvoices(addresses: string[]): Promise<{ [safeAddress: string]: PdfDbInvoiceData[] }> {
-    const invoices = await prisma_api_rw.invoice.findMany({
+    const invoices = await Environment.readWriteApiDb.invoice.findMany({
       where: {
         customerProfile: {
           circlesAddress: {

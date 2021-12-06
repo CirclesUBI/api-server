@@ -1,5 +1,4 @@
 import {Context} from "../../context";
-import {prisma_api_ro} from "../../apiDbClient";
 import {Organisation, Profile, QueryOrganisationsByAddressArgs} from "../../types";
 import {ProfileLoader} from "../../profileLoader";
 import {Environment} from "../../environment";
@@ -23,7 +22,7 @@ export function organisationsByAddress() {
 
 
         const profileLoader = new ProfileLoader();
-        const profiles = await profileLoader.profilesBySafeAddress(prisma_api_ro, Object.keys(allCreationDates));
+        const profiles = await profileLoader.profilesBySafeAddress(Environment.readonlyApiDb, Object.keys(allCreationDates));
 
         return organisationSignupsResult.rows.map(o => {
             const p: Profile = profiles[o.organisation] ?? {

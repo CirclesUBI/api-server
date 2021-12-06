@@ -7,8 +7,8 @@ import {
   ProfileEvent,
   ProfileEventFilter,
 } from "../../types";
-import { prisma_api_ro } from "../../apiDbClient";
 import { Prisma } from "../../api-db/client";
+import {Environment} from "../../environment";
 
 export class MembershipOfferEventSource implements EventSource {
   async getEvents(
@@ -20,7 +20,7 @@ export class MembershipOfferEventSource implements EventSource {
       // Exists only for "in"
       return [];
     }
-    const pendingMembershipOffers = await prisma_api_ro.membership.findMany({
+    const pendingMembershipOffers = await Environment.readonlyApiDb.membership.findMany({
       where: {
         createdAt:
           pagination.order == "ASC"

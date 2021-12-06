@@ -183,8 +183,8 @@ export class Session
         return session;
     }
 
-    static async assignProfile(prisma_api_rw:PrismaClient, sessionToken: string, profileId: number, context:Context) {
-        await prisma_api_rw.session.update({
+    static async assignProfile(sessionToken: string, profileId: number, context:Context) {
+        await Environment.readWriteApiDb.session.update({
             where: {sessionToken: sessionToken},
             data: {profileId: profileId}
         });

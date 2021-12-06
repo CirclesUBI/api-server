@@ -1,7 +1,6 @@
 import {PrismaClient} from "../../api-db/client";
 import {Context} from "../../context";
 import {Session} from "../../session";
-import {prisma_api_rw} from "../../apiDbClient";
 import {Environment} from "../../environment";
 
 export function verifySessionChallengeResolver(prisma:PrismaClient) {

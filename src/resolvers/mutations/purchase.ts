@@ -5,9 +5,9 @@ import {
   Purchase as DbPurchase,
   PurchaseLine as DbPurchaseLine,
 } from "../../api-db/client";
-import {prisma_api_ro, prisma_api_rw} from "../../apiDbClient";
 import {Context} from "../../context";
 import {ProfileLoader} from "../../profileLoader";
+import {Environment} from "../../environment";
 
 export type OfferLookup = {
   [id: number]: {
@@ -32,7 +32,7 @@ export async function purchaseResolver(parent: any, args: MutationPurchaseArgs, 
   // If there are pending payments for this user then
   // don't allow to create a new purchase until the previous
   // one is paid.
-  const openInvoices = await prisma_api_rw.purchase.findMany({
+  const openInvoices = await Environment.readWriteApiDb.purchase.findMany({
     where: {
       createdBy: {
         circlesAddress: callerInfo.profile.circlesAddress
@@ -79,7 +79,7 @@ export async function purchaseResolver(parent: any, args: MutationPurchaseArgs, 
 
 async function lookupOffers(args: MutationPurchaseArgs): Promise<OfferLookup> {
   const offerVersions = await Promise.all(args.lines.map(async o => {
-    const maxVersion = await prisma_api_ro.$queryRaw(`
+    const maxVersion = await Environment.readonlyApiDb.$queryRaw(`
         select id
              , max(o.version) as version
         from "Offer" o
@@ -94,7 +94,7 @@ async function lookupOffers(args: MutationPurchaseArgs): Promise<OfferLookup> {
   }));
 
   const offers = await Promise.all(offerVersions.map(async o => {
-    const offer = await prisma_api_ro.offer.findUnique({
+    const offer = await Environment.readonlyApiDb.offer.findUnique({
       where: {
         id_version: {
           id: o.id,
@@ -120,7 +120,7 @@ async function lookupOffers(args: MutationPurchaseArgs): Promise<OfferLookup> {
 }
 
 async function createPurchase(caller:Profile, args: MutationPurchaseArgs, offersLookup: OfferLookup) : Promise<CreatedDbPurchase> {
-  const purchase = await prisma_api_rw.purchase.create({
+  const purchase = await Environment.readWriteApiDb.purchase.create({
     data: {
       createdByProfileId: caller.id,
       createdAt: new Date(),
@@ -167,7 +167,7 @@ async function createPurchase(caller:Profile, args: MutationPurchaseArgs, offers
 }
 
 export async function getNextInvoiceNo(profileId: number) : Promise<number> {
-  const p = await prisma_api_rw.$queryRaw(`
+  const p = await Environment.readWriteApiDb.$queryRaw(`
       WITH updated AS (
         UPDATE "Profile" SET "lastInvoiceNo" = "lastInvoiceNo" + 1
             WHERE id = ${profileId} RETURNING "lastInvoiceNo"
@@ -201,7 +201,7 @@ async function createInvoices(caller:Profile, args: MutationPurchaseArgs, offers
     }
     const sellerLines = sellersLines[seller.circlesAddress];
 
-    const invoice = prisma_api_rw.invoice.create({
+    const invoice = Environment.readWriteApiDb.invoice.create({
       data: {
         sellerProfileId: seller.id,
         customerProfileId: caller.id,

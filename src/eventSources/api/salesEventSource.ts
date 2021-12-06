@@ -7,8 +7,8 @@ import {
   ProfileEvent,
   ProfileEventFilter, SaleEvent,
 } from "../../types";
-import {prisma_api_ro} from "../../apiDbClient";
 import {Prisma} from "../../api-db/client";
+import {Environment} from "../../environment";
 
 export class SalesEventSource implements EventSource {
   async getEvents(forSafeAddress: string, pagination: PaginationArgs, filter: Maybe<ProfileEventFilter>): Promise<ProfileEvent[]> {
@@ -16,7 +16,7 @@ export class SalesEventSource implements EventSource {
       // Exists only for "in"
       return [];
     }
-    const sales = await prisma_api_ro.invoice.findMany({
+    const sales = await Environment.readonlyApiDb.invoice.findMany({
       where: {
         sellerProfile: {
           circlesAddress: forSafeAddress

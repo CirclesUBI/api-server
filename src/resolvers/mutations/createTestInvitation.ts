@@ -1,5 +1,4 @@
 import {Context} from "../../context";
-import { PrismaClient} from "../../api-db/client";
 import {RpcGateway} from "../../rpcGateway";
 import {Session} from "../../session";
 import {CreateInvitationResult} from "../../types";
@@ -64,11 +63,11 @@ export async function fundEoa(web3: Web3, invitation: any, context?:Context) {
   */
 }
 
-export function createTestInvitation(prisma_api_rw:PrismaClient) {
+export function createTestInvitation() {
   return async (parent:any, args:any, context:Context) => {
     const web3 = RpcGateway.get();
     const invitationEoa = web3.eth.accounts.create();
-    const invitation = await prisma_api_rw.invitation.create({
+    const invitation = await Environment.readWriteApiDb.invitation.create({
       data: {
         name: Session.generateRandomBase64String(3),
         createdAt: new Date(),

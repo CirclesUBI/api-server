@@ -1,7 +1,7 @@
 import {QueryVerificationsArgs, SortOrder, Verification} from "../../types";
 import {Context} from "../../context";
-import {prisma_api_ro} from "../../apiDbClient";
 import {ProfileLoader} from "../../profileLoader";
+import {Environment} from "../../environment";
 
 export const verifications = async (parent:any, args:QueryVerificationsArgs, context?:Context) => {
   const where:any = { };
@@ -24,7 +24,7 @@ export const verifications = async (parent:any, args:QueryVerificationsArgs, con
     };
   }
 
-  const result = await prisma_api_ro.verifiedSafe.findMany({
+  const result = await Environment.readonlyApiDb.verifiedSafe.findMany({
     where: where,
     select: {
       createdAt: true,
@@ -49,7 +49,7 @@ export const verifications = async (parent:any, args:QueryVerificationsArgs, con
     return p;
   }, <{[address:string]:any}>{});
 
-  const profiles = await new ProfileLoader().profilesBySafeAddress(prisma_api_ro, Object.keys(safeAddresses));
+  const profiles = await new ProfileLoader().profilesBySafeAddress(Environment.readonlyApiDb, Object.keys(safeAddresses));
 
   return result.sort((a,b) => {
     return args.pagination?.order == SortOrder.Asc || !args.pagination

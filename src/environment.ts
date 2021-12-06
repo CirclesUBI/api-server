@@ -4,6 +4,8 @@ import {Account} from "web3-core";
 import {GnosisSafeProxy} from "./circles/safe/gnosisSafeProxy";
 import AWS from "aws-sdk";
 import {Pool} from "pg";
+import fetch from "cross-fetch";
+import {PrismaClient} from "./api-db/client";
 
 export type SmtpConfig = {
   from: string,
@@ -16,8 +18,39 @@ export type SmtpConfig = {
 
 export class Environment {
 
-  static validateAndSummarize() {
-    console.log();
+  static async validateAndSummarize() {
+    try {
+      console.log(`Testing connection to the utility-db ...`)
+      await this.utilityDb.query("select 1");
+      console.log(`Success`)
+
+      console.log(`Testing connection to the indexer-db ...`)
+      await this.indexDb.query("select 1");
+      console.log(`Success`)
+
+      console.log(`Testing connection to the readonly api-db ...`)
+      await this.readonlyApiDb.$queryRaw("select 1");
+      console.log(`Success`)
+
+      console.log(`Testing connection to the read/write api-db ...`)
+      await this.readWriteApiDb.$queryRaw("select 1");
+      console.log(`Success`)
+
+      console.log(`Testing connection to the indexer ws endpoint ...`)
+      const indexerWsEndpoint = await fetch(this.blockchainIndexerUrl
+        .replace("ws://", "http://")
+        .replace("wss://", "https://"));
+      if (indexerWsEndpoint.status !== 200) {
+        console.log("Success");
+      } else {
+        throw new Error(`The indexerWsEndpoint responded with a non 200 code: ${indexerWsEndpoint.status}. Body: ${await indexerWsEndpoint.text()}`);
+      }
+
+
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
   }
 
   static get smtpConfig() : SmtpConfig {
@@ -47,6 +80,28 @@ export class Environment {
   });
   static get indexDb() : Pool {
     return Environment._indexDb;
+  }
+
+  private static _readonlyApiDb: PrismaClient = new PrismaClient({
+    datasources: {
+      db: {
+        url: <string>process.env.CONNECTION_STRING_RO
+      }
+    }
+  });
+  static get readonlyApiDb() : PrismaClient {
+    return this._readonlyApiDb;
+  }
+
+  private static _readWriteApiDb: PrismaClient = new PrismaClient({
+    datasources: {
+      db: {
+        url: <string>process.env.CONNECTION_STRING_RW
+      }
+    }
+  });
+  static get readWriteApiDb() : PrismaClient {
+    return this._readWriteApiDb;
   }
 
   static get corsOrigins() : string {

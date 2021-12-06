@@ -1,6 +1,6 @@
 import {AggregateSource} from "../aggregateSource";
 import {AggregateType, Maybe, Offer, Offers, ProfileAggregate, ProfileAggregateFilter} from "../../types";
-import {prisma_api_ro} from "../../apiDbClient";
+import {Environment} from "../../environment";
 
 export type OfferRow = {
   id: number
@@ -18,7 +18,7 @@ export type OfferRow = {
 
 export class OffersSource implements AggregateSource {
   async getAggregate(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>): Promise<ProfileAggregate[]> {
-    const offersResult = <OfferRow[]>(await prisma_api_ro.$queryRaw(`
+    const offersResult = <OfferRow[]>(await Environment.readonlyApiDb.$queryRaw(`
         with "latest" as (
             select id
                  , max(o.version) as latest_version

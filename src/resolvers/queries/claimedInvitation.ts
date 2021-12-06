@@ -1,10 +1,10 @@
-import {prisma_api_rw} from "../../apiDbClient";
 import {Context} from "../../context";
 import {ClaimedInvitation} from "../../types";
+import {Environment} from "../../environment";
 
 export const claimedInvitation = async (parent:any, args:any, context:Context) => {
     const session = await context.verifySession();
-    const profile = await prisma_api_rw.profile.findFirst({
+    const profile = await Environment.readWriteApiDb.profile.findFirst({
         where:{
             //OR:[{
             //    emailAddress: null,

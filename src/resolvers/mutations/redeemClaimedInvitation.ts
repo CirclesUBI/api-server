@@ -3,8 +3,9 @@ import {PrismaClient} from "../../api-db/client";
 import {RpcGateway} from "../../rpcGateway";
 import { BN } from "ethereumjs-util";
 import {RedeemClaimedInvitationResult} from "../../types";
+import {Environment} from "../../environment";
 
-export function redeemClaimedInvitation(prisma_api_ro:PrismaClient, prisma_api_rw:PrismaClient) {
+export function redeemClaimedInvitation() {
   return async (parent: any, args: any, context: Context) => {
     const callerInfo = await context.callerInfo;
 
@@ -12,7 +13,7 @@ export function redeemClaimedInvitation(prisma_api_ro:PrismaClient, prisma_api_r
       throw new Error(`You need a profile and EOA to redeem a claimed invitation.`);
     }
 
-    const claimedInvitation = await prisma_api_ro.invitation.findFirst({
+    const claimedInvitation = await Environment.readWriteApiDb.invitation.findFirst({
       where: {
         claimedByProfileId: callerInfo.profile.id
       }
@@ -56,7 +57,7 @@ export function redeemClaimedInvitation(prisma_api_ro:PrismaClient, prisma_api_r
 
       const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
 
-      await prisma_api_rw.invitation.updateMany({
+      await Environment.readWriteApiDb.invitation.updateMany({
         data: {
           redeemedAt: new Date(),
           redeemedByProfileId: callerInfo.profile.id,

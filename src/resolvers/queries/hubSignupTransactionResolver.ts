@@ -1,12 +1,11 @@
 import {Context} from "../../context";
-import {prisma_api_ro} from "../../apiDbClient";
 import {ProfileEvent} from "../../types";
 import {Environment} from "../../environment";
 
 export async function hubSignupTransactionResolver (parent:any, args:any, context:Context) {
   const now = new Date();
   const session = await context.verifySession();
-  const profile = await prisma_api_ro.profile.findFirst({
+  const profile = await Environment.readonlyApiDb.profile.findFirst({
     where:{
       //OR:[{
 //            emailAddress: null,

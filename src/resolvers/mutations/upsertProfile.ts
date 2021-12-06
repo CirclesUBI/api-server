@@ -1,10 +1,10 @@
 import {DisplayCurrency, MutationUpsertProfileArgs, Profile} from "../../types";
 import {Context} from "../../context";
 import {Session} from "../../session";
-import {PrismaClient} from "../../api-db/client";
 import {ProfileLoader} from "../../profileLoader";
+import {Environment} from "../../environment";
 
-export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
+export function upsertProfileResolver() {
     return async (parent:any, args:MutationUpsertProfileArgs, context:Context) => {
         const session = await context.verifySession();
         let profile:Profile;
@@ -17,7 +17,7 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
             if (args.data.id != session.profileId) {
                 throw new Error(`'${session.sessionToken}' (profile id: ${session.profileId ?? "<undefined>"}) can not upsert other profile '${args.data.id}'.`);
             }
-            profile = ProfileLoader.withDisplayCurrency(await prisma_api_rw.profile.update({
+            profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({
                 where: {
                     id: args.data.id
                 },
@@ -31,7 +31,7 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
                 }
             }));
         } else {
-            profile = ProfileLoader.withDisplayCurrency(await prisma_api_rw.profile.create({
+            profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.create({
                 data: {
                     ...args.data,
                     id: undefined,
@@ -44,7 +44,7 @@ export function upsertProfileResolver(prisma_api_rw:PrismaClient) {
                     displayCurrency: <DisplayCurrency>args.data.displayCurrency
                 }
             }));
-            await Session.assignProfile(prisma_api_rw, session.sessionToken, profile.id, context);
+            await Session.assignProfile(session.sessionToken, profile.id, context);
         }
         return profile;
     };

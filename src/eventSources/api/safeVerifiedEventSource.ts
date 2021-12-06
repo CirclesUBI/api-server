@@ -7,8 +7,8 @@ import {
   ProfileEventFilter,
   SafeVerified
 } from "../../types";
-import {prisma_api_ro} from "../../apiDbClient";
 import {Prisma} from "../../api-db/client";
+import {Environment} from "../../environment";
 
 export class SafeVerifiedEventSource implements EventSource {
   async getEvents(forSafeAddress: string, pagination: PaginationArgs, filter: Maybe<ProfileEventFilter>): Promise<ProfileEvent[]> {
@@ -16,7 +16,7 @@ export class SafeVerifiedEventSource implements EventSource {
       // Exists only for "in"
       return [];
     }
-    const verifiedSafes = await prisma_api_ro.verifiedSafe.findMany({
+    const verifiedSafes = await Environment.readonlyApiDb.verifiedSafe.findMany({
       where: {
         safeAddress: forSafeAddress,
         // TODO: redeemedAt doesn't work immediately as a filter for RedeemedInvitation events because there will be no profile at the time of redemption

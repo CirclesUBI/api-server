@@ -1,6 +1,5 @@
 import {myProfile, profilesBySafeAddress} from "./queries/profiles";
 import {upsertProfileResolver} from "./mutations/upsertProfile";
-import {prisma_api_ro, prisma_api_rw} from "../apiDbClient";
 import {
   Profile, Purchase, Resolvers,
 } from "../types";
@@ -23,7 +22,6 @@ import {claimedInvitation} from "./queries/claimedInvitation";
 import {Context} from "../context";
 import {ApiPubSub} from "../pubsub";
 import {trustRelations} from "./queries/trustRelations";
-import {Pool, PoolConfig} from "pg";
 import {commonTrust} from "./queries/commonTrust";
 import {sendMessage} from "./mutations/sendMessage";
 import {tagTransaction} from "./mutations/tagTransaction";
@@ -62,6 +60,7 @@ import {completePurchase} from "./mutations/completePurchase";
 import {completeSale} from "./mutations/completeSale";
 import {verifySafe} from "./mutations/verifySafe";
 import {verifications} from "./queries/verifications";
+import {Environment} from "../environment";
 
 const packageJson = require("../../package.json");
 
@@ -113,20 +112,20 @@ export const resolvers: Resolvers = {
     cities: cities,
     claimedInvitation: claimedInvitation,
     findSafeAddressByOwner: findSafeAddressByOwnerResolver,
-    invitationTransaction: invitationTransaction(prisma_api_ro),
+    invitationTransaction: invitationTransaction(),
     hubSignupTransaction: hubSignupTransactionResolver,
-    myProfile: myProfile(prisma_api_rw),
+    myProfile: myProfile(Environment.readWriteApiDb),
     myInvitations: myInvitations(),
-    organisations: organisations(prisma_api_ro),
+    organisations: organisations(Environment.readonlyApiDb),
     regions: regionsResolver,
     organisationsByAddress: organisationsByAddress(),
-    profilesBySafeAddress: profilesBySafeAddress(prisma_api_ro),
-    search: search(prisma_api_ro),
+    profilesBySafeAddress: profilesBySafeAddress(Environment.readonlyApiDb),
+    search: search(Environment.readonlyApiDb),
     version: version(packageJson),
-    tags: tags(prisma_api_ro),
-    tagById: tagById(prisma_api_ro),
-    trustRelations: trustRelations(prisma_api_ro),
-    commonTrust: commonTrust(prisma_api_ro),
+    tags: tags(Environment.readonlyApiDb),
+    tagById: tagById(Environment.readonlyApiDb),
+    trustRelations: trustRelations(Environment.readonlyApiDb),
+    commonTrust: commonTrust(Environment.readonlyApiDb),
     ubiInfo: ubiInfo(),
     profilesById: profilesById,
     aggregates: aggregates,
@@ -138,26 +137,26 @@ export const resolvers: Resolvers = {
   },
   Mutation: {
     purchase: purchaseResolver,
-    upsertOrganisation: upsertOrganisation(prisma_api_rw, false),
-    upsertRegion: upsertOrganisation(prisma_api_rw, true),
-    exchangeToken: exchangeTokenResolver(prisma_api_rw),
-    logout: logout(prisma_api_rw),
-    upsertProfile: upsertProfileResolver(prisma_api_rw),
-    authenticateAt: authenticateAtResolver(prisma_api_rw),
-    depositChallenge: depositChallengeResolver(prisma_api_rw),
-    consumeDepositedChallenge: consumeDepositedChallengeResolver(prisma_api_rw),
-    requestUpdateSafe: requestUpdateSafe(prisma_api_rw),
-    updateSafe: updateSafe(prisma_api_rw),
-    upsertTag: upsertTag(prisma_api_ro, prisma_api_rw),
-    tagTransaction: tagTransaction(prisma_api_rw),
-    sendMessage: sendMessage(prisma_api_rw),
-    acknowledge: acknowledge(prisma_api_rw),
-    createInvitations: createInvitations(prisma_api_rw),
-    claimInvitation: claimInvitation(prisma_api_rw),
-    redeemClaimedInvitation: redeemClaimedInvitation(prisma_api_ro, prisma_api_rw),
+    upsertOrganisation: upsertOrganisation(false),
+    upsertRegion: upsertOrganisation(true),
+    exchangeToken: exchangeTokenResolver(Environment.readWriteApiDb),
+    logout: logout(),
+    upsertProfile: upsertProfileResolver(),
+    authenticateAt: authenticateAtResolver(),
+    depositChallenge: depositChallengeResolver(Environment.readWriteApiDb),
+    consumeDepositedChallenge: consumeDepositedChallengeResolver(Environment.readWriteApiDb),
+    requestUpdateSafe: requestUpdateSafe(Environment.readWriteApiDb),
+    updateSafe: updateSafe(Environment.readWriteApiDb),
+    upsertTag: upsertTag(),
+    tagTransaction: tagTransaction(),
+    sendMessage: sendMessage(Environment.readWriteApiDb),
+    acknowledge: acknowledge(),
+    createInvitations: createInvitations(),
+    claimInvitation: claimInvitation(),
+    redeemClaimedInvitation: redeemClaimedInvitation(),
     requestSessionChallenge: requestSessionChallenge,
-    verifySessionChallenge: verifySessionChallengeResolver(prisma_api_rw),
-    createTestInvitation: createTestInvitation(prisma_api_rw),
+    verifySessionChallenge: verifySessionChallengeResolver(Environment.readWriteApiDb),
+    createTestInvitation: createTestInvitation(),
     addMember: addMemberResolver,
     removeMember: removeMemberResolver,
     importOrganisationsOfAccount: importOrganisationsOfAccount,

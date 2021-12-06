@@ -2,14 +2,11 @@ import {AggregateSource} from "../aggregateSource";
 import {
   AggregateType,
   Maybe,
-  Offer,
-  Offers,
   ProfileAggregate,
   ProfileAggregateFilter,
-  Purchase,
   Purchases
 } from "../../types";
-import {prisma_api_ro} from "../../apiDbClient";
+import {Environment} from "../../environment";
 
 export class PurchasesSource implements AggregateSource {
   async getAggregate(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>): Promise<ProfileAggregate[]> {
@@ -20,7 +17,7 @@ export class PurchasesSource implements AggregateSource {
       }
     } : {};
 
-    const purchasesResult = await prisma_api_ro.purchase.findMany({
+    const purchasesResult = await Environment.readonlyApiDb.purchase.findMany({
       where: {
         createdBy: {
           circlesAddress: forSafeAddress

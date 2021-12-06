@@ -1,7 +1,7 @@
 import {EventSource} from "../eventSource";
 import {Direction, InvitationCreated, Maybe, PaginationArgs, ProfileEvent, ProfileEventFilter} from "../../types";
-import {prisma_api_ro} from "../../apiDbClient";
 import {Prisma} from "../../api-db/client";
+import {Environment} from "../../environment";
 
 export class CreatedInvitationsEventSource implements EventSource {
   async getEvents(forSafeAddress: string, pagination: PaginationArgs, filter: Maybe<ProfileEventFilter>): Promise<ProfileEvent[]> {
@@ -9,7 +9,7 @@ export class CreatedInvitationsEventSource implements EventSource {
       // Exists only for "in"
       return [];
     }
-    const createdInvitations = await prisma_api_ro.invitation.findMany({
+    const createdInvitations = await Environment.readonlyApiDb.invitation.findMany({
       where: {
         createdBy: {
           circlesAddress: forSafeAddress

@@ -1,5 +1,4 @@
 import {Context} from "../../context";
-import {PrismaClient} from "../../api-db/client";
 import {RpcGateway} from "../../rpcGateway";
 import {Session} from "../../session";
 import {CreateInvitationResult} from "../../types";
@@ -7,7 +6,7 @@ import {fundEoa} from "./createTestInvitation";
 import {isBILMember} from "../../canAccess";
 import {Environment} from "../../environment";
 
-export function createInvitations(prisma_api_rw:PrismaClient) {
+export function createInvitations() {
     return async (parent:any, args:{for:string[]}, context:Context) => {
       const callerInfo = await context.callerInfo;
 
@@ -34,7 +33,7 @@ export function createInvitations(prisma_api_rw:PrismaClient) {
 
         const createdInvitation = (await fundEoa(RpcGateway.get(), invitationData)).createdInviteEoas[0];
 
-        const invitation = await prisma_api_rw.invitation.create({
+        const invitation = await Environment.readWriteApiDb.invitation.create({
           data: {
             ...invitationData
           }

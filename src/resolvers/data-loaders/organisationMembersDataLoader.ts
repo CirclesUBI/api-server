@@ -1,10 +1,10 @@
 import DataLoader from "dataloader";
 import {ProfileOrOrganisation} from "../../types";
-import {prisma_api_ro} from "../../apiDbClient";
 import {ProfileLoader} from "../../profileLoader";
+import {Environment} from "../../environment";
 
 export const organisationMembersDataLoader = new DataLoader<number, ProfileOrOrganisation[]>(async (organisationIds) => {
-  const memberships = (await prisma_api_ro.membership.findMany({
+  const memberships = (await Environment.readonlyApiDb.membership.findMany({
     where: {
       memberAtId: {
         in: organisationIds.map(o => o)
@@ -15,7 +15,7 @@ export const organisationMembersDataLoader = new DataLoader<number, ProfileOrOrg
     }
   }));
 
-  const membersBySafeAddress = await new ProfileLoader().profilesBySafeAddress(prisma_api_ro, memberships.map(o => o.memberAddress));
+  const membersBySafeAddress = await new ProfileLoader().profilesBySafeAddress(Environment.readonlyApiDb, memberships.map(o => o.memberAddress));
   const memberProfilesByOrganisation = memberships.map(o => {
     return  {
       memberProfile: <any>{

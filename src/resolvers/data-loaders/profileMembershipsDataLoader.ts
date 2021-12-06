@@ -1,10 +1,10 @@
 import DataLoader from "dataloader";
 import {Membership} from "../../types";
-import {prisma_api_ro} from "../../apiDbClient";
 import {ProfileLoader} from "../../profileLoader";
+import {Environment} from "../../environment";
 
 export const profileMembershipsDataLoader = new DataLoader<string, Membership[]>(async (keys) => {
-  const memberships = await prisma_api_ro.membership.findMany({
+  const memberships = await Environment.readonlyApiDb.membership.findMany({
     where: {
       memberAddress: {
         in: keys.map(o => o)

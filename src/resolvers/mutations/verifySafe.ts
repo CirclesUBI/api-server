@@ -2,7 +2,6 @@ import {MutationVerifySafeArgs} from "../../types";
 import {Context} from "../../context";
 import {isBILMember} from "../../canAccess";
 import {VerifiedSafe} from "../../api-db/client";
-import {prisma_api_ro, prisma_api_rw} from "../../apiDbClient";
 import {RpcGateway} from "../../rpcGateway";
 import {Environment} from "../../environment";
 
@@ -13,7 +12,7 @@ export const verifySafe = async (parent:any, args:MutationVerifySafeArgs, contex
     throw new Error(`Not allowed`);
   }
 
-  let verifiedSafe: VerifiedSafe|null = await prisma_api_rw.verifiedSafe.findUnique({
+  let verifiedSafe: VerifiedSafe|null = await Environment.readWriteApiDb.verifiedSafe.findUnique({
     where: {
       safeAddress: args.safeAddress.toLowerCase()
     }
@@ -23,7 +22,7 @@ export const verifySafe = async (parent:any, args:MutationVerifySafeArgs, contex
     throw new Error(`Safe ${args.safeAddress} is already verified.`);
   }
 
-  const bilOrga = await prisma_api_ro.profile.findFirst({
+  const bilOrga = await Environment.readonlyApiDb.profile.findFirst({
     where: {
       circlesAddress: Environment.operatorOrganisationAddress
     },
@@ -38,7 +37,7 @@ export const verifySafe = async (parent:any, args:MutationVerifySafeArgs, contex
 
   const swapEoa = RpcGateway.get().eth.accounts.create();
 
-  verifiedSafe = await prisma_api_rw.verifiedSafe.create({
+  verifiedSafe = await Environment.readWriteApiDb.verifiedSafe.create({
     data: {
       safeAddress: args.safeAddress.toLowerCase(),
       createdByProfileId: callerInfo.profile.id,

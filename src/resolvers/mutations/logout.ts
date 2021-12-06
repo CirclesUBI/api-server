@@ -1,12 +1,11 @@
 import {Context} from "../../context";
 import {Session} from "../../session";
-import {PrismaClient} from "../../api-db/client";
 import {Environment} from "../../environment";
 
-export function logout(prisma_api_rw:PrismaClient) {
+export function logout() {
     return async (parent: any, args: any, context: Context) => {
         const session = await context.verifySession();
-        const loggedOutSession = await Session.logout(context, prisma_api_rw, session.sessionToken);
+        const loggedOutSession = await Session.logout(context, Environment.readWriteApiDb, session.sessionToken);
         context.setCookies.push({
             name: "session",
             value: session.sessionToken,

@@ -1,13 +1,13 @@
 import {Context} from "../../context";
 import {Session} from "../../session";
-import {PrismaClient} from "../../api-db/client";
+import {Environment} from "../../environment";
 
-export function authenticateAtResolver(prisma_api_rw:PrismaClient) {
+export function authenticateAtResolver() {
     return async (parent: any, args:{appId:string}, context: Context) => {
         const session = await context.verifySession();
 
         const now = new Date();
-        const delegatedChallengeRequest = await prisma_api_rw.delegatedChallenges.create({
+        const delegatedChallengeRequest = await Environment.readWriteApiDb.delegatedChallenges.create({
             data: {
                 createdAt: now,
                 sessionId: session.sessionToken,

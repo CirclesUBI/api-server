@@ -1,8 +1,9 @@
 import {MutationUpsertTagArgs} from "../../types";
 import {Context} from "../../context";
 import {PrismaClient} from "../../api-db/client";
+import {Environment} from "../../environment";
 
-export function upsertTag(prisma_api_ro:PrismaClient, prisma_api_rw:PrismaClient) {
+export function upsertTag() {
     return async (parent:any, args:MutationUpsertTagArgs, context:Context) => {
         const session = await context.verifySession();
         let tag: {
@@ -15,14 +16,14 @@ export function upsertTag(prisma_api_ro:PrismaClient, prisma_api_rw:PrismaClient
         } | null;
         if (args.data.id) {
             // update
-            tag = await prisma_api_ro.tag.findUnique({where: {id: args.data.id}});
+            tag = await Environment.readonlyApiDb.tag.findUnique({where: {id: args.data.id}});
             if (!tag) {
                 throw new Error(`Profile ${session.profileId} cannot find tag ${args.data.id} for update.`);
             }
             if (tag.createdByProfileId !== session.profileId) {
                 throw new Error(`Profile ${session.profileId} access tag ${args.data.id} for update.`);
             }
-            tag = await prisma_api_rw.tag.update({
+            tag = await Environment.readWriteApiDb.tag.update({
                 where: {
                     id: tag.id
                 },
@@ -36,7 +37,7 @@ export function upsertTag(prisma_api_ro:PrismaClient, prisma_api_rw:PrismaClient
             });
         } else {
             // insert
-            tag = await prisma_api_rw.tag.create({
+            tag = await Environment.readWriteApiDb.tag.create({
                 data: {
                     createdByProfileId: session.profileId ?? 0,
                     createdAt: new Date(),

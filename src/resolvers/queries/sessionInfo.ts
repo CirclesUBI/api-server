@@ -1,6 +1,5 @@
 import {Context} from "../../context";
 import {CapabilityType, SessionInfo} from "../../types";
-import {prisma_api_rw} from "../../apiDbClient";
 import {Profile} from "../../api-db/client";
 import {ProfileLoader} from "../../profileLoader";
 import {isBILMember} from "../../canAccess";
@@ -12,7 +11,7 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
         //const session = await context.verifySession();
         let profile: Profile|null = null;
         if (callerInfo?.session.profileId) {
-            profile = await prisma_api_rw.profile.findUnique({
+            profile = await Environment.readWriteApiDb.profile.findUnique({
                 where:{
                     id: callerInfo.session.profileId
                 }

@@ -1,6 +1,5 @@
 import {Context} from "../../context";
 import {ProfileLoader} from "../../profileLoader";
-import {prisma_api_rw} from "../../apiDbClient";
 import {upsertOrganisation} from "./upsertOrganisation";
 import {Environment} from "../../environment";
 
@@ -13,12 +12,12 @@ export const importOrganisationsOfAccount = async (parent:any, args:{}, context:
   const session = await context.verifySession();
   const organisationSignups = await Environment.indexDb.query(sql, [[session.ethAddress]]);
   const orgSafeAddresses = organisationSignups.rows.map(o => o.organisation);
-  const existingOrgProfiles = await new ProfileLoader().queryCirclesLandBySafeAddress(prisma_api_rw, orgSafeAddresses);
+  const existingOrgProfiles = await new ProfileLoader().queryCirclesLandBySafeAddress(Environment.readWriteApiDb, orgSafeAddresses);
   const missingOrgProfiles = orgSafeAddresses.filter(o => !existingOrgProfiles[o]);
-  const missingOrgProfilesFromCirclesGarden = await new ProfileLoader().queryCirclesGardenRemote(prisma_api_rw, missingOrgProfiles);
+  const missingOrgProfilesFromCirclesGarden = await new ProfileLoader().queryCirclesGardenRemote(Environment.readWriteApiDb, missingOrgProfiles);
 
   const importResults = await Promise.all(missingOrgProfiles.map(async org => {
-    const createOrgMutation = upsertOrganisation(prisma_api_rw, false);
+    const createOrgMutation = upsertOrganisation(false);
     const circlesGardenProfile = missingOrgProfilesFromCirclesGarden[org];
     if (circlesGardenProfile) {
       const importOrgResult = await createOrgMutation(null, {

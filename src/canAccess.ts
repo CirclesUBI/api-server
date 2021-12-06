@@ -1,5 +1,4 @@
 import {Context} from "./context";
-import {prisma_api_ro, prisma_api_rw} from "./apiDbClient";
 import {Session, Profile} from "./api-db/client";
 import {Environment} from "./environment";
 
@@ -9,7 +8,7 @@ export async function isBILMember(sessionInfo: {session: Session, profile: Profi
   if (!sessionInfo.profile?.circlesAddress)
     return false;
 
-  const orga = await prisma_api_ro.profile.findFirst({
+  const orga = await Environment.readonlyApiDb.profile.findFirst({
     where: {
       circlesAddress: Environment.operatorOrganisationAddress,
       members: {
@@ -37,7 +36,7 @@ export async function canAccess(context:Context, accessedSafeAddress:string) {
   // Could be that a user requests the data of an organisation
   // Check if the user is either admin or owner and grant access
   // if that's the case.
-  const requestedProfile = await prisma_api_rw.profile.findMany({
+  const requestedProfile = await Environment.readWriteApiDb.profile.findMany({
     where: {
       circlesAddress: accessedSafeAddress,
       type: "ORGANISATION"

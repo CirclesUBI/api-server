@@ -1,6 +1,6 @@
 import DataLoader from "dataloader";
 import {Invoice, InvoiceLine} from "../../types";
-import {prisma_api_rw} from "../../apiDbClient";
+import {Environment} from "../../environment";
 
 const purchaseInvoicesDataLoaders: {
   [callerSafeAddress: string]: {
@@ -22,7 +22,7 @@ export function getPurchaseInvoicesDataLoader(forCaller: string): DataLoader<num
     cachedEntry = {
       timestamp: new Date(),
       dataLoader: new DataLoader<number, Invoice[]>(async (keys) => {
-        const invoices = await prisma_api_rw.invoice.findMany({
+        const invoices = await Environment.readWriteApiDb.invoice.findMany({
           where: {
             purchase: {
               id: {

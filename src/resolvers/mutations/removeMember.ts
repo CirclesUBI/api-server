@@ -1,8 +1,8 @@
-import { prisma_api_rw } from "../../apiDbClient";
 import {MutationRemoveMemberArgs} from "../../types";
 import {Context} from "../../context";
 import {findGroup} from "./addMember";
 import {ProfileLoader} from "../../profileLoader";
+import {Environment} from "../../environment";
 
 export const removeMemberResolver =async (parent:any, args:MutationRemoveMemberArgs, context:Context) => {
   const callerInfo = await context.callerInfo;
@@ -15,7 +15,7 @@ export const removeMemberResolver =async (parent:any, args:MutationRemoveMemberA
     throw new Error(`You are not an admin of this group.`);
   }
 
-  await prisma_api_rw.membership.deleteMany({
+  await Environment.readWriteApiDb.membership.deleteMany({
     where: {
       memberAddress: args.memberAddress,
       memberAtId: groupProfile.id,

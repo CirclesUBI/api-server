@@ -2,8 +2,8 @@ import {ExecutionParams} from "subscriptions-transport-ws";
 import {Request, Response} from "express";
 import {Session as PrismaSession} from "./api-db/client";
 import {Session} from "./session";
-import {prisma_api_rw} from "./apiDbClient";
 import {Profile} from "./api-db/client";
+import {Environment} from "./environment";
 
 export class Context {
     readonly id: string;
@@ -85,7 +85,7 @@ export class Context {
             throw new Error("No session on context.");
         }
 
-        const validSession = await Session.findSessionBysessionToken(prisma_api_rw, this.session.sessionToken)
+        const validSession = await Session.findSessionBysessionToken(Environment.readWriteApiDb, this.session.sessionToken)
         if (!validSession) {
             const errorMsg = `No session could be found for the supplied sessionToken.')`;
             throw new Error(errorMsg);
@@ -98,12 +98,12 @@ export class Context {
 
     static async findSession(sessionToken?:string) : Promise<PrismaSession|null> {
         if (!sessionToken) return null;
-        return await Session.findSessionBysessionToken(prisma_api_rw, sessionToken)
+        return await Session.findSessionBysessionToken(Environment.readWriteApiDb, sessionToken)
     }
 
     get callerInfo() : Promise<{ session: PrismaSession, profile: Profile|null }|null> {
         return this.verifySession().then(async session => {
-            const p = session.profileId ? (await prisma_api_rw.profile.findUnique({
+            const p = session.profileId ? (await Environment.readWriteApiDb.profile.findUnique({
                 where: {
                     id: session.profileId
                 }

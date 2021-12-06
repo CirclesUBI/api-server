@@ -1,4 +1,3 @@
-import {prisma_api_rw} from "../apiDbClient";
 import {Prisma, VerifiedSafe} from "../api-db/client";
 import {
   createTransaction,
@@ -32,7 +31,7 @@ export class Dropper {
 
   private async checkNewVerifications() {
     const now = new Date();
-    await prisma_api_rw.verifiedSafe.updateMany({
+    await Environment.readWriteApiDb.verifiedSafe.updateMany({
       where: {
         createdAt: {
           gt: this._lastVerification
@@ -45,7 +44,7 @@ export class Dropper {
       }
     });
 
-    const verificationsToProcess = await prisma_api_rw.verifiedSafe.findMany({
+    const verificationsToProcess = await Environment.readWriteApiDb.verifiedSafe.findMany({
       where: {
         rewardProcessingStartedAt: now,
         rewardProcessingWorker: process.pid.toString()
@@ -96,7 +95,7 @@ export class Dropper {
   }
 
   async createdInvitationEoasForInvitee(verifiedSafe:VerifiedSafe) : Promise<InvitationCreateManyInput[]> {
-    const profileResult = await new ProfileLoader().queryCirclesLandBySafeAddress(prisma_api_rw, [verifiedSafe.safeAddress]);
+    const profileResult = await new ProfileLoader().queryCirclesLandBySafeAddress(Environment.readWriteApiDb, [verifiedSafe.safeAddress]);
     const profileResultValues = Object.values(profileResult);
     if (profileResultValues.length == 0) {
       throw new Error(`Couldn't find a profile for the verified safe ${verifiedSafe.safeAddress}`);
@@ -121,7 +120,7 @@ export class Dropper {
       });
     }
 
-    await prisma_api_rw.invitation.createMany({
+    await Environment.readWriteApiDb.invitation.createMany({
       data: createInvitationsData
     });
 
@@ -160,7 +159,7 @@ export class Dropper {
   }
 
   async dropInviterReward(verifiedSafe:VerifiedSafe) : Promise<TransferFundsTransactionInput> {
-    const invitationResult = await prisma_api_rw.invitation.findMany({
+    const invitationResult = await Environment.readWriteApiDb.invitation.findMany({
       where: {
         redeemedBy: {
           circlesAddress: verifiedSafe.safeAddress

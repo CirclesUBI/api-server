@@ -1,9 +1,9 @@
 import {Context} from "../../context";
-import {prisma_api_ro} from "../../apiDbClient";
 import {Organisation} from "../../types";
+import {Environment} from "../../environment";
 
 export const regionsResolver = async (parent:any, args:any, context:Context) => {
-  const regions = await prisma_api_ro.profile.findMany({
+  const regions = await Environment.readonlyApiDb.profile.findMany({
     where: {
       type: "REGION"
     }
