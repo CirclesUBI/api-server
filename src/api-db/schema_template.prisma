@@ -84,6 +84,7 @@ model VerifiedSafe {
     swapEoaKey String
 
     rewardProcessingStartedAt DateTime?
+    rewardProcessingWorker String?
 
     inviteeRewardTransaction Transaction? @relation(name: "VerifiedSafe_InviteeRewardTransaction", fields: [inviteeRewardTransactionHash], references: [transactionHash])
     inviteeRewardTransactionHash String?
