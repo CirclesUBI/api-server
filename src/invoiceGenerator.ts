@@ -1,8 +1,8 @@
 import PDFDocument from "pdfkit";
 import dayjs from "dayjs";
 import AWS from "aws-sdk";
-import {Invoice, InvoiceLine, Offer, Profile} from "./api-db/client";
-import {PromiseResult} from "aws-sdk/lib/request";
+import { Invoice, InvoiceLine, Offer, Profile } from "./api-db/client";
+import { PromiseResult } from "aws-sdk/lib/request";
 
 export type PdfInvoiceLine = {
   amount: number;
@@ -43,13 +43,17 @@ export type PdfInvoiceData = {
   items: PdfInvoiceLine[];
 };
 
-export type PdfDbInvoiceData = Invoice & {customerProfile: Profile, sellerProfile: Profile, lines: (InvoiceLine & {product: Offer})[]};
-export type PdfInvoicePaymentTransaction = {hash:string, timestamp: Date};
+export type PdfDbInvoiceData = Invoice & {
+  customerProfile: Profile;
+  sellerProfile: Profile;
+  lines: (InvoiceLine & { product: Offer })[];
+};
+export type PdfInvoicePaymentTransaction = { hash: string; timestamp: Date };
 
 export function pdfInvoiceDataFromDbInvoice(
   data: PdfDbInvoiceData,
-  paymentTransaction?: PdfInvoicePaymentTransaction)
-  : PdfInvoiceData {
+  paymentTransaction?: PdfInvoicePaymentTransaction
+): PdfInvoiceData {
   const buyer = data.customerProfile;
   const seller = data.sellerProfile;
 
@@ -93,9 +97,7 @@ export function pdfInvoiceDataFromDbInvoice(
       postal_code: "80469",
       safe_address: seller.circlesAddress,
     },
-    invoice_date: dayjs(data.createdAt).format(
-      "YYYY-MM-DD HH:mm:ss"
-    ),
+    invoice_date: dayjs(data.createdAt).format("YYYY-MM-DD HH:mm:ss"),
     invoice_nr: data.invoiceNo,
     transactionHash: paymentTransaction?.hash ?? "",
     transferTime: paymentTransaction
@@ -113,11 +115,10 @@ export function pdfInvoiceDataFromDbInvoice(
   };
 }
 
-
 export class InvoicePdfGenerator {
-  margin:number = 30;
-  marginx:number = 50;
-  lineMargin:number = 15;
+  margin: number = 30;
+  marginx: number = 50;
+  lineMargin: number = 15;
   top: number = this.margin;
 
   readonly invoice: PdfInvoiceData;
@@ -126,7 +127,7 @@ export class InvoicePdfGenerator {
     this.invoice = invoice;
   }
 
-  generate() : PDFKit.PDFDocument {
+  generate(): PDFKit.PDFDocument {
     let doc = new PDFDocument({
       size: "A4",
       margins: { top: this.margin, left: this.margin, bottom: 10, right: 50 },
@@ -146,7 +147,7 @@ export class InvoicePdfGenerator {
     return doc;
   }
 
-  async savePdfToS3(key:string, pdfDocument: PDFKit.PDFDocument) {
+  async savePdfToS3(key: string, pdfDocument: PDFKit.PDFDocument) {
     if (!process.env.DIGITALOCEAN_SPACES_ENDPOINT) {
       throw new Error(
         `Missing configuration: process.env.DIGITALOCEAN_SPACES_ENDPOINT`
@@ -173,31 +174,33 @@ export class InvoicePdfGenerator {
       ACL: "private",
     };
 
-    return new Promise<PromiseResult<AWS.S3.PutObjectOutput, AWS.AWSError>>((resolve, reject) => {
-      let pdfBytes: any[] = [];
-      pdfDocument.on("readable", (_) => {
-        try {
-          while (true) {
-            let buffer = pdfDocument.read();
-            if (!buffer) {
-              break;
+    return new Promise<PromiseResult<AWS.S3.PutObjectOutput, AWS.AWSError>>(
+      (resolve, reject) => {
+        let pdfBytes: any[] = [];
+        pdfDocument.on("readable", (_) => {
+          try {
+            while (true) {
+              let buffer = pdfDocument.read();
+              if (!buffer) {
+                break;
+              }
+              pdfBytes.push(buffer);
             }
-            pdfBytes.push(buffer);
+          } catch (e) {
+            reject(e);
           }
-        } catch (e) {
-          reject(e);
-        }
-      });
-      pdfDocument.on("end", async (_) => {
-        try {
-          params.Body = Buffer.concat(pdfBytes);
-          const result = await s3.putObject(params).promise();
-          resolve(result);
-        } catch (e) {
-          reject(e);
-        }
-      });
-    });
+        });
+        pdfDocument.on("end", async (_) => {
+          try {
+            params.Body = Buffer.concat(pdfBytes);
+            const result = await s3.putObject(params).promise();
+            resolve(result);
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
+    );
   }
 
   private newPageCheck(
@@ -215,7 +218,14 @@ export class InvoicePdfGenerator {
           .fill("#F8F8FA")
           .font("Helvetica-Bold")
           .fillColor("#333333");
-        this.generateTableRow(doc, this.top + 10, "ITEM", "QTY", "COST", "PRICE");
+        this.generateTableRow(
+          doc,
+          this.top + 10,
+          "ITEM",
+          "QTY",
+          "COST",
+          "PRICE"
+        );
         this.top += 50;
       }
     }
@@ -298,7 +308,11 @@ export class InvoicePdfGenerator {
       .font("Helvetica")
       .fillColor("#000000")
       .fontSize(8)
-      .text(invoice.buyer.safe_address, this.marginx, (this.top += this.lineMargin))
+      .text(
+        invoice.buyer.safe_address,
+        this.marginx,
+        (this.top += this.lineMargin)
+      )
 
       // Seller
       .fontSize(10)
@@ -382,7 +396,9 @@ export class InvoicePdfGenerator {
       .fillColor("#333333")
 
       .text("Invoice Total", 300, this.top, { width: 70, align: "left" })
-      .text(this.formatCurrency(invoice.subtotal), 0, this.top, { align: "right" });
+      .text(this.formatCurrency(invoice.subtotal), 0, this.top, {
+        align: "right",
+      });
 
     this.newPageCheck(doc, invoice);
     this.newPageCheck(doc, invoice);
@@ -395,6 +411,20 @@ export class InvoicePdfGenerator {
       .stroke();
 
     this.newPageCheck(doc, invoice);
+
+    doc
+      .fontSize(10)
+      .font("Helvetica")
+      .fillColor("#333333")
+
+      .text("Paid in Time Circles", 300, (this.top += 20), {
+        width: 100,
+        align: "left",
+      })
+      .text(`-${invoice.timeCirclesTotal} c`, 0, this.top, {
+        align: "right",
+      })
+      .moveDown();
 
     doc
       .fontSize(10)
@@ -432,7 +462,11 @@ export class InvoicePdfGenerator {
       .text("Transaction Hash", this.marginx, (this.top += 20))
       .font("Helvetica")
       .fillColor("#000000")
-      .text(invoice.transactionHash, this.marginx, (this.top += this.lineMargin));
+      .text(
+        invoice.transactionHash,
+        this.marginx,
+        (this.top += this.lineMargin)
+      );
   }
 
   private generateInvoiceTable(
@@ -530,7 +564,12 @@ export class InvoicePdfGenerator {
   }
 
   private generateHr(doc: typeof PDFDocument, y: number) {
-    doc.strokeColor("#aaaaaa").lineWidth(1).moveTo(50, y).lineTo(550, y).stroke();
+    doc
+      .strokeColor("#aaaaaa")
+      .lineWidth(1)
+      .moveTo(50, y)
+      .lineTo(550, y)
+      .stroke();
   }
 
   private formatCurrency(amount: number) {
