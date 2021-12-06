@@ -28,7 +28,10 @@ export class Main {
     private _dropper = new Dropper();
 
     async run2 () {
+        console.log("======== Checking configuration ======== ")
         await Environment.validateAndSummarize();
+        console.log("================ DONE ================== ")
+        console.log("")
 
         const app = express();
         const httpServer = createServer(app);
