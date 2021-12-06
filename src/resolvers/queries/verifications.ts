@@ -3,7 +3,7 @@ import {Context} from "../../context";
 import {prisma_api_ro} from "../../apiDbClient";
 import {ProfileLoader} from "../../profileLoader";
 
-export const verifications = async (parent:any, args:QueryVerificationsArgs, context:Context) => {
+export const verifications = async (parent:any, args:QueryVerificationsArgs, context?:Context) => {
   const where:any = { };
 
   const limit = args.pagination ? (Number.isInteger(args.pagination.limit) && args.pagination.limit > 0 && args.pagination.limit <= 100

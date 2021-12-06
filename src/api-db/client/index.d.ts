@@ -41,6 +41,7 @@ export type Invitation = {
   id: number
   createdByProfileId: number
   createdAt: Date
+  fundedAt: Date | null
   name: string
   code: string
   claimedByProfileId: number | null
@@ -50,19 +51,6 @@ export type Invitation = {
   redeemTxHash: string | null
   address: string
   key: string
-}
-
-/**
- * Model RedeemInvitationRequest
- */
-
-export type RedeemInvitationRequest = {
-  id: number
-  createdAt: Date
-  createdByProfileId: number
-  workerProcess: string | null
-  pickedAt: Date | null
-  invitationToRedeemId: number
 }
 
 /**
@@ -85,6 +73,12 @@ export type VerifiedSafe = {
   createdAt: Date
   createdByProfileId: number
   createdByOrganisationId: number
+  swapEoaAddress: string
+  swapEoaKey: string
+  rewardProcessingStartedAt: Date | null
+  inviteeRewardTransactionHash: string | null
+  inviterRewardTransactionHash: string | null
+  swapFundingTransactionHash: string | null
 }
 
 /**
@@ -435,16 +429,6 @@ export class PrismaClient<
     * ```
     */
   get invitation(): Prisma.InvitationDelegate<GlobalReject>;
-
-  /**
-   * `prisma.redeemInvitationRequest`: Exposes CRUD operations for the **RedeemInvitationRequest** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more RedeemInvitationRequests
-    * const redeemInvitationRequests = await prisma.redeemInvitationRequest.findMany()
-    * ```
-    */
-  get redeemInvitationRequest(): Prisma.RedeemInvitationRequestDelegate<GlobalReject>;
 
   /**
    * `prisma.invitationFundsEOA`: Exposes CRUD operations for the **InvitationFundsEOA** model.
@@ -967,7 +951,6 @@ export namespace Prisma {
   export const ModelName: {
     Session: 'Session',
     Invitation: 'Invitation',
-    RedeemInvitationRequest: 'RedeemInvitationRequest',
     InvitationFundsEOA: 'InvitationFundsEOA',
     VerifiedSafe: 'VerifiedSafe',
     Profile: 'Profile',
@@ -2164,6 +2147,7 @@ export namespace Prisma {
     id: number | null
     createdByProfileId: number | null
     createdAt: Date | null
+    fundedAt: Date | null
     name: string | null
     code: string | null
     claimedByProfileId: number | null
@@ -2179,6 +2163,7 @@ export namespace Prisma {
     id: number | null
     createdByProfileId: number | null
     createdAt: Date | null
+    fundedAt: Date | null
     name: string | null
     code: string | null
     claimedByProfileId: number | null
@@ -2194,6 +2179,7 @@ export namespace Prisma {
     id: number
     createdByProfileId: number
     createdAt: number
+    fundedAt: number
     name: number
     code: number
     claimedByProfileId: number
@@ -2225,6 +2211,7 @@ export namespace Prisma {
     id?: true
     createdByProfileId?: true
     createdAt?: true
+    fundedAt?: true
     name?: true
     code?: true
     claimedByProfileId?: true
@@ -2240,6 +2227,7 @@ export namespace Prisma {
     id?: true
     createdByProfileId?: true
     createdAt?: true
+    fundedAt?: true
     name?: true
     code?: true
     claimedByProfileId?: true
@@ -2255,6 +2243,7 @@ export namespace Prisma {
     id?: true
     createdByProfileId?: true
     createdAt?: true
+    fundedAt?: true
     name?: true
     code?: true
     claimedByProfileId?: true
@@ -2383,6 +2372,7 @@ export namespace Prisma {
     id: number
     createdByProfileId: number
     createdAt: Date
+    fundedAt: Date | null
     name: string
     code: string
     claimedByProfileId: number | null
@@ -2418,6 +2408,7 @@ export namespace Prisma {
     createdBy?: boolean | ProfileArgs
     createdByProfileId?: boolean
     createdAt?: boolean
+    fundedAt?: boolean
     name?: boolean
     code?: boolean
     claimedBy?: boolean | ProfileArgs
@@ -2429,14 +2420,12 @@ export namespace Prisma {
     redeemTxHash?: boolean
     address?: boolean
     key?: boolean
-    indexedTransactions?: boolean | RedeemInvitationRequestFindManyArgs
   }
 
   export type InvitationInclude = {
     createdBy?: boolean | ProfileArgs
     claimedBy?: boolean | ProfileArgs
     redeemedBy?: boolean | ProfileArgs
-    indexedTransactions?: boolean | RedeemInvitationRequestFindManyArgs
   }
 
   export type InvitationGetPayload<
@@ -2455,9 +2444,7 @@ export namespace Prisma {
         P extends 'claimedBy'
         ? ProfileGetPayload<S['include'][P]> | null :
         P extends 'redeemedBy'
-        ? ProfileGetPayload<S['include'][P]> | null :
-        P extends 'indexedTransactions'
-        ? Array < RedeemInvitationRequestGetPayload<S['include'][P]>>  : never
+        ? ProfileGetPayload<S['include'][P]> | null : never
   } 
     : 'select' extends U
     ? {
@@ -2468,9 +2455,7 @@ export namespace Prisma {
         P extends 'claimedBy'
         ? ProfileGetPayload<S['select'][P]> | null :
         P extends 'redeemedBy'
-        ? ProfileGetPayload<S['select'][P]> | null :
-        P extends 'indexedTransactions'
-        ? Array < RedeemInvitationRequestGetPayload<S['select'][P]>>  : never
+        ? ProfileGetPayload<S['select'][P]> | null : never
   } 
     : Invitation
   : Invitation
@@ -2816,8 +2801,6 @@ export namespace Prisma {
 
     redeemedBy<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
 
-    indexedTransactions<T extends RedeemInvitationRequestFindManyArgs = {}>(args?: Subset<T, RedeemInvitationRequestFindManyArgs>): CheckSelect<T, PrismaPromise<Array<RedeemInvitationRequest>>, PrismaPromise<Array<RedeemInvitationRequestGetPayload<T>>>>;
-
     private get _document();
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3126,940 +3109,6 @@ export namespace Prisma {
      * 
     **/
     include?: InvitationInclude | null
-  }
-
-
-
-  /**
-   * Model RedeemInvitationRequest
-   */
-
-
-  export type AggregateRedeemInvitationRequest = {
-    _count: RedeemInvitationRequestCountAggregateOutputType | null
-    count: RedeemInvitationRequestCountAggregateOutputType | null
-    _avg: RedeemInvitationRequestAvgAggregateOutputType | null
-    avg: RedeemInvitationRequestAvgAggregateOutputType | null
-    _sum: RedeemInvitationRequestSumAggregateOutputType | null
-    sum: RedeemInvitationRequestSumAggregateOutputType | null
-    _min: RedeemInvitationRequestMinAggregateOutputType | null
-    min: RedeemInvitationRequestMinAggregateOutputType | null
-    _max: RedeemInvitationRequestMaxAggregateOutputType | null
-    max: RedeemInvitationRequestMaxAggregateOutputType | null
-  }
-
-  export type RedeemInvitationRequestAvgAggregateOutputType = {
-    id: number | null
-    createdByProfileId: number | null
-    invitationToRedeemId: number | null
-  }
-
-  export type RedeemInvitationRequestSumAggregateOutputType = {
-    id: number | null
-    createdByProfileId: number | null
-    invitationToRedeemId: number | null
-  }
-
-  export type RedeemInvitationRequestMinAggregateOutputType = {
-    id: number | null
-    createdAt: Date | null
-    createdByProfileId: number | null
-    workerProcess: string | null
-    pickedAt: Date | null
-    invitationToRedeemId: number | null
-  }
-
-  export type RedeemInvitationRequestMaxAggregateOutputType = {
-    id: number | null
-    createdAt: Date | null
-    createdByProfileId: number | null
-    workerProcess: string | null
-    pickedAt: Date | null
-    invitationToRedeemId: number | null
-  }
-
-  export type RedeemInvitationRequestCountAggregateOutputType = {
-    id: number
-    createdAt: number
-    createdByProfileId: number
-    workerProcess: number
-    pickedAt: number
-    invitationToRedeemId: number
-    _all: number
-  }
-
-
-  export type RedeemInvitationRequestAvgAggregateInputType = {
-    id?: true
-    createdByProfileId?: true
-    invitationToRedeemId?: true
-  }
-
-  export type RedeemInvitationRequestSumAggregateInputType = {
-    id?: true
-    createdByProfileId?: true
-    invitationToRedeemId?: true
-  }
-
-  export type RedeemInvitationRequestMinAggregateInputType = {
-    id?: true
-    createdAt?: true
-    createdByProfileId?: true
-    workerProcess?: true
-    pickedAt?: true
-    invitationToRedeemId?: true
-  }
-
-  export type RedeemInvitationRequestMaxAggregateInputType = {
-    id?: true
-    createdAt?: true
-    createdByProfileId?: true
-    workerProcess?: true
-    pickedAt?: true
-    invitationToRedeemId?: true
-  }
-
-  export type RedeemInvitationRequestCountAggregateInputType = {
-    id?: true
-    createdAt?: true
-    createdByProfileId?: true
-    workerProcess?: true
-    pickedAt?: true
-    invitationToRedeemId?: true
-    _all?: true
-  }
-
-  export type RedeemInvitationRequestAggregateArgs = {
-    /**
-     * Filter which RedeemInvitationRequest to aggregate.
-     * 
-    **/
-    where?: RedeemInvitationRequestWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RedeemInvitationRequests to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<RedeemInvitationRequestOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     * 
-    **/
-    cursor?: RedeemInvitationRequestWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RedeemInvitationRequests from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RedeemInvitationRequests.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned RedeemInvitationRequests
-    **/
-    _count?: true | RedeemInvitationRequestCountAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | RedeemInvitationRequestCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: RedeemInvitationRequestAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: RedeemInvitationRequestAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: RedeemInvitationRequestSumAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: RedeemInvitationRequestSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: RedeemInvitationRequestMinAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: RedeemInvitationRequestMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: RedeemInvitationRequestMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: RedeemInvitationRequestMaxAggregateInputType
-  }
-
-  export type GetRedeemInvitationRequestAggregateType<T extends RedeemInvitationRequestAggregateArgs> = {
-        [P in keyof T & keyof AggregateRedeemInvitationRequest]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateRedeemInvitationRequest[P]>
-      : GetScalarType<T[P], AggregateRedeemInvitationRequest[P]>
-  }
-
-
-    
-    
-  export type RedeemInvitationRequestGroupByArgs = {
-    where?: RedeemInvitationRequestWhereInput
-    orderBy?: Enumerable<RedeemInvitationRequestOrderByInput>
-    by: Array<RedeemInvitationRequestScalarFieldEnum>
-    having?: RedeemInvitationRequestScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: RedeemInvitationRequestCountAggregateInputType | true
-    _avg?: RedeemInvitationRequestAvgAggregateInputType
-    _sum?: RedeemInvitationRequestSumAggregateInputType
-    _min?: RedeemInvitationRequestMinAggregateInputType
-    _max?: RedeemInvitationRequestMaxAggregateInputType
-  }
-
-
-  export type RedeemInvitationRequestGroupByOutputType = {
-    id: number
-    createdAt: Date
-    createdByProfileId: number
-    workerProcess: string | null
-    pickedAt: Date | null
-    invitationToRedeemId: number
-    _count: RedeemInvitationRequestCountAggregateOutputType | null
-    _avg: RedeemInvitationRequestAvgAggregateOutputType | null
-    _sum: RedeemInvitationRequestSumAggregateOutputType | null
-    _min: RedeemInvitationRequestMinAggregateOutputType | null
-    _max: RedeemInvitationRequestMaxAggregateOutputType | null
-  }
-
-  type GetRedeemInvitationRequestGroupByPayload<T extends RedeemInvitationRequestGroupByArgs> = Promise<
-    Array<
-      PickArray<RedeemInvitationRequestGroupByOutputType, T['by']> & 
-        {
-          [P in ((keyof T) & (keyof RedeemInvitationRequestGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], RedeemInvitationRequestGroupByOutputType[P]> 
-            : GetScalarType<T[P], RedeemInvitationRequestGroupByOutputType[P]>
-        }
-      > 
-    >
-
-
-  export type RedeemInvitationRequestSelect = {
-    id?: boolean
-    createdAt?: boolean
-    createdBy?: boolean | ProfileArgs
-    createdByProfileId?: boolean
-    workerProcess?: boolean
-    pickedAt?: boolean
-    invitationToRedeem?: boolean | InvitationArgs
-    invitationToRedeemId?: boolean
-  }
-
-  export type RedeemInvitationRequestInclude = {
-    createdBy?: boolean | ProfileArgs
-    invitationToRedeem?: boolean | InvitationArgs
-  }
-
-  export type RedeemInvitationRequestGetPayload<
-    S extends boolean | null | undefined | RedeemInvitationRequestArgs,
-    U = keyof S
-      > = S extends true
-        ? RedeemInvitationRequest
-    : S extends undefined
-    ? never
-    : S extends RedeemInvitationRequestArgs | RedeemInvitationRequestFindManyArgs
-    ?'include' extends U
-    ? RedeemInvitationRequest  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'createdBy'
-        ? ProfileGetPayload<S['include'][P]> :
-        P extends 'invitationToRedeem'
-        ? InvitationGetPayload<S['include'][P]> : never
-  } 
-    : 'select' extends U
-    ? {
-    [P in TrueKeys<S['select']>]: P extends keyof RedeemInvitationRequest ?RedeemInvitationRequest [P]
-  : 
-          P extends 'createdBy'
-        ? ProfileGetPayload<S['select'][P]> :
-        P extends 'invitationToRedeem'
-        ? InvitationGetPayload<S['select'][P]> : never
-  } 
-    : RedeemInvitationRequest
-  : RedeemInvitationRequest
-
-
-  type RedeemInvitationRequestCountArgs = Merge<
-    Omit<RedeemInvitationRequestFindManyArgs, 'select' | 'include'> & {
-      select?: RedeemInvitationRequestCountAggregateInputType | true
-    }
-  >
-
-  export interface RedeemInvitationRequestDelegate<GlobalRejectSettings> {
-    /**
-     * Find zero or one RedeemInvitationRequest that matches the filter.
-     * @param {RedeemInvitationRequestFindUniqueArgs} args - Arguments to find a RedeemInvitationRequest
-     * @example
-     * // Get one RedeemInvitationRequest
-     * const redeemInvitationRequest = await prisma.redeemInvitationRequest.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUnique<T extends RedeemInvitationRequestFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, RedeemInvitationRequestFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'RedeemInvitationRequest'> extends True ? CheckSelect<T, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequest>, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequestGetPayload<T>>> : CheckSelect<T, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequest | null >, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequestGetPayload<T> | null >>
-
-    /**
-     * Find the first RedeemInvitationRequest that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RedeemInvitationRequestFindFirstArgs} args - Arguments to find a RedeemInvitationRequest
-     * @example
-     * // Get one RedeemInvitationRequest
-     * const redeemInvitationRequest = await prisma.redeemInvitationRequest.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirst<T extends RedeemInvitationRequestFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, RedeemInvitationRequestFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'RedeemInvitationRequest'> extends True ? CheckSelect<T, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequest>, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequestGetPayload<T>>> : CheckSelect<T, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequest | null >, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequestGetPayload<T> | null >>
-
-    /**
-     * Find zero or more RedeemInvitationRequests that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RedeemInvitationRequestFindManyArgs=} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all RedeemInvitationRequests
-     * const redeemInvitationRequests = await prisma.redeemInvitationRequest.findMany()
-     * 
-     * // Get first 10 RedeemInvitationRequests
-     * const redeemInvitationRequests = await prisma.redeemInvitationRequest.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const redeemInvitationRequestWithIdOnly = await prisma.redeemInvitationRequest.findMany({ select: { id: true } })
-     * 
-    **/
-    findMany<T extends RedeemInvitationRequestFindManyArgs>(
-      args?: SelectSubset<T, RedeemInvitationRequestFindManyArgs>
-    ): CheckSelect<T, PrismaPromise<Array<RedeemInvitationRequest>>, PrismaPromise<Array<RedeemInvitationRequestGetPayload<T>>>>
-
-    /**
-     * Create a RedeemInvitationRequest.
-     * @param {RedeemInvitationRequestCreateArgs} args - Arguments to create a RedeemInvitationRequest.
-     * @example
-     * // Create one RedeemInvitationRequest
-     * const RedeemInvitationRequest = await prisma.redeemInvitationRequest.create({
-     *   data: {
-     *     // ... data to create a RedeemInvitationRequest
-     *   }
-     * })
-     * 
-    **/
-    create<T extends RedeemInvitationRequestCreateArgs>(
-      args: SelectSubset<T, RedeemInvitationRequestCreateArgs>
-    ): CheckSelect<T, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequest>, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequestGetPayload<T>>>
-
-    /**
-     * Create many RedeemInvitationRequests.
-     *     @param {RedeemInvitationRequestCreateManyArgs} args - Arguments to create many RedeemInvitationRequests.
-     *     @example
-     *     // Create many RedeemInvitationRequests
-     *     const redeemInvitationRequest = await prisma.redeemInvitationRequest.createMany({
-     *       data: {
-     *         // ... provide data here
-     *       }
-     *     })
-     *     
-    **/
-    createMany<T extends RedeemInvitationRequestCreateManyArgs>(
-      args?: SelectSubset<T, RedeemInvitationRequestCreateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a RedeemInvitationRequest.
-     * @param {RedeemInvitationRequestDeleteArgs} args - Arguments to delete one RedeemInvitationRequest.
-     * @example
-     * // Delete one RedeemInvitationRequest
-     * const RedeemInvitationRequest = await prisma.redeemInvitationRequest.delete({
-     *   where: {
-     *     // ... filter to delete one RedeemInvitationRequest
-     *   }
-     * })
-     * 
-    **/
-    delete<T extends RedeemInvitationRequestDeleteArgs>(
-      args: SelectSubset<T, RedeemInvitationRequestDeleteArgs>
-    ): CheckSelect<T, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequest>, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequestGetPayload<T>>>
-
-    /**
-     * Update one RedeemInvitationRequest.
-     * @param {RedeemInvitationRequestUpdateArgs} args - Arguments to update one RedeemInvitationRequest.
-     * @example
-     * // Update one RedeemInvitationRequest
-     * const redeemInvitationRequest = await prisma.redeemInvitationRequest.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    update<T extends RedeemInvitationRequestUpdateArgs>(
-      args: SelectSubset<T, RedeemInvitationRequestUpdateArgs>
-    ): CheckSelect<T, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequest>, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequestGetPayload<T>>>
-
-    /**
-     * Delete zero or more RedeemInvitationRequests.
-     * @param {RedeemInvitationRequestDeleteManyArgs} args - Arguments to filter RedeemInvitationRequests to delete.
-     * @example
-     * // Delete a few RedeemInvitationRequests
-     * const { count } = await prisma.redeemInvitationRequest.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-    **/
-    deleteMany<T extends RedeemInvitationRequestDeleteManyArgs>(
-      args?: SelectSubset<T, RedeemInvitationRequestDeleteManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more RedeemInvitationRequests.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RedeemInvitationRequestUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many RedeemInvitationRequests
-     * const redeemInvitationRequest = await prisma.redeemInvitationRequest.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    updateMany<T extends RedeemInvitationRequestUpdateManyArgs>(
-      args: SelectSubset<T, RedeemInvitationRequestUpdateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one RedeemInvitationRequest.
-     * @param {RedeemInvitationRequestUpsertArgs} args - Arguments to update or create a RedeemInvitationRequest.
-     * @example
-     * // Update or create a RedeemInvitationRequest
-     * const redeemInvitationRequest = await prisma.redeemInvitationRequest.upsert({
-     *   create: {
-     *     // ... data to create a RedeemInvitationRequest
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the RedeemInvitationRequest we want to update
-     *   }
-     * })
-    **/
-    upsert<T extends RedeemInvitationRequestUpsertArgs>(
-      args: SelectSubset<T, RedeemInvitationRequestUpsertArgs>
-    ): CheckSelect<T, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequest>, Prisma__RedeemInvitationRequestClient<RedeemInvitationRequestGetPayload<T>>>
-
-    /**
-     * Count the number of RedeemInvitationRequests.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RedeemInvitationRequestCountArgs} args - Arguments to filter RedeemInvitationRequests to count.
-     * @example
-     * // Count the number of RedeemInvitationRequests
-     * const count = await prisma.redeemInvitationRequest.count({
-     *   where: {
-     *     // ... the filter for the RedeemInvitationRequests we want to count
-     *   }
-     * })
-    **/
-    count<T extends RedeemInvitationRequestCountArgs>(
-      args?: Subset<T, RedeemInvitationRequestCountArgs>,
-    ): PrismaPromise<
-      T extends _Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], RedeemInvitationRequestCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a RedeemInvitationRequest.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RedeemInvitationRequestAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends RedeemInvitationRequestAggregateArgs>(args: Subset<T, RedeemInvitationRequestAggregateArgs>): PrismaPromise<GetRedeemInvitationRequestAggregateType<T>>
-
-    /**
-     * Group by RedeemInvitationRequest.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RedeemInvitationRequestGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends RedeemInvitationRequestGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: RedeemInvitationRequestGroupByArgs['orderBy'] }
-        : { orderBy?: RedeemInvitationRequestGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends TupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, RedeemInvitationRequestGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRedeemInvitationRequestGroupByPayload<T> : Promise<InputErrors>
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for RedeemInvitationRequest.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export class Prisma__RedeemInvitationRequestClient<T> implements PrismaPromise<T> {
-    [prisma]: true;
-    private readonly _dmmf;
-    private readonly _fetcher;
-    private readonly _queryType;
-    private readonly _rootField;
-    private readonly _clientMethod;
-    private readonly _args;
-    private readonly _dataPath;
-    private readonly _errorFormat;
-    private readonly _measurePerformance?;
-    private _isList;
-    private _callsite;
-    private _requestPromise?;
-    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
-
-    createdBy<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
-
-    invitationToRedeem<T extends InvitationArgs = {}>(args?: Subset<T, InvitationArgs>): CheckSelect<T, Prisma__InvitationClient<Invitation | null >, Prisma__InvitationClient<InvitationGetPayload<T> | null >>;
-
-    private get _document();
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
-  }
-
-  // Custom InputTypes
-
-  /**
-   * RedeemInvitationRequest findUnique
-   */
-  export type RedeemInvitationRequestFindUniqueArgs = {
-    /**
-     * Select specific fields to fetch from the RedeemInvitationRequest
-     * 
-    **/
-    select?: RedeemInvitationRequestSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: RedeemInvitationRequestInclude | null
-    /**
-     * Throw an Error if a RedeemInvitationRequest can't be found
-     * 
-    **/
-    rejectOnNotFound?: RejectOnNotFound
-    /**
-     * Filter, which RedeemInvitationRequest to fetch.
-     * 
-    **/
-    where: RedeemInvitationRequestWhereUniqueInput
-  }
-
-
-  /**
-   * RedeemInvitationRequest findFirst
-   */
-  export type RedeemInvitationRequestFindFirstArgs = {
-    /**
-     * Select specific fields to fetch from the RedeemInvitationRequest
-     * 
-    **/
-    select?: RedeemInvitationRequestSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: RedeemInvitationRequestInclude | null
-    /**
-     * Throw an Error if a RedeemInvitationRequest can't be found
-     * 
-    **/
-    rejectOnNotFound?: RejectOnNotFound
-    /**
-     * Filter, which RedeemInvitationRequest to fetch.
-     * 
-    **/
-    where?: RedeemInvitationRequestWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RedeemInvitationRequests to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<RedeemInvitationRequestOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for RedeemInvitationRequests.
-     * 
-    **/
-    cursor?: RedeemInvitationRequestWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RedeemInvitationRequests from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RedeemInvitationRequests.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of RedeemInvitationRequests.
-     * 
-    **/
-    distinct?: Enumerable<RedeemInvitationRequestScalarFieldEnum>
-  }
-
-
-  /**
-   * RedeemInvitationRequest findMany
-   */
-  export type RedeemInvitationRequestFindManyArgs = {
-    /**
-     * Select specific fields to fetch from the RedeemInvitationRequest
-     * 
-    **/
-    select?: RedeemInvitationRequestSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: RedeemInvitationRequestInclude | null
-    /**
-     * Filter, which RedeemInvitationRequests to fetch.
-     * 
-    **/
-    where?: RedeemInvitationRequestWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RedeemInvitationRequests to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<RedeemInvitationRequestOrderByInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing RedeemInvitationRequests.
-     * 
-    **/
-    cursor?: RedeemInvitationRequestWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RedeemInvitationRequests from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RedeemInvitationRequests.
-     * 
-    **/
-    skip?: number
-    distinct?: Enumerable<RedeemInvitationRequestScalarFieldEnum>
-  }
-
-
-  /**
-   * RedeemInvitationRequest create
-   */
-  export type RedeemInvitationRequestCreateArgs = {
-    /**
-     * Select specific fields to fetch from the RedeemInvitationRequest
-     * 
-    **/
-    select?: RedeemInvitationRequestSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: RedeemInvitationRequestInclude | null
-    /**
-     * The data needed to create a RedeemInvitationRequest.
-     * 
-    **/
-    data: XOR<RedeemInvitationRequestCreateInput, RedeemInvitationRequestUncheckedCreateInput>
-  }
-
-
-  /**
-   * RedeemInvitationRequest createMany
-   */
-  export type RedeemInvitationRequestCreateManyArgs = {
-    data: Enumerable<RedeemInvitationRequestCreateManyInput>
-    skipDuplicates?: boolean
-  }
-
-
-  /**
-   * RedeemInvitationRequest update
-   */
-  export type RedeemInvitationRequestUpdateArgs = {
-    /**
-     * Select specific fields to fetch from the RedeemInvitationRequest
-     * 
-    **/
-    select?: RedeemInvitationRequestSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: RedeemInvitationRequestInclude | null
-    /**
-     * The data needed to update a RedeemInvitationRequest.
-     * 
-    **/
-    data: XOR<RedeemInvitationRequestUpdateInput, RedeemInvitationRequestUncheckedUpdateInput>
-    /**
-     * Choose, which RedeemInvitationRequest to update.
-     * 
-    **/
-    where: RedeemInvitationRequestWhereUniqueInput
-  }
-
-
-  /**
-   * RedeemInvitationRequest updateMany
-   */
-  export type RedeemInvitationRequestUpdateManyArgs = {
-    data: XOR<RedeemInvitationRequestUpdateManyMutationInput, RedeemInvitationRequestUncheckedUpdateManyInput>
-    where?: RedeemInvitationRequestWhereInput
-  }
-
-
-  /**
-   * RedeemInvitationRequest upsert
-   */
-  export type RedeemInvitationRequestUpsertArgs = {
-    /**
-     * Select specific fields to fetch from the RedeemInvitationRequest
-     * 
-    **/
-    select?: RedeemInvitationRequestSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: RedeemInvitationRequestInclude | null
-    /**
-     * The filter to search for the RedeemInvitationRequest to update in case it exists.
-     * 
-    **/
-    where: RedeemInvitationRequestWhereUniqueInput
-    /**
-     * In case the RedeemInvitationRequest found by the `where` argument doesn't exist, create a new RedeemInvitationRequest with this data.
-     * 
-    **/
-    create: XOR<RedeemInvitationRequestCreateInput, RedeemInvitationRequestUncheckedCreateInput>
-    /**
-     * In case the RedeemInvitationRequest was found with the provided `where` argument, update it with this data.
-     * 
-    **/
-    update: XOR<RedeemInvitationRequestUpdateInput, RedeemInvitationRequestUncheckedUpdateInput>
-  }
-
-
-  /**
-   * RedeemInvitationRequest delete
-   */
-  export type RedeemInvitationRequestDeleteArgs = {
-    /**
-     * Select specific fields to fetch from the RedeemInvitationRequest
-     * 
-    **/
-    select?: RedeemInvitationRequestSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: RedeemInvitationRequestInclude | null
-    /**
-     * Filter which RedeemInvitationRequest to delete.
-     * 
-    **/
-    where: RedeemInvitationRequestWhereUniqueInput
-  }
-
-
-  /**
-   * RedeemInvitationRequest deleteMany
-   */
-  export type RedeemInvitationRequestDeleteManyArgs = {
-    where?: RedeemInvitationRequestWhereInput
-  }
-
-
-  /**
-   * RedeemInvitationRequest without action
-   */
-  export type RedeemInvitationRequestArgs = {
-    /**
-     * Select specific fields to fetch from the RedeemInvitationRequest
-     * 
-    **/
-    select?: RedeemInvitationRequestSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: RedeemInvitationRequestInclude | null
   }
 
 
@@ -5003,6 +4052,12 @@ export namespace Prisma {
     createdAt: Date | null
     createdByProfileId: number | null
     createdByOrganisationId: number | null
+    swapEoaAddress: string | null
+    swapEoaKey: string | null
+    rewardProcessingStartedAt: Date | null
+    inviteeRewardTransactionHash: string | null
+    inviterRewardTransactionHash: string | null
+    swapFundingTransactionHash: string | null
   }
 
   export type VerifiedSafeMaxAggregateOutputType = {
@@ -5010,6 +4065,12 @@ export namespace Prisma {
     createdAt: Date | null
     createdByProfileId: number | null
     createdByOrganisationId: number | null
+    swapEoaAddress: string | null
+    swapEoaKey: string | null
+    rewardProcessingStartedAt: Date | null
+    inviteeRewardTransactionHash: string | null
+    inviterRewardTransactionHash: string | null
+    swapFundingTransactionHash: string | null
   }
 
   export type VerifiedSafeCountAggregateOutputType = {
@@ -5017,6 +4078,12 @@ export namespace Prisma {
     createdAt: number
     createdByProfileId: number
     createdByOrganisationId: number
+    swapEoaAddress: number
+    swapEoaKey: number
+    rewardProcessingStartedAt: number
+    inviteeRewardTransactionHash: number
+    inviterRewardTransactionHash: number
+    swapFundingTransactionHash: number
     _all: number
   }
 
@@ -5036,6 +4103,12 @@ export namespace Prisma {
     createdAt?: true
     createdByProfileId?: true
     createdByOrganisationId?: true
+    swapEoaAddress?: true
+    swapEoaKey?: true
+    rewardProcessingStartedAt?: true
+    inviteeRewardTransactionHash?: true
+    inviterRewardTransactionHash?: true
+    swapFundingTransactionHash?: true
   }
 
   export type VerifiedSafeMaxAggregateInputType = {
@@ -5043,6 +4116,12 @@ export namespace Prisma {
     createdAt?: true
     createdByProfileId?: true
     createdByOrganisationId?: true
+    swapEoaAddress?: true
+    swapEoaKey?: true
+    rewardProcessingStartedAt?: true
+    inviteeRewardTransactionHash?: true
+    inviterRewardTransactionHash?: true
+    swapFundingTransactionHash?: true
   }
 
   export type VerifiedSafeCountAggregateInputType = {
@@ -5050,6 +4129,12 @@ export namespace Prisma {
     createdAt?: true
     createdByProfileId?: true
     createdByOrganisationId?: true
+    swapEoaAddress?: true
+    swapEoaKey?: true
+    rewardProcessingStartedAt?: true
+    inviteeRewardTransactionHash?: true
+    inviterRewardTransactionHash?: true
+    swapFundingTransactionHash?: true
     _all?: true
   }
 
@@ -5170,6 +4255,12 @@ export namespace Prisma {
     createdAt: Date
     createdByProfileId: number
     createdByOrganisationId: number
+    swapEoaAddress: string
+    swapEoaKey: string
+    rewardProcessingStartedAt: Date | null
+    inviteeRewardTransactionHash: string | null
+    inviterRewardTransactionHash: string | null
+    swapFundingTransactionHash: string | null
     _count: VerifiedSafeCountAggregateOutputType | null
     _avg: VerifiedSafeAvgAggregateOutputType | null
     _sum: VerifiedSafeSumAggregateOutputType | null
@@ -5198,11 +4289,23 @@ export namespace Prisma {
     createdByProfileId?: boolean
     createdByOrganisation?: boolean | ProfileArgs
     createdByOrganisationId?: boolean
+    swapEoaAddress?: boolean
+    swapEoaKey?: boolean
+    rewardProcessingStartedAt?: boolean
+    inviteeRewardTransaction?: boolean | TransactionArgs
+    inviteeRewardTransactionHash?: boolean
+    inviterRewardTransaction?: boolean | TransactionArgs
+    inviterRewardTransactionHash?: boolean
+    swapFundingTransaction?: boolean | TransactionArgs
+    swapFundingTransactionHash?: boolean
   }
 
   export type VerifiedSafeInclude = {
     createdBy?: boolean | ProfileArgs
     createdByOrganisation?: boolean | ProfileArgs
+    inviteeRewardTransaction?: boolean | TransactionArgs
+    inviterRewardTransaction?: boolean | TransactionArgs
+    swapFundingTransaction?: boolean | TransactionArgs
   }
 
   export type VerifiedSafeGetPayload<
@@ -5219,7 +4322,13 @@ export namespace Prisma {
           P extends 'createdBy'
         ? ProfileGetPayload<S['include'][P]> :
         P extends 'createdByOrganisation'
-        ? ProfileGetPayload<S['include'][P]> : never
+        ? ProfileGetPayload<S['include'][P]> :
+        P extends 'inviteeRewardTransaction'
+        ? TransactionGetPayload<S['include'][P]> | null :
+        P extends 'inviterRewardTransaction'
+        ? TransactionGetPayload<S['include'][P]> | null :
+        P extends 'swapFundingTransaction'
+        ? TransactionGetPayload<S['include'][P]> | null : never
   } 
     : 'select' extends U
     ? {
@@ -5228,7 +4337,13 @@ export namespace Prisma {
           P extends 'createdBy'
         ? ProfileGetPayload<S['select'][P]> :
         P extends 'createdByOrganisation'
-        ? ProfileGetPayload<S['select'][P]> : never
+        ? ProfileGetPayload<S['select'][P]> :
+        P extends 'inviteeRewardTransaction'
+        ? TransactionGetPayload<S['select'][P]> | null :
+        P extends 'inviterRewardTransaction'
+        ? TransactionGetPayload<S['select'][P]> | null :
+        P extends 'swapFundingTransaction'
+        ? TransactionGetPayload<S['select'][P]> | null : never
   } 
     : VerifiedSafe
   : VerifiedSafe
@@ -5571,6 +4686,12 @@ export namespace Prisma {
     createdBy<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
 
     createdByOrganisation<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
+
+    inviteeRewardTransaction<T extends TransactionArgs = {}>(args?: Subset<T, TransactionArgs>): CheckSelect<T, Prisma__TransactionClient<Transaction | null >, Prisma__TransactionClient<TransactionGetPayload<T> | null >>;
+
+    inviterRewardTransaction<T extends TransactionArgs = {}>(args?: Subset<T, TransactionArgs>): CheckSelect<T, Prisma__TransactionClient<Transaction | null >, Prisma__TransactionClient<TransactionGetPayload<T> | null >>;
+
+    swapFundingTransaction<T extends TransactionArgs = {}>(args?: Subset<T, TransactionArgs>): CheckSelect<T, Prisma__TransactionClient<Transaction | null >, Prisma__TransactionClient<TransactionGetPayload<T> | null >>;
 
     private get _document();
     /**
@@ -6295,7 +5416,6 @@ export namespace Prisma {
     purchases?: boolean | PurchaseFindManyArgs
     invitations?: boolean | InvitationFindManyArgs
     invitationFunds?: boolean | InvitationFundsEOAArgs
-    redeemInvitationRequests?: boolean | RedeemInvitationRequestFindManyArgs
     redeemedInvitations?: boolean | InvitationFindManyArgs
     claimedInvitations?: boolean | InvitationFindManyArgs
     members?: boolean | MembershipFindManyArgs
@@ -6318,7 +5438,6 @@ export namespace Prisma {
     purchases?: boolean | PurchaseFindManyArgs
     invitations?: boolean | InvitationFindManyArgs
     invitationFunds?: boolean | InvitationFundsEOAArgs
-    redeemInvitationRequests?: boolean | RedeemInvitationRequestFindManyArgs
     redeemedInvitations?: boolean | InvitationFindManyArgs
     claimedInvitations?: boolean | InvitationFindManyArgs
     members?: boolean | MembershipFindManyArgs
@@ -6352,8 +5471,6 @@ export namespace Prisma {
         ? Array < InvitationGetPayload<S['include'][P]>>  :
         P extends 'invitationFunds'
         ? InvitationFundsEOAGetPayload<S['include'][P]> | null :
-        P extends 'redeemInvitationRequests'
-        ? Array < RedeemInvitationRequestGetPayload<S['include'][P]>>  :
         P extends 'redeemedInvitations'
         ? Array < InvitationGetPayload<S['include'][P]>>  :
         P extends 'claimedInvitations'
@@ -6387,8 +5504,6 @@ export namespace Prisma {
         ? Array < InvitationGetPayload<S['select'][P]>>  :
         P extends 'invitationFunds'
         ? InvitationFundsEOAGetPayload<S['select'][P]> | null :
-        P extends 'redeemInvitationRequests'
-        ? Array < RedeemInvitationRequestGetPayload<S['select'][P]>>  :
         P extends 'redeemedInvitations'
         ? Array < InvitationGetPayload<S['select'][P]>>  :
         P extends 'claimedInvitations'
@@ -6755,8 +5870,6 @@ export namespace Prisma {
     invitations<T extends InvitationFindManyArgs = {}>(args?: Subset<T, InvitationFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Invitation>>, PrismaPromise<Array<InvitationGetPayload<T>>>>;
 
     invitationFunds<T extends InvitationFundsEOAArgs = {}>(args?: Subset<T, InvitationFundsEOAArgs>): CheckSelect<T, Prisma__InvitationFundsEOAClient<InvitationFundsEOA | null >, Prisma__InvitationFundsEOAClient<InvitationFundsEOAGetPayload<T> | null >>;
-
-    redeemInvitationRequests<T extends RedeemInvitationRequestFindManyArgs = {}>(args?: Subset<T, RedeemInvitationRequestFindManyArgs>): CheckSelect<T, PrismaPromise<Array<RedeemInvitationRequest>>, PrismaPromise<Array<RedeemInvitationRequestGetPayload<T>>>>;
 
     redeemedInvitations<T extends InvitationFindManyArgs = {}>(args?: Subset<T, InvitationFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Invitation>>, PrismaPromise<Array<InvitationGetPayload<T>>>>;
 
@@ -16420,11 +15533,17 @@ export namespace Prisma {
     transactionHash?: boolean
     tags?: boolean | TagFindManyArgs
     payedInvoice?: boolean | InvoiceArgs
+    InviteeReward_VerifiedSafe?: boolean | VerifiedSafeArgs
+    InviterReward_VerifiedSafe?: boolean | VerifiedSafeArgs
+    SwapFunding_VerifiedSafe?: boolean | VerifiedSafeArgs
   }
 
   export type TransactionInclude = {
     tags?: boolean | TagFindManyArgs
     payedInvoice?: boolean | InvoiceArgs
+    InviteeReward_VerifiedSafe?: boolean | VerifiedSafeArgs
+    InviterReward_VerifiedSafe?: boolean | VerifiedSafeArgs
+    SwapFunding_VerifiedSafe?: boolean | VerifiedSafeArgs
   }
 
   export type TransactionGetPayload<
@@ -16441,7 +15560,13 @@ export namespace Prisma {
           P extends 'tags'
         ? Array < TagGetPayload<S['include'][P]>>  :
         P extends 'payedInvoice'
-        ? InvoiceGetPayload<S['include'][P]> | null : never
+        ? InvoiceGetPayload<S['include'][P]> | null :
+        P extends 'InviteeReward_VerifiedSafe'
+        ? VerifiedSafeGetPayload<S['include'][P]> | null :
+        P extends 'InviterReward_VerifiedSafe'
+        ? VerifiedSafeGetPayload<S['include'][P]> | null :
+        P extends 'SwapFunding_VerifiedSafe'
+        ? VerifiedSafeGetPayload<S['include'][P]> | null : never
   } 
     : 'select' extends U
     ? {
@@ -16450,7 +15575,13 @@ export namespace Prisma {
           P extends 'tags'
         ? Array < TagGetPayload<S['select'][P]>>  :
         P extends 'payedInvoice'
-        ? InvoiceGetPayload<S['select'][P]> | null : never
+        ? InvoiceGetPayload<S['select'][P]> | null :
+        P extends 'InviteeReward_VerifiedSafe'
+        ? VerifiedSafeGetPayload<S['select'][P]> | null :
+        P extends 'InviterReward_VerifiedSafe'
+        ? VerifiedSafeGetPayload<S['select'][P]> | null :
+        P extends 'SwapFunding_VerifiedSafe'
+        ? VerifiedSafeGetPayload<S['select'][P]> | null : never
   } 
     : Transaction
   : Transaction
@@ -16793,6 +15924,12 @@ export namespace Prisma {
     tags<T extends TagFindManyArgs = {}>(args?: Subset<T, TagFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Tag>>, PrismaPromise<Array<TagGetPayload<T>>>>;
 
     payedInvoice<T extends InvoiceArgs = {}>(args?: Subset<T, InvoiceArgs>): CheckSelect<T, Prisma__InvoiceClient<Invoice | null >, Prisma__InvoiceClient<InvoiceGetPayload<T> | null >>;
+
+    InviteeReward_VerifiedSafe<T extends VerifiedSafeArgs = {}>(args?: Subset<T, VerifiedSafeArgs>): CheckSelect<T, Prisma__VerifiedSafeClient<VerifiedSafe | null >, Prisma__VerifiedSafeClient<VerifiedSafeGetPayload<T> | null >>;
+
+    InviterReward_VerifiedSafe<T extends VerifiedSafeArgs = {}>(args?: Subset<T, VerifiedSafeArgs>): CheckSelect<T, Prisma__VerifiedSafeClient<VerifiedSafe | null >, Prisma__VerifiedSafeClient<VerifiedSafeGetPayload<T> | null >>;
+
+    SwapFunding_VerifiedSafe<T extends VerifiedSafeArgs = {}>(args?: Subset<T, VerifiedSafeArgs>): CheckSelect<T, Prisma__VerifiedSafeClient<VerifiedSafe | null >, Prisma__VerifiedSafeClient<VerifiedSafeGetPayload<T> | null >>;
 
     private get _document();
     /**
@@ -18103,6 +17240,7 @@ export namespace Prisma {
     id: 'id',
     createdByProfileId: 'createdByProfileId',
     createdAt: 'createdAt',
+    fundedAt: 'fundedAt',
     name: 'name',
     code: 'code',
     claimedByProfileId: 'claimedByProfileId',
@@ -18115,18 +17253,6 @@ export namespace Prisma {
   };
 
   export type InvitationScalarFieldEnum = (typeof InvitationScalarFieldEnum)[keyof typeof InvitationScalarFieldEnum]
-
-
-  export const RedeemInvitationRequestScalarFieldEnum: {
-    id: 'id',
-    createdAt: 'createdAt',
-    createdByProfileId: 'createdByProfileId',
-    workerProcess: 'workerProcess',
-    pickedAt: 'pickedAt',
-    invitationToRedeemId: 'invitationToRedeemId'
-  };
-
-  export type RedeemInvitationRequestScalarFieldEnum = (typeof RedeemInvitationRequestScalarFieldEnum)[keyof typeof RedeemInvitationRequestScalarFieldEnum]
 
 
   export const InvitationFundsEOAScalarFieldEnum: {
@@ -18143,7 +17269,13 @@ export namespace Prisma {
     safeAddress: 'safeAddress',
     createdAt: 'createdAt',
     createdByProfileId: 'createdByProfileId',
-    createdByOrganisationId: 'createdByOrganisationId'
+    createdByOrganisationId: 'createdByOrganisationId',
+    swapEoaAddress: 'swapEoaAddress',
+    swapEoaKey: 'swapEoaKey',
+    rewardProcessingStartedAt: 'rewardProcessingStartedAt',
+    inviteeRewardTransactionHash: 'inviteeRewardTransactionHash',
+    inviterRewardTransactionHash: 'inviterRewardTransactionHash',
+    swapFundingTransactionHash: 'swapFundingTransactionHash'
   };
 
   export type VerifiedSafeScalarFieldEnum = (typeof VerifiedSafeScalarFieldEnum)[keyof typeof VerifiedSafeScalarFieldEnum]
@@ -18418,6 +17550,7 @@ export namespace Prisma {
     createdBy?: XOR<ProfileRelationFilter, ProfileWhereInput>
     createdByProfileId?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
+    fundedAt?: DateTimeNullableFilter | Date | string | null
     name?: StringFilter | string
     code?: StringFilter | string
     claimedBy?: XOR<ProfileRelationFilter, ProfileWhereInput> | null
@@ -18429,13 +17562,13 @@ export namespace Prisma {
     redeemTxHash?: StringNullableFilter | string | null
     address?: StringFilter | string
     key?: StringFilter | string
-    indexedTransactions?: RedeemInvitationRequestListRelationFilter
   }
 
   export type InvitationOrderByInput = {
     id?: SortOrder
     createdByProfileId?: SortOrder
     createdAt?: SortOrder
+    fundedAt?: SortOrder
     name?: SortOrder
     code?: SortOrder
     claimedByProfileId?: SortOrder
@@ -18458,6 +17591,7 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter | number
     createdByProfileId?: IntWithAggregatesFilter | number
     createdAt?: DateTimeWithAggregatesFilter | Date | string
+    fundedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
     name?: StringWithAggregatesFilter | string
     code?: StringWithAggregatesFilter | string
     claimedByProfileId?: IntNullableWithAggregatesFilter | number | null
@@ -18467,45 +17601,6 @@ export namespace Prisma {
     redeemTxHash?: StringNullableWithAggregatesFilter | string | null
     address?: StringWithAggregatesFilter | string
     key?: StringWithAggregatesFilter | string
-  }
-
-  export type RedeemInvitationRequestWhereInput = {
-    AND?: Enumerable<RedeemInvitationRequestWhereInput>
-    OR?: Enumerable<RedeemInvitationRequestWhereInput>
-    NOT?: Enumerable<RedeemInvitationRequestWhereInput>
-    id?: IntFilter | number
-    createdAt?: DateTimeFilter | Date | string
-    createdBy?: XOR<ProfileRelationFilter, ProfileWhereInput>
-    createdByProfileId?: IntFilter | number
-    workerProcess?: StringNullableFilter | string | null
-    pickedAt?: DateTimeNullableFilter | Date | string | null
-    invitationToRedeem?: XOR<InvitationRelationFilter, InvitationWhereInput>
-    invitationToRedeemId?: IntFilter | number
-  }
-
-  export type RedeemInvitationRequestOrderByInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    createdByProfileId?: SortOrder
-    workerProcess?: SortOrder
-    pickedAt?: SortOrder
-    invitationToRedeemId?: SortOrder
-  }
-
-  export type RedeemInvitationRequestWhereUniqueInput = {
-    id?: number
-  }
-
-  export type RedeemInvitationRequestScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<RedeemInvitationRequestScalarWhereWithAggregatesInput>
-    OR?: Enumerable<RedeemInvitationRequestScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<RedeemInvitationRequestScalarWhereWithAggregatesInput>
-    id?: IntWithAggregatesFilter | number
-    createdAt?: DateTimeWithAggregatesFilter | Date | string
-    createdByProfileId?: IntWithAggregatesFilter | number
-    workerProcess?: StringNullableWithAggregatesFilter | string | null
-    pickedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
-    invitationToRedeemId?: IntWithAggregatesFilter | number
   }
 
   export type InvitationFundsEOAWhereInput = {
@@ -18550,6 +17645,15 @@ export namespace Prisma {
     createdByProfileId?: IntFilter | number
     createdByOrganisation?: XOR<ProfileRelationFilter, ProfileWhereInput>
     createdByOrganisationId?: IntFilter | number
+    swapEoaAddress?: StringFilter | string
+    swapEoaKey?: StringFilter | string
+    rewardProcessingStartedAt?: DateTimeNullableFilter | Date | string | null
+    inviteeRewardTransaction?: XOR<TransactionRelationFilter, TransactionWhereInput> | null
+    inviteeRewardTransactionHash?: StringNullableFilter | string | null
+    inviterRewardTransaction?: XOR<TransactionRelationFilter, TransactionWhereInput> | null
+    inviterRewardTransactionHash?: StringNullableFilter | string | null
+    swapFundingTransaction?: XOR<TransactionRelationFilter, TransactionWhereInput> | null
+    swapFundingTransactionHash?: StringNullableFilter | string | null
   }
 
   export type VerifiedSafeOrderByInput = {
@@ -18557,6 +17661,12 @@ export namespace Prisma {
     createdAt?: SortOrder
     createdByProfileId?: SortOrder
     createdByOrganisationId?: SortOrder
+    swapEoaAddress?: SortOrder
+    swapEoaKey?: SortOrder
+    rewardProcessingStartedAt?: SortOrder
+    inviteeRewardTransactionHash?: SortOrder
+    inviterRewardTransactionHash?: SortOrder
+    swapFundingTransactionHash?: SortOrder
   }
 
   export type VerifiedSafeWhereUniqueInput = {
@@ -18571,6 +17681,12 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     createdByProfileId?: IntWithAggregatesFilter | number
     createdByOrganisationId?: IntWithAggregatesFilter | number
+    swapEoaAddress?: StringWithAggregatesFilter | string
+    swapEoaKey?: StringWithAggregatesFilter | string
+    rewardProcessingStartedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
+    inviteeRewardTransactionHash?: StringNullableWithAggregatesFilter | string | null
+    inviterRewardTransactionHash?: StringNullableWithAggregatesFilter | string | null
+    swapFundingTransactionHash?: StringNullableWithAggregatesFilter | string | null
   }
 
   export type ProfileWhereInput = {
@@ -18604,7 +17720,6 @@ export namespace Prisma {
     purchases?: PurchaseListRelationFilter
     invitations?: InvitationListRelationFilter
     invitationFunds?: XOR<InvitationFundsEOARelationFilter, InvitationFundsEOAWhereInput> | null
-    redeemInvitationRequests?: RedeemInvitationRequestListRelationFilter
     redeemedInvitations?: InvitationListRelationFilter
     claimedInvitations?: InvitationListRelationFilter
     members?: MembershipListRelationFilter
@@ -19094,6 +18209,9 @@ export namespace Prisma {
     transactionHash?: StringFilter | string
     tags?: TagListRelationFilter
     payedInvoice?: XOR<InvoiceRelationFilter, InvoiceWhereInput> | null
+    InviteeReward_VerifiedSafe?: XOR<VerifiedSafeRelationFilter, VerifiedSafeWhereInput> | null
+    InviterReward_VerifiedSafe?: XOR<VerifiedSafeRelationFilter, VerifiedSafeWhereInput> | null
+    SwapFunding_VerifiedSafe?: XOR<VerifiedSafeRelationFilter, VerifiedSafeWhereInput> | null
   }
 
   export type TransactionOrderByInput = {
@@ -19278,6 +18396,7 @@ export namespace Prisma {
 
   export type InvitationCreateInput = {
     createdAt: Date | string
+    fundedAt?: Date | string | null
     name: string
     code: string
     claimedAt?: Date | string | null
@@ -19288,13 +18407,13 @@ export namespace Prisma {
     createdBy: ProfileCreateNestedOneWithoutInvitationsInput
     claimedBy?: ProfileCreateNestedOneWithoutClaimedInvitationsInput
     redeemedBy?: ProfileCreateNestedOneWithoutRedeemedInvitationsInput
-    indexedTransactions?: RedeemInvitationRequestCreateNestedManyWithoutInvitationToRedeemInput
   }
 
   export type InvitationUncheckedCreateInput = {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    fundedAt?: Date | string | null
     name: string
     code: string
     claimedByProfileId?: number | null
@@ -19304,11 +18423,11 @@ export namespace Prisma {
     redeemTxHash?: string | null
     address: string
     key: string
-    indexedTransactions?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutInvitationToRedeemInput
   }
 
   export type InvitationUpdateInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -19319,13 +18438,13 @@ export namespace Prisma {
     createdBy?: ProfileUpdateOneRequiredWithoutInvitationsInput
     claimedBy?: ProfileUpdateOneWithoutClaimedInvitationsInput
     redeemedBy?: ProfileUpdateOneWithoutRedeemedInvitationsInput
-    indexedTransactions?: RedeemInvitationRequestUpdateManyWithoutInvitationToRedeemInput
   }
 
   export type InvitationUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -19335,13 +18454,13 @@ export namespace Prisma {
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-    indexedTransactions?: RedeemInvitationRequestUncheckedUpdateManyWithoutInvitationToRedeemInput
   }
 
   export type InvitationCreateManyInput = {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    fundedAt?: Date | string | null
     name: string
     code: string
     claimedByProfileId?: number | null
@@ -19355,6 +18474,7 @@ export namespace Prisma {
 
   export type InvitationUpdateManyMutationInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -19368,6 +18488,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -19377,64 +18498,6 @@ export namespace Prisma {
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type RedeemInvitationRequestCreateInput = {
-    createdAt: Date | string
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-    createdBy: ProfileCreateNestedOneWithoutRedeemInvitationRequestsInput
-    invitationToRedeem: InvitationCreateNestedOneWithoutIndexedTransactionsInput
-  }
-
-  export type RedeemInvitationRequestUncheckedCreateInput = {
-    id?: number
-    createdAt: Date | string
-    createdByProfileId: number
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-    invitationToRedeemId: number
-  }
-
-  export type RedeemInvitationRequestUpdateInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdBy?: ProfileUpdateOneRequiredWithoutRedeemInvitationRequestsInput
-    invitationToRedeem?: InvitationUpdateOneRequiredWithoutIndexedTransactionsInput
-  }
-
-  export type RedeemInvitationRequestUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    invitationToRedeemId?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type RedeemInvitationRequestCreateManyInput = {
-    id?: number
-    createdAt: Date | string
-    createdByProfileId: number
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-    invitationToRedeemId: number
-  }
-
-  export type RedeemInvitationRequestUpdateManyMutationInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type RedeemInvitationRequestUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    invitationToRedeemId?: IntFieldUpdateOperationsInput | number
   }
 
   export type InvitationFundsEOACreateInput = {
@@ -19485,8 +18548,15 @@ export namespace Prisma {
   export type VerifiedSafeCreateInput = {
     safeAddress: string
     createdAt?: Date | string
+    swapEoaAddress: string
+    swapEoaKey: string
+    rewardProcessingStartedAt?: Date | string | null
+    swapFundingTransactionHash?: string | null
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
+    inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
+    inviterRewardTransaction?: TransactionCreateNestedOneWithoutInviterReward_VerifiedSafeInput
+    swapFundingTransaction?: TransactionCreateNestedOneWithoutSwapFunding_VerifiedSafeInput
   }
 
   export type VerifiedSafeUncheckedCreateInput = {
@@ -19494,13 +18564,26 @@ export namespace Prisma {
     createdAt?: Date | string
     createdByProfileId: number
     createdByOrganisationId: number
+    swapEoaAddress: string
+    swapEoaKey: string
+    rewardProcessingStartedAt?: Date | string | null
+    inviteeRewardTransactionHash?: string | null
+    inviterRewardTransactionHash?: string | null
+    swapFundingTransactionHash?: string | null
   }
 
   export type VerifiedSafeUpdateInput = {
     safeAddress?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    swapEoaAddress?: StringFieldUpdateOperationsInput | string
+    swapEoaKey?: StringFieldUpdateOperationsInput | string
+    rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
+    inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
+    inviterRewardTransaction?: TransactionUpdateOneWithoutInviterReward_VerifiedSafeInput
+    swapFundingTransaction?: TransactionUpdateOneWithoutSwapFunding_VerifiedSafeInput
   }
 
   export type VerifiedSafeUncheckedUpdateInput = {
@@ -19508,6 +18591,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdByOrganisationId?: IntFieldUpdateOperationsInput | number
+    swapEoaAddress?: StringFieldUpdateOperationsInput | string
+    swapEoaKey?: StringFieldUpdateOperationsInput | string
+    rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type VerifiedSafeCreateManyInput = {
@@ -19515,11 +18604,21 @@ export namespace Prisma {
     createdAt?: Date | string
     createdByProfileId: number
     createdByOrganisationId: number
+    swapEoaAddress: string
+    swapEoaKey: string
+    rewardProcessingStartedAt?: Date | string | null
+    inviteeRewardTransactionHash?: string | null
+    inviterRewardTransactionHash?: string | null
+    swapFundingTransactionHash?: string | null
   }
 
   export type VerifiedSafeUpdateManyMutationInput = {
     safeAddress?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    swapEoaAddress?: StringFieldUpdateOperationsInput | string
+    swapEoaKey?: StringFieldUpdateOperationsInput | string
+    rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type VerifiedSafeUncheckedUpdateManyInput = {
@@ -19527,6 +18626,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdByOrganisationId?: IntFieldUpdateOperationsInput | number
+    swapEoaAddress?: StringFieldUpdateOperationsInput | string
+    swapEoaKey?: StringFieldUpdateOperationsInput | string
+    rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProfileCreateInput = {
@@ -19561,7 +18666,6 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
@@ -19605,7 +18709,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
@@ -19648,7 +18751,6 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
     members?: MembershipUpdateManyWithoutMemberAtInput
@@ -19692,7 +18794,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
@@ -20440,24 +19541,36 @@ export namespace Prisma {
     transactionHash: string
     tags?: TagCreateNestedManyWithoutTransactionInput
     payedInvoice?: InvoiceCreateNestedOneWithoutPaymentTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeCreateNestedOneWithoutInviteeRewardTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeCreateNestedOneWithoutInviterRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeCreateNestedOneWithoutSwapFundingTransactionInput
   }
 
   export type TransactionUncheckedCreateInput = {
     transactionHash: string
     tags?: TagUncheckedCreateNestedManyWithoutTransactionInput
     payedInvoice?: InvoiceUncheckedCreateNestedOneWithoutPaymentTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeUncheckedCreateNestedOneWithoutInviteeRewardTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeUncheckedCreateNestedOneWithoutInviterRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeUncheckedCreateNestedOneWithoutSwapFundingTransactionInput
   }
 
   export type TransactionUpdateInput = {
     transactionHash?: StringFieldUpdateOperationsInput | string
     tags?: TagUpdateManyWithoutTransactionInput
     payedInvoice?: InvoiceUpdateOneWithoutPaymentTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeUpdateOneWithoutInviteeRewardTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeUpdateOneWithoutInviterRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeUpdateOneWithoutSwapFundingTransactionInput
   }
 
   export type TransactionUncheckedUpdateInput = {
     transactionHash?: StringFieldUpdateOperationsInput | string
     tags?: TagUncheckedUpdateManyWithoutTransactionInput
     payedInvoice?: InvoiceUncheckedUpdateOneWithoutPaymentTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeUncheckedUpdateOneWithoutInviteeRewardTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeUncheckedUpdateOneWithoutInviterRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeUncheckedUpdateOneWithoutSwapFundingTransactionInput
   }
 
   export type TransactionCreateManyInput = {
@@ -20573,8 +19686,8 @@ export namespace Prisma {
   }
 
   export type ProfileRelationFilter = {
-    is?: ProfileWhereInput | null
-    isNot?: ProfileWhereInput | null
+    is?: ProfileWhereInput
+    isNot?: ProfileWhereInput
   }
 
   export type IntNullableFilter = {
@@ -20827,15 +19940,9 @@ export namespace Prisma {
     max?: NestedIntFilter
   }
 
-  export type RedeemInvitationRequestListRelationFilter = {
-    every?: RedeemInvitationRequestWhereInput
-    some?: RedeemInvitationRequestWhereInput
-    none?: RedeemInvitationRequestWhereInput
-  }
-
-  export type InvitationRelationFilter = {
-    is?: InvitationWhereInput
-    isNot?: InvitationWhereInput
+  export type TransactionRelationFilter = {
+    is?: TransactionWhereInput | null
+    isNot?: TransactionWhereInput | null
   }
 
   export type EnumProfileTypeNullableFilter = {
@@ -20978,14 +20085,14 @@ export namespace Prisma {
     isNot?: OfferWhereInput
   }
 
-  export type TransactionRelationFilter = {
-    is?: TransactionWhereInput | null
-    isNot?: TransactionWhereInput | null
-  }
-
   export type InvoiceRelationFilter = {
     is?: InvoiceWhereInput
     isNot?: InvoiceWhereInput
+  }
+
+  export type VerifiedSafeRelationFilter = {
+    is?: VerifiedSafeWhereInput | null
+    isNot?: VerifiedSafeWhereInput | null
   }
 
   export type BoolFilter = {
@@ -21092,20 +20199,6 @@ export namespace Prisma {
     connect?: ProfileWhereUniqueInput
   }
 
-  export type RedeemInvitationRequestCreateNestedManyWithoutInvitationToRedeemInput = {
-    create?: XOR<Enumerable<RedeemInvitationRequestCreateWithoutInvitationToRedeemInput>, Enumerable<RedeemInvitationRequestUncheckedCreateWithoutInvitationToRedeemInput>>
-    connectOrCreate?: Enumerable<RedeemInvitationRequestCreateOrConnectWithoutInvitationToRedeemInput>
-    createMany?: RedeemInvitationRequestCreateManyInvitationToRedeemInputEnvelope
-    connect?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-  }
-
-  export type RedeemInvitationRequestUncheckedCreateNestedManyWithoutInvitationToRedeemInput = {
-    create?: XOR<Enumerable<RedeemInvitationRequestCreateWithoutInvitationToRedeemInput>, Enumerable<RedeemInvitationRequestUncheckedCreateWithoutInvitationToRedeemInput>>
-    connectOrCreate?: Enumerable<RedeemInvitationRequestCreateOrConnectWithoutInvitationToRedeemInput>
-    createMany?: RedeemInvitationRequestCreateManyInvitationToRedeemInputEnvelope
-    connect?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-  }
-
   export type ProfileUpdateOneRequiredWithoutInvitationsInput = {
     create?: XOR<ProfileCreateWithoutInvitationsInput, ProfileUncheckedCreateWithoutInvitationsInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutInvitationsInput
@@ -21134,62 +20227,6 @@ export namespace Prisma {
     update?: XOR<ProfileUpdateWithoutRedeemedInvitationsInput, ProfileUncheckedUpdateWithoutRedeemedInvitationsInput>
   }
 
-  export type RedeemInvitationRequestUpdateManyWithoutInvitationToRedeemInput = {
-    create?: XOR<Enumerable<RedeemInvitationRequestCreateWithoutInvitationToRedeemInput>, Enumerable<RedeemInvitationRequestUncheckedCreateWithoutInvitationToRedeemInput>>
-    connectOrCreate?: Enumerable<RedeemInvitationRequestCreateOrConnectWithoutInvitationToRedeemInput>
-    upsert?: Enumerable<RedeemInvitationRequestUpsertWithWhereUniqueWithoutInvitationToRedeemInput>
-    createMany?: RedeemInvitationRequestCreateManyInvitationToRedeemInputEnvelope
-    connect?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-    set?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-    disconnect?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-    delete?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-    update?: Enumerable<RedeemInvitationRequestUpdateWithWhereUniqueWithoutInvitationToRedeemInput>
-    updateMany?: Enumerable<RedeemInvitationRequestUpdateManyWithWhereWithoutInvitationToRedeemInput>
-    deleteMany?: Enumerable<RedeemInvitationRequestScalarWhereInput>
-  }
-
-  export type RedeemInvitationRequestUncheckedUpdateManyWithoutInvitationToRedeemInput = {
-    create?: XOR<Enumerable<RedeemInvitationRequestCreateWithoutInvitationToRedeemInput>, Enumerable<RedeemInvitationRequestUncheckedCreateWithoutInvitationToRedeemInput>>
-    connectOrCreate?: Enumerable<RedeemInvitationRequestCreateOrConnectWithoutInvitationToRedeemInput>
-    upsert?: Enumerable<RedeemInvitationRequestUpsertWithWhereUniqueWithoutInvitationToRedeemInput>
-    createMany?: RedeemInvitationRequestCreateManyInvitationToRedeemInputEnvelope
-    connect?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-    set?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-    disconnect?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-    delete?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-    update?: Enumerable<RedeemInvitationRequestUpdateWithWhereUniqueWithoutInvitationToRedeemInput>
-    updateMany?: Enumerable<RedeemInvitationRequestUpdateManyWithWhereWithoutInvitationToRedeemInput>
-    deleteMany?: Enumerable<RedeemInvitationRequestScalarWhereInput>
-  }
-
-  export type ProfileCreateNestedOneWithoutRedeemInvitationRequestsInput = {
-    create?: XOR<ProfileCreateWithoutRedeemInvitationRequestsInput, ProfileUncheckedCreateWithoutRedeemInvitationRequestsInput>
-    connectOrCreate?: ProfileCreateOrConnectWithoutRedeemInvitationRequestsInput
-    connect?: ProfileWhereUniqueInput
-  }
-
-  export type InvitationCreateNestedOneWithoutIndexedTransactionsInput = {
-    create?: XOR<InvitationCreateWithoutIndexedTransactionsInput, InvitationUncheckedCreateWithoutIndexedTransactionsInput>
-    connectOrCreate?: InvitationCreateOrConnectWithoutIndexedTransactionsInput
-    connect?: InvitationWhereUniqueInput
-  }
-
-  export type ProfileUpdateOneRequiredWithoutRedeemInvitationRequestsInput = {
-    create?: XOR<ProfileCreateWithoutRedeemInvitationRequestsInput, ProfileUncheckedCreateWithoutRedeemInvitationRequestsInput>
-    connectOrCreate?: ProfileCreateOrConnectWithoutRedeemInvitationRequestsInput
-    upsert?: ProfileUpsertWithoutRedeemInvitationRequestsInput
-    connect?: ProfileWhereUniqueInput
-    update?: XOR<ProfileUpdateWithoutRedeemInvitationRequestsInput, ProfileUncheckedUpdateWithoutRedeemInvitationRequestsInput>
-  }
-
-  export type InvitationUpdateOneRequiredWithoutIndexedTransactionsInput = {
-    create?: XOR<InvitationCreateWithoutIndexedTransactionsInput, InvitationUncheckedCreateWithoutIndexedTransactionsInput>
-    connectOrCreate?: InvitationCreateOrConnectWithoutIndexedTransactionsInput
-    upsert?: InvitationUpsertWithoutIndexedTransactionsInput
-    connect?: InvitationWhereUniqueInput
-    update?: XOR<InvitationUpdateWithoutIndexedTransactionsInput, InvitationUncheckedUpdateWithoutIndexedTransactionsInput>
-  }
-
   export type ProfileCreateNestedOneWithoutInvitationFundsInput = {
     create?: XOR<ProfileCreateWithoutInvitationFundsInput, ProfileUncheckedCreateWithoutInvitationFundsInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutInvitationFundsInput
@@ -21216,6 +20253,24 @@ export namespace Prisma {
     connect?: ProfileWhereUniqueInput
   }
 
+  export type TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput = {
+    create?: XOR<TransactionCreateWithoutInviteeReward_VerifiedSafeInput, TransactionUncheckedCreateWithoutInviteeReward_VerifiedSafeInput>
+    connectOrCreate?: TransactionCreateOrConnectWithoutInviteeReward_VerifiedSafeInput
+    connect?: TransactionWhereUniqueInput
+  }
+
+  export type TransactionCreateNestedOneWithoutInviterReward_VerifiedSafeInput = {
+    create?: XOR<TransactionCreateWithoutInviterReward_VerifiedSafeInput, TransactionUncheckedCreateWithoutInviterReward_VerifiedSafeInput>
+    connectOrCreate?: TransactionCreateOrConnectWithoutInviterReward_VerifiedSafeInput
+    connect?: TransactionWhereUniqueInput
+  }
+
+  export type TransactionCreateNestedOneWithoutSwapFunding_VerifiedSafeInput = {
+    create?: XOR<TransactionCreateWithoutSwapFunding_VerifiedSafeInput, TransactionUncheckedCreateWithoutSwapFunding_VerifiedSafeInput>
+    connectOrCreate?: TransactionCreateOrConnectWithoutSwapFunding_VerifiedSafeInput
+    connect?: TransactionWhereUniqueInput
+  }
+
   export type ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput = {
     create?: XOR<ProfileCreateWithoutSafesVerifiedByPersonInput, ProfileUncheckedCreateWithoutSafesVerifiedByPersonInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutSafesVerifiedByPersonInput
@@ -21230,6 +20285,36 @@ export namespace Prisma {
     upsert?: ProfileUpsertWithoutSafesVerifiedByOrganisationInput
     connect?: ProfileWhereUniqueInput
     update?: XOR<ProfileUpdateWithoutSafesVerifiedByOrganisationInput, ProfileUncheckedUpdateWithoutSafesVerifiedByOrganisationInput>
+  }
+
+  export type TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput = {
+    create?: XOR<TransactionCreateWithoutInviteeReward_VerifiedSafeInput, TransactionUncheckedCreateWithoutInviteeReward_VerifiedSafeInput>
+    connectOrCreate?: TransactionCreateOrConnectWithoutInviteeReward_VerifiedSafeInput
+    upsert?: TransactionUpsertWithoutInviteeReward_VerifiedSafeInput
+    connect?: TransactionWhereUniqueInput
+    disconnect?: boolean
+    delete?: boolean
+    update?: XOR<TransactionUpdateWithoutInviteeReward_VerifiedSafeInput, TransactionUncheckedUpdateWithoutInviteeReward_VerifiedSafeInput>
+  }
+
+  export type TransactionUpdateOneWithoutInviterReward_VerifiedSafeInput = {
+    create?: XOR<TransactionCreateWithoutInviterReward_VerifiedSafeInput, TransactionUncheckedCreateWithoutInviterReward_VerifiedSafeInput>
+    connectOrCreate?: TransactionCreateOrConnectWithoutInviterReward_VerifiedSafeInput
+    upsert?: TransactionUpsertWithoutInviterReward_VerifiedSafeInput
+    connect?: TransactionWhereUniqueInput
+    disconnect?: boolean
+    delete?: boolean
+    update?: XOR<TransactionUpdateWithoutInviterReward_VerifiedSafeInput, TransactionUncheckedUpdateWithoutInviterReward_VerifiedSafeInput>
+  }
+
+  export type TransactionUpdateOneWithoutSwapFunding_VerifiedSafeInput = {
+    create?: XOR<TransactionCreateWithoutSwapFunding_VerifiedSafeInput, TransactionUncheckedCreateWithoutSwapFunding_VerifiedSafeInput>
+    connectOrCreate?: TransactionCreateOrConnectWithoutSwapFunding_VerifiedSafeInput
+    upsert?: TransactionUpsertWithoutSwapFunding_VerifiedSafeInput
+    connect?: TransactionWhereUniqueInput
+    disconnect?: boolean
+    delete?: boolean
+    update?: XOR<TransactionUpdateWithoutSwapFunding_VerifiedSafeInput, TransactionUncheckedUpdateWithoutSwapFunding_VerifiedSafeInput>
   }
 
   export type SessionCreateNestedManyWithoutProfileInput = {
@@ -21271,13 +20356,6 @@ export namespace Prisma {
     create?: XOR<InvitationFundsEOACreateWithoutProfileInput, InvitationFundsEOAUncheckedCreateWithoutProfileInput>
     connectOrCreate?: InvitationFundsEOACreateOrConnectWithoutProfileInput
     connect?: InvitationFundsEOAWhereUniqueInput
-  }
-
-  export type RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput = {
-    create?: XOR<Enumerable<RedeemInvitationRequestCreateWithoutCreatedByInput>, Enumerable<RedeemInvitationRequestUncheckedCreateWithoutCreatedByInput>>
-    connectOrCreate?: Enumerable<RedeemInvitationRequestCreateOrConnectWithoutCreatedByInput>
-    createMany?: RedeemInvitationRequestCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
   }
 
   export type InvitationCreateNestedManyWithoutRedeemedByInput = {
@@ -21375,13 +20453,6 @@ export namespace Prisma {
     create?: XOR<InvitationFundsEOACreateWithoutProfileInput, InvitationFundsEOAUncheckedCreateWithoutProfileInput>
     connectOrCreate?: InvitationFundsEOACreateOrConnectWithoutProfileInput
     connect?: InvitationFundsEOAWhereUniqueInput
-  }
-
-  export type RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput = {
-    create?: XOR<Enumerable<RedeemInvitationRequestCreateWithoutCreatedByInput>, Enumerable<RedeemInvitationRequestUncheckedCreateWithoutCreatedByInput>>
-    connectOrCreate?: Enumerable<RedeemInvitationRequestCreateOrConnectWithoutCreatedByInput>
-    createMany?: RedeemInvitationRequestCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
   }
 
   export type InvitationUncheckedCreateNestedManyWithoutRedeemedByInput = {
@@ -21526,20 +20597,6 @@ export namespace Prisma {
     disconnect?: boolean
     delete?: boolean
     update?: XOR<InvitationFundsEOAUpdateWithoutProfileInput, InvitationFundsEOAUncheckedUpdateWithoutProfileInput>
-  }
-
-  export type RedeemInvitationRequestUpdateManyWithoutCreatedByInput = {
-    create?: XOR<Enumerable<RedeemInvitationRequestCreateWithoutCreatedByInput>, Enumerable<RedeemInvitationRequestUncheckedCreateWithoutCreatedByInput>>
-    connectOrCreate?: Enumerable<RedeemInvitationRequestCreateOrConnectWithoutCreatedByInput>
-    upsert?: Enumerable<RedeemInvitationRequestUpsertWithWhereUniqueWithoutCreatedByInput>
-    createMany?: RedeemInvitationRequestCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-    set?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-    disconnect?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-    delete?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-    update?: Enumerable<RedeemInvitationRequestUpdateWithWhereUniqueWithoutCreatedByInput>
-    updateMany?: Enumerable<RedeemInvitationRequestUpdateManyWithWhereWithoutCreatedByInput>
-    deleteMany?: Enumerable<RedeemInvitationRequestScalarWhereInput>
   }
 
   export type InvitationUpdateManyWithoutRedeemedByInput = {
@@ -21732,20 +20789,6 @@ export namespace Prisma {
     disconnect?: boolean
     delete?: boolean
     update?: XOR<InvitationFundsEOAUpdateWithoutProfileInput, InvitationFundsEOAUncheckedUpdateWithoutProfileInput>
-  }
-
-  export type RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput = {
-    create?: XOR<Enumerable<RedeemInvitationRequestCreateWithoutCreatedByInput>, Enumerable<RedeemInvitationRequestUncheckedCreateWithoutCreatedByInput>>
-    connectOrCreate?: Enumerable<RedeemInvitationRequestCreateOrConnectWithoutCreatedByInput>
-    upsert?: Enumerable<RedeemInvitationRequestUpsertWithWhereUniqueWithoutCreatedByInput>
-    createMany?: RedeemInvitationRequestCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-    set?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-    disconnect?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-    delete?: Enumerable<RedeemInvitationRequestWhereUniqueInput>
-    update?: Enumerable<RedeemInvitationRequestUpdateWithWhereUniqueWithoutCreatedByInput>
-    updateMany?: Enumerable<RedeemInvitationRequestUpdateManyWithWhereWithoutCreatedByInput>
-    deleteMany?: Enumerable<RedeemInvitationRequestScalarWhereInput>
   }
 
   export type InvitationUncheckedUpdateManyWithoutRedeemedByInput = {
@@ -22337,6 +21380,24 @@ export namespace Prisma {
     connect?: InvoiceWhereUniqueInput
   }
 
+  export type VerifiedSafeCreateNestedOneWithoutInviteeRewardTransactionInput = {
+    create?: XOR<VerifiedSafeCreateWithoutInviteeRewardTransactionInput, VerifiedSafeUncheckedCreateWithoutInviteeRewardTransactionInput>
+    connectOrCreate?: VerifiedSafeCreateOrConnectWithoutInviteeRewardTransactionInput
+    connect?: VerifiedSafeWhereUniqueInput
+  }
+
+  export type VerifiedSafeCreateNestedOneWithoutInviterRewardTransactionInput = {
+    create?: XOR<VerifiedSafeCreateWithoutInviterRewardTransactionInput, VerifiedSafeUncheckedCreateWithoutInviterRewardTransactionInput>
+    connectOrCreate?: VerifiedSafeCreateOrConnectWithoutInviterRewardTransactionInput
+    connect?: VerifiedSafeWhereUniqueInput
+  }
+
+  export type VerifiedSafeCreateNestedOneWithoutSwapFundingTransactionInput = {
+    create?: XOR<VerifiedSafeCreateWithoutSwapFundingTransactionInput, VerifiedSafeUncheckedCreateWithoutSwapFundingTransactionInput>
+    connectOrCreate?: VerifiedSafeCreateOrConnectWithoutSwapFundingTransactionInput
+    connect?: VerifiedSafeWhereUniqueInput
+  }
+
   export type TagUncheckedCreateNestedManyWithoutTransactionInput = {
     create?: XOR<Enumerable<TagCreateWithoutTransactionInput>, Enumerable<TagUncheckedCreateWithoutTransactionInput>>
     connectOrCreate?: Enumerable<TagCreateOrConnectWithoutTransactionInput>
@@ -22348,6 +21409,24 @@ export namespace Prisma {
     create?: XOR<InvoiceCreateWithoutPaymentTransactionInput, InvoiceUncheckedCreateWithoutPaymentTransactionInput>
     connectOrCreate?: InvoiceCreateOrConnectWithoutPaymentTransactionInput
     connect?: InvoiceWhereUniqueInput
+  }
+
+  export type VerifiedSafeUncheckedCreateNestedOneWithoutInviteeRewardTransactionInput = {
+    create?: XOR<VerifiedSafeCreateWithoutInviteeRewardTransactionInput, VerifiedSafeUncheckedCreateWithoutInviteeRewardTransactionInput>
+    connectOrCreate?: VerifiedSafeCreateOrConnectWithoutInviteeRewardTransactionInput
+    connect?: VerifiedSafeWhereUniqueInput
+  }
+
+  export type VerifiedSafeUncheckedCreateNestedOneWithoutInviterRewardTransactionInput = {
+    create?: XOR<VerifiedSafeCreateWithoutInviterRewardTransactionInput, VerifiedSafeUncheckedCreateWithoutInviterRewardTransactionInput>
+    connectOrCreate?: VerifiedSafeCreateOrConnectWithoutInviterRewardTransactionInput
+    connect?: VerifiedSafeWhereUniqueInput
+  }
+
+  export type VerifiedSafeUncheckedCreateNestedOneWithoutSwapFundingTransactionInput = {
+    create?: XOR<VerifiedSafeCreateWithoutSwapFundingTransactionInput, VerifiedSafeUncheckedCreateWithoutSwapFundingTransactionInput>
+    connectOrCreate?: VerifiedSafeCreateOrConnectWithoutSwapFundingTransactionInput
+    connect?: VerifiedSafeWhereUniqueInput
   }
 
   export type TagUpdateManyWithoutTransactionInput = {
@@ -22374,6 +21453,36 @@ export namespace Prisma {
     update?: XOR<InvoiceUpdateWithoutPaymentTransactionInput, InvoiceUncheckedUpdateWithoutPaymentTransactionInput>
   }
 
+  export type VerifiedSafeUpdateOneWithoutInviteeRewardTransactionInput = {
+    create?: XOR<VerifiedSafeCreateWithoutInviteeRewardTransactionInput, VerifiedSafeUncheckedCreateWithoutInviteeRewardTransactionInput>
+    connectOrCreate?: VerifiedSafeCreateOrConnectWithoutInviteeRewardTransactionInput
+    upsert?: VerifiedSafeUpsertWithoutInviteeRewardTransactionInput
+    connect?: VerifiedSafeWhereUniqueInput
+    disconnect?: boolean
+    delete?: boolean
+    update?: XOR<VerifiedSafeUpdateWithoutInviteeRewardTransactionInput, VerifiedSafeUncheckedUpdateWithoutInviteeRewardTransactionInput>
+  }
+
+  export type VerifiedSafeUpdateOneWithoutInviterRewardTransactionInput = {
+    create?: XOR<VerifiedSafeCreateWithoutInviterRewardTransactionInput, VerifiedSafeUncheckedCreateWithoutInviterRewardTransactionInput>
+    connectOrCreate?: VerifiedSafeCreateOrConnectWithoutInviterRewardTransactionInput
+    upsert?: VerifiedSafeUpsertWithoutInviterRewardTransactionInput
+    connect?: VerifiedSafeWhereUniqueInput
+    disconnect?: boolean
+    delete?: boolean
+    update?: XOR<VerifiedSafeUpdateWithoutInviterRewardTransactionInput, VerifiedSafeUncheckedUpdateWithoutInviterRewardTransactionInput>
+  }
+
+  export type VerifiedSafeUpdateOneWithoutSwapFundingTransactionInput = {
+    create?: XOR<VerifiedSafeCreateWithoutSwapFundingTransactionInput, VerifiedSafeUncheckedCreateWithoutSwapFundingTransactionInput>
+    connectOrCreate?: VerifiedSafeCreateOrConnectWithoutSwapFundingTransactionInput
+    upsert?: VerifiedSafeUpsertWithoutSwapFundingTransactionInput
+    connect?: VerifiedSafeWhereUniqueInput
+    disconnect?: boolean
+    delete?: boolean
+    update?: XOR<VerifiedSafeUpdateWithoutSwapFundingTransactionInput, VerifiedSafeUncheckedUpdateWithoutSwapFundingTransactionInput>
+  }
+
   export type TagUncheckedUpdateManyWithoutTransactionInput = {
     create?: XOR<Enumerable<TagCreateWithoutTransactionInput>, Enumerable<TagUncheckedCreateWithoutTransactionInput>>
     connectOrCreate?: Enumerable<TagCreateOrConnectWithoutTransactionInput>
@@ -22396,6 +21505,36 @@ export namespace Prisma {
     disconnect?: boolean
     delete?: boolean
     update?: XOR<InvoiceUpdateWithoutPaymentTransactionInput, InvoiceUncheckedUpdateWithoutPaymentTransactionInput>
+  }
+
+  export type VerifiedSafeUncheckedUpdateOneWithoutInviteeRewardTransactionInput = {
+    create?: XOR<VerifiedSafeCreateWithoutInviteeRewardTransactionInput, VerifiedSafeUncheckedCreateWithoutInviteeRewardTransactionInput>
+    connectOrCreate?: VerifiedSafeCreateOrConnectWithoutInviteeRewardTransactionInput
+    upsert?: VerifiedSafeUpsertWithoutInviteeRewardTransactionInput
+    connect?: VerifiedSafeWhereUniqueInput
+    disconnect?: boolean
+    delete?: boolean
+    update?: XOR<VerifiedSafeUpdateWithoutInviteeRewardTransactionInput, VerifiedSafeUncheckedUpdateWithoutInviteeRewardTransactionInput>
+  }
+
+  export type VerifiedSafeUncheckedUpdateOneWithoutInviterRewardTransactionInput = {
+    create?: XOR<VerifiedSafeCreateWithoutInviterRewardTransactionInput, VerifiedSafeUncheckedCreateWithoutInviterRewardTransactionInput>
+    connectOrCreate?: VerifiedSafeCreateOrConnectWithoutInviterRewardTransactionInput
+    upsert?: VerifiedSafeUpsertWithoutInviterRewardTransactionInput
+    connect?: VerifiedSafeWhereUniqueInput
+    disconnect?: boolean
+    delete?: boolean
+    update?: XOR<VerifiedSafeUpdateWithoutInviterRewardTransactionInput, VerifiedSafeUncheckedUpdateWithoutInviterRewardTransactionInput>
+  }
+
+  export type VerifiedSafeUncheckedUpdateOneWithoutSwapFundingTransactionInput = {
+    create?: XOR<VerifiedSafeCreateWithoutSwapFundingTransactionInput, VerifiedSafeUncheckedCreateWithoutSwapFundingTransactionInput>
+    connectOrCreate?: VerifiedSafeCreateOrConnectWithoutSwapFundingTransactionInput
+    upsert?: VerifiedSafeUpsertWithoutSwapFundingTransactionInput
+    connect?: VerifiedSafeWhereUniqueInput
+    disconnect?: boolean
+    delete?: boolean
+    update?: XOR<VerifiedSafeUpdateWithoutSwapFundingTransactionInput, VerifiedSafeUncheckedUpdateWithoutSwapFundingTransactionInput>
   }
 
   export type ProfileCreateNestedOneWithoutTagsInput = {
@@ -22879,7 +22018,6 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
@@ -22922,7 +22060,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
@@ -22974,7 +22111,6 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
     members?: MembershipUpdateManyWithoutMemberAtInput
@@ -23017,7 +22153,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
@@ -23059,7 +22194,6 @@ export namespace Prisma {
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
@@ -23102,7 +22236,6 @@ export namespace Prisma {
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
@@ -23150,7 +22283,6 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
@@ -23193,7 +22325,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
@@ -23240,7 +22371,6 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
@@ -23283,7 +22413,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
@@ -23296,31 +22425,6 @@ export namespace Prisma {
   export type ProfileCreateOrConnectWithoutRedeemedInvitationsInput = {
     where: ProfileWhereUniqueInput
     create: XOR<ProfileCreateWithoutRedeemedInvitationsInput, ProfileUncheckedCreateWithoutRedeemedInvitationsInput>
-  }
-
-  export type RedeemInvitationRequestCreateWithoutInvitationToRedeemInput = {
-    createdAt: Date | string
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-    createdBy: ProfileCreateNestedOneWithoutRedeemInvitationRequestsInput
-  }
-
-  export type RedeemInvitationRequestUncheckedCreateWithoutInvitationToRedeemInput = {
-    id?: number
-    createdAt: Date | string
-    createdByProfileId: number
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-  }
-
-  export type RedeemInvitationRequestCreateOrConnectWithoutInvitationToRedeemInput = {
-    where: RedeemInvitationRequestWhereUniqueInput
-    create: XOR<RedeemInvitationRequestCreateWithoutInvitationToRedeemInput, RedeemInvitationRequestUncheckedCreateWithoutInvitationToRedeemInput>
-  }
-
-  export type RedeemInvitationRequestCreateManyInvitationToRedeemInputEnvelope = {
-    data: Enumerable<RedeemInvitationRequestCreateManyInvitationToRedeemInput>
-    skipDuplicates?: boolean
   }
 
   export type ProfileUpsertWithoutInvitationsInput = {
@@ -23359,7 +22463,6 @@ export namespace Prisma {
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
     members?: MembershipUpdateManyWithoutMemberAtInput
@@ -23402,7 +22505,6 @@ export namespace Prisma {
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
@@ -23450,7 +22552,6 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     members?: MembershipUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
@@ -23493,7 +22594,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
@@ -23540,7 +22640,6 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
     members?: MembershipUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
@@ -23583,7 +22682,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
@@ -23591,282 +22689,6 @@ export namespace Prisma {
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
-  }
-
-  export type RedeemInvitationRequestUpsertWithWhereUniqueWithoutInvitationToRedeemInput = {
-    where: RedeemInvitationRequestWhereUniqueInput
-    update: XOR<RedeemInvitationRequestUpdateWithoutInvitationToRedeemInput, RedeemInvitationRequestUncheckedUpdateWithoutInvitationToRedeemInput>
-    create: XOR<RedeemInvitationRequestCreateWithoutInvitationToRedeemInput, RedeemInvitationRequestUncheckedCreateWithoutInvitationToRedeemInput>
-  }
-
-  export type RedeemInvitationRequestUpdateWithWhereUniqueWithoutInvitationToRedeemInput = {
-    where: RedeemInvitationRequestWhereUniqueInput
-    data: XOR<RedeemInvitationRequestUpdateWithoutInvitationToRedeemInput, RedeemInvitationRequestUncheckedUpdateWithoutInvitationToRedeemInput>
-  }
-
-  export type RedeemInvitationRequestUpdateManyWithWhereWithoutInvitationToRedeemInput = {
-    where: RedeemInvitationRequestScalarWhereInput
-    data: XOR<RedeemInvitationRequestUpdateManyMutationInput, RedeemInvitationRequestUncheckedUpdateManyWithoutIndexedTransactionsInput>
-  }
-
-  export type RedeemInvitationRequestScalarWhereInput = {
-    AND?: Enumerable<RedeemInvitationRequestScalarWhereInput>
-    OR?: Enumerable<RedeemInvitationRequestScalarWhereInput>
-    NOT?: Enumerable<RedeemInvitationRequestScalarWhereInput>
-    id?: IntFilter | number
-    createdAt?: DateTimeFilter | Date | string
-    createdByProfileId?: IntFilter | number
-    workerProcess?: StringNullableFilter | string | null
-    pickedAt?: DateTimeNullableFilter | Date | string | null
-    invitationToRedeemId?: IntFilter | number
-  }
-
-  export type ProfileCreateWithoutRedeemInvitationRequestsInput = {
-    lastUpdateAt?: Date | string
-    emailAddress?: string | null
-    status?: string | null
-    type?: ProfileType | null
-    circlesAddress?: string | null
-    circlesSafeOwner?: string | null
-    circlesTokenAddress?: string | null
-    firstName: string
-    lastName?: string | null
-    avatarUrl?: string | null
-    avatarCid?: string | null
-    avatarMimeType?: string | null
-    dream?: string | null
-    country?: string | null
-    newsletter?: boolean | null
-    displayTimeCircles?: boolean | null
-    cityGeonameid?: number | null
-    lastAcknowledged?: Date | string | null
-    verifySafeChallenge?: string | null
-    newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
-    sessions?: SessionCreateNestedManyWithoutProfileInput
-    tags?: TagCreateNestedManyWithoutCreatedByInput
-    offers?: OfferCreateNestedManyWithoutCreatedByInput
-    purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
-    invitations?: InvitationCreateNestedManyWithoutCreatedByInput
-    invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
-    redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
-    members?: MembershipCreateNestedManyWithoutMemberAtInput
-    createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
-    payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
-    receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
-    safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
-    safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
-  }
-
-  export type ProfileUncheckedCreateWithoutRedeemInvitationRequestsInput = {
-    id?: number
-    lastUpdateAt?: Date | string
-    emailAddress?: string | null
-    status?: string | null
-    type?: ProfileType | null
-    circlesAddress?: string | null
-    circlesSafeOwner?: string | null
-    circlesTokenAddress?: string | null
-    firstName: string
-    lastName?: string | null
-    avatarUrl?: string | null
-    avatarCid?: string | null
-    avatarMimeType?: string | null
-    dream?: string | null
-    country?: string | null
-    newsletter?: boolean | null
-    displayTimeCircles?: boolean | null
-    cityGeonameid?: number | null
-    lastAcknowledged?: Date | string | null
-    verifySafeChallenge?: string | null
-    newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
-    sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
-    tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
-    offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
-    purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
-    invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
-    invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
-    redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
-    members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
-    createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
-    payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
-    receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
-    safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
-    safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
-  }
-
-  export type ProfileCreateOrConnectWithoutRedeemInvitationRequestsInput = {
-    where: ProfileWhereUniqueInput
-    create: XOR<ProfileCreateWithoutRedeemInvitationRequestsInput, ProfileUncheckedCreateWithoutRedeemInvitationRequestsInput>
-  }
-
-  export type InvitationCreateWithoutIndexedTransactionsInput = {
-    createdAt: Date | string
-    name: string
-    code: string
-    claimedAt?: Date | string | null
-    redeemedAt?: Date | string | null
-    redeemTxHash?: string | null
-    address: string
-    key: string
-    createdBy: ProfileCreateNestedOneWithoutInvitationsInput
-    claimedBy?: ProfileCreateNestedOneWithoutClaimedInvitationsInput
-    redeemedBy?: ProfileCreateNestedOneWithoutRedeemedInvitationsInput
-  }
-
-  export type InvitationUncheckedCreateWithoutIndexedTransactionsInput = {
-    id?: number
-    createdByProfileId: number
-    createdAt: Date | string
-    name: string
-    code: string
-    claimedByProfileId?: number | null
-    claimedAt?: Date | string | null
-    redeemedByProfileId?: number | null
-    redeemedAt?: Date | string | null
-    redeemTxHash?: string | null
-    address: string
-    key: string
-  }
-
-  export type InvitationCreateOrConnectWithoutIndexedTransactionsInput = {
-    where: InvitationWhereUniqueInput
-    create: XOR<InvitationCreateWithoutIndexedTransactionsInput, InvitationUncheckedCreateWithoutIndexedTransactionsInput>
-  }
-
-  export type ProfileUpsertWithoutRedeemInvitationRequestsInput = {
-    update: XOR<ProfileUpdateWithoutRedeemInvitationRequestsInput, ProfileUncheckedUpdateWithoutRedeemInvitationRequestsInput>
-    create: XOR<ProfileCreateWithoutRedeemInvitationRequestsInput, ProfileUncheckedCreateWithoutRedeemInvitationRequestsInput>
-  }
-
-  export type ProfileUpdateWithoutRedeemInvitationRequestsInput = {
-    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
-    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    dream?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
-    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
-    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
-    sessions?: SessionUpdateManyWithoutProfileInput
-    tags?: TagUpdateManyWithoutCreatedByInput
-    offers?: OfferUpdateManyWithoutCreatedByInput
-    purchases?: PurchaseUpdateManyWithoutCreatedByInput
-    invitations?: InvitationUpdateManyWithoutCreatedByInput
-    invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
-    redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
-    members?: MembershipUpdateManyWithoutMemberAtInput
-    createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
-    payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
-    receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
-    safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
-    safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
-  }
-
-  export type ProfileUncheckedUpdateWithoutRedeemInvitationRequestsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
-    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
-    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    firstName?: StringFieldUpdateOperationsInput | string
-    lastName?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
-    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
-    dream?: NullableStringFieldUpdateOperationsInput | string | null
-    country?: NullableStringFieldUpdateOperationsInput | string | null
-    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
-    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
-    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
-    sessions?: SessionUncheckedUpdateManyWithoutProfileInput
-    tags?: TagUncheckedUpdateManyWithoutCreatedByInput
-    offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
-    purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
-    invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
-    invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
-    redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
-    claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
-    members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
-    createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
-    payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
-    receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
-    safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
-    safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
-  }
-
-  export type InvitationUpsertWithoutIndexedTransactionsInput = {
-    update: XOR<InvitationUpdateWithoutIndexedTransactionsInput, InvitationUncheckedUpdateWithoutIndexedTransactionsInput>
-    create: XOR<InvitationCreateWithoutIndexedTransactionsInput, InvitationUncheckedCreateWithoutIndexedTransactionsInput>
-  }
-
-  export type InvitationUpdateWithoutIndexedTransactionsInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    code?: StringFieldUpdateOperationsInput | string
-    claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
-    address?: StringFieldUpdateOperationsInput | string
-    key?: StringFieldUpdateOperationsInput | string
-    createdBy?: ProfileUpdateOneRequiredWithoutInvitationsInput
-    claimedBy?: ProfileUpdateOneWithoutClaimedInvitationsInput
-    redeemedBy?: ProfileUpdateOneWithoutRedeemedInvitationsInput
-  }
-
-  export type InvitationUncheckedUpdateWithoutIndexedTransactionsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    code?: StringFieldUpdateOperationsInput | string
-    claimedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
-    claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    redeemedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
-    redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
-    address?: StringFieldUpdateOperationsInput | string
-    key?: StringFieldUpdateOperationsInput | string
   }
 
   export type ProfileCreateWithoutInvitationFundsInput = {
@@ -23900,7 +22722,6 @@ export namespace Prisma {
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
@@ -23943,7 +22764,6 @@ export namespace Prisma {
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
@@ -23995,7 +22815,6 @@ export namespace Prisma {
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
     members?: MembershipUpdateManyWithoutMemberAtInput
@@ -24038,7 +22857,6 @@ export namespace Prisma {
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
@@ -24081,7 +22899,6 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
@@ -24124,7 +22941,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
@@ -24171,7 +22987,6 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
@@ -24214,7 +23029,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
@@ -24227,6 +23041,69 @@ export namespace Prisma {
   export type ProfileCreateOrConnectWithoutSafesVerifiedByOrganisationInput = {
     where: ProfileWhereUniqueInput
     create: XOR<ProfileCreateWithoutSafesVerifiedByOrganisationInput, ProfileUncheckedCreateWithoutSafesVerifiedByOrganisationInput>
+  }
+
+  export type TransactionCreateWithoutInviteeReward_VerifiedSafeInput = {
+    transactionHash: string
+    tags?: TagCreateNestedManyWithoutTransactionInput
+    payedInvoice?: InvoiceCreateNestedOneWithoutPaymentTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeCreateNestedOneWithoutInviterRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeCreateNestedOneWithoutSwapFundingTransactionInput
+  }
+
+  export type TransactionUncheckedCreateWithoutInviteeReward_VerifiedSafeInput = {
+    transactionHash: string
+    tags?: TagUncheckedCreateNestedManyWithoutTransactionInput
+    payedInvoice?: InvoiceUncheckedCreateNestedOneWithoutPaymentTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeUncheckedCreateNestedOneWithoutInviterRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeUncheckedCreateNestedOneWithoutSwapFundingTransactionInput
+  }
+
+  export type TransactionCreateOrConnectWithoutInviteeReward_VerifiedSafeInput = {
+    where: TransactionWhereUniqueInput
+    create: XOR<TransactionCreateWithoutInviteeReward_VerifiedSafeInput, TransactionUncheckedCreateWithoutInviteeReward_VerifiedSafeInput>
+  }
+
+  export type TransactionCreateWithoutInviterReward_VerifiedSafeInput = {
+    transactionHash: string
+    tags?: TagCreateNestedManyWithoutTransactionInput
+    payedInvoice?: InvoiceCreateNestedOneWithoutPaymentTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeCreateNestedOneWithoutInviteeRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeCreateNestedOneWithoutSwapFundingTransactionInput
+  }
+
+  export type TransactionUncheckedCreateWithoutInviterReward_VerifiedSafeInput = {
+    transactionHash: string
+    tags?: TagUncheckedCreateNestedManyWithoutTransactionInput
+    payedInvoice?: InvoiceUncheckedCreateNestedOneWithoutPaymentTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeUncheckedCreateNestedOneWithoutInviteeRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeUncheckedCreateNestedOneWithoutSwapFundingTransactionInput
+  }
+
+  export type TransactionCreateOrConnectWithoutInviterReward_VerifiedSafeInput = {
+    where: TransactionWhereUniqueInput
+    create: XOR<TransactionCreateWithoutInviterReward_VerifiedSafeInput, TransactionUncheckedCreateWithoutInviterReward_VerifiedSafeInput>
+  }
+
+  export type TransactionCreateWithoutSwapFunding_VerifiedSafeInput = {
+    transactionHash: string
+    tags?: TagCreateNestedManyWithoutTransactionInput
+    payedInvoice?: InvoiceCreateNestedOneWithoutPaymentTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeCreateNestedOneWithoutInviteeRewardTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeCreateNestedOneWithoutInviterRewardTransactionInput
+  }
+
+  export type TransactionUncheckedCreateWithoutSwapFunding_VerifiedSafeInput = {
+    transactionHash: string
+    tags?: TagUncheckedCreateNestedManyWithoutTransactionInput
+    payedInvoice?: InvoiceUncheckedCreateNestedOneWithoutPaymentTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeUncheckedCreateNestedOneWithoutInviteeRewardTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeUncheckedCreateNestedOneWithoutInviterRewardTransactionInput
+  }
+
+  export type TransactionCreateOrConnectWithoutSwapFunding_VerifiedSafeInput = {
+    where: TransactionWhereUniqueInput
+    create: XOR<TransactionCreateWithoutSwapFunding_VerifiedSafeInput, TransactionUncheckedCreateWithoutSwapFunding_VerifiedSafeInput>
   }
 
   export type ProfileUpsertWithoutSafesVerifiedByPersonInput = {
@@ -24266,7 +23143,6 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
     members?: MembershipUpdateManyWithoutMemberAtInput
@@ -24309,7 +23185,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
@@ -24356,7 +23231,6 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
     members?: MembershipUpdateManyWithoutMemberAtInput
@@ -24399,7 +23273,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
@@ -24407,6 +23280,69 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
+  }
+
+  export type TransactionUpsertWithoutInviteeReward_VerifiedSafeInput = {
+    update: XOR<TransactionUpdateWithoutInviteeReward_VerifiedSafeInput, TransactionUncheckedUpdateWithoutInviteeReward_VerifiedSafeInput>
+    create: XOR<TransactionCreateWithoutInviteeReward_VerifiedSafeInput, TransactionUncheckedCreateWithoutInviteeReward_VerifiedSafeInput>
+  }
+
+  export type TransactionUpdateWithoutInviteeReward_VerifiedSafeInput = {
+    transactionHash?: StringFieldUpdateOperationsInput | string
+    tags?: TagUpdateManyWithoutTransactionInput
+    payedInvoice?: InvoiceUpdateOneWithoutPaymentTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeUpdateOneWithoutInviterRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeUpdateOneWithoutSwapFundingTransactionInput
+  }
+
+  export type TransactionUncheckedUpdateWithoutInviteeReward_VerifiedSafeInput = {
+    transactionHash?: StringFieldUpdateOperationsInput | string
+    tags?: TagUncheckedUpdateManyWithoutTransactionInput
+    payedInvoice?: InvoiceUncheckedUpdateOneWithoutPaymentTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeUncheckedUpdateOneWithoutInviterRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeUncheckedUpdateOneWithoutSwapFundingTransactionInput
+  }
+
+  export type TransactionUpsertWithoutInviterReward_VerifiedSafeInput = {
+    update: XOR<TransactionUpdateWithoutInviterReward_VerifiedSafeInput, TransactionUncheckedUpdateWithoutInviterReward_VerifiedSafeInput>
+    create: XOR<TransactionCreateWithoutInviterReward_VerifiedSafeInput, TransactionUncheckedCreateWithoutInviterReward_VerifiedSafeInput>
+  }
+
+  export type TransactionUpdateWithoutInviterReward_VerifiedSafeInput = {
+    transactionHash?: StringFieldUpdateOperationsInput | string
+    tags?: TagUpdateManyWithoutTransactionInput
+    payedInvoice?: InvoiceUpdateOneWithoutPaymentTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeUpdateOneWithoutInviteeRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeUpdateOneWithoutSwapFundingTransactionInput
+  }
+
+  export type TransactionUncheckedUpdateWithoutInviterReward_VerifiedSafeInput = {
+    transactionHash?: StringFieldUpdateOperationsInput | string
+    tags?: TagUncheckedUpdateManyWithoutTransactionInput
+    payedInvoice?: InvoiceUncheckedUpdateOneWithoutPaymentTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeUncheckedUpdateOneWithoutInviteeRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeUncheckedUpdateOneWithoutSwapFundingTransactionInput
+  }
+
+  export type TransactionUpsertWithoutSwapFunding_VerifiedSafeInput = {
+    update: XOR<TransactionUpdateWithoutSwapFunding_VerifiedSafeInput, TransactionUncheckedUpdateWithoutSwapFunding_VerifiedSafeInput>
+    create: XOR<TransactionCreateWithoutSwapFunding_VerifiedSafeInput, TransactionUncheckedCreateWithoutSwapFunding_VerifiedSafeInput>
+  }
+
+  export type TransactionUpdateWithoutSwapFunding_VerifiedSafeInput = {
+    transactionHash?: StringFieldUpdateOperationsInput | string
+    tags?: TagUpdateManyWithoutTransactionInput
+    payedInvoice?: InvoiceUpdateOneWithoutPaymentTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeUpdateOneWithoutInviteeRewardTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeUpdateOneWithoutInviterRewardTransactionInput
+  }
+
+  export type TransactionUncheckedUpdateWithoutSwapFunding_VerifiedSafeInput = {
+    transactionHash?: StringFieldUpdateOperationsInput | string
+    tags?: TagUncheckedUpdateManyWithoutTransactionInput
+    payedInvoice?: InvoiceUncheckedUpdateOneWithoutPaymentTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeUncheckedUpdateOneWithoutInviteeRewardTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeUncheckedUpdateOneWithoutInviterRewardTransactionInput
   }
 
   export type SessionCreateWithoutProfileInput = {
@@ -24543,6 +23479,7 @@ export namespace Prisma {
 
   export type InvitationCreateWithoutCreatedByInput = {
     createdAt: Date | string
+    fundedAt?: Date | string | null
     name: string
     code: string
     claimedAt?: Date | string | null
@@ -24552,12 +23489,12 @@ export namespace Prisma {
     key: string
     claimedBy?: ProfileCreateNestedOneWithoutClaimedInvitationsInput
     redeemedBy?: ProfileCreateNestedOneWithoutRedeemedInvitationsInput
-    indexedTransactions?: RedeemInvitationRequestCreateNestedManyWithoutInvitationToRedeemInput
   }
 
   export type InvitationUncheckedCreateWithoutCreatedByInput = {
     id?: number
     createdAt: Date | string
+    fundedAt?: Date | string | null
     name: string
     code: string
     claimedByProfileId?: number | null
@@ -24567,7 +23504,6 @@ export namespace Prisma {
     redeemTxHash?: string | null
     address: string
     key: string
-    indexedTransactions?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutInvitationToRedeemInput
   }
 
   export type InvitationCreateOrConnectWithoutCreatedByInput = {
@@ -24596,33 +23532,9 @@ export namespace Prisma {
     create: XOR<InvitationFundsEOACreateWithoutProfileInput, InvitationFundsEOAUncheckedCreateWithoutProfileInput>
   }
 
-  export type RedeemInvitationRequestCreateWithoutCreatedByInput = {
-    createdAt: Date | string
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-    invitationToRedeem: InvitationCreateNestedOneWithoutIndexedTransactionsInput
-  }
-
-  export type RedeemInvitationRequestUncheckedCreateWithoutCreatedByInput = {
-    id?: number
-    createdAt: Date | string
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-    invitationToRedeemId: number
-  }
-
-  export type RedeemInvitationRequestCreateOrConnectWithoutCreatedByInput = {
-    where: RedeemInvitationRequestWhereUniqueInput
-    create: XOR<RedeemInvitationRequestCreateWithoutCreatedByInput, RedeemInvitationRequestUncheckedCreateWithoutCreatedByInput>
-  }
-
-  export type RedeemInvitationRequestCreateManyCreatedByInputEnvelope = {
-    data: Enumerable<RedeemInvitationRequestCreateManyCreatedByInput>
-    skipDuplicates?: boolean
-  }
-
   export type InvitationCreateWithoutRedeemedByInput = {
     createdAt: Date | string
+    fundedAt?: Date | string | null
     name: string
     code: string
     claimedAt?: Date | string | null
@@ -24632,13 +23544,13 @@ export namespace Prisma {
     key: string
     createdBy: ProfileCreateNestedOneWithoutInvitationsInput
     claimedBy?: ProfileCreateNestedOneWithoutClaimedInvitationsInput
-    indexedTransactions?: RedeemInvitationRequestCreateNestedManyWithoutInvitationToRedeemInput
   }
 
   export type InvitationUncheckedCreateWithoutRedeemedByInput = {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    fundedAt?: Date | string | null
     name: string
     code: string
     claimedByProfileId?: number | null
@@ -24647,7 +23559,6 @@ export namespace Prisma {
     redeemTxHash?: string | null
     address: string
     key: string
-    indexedTransactions?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutInvitationToRedeemInput
   }
 
   export type InvitationCreateOrConnectWithoutRedeemedByInput = {
@@ -24662,6 +23573,7 @@ export namespace Prisma {
 
   export type InvitationCreateWithoutClaimedByInput = {
     createdAt: Date | string
+    fundedAt?: Date | string | null
     name: string
     code: string
     claimedAt?: Date | string | null
@@ -24671,13 +23583,13 @@ export namespace Prisma {
     key: string
     createdBy: ProfileCreateNestedOneWithoutInvitationsInput
     redeemedBy?: ProfileCreateNestedOneWithoutRedeemedInvitationsInput
-    indexedTransactions?: RedeemInvitationRequestCreateNestedManyWithoutInvitationToRedeemInput
   }
 
   export type InvitationUncheckedCreateWithoutClaimedByInput = {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    fundedAt?: Date | string | null
     name: string
     code: string
     claimedAt?: Date | string | null
@@ -24686,7 +23598,6 @@ export namespace Prisma {
     redeemTxHash?: string | null
     address: string
     key: string
-    indexedTransactions?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutInvitationToRedeemInput
   }
 
   export type InvitationCreateOrConnectWithoutClaimedByInput = {
@@ -24842,13 +23753,26 @@ export namespace Prisma {
   export type VerifiedSafeCreateWithoutCreatedByInput = {
     safeAddress: string
     createdAt?: Date | string
+    swapEoaAddress: string
+    swapEoaKey: string
+    rewardProcessingStartedAt?: Date | string | null
+    swapFundingTransactionHash?: string | null
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
+    inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
+    inviterRewardTransaction?: TransactionCreateNestedOneWithoutInviterReward_VerifiedSafeInput
+    swapFundingTransaction?: TransactionCreateNestedOneWithoutSwapFunding_VerifiedSafeInput
   }
 
   export type VerifiedSafeUncheckedCreateWithoutCreatedByInput = {
     safeAddress: string
     createdAt?: Date | string
     createdByOrganisationId: number
+    swapEoaAddress: string
+    swapEoaKey: string
+    rewardProcessingStartedAt?: Date | string | null
+    inviteeRewardTransactionHash?: string | null
+    inviterRewardTransactionHash?: string | null
+    swapFundingTransactionHash?: string | null
   }
 
   export type VerifiedSafeCreateOrConnectWithoutCreatedByInput = {
@@ -24864,13 +23788,26 @@ export namespace Prisma {
   export type VerifiedSafeCreateWithoutCreatedByOrganisationInput = {
     safeAddress: string
     createdAt?: Date | string
+    swapEoaAddress: string
+    swapEoaKey: string
+    rewardProcessingStartedAt?: Date | string | null
+    swapFundingTransactionHash?: string | null
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
+    inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
+    inviterRewardTransaction?: TransactionCreateNestedOneWithoutInviterReward_VerifiedSafeInput
+    swapFundingTransaction?: TransactionCreateNestedOneWithoutSwapFunding_VerifiedSafeInput
   }
 
   export type VerifiedSafeUncheckedCreateWithoutCreatedByOrganisationInput = {
     safeAddress: string
     createdAt?: Date | string
     createdByProfileId: number
+    swapEoaAddress: string
+    swapEoaKey: string
+    rewardProcessingStartedAt?: Date | string | null
+    inviteeRewardTransactionHash?: string | null
+    inviterRewardTransactionHash?: string | null
+    swapFundingTransactionHash?: string | null
   }
 
   export type VerifiedSafeCreateOrConnectWithoutCreatedByOrganisationInput = {
@@ -25029,6 +23966,7 @@ export namespace Prisma {
     id?: IntFilter | number
     createdByProfileId?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
+    fundedAt?: DateTimeNullableFilter | Date | string | null
     name?: StringFilter | string
     code?: StringFilter | string
     claimedByProfileId?: IntNullableFilter | number | null
@@ -25054,22 +23992,6 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     address?: StringFieldUpdateOperationsInput | string
     privateKey?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type RedeemInvitationRequestUpsertWithWhereUniqueWithoutCreatedByInput = {
-    where: RedeemInvitationRequestWhereUniqueInput
-    update: XOR<RedeemInvitationRequestUpdateWithoutCreatedByInput, RedeemInvitationRequestUncheckedUpdateWithoutCreatedByInput>
-    create: XOR<RedeemInvitationRequestCreateWithoutCreatedByInput, RedeemInvitationRequestUncheckedCreateWithoutCreatedByInput>
-  }
-
-  export type RedeemInvitationRequestUpdateWithWhereUniqueWithoutCreatedByInput = {
-    where: RedeemInvitationRequestWhereUniqueInput
-    data: XOR<RedeemInvitationRequestUpdateWithoutCreatedByInput, RedeemInvitationRequestUncheckedUpdateWithoutCreatedByInput>
-  }
-
-  export type RedeemInvitationRequestUpdateManyWithWhereWithoutCreatedByInput = {
-    where: RedeemInvitationRequestScalarWhereInput
-    data: XOR<RedeemInvitationRequestUpdateManyMutationInput, RedeemInvitationRequestUncheckedUpdateManyWithoutRedeemInvitationRequestsInput>
   }
 
   export type InvitationUpsertWithWhereUniqueWithoutRedeemedByInput = {
@@ -25225,6 +24147,12 @@ export namespace Prisma {
     createdAt?: DateTimeFilter | Date | string
     createdByProfileId?: IntFilter | number
     createdByOrganisationId?: IntFilter | number
+    swapEoaAddress?: StringFilter | string
+    swapEoaKey?: StringFilter | string
+    rewardProcessingStartedAt?: DateTimeNullableFilter | Date | string | null
+    inviteeRewardTransactionHash?: StringNullableFilter | string | null
+    inviterRewardTransactionHash?: StringNullableFilter | string | null
+    swapFundingTransactionHash?: StringNullableFilter | string | null
   }
 
   export type VerifiedSafeUpsertWithWhereUniqueWithoutCreatedByOrganisationInput = {
@@ -25275,7 +24203,6 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
@@ -25318,7 +24245,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
@@ -25365,7 +24291,6 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
@@ -25408,7 +24333,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
@@ -25460,7 +24384,6 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
     members?: MembershipUpdateManyWithoutMemberAtInput
@@ -25503,7 +24426,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
@@ -25550,7 +24472,6 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
@@ -25593,7 +24514,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
@@ -25679,7 +24599,6 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
@@ -25722,7 +24641,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
@@ -25816,7 +24734,6 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
     members?: MembershipUpdateManyWithoutMemberAtInput
@@ -25859,7 +24776,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
@@ -25955,7 +24871,6 @@ export namespace Prisma {
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
@@ -25998,7 +24913,6 @@ export namespace Prisma {
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
@@ -26111,7 +25025,6 @@ export namespace Prisma {
     offers?: OfferUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
     members?: MembershipUpdateManyWithoutMemberAtInput
@@ -26154,7 +25067,6 @@ export namespace Prisma {
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
@@ -26331,7 +25243,6 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
@@ -26374,7 +25285,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
@@ -26421,7 +25331,6 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
@@ -26464,7 +25373,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
@@ -26522,11 +25430,17 @@ export namespace Prisma {
   export type TransactionCreateWithoutPayedInvoiceInput = {
     transactionHash: string
     tags?: TagCreateNestedManyWithoutTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeCreateNestedOneWithoutInviteeRewardTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeCreateNestedOneWithoutInviterRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeCreateNestedOneWithoutSwapFundingTransactionInput
   }
 
   export type TransactionUncheckedCreateWithoutPayedInvoiceInput = {
     transactionHash: string
     tags?: TagUncheckedCreateNestedManyWithoutTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeUncheckedCreateNestedOneWithoutInviteeRewardTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeUncheckedCreateNestedOneWithoutInviterRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeUncheckedCreateNestedOneWithoutSwapFundingTransactionInput
   }
 
   export type TransactionCreateOrConnectWithoutPayedInvoiceInput = {
@@ -26571,7 +25485,6 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
     members?: MembershipUpdateManyWithoutMemberAtInput
@@ -26614,7 +25527,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
@@ -26661,7 +25573,6 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
     members?: MembershipUpdateManyWithoutMemberAtInput
@@ -26704,7 +25615,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
@@ -26756,11 +25666,17 @@ export namespace Prisma {
   export type TransactionUpdateWithoutPayedInvoiceInput = {
     transactionHash?: StringFieldUpdateOperationsInput | string
     tags?: TagUpdateManyWithoutTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeUpdateOneWithoutInviteeRewardTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeUpdateOneWithoutInviterRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeUpdateOneWithoutSwapFundingTransactionInput
   }
 
   export type TransactionUncheckedUpdateWithoutPayedInvoiceInput = {
     transactionHash?: StringFieldUpdateOperationsInput | string
     tags?: TagUncheckedUpdateManyWithoutTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeUncheckedUpdateOneWithoutInviteeRewardTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeUncheckedUpdateOneWithoutInviterRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeUncheckedUpdateOneWithoutSwapFundingTransactionInput
   }
 
   export type InvoiceCreateWithoutLinesInput = {
@@ -27005,6 +25921,96 @@ export namespace Prisma {
     create: XOR<InvoiceCreateWithoutPaymentTransactionInput, InvoiceUncheckedCreateWithoutPaymentTransactionInput>
   }
 
+  export type VerifiedSafeCreateWithoutInviteeRewardTransactionInput = {
+    safeAddress: string
+    createdAt?: Date | string
+    swapEoaAddress: string
+    swapEoaKey: string
+    rewardProcessingStartedAt?: Date | string | null
+    swapFundingTransactionHash?: string | null
+    createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
+    createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
+    inviterRewardTransaction?: TransactionCreateNestedOneWithoutInviterReward_VerifiedSafeInput
+    swapFundingTransaction?: TransactionCreateNestedOneWithoutSwapFunding_VerifiedSafeInput
+  }
+
+  export type VerifiedSafeUncheckedCreateWithoutInviteeRewardTransactionInput = {
+    safeAddress: string
+    createdAt?: Date | string
+    createdByProfileId: number
+    createdByOrganisationId: number
+    swapEoaAddress: string
+    swapEoaKey: string
+    rewardProcessingStartedAt?: Date | string | null
+    inviterRewardTransactionHash?: string | null
+    swapFundingTransactionHash?: string | null
+  }
+
+  export type VerifiedSafeCreateOrConnectWithoutInviteeRewardTransactionInput = {
+    where: VerifiedSafeWhereUniqueInput
+    create: XOR<VerifiedSafeCreateWithoutInviteeRewardTransactionInput, VerifiedSafeUncheckedCreateWithoutInviteeRewardTransactionInput>
+  }
+
+  export type VerifiedSafeCreateWithoutInviterRewardTransactionInput = {
+    safeAddress: string
+    createdAt?: Date | string
+    swapEoaAddress: string
+    swapEoaKey: string
+    rewardProcessingStartedAt?: Date | string | null
+    swapFundingTransactionHash?: string | null
+    createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
+    createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
+    inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
+    swapFundingTransaction?: TransactionCreateNestedOneWithoutSwapFunding_VerifiedSafeInput
+  }
+
+  export type VerifiedSafeUncheckedCreateWithoutInviterRewardTransactionInput = {
+    safeAddress: string
+    createdAt?: Date | string
+    createdByProfileId: number
+    createdByOrganisationId: number
+    swapEoaAddress: string
+    swapEoaKey: string
+    rewardProcessingStartedAt?: Date | string | null
+    inviteeRewardTransactionHash?: string | null
+    swapFundingTransactionHash?: string | null
+  }
+
+  export type VerifiedSafeCreateOrConnectWithoutInviterRewardTransactionInput = {
+    where: VerifiedSafeWhereUniqueInput
+    create: XOR<VerifiedSafeCreateWithoutInviterRewardTransactionInput, VerifiedSafeUncheckedCreateWithoutInviterRewardTransactionInput>
+  }
+
+  export type VerifiedSafeCreateWithoutSwapFundingTransactionInput = {
+    safeAddress: string
+    createdAt?: Date | string
+    swapEoaAddress: string
+    swapEoaKey: string
+    rewardProcessingStartedAt?: Date | string | null
+    swapFundingTransactionHash?: string | null
+    createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
+    createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
+    inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
+    inviterRewardTransaction?: TransactionCreateNestedOneWithoutInviterReward_VerifiedSafeInput
+  }
+
+  export type VerifiedSafeUncheckedCreateWithoutSwapFundingTransactionInput = {
+    safeAddress: string
+    createdAt?: Date | string
+    createdByProfileId: number
+    createdByOrganisationId: number
+    swapEoaAddress: string
+    swapEoaKey: string
+    rewardProcessingStartedAt?: Date | string | null
+    inviteeRewardTransactionHash?: string | null
+    swapFundingTransactionHash?: string | null
+  }
+
+  export type VerifiedSafeCreateOrConnectWithoutSwapFundingTransactionInput = {
+    where: VerifiedSafeWhereUniqueInput
+    create: XOR<VerifiedSafeCreateWithoutSwapFundingTransactionInput, VerifiedSafeUncheckedCreateWithoutSwapFundingTransactionInput>
+  }
+
   export type TagUpsertWithWhereUniqueWithoutTransactionInput = {
     where: TagWhereUniqueInput
     update: XOR<TagUpdateWithoutTransactionInput, TagUncheckedUpdateWithoutTransactionInput>
@@ -27055,6 +26061,96 @@ export namespace Prisma {
     lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
+  export type VerifiedSafeUpsertWithoutInviteeRewardTransactionInput = {
+    update: XOR<VerifiedSafeUpdateWithoutInviteeRewardTransactionInput, VerifiedSafeUncheckedUpdateWithoutInviteeRewardTransactionInput>
+    create: XOR<VerifiedSafeCreateWithoutInviteeRewardTransactionInput, VerifiedSafeUncheckedCreateWithoutInviteeRewardTransactionInput>
+  }
+
+  export type VerifiedSafeUpdateWithoutInviteeRewardTransactionInput = {
+    safeAddress?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    swapEoaAddress?: StringFieldUpdateOperationsInput | string
+    swapEoaKey?: StringFieldUpdateOperationsInput | string
+    rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
+    createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
+    inviterRewardTransaction?: TransactionUpdateOneWithoutInviterReward_VerifiedSafeInput
+    swapFundingTransaction?: TransactionUpdateOneWithoutSwapFunding_VerifiedSafeInput
+  }
+
+  export type VerifiedSafeUncheckedUpdateWithoutInviteeRewardTransactionInput = {
+    safeAddress?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+    createdByOrganisationId?: IntFieldUpdateOperationsInput | number
+    swapEoaAddress?: StringFieldUpdateOperationsInput | string
+    swapEoaKey?: StringFieldUpdateOperationsInput | string
+    rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type VerifiedSafeUpsertWithoutInviterRewardTransactionInput = {
+    update: XOR<VerifiedSafeUpdateWithoutInviterRewardTransactionInput, VerifiedSafeUncheckedUpdateWithoutInviterRewardTransactionInput>
+    create: XOR<VerifiedSafeCreateWithoutInviterRewardTransactionInput, VerifiedSafeUncheckedCreateWithoutInviterRewardTransactionInput>
+  }
+
+  export type VerifiedSafeUpdateWithoutInviterRewardTransactionInput = {
+    safeAddress?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    swapEoaAddress?: StringFieldUpdateOperationsInput | string
+    swapEoaKey?: StringFieldUpdateOperationsInput | string
+    rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
+    createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
+    inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
+    swapFundingTransaction?: TransactionUpdateOneWithoutSwapFunding_VerifiedSafeInput
+  }
+
+  export type VerifiedSafeUncheckedUpdateWithoutInviterRewardTransactionInput = {
+    safeAddress?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+    createdByOrganisationId?: IntFieldUpdateOperationsInput | number
+    swapEoaAddress?: StringFieldUpdateOperationsInput | string
+    swapEoaKey?: StringFieldUpdateOperationsInput | string
+    rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type VerifiedSafeUpsertWithoutSwapFundingTransactionInput = {
+    update: XOR<VerifiedSafeUpdateWithoutSwapFundingTransactionInput, VerifiedSafeUncheckedUpdateWithoutSwapFundingTransactionInput>
+    create: XOR<VerifiedSafeCreateWithoutSwapFundingTransactionInput, VerifiedSafeUncheckedCreateWithoutSwapFundingTransactionInput>
+  }
+
+  export type VerifiedSafeUpdateWithoutSwapFundingTransactionInput = {
+    safeAddress?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    swapEoaAddress?: StringFieldUpdateOperationsInput | string
+    swapEoaKey?: StringFieldUpdateOperationsInput | string
+    rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
+    createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
+    inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
+    inviterRewardTransaction?: TransactionUpdateOneWithoutInviterReward_VerifiedSafeInput
+  }
+
+  export type VerifiedSafeUncheckedUpdateWithoutSwapFundingTransactionInput = {
+    safeAddress?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+    createdByOrganisationId?: IntFieldUpdateOperationsInput | number
+    swapEoaAddress?: StringFieldUpdateOperationsInput | string
+    swapEoaKey?: StringFieldUpdateOperationsInput | string
+    rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type ProfileCreateWithoutTagsInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
@@ -27086,7 +26182,6 @@ export namespace Prisma {
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
     members?: MembershipCreateNestedManyWithoutMemberAtInput
@@ -27129,7 +26224,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
     invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedCreateNestedManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
@@ -27148,11 +26242,17 @@ export namespace Prisma {
   export type TransactionCreateWithoutTagsInput = {
     transactionHash: string
     payedInvoice?: InvoiceCreateNestedOneWithoutPaymentTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeCreateNestedOneWithoutInviteeRewardTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeCreateNestedOneWithoutInviterRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeCreateNestedOneWithoutSwapFundingTransactionInput
   }
 
   export type TransactionUncheckedCreateWithoutTagsInput = {
     transactionHash: string
     payedInvoice?: InvoiceUncheckedCreateNestedOneWithoutPaymentTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeUncheckedCreateNestedOneWithoutInviteeRewardTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeUncheckedCreateNestedOneWithoutInviterRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeUncheckedCreateNestedOneWithoutSwapFundingTransactionInput
   }
 
   export type TransactionCreateOrConnectWithoutTagsInput = {
@@ -27231,7 +26331,6 @@ export namespace Prisma {
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
     invitations?: InvitationUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
     members?: MembershipUpdateManyWithoutMemberAtInput
@@ -27274,7 +26373,6 @@ export namespace Prisma {
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
     invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
     invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
-    redeemInvitationRequests?: RedeemInvitationRequestUncheckedUpdateManyWithoutCreatedByInput
     redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
     claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
@@ -27293,11 +26391,17 @@ export namespace Prisma {
   export type TransactionUpdateWithoutTagsInput = {
     transactionHash?: StringFieldUpdateOperationsInput | string
     payedInvoice?: InvoiceUpdateOneWithoutPaymentTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeUpdateOneWithoutInviteeRewardTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeUpdateOneWithoutInviterRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeUpdateOneWithoutSwapFundingTransactionInput
   }
 
   export type TransactionUncheckedUpdateWithoutTagsInput = {
     transactionHash?: StringFieldUpdateOperationsInput | string
     payedInvoice?: InvoiceUncheckedUpdateOneWithoutPaymentTransactionInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeUncheckedUpdateOneWithoutInviteeRewardTransactionInput
+    InviterReward_VerifiedSafe?: VerifiedSafeUncheckedUpdateOneWithoutInviterRewardTransactionInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeUncheckedUpdateOneWithoutSwapFundingTransactionInput
   }
 
   export type TagTypeUpsertWithoutTagsInput = {
@@ -27333,37 +26437,6 @@ export namespace Prisma {
     from?: StringFieldUpdateOperationsInput | string
     to?: StringFieldUpdateOperationsInput | string
     text?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type RedeemInvitationRequestCreateManyInvitationToRedeemInput = {
-    id?: number
-    createdAt: Date | string
-    createdByProfileId: number
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-  }
-
-  export type RedeemInvitationRequestUpdateWithoutInvitationToRedeemInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdBy?: ProfileUpdateOneRequiredWithoutRedeemInvitationRequestsInput
-  }
-
-  export type RedeemInvitationRequestUncheckedUpdateWithoutInvitationToRedeemInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type RedeemInvitationRequestUncheckedUpdateManyWithoutIndexedTransactionsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SessionCreateManyProfileInput = {
@@ -27412,6 +26485,7 @@ export namespace Prisma {
   export type InvitationCreateManyCreatedByInput = {
     id?: number
     createdAt: Date | string
+    fundedAt?: Date | string | null
     name: string
     code: string
     claimedByProfileId?: number | null
@@ -27423,18 +26497,11 @@ export namespace Prisma {
     key: string
   }
 
-  export type RedeemInvitationRequestCreateManyCreatedByInput = {
-    id?: number
-    createdAt: Date | string
-    workerProcess?: string | null
-    pickedAt?: Date | string | null
-    invitationToRedeemId: number
-  }
-
   export type InvitationCreateManyRedeemedByInput = {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    fundedAt?: Date | string | null
     name: string
     code: string
     claimedByProfileId?: number | null
@@ -27449,6 +26516,7 @@ export namespace Prisma {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    fundedAt?: Date | string | null
     name: string
     code: string
     claimedAt?: Date | string | null
@@ -27513,12 +26581,24 @@ export namespace Prisma {
     safeAddress: string
     createdAt?: Date | string
     createdByOrganisationId: number
+    swapEoaAddress: string
+    swapEoaKey: string
+    rewardProcessingStartedAt?: Date | string | null
+    inviteeRewardTransactionHash?: string | null
+    inviterRewardTransactionHash?: string | null
+    swapFundingTransactionHash?: string | null
   }
 
   export type VerifiedSafeCreateManyCreatedByOrganisationInput = {
     safeAddress: string
     createdAt?: Date | string
     createdByProfileId: number
+    swapEoaAddress: string
+    swapEoaKey: string
+    rewardProcessingStartedAt?: Date | string | null
+    inviteeRewardTransactionHash?: string | null
+    inviterRewardTransactionHash?: string | null
+    swapFundingTransactionHash?: string | null
   }
 
   export type SessionUpdateWithoutProfileInput = {
@@ -27658,6 +26738,7 @@ export namespace Prisma {
 
   export type InvitationUpdateWithoutCreatedByInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27667,12 +26748,12 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
     claimedBy?: ProfileUpdateOneWithoutClaimedInvitationsInput
     redeemedBy?: ProfileUpdateOneWithoutRedeemedInvitationsInput
-    indexedTransactions?: RedeemInvitationRequestUpdateManyWithoutInvitationToRedeemInput
   }
 
   export type InvitationUncheckedUpdateWithoutCreatedByInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -27682,12 +26763,12 @@ export namespace Prisma {
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-    indexedTransactions?: RedeemInvitationRequestUncheckedUpdateManyWithoutInvitationToRedeemInput
   }
 
   export type InvitationUncheckedUpdateManyWithoutInvitationsInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -27699,31 +26780,9 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
   }
 
-  export type RedeemInvitationRequestUpdateWithoutCreatedByInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    invitationToRedeem?: InvitationUpdateOneRequiredWithoutIndexedTransactionsInput
-  }
-
-  export type RedeemInvitationRequestUncheckedUpdateWithoutCreatedByInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    invitationToRedeemId?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type RedeemInvitationRequestUncheckedUpdateManyWithoutRedeemInvitationRequestsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    workerProcess?: NullableStringFieldUpdateOperationsInput | string | null
-    pickedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    invitationToRedeemId?: IntFieldUpdateOperationsInput | number
-  }
-
   export type InvitationUpdateWithoutRedeemedByInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27733,13 +26792,13 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
     createdBy?: ProfileUpdateOneRequiredWithoutInvitationsInput
     claimedBy?: ProfileUpdateOneWithoutClaimedInvitationsInput
-    indexedTransactions?: RedeemInvitationRequestUpdateManyWithoutInvitationToRedeemInput
   }
 
   export type InvitationUncheckedUpdateWithoutRedeemedByInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -27748,13 +26807,13 @@ export namespace Prisma {
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-    indexedTransactions?: RedeemInvitationRequestUncheckedUpdateManyWithoutInvitationToRedeemInput
   }
 
   export type InvitationUncheckedUpdateManyWithoutRedeemedInvitationsInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
@@ -27767,6 +26826,7 @@ export namespace Prisma {
 
   export type InvitationUpdateWithoutClaimedByInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27776,13 +26836,13 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
     createdBy?: ProfileUpdateOneRequiredWithoutInvitationsInput
     redeemedBy?: ProfileUpdateOneWithoutRedeemedInvitationsInput
-    indexedTransactions?: RedeemInvitationRequestUpdateManyWithoutInvitationToRedeemInput
   }
 
   export type InvitationUncheckedUpdateWithoutClaimedByInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27791,13 +26851,13 @@ export namespace Prisma {
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-    indexedTransactions?: RedeemInvitationRequestUncheckedUpdateManyWithoutInvitationToRedeemInput
   }
 
   export type InvitationUncheckedUpdateManyWithoutClaimedInvitationsInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27961,37 +27021,75 @@ export namespace Prisma {
   export type VerifiedSafeUpdateWithoutCreatedByInput = {
     safeAddress?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    swapEoaAddress?: StringFieldUpdateOperationsInput | string
+    swapEoaKey?: StringFieldUpdateOperationsInput | string
+    rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
+    inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
+    inviterRewardTransaction?: TransactionUpdateOneWithoutInviterReward_VerifiedSafeInput
+    swapFundingTransaction?: TransactionUpdateOneWithoutSwapFunding_VerifiedSafeInput
   }
 
   export type VerifiedSafeUncheckedUpdateWithoutCreatedByInput = {
     safeAddress?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdByOrganisationId?: IntFieldUpdateOperationsInput | number
+    swapEoaAddress?: StringFieldUpdateOperationsInput | string
+    swapEoaKey?: StringFieldUpdateOperationsInput | string
+    rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type VerifiedSafeUncheckedUpdateManyWithoutSafesVerifiedByPersonInput = {
     safeAddress?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdByOrganisationId?: IntFieldUpdateOperationsInput | number
+    swapEoaAddress?: StringFieldUpdateOperationsInput | string
+    swapEoaKey?: StringFieldUpdateOperationsInput | string
+    rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type VerifiedSafeUpdateWithoutCreatedByOrganisationInput = {
     safeAddress?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    swapEoaAddress?: StringFieldUpdateOperationsInput | string
+    swapEoaKey?: StringFieldUpdateOperationsInput | string
+    rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
+    inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
+    inviterRewardTransaction?: TransactionUpdateOneWithoutInviterReward_VerifiedSafeInput
+    swapFundingTransaction?: TransactionUpdateOneWithoutSwapFunding_VerifiedSafeInput
   }
 
   export type VerifiedSafeUncheckedUpdateWithoutCreatedByOrganisationInput = {
     safeAddress?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdByProfileId?: IntFieldUpdateOperationsInput | number
+    swapEoaAddress?: StringFieldUpdateOperationsInput | string
+    swapEoaKey?: StringFieldUpdateOperationsInput | string
+    rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type VerifiedSafeUncheckedUpdateManyWithoutSafesVerifiedByOrganisationInput = {
     safeAddress?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdByProfileId?: IntFieldUpdateOperationsInput | number
+    swapEoaAddress?: StringFieldUpdateOperationsInput | string
+    swapEoaKey?: StringFieldUpdateOperationsInput | string
+    rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TagCreateManyChatMessageInput = {

@@ -39,6 +39,7 @@ model Invitation {
     createdBy Profile @relation(name: "Invitation_CreatedBy", fields: [createdByProfileId], references: [id])
     createdByProfileId Int
     createdAt DateTime
+    fundedAt DateTime?
 
     name String
     code String
@@ -54,22 +55,6 @@ model Invitation {
 
     address String
     key String
-
-    indexedTransactions RedeemInvitationRequest[]  @relation(name: "RedeemInvitationRequest_InvitationToRedeem")
-}
-
-model RedeemInvitationRequest {
-  id Int @id @default(autoincrement())
-
-  createdAt DateTime
-  createdBy Profile @relation(name: "RedeemInvitationRequest_CreatedBy", fields: [createdByProfileId], references: [id])
-  createdByProfileId Int
-
-  workerProcess String? // Contains the id of the worker process which picked the task (or null if not yet picked)
-  pickedAt DateTime?
-
-  invitationToRedeem Invitation @relation(name: "RedeemInvitationRequest_InvitationToRedeem", fields: [invitationToRedeemId], references: [id])
-  invitationToRedeemId Int
 }
 
 enum ProfileType {
@@ -94,6 +79,20 @@ model VerifiedSafe {
     createdByProfileId Int
     createdByOrganisation Profile @relation(name: "VerifiedSafe_CreatedByOrganisation", fields: [createdByOrganisationId], references: [id])
     createdByOrganisationId Int
+
+    swapEoaAddress String
+    swapEoaKey String
+
+    rewardProcessingStartedAt DateTime?
+
+    inviteeRewardTransaction Transaction? @relation(name: "VerifiedSafe_InviteeRewardTransaction", fields: [inviteeRewardTransactionHash], references: [transactionHash])
+    inviteeRewardTransactionHash String?
+
+    inviterRewardTransaction Transaction? @relation(name: "VerifiedSafe_InviterRewardTransaction", fields: [inviterRewardTransactionHash], references: [transactionHash])
+    inviterRewardTransactionHash String?
+
+    swapFundingTransaction Transaction? @relation(name: "VerifiedSafe_SwapFundingTransaction", fields: [inviterRewardTransactionHash], references: [transactionHash])
+    swapFundingTransactionHash String?
 }
 
 model Profile {
@@ -133,7 +132,6 @@ model Profile {
     invitations Invitation[]  @relation(name: "Invitation_CreatedBy")
     invitationFunds InvitationFundsEOA? @relation(name: "Profile_InvitationFundsEOA")
 
-    redeemInvitationRequests RedeemInvitationRequest[] @relation(name: "RedeemInvitationRequest_CreatedBy")
     redeemedInvitations Invitation[]  @relation(name: "Invitation_RedeemedBy")
     claimedInvitations Invitation[]  @relation(name: "Invitation_ClaimedBy")
 
@@ -303,6 +301,10 @@ model Transaction {
     tags Tag[] @relation(name: "Transaction_Tag")
 
     payedInvoice Invoice? @relation(name: "Invoice_PaymentTransaction")
+
+    InviteeReward_VerifiedSafe VerifiedSafe? @relation(name: "VerifiedSafe_InviteeRewardTransaction")
+    InviterReward_VerifiedSafe VerifiedSafe? @relation(name: "VerifiedSafe_InviterRewardTransaction")
+    SwapFunding_VerifiedSafe VerifiedSafe? @relation(name: "VerifiedSafe_SwapFundingTransaction")
 }
 
 model Tag {

@@ -3,6 +3,7 @@ import {Context} from "../../context";
 import {BIL_ORGA, isBILMember} from "../../canAccess";
 import {VerifiedSafe} from "../../api-db/client";
 import {prisma_api_ro, prisma_api_rw} from "../../apiDbClient";
+import {RpcGateway} from "../../rpcGateway";
 
 export const verifySafe = async (parent:any, args:MutationVerifySafeArgs, context: Context) => {
   const callerInfo = await context.callerInfo;
@@ -34,12 +35,19 @@ export const verifySafe = async (parent:any, args:MutationVerifySafeArgs, contex
     throw new Error(`Couldn't find an organisation with safe address ${BIL_ORGA}`);
   }
 
+
+  const swapEoa = RpcGateway.get().eth.accounts.create();
+
   verifiedSafe = await prisma_api_rw.verifiedSafe.create({
     data: {
       safeAddress: args.safeAddress.toLowerCase(),
       createdByProfileId: callerInfo.profile.id,
       createdByOrganisationId: bilOrga.id,
-      createdAt: new Date()
+      createdAt: new Date(),
+      inviteeRewardTransactionHash: null,
+      inviterRewardTransactionHash: null,
+      swapEoaKey: swapEoa.privateKey,
+      swapEoaAddress: swapEoa.address
     }
   });
 

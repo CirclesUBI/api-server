@@ -16,6 +16,7 @@ import {GqlLogger} from "./gqlLogger";
 import {Session as PrismaSession, PrismaClient} from "./api-db/client";
 import {Session} from "./session";
 import {Server, ServerOptions} from "ws";
+import {Dropper} from "./dropper/dropper";
 
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
 
@@ -32,6 +33,9 @@ const errorLogger = {
 };
 
 export class Main {
+
+    private _dropper = new Dropper();
+
     async run2 () {
         const app = express();
         const httpServer = createServer(app);
@@ -139,6 +143,7 @@ export class Main {
               console.error(`The notifyConnection died:`, e);
           });
 
+        await this._dropper.start();
 
         const PORT = 8989;
             httpServer.listen(PORT, () =>
