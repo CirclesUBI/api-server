@@ -1,19 +1,13 @@
 import {Context} from "../../context";
 import {Client} from "../../auth-client/client";
 import {PrismaClient} from "../../api-db/client";
+import {Environment} from "../../environment";
 
 export function depositChallengeResolver(prisma:PrismaClient) {
     return async (parent: any, args:{jwt:string}, context: Context) => {
-        if (!process.env.APP_ID) {
-            throw new Error('process.env.APP_ID is not set')
-        }
-        if (!process.env.ACCEPTED_ISSUER) {
-            throw new Error('process.env.ACCEPTED_ISSUER is not set')
-        }
-
         const now = new Date();
 
-        const authClient = new Client(process.env.APP_ID, process.env.ACCEPTED_ISSUER);
+        const authClient = new Client(Environment.appId, Environment.acceptedIssuer);
 
         console.log(`'${context.ipAddress}' tries to deposit a challenge ..`);
 

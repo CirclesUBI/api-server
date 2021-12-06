@@ -8,12 +8,12 @@ import {
   ProfileAggregate,
   ProfileAggregateFilter, Maybe, EventType
 } from "../../types";
-import {getPool} from "../../resolvers/resolvers";
 import {prisma_api_ro} from "../../apiDbClient";
 import {getDateWithOffset} from "../../indexer-api/blockchainEventSource";
+import {Environment} from "../../environment";
 
 async function trustContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
-  const trustContactsResult = await getPool().query(`
+  const trustContactsResult = await Environment.indexDb.query(`
               with "out" as (
                   select max(timestamp) last_contact_at, array_agg("limit" order by timestamp) as limits, address
                   from crc_trust_2
@@ -56,7 +56,7 @@ async function trustContacts(forSafeAddress: string, filter?: Maybe<ProfileAggre
 }
 
 async function hubTransferContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
-    const hubTransferContactsResult = await getPool().query(`
+    const hubTransferContactsResult = await Environment.indexDb.query(`
                 with "out" as (
                     select max(timestamp) last_contact_at, "to" as contact_address
                     from crc_hub_transfer_2
@@ -108,7 +108,7 @@ async function hubTransferContacts(forSafeAddress: string, filter?: Maybe<Profil
 }
 
 async function erc20TransferContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
-    const erc20TransferContactsResult = await getPool().query(`
+    const erc20TransferContactsResult = await Environment.indexDb.query(`
                 with "out" as (
                     select max(t.timestamp) last_contact_at, t."to" as contact_address
                     from erc20_transfer_2 t

@@ -63,20 +63,6 @@ import {completeSale} from "./mutations/completeSale";
 import {verifySafe} from "./mutations/verifySafe";
 import {verifications} from "./queries/verifications";
 
-export const HUB_ADDRESS = "0x29b9a7fBb8995b2423a71cC17cf9810798F6C543";
-
-const pool = new Pool(<PoolConfig>{
-  connectionString: process.env.BLOCKCHAIN_INDEX_DB_CONNECTION_STRING,
-  ssl: {
-    rejectUnauthorized: false,
-    // ca: cert
-  }
-});
-
-export function getPool() {
-  return pool;
-}
-
 const packageJson = require("../../package.json");
 
 export const resolvers: Resolvers = {

@@ -1,8 +1,8 @@
 import {PrismaClient} from "../../api-db/client";
 import {Context} from "../../context";
-import {getPool} from "../resolvers";
 import {Organisation, Profile, QueryOrganisationsArgs} from "../../types";
 import {ProfileLoader} from "../../profileLoader";
+import {Environment} from "../../environment";
 
 export function organisations(prisma: PrismaClient) {
   return async (
@@ -27,7 +27,7 @@ export function organisations(prisma: PrismaClient) {
     organisationSignupQuery += ` order by timestamp desc`;
     organisationSignupQuery += ` limit ${limit}`;
 
-    const organisationSignupsResult = await getPool().query(organisationSignupQuery);
+    const organisationSignupsResult = await Environment.indexDb.query(organisationSignupQuery);
     if (organisationSignupsResult.rows.length == 0) {
       return [];
     }

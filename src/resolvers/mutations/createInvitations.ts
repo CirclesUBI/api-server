@@ -4,7 +4,8 @@ import {RpcGateway} from "../../rpcGateway";
 import {Session} from "../../session";
 import {CreateInvitationResult} from "../../types";
 import {fundEoa} from "./createTestInvitation";
-import {BIL_ORGA, isBILMember} from "../../canAccess";
+import {isBILMember} from "../../canAccess";
+import {Environment} from "../../environment";
 
 export function createInvitations(prisma_api_rw:PrismaClient) {
     return async (parent:any, args:{for:string[]}, context:Context) => {
@@ -16,7 +17,7 @@ export function createInvitations(prisma_api_rw:PrismaClient) {
 
       const isBilMember = await isBILMember(callerInfo);
       if (!isBilMember) {
-        throw new Error(`You are not a member of organisation ${BIL_ORGA}. Only members of this organisation can create invitations at the moment.`);
+        throw new Error(`You are not a member of organisation ${Environment.operatorOrganisationAddress}. Only members of this organisation can create invitations at the moment.`);
       }
 
       // Creates as many invitations as there are recipients in the arguments

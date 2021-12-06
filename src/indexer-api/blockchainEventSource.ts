@@ -1,6 +1,5 @@
 import WebSocket from 'ws';
 import {ApiPubSub} from "../pubsub";
-import {getPool} from "../resolvers/resolvers";
 import {prisma_api_rw} from "../apiDbClient";
 import {Generate} from "../generate";
 import {EventType} from "../types";
@@ -14,6 +13,7 @@ import {
   PdfInvoicePaymentTransaction
 } from "../invoiceGenerator";
 import {getNextInvoiceNo} from "../resolvers/mutations/purchase";
+import {Environment} from "../environment";
 
 export function getDateWithOffset(timestamp: Date) {
   const timeOffset = new Date(timestamp).getTimezoneOffset() * 60 * 1000;
@@ -125,7 +125,7 @@ export class BlockchainEventSource {
         + `to: '${invoice.sellerProfile.circlesAddress}'): ${candidateTxHashes.join(", ")}`);
 
       // Query the full CrcHubTransfer events
-      const hubTransferRows = await getPool().query(`
+      const hubTransferRows = await Environment.indexDb.query(`
                       select *
                       from crc_hub_transfer_2
                       where hash = ANY ($1)`,
@@ -174,7 +174,7 @@ export class BlockchainEventSource {
     try {
       const transactionHashes: string[] = JSON.parse(message);
       const {events: relatedEvents, addresses} = await this.findRelatedData(transactionHashes);
-      const relatedHubTransfers = relatedEvents.filter(event => event.type === EventType.CrcHubTransfer);
+      const relatedHubTransfers = relatedEvents.filter((event:any) => event.type === EventType.CrcHubTransfer);
 
       log(`Received ${transactionHashes.length} tx-hashes. Found related: ${addresses.length} addresses, ${relatedEvents.length} events`,
         " *-> ");
@@ -242,7 +242,7 @@ export class BlockchainEventSource {
 
         if (saveResult.$response.error) {
           const errMessage = `An error occurred while saving the pdf of invoice '${updateInvoiceResult.invoiceNo}' `
-            +`(id: ${updateInvoiceResult.id}) to ${process.env.DIGITALOCEAN_SPACES_ENDPOINT}: ${JSON.stringify(saveResult.$response.error)}`;
+            +`(id: ${updateInvoiceResult.id}) to ${Environment.invoicesBucket.endpoint.href}: ${JSON.stringify(saveResult.$response.error)}`;
           console.error(errMessage);
         }
       }
@@ -291,7 +291,7 @@ export class BlockchainEventSource {
                                     from a
                                     where hash = ANY ($1);`;
 
-    const relatedEvents = await getPool().query(affectedAddressesQuery, [transactionHashes]);
+    const relatedEvents = await Environment.indexDb.query(affectedAddressesQuery, [transactionHashes]);
     const relatedAddresses: { [safeAddress: string]: any } = relatedEvents.rows.reduce((p, c) => {
       if (c.address1) {
         p[c.address1] = true;

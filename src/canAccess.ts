@@ -1,8 +1,7 @@
 import {Context} from "./context";
 import {prisma_api_ro, prisma_api_rw} from "./apiDbClient";
 import {Session, Profile} from "./api-db/client";
-
-export const BIL_ORGA = "0xc5a786eafefcf703c114558c443e4f17969d9573";
+import {Environment} from "./environment";
 
 export async function isBILMember(sessionInfo: {session: Session, profile: Profile | null}|null) {
   if (!sessionInfo)
@@ -12,7 +11,7 @@ export async function isBILMember(sessionInfo: {session: Session, profile: Profi
 
   const orga = await prisma_api_ro.profile.findFirst({
     where: {
-      circlesAddress: BIL_ORGA,
+      circlesAddress: Environment.operatorOrganisationAddress,
       members: {
         some: {
           memberAddress: sessionInfo.profile.circlesAddress

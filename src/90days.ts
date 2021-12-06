@@ -1,7 +1,7 @@
 import {RpcGateway} from "./rpcGateway";
 import {prisma_api_ro} from "./apiDbClient";
-import {getPool} from "./resolvers/resolvers";
 import {crcabi} from "./crcabi";
+import {Environment} from "./environment";
 
 async function checkUBI(tokenAddress:string) {
   try {
@@ -83,7 +83,7 @@ export async function ninetyDaysLater() {
     }
   });
 
-  const tokens = await getPool().query(
+  const tokens = await Environment.indexDb.query(
     `
     select * 
     from crc_signup_2

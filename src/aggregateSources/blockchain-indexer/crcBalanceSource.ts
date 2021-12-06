@@ -5,13 +5,13 @@ import {
   ProfileAggregate,
   ProfileAggregateFilter
 } from "../../types";
-import {getPool} from "../../resolvers/resolvers";
 import {getDateWithOffset} from "../../indexer-api/blockchainEventSource";
+import {Environment} from "../../environment";
 
 // All CRC balances of a safe
 export class CrcBalanceSource implements AggregateSource {
   async getAggregate(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>): Promise<ProfileAggregate[]> {
-    const crcBalancesResult = await getPool().query(`
+    const crcBalancesResult = await Environment.indexDb.query(`
         select last_change_at, token, token_owner, balance
         from crc_balances_by_safe_and_token_2
         where safe_address = $1

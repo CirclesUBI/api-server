@@ -1,10 +1,9 @@
 import {ChatMessage, EventType, MutationSendMessageArgs, SendMessageResult} from "../../types";
 import { Context } from "../../context";
 import { PrismaClient } from "../../api-db/client";
-import {ApiPubSub} from "../../pubsub";
-import {getPool} from "../resolvers";
 import {RpcGateway} from "../../rpcGateway";
 import {canAccess} from "../../canAccess";
+import {Environment} from "../../environment";
 
 export function sendMessage(prisma: PrismaClient) {
   return async (
@@ -46,7 +45,7 @@ export function sendMessage(prisma: PrismaClient) {
     });
 
     if (toProfile.circlesAddress && RpcGateway.get().utils.isAddress(toProfile.circlesAddress)) {
-      await getPool().query(
+      await Environment.indexDb.query(
         `call publish_event('new_message', '{"to":"${toProfile.circlesAddress.toLowerCase()}"}');`);
     } else {
       const err = new Error();

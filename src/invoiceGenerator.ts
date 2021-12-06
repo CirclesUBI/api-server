@@ -1,8 +1,9 @@
 import PDFDocument from "pdfkit";
 import dayjs from "dayjs";
 import AWS from "aws-sdk";
-import { Invoice, InvoiceLine, Offer, Profile } from "./api-db/client";
-import { PromiseResult } from "aws-sdk/lib/request";
+import {Invoice, InvoiceLine, Offer, Profile} from "./api-db/client";
+import {PromiseResult} from "aws-sdk/lib/request";
+import {Environment} from "./environment";
 
 export type PdfInvoiceLine = {
   amount: number;
@@ -115,6 +116,7 @@ export function pdfInvoiceDataFromDbInvoice(
   };
 }
 
+
 export class InvoicePdfGenerator {
   margin: number = 30;
   marginx: number = 50;
@@ -147,22 +149,7 @@ export class InvoicePdfGenerator {
     return doc;
   }
 
-  async savePdfToS3(key: string, pdfDocument: PDFKit.PDFDocument) {
-    if (!process.env.DIGITALOCEAN_SPACES_ENDPOINT) {
-      throw new Error(
-        `Missing configuration: process.env.DIGITALOCEAN_SPACES_ENDPOINT`
-      );
-    }
-
-    const spacesEndpoint = new AWS.Endpoint(
-      process.env.DIGITALOCEAN_SPACES_ENDPOINT
-    );
-    const s3 = new AWS.S3({
-      endpoint: spacesEndpoint,
-      accessKeyId: process.env.DIGITALOCEAN_SPACES_KEY,
-      secretAccessKey: process.env.DIGITALOCEAN_SPACES_SECRET,
-    });
-
+  async savePdfToS3(key:string, pdfDocument: PDFKit.PDFDocument) {
     const params: {
       Bucket: string;
       Body?: any;
@@ -174,33 +161,31 @@ export class InvoicePdfGenerator {
       ACL: "private",
     };
 
-    return new Promise<PromiseResult<AWS.S3.PutObjectOutput, AWS.AWSError>>(
-      (resolve, reject) => {
-        let pdfBytes: any[] = [];
-        pdfDocument.on("readable", (_) => {
-          try {
-            while (true) {
-              let buffer = pdfDocument.read();
-              if (!buffer) {
-                break;
-              }
-              pdfBytes.push(buffer);
+    return new Promise<PromiseResult<AWS.S3.PutObjectOutput, AWS.AWSError>>((resolve, reject) => {
+      let pdfBytes: any[] = [];
+      pdfDocument.on("readable", (_) => {
+        try {
+          while (true) {
+            let buffer = pdfDocument.read();
+            if (!buffer) {
+              break;
             }
-          } catch (e) {
-            reject(e);
+            pdfBytes.push(buffer);
           }
-        });
-        pdfDocument.on("end", async (_) => {
-          try {
-            params.Body = Buffer.concat(pdfBytes);
-            const result = await s3.putObject(params).promise();
-            resolve(result);
-          } catch (e) {
-            reject(e);
-          }
-        });
-      }
-    );
+        } catch (e) {
+          reject(e);
+        }
+      });
+      pdfDocument.on("end", async (_) => {
+        try {
+          params.Body = Buffer.concat(pdfBytes);
+          const result = await Environment.invoicesBucket.putObject(params).promise();
+          resolve(result);
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
   }
 
   private newPageCheck(

@@ -1,8 +1,8 @@
 import {Context} from "../../context";
-import {getPool} from "../resolvers";
 import {prisma_api_ro} from "../../apiDbClient";
 import {Organisation, Profile, QueryOrganisationsByAddressArgs} from "../../types";
 import {ProfileLoader} from "../../profileLoader";
+import {Environment} from "../../environment";
 
 export function organisationsByAddress() {
     return async (parent:any, args:QueryOrganisationsByAddressArgs, context:Context) => {
@@ -11,7 +11,7 @@ export function organisationsByAddress() {
             from crc_organisation_signup_2
             where organisation = ANY ($1)`;
 
-        const organisationSignupsResult = await getPool().query(organisationSignupQuery, [args.addresses]);
+        const organisationSignupsResult = await Environment.indexDb.query(organisationSignupQuery, [args.addresses]);
         if (organisationSignupsResult.rows.length == 0) {
             return [];
         }

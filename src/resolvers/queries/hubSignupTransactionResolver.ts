@@ -1,7 +1,7 @@
 import {Context} from "../../context";
 import {prisma_api_ro} from "../../apiDbClient";
 import {ProfileEvent} from "../../types";
-import {getPool} from "../resolvers";
+import {Environment} from "../../environment";
 
 export async function hubSignupTransactionResolver (parent:any, args:any, context:Context) {
   const now = new Date();
@@ -26,7 +26,7 @@ export async function hubSignupTransactionResolver (parent:any, args:any, contex
   const hubSignupTransactionQueryParams = [
     profile.circlesAddress.toLowerCase()
   ];
-  const hubSignupTransactionResult = await getPool().query(
+  const hubSignupTransactionResult = await Environment.indexDb.query(
     hubSignupTransactionQuery,
     hubSignupTransactionQueryParams);
 

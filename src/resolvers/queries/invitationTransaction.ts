@@ -1,7 +1,7 @@
-import {getPool} from "../resolvers";
 import {PrismaClient} from "../../api-db/client";
 import {ProfileEvent} from "../../types";
 import {Context} from "../../context";
+import {Environment} from "../../environment";
 
 export function invitationTransaction(prisma_api_ro:PrismaClient) {
     return async (parent:any, args:any, context:Context) => {
@@ -41,7 +41,7 @@ export function invitationTransaction(prisma_api_ro:PrismaClient) {
         const redeemInvitationTransactionQueryParams = [
             claimedInvitation.redeemTxHash
         ];
-        const redeemResult = await getPool().query(
+        const redeemResult = await Environment.indexDb.query(
           redeemInvitationTransactionQuery,
           redeemInvitationTransactionQueryParams);
 

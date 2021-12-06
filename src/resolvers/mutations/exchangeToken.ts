@@ -1,6 +1,7 @@
 import {Session} from "../../session";
 import {Context} from "../../context";
 import {PrismaClient} from "../../api-db/client";
+import {Environment} from "../../environment";
 
 export function exchangeTokenResolver(prisma:PrismaClient) {
     return async (parent: any, args: any, context: Context) => {
@@ -12,11 +13,11 @@ export function exchangeTokenResolver(prisma:PrismaClient) {
             const expires = new Date(Date.now() + session.maxLifetime * 1000);
             /// See https://www.npmjs.com/package/apollo-server-plugin-http-headers for the magic that happens below ;)
             context.res?.cookie('session', session.sessionToken, <any>{
-                domain: process.env.EXTERNAL_DOMAIN,
+                domain: Environment.externalDomain,
                 httpOnly: true,
                 path: "/",
-                sameSite: process.env.DEBUG ? "Strict" : "None",
-                secure: !process.env.DEBUG,
+                sameSite: Environment.isLocalDebugEnvironment ? "Strict" : "None",
+                secure: !Environment.isLocalDebugEnvironment,
                 expires: expires
             });
 

@@ -1,11 +1,5 @@
-import {Pool} from "pg";
 import {City} from "../types";
-
-let pool = new Pool({
-    connectionString: process.env.UTILITY_DB_CONNECTION_STRING
-}).on('error', (err) => {
-    console.error('An idle client has experienced an error', err.stack)
-});
+import {Environment} from "../environment";
 
 export class Query {
     static async placesById(ids:number[]) : Promise<City[]> {
@@ -29,10 +23,7 @@ export class Query {
         limit 50`;
 
         return new Promise((resolve, reject) => {
-            if (!pool) {
-                throw new Error(`The utility-db is not available.`)
-            }
-            pool.query(query, ids, (err, res) => {
+            Environment.utilityDb.query(query, ids, (err, res) => {
                 if (err) {
                     reject(err);
                     return;
@@ -131,10 +122,10 @@ export class Query {
         const isoAlpha2Language_ = isoAlpha2Language.toLowerCase();
 
         return new Promise((resolve, reject) => {
-            if (!pool) {
-                throw new Error(`The utility-db is not available.`)
-            }
-            pool.query(query, [searchPattern_, isoAlpha2Language_], (err, res) => {
+            Environment.utilityDb.query(
+              query,
+              [searchPattern_, isoAlpha2Language_],
+              (err, res) => {
                 if (err) {
                     reject(err);
                     return;

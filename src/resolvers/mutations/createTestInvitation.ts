@@ -2,23 +2,39 @@ import {Context} from "../../context";
 import { PrismaClient} from "../../api-db/client";
 import {RpcGateway} from "../../rpcGateway";
 import {Session} from "../../session";
-import {BN} from "ethereumjs-util";
 import {CreateInvitationResult} from "../../types";
 import Web3 from "web3";
+import {Environment} from "../../environment";
 
-export async function fundEoa(web3: Web3, invitation: any) {
-  const invitationFundsEoa = web3.eth.accounts.privateKeyToAccount(process.env.INVITE_EOA_KEY ?? "");
+export async function fundEoa(web3: Web3, invitation: any, context?:Context) {
+  const invitationFundsAmountxDai = RpcGateway.get().utils.fromWei(Environment.invitationFundsAmount, "ether");
+  context?.log(`Transferring ${invitationFundsAmountxDai} xdai from ${Environment.invitationFundsSafe.address} to invitation EOA ${invitation.address} ..`)
 
-  const gas = 41000;
-  const gasPrice = new BN(await web3.eth.getGasPrice());
-  const nonce = await web3.eth.getTransactionCount(invitationFundsEoa.address);
+  const receipt = await Environment.invitationFundsSafe.transferEth(
+    Environment.invitationFundsSafeOwner.privateKey,
+    Environment.invitationFundsAmount,
+    invitation.address);
 
-  console.log(`Transferring 0.2 eth to invitation EOA ${invitationFundsEoa.address} (nonce: ${nonce}, gasPrice: ${gasPrice.toString()})`)
+  context?.log(`Transferred ${invitationFundsAmountxDai} xdai from ${Environment.invitationFundsSafe.address} to invitation EOA ${invitation.address}. Receipt: ${JSON.stringify(receipt)}`);
 
+  return <CreateInvitationResult>{
+    success: true,
+    createdInviteEoas: [{
+      createdBy: invitation.createdBy,
+      createdByProfileId: invitation.createdByProfileId,
+      createdAt: invitation.createdAt.toJSON(),
+      name: invitation.name,
+      address: invitation.address,
+      balance: "0",
+      code: invitation.code,
+    }]
+  };
+
+  /*
   const signedTx = await invitationFundsEoa.signTransaction({
     from: invitationFundsEoa.address,
     to: invitation.address,
-    value: new BN(web3.utils.toWei("0.2", "ether")),
+    value: Environment.invitationFundsAmount,
     gasPrice: gasPrice,
     gas: gas,
     nonce: nonce
@@ -45,6 +61,7 @@ export async function fundEoa(web3: Web3, invitation: any) {
       code: invitation.code,
     }]
   };
+  */
 }
 
 export function createTestInvitation(prisma_api_rw:PrismaClient) {

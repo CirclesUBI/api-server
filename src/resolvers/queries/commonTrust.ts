@@ -1,8 +1,8 @@
 import {Context} from "../../context";
-import {getPool} from "../resolvers";
 import {CommonTrust} from "../../types";
 import {PrismaClient} from "../../api-db/client";
 import {ProfileLoader} from "../../profileLoader";
+import {Environment} from "../../environment";
 
 export function commonTrust(prisma:PrismaClient) {
   return async (parent:any, args:any, context:Context) : Promise<CommonTrust[]> => {
@@ -34,7 +34,7 @@ export function commonTrust(prisma:PrismaClient) {
           and "user" != $2;`;
 
     const commonTrustsQueryParameters = [args.safeAddress1, args.safeAddress2];
-    const commonTrustsResult = await getPool().query(commonTrustsQuery, commonTrustsQueryParameters);
+    const commonTrustsResult = await Environment.indexDb.query(commonTrustsQuery, commonTrustsQueryParameters);
     if (commonTrustsResult.rows.length == 0) {
       return [];
     }

@@ -1,7 +1,7 @@
 import {EventSource} from "../eventSource";
 import {Direction, Maybe, PaginationArgs, ProfileEvent, ProfileEventFilter, SortOrder} from "../../types";
-import {getPool} from "../../resolvers/resolvers";
 import {getDateWithOffset} from "../../indexer-api/blockchainEventSource";
+import {Environment} from "../../environment";
 
 export enum BlockchainEventType {
   CrcSignup = "CrcSignup",
@@ -135,7 +135,7 @@ export class BlockchainIndexerEventSource implements EventSource
       filter?.transactionHash ?? ""
     ];
 
-    const eventRows = await getPool().query(
+    const eventRows = await Environment.indexDb.query(
       queryWithFilter,
       params
     );

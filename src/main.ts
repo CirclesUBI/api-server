@@ -4,7 +4,7 @@ import {SubscriptionServer} from "subscriptions-transport-ws";
 import {makeExecutableSchema} from "@graphql-tools/schema";
 import express from "express";
 import {ApolloServer} from "apollo-server-express";
-import {getPool, resolvers} from "./resolvers/resolvers";
+import {resolvers} from "./resolvers/resolvers";
 import {importSchema} from "graphql-import";
 import {Context} from "./context";
 import {Error} from "apollo-server-core/src/plugin/schemaReporting/operations";
@@ -13,30 +13,23 @@ import {ApiPubSub} from "./pubsub";
 import {RpcGateway} from "./rpcGateway";
 import {PoolClient} from "pg";
 import {GqlLogger} from "./gqlLogger";
-import {Session as PrismaSession, PrismaClient} from "./api-db/client";
+import {Session as PrismaSession} from "./api-db/client";
 import {Session} from "./session";
 import {Server, ServerOptions} from "ws";
 import {Dropper} from "./dropper/dropper";
+import {Environment} from "./environment";
 
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
 
-if (!process.env.CORS_ORIGNS) {
-    throw new Error("No CORS_ORIGNS env variable");
-}
-
-const corsOrigins = process.env.CORS_ORIGNS.split(";").map(o => o.trim());
-
-const errorLogger = {
-    async didEncounterErrors(requestContext: any) {
-        console.log(requestContext);
-    }
-};
+const corsOrigins = Environment.corsOrigins.split(";").map(o => o.trim());
 
 export class Main {
 
     private _dropper = new Dropper();
 
     async run2 () {
+        Environment.validateAndSummarize();
+
         const app = express();
         const httpServer = createServer(app);
 
@@ -60,7 +53,6 @@ export class Main {
                 }
             },
             ApolloServerPluginLandingPageGraphQLPlayground(),
-            errorLogger,
             new GqlLogger()],
         });
 
@@ -128,15 +120,11 @@ export class Main {
             path: server.graphqlPath,
         });
 
-        const indexerApiUrl = process.env.BLOCKCHAIN_INDEX_WS_URL;
-        if (indexerApiUrl) {
-            console.log(`Subscribing to blockchain events from the indexer at ${indexerApiUrl} ..`)
-            const conn = new BlockchainEventSource(indexerApiUrl ?? "");
-            conn.connect();
-            console.log("Subscription ready.")
-        } else {
-            console.warn(`No BLOCKCHAIN_INDEX_WS_URL environment variable was provided. Cannot subscribe to blockchain events.`)
-        }
+
+        console.log(`Subscribing to blockchain events from the indexer at ${Environment.blockchainIndexerUrl} ..`)
+        const conn = new BlockchainEventSource(Environment.blockchainIndexerUrl);
+        conn.connect();
+        console.log("Subscription ready.")
 
         this.listenForDbEvents()
           .catch(e => {
@@ -172,7 +160,7 @@ export class Main {
             let notifyConnection: PoolClient|null = null;
             console.log(`Trying to create the notifyConnection ..`);
             try {
-                notifyConnection = await getPool().connect();
+                notifyConnection = await Environment.indexDb.connect();
                 await new Promise(async (resolve, reject) => {
                     if (!notifyConnection) {
                         reject(new Error(`The notifyConnection couldn't be established and is 'null'.`));

@@ -1,13 +1,13 @@
 import {Context} from "../../context";
-import {getPool} from "../resolvers";
 import {QueryMostRecentUbiSafeOfAccountArgs} from "../../types";
+import {Environment} from "../../environment";
 
 export const mostRecentUbiSafeOfAccount = async (parent:any, args:QueryMostRecentUbiSafeOfAccountArgs, context:Context) => {
     const findSafeOfOwnerSql = `select "user"
                                   from crc_signup_2
                                   where "owners" @> $1::text[];`;
 
-    const safesResult = await getPool().query(findSafeOfOwnerSql, [[args.account]]);
+    const safesResult = await Environment.indexDb.query(findSafeOfOwnerSql, [[args.account]]);
     if (safesResult.rows.length == 0) {
       return null;
     }
@@ -22,7 +22,7 @@ export const mostRecentUbiSafeOfAccount = async (parent:any, args:QueryMostRecen
           order by max(st.timestamp) desc
           limit 1;`;
 
-    const activeSafeResult = await getPool().query(lastActiveSafeSql, [safeAddresses]);
+    const activeSafeResult = await Environment.indexDb.query(lastActiveSafeSql, [safeAddresses]);
     if (activeSafeResult.rows.length == 0) {
       return null;
     }

@@ -12,12 +12,12 @@ import {RpcGateway} from "../rpcGateway";
 import {Session} from "../session";
 import {ProfileLoader} from "../profileLoader";
 import BN from "bn.js";
-import {GnosisSafeProxy} from "../circles/safe/gnosisSafeProxy";
 import {SafeTransaction} from "../circles/model/safeTransaction";
 import {SafeOps} from "../circles/model/safeOps";
 import {ZERO_ADDRESS} from "../circles/consts";
 import InvitationCreateManyInput = Prisma.InvitationCreateManyInput;
 import {Generate} from "../generate";
+import {Environment} from "../environment";
 
 export class Dropper {
 
@@ -77,19 +77,20 @@ export class Dropper {
       ...invitationFundingTransactions.map(o => o.fundingTransaction),
       encodeSingle(inviterRewardTransaction),
       encodeSingle(inviteeRewardTransaction)
-    ], process.env.REWARD_SAFE_ADDRESS);
+    ], Environment.verificationRewardFundsSafe.address );
 
     const data = metaTransaction.data;
-    const acc = RpcGateway.get().eth.accounts.privateKeyToAccount(<string>process.env.REWARD_SAFE_ADDRESS_KEY);
-    const safe = new GnosisSafeProxy(RpcGateway.get(), <string>process.env.REWARD_SAFE_ADDRESS);
-    const receipt = await safe.execTransaction(acc.privateKey, <SafeTransaction>{
-      to: process.env.REWARD_SAFE_ADDRESS,
-      data: data,
-      value: new BN("0"),
-      refundReceiver: ZERO_ADDRESS,
-      gasToken: ZERO_ADDRESS,
-      operation: SafeOps.CALL
-    });
+    const receipt = await Environment.verificationRewardFundsSafe.execTransaction(
+      Environment.verificationRewardFundsSafeOwner.privateKey,
+      <SafeTransaction>{
+        to: Environment.verificationRewardFundsSafe.address,
+        data: data,
+        value: new BN("0"),
+        refundReceiver: ZERO_ADDRESS,
+        gasToken: ZERO_ADDRESS,
+        operation: SafeOps.CALL
+      }
+    );
 
     console.log(metaTransaction, receipt);
   }

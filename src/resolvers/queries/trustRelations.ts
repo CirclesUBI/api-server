@@ -1,9 +1,8 @@
 import {Context} from "../../context";
 import {TrustDirection} from "../../types";
-import {profilesBySafeAddress, ProfilesBySafeAddressLookup} from "./profiles";
 import {PrismaClient} from "../../api-db/client";
-import {getPool} from "../resolvers";
 import {ProfileLoader} from "../../profileLoader";
+import {Environment} from "../../environment";
 
 export function trustRelations(prisma:PrismaClient) {
   return async (parent:any, args:any, context:Context) => {
@@ -18,7 +17,7 @@ export function trustRelations(prisma:PrismaClient) {
                           and "limit" > 0;`;
 
     const trustQueryParameters = [safeAddress];
-    const trustQueryResult = await getPool().query(trustQuery, trustQueryParameters);
+    const trustQueryResult = await Environment.indexDb.query(trustQuery, trustQueryParameters);
 
     const trusting: { [safeAddress: string]: boolean } = {};
     trustQueryResult.rows

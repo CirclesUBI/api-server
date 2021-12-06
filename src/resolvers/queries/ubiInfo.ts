@@ -1,7 +1,7 @@
 import {Context} from "../../context";
-import {getPool} from "../resolvers";
 import {UbiInfo} from "../../types";
 import {Generate} from "../../generate";
+import {Environment} from "../../environment";
 
 export function ubiInfo() {
     return async (parent:any, args:any, context:Context) => {
@@ -26,8 +26,8 @@ export function ubiInfo() {
                                  limit 1;`;
 
         const results = await Promise.all([
-            getPool().query(lastMintingSql, [profile.profile.circlesAddress]),
-            getPool().query(tokenAddressSql, [profile.profile.circlesAddress])
+            Environment.indexDb.query(lastMintingSql, [profile.profile.circlesAddress]),
+            Environment.indexDb.query(tokenAddressSql, [profile.profile.circlesAddress])
         ])
 
         const lastMintingResult = results[0].rows;

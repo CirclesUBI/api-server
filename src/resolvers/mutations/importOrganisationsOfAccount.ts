@@ -2,7 +2,7 @@ import {Context} from "../../context";
 import {ProfileLoader} from "../../profileLoader";
 import {prisma_api_rw} from "../../apiDbClient";
 import {upsertOrganisation} from "./upsertOrganisation";
-import {getPool} from "../resolvers";
+import {Environment} from "../../environment";
 
 export const importOrganisationsOfAccount = async (parent:any, args:{}, context: Context) => {
   const sql = `
@@ -11,7 +11,7 @@ export const importOrganisationsOfAccount = async (parent:any, args:{}, context:
           where owners @> $1::text[];`;
 
   const session = await context.verifySession();
-  const organisationSignups = await getPool().query(sql, [[session.ethAddress]]);
+  const organisationSignups = await Environment.indexDb.query(sql, [[session.ethAddress]]);
   const orgSafeAddresses = organisationSignups.rows.map(o => o.organisation);
   const existingOrgProfiles = await new ProfileLoader().queryCirclesLandBySafeAddress(prisma_api_rw, orgSafeAddresses);
   const missingOrgProfiles = orgSafeAddresses.filter(o => !existingOrgProfiles[o]);

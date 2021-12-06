@@ -2,8 +2,8 @@ import {QueryDirectPathArgs, TransitivePath, TransitiveTransfer} from "../../typ
 import {AbiItem} from "web3-utils";
 import {RpcGateway} from "../../rpcGateway";
 import BN from "bn.js";
-import {getPool, HUB_ADDRESS} from "../resolvers";
 import {Context} from "../../context";
+import {Environment} from "../../environment";
 
 export const directPath = async (parent:any, args:QueryDirectPathArgs, context:Context) => {
   const from = args.from.toLowerCase();
@@ -58,7 +58,11 @@ export const directPath = async (parent:any, args:QueryDirectPathArgs, context:C
       ]).substr(2)/* remove preceding 0x */;
 
     try {
-      await RpcGateway.get().eth.call({from: from[0], to: HUB_ADDRESS, data: callData});
+      await RpcGateway.get().eth.call({
+        from: from[0],
+        to: Environment.circlesHubAddress,
+        data: callData
+      });
       return true;
     } catch {
       throw new Error("Cannot validate the following path: " + JSON.stringify(transfers, null, 2));
@@ -140,7 +144,7 @@ export const directPath = async (parent:any, args:QueryDirectPathArgs, context:C
 
   let requestedAmount = new BN(args.amount);
 
-  const result = await getPool().query(sql, [from, to, requestedAmount.toString()]);
+  const result = await Environment.indexDb.query(sql, [from, to, requestedAmount.toString()]);
   const transfers: { token: string, tokenOwner: string, balance: BN, weighted_price_part: BN }[] = [];
 
   result.rows.forEach(o => {

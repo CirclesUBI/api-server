@@ -1,6 +1,7 @@
 import {Context} from "../../context";
 import {Session} from "../../session";
 import {PrismaClient} from "../../api-db/client";
+import {Environment} from "../../environment";
 
 export function logout(prisma_api_rw:PrismaClient) {
     return async (parent: any, args: any, context: Context) => {
@@ -10,11 +11,11 @@ export function logout(prisma_api_rw:PrismaClient) {
             name: "session",
             value: session.sessionToken,
             options: {
-                domain: process.env.EXTERNAL_DOMAIN,
+                domain: Environment.externalDomain,
                 httpOnly: true,
                 path: "/",
-                sameSite: process.env.DEBUG ? "Strict" : "None",
-                secure: !process.env.DEBUG,
+                sameSite: Environment.isLocalDebugEnvironment ? "Strict" : "None",
+                secure: !Environment.isLocalDebugEnvironment,
                 maxAge: 0,
                 expires: loggedOutSession.endedAt
             }

@@ -4,6 +4,7 @@ import {prisma_api_rw} from "../../apiDbClient";
 import {Profile} from "../../api-db/client";
 import {ProfileLoader} from "../../profileLoader";
 import {isBILMember} from "../../canAccess";
+import {Environment} from "../../environment";
 
 export const sessionInfo = async (parent:any, args:any, context:Context) : Promise<SessionInfo> => {
     try {
@@ -47,11 +48,11 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
             name: "session",
             value: "no-session",
             options: {
-                domain: process.env.EXTERNAL_DOMAIN,
+                domain: Environment.externalDomain,
                 httpOnly: true,
                 path: "/",
-                sameSite: process.env.DEBUG ? "Strict" : "None",
-                secure: !process.env.DEBUG,
+                sameSite: Environment.isLocalDebugEnvironment ? "Strict" : "None",
+                secure: !Environment.isLocalDebugEnvironment,
                 expires: expires
             }
         });

@@ -1,9 +1,10 @@
 import {MutationVerifySafeArgs} from "../../types";
 import {Context} from "../../context";
-import {BIL_ORGA, isBILMember} from "../../canAccess";
+import {isBILMember} from "../../canAccess";
 import {VerifiedSafe} from "../../api-db/client";
 import {prisma_api_ro, prisma_api_rw} from "../../apiDbClient";
 import {RpcGateway} from "../../rpcGateway";
+import {Environment} from "../../environment";
 
 export const verifySafe = async (parent:any, args:MutationVerifySafeArgs, context: Context) => {
   const callerInfo = await context.callerInfo;
@@ -24,7 +25,7 @@ export const verifySafe = async (parent:any, args:MutationVerifySafeArgs, contex
 
   const bilOrga = await prisma_api_ro.profile.findFirst({
     where: {
-      circlesAddress: BIL_ORGA
+      circlesAddress: Environment.operatorOrganisationAddress
     },
     orderBy: {
       lastUpdateAt: "desc"
@@ -32,9 +33,8 @@ export const verifySafe = async (parent:any, args:MutationVerifySafeArgs, contex
   });
 
   if (!bilOrga) {
-    throw new Error(`Couldn't find an organisation with safe address ${BIL_ORGA}`);
+    throw new Error(`Couldn't find an organisation with safe address ${Environment.operatorOrganisationAddress}`);
   }
-
 
   const swapEoa = RpcGateway.get().eth.accounts.create();
 

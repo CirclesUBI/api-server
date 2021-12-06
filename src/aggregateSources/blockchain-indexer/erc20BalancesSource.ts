@@ -5,13 +5,13 @@ import {
   ProfileAggregate,
   ProfileAggregateFilter
 } from "../../types";
-import {getPool} from "../../resolvers/resolvers";
 import {getDateWithOffset} from "../../indexer-api/blockchainEventSource";
+import {Environment} from "../../environment";
 
 // All ERC20 balances of a safe
 export class Erc20BalancesSource implements AggregateSource {
   async getAggregate(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>): Promise<ProfileAggregate[]> {
-    const erc20BalancesResult = await getPool().query(`
+    const erc20BalancesResult = await Environment.indexDb.query(`
        select safe_address
             , token
             , balance

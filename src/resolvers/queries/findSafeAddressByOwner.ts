@@ -1,6 +1,6 @@
-import {getPool} from "../resolvers";
 import {QueryFindSafeAddressByOwnerArgs, SafeAddressByOwnerResult} from "../../types";
 import {Context} from "../../context";
+import {Environment} from "../../environment";
 
 export const findSafeAddressByOwnerResolver = async (parent:any, args: QueryFindSafeAddressByOwnerArgs, context: Context) => {
     const safeOwnersQuery = `
@@ -12,7 +12,7 @@ export const findSafeAddressByOwnerResolver = async (parent:any, args: QueryFind
             from crc_organisation_signup_2
             where owners @> ARRAY[$1]`;
 
-    const safeOwnersResult = await getPool().query(safeOwnersQuery, [args.owner.toLowerCase()]);
+    const safeOwnersResult = await Environment.indexDb.query(safeOwnersQuery, [args.owner.toLowerCase()]);
     const safeOwnerSafes = safeOwnersResult.rows.map(o => {
         return <SafeAddressByOwnerResult>{
             type: o.type,

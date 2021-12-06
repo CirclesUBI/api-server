@@ -3,6 +3,7 @@ import crypto from "crypto";
 import {Context} from "./context";
 import {Session as PrismaSession, PrismaClient} from "./api-db/client";
 import {RpcGateway} from "./rpcGateway";
+import {Environment} from "./environment";
 
 export class Session
 {
@@ -82,8 +83,8 @@ export class Session
                 id: Session.generateRandomBase64String(8),
                 ethAddress: address.toLowerCase(),
                 createdAt: new Date(),
-                issuedBy: process.env.APP_ID ?? "api-server",
-                maxLifetime: process.env.SESSION_LIIFETIME ? parseInt(process.env.SESSION_LIIFETIME) : 60 * 60 * 24 * 30,
+                issuedBy: Environment.appId,
+                maxLifetime: Environment.sessionLifetimeInSeconds,
                 sessionToken: Session.generateRandomBase64String(64),
                 challengeHash: ch
             }
@@ -155,14 +156,7 @@ export class Session
             throw new Error("No jwt was supplied");
         }
 
-        if (!process.env.APP_ID) {
-            throw new Error('process.env.APP_ID is not set')
-        }
-        if (!process.env.ACCEPTED_ISSUER) {
-            throw new Error('process.env.ACCEPTED_ISSUER is not set')
-        }
-
-        const authClient = new Client(process.env.APP_ID, process.env.ACCEPTED_ISSUER);
+        const authClient = new Client(Environment.appId, Environment.acceptedIssuer);
         const tokenPayload = await authClient.verify(context.jwt);
         if (!tokenPayload)
         {
@@ -179,7 +173,7 @@ export class Session
                 issuedBy: tokenPayload.iss,
                 createdAt: new Date(),
                 validFrom: new Date(),
-                maxLifetime: process.env.SESSION_LIIFETIME ? parseInt(process.env.SESSION_LIIFETIME) : 60 * 60 * 24 * 30,
+                maxLifetime: Environment.sessionLifetimeInSeconds,
                 sessionToken: Session.generateRandomBase64String(64),
                 emailAddress: tokenPayload.sub,
                 jti: tokenPayload.jti
