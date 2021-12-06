@@ -2,9 +2,9 @@ import {HttpProvider} from "web3-core";
 import {BN} from "ethereumjs-util";
 import Web3 from "web3";
 import Common from "ethereumjs-common";
+import {Environment} from "./environment";
 
 export class RpcGateway {
-    static readonly gateway = "https://rpc.circles.land/";
     private static _web3?: Web3;
     private static _provider?: HttpProvider;
 
@@ -79,9 +79,8 @@ export class RpcGateway {
             this._web3 = new Web3();
         }
 
-        const nextProvider = this.gateway;
         this._provider = new Web3.providers.HttpProvider(
-          nextProvider,
+          Environment.rpcGatewayUrl,
           {
               timeout: 30000
           }

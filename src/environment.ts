@@ -138,7 +138,8 @@ export class Environment {
   }
 
   private static _utilityDb:Pool = new Pool({
-    connectionString: process.env.UTILITY_DB_CONNECTION_STRING
+    connectionString: process.env.UTILITY_DB_CONNECTION_STRING,
+    ssl: !process.env.DEBUG
   }).on('error', (err) => {
     console.error('An idle client has experienced an error', err.stack)
   });
@@ -147,7 +148,8 @@ export class Environment {
   }
 
   private static _indexDb:Pool = new Pool({
-    connectionString: process.env.BLOCKCHAIN_INDEX_DB_CONNECTION_STRING
+    connectionString: process.env.BLOCKCHAIN_INDEX_DB_CONNECTION_STRING,
+    ssl: !process.env.DEBUG
   }).on('error', (err) => {
     console.error('An idle client has experienced an error', err.stack)
   });
