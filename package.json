@@ -1,6 +1,6 @@
 {
   "name": "@o-platform/api-server",
-  "version": "0.1.219",
+  "version": "0.1.220",
   "description": "",
   "main": "dist/index.js",
   "prepublish": "tsc",
@@ -44,7 +44,10 @@
     "ws": "^8.2.3",
     "xstate": "^4.25.0",
     "aws-sdk": "^2.1036.0",
-    "ethers-multisend": "^2.0.1"
+    "ethers-multisend": "^2.0.1",
+    "eth-lib": "^0.1.29",
+    "ethereumjs-common": "^1.5.2",
+    "ethereumjs-tx": "^2.1.2"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^1.21.4",

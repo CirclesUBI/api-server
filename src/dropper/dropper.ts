@@ -1,20 +1,23 @@
-import {Pool} from "pg";
 import {prisma_api_rw} from "../apiDbClient";
 import {Prisma, VerifiedSafe} from "../api-db/client";
-import {createTransaction, encodeMulti, encodeSingle, MetaTransaction, TransactionType} from "ethers-multisend";
+import {
+  createTransaction,
+  encodeMulti,
+  encodeSingle,
+  MetaTransaction,
+  TransactionType,
+  TransferFundsTransactionInput
+} from "ethers-multisend";
 import {RpcGateway} from "../rpcGateway";
 import {Session} from "../session";
 import {ProfileLoader} from "../profileLoader";
-import InvitationCreateManyInput = Prisma.InvitationCreateManyInput;
-import {erc20_abi} from "../crcabi";
-import { FormatTypes, Interface } from '@ethersproject/abi'
 import BN from "bn.js";
-
-let pool = new Pool({
-  connectionString: process.env.DROPPER_DB_CONNECTION_STRING
-}).on('error', (err) => {
-  console.error('An idle client has experienced an error', err.stack)
-});
+import {GnosisSafeProxy} from "../circles/safe/gnosisSafeProxy";
+import {SafeTransaction} from "../circles/model/safeTransaction";
+import {SafeOps} from "../circles/model/safeOps";
+import {ZERO_ADDRESS} from "../circles/consts";
+import InvitationCreateManyInput = Prisma.InvitationCreateManyInput;
+import {Generate} from "../generate";
 
 export class Dropper {
 
@@ -22,29 +25,46 @@ export class Dropper {
   private _lastVerification:Date = new Date(0);
 
   async start() {
-    this._interval = setInterval(() => {
-      // this.checkNewVerifications();
+    this._interval = setInterval(async () => {
+      // await this.checkNewVerifications();
     }, 10000);
   }
 
   private async checkNewVerifications() {
-    const newVerifications = await prisma_api_rw.verifiedSafe.findMany({
+    const now = new Date();
+    await prisma_api_rw.verifiedSafe.updateMany({
       where: {
         createdAt: {
           gt: this._lastVerification
         },
         rewardProcessingStartedAt: null
+      },
+      data: {
+        rewardProcessingStartedAt: now,
+        rewardProcessingWorker: process.pid.toString()
       }
     });
 
-    for (let newVerification of newVerifications) {
-      this._lastVerification = new Date(newVerification.createdAt);
-      console.log("New verification: ", newVerification);
-      await this.drop(newVerification);
+    const verificationsToProcess = await prisma_api_rw.verifiedSafe.findMany({
+      where: {
+        rewardProcessingStartedAt: now,
+        rewardProcessingWorker: process.pid.toString()
+      }
+    });
+
+    for (let newVerification of verificationsToProcess) {
+      try {
+        this._lastVerification = new Date(newVerification.createdAt);
+        console.log(`Dropping rewards for new verified safe ${newVerification.safeAddress} ..`);
+        await this.drop(newVerification);
+      } catch (e) {
+        console.error(`An error occurred while dropping the invites and rewards for verifiedSafe ${newVerification.safeAddress}: ${JSON.stringify(e)}`);
+      }
     }
   }
 
   async drop(verifiedSafe:VerifiedSafe) {
+
     // Create ten invitations for the verified account
     const invitations = await this.createdInvitationEoasForInvitee(verifiedSafe);
     const invitationFundingTransactions = await this.createInvitationEoaFundingTransactions(invitations);
@@ -55,9 +75,23 @@ export class Dropper {
 
     const metaTransaction = encodeMulti([
       ...invitationFundingTransactions.map(o => o.fundingTransaction),
-      inviterRewardTransaction,
-      inviteeRewardTransaction
-    ]);
+      encodeSingle(inviterRewardTransaction),
+      encodeSingle(inviteeRewardTransaction)
+    ], process.env.REWARD_SAFE_ADDRESS);
+
+    const data = metaTransaction.data;
+    const acc = RpcGateway.get().eth.accounts.privateKeyToAccount(<string>process.env.REWARD_SAFE_ADDRESS_KEY);
+    const safe = new GnosisSafeProxy(RpcGateway.get(), <string>process.env.REWARD_SAFE_ADDRESS);
+    const receipt = await safe.execTransaction(acc.privateKey, <SafeTransaction>{
+      to: process.env.REWARD_SAFE_ADDRESS,
+      data: data,
+      value: new BN("0"),
+      refundReceiver: ZERO_ADDRESS,
+      gasToken: ZERO_ADDRESS,
+      operation: SafeOps.CALL
+    });
+
+    console.log(metaTransaction, receipt);
   }
 
   async createdInvitationEoasForInvitee(verifiedSafe:VerifiedSafe) : Promise<InvitationCreateManyInput[]> {
@@ -80,7 +114,7 @@ export class Dropper {
         name: `Invitation ${i}`,
         createdAt: now,
         createdByProfileId: profile.id,
-        address: invitationEoa.address,
+        address: invitationEoa.address.toLowerCase(),
         key: invitationEoa.privateKey,
         code: Session.generateRandomBase64String(16)
       });
@@ -100,22 +134,18 @@ export class Dropper {
     const inputs = invitations.map(i => {
       return {
         invitation: i,
-        fundingTransaction: createTransaction(TransactionType.callContract, i.code)
+        fundingTransaction: createTransaction(TransactionType.raw, i.code)
       };
     });
 
-    const transferAbi = new Interface([
-      'function transfer(address to, uint256 amount)',
-    ]).format(FormatTypes.json) as string
 
-    inputs.forEach(i => {
-      i.fundingTransaction.abi = transferAbi;
+    const amountWei = RpcGateway.get().utils.toWei("0.1", "ether");
+    const amount = new BN(amountWei);
+
+    inputs.forEach((i:any) => {
       i.fundingTransaction.to = i.invitation.address;
-      i.fundingTransaction.functionSignature = "transfer(address,uint256)";
-      i.fundingTransaction.inputValues = {
-        to: i.invitation.address,
-        amount: new BN(RpcGateway.get().utils.toWei("0.1", "ether")).toString("hex")
-      }
+      i.fundingTransaction.value = amount.toString();
+      i.fundingTransaction.data = "0x";
 
       return i;
     });
@@ -128,12 +158,42 @@ export class Dropper {
     });
   }
 
-  async dropInviterReward(verifiedSafe:VerifiedSafe) : Promise<MetaTransaction> {
-    return <any>{};
+  async dropInviterReward(verifiedSafe:VerifiedSafe) : Promise<TransferFundsTransactionInput> {
+    const invitationResult = await prisma_api_rw.invitation.findMany({
+      where: {
+        redeemedBy: {
+          circlesAddress: verifiedSafe.safeAddress
+        }
+      },
+      include: {
+        createdBy: true
+      }
+    });
+
+    if (invitationResult.length == 0) {
+      throw new Error(`Couldn't find a invitation for verified safe ${verifiedSafe.safeAddress}`);
+    }
+    const invitation = invitationResult[0];
+    if (!invitation.createdBy || !invitation.createdBy.circlesAddress) {
+      throw new Error(`Couldn't find a creator for invitation ${invitation.id}.`);
+    }
+
+    const inviterReward = createTransaction(TransactionType.transferFunds, invitation.id.toString());
+    inviterReward.to = invitation.createdBy.circlesAddress;
+    inviterReward.amount = new BN("").toString();
+    inviterReward.token = "0x04e7c72a70975b3d2f35ec7f6b474451f43d4ea0";
+
+    return inviterReward;
   }
 
-  async dropInviteeReward(verifiedSafe:VerifiedSafe) : Promise<MetaTransaction> {
-    return <any>{};
+  async dropInviteeReward(verifiedSafe:VerifiedSafe) : Promise<TransferFundsTransactionInput> {
+    const txId = Math.abs(Generate.randomInt4()).toString();
+    const inviteeReward = createTransaction(TransactionType.transferFunds, txId);
+    inviteeReward.to = verifiedSafe.safeAddress;
+    inviteeReward.amount = new BN("").toString();
+    inviteeReward.token = "0x04e7c72a70975b3d2f35ec7f6b474451f43d4ea0";
+
+    return inviteeReward;
   }
 
   async stop() {

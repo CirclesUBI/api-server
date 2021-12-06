@@ -76,6 +76,7 @@ export type VerifiedSafe = {
   swapEoaAddress: string
   swapEoaKey: string
   rewardProcessingStartedAt: Date | null
+  rewardProcessingWorker: string | null
   inviteeRewardTransactionHash: string | null
   inviterRewardTransactionHash: string | null
   swapFundingTransactionHash: string | null
@@ -4055,6 +4056,7 @@ export namespace Prisma {
     swapEoaAddress: string | null
     swapEoaKey: string | null
     rewardProcessingStartedAt: Date | null
+    rewardProcessingWorker: string | null
     inviteeRewardTransactionHash: string | null
     inviterRewardTransactionHash: string | null
     swapFundingTransactionHash: string | null
@@ -4068,6 +4070,7 @@ export namespace Prisma {
     swapEoaAddress: string | null
     swapEoaKey: string | null
     rewardProcessingStartedAt: Date | null
+    rewardProcessingWorker: string | null
     inviteeRewardTransactionHash: string | null
     inviterRewardTransactionHash: string | null
     swapFundingTransactionHash: string | null
@@ -4081,6 +4084,7 @@ export namespace Prisma {
     swapEoaAddress: number
     swapEoaKey: number
     rewardProcessingStartedAt: number
+    rewardProcessingWorker: number
     inviteeRewardTransactionHash: number
     inviterRewardTransactionHash: number
     swapFundingTransactionHash: number
@@ -4106,6 +4110,7 @@ export namespace Prisma {
     swapEoaAddress?: true
     swapEoaKey?: true
     rewardProcessingStartedAt?: true
+    rewardProcessingWorker?: true
     inviteeRewardTransactionHash?: true
     inviterRewardTransactionHash?: true
     swapFundingTransactionHash?: true
@@ -4119,6 +4124,7 @@ export namespace Prisma {
     swapEoaAddress?: true
     swapEoaKey?: true
     rewardProcessingStartedAt?: true
+    rewardProcessingWorker?: true
     inviteeRewardTransactionHash?: true
     inviterRewardTransactionHash?: true
     swapFundingTransactionHash?: true
@@ -4132,6 +4138,7 @@ export namespace Prisma {
     swapEoaAddress?: true
     swapEoaKey?: true
     rewardProcessingStartedAt?: true
+    rewardProcessingWorker?: true
     inviteeRewardTransactionHash?: true
     inviterRewardTransactionHash?: true
     swapFundingTransactionHash?: true
@@ -4258,6 +4265,7 @@ export namespace Prisma {
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt: Date | null
+    rewardProcessingWorker: string | null
     inviteeRewardTransactionHash: string | null
     inviterRewardTransactionHash: string | null
     swapFundingTransactionHash: string | null
@@ -4292,6 +4300,7 @@ export namespace Prisma {
     swapEoaAddress?: boolean
     swapEoaKey?: boolean
     rewardProcessingStartedAt?: boolean
+    rewardProcessingWorker?: boolean
     inviteeRewardTransaction?: boolean | TransactionArgs
     inviteeRewardTransactionHash?: boolean
     inviterRewardTransaction?: boolean | TransactionArgs
@@ -17273,6 +17282,7 @@ export namespace Prisma {
     swapEoaAddress: 'swapEoaAddress',
     swapEoaKey: 'swapEoaKey',
     rewardProcessingStartedAt: 'rewardProcessingStartedAt',
+    rewardProcessingWorker: 'rewardProcessingWorker',
     inviteeRewardTransactionHash: 'inviteeRewardTransactionHash',
     inviterRewardTransactionHash: 'inviterRewardTransactionHash',
     swapFundingTransactionHash: 'swapFundingTransactionHash'
@@ -17648,6 +17658,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFilter | string
     swapEoaKey?: StringFilter | string
     rewardProcessingStartedAt?: DateTimeNullableFilter | Date | string | null
+    rewardProcessingWorker?: StringNullableFilter | string | null
     inviteeRewardTransaction?: XOR<TransactionRelationFilter, TransactionWhereInput> | null
     inviteeRewardTransactionHash?: StringNullableFilter | string | null
     inviterRewardTransaction?: XOR<TransactionRelationFilter, TransactionWhereInput> | null
@@ -17664,6 +17675,7 @@ export namespace Prisma {
     swapEoaAddress?: SortOrder
     swapEoaKey?: SortOrder
     rewardProcessingStartedAt?: SortOrder
+    rewardProcessingWorker?: SortOrder
     inviteeRewardTransactionHash?: SortOrder
     inviterRewardTransactionHash?: SortOrder
     swapFundingTransactionHash?: SortOrder
@@ -17684,6 +17696,7 @@ export namespace Prisma {
     swapEoaAddress?: StringWithAggregatesFilter | string
     swapEoaKey?: StringWithAggregatesFilter | string
     rewardProcessingStartedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
+    rewardProcessingWorker?: StringNullableWithAggregatesFilter | string | null
     inviteeRewardTransactionHash?: StringNullableWithAggregatesFilter | string | null
     inviterRewardTransactionHash?: StringNullableWithAggregatesFilter | string | null
     swapFundingTransactionHash?: StringNullableWithAggregatesFilter | string | null
@@ -18551,6 +18564,7 @@ export namespace Prisma {
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
+    rewardProcessingWorker?: string | null
     swapFundingTransactionHash?: string | null
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
@@ -18567,6 +18581,7 @@ export namespace Prisma {
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
+    rewardProcessingWorker?: string | null
     inviteeRewardTransactionHash?: string | null
     inviterRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
@@ -18578,6 +18593,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
@@ -18594,6 +18610,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18607,6 +18624,7 @@ export namespace Prisma {
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
+    rewardProcessingWorker?: string | null
     inviteeRewardTransactionHash?: string | null
     inviterRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
@@ -18618,6 +18636,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -18629,6 +18648,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23756,6 +23776,7 @@ export namespace Prisma {
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
+    rewardProcessingWorker?: string | null
     swapFundingTransactionHash?: string | null
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
@@ -23770,6 +23791,7 @@ export namespace Prisma {
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
+    rewardProcessingWorker?: string | null
     inviteeRewardTransactionHash?: string | null
     inviterRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
@@ -23791,6 +23813,7 @@ export namespace Prisma {
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
+    rewardProcessingWorker?: string | null
     swapFundingTransactionHash?: string | null
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
@@ -23805,6 +23828,7 @@ export namespace Prisma {
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
+    rewardProcessingWorker?: string | null
     inviteeRewardTransactionHash?: string | null
     inviterRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
@@ -24150,6 +24174,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFilter | string
     swapEoaKey?: StringFilter | string
     rewardProcessingStartedAt?: DateTimeNullableFilter | Date | string | null
+    rewardProcessingWorker?: StringNullableFilter | string | null
     inviteeRewardTransactionHash?: StringNullableFilter | string | null
     inviterRewardTransactionHash?: StringNullableFilter | string | null
     swapFundingTransactionHash?: StringNullableFilter | string | null
@@ -25927,6 +25952,7 @@ export namespace Prisma {
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
+    rewardProcessingWorker?: string | null
     swapFundingTransactionHash?: string | null
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
@@ -25942,6 +25968,7 @@ export namespace Prisma {
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
+    rewardProcessingWorker?: string | null
     inviterRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
   }
@@ -25957,6 +25984,7 @@ export namespace Prisma {
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
+    rewardProcessingWorker?: string | null
     swapFundingTransactionHash?: string | null
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
@@ -25972,6 +26000,7 @@ export namespace Prisma {
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
+    rewardProcessingWorker?: string | null
     inviteeRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
   }
@@ -25987,6 +26016,7 @@ export namespace Prisma {
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
+    rewardProcessingWorker?: string | null
     swapFundingTransactionHash?: string | null
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
@@ -26002,6 +26032,7 @@ export namespace Prisma {
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
+    rewardProcessingWorker?: string | null
     inviteeRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
   }
@@ -26072,6 +26103,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
@@ -26087,6 +26119,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -26102,6 +26135,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
@@ -26117,6 +26151,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -26132,6 +26167,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
@@ -26147,6 +26183,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -26584,6 +26621,7 @@ export namespace Prisma {
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
+    rewardProcessingWorker?: string | null
     inviteeRewardTransactionHash?: string | null
     inviterRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
@@ -26596,6 +26634,7 @@ export namespace Prisma {
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
+    rewardProcessingWorker?: string | null
     inviteeRewardTransactionHash?: string | null
     inviterRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
@@ -27024,6 +27063,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
@@ -27038,6 +27078,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27050,6 +27091,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27061,6 +27103,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
@@ -27075,6 +27118,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27087,6 +27131,7 @@ export namespace Prisma {
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
