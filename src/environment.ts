@@ -191,6 +191,10 @@ export class Environment {
     return <string>process.env.RPC_GATEWAY_URL;
   }
 
+  static get delayStart() : number {
+    return process.env.DELAY_START ? parseInt(process.env.DELAY_START) : 0;
+  }
+
   static get readonlyApiConnectionString() : string {
     return <string>process.env.CONNECTION_STRING_RO;
   }

@@ -28,6 +28,13 @@ export class Main {
     private _dropper = new Dropper();
 
     async run2 () {
+        if (Environment.delayStart) {
+            console.log(`Delaying the start for ${Environment.delayStart} seconds ...`);
+            await new Promise((r) => {
+               setTimeout(r, Environment.delayStart * 1000);
+            });
+        }
+
         console.log("======== Checking configuration ======== ")
         await Environment.validateAndSummarize();
         console.log("================ DONE ================== ")
