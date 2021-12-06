@@ -50,7 +50,7 @@ export class Environment {
     const rpcGateway = await fetch(this.rpcGatewayUrl
       .replace("ws://", "http://")
       .replace("wss://", "https://"));
-    if (rpcGateway.status.toString() == "200") {
+    if (rpcGateway.status < 500) {
       console.log("  Success. Body: " + (await rpcGateway.text()));
     } else {
       throw new Error(`The json rpc gateway responded with a non 200 code: ${rpcGateway.status}. Body: ${await rpcGateway.text()}`);
@@ -118,7 +118,7 @@ export class Environment {
         'accept': 'text/html,application/xhtml+xml,application/xml;'
       }
     });
-    if (indexerWsEndpoint.status.toString() == "200") {
+    if (indexerWsEndpoint.status < 500) {
       console.log("  Success. Body: " + (await indexerWsEndpoint.text()));
     } else {
       const body = await indexerWsEndpoint.text();
