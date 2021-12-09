@@ -3,6 +3,7 @@ import {Context} from "../../context";
 import {Session} from "../../session";
 import {ProfileLoader} from "../../profileLoader";
 import {Environment} from "../../environment";
+import {TestData} from "../../api-db/testData";
 
 export function upsertProfileResolver() {
     return async (parent:any, args:MutationUpsertProfileArgs, context:Context) => {
@@ -46,6 +47,13 @@ export function upsertProfileResolver() {
             }));
             await Session.assignProfile(session.sessionToken, profile.id, context);
         }
+
+        if (Environment.isAutomatedTest && profile.circlesAddress) {
+            // Insert the test data when the first profile with a safe-address was created
+            console.log("First circles user. Deploying test data ..");
+            await TestData.insertIfEmpty(profile.circlesAddress);
+        }
+
         return profile;
     };
 }

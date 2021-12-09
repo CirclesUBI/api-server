@@ -72,6 +72,10 @@ export class Environment {
       throw new Error(`The INVITATION_FUNDS_SAFE_KEY environment variable is not set.`);
     }
 
+    if (!process.env.REWARD_TOKEN_ADDRESS) {
+      throw new Error(`The REWARD_TOKEN_ADDRESS environment variable is not set.`);
+    }
+
     if (!process.env.VERIFICATION_REWARD_FUNDS_SAFE_ADDRESS) {
       throw new Error(`The VERIFICATION_REWARD_FUNDS_SAFE_ADDRESS environment variable is not set.`);
     }
@@ -223,6 +227,10 @@ export class Environment {
     return <string>process.env.EXTERNAL_DOMAIN;
   }
 
+  static get isAutomatedTest() : boolean {
+    return !!process.env.IS_AUTOMATED_TEST;
+  }
+
   /**
    * The safe address of the organisation which operates this instance.
    */
@@ -257,6 +265,10 @@ export class Environment {
     return RpcGateway.get().eth.accounts.privateKeyToAccount(
       <string>process.env.VERIFICATION_REWARD_FUNDS_SAFE_KEY?.toLowerCase()
     );
+  }
+
+  static get rewardTokenAddress() : string {
+      return <string>process.env.REWARD_TOKEN_ADDRESS?.toLowerCase()
   }
 
   static get invoicesBucket() : AWS.S3 {
