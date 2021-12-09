@@ -1,9 +1,9 @@
 import PDFDocument from "pdfkit";
 import dayjs from "dayjs";
 import AWS from "aws-sdk";
-import {Invoice, InvoiceLine, Offer, Profile} from "./api-db/client";
-import {PromiseResult} from "aws-sdk/lib/request";
-import {Environment} from "./environment";
+import { Invoice, InvoiceLine, Offer, Profile } from "./api-db/client";
+import { PromiseResult } from "aws-sdk/lib/request";
+import { Environment } from "./environment";
 
 export type PdfInvoiceLine = {
   amount: number;
@@ -116,12 +116,21 @@ export function pdfInvoiceDataFromDbInvoice(
   };
 }
 
-
 export class InvoicePdfGenerator {
   margin: number = 30;
   marginx: number = 50;
   lineMargin: number = 15;
-  top: number = this.margin;
+  _top: number = this.margin;
+
+  set top(value: number) {
+    this._top = value;
+    // console.log("CURRENT TOP: ", this._top);
+    // console.log("STACK ", new Error().stack);
+  }
+
+  get top() {
+    return this._top;
+  }
 
   readonly invoice: PdfInvoiceData;
 
@@ -149,7 +158,7 @@ export class InvoicePdfGenerator {
     return doc;
   }
 
-  async savePdfToS3(key:string, pdfDocument: PDFKit.PDFDocument) {
+  async savePdfToS3(key: string, pdfDocument: PDFKit.PDFDocument) {
     const params: {
       Bucket: string;
       Body?: any;
@@ -161,31 +170,35 @@ export class InvoicePdfGenerator {
       ACL: "private",
     };
 
-    return new Promise<PromiseResult<AWS.S3.PutObjectOutput, AWS.AWSError>>((resolve, reject) => {
-      let pdfBytes: any[] = [];
-      pdfDocument.on("readable", (_) => {
-        try {
-          while (true) {
-            let buffer = pdfDocument.read();
-            if (!buffer) {
-              break;
+    return new Promise<PromiseResult<AWS.S3.PutObjectOutput, AWS.AWSError>>(
+      (resolve, reject) => {
+        let pdfBytes: any[] = [];
+        pdfDocument.on("readable", (_) => {
+          try {
+            while (true) {
+              let buffer = pdfDocument.read();
+              if (!buffer) {
+                break;
+              }
+              pdfBytes.push(buffer);
             }
-            pdfBytes.push(buffer);
+          } catch (e) {
+            reject(e);
           }
-        } catch (e) {
-          reject(e);
-        }
-      });
-      pdfDocument.on("end", async (_) => {
-        try {
-          params.Body = Buffer.concat(pdfBytes);
-          const result = await Environment.invoicesBucket.putObject(params).promise();
-          resolve(result);
-        } catch (e) {
-          reject(e);
-        }
-      });
-    });
+        });
+        pdfDocument.on("end", async (_) => {
+          try {
+            params.Body = Buffer.concat(pdfBytes);
+            const result = await Environment.invoicesBucket
+              .putObject(params)
+              .promise();
+            resolve(result);
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
+    );
   }
 
   private newPageCheck(
@@ -416,7 +429,7 @@ export class InvoicePdfGenerator {
       .font("Helvetica-Bold")
       .fillColor("#333333")
 
-      .text("Amount due", 300, (this.top += 10), { width: 70, align: "left" })
+      .text("Amount due", 300, (this.top += 20), { width: 70, align: "left" })
       .text(this.formatCurrency(0), 0, this.top, { align: "right" });
 
     this.newPageCheck(doc, invoice);
