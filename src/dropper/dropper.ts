@@ -63,7 +63,6 @@ export class Dropper {
   }
 
   async drop(verifiedSafe:VerifiedSafe) {
-
     // Create ten invitations for the verified account
     const invitations = await this.createdInvitationEoasForInvitee(verifiedSafe);
     const invitationFundingTransactions = await this.createInvitationEoaFundingTransactions(invitations);
@@ -181,7 +180,7 @@ export class Dropper {
     const inviterReward = createTransaction(TransactionType.transferFunds, invitation.id.toString());
     inviterReward.to = invitation.createdBy.circlesAddress;
     inviterReward.amount = new BN("").toString();
-    inviterReward.token = "0x04e7c72a70975b3d2f35ec7f6b474451f43d4ea0";
+    inviterReward.token = Environment.rewardTokenAddress;
 
     return inviterReward;
   }
@@ -191,7 +190,17 @@ export class Dropper {
     const inviteeReward = createTransaction(TransactionType.transferFunds, txId);
     inviteeReward.to = verifiedSafe.safeAddress;
     inviteeReward.amount = new BN("").toString();
-    inviteeReward.token = "0x04e7c72a70975b3d2f35ec7f6b474451f43d4ea0";
+    inviteeReward.token = Environment.rewardTokenAddress;
+
+    return inviteeReward;
+  }
+
+  async dropSeedbomberReward(verifiedSafe:VerifiedSafe) : Promise<TransferFundsTransactionInput> {
+    const txId = Math.abs(Generate.randomInt4()).toString();
+    const inviteeReward = createTransaction(TransactionType.transferFunds, txId);
+    inviteeReward.to = verifiedSafe.safeAddress;
+    inviteeReward.amount = new BN("").toString();
+    inviteeReward.token = Environment.rewardTokenAddress;
 
     return inviteeReward;
   }
