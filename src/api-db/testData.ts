@@ -44,10 +44,10 @@ export class TestData {
                                          , "validTo"
                                          , "memberAddress")
                 values (now(),
-                        0,
+                        1,
                         true,
                         now(),
-                        0,
+                        1,
                         null,
                         null,
                         '${circlesAddress}')`);
