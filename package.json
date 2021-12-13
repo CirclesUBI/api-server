@@ -1,6 +1,6 @@
 {
   "name": "@o-platform/api-server",
-  "version": "0.1.232",
+  "version": "0.1.233",
   "description": "",
   "main": "dist/index.js",
   "prepublish": "tsc",
@@ -18,7 +18,7 @@
     "@graphql-tools/schema": "^8.2.0",
     "@prisma/client": "^2.30.2",
     "@types/lru-cache": "^5.1.1",
-    "@types/node-fetch": "^2.5.12",
+    "@types/node-fetch": "^3.0.3",
     "@types/pdfkit": "^0.12.3",
     "apollo-server": "^3.3.0",
     "apollo-server-core": "^3.3.0",

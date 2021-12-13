@@ -29,12 +29,13 @@ export class GqlLogger {
     const now = new Date();
     if (args.context) {
       let context: Context = args.context;
-      const ipAddr = context.ipAddress;
+      context.operationName = operationName;
+
       _pendingRequests[context.id] = {
         begin: now
       };
 
-      console.log(`  -> [${now.toJSON()}] [${context.session?.id}] [${context.id}] [${ipAddr}] [${operationName ?? ""}]: ${JSON.stringify(args.request.variables)}`);
+      console.log(`  -> [${now.toJSON()}] [${context.session?.id}] [${context.id}] [${context.ipAddress}] [${context.operationName ?? ""}]: ${JSON.stringify(args.request.variables)}`);
     } else {
       console.log(`  -> [${now.toJSON()}] [no-session] [no-context] [${operationName ?? ""}]: ${JSON.stringify(args.request.variables)}`);
     }
