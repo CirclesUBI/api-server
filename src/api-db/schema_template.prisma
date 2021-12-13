@@ -82,7 +82,7 @@ model VerifiedSafe {
     createdByOrganisation Profile @relation(name: "VerifiedSafe_CreatedByOrganisation", fields: [createdByOrganisationId], references: [id])
     createdByOrganisationId Int
 
-    revokedAt DateTime? @default(now())
+    revokedAt DateTime?
     revokedByProfileId Int?
     revokedBy Profile? @relation(name: "VerifiedSafe_RevokedByPerson", fields: [revokedByProfileId], references: [id])
 
