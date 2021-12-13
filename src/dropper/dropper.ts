@@ -25,7 +25,9 @@ export class Dropper {
 
   async start() {
     this._interval = setInterval(async () => {
-      // await this.checkNewVerifications();
+      if (process.env.REWARD_TOKEN_ADDRESS) {
+        await this.checkNewVerifications();
+      }
     }, 10000);
   }
 
