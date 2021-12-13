@@ -323,7 +323,7 @@ export class Environment {
 
   static get verificationRewardFundsSafeOwner(): Account {
     return RpcGateway.get().eth.accounts.privateKeyToAccount(
-      <string>process.env.VERIFICATION_REWARD_FUNDS_SAFE_KEY?.toLowerCase()
+      <string>process.env.VERIFICATION_REWARD_FUNDS_KEY?.toLowerCase()
     );
   }
 

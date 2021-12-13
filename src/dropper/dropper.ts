@@ -59,7 +59,7 @@ export class Dropper {
         console.log(`Dropping rewards for new verified safe ${newVerification.safeAddress} ..`);
         await this.drop(newVerification);
       } catch (e) {
-        console.error(`An error occurred while dropping the invites and rewards for verifiedSafe ${newVerification.safeAddress}: ${JSON.stringify(e)}`);
+        console.error(`An error occurred while dropping the invites and rewards for verifiedSafe ${newVerification.safeAddress}:`, e);
       }
     }
   }
@@ -68,19 +68,11 @@ export class Dropper {
     // Create ten invitations for the verified account
     const invitations = await this.createdInvitationEoasForInvitee(verifiedSafe);
     const invitationFundingTransactions = await this.createInvitationEoaFundingTransactions(invitations);
+    let metaTransaction = encodeMulti([
+      ...invitationFundingTransactions.map(o => o.fundingTransaction)]);
 
-    // Drop the reward for the inviter
-    const inviterRewardTransaction = await this.dropInviterReward(verifiedSafe);
-    const inviteeRewardTransaction = await this.dropInviteeReward(verifiedSafe);
-
-    const metaTransaction = encodeMulti([
-      ...invitationFundingTransactions.map(o => o.fundingTransaction),
-      encodeSingle(inviterRewardTransaction),
-      encodeSingle(inviteeRewardTransaction)
-    ], Environment.verificationRewardFundsSafe.address );
-
-    const data = metaTransaction.data;
-    const receipt = await Environment.verificationRewardFundsSafe.execTransaction(
+    let data = metaTransaction.data;
+    let receipt = await Environment.verificationRewardFundsSafe.execTransaction(
       Environment.verificationRewardFundsSafeOwner.privateKey,
       <SafeTransaction>{
         to: Environment.verificationRewardFundsSafe.address,
@@ -89,7 +81,32 @@ export class Dropper {
         refundReceiver: ZERO_ADDRESS,
         gasToken: ZERO_ADDRESS,
         operation: SafeOps.CALL
-      }
+      }, true
+    );
+
+    console.log(metaTransaction, receipt);
+
+    // Drop the reward for the inviter
+    const inviterRewardTransaction = await this.dropInviterReward(verifiedSafe);
+    const inviteeRewardTransaction = await this.dropInviteeReward(verifiedSafe);
+
+    metaTransaction = encodeMulti([
+      ...invitationFundingTransactions.map(o => o.fundingTransaction),
+      encodeSingle(inviterRewardTransaction),
+      encodeSingle(inviteeRewardTransaction)
+    ], Environment.verificationRewardFundsSafe.address );
+
+    data = metaTransaction.data;
+    receipt = await Environment.verificationRewardFundsSafe.execTransaction(
+      Environment.verificationRewardFundsSafeOwner.privateKey,
+      <SafeTransaction>{
+        to: Environment.verificationRewardFundsSafe.address,
+        data: data,
+        value: new BN("0"),
+        refundReceiver: ZERO_ADDRESS,
+        gasToken: ZERO_ADDRESS,
+        operation: SafeOps.CALL
+      }, true
     );
 
     console.log(metaTransaction, receipt);
