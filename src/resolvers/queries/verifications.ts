@@ -4,7 +4,9 @@ import {ProfileLoader} from "../../profileLoader";
 import {Environment} from "../../environment";
 
 export const verifications = async (parent:any, args:QueryVerificationsArgs, context?:Context) => {
-  const where:any = { };
+  const where:any = {
+    revokedAt: null
+  };
 
   const limit = args.pagination ? (Number.isInteger(args.pagination.limit) && args.pagination.limit > 0 && args.pagination.limit <= 100
     ? args.pagination.limit
@@ -20,12 +22,14 @@ export const verifications = async (parent:any, args:QueryVerificationsArgs, con
   }
   if (args.filter?.addresses) {
     where.safeAddress = {
-      in: args.filter?.addresses
+      in: args.filter?.addresses,
     };
   }
 
   const result = await Environment.readonlyApiDb.verifiedSafe.findMany({
-    where: where,
+    where: {
+      ...where,
+    },
     select: {
       createdAt: true,
       safeAddress: true,
