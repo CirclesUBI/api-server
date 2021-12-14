@@ -956,7 +956,8 @@ input ProfileAggregateFilter {
 }
 
 type UbiInfo {
-  lastTransactionAt: String
+  safeAddress: String
+  lastUbiAt: String
   tokenAddress: String
   randomValue: String
 }
@@ -980,7 +981,7 @@ type Query {
   claimedInvitation: ClaimedInvitation
   invitationTransaction: ProfileEvent
   hubSignupTransaction: ProfileEvent
-  ubiInfo: UbiInfo!
+  ubiInfo(safeAddress: String): UbiInfo
 
   verifications(
     pagination: PaginationArgs

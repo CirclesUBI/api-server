@@ -838,7 +838,7 @@ export type Query = {
   claimedInvitation?: Maybe<ClaimedInvitation>;
   invitationTransaction?: Maybe<ProfileEvent>;
   hubSignupTransaction?: Maybe<ProfileEvent>;
-  ubiInfo: UbiInfo;
+  ubiInfo?: Maybe<UbiInfo>;
   verifications: Array<Verification>;
   events: Array<ProfileEvent>;
   aggregates: Array<ProfileAggregate>;
@@ -859,6 +859,11 @@ export type Query = {
   directPath: TransitivePath;
   mostRecentUbiSafeOfAccount?: Maybe<Scalars['String']>;
   invoice?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryUbiInfoArgs = {
+  safeAddress?: Maybe<Scalars['String']>;
 };
 
 
@@ -1158,7 +1163,8 @@ export type TrustRelation = {
 
 export type UbiInfo = {
   __typename?: 'UbiInfo';
-  lastTransactionAt?: Maybe<Scalars['String']>;
+  safeAddress?: Maybe<Scalars['String']>;
+  lastUbiAt?: Maybe<Scalars['String']>;
   tokenAddress?: Maybe<Scalars['String']>;
   randomValue?: Maybe<Scalars['String']>;
 };
@@ -2157,7 +2163,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
-  ubiInfo?: Resolver<ResolversTypes['UbiInfo'], ParentType, ContextType>;
+  ubiInfo?: Resolver<Maybe<ResolversTypes['UbiInfo']>, ParentType, ContextType, RequireFields<QueryUbiInfoArgs, never>>;
   verifications?: Resolver<Array<ResolversTypes['Verification']>, ParentType, ContextType, RequireFields<QueryVerificationsArgs, never>>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'types' | 'safeAddress' | 'pagination'>>;
   aggregates?: Resolver<Array<ResolversTypes['ProfileAggregate']>, ParentType, ContextType, RequireFields<QueryAggregatesArgs, 'types' | 'safeAddress'>>;
@@ -2321,7 +2327,8 @@ export type TrustRelationResolvers<ContextType = any, ParentType extends Resolve
 }>;
 
 export type UbiInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['UbiInfo'] = ResolversParentTypes['UbiInfo']> = ResolversObject<{
-  lastTransactionAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  safeAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lastUbiAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   tokenAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   randomValue?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

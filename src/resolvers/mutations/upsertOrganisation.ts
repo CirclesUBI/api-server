@@ -2,6 +2,7 @@ import {Context} from "../../context";
 import {MutationUpsertOrganisationArgs, Profile} from "../../types";
 import {ProfileLoader} from "../../profileLoader";
 import {Environment} from "../../environment";
+import {RpcGateway} from "../../rpcGateway";
 
 export async function isOrgAdmin(userAddress:string, orgId: number) : Promise<boolean> {
   return !!(await Environment.readWriteApiDb.membership.findFirst({
@@ -22,6 +23,15 @@ export function upsertOrganisation(isRegion:boolean) {
       }
 
       let organisationProfile:Profile;
+      if (args.organisation.circlesAddress && !RpcGateway.get().utils.isAddress(args.organisation.circlesAddress)) {
+        throw new Error(`Invalid 'circlesAddress': ${args.organisation.circlesAddress}`);
+      }
+      if (args.organisation.circlesAddress) {
+        if (!await context.isOwnerOfSafe(args.organisation.circlesAddress)) {
+          throw new Error(`You EOA isn't an owner of safe ${args.organisation.circlesAddress}`)
+        }
+      }
+
       if (args.organisation.id && await isOrgAdmin(callerInfo.profile.circlesAddress, args.organisation.id)) {
         organisationProfile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({
           where: {
