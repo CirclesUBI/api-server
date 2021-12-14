@@ -98,7 +98,7 @@ model VerifiedSafe {
     inviterRewardTransaction Transaction? @relation(name: "VerifiedSafe_InviterRewardTransaction", fields: [inviterRewardTransactionHash], references: [transactionHash])
     inviterRewardTransactionHash String?
 
-    swapFundingTransaction Transaction? @relation(name: "VerifiedSafe_SwapFundingTransaction", fields: [inviterRewardTransactionHash], references: [transactionHash])
+    swapFundingTransaction Transaction? @relation(name: "VerifiedSafe_SwapFundingTransaction", fields: [swapFundingTransactionHash], references: [transactionHash])
     swapFundingTransactionHash String?
 }
 

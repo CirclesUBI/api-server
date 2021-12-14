@@ -1,22 +1,27 @@
-import {MutationVerifySafeArgs} from "../../types";
-import {Context} from "../../context";
-import {isBILMember} from "../../canAccess";
-import {VerifiedSafe} from "../../api-db/client";
-import {RpcGateway} from "../../rpcGateway";
-import {Environment} from "../../environment";
+import { MutationVerifySafeArgs } from "../../types";
+import { Context } from "../../context";
+import { isBILMember } from "../../canAccess";
+import { VerifiedSafe } from "../../api-db/client";
+import { RpcGateway } from "../../rpcGateway";
+import { Environment } from "../../environment";
 
-export const verifySafe = async (parent:any, args:MutationVerifySafeArgs, context: Context) => {
+export const verifySafe = async (
+  parent: any,
+  args: MutationVerifySafeArgs,
+  context: Context
+) => {
   const callerInfo = await context.callerInfo;
   const isBilMember = await isBILMember(callerInfo);
   if (!isBilMember || !callerInfo?.profile) {
     throw new Error(`Not allowed`);
   }
 
-  let verifiedSafe: VerifiedSafe|null = await Environment.readWriteApiDb.verifiedSafe.findUnique({
-    where: {
-      safeAddress: args.safeAddress.toLowerCase()
-    }
-  });
+  let verifiedSafe: VerifiedSafe | null =
+    await Environment.readWriteApiDb.verifiedSafe.findUnique({
+      where: {
+        safeAddress: args.safeAddress.toLowerCase(),
+      },
+    });
 
   if (verifiedSafe) {
     throw new Error(`Safe ${args.safeAddress} is already verified.`);
@@ -24,15 +29,17 @@ export const verifySafe = async (parent:any, args:MutationVerifySafeArgs, contex
 
   const bilOrga = await Environment.readonlyApiDb.profile.findFirst({
     where: {
-      circlesAddress: Environment.operatorOrganisationAddress
+      circlesAddress: Environment.operatorOrganisationAddress,
     },
     orderBy: {
-      lastUpdateAt: "desc"
-    }
+      lastUpdateAt: "desc",
+    },
   });
 
   if (!bilOrga) {
-    throw new Error(`Couldn't find an organisation with safe address ${Environment.operatorOrganisationAddress}`);
+    throw new Error(
+      `Couldn't find an organisation with safe address ${Environment.operatorOrganisationAddress}`
+    );
   }
 
   const swapEoa = RpcGateway.get().eth.accounts.create();
@@ -46,11 +53,49 @@ export const verifySafe = async (parent:any, args:MutationVerifySafeArgs, contex
       inviteeRewardTransactionHash: null,
       inviterRewardTransactionHash: null,
       swapEoaKey: swapEoa.privateKey,
-      swapEoaAddress: swapEoa.address
-    }
+      swapEoaAddress: swapEoa.address,
+    },
   });
 
   return {
-    success: true
+    success: true,
   };
-}
+};
+
+export const revokeSafeVerification = async (
+  parent: any,
+  args: MutationVerifySafeArgs,
+  context: Context
+) => {
+  const callerInfo = await context.callerInfo;
+  const isBilMember = await isBILMember(callerInfo);
+  if (!isBilMember || !callerInfo?.profile) {
+    throw new Error(`Not allowed`);
+  }
+
+  let verifiedSafe: VerifiedSafe | null =
+    await Environment.readWriteApiDb.verifiedSafe.findUnique({
+      where: {
+        safeAddress: args.safeAddress.toLowerCase(),
+      },
+    });
+
+  if (!verifiedSafe) {
+    throw new Error(`Safe ${args.safeAddress} is not verified.`);
+  }
+
+  const revokeVerification =
+    await Environment.readWriteApiDb.verifiedSafe.update({
+      where: {
+        safeAddress: verifiedSafe.safeAddress,
+      },
+      data: {
+        revokedAt: new Date(),
+        revokedByProfileId: callerInfo.profile.id,
+      },
+    });
+
+  return {
+    success: true,
+  };
+};

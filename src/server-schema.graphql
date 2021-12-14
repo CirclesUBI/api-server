@@ -28,8 +28,8 @@ type Profile {
 }
 
 enum DisplayCurrency {
-  CRC,
-  TIME_CRC,
+  CRC
+  TIME_CRC
   EURS
 }
 
@@ -520,7 +520,7 @@ type SaleEvent implements IEventPayload {
 type SafeVerified implements IEventPayload {
   transaction_hash: String
   organisation: String!
-  organisation_profile: Organisation,
+  organisation_profile: Organisation
   safe_address: String!
 }
 
@@ -824,8 +824,8 @@ type ProofPaymentResult {
 
 type Mutation {
   purchase(lines: [PurchaseLineInput!]!): [Invoice!]!
-  completePurchase(invoiceId: Int! revoke:Boolean) : Invoice!
-  completeSale(invoiceId: Int! revoke:Boolean) : Invoice!
+  completePurchase(invoiceId: Int!, revoke: Boolean): Invoice!
+  completeSale(invoiceId: Int!, revoke: Boolean): Invoice!
 
   exchangeToken: ExchangeTokenResponse!
   authenticateAt(appId: String!): DelegateAuthInit!
@@ -880,7 +880,9 @@ type Mutation {
 
   importOrganisationsOfAccount: [Organisation!]!
 
-  verifySafe(safeAddress: String!) : VerifySafeResult!
+  verifySafe(safeAddress: String!): VerifySafeResult!
+
+  revokeSafeVerification(safeAddress: String!): VerifySafeResult!
 }
 
 type VerifySafeResult {
@@ -895,6 +897,9 @@ type Verification {
 
   verifiedSafeAddress: String!
   verifiedProfile: Profile
+
+  revokedAt: String
+  revokedProfile: Profile
 
   verificationRewardTransactionHash: String!
   verificationRewardTransaction: ProfileEvent
@@ -977,7 +982,10 @@ type Query {
   hubSignupTransaction: ProfileEvent
   ubiInfo: UbiInfo!
 
-  verifications(pagination: PaginationArgs, filter:VerifiedSafesFilter) : [Verification!]!
+  verifications(
+    pagination: PaginationArgs
+    filter: VerifiedSafesFilter
+  ): [Verification!]!
 
   events(
     types: [EventType!]!

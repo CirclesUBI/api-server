@@ -506,6 +506,7 @@ export type Mutation = {
   verifySessionChallenge?: Maybe<ExchangeTokenResponse>;
   importOrganisationsOfAccount: Array<Organisation>;
   verifySafe: VerifySafeResult;
+  revokeSafeVerification: VerifySafeResult;
 };
 
 
@@ -638,6 +639,11 @@ export type MutationVerifySessionChallengeArgs = {
 
 
 export type MutationVerifySafeArgs = {
+  safeAddress: Scalars['String'];
+};
+
+
+export type MutationRevokeSafeVerificationArgs = {
   safeAddress: Scalars['String'];
 };
 
@@ -1212,6 +1218,8 @@ export type Verification = {
   verifierProfile?: Maybe<Organisation>;
   verifiedSafeAddress: Scalars['String'];
   verifiedProfile?: Maybe<Profile>;
+  revokedAt?: Maybe<Scalars['String']>;
+  revokedProfile?: Maybe<Profile>;
   verificationRewardTransactionHash: Scalars['String'];
   verificationRewardTransaction?: Maybe<ProfileEvent>;
 };
@@ -1991,6 +1999,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   verifySessionChallenge?: Resolver<Maybe<ResolversTypes['ExchangeTokenResponse']>, ParentType, ContextType, RequireFields<MutationVerifySessionChallengeArgs, 'challenge' | 'signature'>>;
   importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   verifySafe?: Resolver<ResolversTypes['VerifySafeResult'], ParentType, ContextType, RequireFields<MutationVerifySafeArgs, 'safeAddress'>>;
+  revokeSafeVerification?: Resolver<ResolversTypes['VerifySafeResult'], ParentType, ContextType, RequireFields<MutationRevokeSafeVerificationArgs, 'safeAddress'>>;
 }>;
 
 export type NotificationEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['NotificationEvent'] = ResolversParentTypes['NotificationEvent']> = ResolversObject<{
@@ -2331,6 +2340,8 @@ export type VerificationResolvers<ContextType = any, ParentType extends Resolver
   verifierProfile?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType>;
   verifiedSafeAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   verifiedProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  revokedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  revokedProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   verificationRewardTransactionHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   verificationRewardTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

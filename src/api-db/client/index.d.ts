@@ -18614,7 +18614,6 @@ export namespace Prisma {
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
-    swapFundingTransactionHash?: string | null
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
@@ -18647,7 +18646,6 @@ export namespace Prisma {
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
-    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
@@ -18696,7 +18694,6 @@ export namespace Prisma {
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
-    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type VerifiedSafeUncheckedUpdateManyInput = {
@@ -24109,7 +24106,6 @@ export namespace Prisma {
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
-    swapFundingTransactionHash?: string | null
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
@@ -24150,7 +24146,6 @@ export namespace Prisma {
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
-    swapFundingTransactionHash?: string | null
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
@@ -24191,7 +24186,6 @@ export namespace Prisma {
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
-    swapFundingTransactionHash?: string | null
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
@@ -26376,7 +26370,6 @@ export namespace Prisma {
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
-    swapFundingTransactionHash?: string | null
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
@@ -26412,7 +26405,6 @@ export namespace Prisma {
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
-    swapFundingTransactionHash?: string | null
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
@@ -26448,7 +26440,6 @@ export namespace Prisma {
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
-    swapFundingTransactionHash?: string | null
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
@@ -26468,7 +26459,7 @@ export namespace Prisma {
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
     inviteeRewardTransactionHash?: string | null
-    swapFundingTransactionHash?: string | null
+    inviterRewardTransactionHash?: string | null
   }
 
   export type VerifiedSafeCreateOrConnectWithoutSwapFundingTransactionInput = {
@@ -26539,7 +26530,6 @@ export namespace Prisma {
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
-    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
@@ -26575,7 +26565,6 @@ export namespace Prisma {
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
-    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
@@ -26611,7 +26600,6 @@ export namespace Prisma {
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
-    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
@@ -26631,7 +26619,7 @@ export namespace Prisma {
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
-    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProfileCreateWithoutTagsInput = {
@@ -27534,7 +27522,6 @@ export namespace Prisma {
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
-    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
@@ -27580,7 +27567,6 @@ export namespace Prisma {
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
-    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
@@ -27626,7 +27612,6 @@ export namespace Prisma {
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
-    swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
