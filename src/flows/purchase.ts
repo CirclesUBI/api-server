@@ -85,14 +85,14 @@ export const purchaseMachine = createMachine<PurchaseContext, PurchaseEvents>({
       const result = await apiClient.query({
         query: ubiInfoDocument
       });
-      if ((result.errors && result.errors.length) || !result.data.ubiInfo) {
+      if ((result.errors && result.errors.length) || !result.data.safeInfo) {
         callback({
           type: "NO_PREVIOUS_PAYOUT"
         });
       } else {
         callback({
           type: "GOT_PREVIOUS_PAYOUT",
-          lastPayoutAt: new Date(Date.parse(result.data.ubiInfo))
+          lastPayoutAt: new Date(Date.parse(result.data.safeInfo))
         });
       }
     }

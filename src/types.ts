@@ -20,6 +20,11 @@ export type AcceptMembershipResult = {
   error?: Maybe<Scalars['String']>;
 };
 
+export enum AccountType {
+  Person = 'Person',
+  Organisation = 'Organisation'
+}
+
 export type AddMemberResult = {
   __typename?: 'AddMemberResult';
   success: Scalars['Boolean'];
@@ -838,7 +843,7 @@ export type Query = {
   claimedInvitation?: Maybe<ClaimedInvitation>;
   invitationTransaction?: Maybe<ProfileEvent>;
   hubSignupTransaction?: Maybe<ProfileEvent>;
-  ubiInfo?: Maybe<UbiInfo>;
+  safeInfo?: Maybe<SafeInfo>;
   verifications: Array<Verification>;
   events: Array<ProfileEvent>;
   aggregates: Array<ProfileAggregate>;
@@ -851,18 +856,17 @@ export type Query = {
   myProfile?: Maybe<Profile>;
   profilesById: Array<Profile>;
   profilesBySafeAddress: Array<Profile>;
-  findSafeAddressByOwner: Array<SafeAddressByOwnerResult>;
+  findSafesByOwner: Array<SafeInfo>;
   search: Array<Profile>;
   cities: Array<City>;
   tags: Array<Tag>;
   tagById?: Maybe<Tag>;
   directPath: TransitivePath;
-  mostRecentUbiSafeOfAccount?: Maybe<Scalars['String']>;
   invoice?: Maybe<Scalars['String']>;
 };
 
 
-export type QueryUbiInfoArgs = {
+export type QuerySafeInfoArgs = {
   safeAddress?: Maybe<Scalars['String']>;
 };
 
@@ -924,7 +928,7 @@ export type QueryProfilesBySafeAddressArgs = {
 };
 
 
-export type QueryFindSafeAddressByOwnerArgs = {
+export type QueryFindSafesByOwnerArgs = {
   owner: Scalars['String'];
 };
 
@@ -953,11 +957,6 @@ export type QueryDirectPathArgs = {
   from: Scalars['String'];
   to: Scalars['String'];
   amount: Scalars['String'];
-};
-
-
-export type QueryMostRecentUbiSafeOfAccountArgs = {
-  account: Scalars['String'];
 };
 
 
@@ -1030,6 +1029,15 @@ export type SafeAddressByOwnerResult = {
   __typename?: 'SafeAddressByOwnerResult';
   type: Scalars['String'];
   safeAddress: Scalars['String'];
+};
+
+export type SafeInfo = {
+  __typename?: 'SafeInfo';
+  type: AccountType;
+  safeAddress: Scalars['String'];
+  lastUbiAt?: Maybe<Scalars['String']>;
+  tokenAddress: Scalars['String'];
+  randomValue?: Maybe<Scalars['String']>;
 };
 
 export type SafeVerified = IEventPayload & {
@@ -1159,14 +1167,6 @@ export type TrustRelation = {
   otherSafeAddress: Scalars['String'];
   otherSafeAddressProfile?: Maybe<Profile>;
   direction: TrustDirection;
-};
-
-export type UbiInfo = {
-  __typename?: 'UbiInfo';
-  safeAddress?: Maybe<Scalars['String']>;
-  lastUbiAt?: Maybe<Scalars['String']>;
-  tokenAddress?: Maybe<Scalars['String']>;
-  randomValue?: Maybe<Scalars['String']>;
 };
 
 export type UpdateSafeInput = {
@@ -1335,6 +1335,7 @@ export type ResolversTypes = ResolversObject<{
   AcceptMembershipResult: ResolverTypeWrapper<AcceptMembershipResult>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  AccountType: AccountType;
   AddMemberResult: ResolverTypeWrapper<AddMemberResult>;
   AggregatePayload: ResolversTypes['CrcBalances'] | ResolversTypes['Erc20Balances'] | ResolversTypes['Contacts'] | ResolversTypes['Memberships'] | ResolversTypes['Members'] | ResolversTypes['Offers'] | ResolversTypes['Sales'] | ResolversTypes['Purchases'];
   AggregateType: AggregateType;
@@ -1427,6 +1428,7 @@ export type ResolversTypes = ResolversObject<{
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: ResolverTypeWrapper<RequestUpdateSafeResponse>;
   SafeAddressByOwnerResult: ResolverTypeWrapper<SafeAddressByOwnerResult>;
+  SafeInfo: ResolverTypeWrapper<SafeInfo>;
   SafeVerified: ResolverTypeWrapper<SafeVerified>;
   Sale: ResolverTypeWrapper<Sale>;
   SaleEvent: ResolverTypeWrapper<SaleEvent>;
@@ -1445,7 +1447,6 @@ export type ResolversTypes = ResolversObject<{
   TransitiveTransfer: ResolverTypeWrapper<TransitiveTransfer>;
   TrustDirection: TrustDirection;
   TrustRelation: ResolverTypeWrapper<TrustRelation>;
-  UbiInfo: ResolverTypeWrapper<UbiInfo>;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: ResolverTypeWrapper<UpdateSafeResponse>;
   UpsertOrganisationInput: UpsertOrganisationInput;
@@ -1549,6 +1550,7 @@ export type ResolversParentTypes = ResolversObject<{
   RequestUpdateSafeInput: RequestUpdateSafeInput;
   RequestUpdateSafeResponse: RequestUpdateSafeResponse;
   SafeAddressByOwnerResult: SafeAddressByOwnerResult;
+  SafeInfo: SafeInfo;
   SafeVerified: SafeVerified;
   Sale: Sale;
   SaleEvent: SaleEvent;
@@ -1565,7 +1567,6 @@ export type ResolversParentTypes = ResolversObject<{
   TransitivePath: TransitivePath;
   TransitiveTransfer: TransitiveTransfer;
   TrustRelation: TrustRelation;
-  UbiInfo: UbiInfo;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: UpdateSafeResponse;
   UpsertOrganisationInput: UpsertOrganisationInput;
@@ -2163,7 +2164,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
-  ubiInfo?: Resolver<Maybe<ResolversTypes['UbiInfo']>, ParentType, ContextType, RequireFields<QueryUbiInfoArgs, never>>;
+  safeInfo?: Resolver<Maybe<ResolversTypes['SafeInfo']>, ParentType, ContextType, RequireFields<QuerySafeInfoArgs, never>>;
   verifications?: Resolver<Array<ResolversTypes['Verification']>, ParentType, ContextType, RequireFields<QueryVerificationsArgs, never>>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'types' | 'safeAddress' | 'pagination'>>;
   aggregates?: Resolver<Array<ResolversTypes['ProfileAggregate']>, ParentType, ContextType, RequireFields<QueryAggregatesArgs, 'types' | 'safeAddress'>>;
@@ -2176,13 +2177,12 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   myProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   profilesById?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesByIdArgs, 'ids'>>;
   profilesBySafeAddress?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesBySafeAddressArgs, 'safeAddresses'>>;
-  findSafeAddressByOwner?: Resolver<Array<ResolversTypes['SafeAddressByOwnerResult']>, ParentType, ContextType, RequireFields<QueryFindSafeAddressByOwnerArgs, 'owner'>>;
+  findSafesByOwner?: Resolver<Array<ResolversTypes['SafeInfo']>, ParentType, ContextType, RequireFields<QueryFindSafesByOwnerArgs, 'owner'>>;
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, 'query'>>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsArgs, 'query'>>;
   tagById?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagByIdArgs, 'id'>>;
   directPath?: Resolver<ResolversTypes['TransitivePath'], ParentType, ContextType, RequireFields<QueryDirectPathArgs, 'from' | 'to' | 'amount'>>;
-  mostRecentUbiSafeOfAccount?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryMostRecentUbiSafeOfAccountArgs, 'account'>>;
   invoice?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryInvoiceArgs, 'invoiceId'>>;
 }>;
 
@@ -2215,6 +2215,15 @@ export type RequestUpdateSafeResponseResolvers<ContextType = any, ParentType ext
 export type SafeAddressByOwnerResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['SafeAddressByOwnerResult'] = ResolversParentTypes['SafeAddressByOwnerResult']> = ResolversObject<{
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   safeAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SafeInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['SafeInfo'] = ResolversParentTypes['SafeInfo']> = ResolversObject<{
+  type?: Resolver<ResolversTypes['AccountType'], ParentType, ContextType>;
+  safeAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  lastUbiAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  tokenAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  randomValue?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2326,14 +2335,6 @@ export type TrustRelationResolvers<ContextType = any, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type UbiInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['UbiInfo'] = ResolversParentTypes['UbiInfo']> = ResolversObject<{
-  safeAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  lastUbiAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  tokenAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  randomValue?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export type UpdateSafeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpdateSafeResponse'] = ResolversParentTypes['UpdateSafeResponse']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2442,6 +2443,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   RemoveMemberResult?: RemoveMemberResultResolvers<ContextType>;
   RequestUpdateSafeResponse?: RequestUpdateSafeResponseResolvers<ContextType>;
   SafeAddressByOwnerResult?: SafeAddressByOwnerResultResolvers<ContextType>;
+  SafeInfo?: SafeInfoResolvers<ContextType>;
   SafeVerified?: SafeVerifiedResolvers<ContextType>;
   Sale?: SaleResolvers<ContextType>;
   SaleEvent?: SaleEventResolvers<ContextType>;
@@ -2456,7 +2458,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   TransitivePath?: TransitivePathResolvers<ContextType>;
   TransitiveTransfer?: TransitiveTransferResolvers<ContextType>;
   TrustRelation?: TrustRelationResolvers<ContextType>;
-  UbiInfo?: UbiInfoResolvers<ContextType>;
   UpdateSafeResponse?: UpdateSafeResponseResolvers<ContextType>;
   Verification?: VerificationResolvers<ContextType>;
   VerifySafeResult?: VerifySafeResultResolvers<ContextType>;

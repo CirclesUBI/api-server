@@ -1,10 +1,10 @@
 import {Context} from "../../context";
-import {Maybe, QueryUbiInfoArgs, UbiInfo} from "../../types";
+import {Maybe, QuerySafeInfoArgs, SafeInfo} from "../../types";
 import {Generate} from "../../generate";
 import {Environment} from "../../environment";
 
-export function ubiInfo() {
-    return async (parent:any, args:QueryUbiInfoArgs, context:Context) => {
+export function safeInfo() {
+    return async (parent:any, args:QuerySafeInfoArgs, context:Context) => {
         let safeAddress: Maybe<string>|undefined = args.safeAddress;
         if (!args.safeAddress) {
             const profile = await context.callerInfo;
@@ -31,8 +31,9 @@ export function ubiInfo() {
             return null;
         }
 
-        return <UbiInfo>{
-            __typename: "UbiInfo",
+        return <SafeInfo>{
+            __typename: "SafeInfo",
+            type: "Person",
             safeAddress: results.rows[0].user,
             lastUbiAt: results.rows[0].last_ubi,
             tokenAddress: results.rows[0].token,

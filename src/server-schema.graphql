@@ -955,10 +955,16 @@ input ProfileAggregateFilter {
   sales: SalesAggregateFilter
 }
 
-type UbiInfo {
-  safeAddress: String
+enum AccountType {
+  Person
+  Organisation
+}
+
+type SafeInfo {
+  type: AccountType!
+  safeAddress: String!
   lastUbiAt: String
-  tokenAddress: String
+  tokenAddress: String!
   randomValue: String
 }
 
@@ -981,7 +987,7 @@ type Query {
   claimedInvitation: ClaimedInvitation
   invitationTransaction: ProfileEvent
   hubSignupTransaction: ProfileEvent
-  ubiInfo(safeAddress: String): UbiInfo
+  safeInfo(safeAddress: String): SafeInfo
 
   verifications(
     pagination: PaginationArgs
@@ -1012,7 +1018,7 @@ type Query {
   profilesById(ids: [Int!]!): [Profile!]!
   profilesBySafeAddress(safeAddresses: [String!]!): [Profile!]!
 
-  findSafeAddressByOwner(owner: String!): [SafeAddressByOwnerResult!]!
+  findSafesByOwner(owner: String!): [SafeInfo!]!
 
   search(query: SearchInput!): [Profile!]!
 
@@ -1021,7 +1027,6 @@ type Query {
   tagById(id: Int!): Tag
 
   directPath(from: String!, to: String!, amount: String!): TransitivePath!
-  mostRecentUbiSafeOfAccount(account: String!): String
   invoice(invoiceId: Int!): String
 }
 

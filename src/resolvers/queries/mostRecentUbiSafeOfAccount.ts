@@ -1,7 +1,7 @@
 import {Context} from "../../context";
-import {QueryMostRecentUbiSafeOfAccountArgs} from "../../types";
+//import {QueryMostRecentUbiSafeOfAccountArgs} from "../../types";
 import {Environment} from "../../environment";
-
+/*
 export const mostRecentUbiSafeOfAccount = async (parent:any, args:QueryMostRecentUbiSafeOfAccountArgs, context:Context) => {
     const findSafeOfOwnerSql = `select "user"
                                   from crc_signup_2
@@ -28,4 +28,4 @@ export const mostRecentUbiSafeOfAccount = async (parent:any, args:QueryMostRecen
     }
 
     return activeSafeResult.rows[0].safe_address;
-  };
+  };*/

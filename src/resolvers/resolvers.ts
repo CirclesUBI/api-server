@@ -30,7 +30,7 @@ import { redeemClaimedInvitation } from "./mutations/redeemClaimedInvitation";
 import { invitationTransaction } from "./queries/invitationTransaction";
 import { verifySessionChallengeResolver } from "./mutations/verifySessionChallengeResolver";
 import { organisations } from "./queries/organisations";
-import { ubiInfo } from "./queries/ubiInfo";
+import { safeInfo } from "./queries/safeInfo";
 import { hubSignupTransactionResolver } from "./queries/hubSignupTransactionResolver";
 import { upsertOrganisation } from "./mutations/upsertOrganisation";
 import { myInvitations } from "./queries/myInvitations";
@@ -39,7 +39,7 @@ import { createTestInvitation } from "./mutations/createTestInvitation";
 import { addMemberResolver } from "./mutations/addMember";
 import { removeMemberResolver } from "./mutations/removeMember";
 import { regionsResolver } from "./queries/regions";
-import { findSafeAddressByOwnerResolver } from "./queries/findSafeAddressByOwner";
+import { findSafesByOwner } from "./queries/findSafesByOwner";
 import { purchaseResolver } from "./mutations/purchase";
 import { profileCityDataLoader } from "./data-loaders/profileCityDataLoader";
 import { profileMembershipsDataLoader } from "./data-loaders/profileMembershipsDataLoader";
@@ -49,7 +49,6 @@ import { profilesById } from "./queries/profilesById";
 import { aggregates } from "./queries/aggregates";
 import { events } from "./queries/events";
 import { directPath } from "./queries/directPath";
-import { mostRecentUbiSafeOfAccount } from "./queries/mostRecentUbiSafeOfAccount";
 import { invoice } from "./queries/invoice";
 import { offerCreatedByLoader } from "./data-loaders/offerCreatedByLoader";
 import { requestSessionChallenge } from "./mutations/requestSessionChallenge";
@@ -110,7 +109,7 @@ export const resolvers: Resolvers = {
     whoami: whoami,
     cities: cities,
     claimedInvitation: claimedInvitation,
-    findSafeAddressByOwner: findSafeAddressByOwnerResolver,
+    findSafesByOwner: findSafesByOwner,
     invitationTransaction: invitationTransaction(),
     hubSignupTransaction: hubSignupTransactionResolver,
     myProfile: myProfile(Environment.readWriteApiDb),
@@ -125,12 +124,11 @@ export const resolvers: Resolvers = {
     tagById: tagById(Environment.readonlyApiDb),
     trustRelations: trustRelations(Environment.readonlyApiDb),
     commonTrust: commonTrust(Environment.readonlyApiDb),
-    ubiInfo: ubiInfo(),
+    safeInfo: safeInfo(),
     profilesById: profilesById,
     aggregates: aggregates,
     events: events,
     directPath: directPath,
-    mostRecentUbiSafeOfAccount: mostRecentUbiSafeOfAccount,
     invoice: invoice,
     verifications: verifications,
   },
