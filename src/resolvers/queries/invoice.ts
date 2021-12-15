@@ -11,9 +11,13 @@ export const invoice = async (parent: any, args:QueryInvoiceArgs, context: Conte
     where: {
       id: args.invoiceId,
       OR: [{
-        customerProfileId: caller.profile.id
+        customerProfile: {
+          circlesAddress: caller.profile.circlesAddress
+        }
       }, {
-        sellerProfileId: caller.profile.id
+        sellerProfile: {
+          circlesAddress: caller.profile.circlesAddress
+        }
       }]
     },
     include: {
