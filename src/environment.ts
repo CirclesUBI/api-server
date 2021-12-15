@@ -180,7 +180,7 @@ export class Environment {
 
   private static _utilityDb: Pool = new Pool({
     connectionString: process.env.UTILITY_DB_CONNECTION_STRING,
-    ssl: !process.env.DEBUG,
+    //ssl: !process.env.DEBUG,
   }).on("error", (err) => {
     console.error("An idle client has experienced an error", err.stack);
   });
