@@ -325,7 +325,8 @@ export class BlockchainEventSource {
             in: addresses
           }
         },
-        paymentTransactionHash: null
+        paymentTransactionHash: null,
+        cancelledAt: null
       },
       include: {
         customerProfile: true,

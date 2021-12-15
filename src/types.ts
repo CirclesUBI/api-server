@@ -398,6 +398,9 @@ export type Invoice = {
   sellerSignature?: Maybe<Scalars['Boolean']>;
   sellerSignedDate?: Maybe<Scalars['String']>;
   paymentTransactionHash?: Maybe<Scalars['String']>;
+  cancelledAt?: Maybe<Scalars['String']>;
+  cancelReason?: Maybe<Scalars['String']>;
+  cancelledBy?: Maybe<Profile>;
 };
 
 export type InvoiceLine = {
@@ -1893,6 +1896,9 @@ export type InvoiceResolvers<ContextType = any, ParentType extends ResolversPare
   sellerSignature?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   sellerSignedDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   paymentTransactionHash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  cancelledAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  cancelReason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  cancelledBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

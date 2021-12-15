@@ -316,6 +316,10 @@ type Invoice {
   sellerSignedDate: String
 
   paymentTransactionHash: String
+
+  cancelledAt: String
+  cancelReason: String
+  cancelledBy: Profile
 }
 
 type InvoiceLine {

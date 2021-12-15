@@ -18,6 +18,7 @@ export const completePurchase = async (parent:any, args:MutationCompletePurchase
     include: {
       sellerProfile: true,
       customerProfile: true,
+      cancelledBy: true,
       lines: {
         include: {
           product: {
@@ -56,6 +57,9 @@ export const completePurchase = async (parent:any, args:MutationCompletePurchase
     sellerProfile: ProfileLoader.withDisplayCurrency(invoice.sellerProfile),
     buyerSignedDate: invoice.buyerSignedDate?.toJSON(),
     sellerSignedDate: invoice.sellerSignedDate?.toJSON(),
+    cancelledAt: invoice.cancelledAt?.toJSON(),
+    cancelledBy: ProfileLoader.withDisplayCurrency(invoice.cancelledBy),
+    cancelReason: invoice.cancelReason,
     lines: invoice.lines.map(l => {
       return {
         ...l,

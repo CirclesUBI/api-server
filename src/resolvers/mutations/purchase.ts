@@ -32,7 +32,7 @@ export async function purchaseResolver(parent: any, args: MutationPurchaseArgs, 
   // If there are pending payments for this user then
   // don't allow to create a new purchase until the previous
   // one is paid.
-  const openInvoices = await Environment.readWriteApiDb.purchase.findMany({
+  const purchasesWithUnPaidInvoices = await Environment.readWriteApiDb.purchase.findMany({
     where: {
       createdBy: {
         circlesAddress: callerInfo.profile.circlesAddress
@@ -42,12 +42,37 @@ export async function purchaseResolver(parent: any, args: MutationPurchaseArgs, 
           paymentTransactionHash: null
         }
       }
+    },
+    include: {
+      invoices: true
     }
   });
 
-  if (openInvoices.length > 0)
+  if (purchasesWithUnPaidInvoices.length > 0)
   {
-    throw new Error(`You cannot make another purchase until your last purchase is processed.`)
+    // Cancel all purchases that aren't payed 60 sec. after they've been created
+    const now = Date.now();
+    const lastMinute = now - 60000;
+    const toCancel = purchasesWithUnPaidInvoices.filter(o => o.createdAt.getTime() <= lastMinute);
+
+    if (toCancel.length > 0) {
+      await Environment.readWriteApiDb.invoice.updateMany({
+        where: {
+          id: {
+            in: toCancel.flatMap(o => o.invoices).map(o => o.id)
+          }
+        },
+        data: {
+          cancelledAt: new Date(now),
+          cancelReason: `No payment within 60 sec.`
+        }
+      });
+    }
+
+    if (toCancel.length < purchasesWithUnPaidInvoices.length) {
+      // There is still at least one purchase that could be paid.
+      throw new Error(`You cannot make another purchase until your last purchase is processed.`)
+    }
   }
 
   const purchasedOffers = await lookupOffers(args);
