@@ -79,6 +79,7 @@ export const directPath = async (parent:any, args:QueryDirectPathArgs, context:C
                    select user_token as token
                    from crc_current_trust_2
                    where can_send_to = $2
+                     and "limit" > 0
                ),
                intersection as (
                    select *
