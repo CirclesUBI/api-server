@@ -147,6 +147,7 @@ model Profile {
 
     payableInvoices Invoice[]  @relation(name: "Invoice_CustomerProfile")
     receivableInvoices Invoice[]  @relation(name: "Invoice_SellerProfile")
+    cancelledInvoices Invoice[] @relation(name: "Invoice_CancelledByProfile")
 
     invoiceNoPrefix String?
     lastInvoiceNo Int? // Is used in organisations only and represents the current value of the invoice number series.
@@ -285,6 +286,11 @@ model Invoice {
 
     sellerSignature Boolean?
     sellerSignedDate DateTime?
+
+    cancelledAt DateTime?
+    cancelledBy Profile? @relation(name: "Invoice_CancelledByProfile", fields: [cancelledByProfileId], references: [id])
+    cancelledByProfileId Int?
+    cancelReason String?
 }
 
 model InvoiceLine {

@@ -229,6 +229,9 @@ export type Invoice = {
   buyerSignedDate: Date | null
   sellerSignature: boolean | null
   sellerSignedDate: Date | null
+  cancelledAt: Date | null
+  cancelledByProfileId: number | null
+  cancelReason: string | null
 }
 
 /**
@@ -5461,6 +5464,7 @@ export namespace Prisma {
     createdMemberships?: boolean | MembershipFindManyArgs
     payableInvoices?: boolean | InvoiceFindManyArgs
     receivableInvoices?: boolean | InvoiceFindManyArgs
+    cancelledInvoices?: boolean | InvoiceFindManyArgs
     invoiceNoPrefix?: boolean
     lastInvoiceNo?: boolean
     refundNoPrefix?: boolean
@@ -5484,6 +5488,7 @@ export namespace Prisma {
     createdMemberships?: boolean | MembershipFindManyArgs
     payableInvoices?: boolean | InvoiceFindManyArgs
     receivableInvoices?: boolean | InvoiceFindManyArgs
+    cancelledInvoices?: boolean | InvoiceFindManyArgs
     safesVerifiedByPerson?: boolean | VerifiedSafeFindManyArgs
     safesVerifiedByOrganisation?: boolean | VerifiedSafeFindManyArgs
     safesRevokedByPerson?: boolean | VerifiedSafeFindManyArgs
@@ -5524,6 +5529,8 @@ export namespace Prisma {
         ? Array < InvoiceGetPayload<S['include'][P]>>  :
         P extends 'receivableInvoices'
         ? Array < InvoiceGetPayload<S['include'][P]>>  :
+        P extends 'cancelledInvoices'
+        ? Array < InvoiceGetPayload<S['include'][P]>>  :
         P extends 'safesVerifiedByPerson'
         ? Array < VerifiedSafeGetPayload<S['include'][P]>>  :
         P extends 'safesVerifiedByOrganisation'
@@ -5558,6 +5565,8 @@ export namespace Prisma {
         P extends 'payableInvoices'
         ? Array < InvoiceGetPayload<S['select'][P]>>  :
         P extends 'receivableInvoices'
+        ? Array < InvoiceGetPayload<S['select'][P]>>  :
+        P extends 'cancelledInvoices'
         ? Array < InvoiceGetPayload<S['select'][P]>>  :
         P extends 'safesVerifiedByPerson'
         ? Array < VerifiedSafeGetPayload<S['select'][P]>>  :
@@ -5927,6 +5936,8 @@ export namespace Prisma {
     payableInvoices<T extends InvoiceFindManyArgs = {}>(args?: Subset<T, InvoiceFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Invoice>>, PrismaPromise<Array<InvoiceGetPayload<T>>>>;
 
     receivableInvoices<T extends InvoiceFindManyArgs = {}>(args?: Subset<T, InvoiceFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Invoice>>, PrismaPromise<Array<InvoiceGetPayload<T>>>>;
+
+    cancelledInvoices<T extends InvoiceFindManyArgs = {}>(args?: Subset<T, InvoiceFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Invoice>>, PrismaPromise<Array<InvoiceGetPayload<T>>>>;
 
     safesVerifiedByPerson<T extends VerifiedSafeFindManyArgs = {}>(args?: Subset<T, VerifiedSafeFindManyArgs>): CheckSelect<T, PrismaPromise<Array<VerifiedSafe>>, PrismaPromise<Array<VerifiedSafeGetPayload<T>>>>;
 
@@ -12669,6 +12680,7 @@ export namespace Prisma {
     customerProfileId: number | null
     sellerProfileId: number | null
     purchaseId: number | null
+    cancelledByProfileId: number | null
   }
 
   export type InvoiceSumAggregateOutputType = {
@@ -12676,6 +12688,7 @@ export namespace Prisma {
     customerProfileId: number | null
     sellerProfileId: number | null
     purchaseId: number | null
+    cancelledByProfileId: number | null
   }
 
   export type InvoiceMinAggregateOutputType = {
@@ -12691,6 +12704,9 @@ export namespace Prisma {
     buyerSignedDate: Date | null
     sellerSignature: boolean | null
     sellerSignedDate: Date | null
+    cancelledAt: Date | null
+    cancelledByProfileId: number | null
+    cancelReason: string | null
   }
 
   export type InvoiceMaxAggregateOutputType = {
@@ -12706,6 +12722,9 @@ export namespace Prisma {
     buyerSignedDate: Date | null
     sellerSignature: boolean | null
     sellerSignedDate: Date | null
+    cancelledAt: Date | null
+    cancelledByProfileId: number | null
+    cancelReason: string | null
   }
 
   export type InvoiceCountAggregateOutputType = {
@@ -12721,6 +12740,9 @@ export namespace Prisma {
     buyerSignedDate: number
     sellerSignature: number
     sellerSignedDate: number
+    cancelledAt: number
+    cancelledByProfileId: number
+    cancelReason: number
     _all: number
   }
 
@@ -12730,6 +12752,7 @@ export namespace Prisma {
     customerProfileId?: true
     sellerProfileId?: true
     purchaseId?: true
+    cancelledByProfileId?: true
   }
 
   export type InvoiceSumAggregateInputType = {
@@ -12737,6 +12760,7 @@ export namespace Prisma {
     customerProfileId?: true
     sellerProfileId?: true
     purchaseId?: true
+    cancelledByProfileId?: true
   }
 
   export type InvoiceMinAggregateInputType = {
@@ -12752,6 +12776,9 @@ export namespace Prisma {
     buyerSignedDate?: true
     sellerSignature?: true
     sellerSignedDate?: true
+    cancelledAt?: true
+    cancelledByProfileId?: true
+    cancelReason?: true
   }
 
   export type InvoiceMaxAggregateInputType = {
@@ -12767,6 +12794,9 @@ export namespace Prisma {
     buyerSignedDate?: true
     sellerSignature?: true
     sellerSignedDate?: true
+    cancelledAt?: true
+    cancelledByProfileId?: true
+    cancelReason?: true
   }
 
   export type InvoiceCountAggregateInputType = {
@@ -12782,6 +12812,9 @@ export namespace Prisma {
     buyerSignedDate?: true
     sellerSignature?: true
     sellerSignedDate?: true
+    cancelledAt?: true
+    cancelledByProfileId?: true
+    cancelReason?: true
     _all?: true
   }
 
@@ -12910,6 +12943,9 @@ export namespace Prisma {
     buyerSignedDate: Date | null
     sellerSignature: boolean | null
     sellerSignedDate: Date | null
+    cancelledAt: Date | null
+    cancelledByProfileId: number | null
+    cancelReason: string | null
     _count: InvoiceCountAggregateOutputType | null
     _avg: InvoiceAvgAggregateOutputType | null
     _sum: InvoiceSumAggregateOutputType | null
@@ -12949,6 +12985,10 @@ export namespace Prisma {
     buyerSignedDate?: boolean
     sellerSignature?: boolean
     sellerSignedDate?: boolean
+    cancelledAt?: boolean
+    cancelledBy?: boolean | ProfileArgs
+    cancelledByProfileId?: boolean
+    cancelReason?: boolean
   }
 
   export type InvoiceInclude = {
@@ -12957,6 +12997,7 @@ export namespace Prisma {
     purchase?: boolean | PurchaseArgs
     lines?: boolean | InvoiceLineFindManyArgs
     paymentTransaction?: boolean | TransactionArgs
+    cancelledBy?: boolean | ProfileArgs
   }
 
   export type InvoiceGetPayload<
@@ -12979,7 +13020,9 @@ export namespace Prisma {
         P extends 'lines'
         ? Array < InvoiceLineGetPayload<S['include'][P]>>  :
         P extends 'paymentTransaction'
-        ? TransactionGetPayload<S['include'][P]> | null : never
+        ? TransactionGetPayload<S['include'][P]> | null :
+        P extends 'cancelledBy'
+        ? ProfileGetPayload<S['include'][P]> | null : never
   } 
     : 'select' extends U
     ? {
@@ -12994,7 +13037,9 @@ export namespace Prisma {
         P extends 'lines'
         ? Array < InvoiceLineGetPayload<S['select'][P]>>  :
         P extends 'paymentTransaction'
-        ? TransactionGetPayload<S['select'][P]> | null : never
+        ? TransactionGetPayload<S['select'][P]> | null :
+        P extends 'cancelledBy'
+        ? ProfileGetPayload<S['select'][P]> | null : never
   } 
     : Invoice
   : Invoice
@@ -13343,6 +13388,8 @@ export namespace Prisma {
     lines<T extends InvoiceLineFindManyArgs = {}>(args?: Subset<T, InvoiceLineFindManyArgs>): CheckSelect<T, PrismaPromise<Array<InvoiceLine>>, PrismaPromise<Array<InvoiceLineGetPayload<T>>>>;
 
     paymentTransaction<T extends TransactionArgs = {}>(args?: Subset<T, TransactionArgs>): CheckSelect<T, Prisma__TransactionClient<Transaction | null >, Prisma__TransactionClient<TransactionGetPayload<T> | null >>;
+
+    cancelledBy<T extends ProfileArgs = {}>(args?: Subset<T, ProfileArgs>): CheckSelect<T, Prisma__ProfileClient<Profile | null >, Prisma__ProfileClient<ProfileGetPayload<T> | null >>;
 
     private get _document();
     /**
@@ -17463,7 +17510,10 @@ export namespace Prisma {
     buyerSignature: 'buyerSignature',
     buyerSignedDate: 'buyerSignedDate',
     sellerSignature: 'sellerSignature',
-    sellerSignedDate: 'sellerSignedDate'
+    sellerSignedDate: 'sellerSignedDate',
+    cancelledAt: 'cancelledAt',
+    cancelledByProfileId: 'cancelledByProfileId',
+    cancelReason: 'cancelReason'
   };
 
   export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
@@ -17786,6 +17836,7 @@ export namespace Prisma {
     createdMemberships?: MembershipListRelationFilter
     payableInvoices?: InvoiceListRelationFilter
     receivableInvoices?: InvoiceListRelationFilter
+    cancelledInvoices?: InvoiceListRelationFilter
     invoiceNoPrefix?: StringNullableFilter | string | null
     lastInvoiceNo?: IntNullableFilter | number | null
     refundNoPrefix?: StringNullableFilter | string | null
@@ -18165,6 +18216,10 @@ export namespace Prisma {
     buyerSignedDate?: DateTimeNullableFilter | Date | string | null
     sellerSignature?: BoolNullableFilter | boolean | null
     sellerSignedDate?: DateTimeNullableFilter | Date | string | null
+    cancelledAt?: DateTimeNullableFilter | Date | string | null
+    cancelledBy?: XOR<ProfileRelationFilter, ProfileWhereInput> | null
+    cancelledByProfileId?: IntNullableFilter | number | null
+    cancelReason?: StringNullableFilter | string | null
   }
 
   export type InvoiceOrderByInput = {
@@ -18180,6 +18235,9 @@ export namespace Prisma {
     buyerSignedDate?: SortOrder
     sellerSignature?: SortOrder
     sellerSignedDate?: SortOrder
+    cancelledAt?: SortOrder
+    cancelledByProfileId?: SortOrder
+    cancelReason?: SortOrder
   }
 
   export type InvoiceWhereUniqueInput = {
@@ -18202,6 +18260,9 @@ export namespace Prisma {
     buyerSignedDate?: DateTimeNullableWithAggregatesFilter | Date | string | null
     sellerSignature?: BoolNullableWithAggregatesFilter | boolean | null
     sellerSignedDate?: DateTimeNullableWithAggregatesFilter | Date | string | null
+    cancelledAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
+    cancelledByProfileId?: IntNullableWithAggregatesFilter | number | null
+    cancelReason?: StringNullableWithAggregatesFilter | string | null
   }
 
   export type InvoiceLineWhereInput = {
@@ -18750,6 +18811,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -18794,6 +18856,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -18837,6 +18900,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -18881,6 +18945,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -19445,11 +19510,14 @@ export namespace Prisma {
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelReason?: string | null
     customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
     sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
     purchase: PurchaseCreateNestedOneWithoutInvoicesInput
     lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
     paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
+    cancelledBy?: ProfileCreateNestedOneWithoutCancelledInvoicesInput
   }
 
   export type InvoiceUncheckedCreateInput = {
@@ -19465,6 +19533,9 @@ export namespace Prisma {
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelledByProfileId?: number | null
+    cancelReason?: string | null
     lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
@@ -19476,11 +19547,14 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
     sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
     purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
     lines?: InvoiceLineUpdateManyWithoutInvoiceInput
     paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
+    cancelledBy?: ProfileUpdateOneWithoutCancelledInvoicesInput
   }
 
   export type InvoiceUncheckedUpdateInput = {
@@ -19496,6 +19570,9 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
@@ -19512,6 +19589,9 @@ export namespace Prisma {
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelledByProfileId?: number | null
+    cancelReason?: string | null
   }
 
   export type InvoiceUpdateManyMutationInput = {
@@ -19522,6 +19602,8 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type InvoiceUncheckedUpdateManyInput = {
@@ -19537,6 +19619,9 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type InvoiceLineCreateInput = {
@@ -20498,6 +20583,13 @@ export namespace Prisma {
     connect?: Enumerable<InvoiceWhereUniqueInput>
   }
 
+  export type InvoiceCreateNestedManyWithoutCancelledByInput = {
+    create?: XOR<Enumerable<InvoiceCreateWithoutCancelledByInput>, Enumerable<InvoiceUncheckedCreateWithoutCancelledByInput>>
+    connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutCancelledByInput>
+    createMany?: InvoiceCreateManyCancelledByInputEnvelope
+    connect?: Enumerable<InvoiceWhereUniqueInput>
+  }
+
   export type VerifiedSafeCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<Enumerable<VerifiedSafeCreateWithoutCreatedByInput>, Enumerable<VerifiedSafeUncheckedCreateWithoutCreatedByInput>>
     connectOrCreate?: Enumerable<VerifiedSafeCreateOrConnectWithoutCreatedByInput>
@@ -20599,6 +20691,13 @@ export namespace Prisma {
     create?: XOR<Enumerable<InvoiceCreateWithoutSellerProfileInput>, Enumerable<InvoiceUncheckedCreateWithoutSellerProfileInput>>
     connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutSellerProfileInput>
     createMany?: InvoiceCreateManySellerProfileInputEnvelope
+    connect?: Enumerable<InvoiceWhereUniqueInput>
+  }
+
+  export type InvoiceUncheckedCreateNestedManyWithoutCancelledByInput = {
+    create?: XOR<Enumerable<InvoiceCreateWithoutCancelledByInput>, Enumerable<InvoiceUncheckedCreateWithoutCancelledByInput>>
+    connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutCancelledByInput>
+    createMany?: InvoiceCreateManyCancelledByInputEnvelope
     connect?: Enumerable<InvoiceWhereUniqueInput>
   }
 
@@ -20792,6 +20891,20 @@ export namespace Prisma {
     delete?: Enumerable<InvoiceWhereUniqueInput>
     update?: Enumerable<InvoiceUpdateWithWhereUniqueWithoutSellerProfileInput>
     updateMany?: Enumerable<InvoiceUpdateManyWithWhereWithoutSellerProfileInput>
+    deleteMany?: Enumerable<InvoiceScalarWhereInput>
+  }
+
+  export type InvoiceUpdateManyWithoutCancelledByInput = {
+    create?: XOR<Enumerable<InvoiceCreateWithoutCancelledByInput>, Enumerable<InvoiceUncheckedCreateWithoutCancelledByInput>>
+    connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutCancelledByInput>
+    upsert?: Enumerable<InvoiceUpsertWithWhereUniqueWithoutCancelledByInput>
+    createMany?: InvoiceCreateManyCancelledByInputEnvelope
+    connect?: Enumerable<InvoiceWhereUniqueInput>
+    set?: Enumerable<InvoiceWhereUniqueInput>
+    disconnect?: Enumerable<InvoiceWhereUniqueInput>
+    delete?: Enumerable<InvoiceWhereUniqueInput>
+    update?: Enumerable<InvoiceUpdateWithWhereUniqueWithoutCancelledByInput>
+    updateMany?: Enumerable<InvoiceUpdateManyWithWhereWithoutCancelledByInput>
     deleteMany?: Enumerable<InvoiceScalarWhereInput>
   }
 
@@ -20998,6 +21111,20 @@ export namespace Prisma {
     delete?: Enumerable<InvoiceWhereUniqueInput>
     update?: Enumerable<InvoiceUpdateWithWhereUniqueWithoutSellerProfileInput>
     updateMany?: Enumerable<InvoiceUpdateManyWithWhereWithoutSellerProfileInput>
+    deleteMany?: Enumerable<InvoiceScalarWhereInput>
+  }
+
+  export type InvoiceUncheckedUpdateManyWithoutCancelledByInput = {
+    create?: XOR<Enumerable<InvoiceCreateWithoutCancelledByInput>, Enumerable<InvoiceUncheckedCreateWithoutCancelledByInput>>
+    connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutCancelledByInput>
+    upsert?: Enumerable<InvoiceUpsertWithWhereUniqueWithoutCancelledByInput>
+    createMany?: InvoiceCreateManyCancelledByInputEnvelope
+    connect?: Enumerable<InvoiceWhereUniqueInput>
+    set?: Enumerable<InvoiceWhereUniqueInput>
+    disconnect?: Enumerable<InvoiceWhereUniqueInput>
+    delete?: Enumerable<InvoiceWhereUniqueInput>
+    update?: Enumerable<InvoiceUpdateWithWhereUniqueWithoutCancelledByInput>
+    updateMany?: Enumerable<InvoiceUpdateManyWithWhereWithoutCancelledByInput>
     deleteMany?: Enumerable<InvoiceScalarWhereInput>
   }
 
@@ -21368,6 +21495,12 @@ export namespace Prisma {
     connect?: TransactionWhereUniqueInput
   }
 
+  export type ProfileCreateNestedOneWithoutCancelledInvoicesInput = {
+    create?: XOR<ProfileCreateWithoutCancelledInvoicesInput, ProfileUncheckedCreateWithoutCancelledInvoicesInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutCancelledInvoicesInput
+    connect?: ProfileWhereUniqueInput
+  }
+
   export type InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput = {
     create?: XOR<Enumerable<InvoiceLineCreateWithoutInvoiceInput>, Enumerable<InvoiceLineUncheckedCreateWithoutInvoiceInput>>
     connectOrCreate?: Enumerable<InvoiceLineCreateOrConnectWithoutInvoiceInput>
@@ -21421,6 +21554,16 @@ export namespace Prisma {
     disconnect?: boolean
     delete?: boolean
     update?: XOR<TransactionUpdateWithoutPayedInvoiceInput, TransactionUncheckedUpdateWithoutPayedInvoiceInput>
+  }
+
+  export type ProfileUpdateOneWithoutCancelledInvoicesInput = {
+    create?: XOR<ProfileCreateWithoutCancelledInvoicesInput, ProfileUncheckedCreateWithoutCancelledInvoicesInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutCancelledInvoicesInput
+    upsert?: ProfileUpsertWithoutCancelledInvoicesInput
+    connect?: ProfileWhereUniqueInput
+    disconnect?: boolean
+    delete?: boolean
+    update?: XOR<ProfileUpdateWithoutCancelledInvoicesInput, ProfileUncheckedUpdateWithoutCancelledInvoicesInput>
   }
 
   export type InvoiceLineUncheckedUpdateManyWithoutInvoiceInput = {
@@ -22164,6 +22307,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -22207,6 +22351,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -22259,6 +22404,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -22302,6 +22448,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -22344,6 +22491,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -22387,6 +22535,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -22434,6 +22583,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -22477,6 +22627,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -22524,6 +22675,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -22567,6 +22719,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -22619,6 +22772,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -22662,6 +22816,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -22709,6 +22864,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -22752,6 +22908,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -22799,6 +22956,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -22842,6 +23000,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -22884,6 +23043,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -22927,6 +23087,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -22979,6 +23140,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -23022,6 +23184,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -23065,6 +23228,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
   }
@@ -23108,6 +23272,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
   }
@@ -23155,6 +23320,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
   }
@@ -23198,6 +23364,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
   }
@@ -23245,6 +23412,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
   }
@@ -23288,6 +23456,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
   }
@@ -23403,6 +23572,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
   }
@@ -23446,6 +23616,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
   }
@@ -23493,6 +23664,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
   }
@@ -23536,6 +23708,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
   }
@@ -23583,6 +23756,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
   }
@@ -23626,6 +23800,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
   }
@@ -24028,10 +24203,13 @@ export namespace Prisma {
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelReason?: string | null
     sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
     purchase: PurchaseCreateNestedOneWithoutInvoicesInput
     lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
     paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
+    cancelledBy?: ProfileCreateNestedOneWithoutCancelledInvoicesInput
   }
 
   export type InvoiceUncheckedCreateWithoutCustomerProfileInput = {
@@ -24046,6 +24224,9 @@ export namespace Prisma {
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelledByProfileId?: number | null
+    cancelReason?: string | null
     lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
@@ -24067,10 +24248,13 @@ export namespace Prisma {
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelReason?: string | null
     customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
     purchase: PurchaseCreateNestedOneWithoutInvoicesInput
     lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
     paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
+    cancelledBy?: ProfileCreateNestedOneWithoutCancelledInvoicesInput
   }
 
   export type InvoiceUncheckedCreateWithoutSellerProfileInput = {
@@ -24085,6 +24269,9 @@ export namespace Prisma {
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelledByProfileId?: number | null
+    cancelReason?: string | null
     lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
@@ -24095,6 +24282,51 @@ export namespace Prisma {
 
   export type InvoiceCreateManySellerProfileInputEnvelope = {
     data: Enumerable<InvoiceCreateManySellerProfileInput>
+    skipDuplicates?: boolean
+  }
+
+  export type InvoiceCreateWithoutCancelledByInput = {
+    createdAt: Date | string
+    invoiceNo: string
+    pickupCode?: string | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelReason?: string | null
+    customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
+    sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
+    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
+    lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
+    paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
+  }
+
+  export type InvoiceUncheckedCreateWithoutCancelledByInput = {
+    id?: number
+    createdAt: Date | string
+    invoiceNo: string
+    customerProfileId: number
+    sellerProfileId: number
+    purchaseId: number
+    paymentTransactionHash?: string | null
+    pickupCode?: string | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelReason?: string | null
+    lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
+  }
+
+  export type InvoiceCreateOrConnectWithoutCancelledByInput = {
+    where: InvoiceWhereUniqueInput
+    create: XOR<InvoiceCreateWithoutCancelledByInput, InvoiceUncheckedCreateWithoutCancelledByInput>
+  }
+
+  export type InvoiceCreateManyCancelledByInputEnvelope = {
+    data: Enumerable<InvoiceCreateManyCancelledByInput>
     skipDuplicates?: boolean
   }
 
@@ -24503,6 +24735,9 @@ export namespace Prisma {
     buyerSignedDate?: DateTimeNullableFilter | Date | string | null
     sellerSignature?: BoolNullableFilter | boolean | null
     sellerSignedDate?: DateTimeNullableFilter | Date | string | null
+    cancelledAt?: DateTimeNullableFilter | Date | string | null
+    cancelledByProfileId?: IntNullableFilter | number | null
+    cancelReason?: StringNullableFilter | string | null
   }
 
   export type InvoiceUpsertWithWhereUniqueWithoutSellerProfileInput = {
@@ -24519,6 +24754,22 @@ export namespace Prisma {
   export type InvoiceUpdateManyWithWhereWithoutSellerProfileInput = {
     where: InvoiceScalarWhereInput
     data: XOR<InvoiceUpdateManyMutationInput, InvoiceUncheckedUpdateManyWithoutReceivableInvoicesInput>
+  }
+
+  export type InvoiceUpsertWithWhereUniqueWithoutCancelledByInput = {
+    where: InvoiceWhereUniqueInput
+    update: XOR<InvoiceUpdateWithoutCancelledByInput, InvoiceUncheckedUpdateWithoutCancelledByInput>
+    create: XOR<InvoiceCreateWithoutCancelledByInput, InvoiceUncheckedCreateWithoutCancelledByInput>
+  }
+
+  export type InvoiceUpdateWithWhereUniqueWithoutCancelledByInput = {
+    where: InvoiceWhereUniqueInput
+    data: XOR<InvoiceUpdateWithoutCancelledByInput, InvoiceUncheckedUpdateWithoutCancelledByInput>
+  }
+
+  export type InvoiceUpdateManyWithWhereWithoutCancelledByInput = {
+    where: InvoiceScalarWhereInput
+    data: XOR<InvoiceUpdateManyMutationInput, InvoiceUncheckedUpdateManyWithoutCancelledInvoicesInput>
   }
 
   export type VerifiedSafeUpsertWithWhereUniqueWithoutCreatedByInput = {
@@ -24625,6 +24876,7 @@ export namespace Prisma {
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -24668,6 +24920,7 @@ export namespace Prisma {
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -24715,6 +24968,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -24758,6 +25012,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -24810,6 +25065,7 @@ export namespace Prisma {
     members?: MembershipUpdateManyWithoutMemberAtInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -24853,6 +25109,7 @@ export namespace Prisma {
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -24900,6 +25157,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -24943,6 +25201,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -25030,6 +25289,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -25073,6 +25333,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -25167,6 +25428,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -25210,6 +25472,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -25306,6 +25569,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -25349,6 +25613,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -25389,10 +25654,13 @@ export namespace Prisma {
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelReason?: string | null
     customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
     sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
     lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
     paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
+    cancelledBy?: ProfileCreateNestedOneWithoutCancelledInvoicesInput
   }
 
   export type InvoiceUncheckedCreateWithoutPurchaseInput = {
@@ -25407,6 +25675,9 @@ export namespace Prisma {
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelledByProfileId?: number | null
+    cancelReason?: string | null
     lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
@@ -25462,6 +25733,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -25505,6 +25777,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -25681,6 +25954,7 @@ export namespace Prisma {
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -25724,6 +25998,7 @@ export namespace Prisma {
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -25771,6 +26046,7 @@ export namespace Prisma {
     members?: MembershipCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
+    cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -25814,6 +26090,7 @@ export namespace Prisma {
     members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
+    cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -25885,6 +26162,98 @@ export namespace Prisma {
     create: XOR<TransactionCreateWithoutPayedInvoiceInput, TransactionUncheckedCreateWithoutPayedInvoiceInput>
   }
 
+  export type ProfileCreateWithoutCancelledInvoicesInput = {
+    lastUpdateAt?: Date | string
+    emailAddress?: string | null
+    status?: string | null
+    type?: ProfileType | null
+    circlesAddress?: string | null
+    circlesSafeOwner?: string | null
+    circlesTokenAddress?: string | null
+    firstName: string
+    lastName?: string | null
+    avatarUrl?: string | null
+    avatarCid?: string | null
+    avatarMimeType?: string | null
+    dream?: string | null
+    country?: string | null
+    newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
+    cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
+    verifySafeChallenge?: string | null
+    newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
+    sessions?: SessionCreateNestedManyWithoutProfileInput
+    tags?: TagCreateNestedManyWithoutCreatedByInput
+    offers?: OfferCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
+    invitations?: InvitationCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOACreateNestedOneWithoutProfileInput
+    redeemedInvitations?: InvitationCreateNestedManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationCreateNestedManyWithoutClaimedByInput
+    members?: MembershipCreateNestedManyWithoutMemberAtInput
+    createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
+    payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
+    receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
+    safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
+    safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
+  }
+
+  export type ProfileUncheckedCreateWithoutCancelledInvoicesInput = {
+    id?: number
+    lastUpdateAt?: Date | string
+    emailAddress?: string | null
+    status?: string | null
+    type?: ProfileType | null
+    circlesAddress?: string | null
+    circlesSafeOwner?: string | null
+    circlesTokenAddress?: string | null
+    firstName: string
+    lastName?: string | null
+    avatarUrl?: string | null
+    avatarCid?: string | null
+    avatarMimeType?: string | null
+    dream?: string | null
+    country?: string | null
+    newsletter?: boolean | null
+    displayTimeCircles?: boolean | null
+    cityGeonameid?: number | null
+    lastAcknowledged?: Date | string | null
+    verifySafeChallenge?: string | null
+    newSafeAddress?: string | null
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
+    sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
+    tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
+    offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
+    invitations?: InvitationUncheckedCreateNestedManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedCreateNestedOneWithoutProfileInput
+    redeemedInvitations?: InvitationUncheckedCreateNestedManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationUncheckedCreateNestedManyWithoutClaimedByInput
+    members?: MembershipUncheckedCreateNestedManyWithoutMemberAtInput
+    createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
+    payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
+    receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
+    safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
+    safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
+  }
+
+  export type ProfileCreateOrConnectWithoutCancelledInvoicesInput = {
+    where: ProfileWhereUniqueInput
+    create: XOR<ProfileCreateWithoutCancelledInvoicesInput, ProfileUncheckedCreateWithoutCancelledInvoicesInput>
+  }
+
   export type ProfileUpsertWithoutPayableInvoicesInput = {
     update: XOR<ProfileUpdateWithoutPayableInvoicesInput, ProfileUncheckedUpdateWithoutPayableInvoicesInput>
     create: XOR<ProfileCreateWithoutPayableInvoicesInput, ProfileUncheckedCreateWithoutPayableInvoicesInput>
@@ -25927,6 +26296,7 @@ export namespace Prisma {
     members?: MembershipUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -25970,6 +26340,7 @@ export namespace Prisma {
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -26017,6 +26388,7 @@ export namespace Prisma {
     members?: MembershipUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
+    cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -26060,6 +26432,7 @@ export namespace Prisma {
     members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
+    cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -26120,6 +26493,98 @@ export namespace Prisma {
     SwapFunding_VerifiedSafe?: VerifiedSafeUncheckedUpdateOneWithoutSwapFundingTransactionInput
   }
 
+  export type ProfileUpsertWithoutCancelledInvoicesInput = {
+    update: XOR<ProfileUpdateWithoutCancelledInvoicesInput, ProfileUncheckedUpdateWithoutCancelledInvoicesInput>
+    create: XOR<ProfileCreateWithoutCancelledInvoicesInput, ProfileUncheckedCreateWithoutCancelledInvoicesInput>
+  }
+
+  export type ProfileUpdateWithoutCancelledInvoicesInput = {
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    dream?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
+    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
+    sessions?: SessionUpdateManyWithoutProfileInput
+    tags?: TagUpdateManyWithoutCreatedByInput
+    offers?: OfferUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUpdateManyWithoutCreatedByInput
+    invitations?: InvitationUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUpdateOneWithoutProfileInput
+    redeemedInvitations?: InvitationUpdateManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationUpdateManyWithoutClaimedByInput
+    members?: MembershipUpdateManyWithoutMemberAtInput
+    createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
+    payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
+    receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
+    safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
+    safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
+  }
+
+  export type ProfileUncheckedUpdateWithoutCancelledInvoicesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
+    circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarCid?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    dream?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    newsletter?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    displayTimeCircles?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    cityGeonameid?: NullableIntFieldUpdateOperationsInput | number | null
+    lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
+    newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
+    sessions?: SessionUncheckedUpdateManyWithoutProfileInput
+    tags?: TagUncheckedUpdateManyWithoutCreatedByInput
+    offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
+    purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
+    invitations?: InvitationUncheckedUpdateManyWithoutCreatedByInput
+    invitationFunds?: InvitationFundsEOAUncheckedUpdateOneWithoutProfileInput
+    redeemedInvitations?: InvitationUncheckedUpdateManyWithoutRedeemedByInput
+    claimedInvitations?: InvitationUncheckedUpdateManyWithoutClaimedByInput
+    members?: MembershipUncheckedUpdateManyWithoutMemberAtInput
+    createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
+    payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
+    receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
+    safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
+    safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
+  }
+
   export type InvoiceCreateWithoutLinesInput = {
     createdAt: Date | string
     invoiceNo: string
@@ -26128,10 +26593,13 @@ export namespace Prisma {
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelReason?: string | null
     customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
     sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
     purchase: PurchaseCreateNestedOneWithoutInvoicesInput
     paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
+    cancelledBy?: ProfileCreateNestedOneWithoutCancelledInvoicesInput
   }
 
   export type InvoiceUncheckedCreateWithoutLinesInput = {
@@ -26147,6 +26615,9 @@ export namespace Prisma {
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelledByProfileId?: number | null
+    cancelReason?: string | null
   }
 
   export type InvoiceCreateOrConnectWithoutLinesInput = {
@@ -26200,10 +26671,13 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
     sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
     purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
     paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
+    cancelledBy?: ProfileUpdateOneWithoutCancelledInvoicesInput
   }
 
   export type InvoiceUncheckedUpdateWithoutLinesInput = {
@@ -26219,6 +26693,9 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type OfferUpsertWithoutInvoiceLinesInput = {
@@ -26336,10 +26813,13 @@ export namespace Prisma {
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelReason?: string | null
     customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
     sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
     purchase: PurchaseCreateNestedOneWithoutInvoicesInput
     lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
+    cancelledBy?: ProfileCreateNestedOneWithoutCancelledInvoicesInput
   }
 
   export type InvoiceUncheckedCreateWithoutPaymentTransactionInput = {
@@ -26354,6 +26834,9 @@ export namespace Prisma {
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelledByProfileId?: number | null
+    cancelReason?: string | null
     lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
@@ -26496,10 +26979,13 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
     sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
     purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
     lines?: InvoiceLineUpdateManyWithoutInvoiceInput
+    cancelledBy?: ProfileUpdateOneWithoutCancelledInvoicesInput
   }
 
   export type InvoiceUncheckedUpdateWithoutPaymentTransactionInput = {
@@ -26514,6 +27000,9 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
@@ -26659,6 +27148,7 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -26702,6 +27192,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -26810,6 +27301,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -26853,6 +27345,7 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -27036,6 +27529,9 @@ export namespace Prisma {
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelledByProfileId?: number | null
+    cancelReason?: string | null
   }
 
   export type InvoiceCreateManySellerProfileInput = {
@@ -27050,6 +27546,26 @@ export namespace Prisma {
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelledByProfileId?: number | null
+    cancelReason?: string | null
+  }
+
+  export type InvoiceCreateManyCancelledByInput = {
+    id?: number
+    createdAt: Date | string
+    invoiceNo: string
+    customerProfileId: number
+    sellerProfileId: number
+    purchaseId: number
+    paymentTransactionHash?: string | null
+    pickupCode?: string | null
+    buyerSignature?: boolean | null
+    buyerSignedDate?: Date | string | null
+    sellerSignature?: boolean | null
+    sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelReason?: string | null
   }
 
   export type VerifiedSafeCreateManyCreatedByInput = {
@@ -27436,10 +27952,13 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
     purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
     lines?: InvoiceLineUpdateManyWithoutInvoiceInput
     paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
+    cancelledBy?: ProfileUpdateOneWithoutCancelledInvoicesInput
   }
 
   export type InvoiceUncheckedUpdateWithoutCustomerProfileInput = {
@@ -27454,6 +27973,9 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
@@ -27469,6 +27991,9 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type InvoiceUpdateWithoutSellerProfileInput = {
@@ -27479,10 +28004,13 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
     purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
     lines?: InvoiceLineUpdateManyWithoutInvoiceInput
     paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
+    cancelledBy?: ProfileUpdateOneWithoutCancelledInvoicesInput
   }
 
   export type InvoiceUncheckedUpdateWithoutSellerProfileInput = {
@@ -27497,6 +28025,9 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
@@ -27512,6 +28043,61 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type InvoiceUpdateWithoutCancelledByInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
+    pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
+    sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
+    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
+    lines?: InvoiceLineUpdateManyWithoutInvoiceInput
+    paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
+  }
+
+  export type InvoiceUncheckedUpdateWithoutCancelledByInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
+    customerProfileId?: IntFieldUpdateOperationsInput | number
+    sellerProfileId?: IntFieldUpdateOperationsInput | number
+    purchaseId?: IntFieldUpdateOperationsInput | number
+    paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
+  }
+
+  export type InvoiceUncheckedUpdateManyWithoutCancelledInvoicesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceNo?: StringFieldUpdateOperationsInput | string
+    customerProfileId?: IntFieldUpdateOperationsInput | number
+    sellerProfileId?: IntFieldUpdateOperationsInput | number
+    purchaseId?: IntFieldUpdateOperationsInput | number
+    paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
+    buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type VerifiedSafeUpdateWithoutCreatedByInput = {
@@ -27743,6 +28329,9 @@ export namespace Prisma {
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
+    cancelledAt?: Date | string | null
+    cancelledByProfileId?: number | null
+    cancelReason?: string | null
   }
 
   export type PurchaseLineUpdateWithoutPurchaseInput = {
@@ -27772,10 +28361,13 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
     sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
     lines?: InvoiceLineUpdateManyWithoutInvoiceInput
     paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
+    cancelledBy?: ProfileUpdateOneWithoutCancelledInvoicesInput
   }
 
   export type InvoiceUncheckedUpdateWithoutPurchaseInput = {
@@ -27790,6 +28382,9 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
@@ -27805,6 +28400,9 @@ export namespace Prisma {
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    cancelledByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type InvoiceLineCreateManyInvoiceInput = {
