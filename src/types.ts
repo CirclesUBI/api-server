@@ -723,6 +723,7 @@ export type Profile = {
   type?: Maybe<Scalars['String']>;
   status?: Maybe<Scalars['String']>;
   circlesAddress?: Maybe<Scalars['String']>;
+  successorOfCirclesAddress?: Maybe<Scalars['String']>;
   circlesSafeOwner?: Maybe<Scalars['String']>;
   circlesTokenAddress?: Maybe<Scalars['String']>;
   firstName: Scalars['String'];
@@ -1041,6 +1042,7 @@ export type SafeInfo = {
   lastUbiAt?: Maybe<Scalars['String']>;
   tokenAddress: Scalars['String'];
   randomValue?: Maybe<Scalars['String']>;
+  safeProfile?: Maybe<Profile>;
 };
 
 export type SafeVerified = IEventPayload & {
@@ -1202,6 +1204,7 @@ export type UpsertProfileInput = {
   dream?: Maybe<Scalars['String']>;
   country?: Maybe<Scalars['String']>;
   emailAddress?: Maybe<Scalars['String']>;
+  successorOfCirclesAddress?: Maybe<Scalars['String']>;
   circlesAddress?: Maybe<Scalars['String']>;
   circlesSafeOwner?: Maybe<Scalars['String']>;
   circlesTokenAddress?: Maybe<Scalars['String']>;
@@ -2071,6 +2074,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  successorOfCirclesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesSafeOwner?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesTokenAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2230,6 +2234,7 @@ export type SafeInfoResolvers<ContextType = any, ParentType extends ResolversPar
   lastUbiAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   tokenAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   randomValue?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  safeProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

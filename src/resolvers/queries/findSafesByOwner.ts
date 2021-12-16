@@ -2,6 +2,7 @@ import {QueryFindSafesByOwnerArgs, SafeInfo} from "../../types";
 import {Context} from "../../context";
 import {Environment} from "../../environment";
 import {Generate} from "../../generate";
+import {ProfileLoader} from "../../profileLoader";
 
 export const findSafesByOwner = async (parent:any, args: QueryFindSafesByOwnerArgs, context: Context) => {
     const safeOwnersQuery = `
@@ -27,11 +28,14 @@ export const findSafesByOwner = async (parent:any, args: QueryFindSafesByOwnerAr
         from ubi_info`;
 
     const safeOwnersResult = await Environment.indexDb.query(safeOwnersQuery, [args.owner.toLowerCase()]);
+    const profiles = await new ProfileLoader().profilesBySafeAddress(Environment.readonlyApiDb, safeOwnersResult.rows.map(o => o.safe_address));
+
     const safeOwnerSafes = safeOwnersResult.rows.map(o => {
         return <SafeInfo>{
             __typename: "SafeInfo",
             type: o.type,
             safeAddress: o.safe_address,
+            safeProfile: ProfileLoader.withDisplayCurrency(profiles[o.safe_address]),
             lastUbiAt: o.last_ubi,
             tokenAddress: o.token,
             randomValue: Generate.randomBase64String(1)[0]

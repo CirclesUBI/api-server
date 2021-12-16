@@ -19,6 +19,11 @@ export function upsertProfileResolver() {
                 throw new Error(`You EOA isn't an owner of safe ${args.data.circlesAddress}`)
             }
         }
+        if (args.data.successorOfCirclesAddress) {
+            if (!await context.isOwnerOfSafe(args.data.successorOfCirclesAddress)) {
+                throw new Error(`You EOA isn't an owner of your imported safe ${args.data.successorOfCirclesAddress}`)
+            }
+        }
         if (args.data.id) {
             if (args.data.id != session.profileId) {
                 throw new Error(`'${session.sessionToken}' (profile id: ${session.profileId ?? "<undefined>"}) can not upsert other profile '${args.data.id}'.`);
@@ -30,6 +35,7 @@ export function upsertProfileResolver() {
                 data: {
                     ...args.data,
                     id: args.data.id,
+                    successorOfCirclesAddress: args.data.successorOfCirclesAddress?.toLowerCase(),
                     lastUpdateAt: new Date(),
                     emailAddress: session.emailAddress ?? undefined,
                     circlesSafeOwner: session.ethAddress?.toLowerCase(),
@@ -44,6 +50,7 @@ export function upsertProfileResolver() {
                     lastUpdateAt: new Date(),
                     emailAddress: session.emailAddress,
                     circlesSafeOwner: session.ethAddress?.toLowerCase(),
+                    successorOfCirclesAddress: args.data.successorOfCirclesAddress?.toLowerCase(),
                     lastAcknowledged: new Date(),
                     lastInvoiceNo: 0,
                     lastRefundNo: 0,

@@ -94,6 +94,7 @@ export type Profile = {
   emailAddress: string | null
   status: string | null
   type: ProfileType | null
+  successorOfCirclesAddress: string | null
   circlesAddress: string | null
   circlesSafeOwner: string | null
   circlesTokenAddress: string | null
@@ -5085,6 +5086,7 @@ export namespace Prisma {
     emailAddress: string | null
     status: string | null
     type: ProfileType | null
+    successorOfCirclesAddress: string | null
     circlesAddress: string | null
     circlesSafeOwner: string | null
     circlesTokenAddress: string | null
@@ -5114,6 +5116,7 @@ export namespace Prisma {
     emailAddress: string | null
     status: string | null
     type: ProfileType | null
+    successorOfCirclesAddress: string | null
     circlesAddress: string | null
     circlesSafeOwner: string | null
     circlesTokenAddress: string | null
@@ -5143,6 +5146,7 @@ export namespace Prisma {
     emailAddress: number
     status: number
     type: number
+    successorOfCirclesAddress: number
     circlesAddress: number
     circlesSafeOwner: number
     circlesTokenAddress: number
@@ -5188,6 +5192,7 @@ export namespace Prisma {
     emailAddress?: true
     status?: true
     type?: true
+    successorOfCirclesAddress?: true
     circlesAddress?: true
     circlesSafeOwner?: true
     circlesTokenAddress?: true
@@ -5217,6 +5222,7 @@ export namespace Prisma {
     emailAddress?: true
     status?: true
     type?: true
+    successorOfCirclesAddress?: true
     circlesAddress?: true
     circlesSafeOwner?: true
     circlesTokenAddress?: true
@@ -5246,6 +5252,7 @@ export namespace Prisma {
     emailAddress?: true
     status?: true
     type?: true
+    successorOfCirclesAddress?: true
     circlesAddress?: true
     circlesSafeOwner?: true
     circlesTokenAddress?: true
@@ -5388,6 +5395,7 @@ export namespace Prisma {
     emailAddress: string | null
     status: string | null
     type: ProfileType | null
+    successorOfCirclesAddress: string | null
     circlesAddress: string | null
     circlesSafeOwner: string | null
     circlesTokenAddress: string | null
@@ -5436,6 +5444,7 @@ export namespace Prisma {
     emailAddress?: boolean
     status?: boolean
     type?: boolean
+    successorOfCirclesAddress?: boolean
     circlesAddress?: boolean
     circlesSafeOwner?: boolean
     circlesTokenAddress?: boolean
@@ -17384,6 +17393,7 @@ export namespace Prisma {
     emailAddress: 'emailAddress',
     status: 'status',
     type: 'type',
+    successorOfCirclesAddress: 'successorOfCirclesAddress',
     circlesAddress: 'circlesAddress',
     circlesSafeOwner: 'circlesSafeOwner',
     circlesTokenAddress: 'circlesTokenAddress',
@@ -17808,6 +17818,7 @@ export namespace Prisma {
     emailAddress?: StringNullableFilter | string | null
     status?: StringNullableFilter | string | null
     type?: EnumProfileTypeNullableFilter | ProfileType | null
+    successorOfCirclesAddress?: StringNullableFilter | string | null
     circlesAddress?: StringNullableFilter | string | null
     circlesSafeOwner?: StringNullableFilter | string | null
     circlesTokenAddress?: StringNullableFilter | string | null
@@ -17853,6 +17864,7 @@ export namespace Prisma {
     emailAddress?: SortOrder
     status?: SortOrder
     type?: SortOrder
+    successorOfCirclesAddress?: SortOrder
     circlesAddress?: SortOrder
     circlesSafeOwner?: SortOrder
     circlesTokenAddress?: SortOrder
@@ -17889,6 +17901,7 @@ export namespace Prisma {
     emailAddress?: StringNullableWithAggregatesFilter | string | null
     status?: StringNullableWithAggregatesFilter | string | null
     type?: EnumProfileTypeNullableWithAggregatesFilter | ProfileType | null
+    successorOfCirclesAddress?: StringNullableWithAggregatesFilter | string | null
     circlesAddress?: StringNullableWithAggregatesFilter | string | null
     circlesSafeOwner?: StringNullableWithAggregatesFilter | string | null
     circlesTokenAddress?: StringNullableWithAggregatesFilter | string | null
@@ -18778,6 +18791,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -18823,6 +18837,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -18867,6 +18882,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18912,6 +18928,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18957,6 +18974,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -18985,6 +19003,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19014,6 +19033,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22275,6 +22295,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -22319,6 +22340,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -22372,6 +22394,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22416,6 +22439,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22459,6 +22483,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -22503,6 +22528,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -22551,6 +22577,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -22595,6 +22622,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -22643,6 +22671,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -22687,6 +22716,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -22740,6 +22770,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22784,6 +22815,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22832,6 +22864,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22876,6 +22909,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22924,6 +22958,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22968,6 +23003,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23011,6 +23047,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -23055,6 +23092,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -23108,6 +23146,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23152,6 +23191,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23195,6 +23235,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -23239,6 +23280,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -23287,6 +23329,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -23331,6 +23374,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -23379,6 +23423,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -23423,6 +23468,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -23539,6 +23585,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23583,6 +23630,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23631,6 +23679,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23675,6 +23724,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23723,6 +23773,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23767,6 +23818,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24844,6 +24896,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -24888,6 +24941,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -24936,6 +24990,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -24980,6 +25035,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -25033,6 +25089,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25077,6 +25134,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25125,6 +25183,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25169,6 +25228,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25257,6 +25317,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -25301,6 +25362,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -25396,6 +25458,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25440,6 +25503,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25537,6 +25601,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -25581,6 +25646,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -25701,6 +25767,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25745,6 +25812,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -25922,6 +25990,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -25966,6 +26035,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -26014,6 +26084,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -26058,6 +26129,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -26167,6 +26239,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -26211,6 +26284,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -26264,6 +26338,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26308,6 +26383,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26356,6 +26432,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26400,6 +26477,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26503,6 +26581,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26547,6 +26626,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27116,6 +27196,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -27160,6 +27241,7 @@ export namespace Prisma {
     emailAddress?: string | null
     status?: string | null
     type?: ProfileType | null
+    successorOfCirclesAddress?: string | null
     circlesAddress?: string | null
     circlesSafeOwner?: string | null
     circlesTokenAddress?: string | null
@@ -27269,6 +27351,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27313,6 +27396,7 @@ export namespace Prisma {
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
     status?: NullableStringFieldUpdateOperationsInput | string | null
     type?: NullableEnumProfileTypeFieldUpdateOperationsInput | ProfileType | null
+    successorOfCirclesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesAddress?: NullableStringFieldUpdateOperationsInput | string | null
     circlesSafeOwner?: NullableStringFieldUpdateOperationsInput | string | null
     circlesTokenAddress?: NullableStringFieldUpdateOperationsInput | string | null

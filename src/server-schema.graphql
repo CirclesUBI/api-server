@@ -7,6 +7,7 @@ type Profile {
   type: String
   status: String
   circlesAddress: String
+  successorOfCirclesAddress: String
   circlesSafeOwner: String
   circlesTokenAddress: String
   firstName: String!
@@ -89,6 +90,7 @@ input UpsertProfileInput {
   dream: String
   country: String
   emailAddress: String
+  successorOfCirclesAddress: String
   circlesAddress: String
   circlesSafeOwner: String
   circlesTokenAddress: String
@@ -970,6 +972,7 @@ type SafeInfo {
   lastUbiAt: String
   tokenAddress: String!
   randomValue: String
+  safeProfile: Profile
 }
 
 type SafeAddressByOwnerResult {
