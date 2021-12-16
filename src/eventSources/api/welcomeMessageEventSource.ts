@@ -3,12 +3,13 @@ import {
   Direction,
   EventType,
   Maybe,
-  PaginationArgs,
+  PaginationArgs, Profile,
   ProfileEvent,
   ProfileEventFilter, WelcomeMessage
 } from "../../types";
 import {Prisma} from "../../api-db/client";
 import {Environment} from "../../environment";
+import {ProfileLoader} from "../../profileLoader";
 
 export class WelcomeMessageEventSource implements EventSource {
   async getEvents(forSafeAddress: string, pagination: PaginationArgs, filter: Maybe<ProfileEventFilter>): Promise<ProfileEvent[]> {
@@ -44,9 +45,22 @@ export class WelcomeMessageEventSource implements EventSource {
       take: pagination.limit ?? 50
     });
 
-    return redeemedInvitations.map(r => {
+    return await Promise.all(redeemedInvitations.map(async r => {
       if (!r.redeemedAt)
         throw new Error(`r.redeemedAt == null or undefined in findRedeemedInvitations()`);
+
+
+      const inviter = r.createdBy.circlesAddress
+        ? await new ProfileLoader().profilesBySafeAddress(Environment.readonlyApiDb, [r.createdBy.circlesAddress])
+        : undefined;
+
+      let inviterProfile:Profile|undefined;
+      if (inviter) {
+        const inviterProfiles = Object.values(inviter);
+        if (inviterProfiles.length == 1) {
+          inviterProfile = ProfileLoader.withDisplayCurrency(inviterProfiles[0]);
+        }
+      }
 
       return <ProfileEvent> {
         __typename: "ProfileEvent",
@@ -61,9 +75,10 @@ export class WelcomeMessageEventSource implements EventSource {
         contact_address: r.createdBy?.circlesAddress,
         payload: <WelcomeMessage> {
           __typename: "WelcomeMessage",
-
+          invitedBy: inviterProfile?.circlesAddress,
+          invitedBy_profile: inviterProfile
         }
       };
-    });
+    }));
   }
 }
