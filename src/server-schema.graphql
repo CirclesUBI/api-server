@@ -1029,6 +1029,10 @@ type Query {
 
   search(query: SearchInput!): [Profile!]!
 
+  profilesCount: Int!
+
+  verificationsCount: Int!
+
   cities(query: QueryCitiesInput!): [City!]!
   tags(query: QueryTagsInput!): [Tag!]!
   tagById(id: Int!): Tag

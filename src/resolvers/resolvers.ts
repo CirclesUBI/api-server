@@ -8,6 +8,7 @@ import { depositChallengeResolver } from "./mutations/depositChallenge";
 import { authenticateAtResolver } from "./mutations/authenticateAt";
 import { consumeDepositedChallengeResolver } from "./mutations/consumeDepositedChallenge";
 import { search } from "./queries/search";
+import { profilesCount } from "./queries/profilesCount";
 import { requestUpdateSafe } from "./mutations/requestUpdateSafe";
 import { updateSafe } from "./mutations/updateSafe";
 import { whoami } from "./queries/whoami";
@@ -56,7 +57,7 @@ import { importOrganisationsOfAccount } from "./mutations/importOrganisationsOfA
 import { completePurchase } from "./mutations/completePurchase";
 import { completeSale } from "./mutations/completeSale";
 import { verifySafe, revokeSafeVerification } from "./mutations/verifySafe";
-import { verifications } from "./queries/verifications";
+import { verifications, verificationsCount } from "./queries/verifications";
 import { Environment } from "../environment";
 
 const packageJson = require("../../package.json");
@@ -119,6 +120,8 @@ export const resolvers: Resolvers = {
     organisationsByAddress: organisationsByAddress(),
     profilesBySafeAddress: profilesBySafeAddress(Environment.readonlyApiDb),
     search: search(Environment.readonlyApiDb),
+    profilesCount: profilesCount(Environment.readonlyApiDb),
+    verificationsCount: verificationsCount(Environment.readWriteApiDb),
     version: version(packageJson),
     tags: tags(Environment.readonlyApiDb),
     tagById: tagById(Environment.readonlyApiDb),

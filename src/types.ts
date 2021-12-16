@@ -862,6 +862,8 @@ export type Query = {
   profilesBySafeAddress: Array<Profile>;
   findSafesByOwner: Array<SafeInfo>;
   search: Array<Profile>;
+  profilesCount: Scalars['Int'];
+  verificationsCount: Scalars['Int'];
   cities: Array<City>;
   tags: Array<Tag>;
   tagById?: Maybe<Tag>;
@@ -2189,6 +2191,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   profilesBySafeAddress?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesBySafeAddressArgs, 'safeAddresses'>>;
   findSafesByOwner?: Resolver<Array<ResolversTypes['SafeInfo']>, ParentType, ContextType, RequireFields<QueryFindSafesByOwnerArgs, 'owner'>>;
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
+  profilesCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  verificationsCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, 'query'>>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsArgs, 'query'>>;
   tagById?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagByIdArgs, 'id'>>;

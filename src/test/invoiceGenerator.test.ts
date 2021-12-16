@@ -47,7 +47,7 @@ describe("Invoice Generator", () => {
       salesTax: [
         {
           name: "TAX",
-          value: 19,
+          value: "19",
         },
       ],
       timeCirclesTotal: 10,
