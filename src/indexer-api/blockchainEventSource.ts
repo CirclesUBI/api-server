@@ -130,7 +130,7 @@ export class BlockchainEventSource {
                       where hash = ANY ($1)`,
         [candidateTxHashes]);
 
-      const invoiceTotal = invoice.lines.reduce((p, c) => p + c.amount * parseFloat(c.product.pricePerUnit), 0);
+      const invoiceTotal = invoice.lines.reduce((p, c) => p + c.amount * (parseFloat(c.product.pricePerUnit ) * 10), 0);
 
       const hubTransfers = hubTransferRows.rows.map(o => {
         const transactionTimestamp = getDateWithOffset(o.timestamp);
@@ -149,9 +149,20 @@ export class BlockchainEventSource {
         }
       });
 
+      // log(`Loaded ${hubTransfers.length} CrcHubTransfer candidate(s) for invoice ${invoice.id}.`);
+
       const hubTransfersWithMatchingAmount = hubTransfers.filter(o => {
         return o.value.gte(o.minValue) && o.value.lte(o.maxValue)
       });
+
+      log(`Found ${hubTransfersWithMatchingAmount.length} CrcHubTransfers with matching payment value: ${JSON.stringify(hubTransfersWithMatchingAmount.map(o => {
+        return {
+          hash: o.hash,
+          timestamp: o.timestamp,
+          value: o.value,
+          invoiceValueInTC: o.invoiceTotalInTC
+        };
+      }))}`);
 
       if (hubTransfersWithMatchingAmount.length == 0) {
         return null;

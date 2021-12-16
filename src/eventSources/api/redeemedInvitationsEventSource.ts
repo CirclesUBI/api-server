@@ -23,7 +23,10 @@ export class RedeemedInvitationsEventSource implements EventSource {
         redeemedBy: {
           circlesAddress: !filter?.with ? {
             not: null
-          } : filter.with
+          } : filter.with,
+          firstName: {
+            not: ""
+          }
         }
       },
       orderBy: {
