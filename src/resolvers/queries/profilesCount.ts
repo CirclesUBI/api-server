@@ -6,6 +6,7 @@ export function profilesCount(prisma: PrismaClient) {
       where: {
         firstName: { not: "" },
         circlesAddress: { not: null },
+        type: "PERSON",
       },
     });
   };
