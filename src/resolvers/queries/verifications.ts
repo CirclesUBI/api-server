@@ -6,7 +6,11 @@ import { PrismaClient } from "../../api-db/client";
 
 export function verificationsCount(prisma: PrismaClient) {
   return async () => {
-    return await prisma.verifiedSafe.count();
+    return await prisma.verifiedSafe.count({
+      where: {
+        revokedAt: null,
+      },
+    });
   };
 }
 
