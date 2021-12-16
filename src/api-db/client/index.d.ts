@@ -49,6 +49,7 @@ export type Invitation = {
   redeemedByProfileId: number | null
   redeemedAt: Date | null
   redeemTxHash: string | null
+  forSafeAddress: string
   address: string
   key: string
 }
@@ -2162,6 +2163,7 @@ export namespace Prisma {
     redeemedByProfileId: number | null
     redeemedAt: Date | null
     redeemTxHash: string | null
+    forSafeAddress: string | null
     address: string | null
     key: string | null
   }
@@ -2178,6 +2180,7 @@ export namespace Prisma {
     redeemedByProfileId: number | null
     redeemedAt: Date | null
     redeemTxHash: string | null
+    forSafeAddress: string | null
     address: string | null
     key: string | null
   }
@@ -2194,6 +2197,7 @@ export namespace Prisma {
     redeemedByProfileId: number
     redeemedAt: number
     redeemTxHash: number
+    forSafeAddress: number
     address: number
     key: number
     _all: number
@@ -2226,6 +2230,7 @@ export namespace Prisma {
     redeemedByProfileId?: true
     redeemedAt?: true
     redeemTxHash?: true
+    forSafeAddress?: true
     address?: true
     key?: true
   }
@@ -2242,6 +2247,7 @@ export namespace Prisma {
     redeemedByProfileId?: true
     redeemedAt?: true
     redeemTxHash?: true
+    forSafeAddress?: true
     address?: true
     key?: true
   }
@@ -2258,6 +2264,7 @@ export namespace Prisma {
     redeemedByProfileId?: true
     redeemedAt?: true
     redeemTxHash?: true
+    forSafeAddress?: true
     address?: true
     key?: true
     _all?: true
@@ -2387,6 +2394,7 @@ export namespace Prisma {
     redeemedByProfileId: number | null
     redeemedAt: Date | null
     redeemTxHash: string | null
+    forSafeAddress: string
     address: string
     key: string
     _count: InvitationCountAggregateOutputType | null
@@ -2425,6 +2433,7 @@ export namespace Prisma {
     redeemedByProfileId?: boolean
     redeemedAt?: boolean
     redeemTxHash?: boolean
+    forSafeAddress?: boolean
     address?: boolean
     key?: boolean
   }
@@ -17351,6 +17360,7 @@ export namespace Prisma {
     redeemedByProfileId: 'redeemedByProfileId',
     redeemedAt: 'redeemedAt',
     redeemTxHash: 'redeemTxHash',
+    forSafeAddress: 'forSafeAddress',
     address: 'address',
     key: 'key'
   };
@@ -17670,6 +17680,7 @@ export namespace Prisma {
     redeemedByProfileId?: IntNullableFilter | number | null
     redeemedAt?: DateTimeNullableFilter | Date | string | null
     redeemTxHash?: StringNullableFilter | string | null
+    forSafeAddress?: StringFilter | string
     address?: StringFilter | string
     key?: StringFilter | string
   }
@@ -17686,6 +17697,7 @@ export namespace Prisma {
     redeemedByProfileId?: SortOrder
     redeemedAt?: SortOrder
     redeemTxHash?: SortOrder
+    forSafeAddress?: SortOrder
     address?: SortOrder
     key?: SortOrder
   }
@@ -17709,6 +17721,7 @@ export namespace Prisma {
     redeemedByProfileId?: IntNullableWithAggregatesFilter | number | null
     redeemedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
     redeemTxHash?: StringNullableWithAggregatesFilter | string | null
+    forSafeAddress?: StringWithAggregatesFilter | string
     address?: StringWithAggregatesFilter | string
     key?: StringWithAggregatesFilter | string
   }
@@ -18537,6 +18550,7 @@ export namespace Prisma {
     claimedAt?: Date | string | null
     redeemedAt?: Date | string | null
     redeemTxHash?: string | null
+    forSafeAddress: string
     address: string
     key: string
     createdBy: ProfileCreateNestedOneWithoutInvitationsInput
@@ -18556,6 +18570,7 @@ export namespace Prisma {
     redeemedByProfileId?: number | null
     redeemedAt?: Date | string | null
     redeemTxHash?: string | null
+    forSafeAddress: string
     address: string
     key: string
   }
@@ -18568,6 +18583,7 @@ export namespace Prisma {
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    forSafeAddress?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     createdBy?: ProfileUpdateOneRequiredWithoutInvitationsInput
@@ -18587,6 +18603,7 @@ export namespace Prisma {
     redeemedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    forSafeAddress?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
   }
@@ -18603,6 +18620,7 @@ export namespace Prisma {
     redeemedByProfileId?: number | null
     redeemedAt?: Date | string | null
     redeemTxHash?: string | null
+    forSafeAddress: string
     address: string
     key: string
   }
@@ -18615,6 +18633,7 @@ export namespace Prisma {
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    forSafeAddress?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
   }
@@ -18631,6 +18650,7 @@ export namespace Prisma {
     redeemedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    forSafeAddress?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
   }
@@ -24060,6 +24080,7 @@ export namespace Prisma {
     claimedAt?: Date | string | null
     redeemedAt?: Date | string | null
     redeemTxHash?: string | null
+    forSafeAddress: string
     address: string
     key: string
     claimedBy?: ProfileCreateNestedOneWithoutClaimedInvitationsInput
@@ -24077,6 +24098,7 @@ export namespace Prisma {
     redeemedByProfileId?: number | null
     redeemedAt?: Date | string | null
     redeemTxHash?: string | null
+    forSafeAddress: string
     address: string
     key: string
   }
@@ -24115,6 +24137,7 @@ export namespace Prisma {
     claimedAt?: Date | string | null
     redeemedAt?: Date | string | null
     redeemTxHash?: string | null
+    forSafeAddress: string
     address: string
     key: string
     createdBy: ProfileCreateNestedOneWithoutInvitationsInput
@@ -24132,6 +24155,7 @@ export namespace Prisma {
     claimedAt?: Date | string | null
     redeemedAt?: Date | string | null
     redeemTxHash?: string | null
+    forSafeAddress: string
     address: string
     key: string
   }
@@ -24154,6 +24178,7 @@ export namespace Prisma {
     claimedAt?: Date | string | null
     redeemedAt?: Date | string | null
     redeemTxHash?: string | null
+    forSafeAddress: string
     address: string
     key: string
     createdBy: ProfileCreateNestedOneWithoutInvitationsInput
@@ -24171,6 +24196,7 @@ export namespace Prisma {
     redeemedByProfileId?: number | null
     redeemedAt?: Date | string | null
     redeemTxHash?: string | null
+    forSafeAddress: string
     address: string
     key: string
   }
@@ -24656,6 +24682,7 @@ export namespace Prisma {
     redeemedByProfileId?: IntNullableFilter | number | null
     redeemedAt?: DateTimeNullableFilter | Date | string | null
     redeemTxHash?: StringNullableFilter | string | null
+    forSafeAddress?: StringFilter | string
     address?: StringFilter | string
     key?: StringFilter | string
   }
@@ -27545,6 +27572,7 @@ export namespace Prisma {
     redeemedByProfileId?: number | null
     redeemedAt?: Date | string | null
     redeemTxHash?: string | null
+    forSafeAddress: string
     address: string
     key: string
   }
@@ -27560,6 +27588,7 @@ export namespace Prisma {
     claimedAt?: Date | string | null
     redeemedAt?: Date | string | null
     redeemTxHash?: string | null
+    forSafeAddress: string
     address: string
     key: string
   }
@@ -27575,6 +27604,7 @@ export namespace Prisma {
     redeemedByProfileId?: number | null
     redeemedAt?: Date | string | null
     redeemTxHash?: string | null
+    forSafeAddress: string
     address: string
     key: string
   }
@@ -27840,6 +27870,7 @@ export namespace Prisma {
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    forSafeAddress?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     claimedBy?: ProfileUpdateOneWithoutClaimedInvitationsInput
@@ -27857,6 +27888,7 @@ export namespace Prisma {
     redeemedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    forSafeAddress?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
   }
@@ -27872,6 +27904,7 @@ export namespace Prisma {
     redeemedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    forSafeAddress?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
   }
@@ -27884,6 +27917,7 @@ export namespace Prisma {
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    forSafeAddress?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     createdBy?: ProfileUpdateOneRequiredWithoutInvitationsInput
@@ -27901,6 +27935,7 @@ export namespace Prisma {
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    forSafeAddress?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
   }
@@ -27916,6 +27951,7 @@ export namespace Prisma {
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    forSafeAddress?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
   }
@@ -27928,6 +27964,7 @@ export namespace Prisma {
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    forSafeAddress?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
     createdBy?: ProfileUpdateOneRequiredWithoutInvitationsInput
@@ -27945,6 +27982,7 @@ export namespace Prisma {
     redeemedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    forSafeAddress?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
   }
@@ -27960,6 +27998,7 @@ export namespace Prisma {
     redeemedByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
+    forSafeAddress?: StringFieldUpdateOperationsInput | string
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
   }

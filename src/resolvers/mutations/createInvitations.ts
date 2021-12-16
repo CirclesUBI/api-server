@@ -28,7 +28,8 @@ export function createInvitations() {
           createdByProfileId: callerInfo.profile?.id ?? -1,
           address: invitationEoa.address,
           key: invitationEoa.privateKey,
-          code: Session.generateRandomBase64String(16)
+          code: Session.generateRandomBase64String(16),
+          forSafeAddress: invitationFor
         };
 
         const createdInvitation = (await fundEoa(RpcGateway.get(), invitationData)).createdInviteEoas[0];

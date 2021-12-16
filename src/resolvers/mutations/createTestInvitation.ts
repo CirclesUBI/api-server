@@ -74,7 +74,8 @@ export function createTestInvitation() {
         createdByProfileId: 1,
         address: invitationEoa.address,
         key: invitationEoa.privateKey,
-        code: Session.generateRandomBase64String(16)
+        code: Session.generateRandomBase64String(16),
+        forSafeAddress: args.forSafeAddress ?? ""
       },
       include: {
         createdBy: true

@@ -53,6 +53,8 @@ model Invitation {
     redeemedAt DateTime?
     redeemTxHash String?
 
+    forSafeAddress String
+
     address String
     key String
 }

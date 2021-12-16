@@ -5,14 +5,12 @@ import {Environment} from "../../environment";
 export function myInvitations() {
     return async (parent:any, args:any, context:Context) => {
         const caller = await context.callerInfo;
-        if (!caller?.profile)
-            throw new Error(`You need a profile to use this feature.`);
+        if (!caller?.profile || !caller.profile.circlesAddress)
+            throw new Error(`You need a profile and safe to use this feature.`);
 
         const invitations = await Environment.readonlyApiDb.invitation.findMany({
             where: {
-                createdBy: {
-                    circlesAddress: caller.profile.circlesAddress
-                }
+                forSafeAddress: caller.profile.circlesAddress
             },
             include: {
                 claimedBy: true

@@ -67,8 +67,9 @@ export class Dropper {
   async drop(verifiedSafe:VerifiedSafe) {
     // Create ten invitations for the verified account
     const invitations = await this.createdInvitationEoasForInvitee(verifiedSafe);
-    const invitationFundingTransactions = await this.createInvitationEoaFundingTransactions(invitations);
-    let metaTransaction = encodeMulti([
+    await this.fundInvitations(invitations);
+
+    /*let metaTransaction = encodeMulti([
       ...invitationFundingTransactions.map(o => o.fundingTransaction)]);
 
     let data = metaTransaction.data;
@@ -110,6 +111,7 @@ export class Dropper {
     );
 
     console.log(metaTransaction, receipt);
+     */
   }
 
   async createdInvitationEoasForInvitee(verifiedSafe:VerifiedSafe) : Promise<InvitationCreateManyInput[]> {
@@ -126,7 +128,7 @@ export class Dropper {
     const now = new Date();
 
     const createInvitationsData:InvitationCreateManyInput[] = [];
-    for(let i = 1; i < 11; i++) {
+    for(let i = 1; i < 10; i++) {
       const invitationEoa = RpcGateway.get().eth.accounts.create();
       createInvitationsData.push({
         name: `Invitation ${i}`,
@@ -134,7 +136,8 @@ export class Dropper {
         createdByProfileId: profile.id,
         address: invitationEoa.address.toLowerCase(),
         key: invitationEoa.privateKey,
-        code: Session.generateRandomBase64String(16)
+        code: Session.generateRandomBase64String(16),
+        forSafeAddress: verifiedSafe.safeAddress
       });
     }
 
@@ -145,37 +148,35 @@ export class Dropper {
     return createInvitationsData;
   }
 
-  async createInvitationEoaFundingTransactions(invitations: InvitationCreateManyInput[]) : Promise<{
-    invitation: InvitationCreateManyInput,
-    fundingTransaction: MetaTransaction
-  }[]> {
-    const inputs = invitations.map(i => {
-      return {
-        invitation: i,
-        fundingTransaction: createTransaction(TransactionType.raw, i.code)
-      };
-    });
-
-
-    const amountWei = RpcGateway.get().utils.toWei("0.1", "ether");
+  async fundInvitations(invitations: InvitationCreateManyInput[]) : Promise<void> {
+    const amountWei = RpcGateway.get().utils.toWei("0.5", "ether");
     const amount = new BN(amountWei);
 
-    inputs.forEach((i:any) => {
-      i.fundingTransaction.to = i.invitation.address;
-      i.fundingTransaction.value = amount.toString();
-      i.fundingTransaction.data = "0x";
+    let i = 1;
+    for (let invitation of invitations) {
+      console.log(`Funding invitation ${i++} (id: ${invitation.id}).. Amount: ${amount}; From: ${Environment.invitationFundsSafe.address}; To: ${invitation.address}.`);
 
-      return i;
-    });
+      const inviteFundingReceipt = await Environment.invitationFundsSafe.transferEth(
+        Environment.invitationFundsSafeOwner.privateKey,
+        amount,
+        invitation.address);
 
-    return inputs.map(o => {
-      return {
-        invitation: o.invitation,
-        fundingTransaction: encodeSingle(o.fundingTransaction)
-      }
-    });
+      const balance = await RpcGateway.get().eth.getBalance(invitation.address);
+      console.log(`Funding invitation ${i} (id: ${invitation.id}).. Done. Balance: ${balance.toString()}; Transaction Hash: ${inviteFundingReceipt.transactionHash}.`);
+
+      await Environment.readWriteApiDb.invitation.updateMany({
+        where: {
+          code: invitation.code
+        },
+        data: {
+          fundedAt: new Date()
+        }
+      });
+
+      console.log(`Funding invitation ${i} (id: ${invitation.id}). Updated 'fundedAt' date.`);
+    }
   }
-
+/*
   async dropInviterReward(verifiedSafe:VerifiedSafe) : Promise<TransferFundsTransactionInput> {
     const invitationResult = await Environment.readWriteApiDb.invitation.findMany({
       where: {
@@ -223,6 +224,7 @@ export class Dropper {
 
     return inviteeReward;
   }
+ */
 
   async stop() {
     if (this._interval) {

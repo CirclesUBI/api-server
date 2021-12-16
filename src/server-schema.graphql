@@ -862,7 +862,7 @@ type Mutation {
   requestInvitationOffer(for: String!): Offer!
 
   # Creates as many new EOAs as there are strings in the array.
-  createInvitations(for: [String!]!): CreateInvitationResult!
+  # createInvitations(for: [String!]!): CreateInvitationResult!
   createTestInvitation: CreateInvitationResult!
 
   claimInvitation(code: String!): ClaimInvitationResult!

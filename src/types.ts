@@ -504,7 +504,6 @@ export type Mutation = {
   rejectMembership?: Maybe<RejectMembershipResult>;
   acknowledge: Scalars['Boolean'];
   requestInvitationOffer: Offer;
-  createInvitations: CreateInvitationResult;
   createTestInvitation: CreateInvitationResult;
   claimInvitation: ClaimInvitationResult;
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
@@ -609,11 +608,6 @@ export type MutationAcknowledgeArgs = {
 
 export type MutationRequestInvitationOfferArgs = {
   for: Scalars['String'];
-};
-
-
-export type MutationCreateInvitationsArgs = {
-  for: Array<Scalars['String']>;
 };
 
 
@@ -2007,7 +2001,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   rejectMembership?: Resolver<Maybe<ResolversTypes['RejectMembershipResult']>, ParentType, ContextType, RequireFields<MutationRejectMembershipArgs, 'membershipId'>>;
   acknowledge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'until'>>;
   requestInvitationOffer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType, RequireFields<MutationRequestInvitationOfferArgs, 'for'>>;
-  createInvitations?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType, RequireFields<MutationCreateInvitationsArgs, 'for'>>;
   createTestInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType>;
   claimInvitation?: Resolver<ResolversTypes['ClaimInvitationResult'], ParentType, ContextType, RequireFields<MutationClaimInvitationArgs, 'code'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;

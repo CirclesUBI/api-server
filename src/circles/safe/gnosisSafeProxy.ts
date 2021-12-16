@@ -92,7 +92,7 @@ export class GnosisSafeProxy extends Web3Contract {
       refundReceiver: ZERO_ADDRESS,
       gasPrice: await RpcGateway.getGasPrice(),
     };
-    return await this.execTransaction(privateKey, safeTransaction);
+    return await this.execTransaction(privateKey, safeTransaction, true);
   }
 
   async execTransaction(

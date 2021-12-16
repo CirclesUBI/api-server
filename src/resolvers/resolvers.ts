@@ -153,7 +153,7 @@ export const resolvers: Resolvers = {
     tagTransaction: tagTransaction(),
     sendMessage: sendMessage(Environment.readWriteApiDb),
     acknowledge: acknowledge(),
-    createInvitations: createInvitations(),
+    // createInvitations: createInvitations(),
     claimInvitation: claimInvitation(),
     redeemClaimedInvitation: redeemClaimedInvitation(),
     requestSessionChallenge: requestSessionChallenge,
