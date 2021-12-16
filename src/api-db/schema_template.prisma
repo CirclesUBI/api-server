@@ -111,6 +111,8 @@ model Profile {
     status String?
     type ProfileType? @default(PERSON)
 
+    successorOfCirclesAddress String?
+
     circlesAddress String?
     circlesSafeOwner String?
     circlesTokenAddress String?
