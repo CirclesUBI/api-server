@@ -136,7 +136,7 @@ export class Dropper {
         createdByProfileId: profile.id,
         address: invitationEoa.address.toLowerCase(),
         key: invitationEoa.privateKey,
-        code: Session.generateRandomBase64String(16),
+        code: Session.generateRandomBase64String(16).replace("/", "-"),
         forSafeAddress: verifiedSafe.safeAddress
       });
     }

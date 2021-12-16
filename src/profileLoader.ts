@@ -126,7 +126,7 @@ export class ProfileLoader {
             verifiedProfile: ProfileLoader.withDisplayCurrency(c),
             revokedAt: safeVerification.revokedAt
               ? safeVerification.revokedAt.toJSON()
-              : "",
+              : null,
             revokedProfile: ProfileLoader.withDisplayCurrency(c),
           });
         }
