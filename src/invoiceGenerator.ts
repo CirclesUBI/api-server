@@ -21,7 +21,7 @@ export type PdfInvoiceData = {
   transactionHash: string;
   salesTax: {
     name: string;
-    value: number;
+    value: string;
   }[];
   subtotal: number;
   timeCirclesTotal: number;
@@ -107,9 +107,10 @@ export function pdfInvoiceDataFromDbInvoice(
     items: items,
     subtotal: total,
     salesTax: [
+      // TODO: replace the Currently 19% hardcoded with dynamic
       {
-        name: "",
-        value: 19,
+        name: "19",
+        value: ((19 / 100) * total).toFixed(2),
       },
     ],
     timeCirclesTotal: 0,
@@ -342,7 +343,7 @@ export class InvoicePdfGenerator {
   private generateSubtotalTable(
     doc: typeof PDFDocument,
     invoice: {
-      salesTax: { name: string; value: number }[];
+      salesTax: { name: string; value: string }[];
       subtotal: number;
       timeCirclesTotal: number;
     }
@@ -379,7 +380,7 @@ export class InvoicePdfGenerator {
               align: "left",
             }
           )
-          .text(this.formatCurrency(taxRow.value), 0, this.top, {
+          .text(taxRow.value, 0, this.top, {
             align: "right",
           });
       });
