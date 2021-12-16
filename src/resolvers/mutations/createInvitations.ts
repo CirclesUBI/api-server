@@ -28,7 +28,7 @@ export function createInvitations() {
           createdByProfileId: callerInfo.profile?.id ?? -1,
           address: invitationEoa.address,
           key: invitationEoa.privateKey,
-          code: Session.generateRandomBase64String(16),
+          code: Session.generateRandomBase64String(16).replace("/", "-"),
           forSafeAddress: invitationFor
         };
 
