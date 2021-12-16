@@ -23,11 +23,13 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
         const isBilMember = await isBILMember(callerInfo);
         if (isBilMember) {
             capabilities.push({
-                type: CapabilityType.Invite
-            }, {
                 type: CapabilityType.Verify
             });
         }
+
+        capabilities.push({
+            type: CapabilityType.Invite
+        });
 
         return {
             isLoggedOn: true,
