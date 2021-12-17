@@ -5,7 +5,7 @@ import {CreateInvitationResult} from "../../types";
 import {fundEoa} from "./createTestInvitation";
 import {isBILMember} from "../../canAccess";
 import {Environment} from "../../environment";
-
+/*
 export function createInvitations() {
     return async (parent:any, args:{for:string[]}, context:Context) => {
       const callerInfo = await context.callerInfo;
@@ -58,4 +58,4 @@ export function createInvitations() {
         })
       }
     }
-}
+}*/

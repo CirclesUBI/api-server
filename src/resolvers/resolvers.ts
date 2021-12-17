@@ -26,7 +26,6 @@ import { sendMessage } from "./mutations/sendMessage";
 import { tagTransaction } from "./mutations/tagTransaction";
 import { acknowledge } from "./mutations/acknowledge";
 import { claimInvitation } from "./mutations/claimInvitation";
-import { createInvitations } from "./mutations/createInvitations";
 import { redeemClaimedInvitation } from "./mutations/redeemClaimedInvitation";
 import { invitationTransaction } from "./queries/invitationTransaction";
 import { verifySessionChallengeResolver } from "./mutations/verifySessionChallengeResolver";

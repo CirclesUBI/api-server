@@ -4,6 +4,7 @@ import { isBILMember } from "../../canAccess";
 import { VerifiedSafe } from "../../api-db/client";
 import { RpcGateway } from "../../rpcGateway";
 import { Environment } from "../../environment";
+import {ApiPubSub} from "../../pubsub";
 
 export const verifySafe = async (
   parent: any,
@@ -43,7 +44,6 @@ export const verifySafe = async (
   }
 
   const swapEoa = RpcGateway.get().eth.accounts.create();
-
   verifiedSafe = await Environment.readWriteApiDb.verifiedSafe.create({
     data: {
       safeAddress: args.safeAddress.toLowerCase(),
@@ -56,6 +56,11 @@ export const verifySafe = async (
       swapEoaAddress: swapEoa.address,
     },
   });
+
+  if (bilOrga.circlesAddress) {
+    await Environment.indexDb.query(
+      `call publish_event('follow_trust', '{"to":"${bilOrga.circlesAddress.toLowerCase()}"}');`);
+  }
 
   return {
     success: true,
