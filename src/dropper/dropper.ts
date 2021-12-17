@@ -156,13 +156,36 @@ export class Dropper {
     for (let invitation of invitations) {
       console.log(`Funding invitation ${i++} (id: ${invitation.id}).. Amount: ${amount}; From: ${Environment.invitationFundsSafe.address}; To: ${invitation.address}.`);
 
-      const inviteFundingReceipt = await Environment.invitationFundsSafe.transferEth(
-        Environment.invitationFundsSafeOwner.privateKey,
-        amount,
-        invitation.address);
+      let balance = new BN(await RpcGateway.get().eth.getBalance(invitation.address));
+      let triesLeft = 3;
 
-      const balance = await RpcGateway.get().eth.getBalance(invitation.address);
-      console.log(`Funding invitation ${i} (id: ${invitation.id}).. Done. Balance: ${balance.toString()}; Transaction Hash: ${inviteFundingReceipt.transactionHash}.`);
+      while(triesLeft > 0 && balance.eq(new BN("0"))) {
+        triesLeft--;
+        try {
+          balance = new BN(await RpcGateway.get().eth.getBalance(invitation.address));
+          if (balance.gt(new BN("10000"))) {
+            break;
+          }
+
+          const inviteFundingReceipt = await Environment.invitationFundsSafe.transferEth(
+            Environment.invitationFundsSafeOwner.privateKey,
+            amount,
+            invitation.address);
+
+          console.log(`Tried funding invitation ${i} (id: ${invitation.id}). Balance: ${balance.toString()}; Transaction Hash: ${inviteFundingReceipt.transactionHash}.`);
+
+          await new Promise((resolve) => {
+            setTimeout(resolve, 250);
+          });
+        } catch (e) {
+          console.log(`Couldn't fund the invitation. Tries left: ${triesLeft}.`)
+          if (triesLeft < 1) {
+            console.log(`Giving up on funding of invitations: ${invitation.id}`);
+            break;
+          }
+        }
+      }
+
 
       await Environment.readWriteApiDb.invitation.updateMany({
         where: {
