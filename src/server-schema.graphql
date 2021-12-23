@@ -1039,6 +1039,8 @@ type Query {
 
   directPath(from: String!, to: String!, amount: String!): TransitivePath!
   invoice(invoiceId: Int!): String
+
+  findInvitationCreator(code:String!) : Profile
 }
 
 type TransitiveTransfer {

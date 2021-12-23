@@ -28,6 +28,9 @@ export class Main {
     private _dropper = new Dropper();
 
     async run2 () {
+
+        RpcGateway.setup(Environment.rpcGatewayUrl, Environment.fixedGasPrice);
+
         if (Environment.delayStart) {
             console.log(`Delaying the start for ${Environment.delayStart} seconds ...`);
             await new Promise((r) => {
@@ -146,7 +149,7 @@ export class Main {
               console.error(`The notifyConnection for 'follow_trust' events died:`, e);
           });
 
-        await this._dropper.start();
+        // await this._dropper.start();
 
         const PORT = 8989;
             httpServer.listen(PORT, () =>

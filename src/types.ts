@@ -863,6 +863,7 @@ export type Query = {
   tagById?: Maybe<Tag>;
   directPath: TransitivePath;
   invoice?: Maybe<Scalars['String']>;
+  findInvitationCreator?: Maybe<Profile>;
 };
 
 
@@ -962,6 +963,11 @@ export type QueryDirectPathArgs = {
 
 export type QueryInvoiceArgs = {
   invoiceId: Scalars['Int'];
+};
+
+
+export type QueryFindInvitationCreatorArgs = {
+  code: Scalars['String'];
 };
 
 export type QueryCitiesByGeonameIdInput = {
@@ -2191,6 +2197,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   tagById?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagByIdArgs, 'id'>>;
   directPath?: Resolver<ResolversTypes['TransitivePath'], ParentType, ContextType, RequireFields<QueryDirectPathArgs, 'from' | 'to' | 'amount'>>;
   invoice?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryInvoiceArgs, 'invoiceId'>>;
+  findInvitationCreator?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryFindInvitationCreatorArgs, 'code'>>;
 }>;
 
 export type RedeemClaimedInvitationResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['RedeemClaimedInvitationResult'] = ResolversParentTypes['RedeemClaimedInvitationResult']> = ResolversObject<{

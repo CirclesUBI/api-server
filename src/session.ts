@@ -11,6 +11,10 @@ export class Session
     {
         return crypto.randomBytes(length).toString('base64').substr(0, length);
     }
+    public static generateRandomHexString(length:number)
+    {
+        return crypto.randomBytes(Math.ceil(length / 2)).toString('hex').substr(0, length);
+    }
 
     static async logout(context:Context, prisma:PrismaClient, sessionToken:string)
     {

@@ -102,6 +102,8 @@ model VerifiedSafe {
 
     swapFundingTransaction Transaction? @relation(name: "VerifiedSafe_SwapFundingTransaction", fields: [swapFundingTransactionHash], references: [transactionHash])
     swapFundingTransactionHash String?
+
+    inviteCount Int @default(0) // Number of created invitations
 }
 
 model Profile {

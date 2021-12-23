@@ -4,7 +4,7 @@ import { isBILMember } from "../../canAccess";
 import { VerifiedSafe } from "../../api-db/client";
 import { RpcGateway } from "../../rpcGateway";
 import { Environment } from "../../environment";
-import {ApiPubSub} from "../../pubsub";
+import {Dropper} from "../../dropper/dropper";
 
 export const verifySafe = async (
   parent: any,
@@ -61,6 +61,8 @@ export const verifySafe = async (
     await Environment.indexDb.query(
       `call publish_event('follow_trust', '{"to":"${bilOrga.circlesAddress.toLowerCase()}"}');`);
   }
+
+  await Dropper.createInvitations(verifiedSafe, 9);
 
   return {
     success: true,

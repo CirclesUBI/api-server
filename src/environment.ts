@@ -278,6 +278,9 @@ export class Environment {
   static get isAutomatedTest() : boolean {
     return !!process.env.IS_AUTOMATED_TEST;
   }
+  static get fixedGasPrice() : number {
+    return !process.env.IS_AUTOMATED_TEST ? 0 : 1;
+  }
 
   /**
    * The safe address of the organisation which operates this instance.

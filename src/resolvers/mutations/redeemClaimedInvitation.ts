@@ -1,5 +1,4 @@
 import {Context} from "../../context";
-import {PrismaClient} from "../../api-db/client";
 import {RpcGateway} from "../../rpcGateway";
 import { BN } from "ethereumjs-util";
 import {RedeemClaimedInvitationResult} from "../../types";
@@ -16,52 +15,57 @@ export function redeemClaimedInvitation() {
     const claimedInvitation = await Environment.readWriteApiDb.invitation.findFirst({
       where: {
         claimedByProfileId: callerInfo.profile.id
+      },
+      include: {
+        claimedBy: true
       }
     });
 
     if (!claimedInvitation) {
       throw new Error(`No claimed invitation for profile ${callerInfo.profile.id}`);
     }
+    if (!claimedInvitation.claimedBy?.circlesSafeOwner) {
+      throw new Error(`Profile ${claimedInvitation.claimedByProfileId} previously claimed invitation ${claimedInvitation.code} but has no circlesSafeOwner set to redeem it to.`);
+    }
 
     try {
       const web3 = RpcGateway.get();
-      const balance = await web3.eth.getBalance(claimedInvitation.address);
-      const eoaBalance = new BN(balance);
 
-      if (eoaBalance.lt(new BN(web3.utils.toWei("0.1", "ether")))) {
+      const invitationFundsRecipient = claimedInvitation.claimedBy.circlesSafeOwner;
+      const invitationFundsAmountInEth = "0.5";
+      const invitationFundsAmountInWei = new BN(web3.utils.toWei(invitationFundsAmountInEth, "ether"));
+      const invitationFundsBalance = await web3.eth.getBalance(Environment.invitationFundsSafe.address);
+
+      context.log(`Redeeming invitation ${claimedInvitation.code}: Invitations funds balance: ${invitationFundsBalance.toString()}`);
+      context.log(`Redeeming invitation ${claimedInvitation.code}: Sending invitation funds of ${invitationFundsAmountInEth} xdai to '${invitationFundsRecipient}' ..`);
+
+      let invitationFundsRecipientBalance = await web3.eth.getBalance(invitationFundsRecipient);
+      context.log(`Redeeming invitation ${claimedInvitation.code}: ${invitationFundsRecipient}'s balance is: ${invitationFundsRecipientBalance}`);
+
+      const fundEoaReceipt = await Environment.invitationFundsSafe.transferEth(
+        Environment.invitationFundsSafeOwner.privateKey,
+        invitationFundsAmountInWei,
+        invitationFundsRecipient);
+
+      context.log(`Redeeming invitation ${claimedInvitation.code}: Transaction hash: ${fundEoaReceipt.transactionHash}`);
+
+      invitationFundsRecipientBalance = await web3.eth.getBalance(invitationFundsRecipient);
+      context.log(`Redeeming invitation ${claimedInvitation.code}: ${invitationFundsRecipient}'s balance is: ${invitationFundsRecipientBalance}`);
+
+      if (new BN(invitationFundsRecipientBalance).lt(new BN(web3.utils.toWei("0.48", "ether")))) {
+        context.log(`Redeeming invitation ${claimedInvitation.code}: ERROR: ${invitationFundsRecipient} couldn't be funded.`);
+
         return <RedeemClaimedInvitationResult>{
           success: false,
-          error: "The invitation isn't funded"
+          error: "You safe owner EOA couldn't be funded."
         }
       }
-
-      const gas = 41000;
-      const gasPrice = new BN(await web3.eth.getGasPrice());
-      const totalFee = gasPrice.mul(new BN(gas.toString()));
-      const nonce = await web3.eth.getTransactionCount(claimedInvitation.address);
-      const availableForTransfer = eoaBalance.sub(totalFee)
-
-      const account = web3.eth.accounts.privateKeyToAccount(claimedInvitation.key);
-      const signedTx = await account.signTransaction({
-        from: claimedInvitation.address,
-        to: callerInfo.profile.circlesSafeOwner?.toLowerCase(),
-        value: availableForTransfer,
-        gasPrice: gasPrice,
-        gas: gas,
-        nonce: nonce
-      });
-
-      if (!signedTx?.rawTransaction) {
-        throw new Error(`Couldn't send the invitation transaction`);
-      }
-
-      const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
 
       await Environment.readWriteApiDb.invitation.updateMany({
         data: {
           redeemedAt: new Date(),
           redeemedByProfileId: callerInfo.profile.id,
-          redeemTxHash: receipt.transactionHash
+          redeemTxHash: fundEoaReceipt.transactionHash
         },
         where: {
           id: claimedInvitation.id
@@ -70,7 +74,7 @@ export function redeemClaimedInvitation() {
 
       return <RedeemClaimedInvitationResult> {
         success: true,
-        transactionHash: receipt.transactionHash
+        transactionHash: fundEoaReceipt.transactionHash
       }
     } catch (e) {
       return <RedeemClaimedInvitationResult>{

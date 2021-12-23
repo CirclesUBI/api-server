@@ -10,10 +10,7 @@ export function myInvitations() {
 
         const invitations = await Environment.readonlyApiDb.invitation.findMany({
             where: {
-                forSafeAddress: caller.profile.circlesAddress,
-                fundedAt: {
-                    not: null
-                }
+                forSafeAddress: caller.profile.circlesAddress
             },
             include: {
                 claimedBy: true

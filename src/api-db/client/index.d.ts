@@ -83,6 +83,7 @@ export type VerifiedSafe = {
   inviteeRewardTransactionHash: string | null
   inviterRewardTransactionHash: string | null
   swapFundingTransactionHash: string | null
+  inviteCount: number
 }
 
 /**
@@ -4057,12 +4058,14 @@ export namespace Prisma {
     createdByProfileId: number | null
     createdByOrganisationId: number | null
     revokedByProfileId: number | null
+    inviteCount: number | null
   }
 
   export type VerifiedSafeSumAggregateOutputType = {
     createdByProfileId: number | null
     createdByOrganisationId: number | null
     revokedByProfileId: number | null
+    inviteCount: number | null
   }
 
   export type VerifiedSafeMinAggregateOutputType = {
@@ -4079,6 +4082,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash: string | null
     inviterRewardTransactionHash: string | null
     swapFundingTransactionHash: string | null
+    inviteCount: number | null
   }
 
   export type VerifiedSafeMaxAggregateOutputType = {
@@ -4095,6 +4099,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash: string | null
     inviterRewardTransactionHash: string | null
     swapFundingTransactionHash: string | null
+    inviteCount: number | null
   }
 
   export type VerifiedSafeCountAggregateOutputType = {
@@ -4111,6 +4116,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash: number
     inviterRewardTransactionHash: number
     swapFundingTransactionHash: number
+    inviteCount: number
     _all: number
   }
 
@@ -4119,12 +4125,14 @@ export namespace Prisma {
     createdByProfileId?: true
     createdByOrganisationId?: true
     revokedByProfileId?: true
+    inviteCount?: true
   }
 
   export type VerifiedSafeSumAggregateInputType = {
     createdByProfileId?: true
     createdByOrganisationId?: true
     revokedByProfileId?: true
+    inviteCount?: true
   }
 
   export type VerifiedSafeMinAggregateInputType = {
@@ -4141,6 +4149,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: true
     inviterRewardTransactionHash?: true
     swapFundingTransactionHash?: true
+    inviteCount?: true
   }
 
   export type VerifiedSafeMaxAggregateInputType = {
@@ -4157,6 +4166,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: true
     inviterRewardTransactionHash?: true
     swapFundingTransactionHash?: true
+    inviteCount?: true
   }
 
   export type VerifiedSafeCountAggregateInputType = {
@@ -4173,6 +4183,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: true
     inviterRewardTransactionHash?: true
     swapFundingTransactionHash?: true
+    inviteCount?: true
     _all?: true
   }
 
@@ -4302,6 +4313,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash: string | null
     inviterRewardTransactionHash: string | null
     swapFundingTransactionHash: string | null
+    inviteCount: number
     _count: VerifiedSafeCountAggregateOutputType | null
     _avg: VerifiedSafeAvgAggregateOutputType | null
     _sum: VerifiedSafeSumAggregateOutputType | null
@@ -4343,6 +4355,7 @@ export namespace Prisma {
     inviterRewardTransactionHash?: boolean
     swapFundingTransaction?: boolean | TransactionArgs
     swapFundingTransactionHash?: boolean
+    inviteCount?: boolean
   }
 
   export type VerifiedSafeInclude = {
@@ -17391,7 +17404,8 @@ export namespace Prisma {
     rewardProcessingWorker: 'rewardProcessingWorker',
     inviteeRewardTransactionHash: 'inviteeRewardTransactionHash',
     inviterRewardTransactionHash: 'inviterRewardTransactionHash',
-    swapFundingTransactionHash: 'swapFundingTransactionHash'
+    swapFundingTransactionHash: 'swapFundingTransactionHash',
+    inviteCount: 'inviteCount'
   };
 
   export type VerifiedSafeScalarFieldEnum = (typeof VerifiedSafeScalarFieldEnum)[keyof typeof VerifiedSafeScalarFieldEnum]
@@ -17781,6 +17795,7 @@ export namespace Prisma {
     inviterRewardTransactionHash?: StringNullableFilter | string | null
     swapFundingTransaction?: XOR<TransactionRelationFilter, TransactionWhereInput> | null
     swapFundingTransactionHash?: StringNullableFilter | string | null
+    inviteCount?: IntFilter | number
   }
 
   export type VerifiedSafeOrderByInput = {
@@ -17797,6 +17812,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: SortOrder
     inviterRewardTransactionHash?: SortOrder
     swapFundingTransactionHash?: SortOrder
+    inviteCount?: SortOrder
   }
 
   export type VerifiedSafeWhereUniqueInput = {
@@ -17820,6 +17836,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: StringNullableWithAggregatesFilter | string | null
     inviterRewardTransactionHash?: StringNullableWithAggregatesFilter | string | null
     swapFundingTransactionHash?: StringNullableWithAggregatesFilter | string | null
+    inviteCount?: IntWithAggregatesFilter | number
   }
 
   export type ProfileWhereInput = {
@@ -18708,6 +18725,7 @@ export namespace Prisma {
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
+    inviteCount?: number
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
@@ -18730,6 +18748,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: string | null
     inviterRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
+    inviteCount?: number
   }
 
   export type VerifiedSafeUpdateInput = {
@@ -18740,6 +18759,7 @@ export namespace Prisma {
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
@@ -18762,6 +18782,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type VerifiedSafeCreateManyInput = {
@@ -18778,6 +18799,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: string | null
     inviterRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
+    inviteCount?: number
   }
 
   export type VerifiedSafeUpdateManyMutationInput = {
@@ -18788,6 +18810,7 @@ export namespace Prisma {
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type VerifiedSafeUncheckedUpdateManyInput = {
@@ -18804,6 +18827,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type ProfileCreateInput = {
@@ -24416,6 +24440,7 @@ export namespace Prisma {
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
+    inviteCount?: number
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
@@ -24436,6 +24461,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: string | null
     inviterRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
+    inviteCount?: number
   }
 
   export type VerifiedSafeCreateOrConnectWithoutCreatedByInput = {
@@ -24456,6 +24482,7 @@ export namespace Prisma {
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
+    inviteCount?: number
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
@@ -24476,6 +24503,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: string | null
     inviterRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
+    inviteCount?: number
   }
 
   export type VerifiedSafeCreateOrConnectWithoutCreatedByOrganisationInput = {
@@ -24496,6 +24524,7 @@ export namespace Prisma {
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
+    inviteCount?: number
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
@@ -24516,6 +24545,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: string | null
     inviterRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
+    inviteCount?: number
   }
 
   export type VerifiedSafeCreateOrConnectWithoutRevokedByInput = {
@@ -24884,6 +24914,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: StringNullableFilter | string | null
     inviterRewardTransactionHash?: StringNullableFilter | string | null
     swapFundingTransactionHash?: StringNullableFilter | string | null
+    inviteCount?: IntFilter | number
   }
 
   export type VerifiedSafeUpsertWithWhereUniqueWithoutCreatedByOrganisationInput = {
@@ -26960,6 +26991,7 @@ export namespace Prisma {
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
+    inviteCount?: number
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
@@ -26980,6 +27012,7 @@ export namespace Prisma {
     rewardProcessingWorker?: string | null
     inviterRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
+    inviteCount?: number
   }
 
   export type VerifiedSafeCreateOrConnectWithoutInviteeRewardTransactionInput = {
@@ -26995,6 +27028,7 @@ export namespace Prisma {
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
+    inviteCount?: number
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
@@ -27015,6 +27049,7 @@ export namespace Prisma {
     rewardProcessingWorker?: string | null
     inviteeRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
+    inviteCount?: number
   }
 
   export type VerifiedSafeCreateOrConnectWithoutInviterRewardTransactionInput = {
@@ -27030,6 +27065,7 @@ export namespace Prisma {
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
+    inviteCount?: number
     createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
@@ -27050,6 +27086,7 @@ export namespace Prisma {
     rewardProcessingWorker?: string | null
     inviteeRewardTransactionHash?: string | null
     inviterRewardTransactionHash?: string | null
+    inviteCount?: number
   }
 
   export type VerifiedSafeCreateOrConnectWithoutSwapFundingTransactionInput = {
@@ -27126,6 +27163,7 @@ export namespace Prisma {
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
@@ -27146,6 +27184,7 @@ export namespace Prisma {
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type VerifiedSafeUpsertWithoutInviterRewardTransactionInput = {
@@ -27161,6 +27200,7 @@ export namespace Prisma {
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
@@ -27181,6 +27221,7 @@ export namespace Prisma {
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type VerifiedSafeUpsertWithoutSwapFundingTransactionInput = {
@@ -27196,6 +27237,7 @@ export namespace Prisma {
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
@@ -27216,6 +27258,7 @@ export namespace Prisma {
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type ProfileCreateWithoutTagsInput = {
@@ -27695,6 +27738,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: string | null
     inviterRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
+    inviteCount?: number
   }
 
   export type VerifiedSafeCreateManyCreatedByOrganisationInput = {
@@ -27710,6 +27754,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: string | null
     inviterRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
+    inviteCount?: number
   }
 
   export type VerifiedSafeCreateManyRevokedByInput = {
@@ -27725,6 +27770,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: string | null
     inviterRewardTransactionHash?: string | null
     swapFundingTransactionHash?: string | null
+    inviteCount?: number
   }
 
   export type SessionUpdateWithoutProfileInput = {
@@ -28231,6 +28277,7 @@ export namespace Prisma {
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
@@ -28251,6 +28298,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type VerifiedSafeUncheckedUpdateManyWithoutSafesVerifiedByPersonInput = {
@@ -28266,6 +28314,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type VerifiedSafeUpdateWithoutCreatedByOrganisationInput = {
@@ -28276,6 +28325,7 @@ export namespace Prisma {
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
@@ -28296,6 +28346,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type VerifiedSafeUncheckedUpdateManyWithoutSafesVerifiedByOrganisationInput = {
@@ -28311,6 +28362,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type VerifiedSafeUpdateWithoutRevokedByInput = {
@@ -28321,6 +28373,7 @@ export namespace Prisma {
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
     createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
@@ -28341,6 +28394,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type VerifiedSafeUncheckedUpdateManyWithoutSafesRevokedByPersonInput = {
@@ -28356,6 +28410,7 @@ export namespace Prisma {
     inviteeRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     inviterRewardTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     swapFundingTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type TagCreateManyChatMessageInput = {
