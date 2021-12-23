@@ -2,9 +2,16 @@ type Server {
   version: String!
 }
 
+enum ProfileOrigin {
+  CirclesGarden
+  CirclesLand
+  Unknown
+}
+
 type Profile {
   id: Int!
   type: String
+  origin: ProfileOrigin
   status: String
   circlesAddress: String
   successorOfCirclesAddress: String

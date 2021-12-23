@@ -1,4 +1,4 @@
-import {QuerySearchArgs} from "../../types";
+import {ProfileOrigin, QuerySearchArgs} from "../../types";
 import {Context} from "../../context";
 import {PrismaClient} from "../../api-db/client";
 
@@ -111,6 +111,7 @@ export function search(prisma: PrismaClient) {
         return result.map(o => {
             return {
                 ...o,
+                origin: ProfileOrigin.Unknown,
                 circlesSafeOwner: o.circlesSafeOwner?.toLowerCase()
             }
         });

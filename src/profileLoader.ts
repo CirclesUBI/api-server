@@ -1,6 +1,6 @@
-import { PrismaClient, VerifiedSafe } from "./api-db/client";
-import { DisplayCurrency, Organisation, Profile, Verification } from "./types";
-import { RpcGateway } from "./rpcGateway";
+import {PrismaClient, VerifiedSafe} from "./api-db/client";
+import {DisplayCurrency, Organisation, Profile, ProfileOrigin, Verification} from "./types";
+import {RpcGateway} from "./rpcGateway";
 import fetch from "cross-fetch";
 
 export type SafeProfileMap = { [safeAddress: string]: Profile | null };
@@ -240,10 +240,18 @@ export class ProfileLoader {
 
     const allProfilesMap: SafeProfileMap = {};
     Object.entries(circlesGardenLocalResult).forEach((entry) => {
-      allProfilesMap[entry[0]] = entry[1];
+      const profile = entry[1];
+      if (profile) {
+        profile.origin = ProfileOrigin.CirclesGarden;
+        allProfilesMap[entry[0]] = profile;
+      }
     });
     Object.entries(circlesLandProfilesResult).forEach((entry) => {
-      allProfilesMap[entry[0]] = entry[1];
+      const profile = entry[1];
+      if (profile) {
+        profile.origin = ProfileOrigin.CirclesLand;
+        allProfilesMap[entry[0]] = profile;
+      }
     });
 
     if (allProfilesMap["0x0000000000000000000000000000000000000000"]) {
@@ -253,6 +261,7 @@ export class ProfileLoader {
         lastName: "Land",
         avatarUrl: "https://dev.circles.land/logos/circles.png",
         circlesAddress: "0x0000000000000000000000000000000000000000",
+        origin: ProfileOrigin.Unknown
       };
     }
 
@@ -268,8 +277,12 @@ export class ProfileLoader {
       Object.keys(nonLocalProfileMap)
     );
     Object.entries(circlesGardenRemoteResult).forEach((entry) => {
-      allProfilesMap[entry[0]] = entry[1];
-      nonLocalProfileMap[entry[0]] = entry[1];
+      const profile = entry[1];
+      if (profile) {
+        profile.origin = ProfileOrigin.CirclesGarden;
+        allProfilesMap[entry[0]] = profile;
+        nonLocalProfileMap[entry[0]] = profile;
+      }
     });
 
     const nonLocal = Object.keys(nonLocalProfileMap).filter(
@@ -282,6 +295,7 @@ export class ProfileLoader {
     const nonLocalProfiles = nonLocal.map((o) => nonLocalProfileMap[o]);
     const notFoundProfiles = notFound.map((o) => {
       return <any>{
+        origin: ProfileOrigin.Unknown,
         circlesAddress: o,
         name: o,
         avatarUrl: null,

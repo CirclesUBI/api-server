@@ -715,6 +715,7 @@ export type Profile = {
   __typename?: 'Profile';
   id: Scalars['Int'];
   type?: Maybe<Scalars['String']>;
+  origin?: Maybe<ProfileOrigin>;
   status?: Maybe<Scalars['String']>;
   circlesAddress?: Maybe<Scalars['String']>;
   successorOfCirclesAddress?: Maybe<Scalars['String']>;
@@ -780,6 +781,12 @@ export type ProfileEventFilter = {
 };
 
 export type ProfileOrOrganisation = Profile | Organisation;
+
+export enum ProfileOrigin {
+  CirclesGarden = 'CirclesGarden',
+  CirclesLand = 'CirclesLand',
+  Unknown = 'Unknown'
+}
 
 export type ProofPaymentResult = {
   __typename?: 'ProofPaymentResult';
@@ -1416,6 +1423,7 @@ export type ResolversTypes = ResolversObject<{
   ProfileEvent: ResolverTypeWrapper<Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
   ProfileEventFilter: ProfileEventFilter;
   ProfileOrOrganisation: ResolversTypes['Profile'] | ResolversTypes['Organisation'];
+  ProfileOrigin: ProfileOrigin;
   ProofPaymentResult: ResolverTypeWrapper<ProofPaymentResult>;
   PublicEvent: ResolverTypeWrapper<Omit<PublicEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
   Purchase: ResolverTypeWrapper<Purchase>;
@@ -2073,6 +2081,7 @@ export type OrganisationCreatedResolvers<ContextType = any, ParentType extends R
 export type ProfileResolvers<ContextType = any, ParentType extends ResolversParentTypes['Profile'] = ResolversParentTypes['Profile']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  origin?: Resolver<Maybe<ResolversTypes['ProfileOrigin']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   successorOfCirclesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
