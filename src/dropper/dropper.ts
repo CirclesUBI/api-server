@@ -19,10 +19,16 @@ export class Dropper {
     }
 
     const now = new Date();
+    const existingInvitationCount = await Environment.readWriteApiDb.invitation.count({
+      where: {
+        forSafeAddress: verifiedSafe.safeAddress
+      }
+    });
+
     const createInvitationsData:InvitationCreateManyInput[] = [];
-    for(let i = 1; i < newInvitationCount + 1; i++) {
+    for(let i = existingInvitationCount + 1; i < existingInvitationCount + newInvitationCount + 1; i++) {
       createInvitationsData.push({
-        name: `Invitation ${verifiedSafe.inviteCount + i}`,
+        name: `Invitation ${i}`,
         createdAt: now,
         createdByProfileId: profile.id,
         address: "0x", // invitationEoa.address.toLowerCase(),
