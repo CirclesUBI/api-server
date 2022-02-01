@@ -1,25 +1,29 @@
 # o-platform/api-server
 
-## Api-Schema:
+This service provides a GraphQL server for use by the frontend ([o-platform](https://github.com/circlesland/o-platform)).  
 
-```graphql
-type Query {
-  server: Server
-  profiles(query: QueryProfileInput!): [Profile!]!
-  circlesWallets(query: QueryCirclesWalletInput!): [CirclesWallet!]!
-}
+## Getting started:
+### Prerequisites
+* A [Postgresql 11+](https://www.postgresql.org/) instance
+* [NodeJS 16.11](https://nodejs.org/download/release/v16.11.1/) (it's advised to use the [node version manager](https://github.com/nvm-sh/nvm) to switch between versions)
+* [git](https://git-scm.com/downloads) 
 
-type Mutation {
-  exchangeToken: ExchangeTokenResponse!
-  upsertProfile(data: UpsertProfileInput!): Profile!
-  addCirclesWallet(data: AddCirclesWalletInput!): CirclesWallet!
-  addCirclesToken(data: AddCirclesTokenInput!): CirclesToken!
-  addCirclesTrustRelation(
-    data: AddCirclesTrustRelationInput!
-  ): CirclesTrustRelation!
-  addCirclesTokenTransfer(data: IndexTransferInput!): CirclesTokenTransfer!
-}
+### Create the api-db and deploy the schema
+1. Clone the repository
+```shell
+git clone https://github.com/circlesland/api-server.git
 ```
+2. Change the directory and branch
+```shell
+cd api-server
+git checkout dev
+```
+3. Create a new 'api' database on your postgres server
+
+
+4. Replace the connection string placeholder in the prisma-file with an actual connection string to the newly created api-db
+
+
 
 ## Database:
 
