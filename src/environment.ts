@@ -95,6 +95,7 @@ export class Environment {
       );
     }
 
+    /*
     if (!process.env.REWARD_TOKEN_ADDRESS) {
       throw new Error(`The REWARD_TOKEN_ADDRESS environment variable is not set.`);
     }
@@ -105,6 +106,7 @@ export class Environment {
       );
     }
     console.log("* Testing verificationRewardFundsSafe ..");
+
     nonce = await this.verificationRewardFundsSafe.getNonce();
     console.log(
       `  ${this.verificationRewardFundsSafe.address} nonce is: ${nonce}`
@@ -115,6 +117,7 @@ export class Environment {
         `The VERIFICATION_REWARD_FUNDS_KEY environment variable is not set.`
       );
     }
+     */
 
     if (
       !process.env.DIGITALOCEAN_SPACES_ENDPOINT ||

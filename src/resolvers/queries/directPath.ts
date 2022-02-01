@@ -64,7 +64,8 @@ export const directPath = async (parent:any, args:QueryDirectPathArgs, context:C
         data: callData
       });
       return true;
-    } catch {
+    } catch(e) {
+      console.log(e);
       throw new Error("Cannot validate the following path: " + JSON.stringify(transfers, null, 2));
     }
   };
@@ -95,7 +96,7 @@ export const directPath = async (parent:any, args:QueryDirectPathArgs, context:C
                    where safe_address = $1
                      and balance > 0
                    order by b.balance desc
-                   limit 5
+                   --limit 5
                ),
                total as (
                    select sum(balance) as total
