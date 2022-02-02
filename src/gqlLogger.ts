@@ -23,13 +23,70 @@ function clearPendingRequests() {
 
 setInterval(() => clearPendingRequests(), 1000);
 
+let queryCounter = 0;
+const queryIds: {[query:string]: number} = {};
+
+function cleanQueryCache () {
+  Object.entries(queryIds)
+      .filter(o => o[1] < queryCounter - 100)
+      .map(o => o[0])
+      .forEach(o => delete queryIds[o]);
+}
+
+const crypto = require('crypto');
+
+function getQueryId(query:string) : {
+  isNew: boolean,
+  query: string,
+  queryId: number,
+  queryHash: string
+} {
+  const sha1 = crypto.createHash('sha1');
+  sha1.update(query);
+  const hash = sha1.digest('hex');
+  sha1.destroy();
+
+  let queryId: number;
+  let isNew = false;
+  if (!queryIds[hash]) {
+    queryId = queryCounter++;
+    queryIds[hash] = queryId;
+    isNew = true;
+  } else {
+    queryId = queryIds[hash];
+  }
+
+  cleanQueryCache();
+
+  return {
+    isNew,
+    query,
+    queryId,
+    queryHash: hash
+  };
+}
+
 export class GqlLogger {
   requestDidStart(args:any) {
-    const operationName = args.request.operationName;
+    let operationName = args.request.operationName;
     const now = new Date();
+    if (!operationName) {
+      const queryId = getQueryId(args.request.query);
+      operationName = "query_" + queryId.queryId.toString();
+      if (args.context) {
+        args.context.operationName = operationName;
+      }
+      if (queryId.isNew) {
+        if (args.context) {
+          console.log(`     [${now.toJSON()}] [${args.context.session?.id}] [${args.context.id}] [${args.context.ipAddress}] [${operationName ?? ""}]: New query: ${queryId.query}`);
+        } else {
+          console.log(`     [${now.toJSON()}] [no-session] [no-context] [] [${operationName ?? ""}]: New query: ${queryId.query}`);
+        }
+      }
+    }
     if (args.context) {
       let context: Context = args.context;
-      context.operationName = operationName;
+      args.context.operationName = operationName;
 
       _pendingRequests[context.id] = {
         begin: now
@@ -37,13 +94,17 @@ export class GqlLogger {
 
       console.log(`  -> [${now.toJSON()}] [${context.session?.id}] [${context.id}] [${context.ipAddress}] [${context.operationName ?? ""}]: ${JSON.stringify(args.request.variables)}`);
     } else {
-      console.log(`  -> [${now.toJSON()}] [no-session] [no-context] [${operationName ?? ""}]: ${JSON.stringify(args.request.variables)}`);
+      console.log(`  -> [${now.toJSON()}] [no-session] [no-context] [] [${operationName ?? ""}]: ${JSON.stringify(args.request.variables)}`);
     }
 
     return {
       willSendResponse(args:any) {
         const now = new Date();
-        const operationName = args.request.operationName;
+        let operationName = args.request.operationName;
+        if (!operationName) {
+          const queryId = getQueryId(args.request.query);
+          operationName = "query_" + queryId.queryId.toString();
+        }
 
         if (args.context) {
           let context: Context = args.context;

@@ -20,6 +20,7 @@ export function myInvitations() {
         return invitations.map(o => <CreatedInvitation>{
             name: o.name,
             address: o.address,
+            ownBalance: "0",
             balance: "0",
             code: o.code,
             createdAt: o.createdAt.toJSON(),

@@ -5,9 +5,14 @@ import BN from "bn.js";
 import {Context} from "../../context";
 import {Environment} from "../../environment";
 
+export const checkSendLimit = async (tokenOwner:string, src:string, dest:string) => {
+
+}
+
 export const directPath = async (parent:any, args:QueryDirectPathArgs, context:Context) => {
   const from = args.from.toLowerCase();
   const to = args.to.toLowerCase();
+  const requestedAmount = new BN(args.amount);
 
   let validateTransfers = async function (transfers: TransitivePath) {
     var token = [];
@@ -70,106 +75,210 @@ export const directPath = async (parent:any, args:QueryDirectPathArgs, context:C
     }
   };
 
-  const sql = `
-          with my_tokens as (
-              select token
-              from crc_balances_by_safe_and_token_2
-              where safe_address = $1
-          ),
-               accepted_tokens as (
-                   select user_token as token
-                   from crc_current_trust_2
-                   where can_send_to = $2
-                     and "limit" > 0
-               ),
-               intersection as (
-                   select *
-                   from my_tokens
-                   intersect
-                   select *
-                   from accepted_tokens
-               ),
-               relevant_balances as (
-                   select b.token, b.token_owner, b.balance as balance
-                   from intersection i
-                            join crc_balances_by_safe_and_token_2 b on i.token = b.token
-                   where safe_address = $1
-                     and balance > 0
-                   order by b.balance desc
-                   --limit 5
-               ),
-               total as (
-                   select sum(balance) as total
-                   from relevant_balances
-               ),
-               distribution as (
-                   select *, ((1 / (select total from total)) * balance) as weight
-                   from relevant_balances
-               ),
-               price as (
-                   select $3::numeric as price
-               ),
-               weighted_price_parts as (
-                   select *
-                        , (select * from price)                    as price
-                        , (select * from price) * weight           as weighted_price_part
-                        , trunc((select * from price) * weight, 0) as weighted_price_part_int
-                   from distribution
-               ),
-               weighted_price_parts_sum as (
-                   select sum(weighted_price_part_int)              as weighted_price_part_sum_int
-                        , sum(weighted_price_part)                  as weighted_price_part_sum
-                        , max(price) - sum(weighted_price_part_int) as weighted_price_error
-                        , max(balance)                              as max_balance
-                   from weighted_price_parts
-               ),
-               result as (
-                   select token
-                        , token_owner
-                        , balance
-                        , case
-                              when (balance = (select max_balance from weighted_price_parts_sum))
-                                  -- The token with the maximum balance must pay for previous rounding errors
-                                  then weighted_price_part_int +
-                                       (select weighted_price_error from weighted_price_parts_sum)
-                       -- all others use the calculated int part
-                              else weighted_price_part_int
-                       end as weighted_price_part
-                   from weighted_price_parts
-                   order by weight asc
-               )
-          select token
-               , token_owner
-               , balance
-               , weighted_price_part as amount
-          from result;`;
+  const usableTokensWithBalanceSql = `
+    with my_tokens as (
+      select token
+      from crc_balances_by_safe_and_token_2
+      where safe_address = $1
+    ),
+    accepted_tokens as (
+      select user_token as token
+      from crc_current_trust_2
+      where can_send_to = $2
+        and "limit" > 0
+    ),
+    intersection as (
+      select *
+      from my_tokens
+      intersect
+      select *
+      from accepted_tokens
+    ),
+    relevant_balances as (
+      select b.token, b.token_owner, b.balance as balance
+      from intersection i
+         join crc_balances_by_safe_and_token_2 b on i.token = b.token
+      where safe_address = $1
+        and balance > 0
+      order by b.balance desc
+    )
+    select *
+    from relevant_balances;`;
 
-  let requestedAmount = new BN(args.amount);
+  const usableTokensWithBalanceResult =
+      await Environment.indexDb.query(
+          usableTokensWithBalanceSql, [
+              from,
+              to
+          ]);
 
-  const result = await Environment.indexDb.query(sql, [from, to, requestedAmount.toString()]);
-  const transfers: { token: string, tokenOwner: string, balance: BN, weighted_price_part: BN }[] = [];
+  const maxTheoreticallyTransferableAmount = usableTokensWithBalanceResult.rows.reduce((p,c) => p.add(new BN(c.balance)), new BN("0"));
+  context.log(`The max. theoretically transferable amount is: ${maxTheoreticallyTransferableAmount.toString()}`);
 
-  result.rows.forEach(o => {
-    const item = {
-      token: o.token,
-      tokenOwner: o.token_owner,
-      balance: new BN(o.balance),
-      weighted_price_part: new BN(o.amount),
+  const tokenOwnerOwnTokenBalancesSql = `
+    with own_balances as (
+      select safe_address
+           , token
+           , token_owner
+           , balance as owner_balance
+      from crc_balances_by_safe_and_token_2 bbsat
+      where bbsat.token_owner = ANY($3)
+        and bbsat.token_owner = bbsat.safe_address
+    ), own_balances_with_limits as (
+      select ob.*, ct.can_send_to, ct."limit"
+      from own_balances ob
+             join crc_current_trust_2 ct on ct.can_send_to = $2
+        and ct."user" = ob.safe_address
+    ), including_sender_balances as (
+      select o.*, m.balance as sender_balance
+      from own_balances_with_limits o
+             join crc_balances_by_safe_and_token_2 m on m.safe_address = $1
+        and m.token = o.token
+        and m.token_owner = o.token_owner
+    ), including_receiver_balances as (
+      select m.*, n.balance as receiver_balance
+      from including_sender_balances m
+             left join crc_balances_by_safe_and_token_2 n on n.safe_address = $2
+        and n.token = m.token
+        and n.token_owner = m.token_owner
+    ), cleaned as (
+      select token
+           , token_owner
+           , "limit"
+           , owner_balance
+           , coalesce(sender_balance, 0) src_balance
+           , coalesce(receiver_balance, 0) dest_balance
+      from including_receiver_balances
+    ), max_transferable as (
+      select cleaned.token_owner
+           , cleaned.token
+           , cleaned."limit"
+           , cleaned.src_balance
+           , cleaned.dest_balance
+           -- uint256 max = (userToToken[dest].balanceOf(dest).mul(limits[dest][tokenOwner])).div(oneHundred);
+           , ((select balance
+               from crc_balances_by_safe_and_token_2
+               where safe_address = $2
+                 and token = (
+                 select token
+                 from crc_signup_2
+                 where "user" = $2
+                 limit 1)
+              ) * cleaned."limit" / 100) as max
+           , dest_balance * (100 - cleaned."limit") / 100 as dest_balance_scaled
+      from cleaned
+    )
+    select token
+         , token_owner
+         , max
+         , dest_balance_scaled
+         , case when max < dest_balance
+                  then 0
+                else (
+                  case when max - dest_balance_scaled > src_balance then src_balance else max - dest_balance_scaled end
+                  )
+      end as max_transferable_amount
+    from max_transferable;`;
+
+  const tokenOwners = usableTokensWithBalanceResult.rows.map(o => o.token_owner);
+  const tokenOwnerOwnTokenBalancesResult = await Environment.indexDb.query(
+      tokenOwnerOwnTokenBalancesSql, [
+          from,
+          to,
+          tokenOwners
+      ]);
+
+  const tokenOwnersOwnTokenBalances:{[tokenOwner:string]:{
+      token: string
+      tokenOwner: string
+      limit: number
+      maxTransferableAmount: BN
+      maxTransferableAmountStr: string
+    }
+  } = tokenOwnerOwnTokenBalancesResult.rows.reduce((p,c) => {
+    /*
+    userToToken[dest].balanceOf(dest) // Dest's balance of his/her own tokens
+    .mul(limits[dest][tokenOwner]) // multiplied by Dest's limit of the tokens in transfer
+    .div(oneHundred) // divided by 100
+     */
+    p[c.token_owner] = {
+      maxTransferableAmount: new BN(c.max_transferable_amount),
+      token: c.token,
+      tokenOwner: c.token_owner
     };
-    transfers.push(item);
-  });
 
-  const totalBalance = transfers.reduce((p, c) => p.add(c.balance), new BN("0"));
-  if (requestedAmount.gt(totalBalance)) {
-    // Not enough balance to perform the transaction
-    return <TransitivePath>{
-      requestedAmount: args.amount,
-      flow: totalBalance.toString(),
-      transfers: []
-    };
+    p[c.token_owner].maxTransferableAmountStr = p[c.token_owner].maxTransferableAmount.toString();
+
+    return p;
+  }, <{
+    [tokenOwner:string]:{
+      token: string
+      tokenOwner: string
+      limit: number
+      maxTransferableAmount: BN
+      maxTransferableAmountStr: string
+    }
+  }>{});
+
+  const usableTokensWithLimitResult = Object.values(tokenOwnersOwnTokenBalances);
+  const maxPracticallyTransferableAmount = usableTokensWithLimitResult.reduce((p,c) => p.add(c.maxTransferableAmount), new BN("0"));
+  context.log(`The max. practically transferable amount is: ${maxPracticallyTransferableAmount.toString()}`);
+
+  if (requestedAmount.gt(maxTheoreticallyTransferableAmount)) {
+    throw new Error(`The amount exceeds the max. theoretically transferable amount by ${requestedAmount.sub(maxTheoreticallyTransferableAmount).toString()} wei`);
+  }
+  if (requestedAmount.gt(maxPracticallyTransferableAmount)) {
+    throw new Error(`The amount exceeds the max. practically transferable amount by ${requestedAmount.sub(maxPracticallyTransferableAmount).toString()} wei`);
   }
 
-  const flow = transfers.reduce((p, c) => p.add(c.balance), new BN("0"));
+  const transfers: {
+    token: string
+    tokenOwner: string
+    amount: BN
+  }[] = [];
+
+  const zeroBN = new BN("0")
+  let remainingAmount = requestedAmount;
+  let rowIndex = 0;
+
+  while (remainingAmount.gt(zeroBN)) {
+    const currentBalanceRow = usableTokensWithLimitResult[rowIndex];
+    const remainingAfterThis = remainingAmount.sub(currentBalanceRow.maxTransferableAmount);
+
+    if (remainingAfterThis.gt(new BN("0"))) {
+      // Transfer wouldn't be saturated. Also use the next balance.
+      remainingAmount = remainingAfterThis;
+      transfers.push({
+        token: currentBalanceRow.token,
+        tokenOwner: currentBalanceRow.tokenOwner,
+        amount: currentBalanceRow.maxTransferableAmount
+      });
+      rowIndex++;
+    } else if (remainingAfterThis.lt(new BN("0"))) {
+      // Transfer would be over-saturated. Stop at this balance and only take the necessary part.
+      const partialAmount = currentBalanceRow.maxTransferableAmount.add(remainingAfterThis);
+      transfers.push({
+        token: currentBalanceRow.token,
+        tokenOwner: currentBalanceRow.tokenOwner,
+        amount: partialAmount
+      });
+      break;
+    } else {
+      // Perfect. Stop and use the whole balance.
+      transfers.push({
+        token: currentBalanceRow.token,
+        tokenOwner: currentBalanceRow.tokenOwner,
+        amount: currentBalanceRow.maxTransferableAmount
+      });
+      break;
+    }
+  }
+
+  if (transfers.length > 20) {
+    throw new Error(`The transfer would result in more than 20 steps.`);
+  }
+
+  const flow = transfers.reduce((p, c) => p.add(c.amount), new BN("0"));
   const path = <TransitivePath>{
     requestedAmount: requestedAmount.toString(),
     flow: flow.toString(),
@@ -179,7 +288,7 @@ export const directPath = async (parent:any, args:QueryDirectPathArgs, context:C
         from: args.from,
         to: args.to,
         tokenOwner: o.tokenOwner,
-        value: o.weighted_price_part.toString()
+        value: o.amount.toString()
       }
     })
   };

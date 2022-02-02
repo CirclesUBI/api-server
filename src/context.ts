@@ -40,7 +40,7 @@ export class Context {
     if (this.session?.id) {
       console.log(`     [${now.toJSON()}] [${this.session?.id}] [${this.id}] [${this.ipAddress}] [${this.operationName ?? ""}]: ${str}`);
     } else {
-      console.log(`     [${now.toJSON()}] [no-session] [${this.id}] [${this.operationName ?? ""}]: ${str}`);
+      console.log(`     [${now.toJSON()}] [undefined] [${this.id}] [${this.ipAddress}] [${this.operationName ?? ""}]: ${str}`);
     }
   }
 
