@@ -165,19 +165,19 @@ export const directPath = async (parent:any, args:QueryDirectPathArgs, context:C
                  where "user" = $2
                  limit 1)
               ) * cleaned."limit" / 100) as max
-           , dest_balance * (100 - cleaned."limit") / 100 as dest_balance_scaled
+           , (dest_balance * (100 - cleaned."limit") / 100) as dest_balance_scaled
       from cleaned
     )
     select token
          , token_owner
          , max
          , dest_balance_scaled
-         , case when max < dest_balance
+         , (case when max < dest_balance
                   then 0
                 else (
                   case when max - dest_balance_scaled > src_balance then src_balance else max - dest_balance_scaled end
                   )
-      end as max_transferable_amount
+      end)::decimal(48,0) as max_transferable_amount
     from max_transferable;`;
 
   const tokenOwners = usableTokensWithBalanceResult.rows.map(o => o.token_owner);
@@ -196,11 +196,6 @@ export const directPath = async (parent:any, args:QueryDirectPathArgs, context:C
       maxTransferableAmountStr: string
     }
   } = tokenOwnerOwnTokenBalancesResult.rows.reduce((p,c) => {
-    /*
-    userToToken[dest].balanceOf(dest) // Dest's balance of his/her own tokens
-    .mul(limits[dest][tokenOwner]) // multiplied by Dest's limit of the tokens in transfer
-    .div(oneHundred) // divided by 100
-     */
     p[c.token_owner] = {
       maxTransferableAmount: new BN(c.max_transferable_amount),
       token: c.token,
@@ -225,10 +220,15 @@ export const directPath = async (parent:any, args:QueryDirectPathArgs, context:C
   context.log(`The max. practically transferable amount is: ${maxPracticallyTransferableAmount.toString()}`);
 
   if (requestedAmount.gt(maxTheoreticallyTransferableAmount)) {
-    throw new Error(`The amount exceeds the max. theoretically transferable amount by ${requestedAmount.sub(maxTheoreticallyTransferableAmount).toString()} wei`);
+    context.log(`The amount exceeds the max. theoretically transferable amount by ${requestedAmount.sub(maxTheoreticallyTransferableAmount).toString()} wei`);
   }
   if (requestedAmount.gt(maxPracticallyTransferableAmount)) {
-    throw new Error(`The amount exceeds the max. practically transferable amount by ${requestedAmount.sub(maxPracticallyTransferableAmount).toString()} wei`);
+    context.log(`The amount exceeds the max. practically transferable amount by ${requestedAmount.sub(maxPracticallyTransferableAmount).toString()} wei`);
+    return <TransitivePath>{
+      requestedAmount: requestedAmount.toString(),
+      flow: maxPracticallyTransferableAmount.toString(),
+      transfers: []
+    };
   }
 
   const transfers: {
