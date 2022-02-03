@@ -156,15 +156,20 @@ export const directPath = async (parent:any, args:QueryDirectPathArgs, context:C
            , cleaned.src_balance
            , cleaned.dest_balance
            -- uint256 max = (userToToken[dest].balanceOf(dest).mul(limits[dest][tokenOwner])).div(oneHundred);
-           , ((select balance
-               from crc_balances_by_safe_and_token_2
-               where safe_address = $2
-                 and token = (
-                 select token
-                 from crc_signup_2
-                 where "user" = $2
-                 limit 1)
-              ) * cleaned."limit" / 100) as max
+           , case when(exists(select * from crc_organisation_signup_2 where organisation = $2)) 
+             then
+                cleaned.src_balance
+             else
+               ((select balance
+                 from crc_balances_by_safe_and_token_2
+                 where safe_address = $2
+                   and token = (
+                   select token
+                   from crc_signup_2
+                   where "user" = $2
+                   limit 1)
+                ) * cleaned."limit" / 100)
+             end as max
            , (dest_balance * (100 - cleaned."limit") / 100) as dest_balance_scaled
       from cleaned
     )
@@ -177,7 +182,7 @@ export const directPath = async (parent:any, args:QueryDirectPathArgs, context:C
                 else (
                   case when max - dest_balance_scaled > src_balance then src_balance else max - dest_balance_scaled end
                   )
-      end)::decimal(48,0) as max_transferable_amount
+      end) as max_transferable_amount
     from max_transferable;`;
 
   const tokenOwners = usableTokensWithBalanceResult.rows.map(o => o.token_owner);
@@ -196,8 +201,13 @@ export const directPath = async (parent:any, args:QueryDirectPathArgs, context:C
       maxTransferableAmountStr: string
     }
   } = tokenOwnerOwnTokenBalancesResult.rows.reduce((p,c) => {
+    const decimalPointPos = c.max_transferable_amount.indexOf(".");
+    let maxTransferableAmount = c.max_transferable_amount;
+    if (decimalPointPos > -1) {
+      maxTransferableAmount = maxTransferableAmount.substr(0, decimalPointPos);
+    }
     p[c.token_owner] = {
-      maxTransferableAmount: new BN(c.max_transferable_amount),
+      maxTransferableAmount: new BN(maxTransferableAmount),
       token: c.token,
       tokenOwner: c.token_owner
     };
