@@ -5,10 +5,6 @@ import BN from "bn.js";
 import {Context} from "../../context";
 import {Environment} from "../../environment";
 
-export const checkSendLimit = async (tokenOwner:string, src:string, dest:string) => {
-
-}
-
 export const directPath = async (parent:any, args:QueryDirectPathArgs, context:Context) => {
   const from = args.from.toLowerCase();
   const to = args.to.toLowerCase();

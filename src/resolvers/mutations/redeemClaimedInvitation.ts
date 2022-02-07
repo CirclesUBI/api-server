@@ -15,7 +15,8 @@ export function redeemClaimedInvitation() {
 
     const claimedInvitation = await Environment.readWriteApiDb.invitation.findFirst({
       where: {
-        claimedByProfileId: callerInfo.profile.id
+        claimedByProfileId: callerInfo.profile.id,
+        redeemedAt: null
       },
       include: {
         claimedBy: true
@@ -23,7 +24,7 @@ export function redeemClaimedInvitation() {
     });
 
     if (!claimedInvitation) {
-      throw new Error(`No claimed invitation for profile ${callerInfo.profile.id}`);
+      throw new Error(`No claimed invitation for profile ${callerInfo.profile.id} or the invitation was already redeemed.`);
     }
     if (!claimedInvitation.claimedBy?.circlesSafeOwner) {
       throw new Error(`Profile ${claimedInvitation.claimedByProfileId} previously claimed invitation ${claimedInvitation.code} but has no circlesSafeOwner set to redeem it to.`);
@@ -53,15 +54,6 @@ export function redeemClaimedInvitation() {
       invitationFundsRecipientBalance = await web3.eth.getBalance(invitationFundsRecipient);
       context.log(`Redeeming invitation ${claimedInvitation.code}: ${invitationFundsRecipient}'s balance is: ${invitationFundsRecipientBalance}`);
 
-      if (new BN(invitationFundsRecipientBalance).lt(new BN(web3.utils.toWei("0.48", "ether")))) {
-        context.log(`Redeeming invitation ${claimedInvitation.code}: ERROR: ${invitationFundsRecipient} couldn't be funded.`);
-
-        return <RedeemClaimedInvitationResult>{
-          success: false,
-          error: "You safe owner EOA couldn't be funded."
-        }
-      }
-
       await Environment.readWriteApiDb.invitation.updateMany({
         data: {
           redeemedAt: new Date(),
@@ -73,18 +65,19 @@ export function redeemClaimedInvitation() {
         }
       });
 
-      if (!claimedInvitation.forSafeAddress) {
-        throw new Error("The claimed invitation doesn't have an assigned 'forSafeAddress'.");
-      }
-      const verifiedInviter = await Environment.readWriteApiDb.verifiedSafe.findFirst({
-        where: {
-          safeAddress: claimedInvitation.forSafeAddress
+      if (claimedInvitation.forSafeAddress) {
+        //throw new Error("The claimed invitation doesn't have an assigned 'forSafeAddress'.");
+        const verifiedInviter = await Environment.readWriteApiDb.verifiedSafe.findFirst({
+          where: {
+            safeAddress: claimedInvitation.forSafeAddress
+          }
+        });
+
+        if (verifiedInviter) {
+          await Dropper.createInvitations(verifiedInviter, 1);
+          // throw new Error(`Couldn't find a 'verifiedSafe' with the address ${claimedInvitation.forSafeAddress}.`)
         }
-      });
-      if (!verifiedInviter) {
-        throw new Error(`Couldn't find a 'verifiedSafe' with the address ${claimedInvitation.forSafeAddress}.`)
       }
-      await Dropper.createInvitations(verifiedInviter, 1);
 
       return <RedeemClaimedInvitationResult> {
         success: true,
