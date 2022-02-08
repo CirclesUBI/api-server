@@ -977,7 +977,7 @@ type SafeInfo {
   type: AccountType!
   safeAddress: String!
   lastUbiAt: String
-  tokenAddress: String!
+  tokenAddress: String
   randomValue: String
   safeProfile: Profile
 }

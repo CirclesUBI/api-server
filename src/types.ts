@@ -1049,7 +1049,7 @@ export type SafeInfo = {
   type: AccountType;
   safeAddress: Scalars['String'];
   lastUbiAt?: Maybe<Scalars['String']>;
-  tokenAddress: Scalars['String'];
+  tokenAddress?: Maybe<Scalars['String']>;
   randomValue?: Maybe<Scalars['String']>;
   safeProfile?: Maybe<Profile>;
 };
@@ -2245,7 +2245,7 @@ export type SafeInfoResolvers<ContextType = any, ParentType extends ResolversPar
   type?: Resolver<ResolversTypes['AccountType'], ParentType, ContextType>;
   safeAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastUbiAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  tokenAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tokenAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   randomValue?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   safeProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
