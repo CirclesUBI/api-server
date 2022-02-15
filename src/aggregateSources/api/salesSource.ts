@@ -16,6 +16,12 @@ export class SalesSource implements AggregateSource {
       }
     } : {};
 
+    const pickupCodeFilter = filter?.sales?.pickupCode ? {
+        every: {
+          pickupCode: filter?.sales?.pickupCode
+        }
+    } : {};
+
     const salesResult = await Environment.readonlyApiDb.purchase.findMany({
       where: {
         ...idFilter,
@@ -24,7 +30,8 @@ export class SalesSource implements AggregateSource {
             sellerProfile: {
               circlesAddress: forSafeAddress
             }
-          }
+          },
+          ...pickupCodeFilter
         }
       },
       orderBy: {

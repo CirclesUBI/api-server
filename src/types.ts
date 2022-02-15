@@ -838,6 +838,7 @@ export type Purchases = IAggregatePayload & {
 export type PurchasesAggregateFilter = {
   createdByAddresses?: Maybe<Array<Scalars['String']>>;
   purchaseIds?: Maybe<Array<Scalars['Int']>>;
+  pickupCode?: Maybe<Scalars['String']>;
 };
 
 export type Query = {
@@ -1093,6 +1094,7 @@ export type Sales = IAggregatePayload & {
 export type SalesAggregateFilter = {
   createdByAddresses?: Maybe<Array<Scalars['String']>>;
   salesIds?: Maybe<Array<Scalars['Int']>>;
+  pickupCode?: Maybe<Scalars['String']>;
 };
 
 export type SalesLine = {

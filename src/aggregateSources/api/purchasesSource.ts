@@ -17,12 +17,21 @@ export class PurchasesSource implements AggregateSource {
       }
     } : {};
 
+    const pickupCodeFilter = filter?.purchases?.pickupCode ? {
+      invoices: {
+        every: {
+          pickupCode: filter?.purchases?.pickupCode
+        }
+      }
+    } : {};
+
     const purchasesResult = await Environment.readonlyApiDb.purchase.findMany({
       where: {
         createdBy: {
           circlesAddress: forSafeAddress
         },
-        ...idFilter
+        ...idFilter,
+        ...pickupCodeFilter
       },
       include: {
         createdBy: true,

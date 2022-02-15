@@ -955,10 +955,12 @@ input OffersAggregateFilter {
 input PurchasesAggregateFilter {
   createdByAddresses: [String!]
   purchaseIds: [Int!]
+  pickupCode: String
 }
 input SalesAggregateFilter {
   createdByAddresses: [String!]
   salesIds: [Int!]
+  pickupCode: String
 }
 input ProfileAggregateFilter {
   contacts: ContactAggregateFilter
