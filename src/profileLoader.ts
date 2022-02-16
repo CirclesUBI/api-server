@@ -1,6 +1,12 @@
-import {PrismaClient, VerifiedSafe} from "./api-db/client";
-import {DisplayCurrency, Organisation, Profile, ProfileOrigin, Verification} from "./types";
-import {RpcGateway} from "./rpcGateway";
+import { PrismaClient, VerifiedSafe } from "./api-db/client";
+import {
+  DisplayCurrency,
+  Organisation,
+  Profile,
+  ProfileOrigin,
+  Verification,
+} from "./types";
+import { RpcGateway } from "./rpcGateway";
 import fetch from "cross-fetch";
 
 export type SafeProfileMap = { [safeAddress: string]: Profile | null };
@@ -38,6 +44,9 @@ export class ProfileLoader {
   }
 
   static getDisplayCurrency(profile: any): DisplayCurrency {
+    if (!profile) {
+      return DisplayCurrency.Eurs;
+    }
     switch (profile.displayCurrency) {
       case "CRC":
         return DisplayCurrency.Crc;
@@ -261,7 +270,7 @@ export class ProfileLoader {
         lastName: "Land",
         avatarUrl: "https://dev.circles.land/logos/circles.png",
         circlesAddress: "0x0000000000000000000000000000000000000000",
-        origin: ProfileOrigin.Unknown
+        origin: ProfileOrigin.Unknown,
       };
     }
 
