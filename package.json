@@ -34,6 +34,7 @@
     "ethereumjs-util": "^7.0.10",
     "ethers-multisend": "^2.0.1",
     "express": "^4.17.1",
+    "cookie-parser": "^1.4.6",
     "graphql": "^15.5.2",
     "graphql-import": "^0.7.1",
     "graphql-subscriptions": "^1.2.1",

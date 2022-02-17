@@ -1,7 +1,7 @@
 import PDFDocument from "pdfkit";
 import dayjs from "dayjs";
-import AWS from "aws-sdk";
 import { Invoice, InvoiceLine, Offer, Profile } from "./api-db/client";
+import AWS from "aws-sdk";
 import { PromiseResult } from "aws-sdk/lib/request";
 import { Environment } from "./environment";
 
@@ -190,7 +190,7 @@ export class InvoicePdfGenerator {
         pdfDocument.on("end", async (_) => {
           try {
             params.Body = Buffer.concat(pdfBytes);
-            const result = await Environment.invoicesBucket
+            const result = await Environment.filesBucket
               .putObject(params)
               .promise();
             resolve(result);

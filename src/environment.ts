@@ -278,10 +278,10 @@ export class Environment {
     return <string>process.env.EXTERNAL_DOMAIN;
   }
 
-  static get isAutomatedTest() : boolean {
+  static get isAutomatedTest(): boolean {
     return !!process.env.IS_AUTOMATED_TEST;
   }
-  static get fixedGasPrice() : number {
+  static get fixedGasPrice(): number {
     return !process.env.IS_AUTOMATED_TEST ? 0 : 1;
   }
 
@@ -333,12 +333,14 @@ export class Environment {
     );
   }
 
-  static get rewardTokenAddress() : string {
-      return <string>process.env.REWARD_TOKEN_ADDRESS?.toLowerCase()
+  static get rewardTokenAddress(): string {
+    return <string>process.env.REWARD_TOKEN_ADDRESS?.toLowerCase();
   }
 
-  static get invoicesBucket() : AWS.S3 {
-    const spacesEndpoint = new AWS.Endpoint(<string>process.env.DIGITALOCEAN_SPACES_ENDPOINT);
+  static get filesBucket(): AWS.S3 {
+    const spacesEndpoint = new AWS.Endpoint(
+      <string>process.env.DIGITALOCEAN_SPACES_ENDPOINT
+    );
     return new AWS.S3({
       endpoint: spacesEndpoint,
       accessKeyId: process.env.DIGITALOCEAN_SPACES_KEY,
