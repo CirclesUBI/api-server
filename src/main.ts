@@ -24,6 +24,7 @@ import { PromiseResult } from "aws-sdk/lib/request";
 import { Environment } from "./environment";
 
 var cookieParser = require("cookie-parser");
+var cors = require("cors");
 
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
@@ -52,9 +53,16 @@ export class Main {
     console.log("");
 
     const app = express();
+    let corsOptions = {
+      origin: corsOrigins,
+      credentials: true,
+    };
+
+    app.use(cors(corsOptions));
 
     app.use(express.json({ limit: "200mb" }));
     app.use(cookieParser());
+
     app.use(
       express.urlencoded({
         limit: "200mb",
@@ -69,9 +77,11 @@ export class Main {
         req.cookies.session
       );
       if (!validSession) {
-        const errorMsg =
-          "No session could be found for the supplied sessionToken.";
-        throw new Error(errorMsg);
+        return res.json({
+          status: "error",
+          message:
+            "Authentication Failed. No session could be found for the supplied sessionToken.",
+        });
       }
 
       try {
