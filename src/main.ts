@@ -71,38 +71,42 @@ export class Main {
       })
     );
 
-    app.post("/upload", async (req: Request, res: Response) => {
-      const validSession = await Session.findSessionBysessionToken(
-        Environment.readWriteApiDb,
-        req.cookies.session
-      );
-      if (!validSession) {
-        return res.json({
-          status: "error",
-          message:
-            "Authentication Failed. No session could be found for the supplied sessionToken.",
-        });
+    app.post(
+      "/upload",
+      cors(corsOptions),
+      async (req: Request, res: Response) => {
+        try {
+          const validSession = await Session.findSessionBysessionToken(
+            Environment.readWriteApiDb,
+            req.cookies.session
+          );
+          if (!validSession) {
+            return res.json({
+              status: "error",
+              message:
+                "Authentication Failed. No session could be found for the supplied sessionToken.",
+            });
+          }
+
+          const fileName = req.body.fileName;
+          const mimeType = req.body.mimeType;
+          const bytes = req.body.bytes;
+
+          const saveResult = await saveImageToS3(fileName, bytes, mimeType);
+
+          res.statusCode = 200;
+          return res.json({
+            status: "ok",
+            url: `https://circlesland-pictures.fra1.cdn.digitaloceanspaces.com/${fileName}`,
+          });
+        } catch (e) {
+          return res.json({
+            status: "error",
+            message: "Image Upload Failed.",
+          });
+        }
       }
-
-      try {
-        const fileName = req.body.fileName;
-        const mimeType = req.body.mimeType;
-        const bytes = req.body.bytes;
-
-        const saveResult = await saveImageToS3(fileName, bytes, mimeType);
-
-        res.statusCode = 200;
-        return res.json({
-          status: "ok",
-          url: `https://circlesland-pictures.fra1.cdn.digitaloceanspaces.com/${fileName}`,
-        });
-      } catch (e) {
-        return res.json({
-          status: "error",
-          message: "Image Upload Failed.",
-        });
-      }
-    });
+    );
 
     async function saveImageToS3(
       key: string,
