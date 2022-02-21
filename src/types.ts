@@ -44,6 +44,12 @@ export enum AggregateType {
   Sales = 'Sales'
 }
 
+export type AnnouncePaymentResult = {
+  __typename?: 'AnnouncePaymentResult';
+  invoiceId: Scalars['Int'];
+  transactionHash: Scalars['String'];
+};
+
 export type AssetBalance = {
   __typename?: 'AssetBalance';
   token_symbol?: Maybe<Scalars['String']>;
@@ -484,6 +490,7 @@ export type Memberships = IAggregatePayload & {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  announcePayment: AnnouncePaymentResult;
   purchase: Array<Invoice>;
   completePurchase: Invoice;
   completeSale: Invoice;
@@ -514,6 +521,12 @@ export type Mutation = {
   importOrganisationsOfAccount: Array<Organisation>;
   verifySafe: VerifySafeResult;
   revokeSafeVerification: VerifySafeResult;
+};
+
+
+export type MutationAnnouncePaymentArgs = {
+  invoiceId: Scalars['Int'];
+  transactionHash: Scalars['String'];
 };
 
 
@@ -1362,12 +1375,13 @@ export type ResolversTypes = ResolversObject<{
   AddMemberResult: ResolverTypeWrapper<AddMemberResult>;
   AggregatePayload: ResolversTypes['CrcBalances'] | ResolversTypes['Erc20Balances'] | ResolversTypes['Contacts'] | ResolversTypes['Memberships'] | ResolversTypes['Members'] | ResolversTypes['Offers'] | ResolversTypes['Sales'] | ResolversTypes['Purchases'];
   AggregateType: AggregateType;
+  AnnouncePaymentResult: ResolverTypeWrapper<AnnouncePaymentResult>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
   AssetBalance: ResolverTypeWrapper<AssetBalance>;
   Capability: ResolverTypeWrapper<Capability>;
   CapabilityType: CapabilityType;
   ChatMessage: ResolverTypeWrapper<ChatMessage>;
   City: ResolverTypeWrapper<City>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   ClaimInvitationResult: ResolverTypeWrapper<ClaimInvitationResult>;
   ClaimedInvitation: ResolverTypeWrapper<ClaimedInvitation>;
@@ -1490,11 +1504,12 @@ export type ResolversParentTypes = ResolversObject<{
   String: Scalars['String'];
   AddMemberResult: AddMemberResult;
   AggregatePayload: ResolversParentTypes['CrcBalances'] | ResolversParentTypes['Erc20Balances'] | ResolversParentTypes['Contacts'] | ResolversParentTypes['Memberships'] | ResolversParentTypes['Members'] | ResolversParentTypes['Offers'] | ResolversParentTypes['Sales'] | ResolversParentTypes['Purchases'];
+  AnnouncePaymentResult: AnnouncePaymentResult;
+  Int: Scalars['Int'];
   AssetBalance: AssetBalance;
   Capability: Capability;
   ChatMessage: ChatMessage;
   City: City;
-  Int: Scalars['Int'];
   Float: Scalars['Float'];
   ClaimInvitationResult: ClaimInvitationResult;
   ClaimedInvitation: ClaimedInvitation;
@@ -1617,6 +1632,12 @@ export type AddMemberResultResolvers<ContextType = any, ParentType extends Resol
 
 export type AggregatePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['AggregatePayload'] = ResolversParentTypes['AggregatePayload']> = ResolversObject<{
   __resolveType: TypeResolveFn<'CrcBalances' | 'Erc20Balances' | 'Contacts' | 'Memberships' | 'Members' | 'Offers' | 'Sales' | 'Purchases', ParentType, ContextType>;
+}>;
+
+export type AnnouncePaymentResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['AnnouncePaymentResult'] = ResolversParentTypes['AnnouncePaymentResult']> = ResolversObject<{
+  invoiceId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  transactionHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type AssetBalanceResolvers<ContextType = any, ParentType extends ResolversParentTypes['AssetBalance'] = ResolversParentTypes['AssetBalance']> = ResolversObject<{
@@ -2003,6 +2024,7 @@ export type MembershipsResolvers<ContextType = any, ParentType extends Resolvers
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  announcePayment?: Resolver<ResolversTypes['AnnouncePaymentResult'], ParentType, ContextType, RequireFields<MutationAnnouncePaymentArgs, 'invoiceId' | 'transactionHash'>>;
   purchase?: Resolver<Array<ResolversTypes['Invoice']>, ParentType, ContextType, RequireFields<MutationPurchaseArgs, 'lines'>>;
   completePurchase?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<MutationCompletePurchaseArgs, 'invoiceId'>>;
   completeSale?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<MutationCompleteSaleArgs, 'invoiceId'>>;
@@ -2411,6 +2433,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   AcceptMembershipResult?: AcceptMembershipResultResolvers<ContextType>;
   AddMemberResult?: AddMemberResultResolvers<ContextType>;
   AggregatePayload?: AggregatePayloadResolvers<ContextType>;
+  AnnouncePaymentResult?: AnnouncePaymentResultResolvers<ContextType>;
   AssetBalance?: AssetBalanceResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
   ChatMessage?: ChatMessageResolvers<ContextType>;

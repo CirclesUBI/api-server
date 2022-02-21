@@ -835,7 +835,13 @@ type ProofPaymentResult {
   acknowledged: Boolean!
 }
 
+type AnnouncePaymentResult {
+  invoiceId: Int!
+  transactionHash: String!
+}
+
 type Mutation {
+  announcePayment(invoiceId: Int! transactionHash: String!) : AnnouncePaymentResult!
   purchase(lines: [PurchaseLineInput!]!): [Invoice!]!
   completePurchase(invoiceId: Int!, revoke: Boolean): Invoice!
   completeSale(invoiceId: Int!, revoke: Boolean): Invoice!
