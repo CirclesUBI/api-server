@@ -23,7 +23,6 @@ import { PromiseResult } from "aws-sdk/lib/request";
 
 import { Environment } from "./environment";
 
-var cookieParser = require("cookie-parser");
 var cors = require("cors");
 
 const {
