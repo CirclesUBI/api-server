@@ -61,7 +61,6 @@ export class Main {
     app.use(cors(corsOptions));
 
     app.use(express.json({ limit: "200mb" }));
-    app.use(cookieParser());
 
     app.use(
       express.urlencoded({
@@ -76,10 +75,16 @@ export class Main {
       cors(corsOptions),
       async (req: Request, res: Response) => {
         try {
-          const validSession = await Session.findSessionBysessionToken(
-            Environment.readWriteApiDb,
-            req.cookies.session
-          );
+          const cookieValue = req.headers["cookie"];
+          let sessionToken = Main.tryGetSessionToken(cookieValue);
+          let validSession = null;
+
+          if (sessionToken) {
+            validSession = await Session.findSessionBysessionToken(
+              Environment.readWriteApiDb,
+              sessionToken
+            );
+          }
           if (!validSession) {
             return res.json({
               status: "error",
