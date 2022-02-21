@@ -1032,6 +1032,7 @@ type Query {
   trustRelations(safeAddress: String!): [TrustRelation!]!
   myProfile: Profile
   profilesById(ids: [Int!]!): [Profile!]!
+  recentProfiles(pagination: PaginationArgs): [Profile!]!
   profilesBySafeAddress(safeAddresses: [String!]!): [Profile!]!
 
   findSafesByOwner(owner: String!): [SafeInfo!]!
@@ -1049,7 +1050,7 @@ type Query {
   directPath(from: String!, to: String!, amount: String!): TransitivePath!
   invoice(invoiceId: Int!): String
 
-  findInvitationCreator(code:String!) : Profile
+  findInvitationCreator(code: String!): Profile
 }
 
 type TransitiveTransfer {

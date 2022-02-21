@@ -66,6 +66,34 @@ export class ProfileLoader {
     };
   }
 
+  async queryRecentProfiles(
+    prisma: PrismaClient
+  ): Promise<{ safeProfileMap: SafeProfileMap; idProfileMap: IdProfileMap }> {
+    const profiles = await prisma.profile.findMany({
+      where: {
+        circlesAddress: { not: null },
+      },
+      orderBy: {
+        id: "desc",
+      },
+      take: 100,
+    });
+
+    const safeProfileMap = profiles.reduce((p, c) => {
+      if (!c.circlesAddress) return p;
+      p[c.circlesAddress] = ProfileLoader.withDisplayCurrency(c);
+      return p;
+    }, <SafeProfileMap>{});
+
+    const idProfileMap = profiles.reduce((p, c) => {
+      if (!c.id) return p;
+      p[c.id] = ProfileLoader.withDisplayCurrency(c);
+      return p;
+    }, <IdProfileMap>{});
+
+    return { safeProfileMap, idProfileMap };
+  }
+
   async queryCirclesLandBySafeAddress(
     prisma: PrismaClient,
     safeAddresses: string[]

@@ -861,6 +861,7 @@ export type Query = {
   trustRelations: Array<TrustRelation>;
   myProfile?: Maybe<Profile>;
   profilesById: Array<Profile>;
+  recentProfiles: Array<Profile>;
   profilesBySafeAddress: Array<Profile>;
   findSafesByOwner: Array<SafeInfo>;
   search: Array<Profile>;
@@ -929,6 +930,11 @@ export type QueryTrustRelationsArgs = {
 
 export type QueryProfilesByIdArgs = {
   ids: Array<Scalars['Int']>;
+};
+
+
+export type QueryRecentProfilesArgs = {
+  pagination?: Maybe<PaginationArgs>;
 };
 
 
@@ -2198,6 +2204,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   trustRelations?: Resolver<Array<ResolversTypes['TrustRelation']>, ParentType, ContextType, RequireFields<QueryTrustRelationsArgs, 'safeAddress'>>;
   myProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   profilesById?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesByIdArgs, 'ids'>>;
+  recentProfiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryRecentProfilesArgs, never>>;
   profilesBySafeAddress?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesBySafeAddressArgs, 'safeAddresses'>>;
   findSafesByOwner?: Resolver<Array<ResolversTypes['SafeInfo']>, ParentType, ContextType, RequireFields<QueryFindSafesByOwnerArgs, 'owner'>>;
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;

@@ -1,64 +1,65 @@
-import {myProfile, profilesBySafeAddress} from "./queries/profiles";
-import {upsertProfileResolver} from "./mutations/upsertProfile";
-import {Profile, ProfileOrigin, Purchase, Resolvers} from "../types";
-import {exchangeTokenResolver} from "./mutations/exchangeToken";
-import {logout} from "./mutations/logout";
-import {sessionInfo} from "./queries/sessionInfo";
-import {depositChallengeResolver} from "./mutations/depositChallenge";
-import {authenticateAtResolver} from "./mutations/authenticateAt";
-import {consumeDepositedChallengeResolver} from "./mutations/consumeDepositedChallenge";
-import {search} from "./queries/search";
-import {profilesCount} from "./queries/profilesCount";
-import {requestUpdateSafe} from "./mutations/requestUpdateSafe";
-import {updateSafe} from "./mutations/updateSafe";
-import {whoami} from "./queries/whoami";
-import {cities} from "./queries/citites";
-import {version} from "./queries/version";
-import {tags} from "./queries/tags";
-import {tagById} from "./queries/tagById";
-import {upsertTag} from "./mutations/upsertTag";
-import {claimedInvitation} from "./queries/claimedInvitation";
-import {Context} from "../context";
-import {ApiPubSub} from "../pubsub";
-import {trustRelations} from "./queries/trustRelations";
-import {commonTrust} from "./queries/commonTrust";
-import {sendMessage} from "./mutations/sendMessage";
-import {tagTransaction} from "./mutations/tagTransaction";
-import {acknowledge} from "./mutations/acknowledge";
-import {claimInvitation} from "./mutations/claimInvitation";
-import {redeemClaimedInvitation} from "./mutations/redeemClaimedInvitation";
-import {invitationTransaction} from "./queries/invitationTransaction";
-import {verifySessionChallengeResolver} from "./mutations/verifySessionChallengeResolver";
-import {organisations} from "./queries/organisations";
-import {safeInfo} from "./queries/safeInfo";
-import {hubSignupTransactionResolver} from "./queries/hubSignupTransactionResolver";
-import {upsertOrganisation} from "./mutations/upsertOrganisation";
-import {myInvitations} from "./queries/myInvitations";
-import {organisationsByAddress} from "./queries/organisationsByAddress";
-import {createTestInvitation} from "./mutations/createTestInvitation";
-import {addMemberResolver} from "./mutations/addMember";
-import {removeMemberResolver} from "./mutations/removeMember";
-import {regionsResolver} from "./queries/regions";
-import {findSafesByOwner} from "./queries/findSafesByOwner";
-import {purchaseResolver} from "./mutations/purchase";
-import {profileCityDataLoader} from "./data-loaders/profileCityDataLoader";
-import {profileMembershipsDataLoader} from "./data-loaders/profileMembershipsDataLoader";
-import {getPurchaseInvoicesDataLoader} from "./data-loaders/purchaseInvoicesDataLoader";
-import {organisationMembersDataLoader} from "./data-loaders/organisationMembersDataLoader";
-import {profilesById} from "./queries/profilesById";
-import {aggregates} from "./queries/aggregates";
-import {events} from "./queries/events";
-import {directPath} from "./queries/directPath";
-import {invoice} from "./queries/invoice";
-import {offerCreatedByLoader} from "./data-loaders/offerCreatedByLoader";
-import {requestSessionChallenge} from "./mutations/requestSessionChallenge";
-import {importOrganisationsOfAccount} from "./mutations/importOrganisationsOfAccount";
-import {completePurchase} from "./mutations/completePurchase";
-import {completeSale} from "./mutations/completeSale";
-import {revokeSafeVerification, verifySafe} from "./mutations/verifySafe";
-import {verifications, verificationsCount} from "./queries/verifications";
-import {Environment} from "../environment";
-import {findInvitationCreator} from "./queries/findInvitationCreator";
+import { myProfile, profilesBySafeAddress } from "./queries/profiles";
+import { upsertProfileResolver } from "./mutations/upsertProfile";
+import { Profile, ProfileOrigin, Purchase, Resolvers } from "../types";
+import { exchangeTokenResolver } from "./mutations/exchangeToken";
+import { logout } from "./mutations/logout";
+import { sessionInfo } from "./queries/sessionInfo";
+import { depositChallengeResolver } from "./mutations/depositChallenge";
+import { authenticateAtResolver } from "./mutations/authenticateAt";
+import { consumeDepositedChallengeResolver } from "./mutations/consumeDepositedChallenge";
+import { search } from "./queries/search";
+import { profilesCount } from "./queries/profilesCount";
+import { requestUpdateSafe } from "./mutations/requestUpdateSafe";
+import { updateSafe } from "./mutations/updateSafe";
+import { whoami } from "./queries/whoami";
+import { cities } from "./queries/citites";
+import { version } from "./queries/version";
+import { tags } from "./queries/tags";
+import { tagById } from "./queries/tagById";
+import { upsertTag } from "./mutations/upsertTag";
+import { claimedInvitation } from "./queries/claimedInvitation";
+import { Context } from "../context";
+import { ApiPubSub } from "../pubsub";
+import { trustRelations } from "./queries/trustRelations";
+import { commonTrust } from "./queries/commonTrust";
+import { sendMessage } from "./mutations/sendMessage";
+import { tagTransaction } from "./mutations/tagTransaction";
+import { acknowledge } from "./mutations/acknowledge";
+import { claimInvitation } from "./mutations/claimInvitation";
+import { redeemClaimedInvitation } from "./mutations/redeemClaimedInvitation";
+import { invitationTransaction } from "./queries/invitationTransaction";
+import { verifySessionChallengeResolver } from "./mutations/verifySessionChallengeResolver";
+import { organisations } from "./queries/organisations";
+import { safeInfo } from "./queries/safeInfo";
+import { hubSignupTransactionResolver } from "./queries/hubSignupTransactionResolver";
+import { upsertOrganisation } from "./mutations/upsertOrganisation";
+import { myInvitations } from "./queries/myInvitations";
+import { organisationsByAddress } from "./queries/organisationsByAddress";
+import { createTestInvitation } from "./mutations/createTestInvitation";
+import { addMemberResolver } from "./mutations/addMember";
+import { removeMemberResolver } from "./mutations/removeMember";
+import { regionsResolver } from "./queries/regions";
+import { findSafesByOwner } from "./queries/findSafesByOwner";
+import { purchaseResolver } from "./mutations/purchase";
+import { profileCityDataLoader } from "./data-loaders/profileCityDataLoader";
+import { profileMembershipsDataLoader } from "./data-loaders/profileMembershipsDataLoader";
+import { getPurchaseInvoicesDataLoader } from "./data-loaders/purchaseInvoicesDataLoader";
+import { organisationMembersDataLoader } from "./data-loaders/organisationMembersDataLoader";
+import { profilesById } from "./queries/profilesById";
+import { aggregates } from "./queries/aggregates";
+import { events } from "./queries/events";
+import { directPath } from "./queries/directPath";
+import { invoice } from "./queries/invoice";
+import { offerCreatedByLoader } from "./data-loaders/offerCreatedByLoader";
+import { requestSessionChallenge } from "./mutations/requestSessionChallenge";
+import { importOrganisationsOfAccount } from "./mutations/importOrganisationsOfAccount";
+import { completePurchase } from "./mutations/completePurchase";
+import { completeSale } from "./mutations/completeSale";
+import { revokeSafeVerification, verifySafe } from "./mutations/verifySafe";
+import { verifications, verificationsCount } from "./queries/verifications";
+import { Environment } from "../environment";
+import { findInvitationCreator } from "./queries/findInvitationCreator";
+import { recentProfiles } from "./queries/recentProfiles";
 
 const packageJson = require("../../package.json");
 
@@ -132,12 +133,13 @@ export const resolvers: Resolvers = {
     commonTrust: commonTrust(Environment.readonlyApiDb),
     safeInfo: safeInfo(),
     profilesById: profilesById,
+    recentProfiles: recentProfiles,
     aggregates: aggregates,
     events: events,
     directPath: directPath,
     invoice: invoice,
     verifications: verifications,
-    findInvitationCreator: findInvitationCreator
+    findInvitationCreator: findInvitationCreator,
   },
   Mutation: {
     purchase: purchaseResolver,
