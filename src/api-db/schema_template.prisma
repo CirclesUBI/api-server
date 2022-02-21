@@ -112,6 +112,8 @@ model Profile {
     emailAddress String?
     // @@unique([emailAddress], name:"UX_Profile_EmailAddress")
 
+    createdAt DateTime @default(now())
+
     status String?
     type ProfileType? @default(PERSON)
 
@@ -281,6 +283,8 @@ model Invoice {
     purchaseId Int
 
     lines InvoiceLine[] @relation(name: "Invoice_Lines")
+
+    pendingPaymentTransactionHash String?
 
     paymentTransaction Transaction? @relation(name: "Invoice_PaymentTransaction", fields: [paymentTransactionHash], references: [transactionHash])
     paymentTransactionHash String?

@@ -8,7 +8,7 @@ import { ApolloServer } from "apollo-server-express";
 import { resolvers } from "./resolvers/resolvers";
 import { importSchema } from "graphql-import";
 import { Context } from "./context";
-import { Error } from "apollo-server-core/src/plugin/schemaReporting/operations";
+// import { Error } from "apollo-server-core/src/plugin/schemaReporting/operations";
 import { BlockchainEventSource } from "./indexer-api/blockchainEventSource";
 import { ApiPubSub } from "./pubsub";
 import { RpcGateway } from "./rpcGateway";
