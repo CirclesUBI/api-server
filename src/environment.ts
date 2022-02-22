@@ -6,6 +6,7 @@ import AWS from "aws-sdk";
 import { Pool } from "pg";
 import fetch from "cross-fetch";
 import { PrismaClient } from "./api-db/client";
+import {Generate} from "./generate";
 
 export type SmtpConfig = {
   from: string;
@@ -17,7 +18,9 @@ export type SmtpConfig = {
 };
 
 export class Environment {
+
   static async validateAndSummarize() {
+
     if (!this.corsOrigins) {
       throw new Error(`The CORS_ORIGNS environment variable is not set.`);
     }
@@ -181,12 +184,18 @@ export class Environment {
     };
   }
 
+  private static _instanceId = Generate.randomBase64String(8).substr(0, 8);
+  static get instanceId() : string {
+    return this._instanceId;
+  }
+
   private static _utilityDb: Pool = new Pool({
     connectionString: process.env.UTILITY_DB_CONNECTION_STRING,
     //ssl: !process.env.DEBUG,
   }).on("error", (err) => {
     console.error("An idle client has experienced an error", err.stack);
   });
+
   static get utilityDb(): Pool {
     return Environment._utilityDb;
   }

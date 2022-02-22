@@ -91,6 +91,7 @@ export async function ninetyDaysLater() {
   );
 
   for(let token of tokens.rows) {
+    console.log(`Checking liveliness of ${token.token} .. `)
     const checkResult = await checkUBI(token.token);
     if (checkResult) {
       await requestUBI(executingEoa, token.token);

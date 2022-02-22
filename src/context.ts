@@ -38,9 +38,9 @@ export class Context {
   log(str: string, prefix?: string) {
     const now = new Date();
     if (this.session?.id) {
-      console.log(`     [${now.toJSON()}] [${this.session?.id}] [${this.id}] [${this.ipAddress}] [${this.operationName ?? ""}]: ${str}`);
+      console.log(`     [${now.toJSON()}] [${Environment.instanceId}] [${this.session?.id}] [${this.id}] [${this.ipAddress}] [${this.operationName ?? ""}]: ${str}`);
     } else {
-      console.log(`     [${now.toJSON()}] [undefined] [${this.id}] [${this.ipAddress}] [${this.operationName ?? ""}]: ${str}`);
+      console.log(`     [${now.toJSON()}] [${Environment.instanceId}] [undefined] [${this.id}] [${this.ipAddress}] [${this.operationName ?? ""}]: ${str}`);
     }
   }
 

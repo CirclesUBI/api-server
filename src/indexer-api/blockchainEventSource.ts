@@ -92,7 +92,7 @@ export class BlockchainEventSource {
       console.log(
         `${
           prefix ?? "     "
-        }[${new Date().toJSON()}] [${messageNo}] [${serverUrl}] [BlockchainEventSource.onMessage]: ${str}`
+        }[${new Date().toJSON()}] [${Environment.instanceId}] [${messageNo}] [${serverUrl}] [BlockchainEventSource.onMessage]: ${str}`
       );
     }
 
@@ -100,7 +100,7 @@ export class BlockchainEventSource {
       console.error(
         `${
           prefix ?? "     "
-        }[${new Date().toJSON()}] [${messageNo}] [${serverUrl}] [BlockchainEventSource.onMessage]: ${str}`
+        }[${new Date().toJSON()}] [${Environment.instanceId}] [${messageNo}] [${serverUrl}] [BlockchainEventSource.onMessage]: ${str}`
       );
     }
 
@@ -412,6 +412,9 @@ export class BlockchainEventSource {
   ): Promise<{ [safeAddress: string]: PdfDbInvoiceData[] }> {
     const invoices = await Environment.readWriteApiDb.invoice.findMany({
       where: {
+        purchase: {
+          sticksToInstanceId: Environment.instanceId // Only process invoices for purchases that are handled by this instance
+        },
         customerProfile: {
           circlesAddress: {
             in: addresses,

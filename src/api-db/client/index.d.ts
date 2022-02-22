@@ -202,6 +202,7 @@ export type Purchase = {
   id: number
   createdByProfileId: number
   createdAt: Date
+  sticksToInstanceId: string | null
 }
 
 /**
@@ -10882,18 +10883,21 @@ export namespace Prisma {
     id: number | null
     createdByProfileId: number | null
     createdAt: Date | null
+    sticksToInstanceId: string | null
   }
 
   export type PurchaseMaxAggregateOutputType = {
     id: number | null
     createdByProfileId: number | null
     createdAt: Date | null
+    sticksToInstanceId: string | null
   }
 
   export type PurchaseCountAggregateOutputType = {
     id: number
     createdByProfileId: number
     createdAt: number
+    sticksToInstanceId: number
     _all: number
   }
 
@@ -10912,18 +10916,21 @@ export namespace Prisma {
     id?: true
     createdByProfileId?: true
     createdAt?: true
+    sticksToInstanceId?: true
   }
 
   export type PurchaseMaxAggregateInputType = {
     id?: true
     createdByProfileId?: true
     createdAt?: true
+    sticksToInstanceId?: true
   }
 
   export type PurchaseCountAggregateInputType = {
     id?: true
     createdByProfileId?: true
     createdAt?: true
+    sticksToInstanceId?: true
     _all?: true
   }
 
@@ -11043,6 +11050,7 @@ export namespace Prisma {
     id: number
     createdByProfileId: number
     createdAt: Date
+    sticksToInstanceId: string | null
     _count: PurchaseCountAggregateOutputType | null
     _avg: PurchaseAvgAggregateOutputType | null
     _sum: PurchaseSumAggregateOutputType | null
@@ -11069,6 +11077,7 @@ export namespace Prisma {
     createdBy?: boolean | ProfileArgs
     createdByProfileId?: boolean
     createdAt?: boolean
+    sticksToInstanceId?: boolean
     lines?: boolean | PurchaseLineFindManyArgs
     invoices?: boolean | InvoiceFindManyArgs
   }
@@ -17534,7 +17543,8 @@ export namespace Prisma {
   export const PurchaseScalarFieldEnum: {
     id: 'id',
     createdByProfileId: 'createdByProfileId',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    sticksToInstanceId: 'sticksToInstanceId'
   };
 
   export type PurchaseScalarFieldEnum = (typeof PurchaseScalarFieldEnum)[keyof typeof PurchaseScalarFieldEnum]
@@ -18202,6 +18212,7 @@ export namespace Prisma {
     createdBy?: XOR<ProfileRelationFilter, ProfileWhereInput>
     createdByProfileId?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
+    sticksToInstanceId?: StringNullableFilter | string | null
     lines?: PurchaseLineListRelationFilter
     invoices?: InvoiceListRelationFilter
   }
@@ -18210,6 +18221,7 @@ export namespace Prisma {
     id?: SortOrder
     createdByProfileId?: SortOrder
     createdAt?: SortOrder
+    sticksToInstanceId?: SortOrder
   }
 
   export type PurchaseWhereUniqueInput = {
@@ -18223,6 +18235,7 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter | number
     createdByProfileId?: IntWithAggregatesFilter | number
     createdAt?: DateTimeWithAggregatesFilter | Date | string
+    sticksToInstanceId?: StringNullableWithAggregatesFilter | string | null
   }
 
   export type PurchaseLineWhereInput = {
@@ -19507,6 +19520,7 @@ export namespace Prisma {
 
   export type PurchaseCreateInput = {
     createdAt: Date | string
+    sticksToInstanceId?: string | null
     createdBy: ProfileCreateNestedOneWithoutPurchasesInput
     lines?: PurchaseLineCreateNestedManyWithoutPurchaseInput
     invoices?: InvoiceCreateNestedManyWithoutPurchaseInput
@@ -19516,12 +19530,14 @@ export namespace Prisma {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    sticksToInstanceId?: string | null
     lines?: PurchaseLineUncheckedCreateNestedManyWithoutPurchaseInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutPurchaseInput
   }
 
   export type PurchaseUpdateInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sticksToInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
     lines?: PurchaseLineUpdateManyWithoutPurchaseInput
     invoices?: InvoiceUpdateManyWithoutPurchaseInput
@@ -19531,6 +19547,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sticksToInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
     lines?: PurchaseLineUncheckedUpdateManyWithoutPurchaseInput
     invoices?: InvoiceUncheckedUpdateManyWithoutPurchaseInput
   }
@@ -19539,16 +19556,19 @@ export namespace Prisma {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    sticksToInstanceId?: string | null
   }
 
   export type PurchaseUpdateManyMutationInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sticksToInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PurchaseUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sticksToInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PurchaseLineCreateInput = {
@@ -24147,6 +24167,7 @@ export namespace Prisma {
 
   export type PurchaseCreateWithoutCreatedByInput = {
     createdAt: Date | string
+    sticksToInstanceId?: string | null
     lines?: PurchaseLineCreateNestedManyWithoutPurchaseInput
     invoices?: InvoiceCreateNestedManyWithoutPurchaseInput
   }
@@ -24154,6 +24175,7 @@ export namespace Prisma {
   export type PurchaseUncheckedCreateWithoutCreatedByInput = {
     id?: number
     createdAt: Date | string
+    sticksToInstanceId?: string | null
     lines?: PurchaseLineUncheckedCreateNestedManyWithoutPurchaseInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutPurchaseInput
   }
@@ -24757,6 +24779,7 @@ export namespace Prisma {
     id?: IntFilter | number
     createdByProfileId?: IntFilter | number
     createdAt?: DateTimeFilter | Date | string
+    sticksToInstanceId?: StringNullableFilter | string | null
   }
 
   export type InvitationUpsertWithWhereUniqueWithoutCreatedByInput = {
@@ -26040,6 +26063,7 @@ export namespace Prisma {
 
   export type PurchaseCreateWithoutLinesInput = {
     createdAt: Date | string
+    sticksToInstanceId?: string | null
     createdBy: ProfileCreateNestedOneWithoutPurchasesInput
     invoices?: InvoiceCreateNestedManyWithoutPurchaseInput
   }
@@ -26048,6 +26072,7 @@ export namespace Prisma {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    sticksToInstanceId?: string | null
     invoices?: InvoiceUncheckedCreateNestedManyWithoutPurchaseInput
   }
 
@@ -26096,6 +26121,7 @@ export namespace Prisma {
 
   export type PurchaseUpdateWithoutLinesInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sticksToInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
     invoices?: InvoiceUpdateManyWithoutPurchaseInput
   }
@@ -26104,6 +26130,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sticksToInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
     invoices?: InvoiceUncheckedUpdateManyWithoutPurchaseInput
   }
 
@@ -26334,6 +26361,7 @@ export namespace Prisma {
 
   export type PurchaseCreateWithoutInvoicesInput = {
     createdAt: Date | string
+    sticksToInstanceId?: string | null
     createdBy: ProfileCreateNestedOneWithoutPurchasesInput
     lines?: PurchaseLineCreateNestedManyWithoutPurchaseInput
   }
@@ -26342,6 +26370,7 @@ export namespace Prisma {
     id?: number
     createdByProfileId: number
     createdAt: Date | string
+    sticksToInstanceId?: string | null
     lines?: PurchaseLineUncheckedCreateNestedManyWithoutPurchaseInput
   }
 
@@ -26688,6 +26717,7 @@ export namespace Prisma {
 
   export type PurchaseUpdateWithoutInvoicesInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sticksToInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
     lines?: PurchaseLineUpdateManyWithoutPurchaseInput
   }
@@ -26696,6 +26726,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sticksToInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
     lines?: PurchaseLineUncheckedUpdateManyWithoutPurchaseInput
   }
 
@@ -27723,6 +27754,7 @@ export namespace Prisma {
   export type PurchaseCreateManyCreatedByInput = {
     id?: number
     createdAt: Date | string
+    sticksToInstanceId?: string | null
   }
 
   export type InvitationCreateManyCreatedByInput = {
@@ -28016,6 +28048,7 @@ export namespace Prisma {
 
   export type PurchaseUpdateWithoutCreatedByInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sticksToInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
     lines?: PurchaseLineUpdateManyWithoutPurchaseInput
     invoices?: InvoiceUpdateManyWithoutPurchaseInput
   }
@@ -28023,6 +28056,7 @@ export namespace Prisma {
   export type PurchaseUncheckedUpdateWithoutCreatedByInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sticksToInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
     lines?: PurchaseLineUncheckedUpdateManyWithoutPurchaseInput
     invoices?: InvoiceUncheckedUpdateManyWithoutPurchaseInput
   }
@@ -28030,6 +28064,7 @@ export namespace Prisma {
   export type PurchaseUncheckedUpdateManyWithoutPurchasesInput = {
     id?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sticksToInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type InvitationUpdateWithoutCreatedByInput = {

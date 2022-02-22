@@ -8,7 +8,6 @@ import { ApolloServer } from "apollo-server-express";
 import { resolvers } from "./resolvers/resolvers";
 import { importSchema } from "graphql-import";
 import { Context } from "./context";
-// import { Error } from "apollo-server-core/src/plugin/schemaReporting/operations";
 import { BlockchainEventSource } from "./indexer-api/blockchainEventSource";
 import { ApiPubSub } from "./pubsub";
 import { RpcGateway } from "./rpcGateway";
@@ -22,6 +21,7 @@ import AWS from "aws-sdk";
 import { PromiseResult } from "aws-sdk/lib/request";
 
 import { Environment } from "./environment";
+import {ninetyDaysLater} from "./90days";
 
 var cors = require("cors");
 
@@ -46,6 +46,7 @@ export class Main {
       });
     }
 
+    console.log(`Starting instance '${Environment.instanceId} ...'`);
     console.log("======== Checking configuration ======== ");
     await Environment.validateAndSummarize();
     console.log("================ DONE ================== ");
@@ -387,4 +388,6 @@ export class Main {
   }
 }
 
-new Main().run2().then(() => "Started");
+new Main().run2().then(() => console.log("Started")).then(async () => {
+  // await ninetyDaysLater()
+});

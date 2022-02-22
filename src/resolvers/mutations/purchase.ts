@@ -147,6 +147,7 @@ async function lookupOffers(args: MutationPurchaseArgs): Promise<OfferLookup> {
 async function createPurchase(caller:Profile, args: MutationPurchaseArgs, offersLookup: OfferLookup) : Promise<CreatedDbPurchase> {
   const purchase = await Environment.readWriteApiDb.purchase.create({
     data: {
+      sticksToInstanceId: Environment.instanceId,
       createdByProfileId: caller.id,
       createdAt: new Date(),
       lines: {
