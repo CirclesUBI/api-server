@@ -17,6 +17,7 @@ import {SalesEventSource} from "../../eventSources/api/salesEventSource";
 import {CombinedEventSource} from "../../eventSources/combinedEventSource";
 import {EventAugmenter} from "../../eventSources/eventAugmenter";
 import {SafeVerifiedEventSource} from "../../eventSources/api/safeVerifiedEventSource";
+import {PurchasesEventSource} from "../../eventSources/api/purchasesEventSource";
 
 export const events = async (parent:any, args:QueryEventsArgs, context: Context) => {
   const eventSources: EventSource[] = [];
@@ -113,6 +114,9 @@ export const events = async (parent:any, args:QueryEventsArgs, context: Context)
     }
     if (canAccessPrivateDetails && types[EventType.SaleEvent]) {
       eventSources.push(new SalesEventSource());
+    }
+    if (canAccessPrivateDetails && types[EventType.PurchaseEvent]) {
+      eventSources.push(new PurchasesEventSource());
     }
   }
 

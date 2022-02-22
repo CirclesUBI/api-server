@@ -529,6 +529,14 @@ type SaleEvent implements IEventPayload {
   invoice: Invoice
 }
 
+# ${seller} sold ${amount} ${offer}(s)
+type PurchaseEvent implements IEventPayload {
+  transaction_hash: String
+  seller: String!
+  seller_profile: Profile
+  invoice: Invoice
+}
+
 # ${organisation} verified your safe ${safe_address}
 type SafeVerified implements IEventPayload {
   transaction_hash: String
@@ -556,6 +564,7 @@ union EventPayload =
   | OrganisationCreated
   | MemberAdded
   | SaleEvent
+  | PurchaseEvent
   | SafeVerified
 
 enum EventType {
@@ -577,6 +586,7 @@ enum EventType {
   OrganisationCreated
   MemberAdded
   SaleEvent
+  PurchaseEvent
   SafeVerified
 }
 
