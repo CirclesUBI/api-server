@@ -250,6 +250,8 @@ model Purchase {
     createdByProfileId Int
     createdAt DateTime
 
+    sticksToInstanceId String? // The instance id of the running service that created the invoice.
+
     lines PurchaseLine[] @relation(name: "Purchase_Lines")
     invoices Invoice[] @relation(name: "Purchase_Invoices")
 }
