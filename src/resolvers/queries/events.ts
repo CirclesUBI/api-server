@@ -26,6 +26,10 @@ export const events = async (parent:any, args:QueryEventsArgs, context: Context)
     return p;
   }, <{ [x: string]: any }>{}) ?? {};
 
+  if (args.pagination.limit > 250) {
+    throw new Error(`You cannot query more than 250 events in one request.`);
+  }
+
   //
   // public
   //

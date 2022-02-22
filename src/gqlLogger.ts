@@ -1,4 +1,5 @@
 import {Context} from "./context";
+import {Environment} from "./environment";
 
 let _pendingRequests:{[contextId:string]: {
   begin: Date
@@ -78,12 +79,22 @@ export class GqlLogger {
       }
       if (queryId.isNew) {
         if (args.context) {
-          console.log(`     [${now.toJSON()}] [${args.context.session?.id}] [${args.context.id}] [${args.context.ipAddress}] [${operationName ?? ""}]: New query: ${queryId.query}`);
+          console.log(`     [${now.toJSON()}] [${Environment.instanceId}] [${args.context.session?.id}] [${args.context.id}] [${args.context.ipAddress}] [${operationName ?? ""}]: New query: ${queryId.query}`);
         } else {
-          console.log(`     [${now.toJSON()}] [no-session] [no-context] [] [${operationName ?? ""}]: New query: ${queryId.query}`);
+          console.log(`     [${now.toJSON()}] [${Environment.instanceId}] [no-session] [no-context] [] [${operationName ?? ""}]: New query: ${queryId.query}`);
         }
       }
     }
+
+    let requestArgs = JSON.stringify(args.request.variables);
+    if (args.request.variables?.code?.length > 24) {
+      const splitted = args.request.variables.code.trim().split(' ');
+      if (splitted.length == 24) {
+        // Very likely a keyphrase
+        requestArgs = '>> redacted keyphrase string <<';
+      }
+    }
+
     if (args.context) {
       let context: Context = args.context;
       args.context.operationName = operationName;
@@ -92,9 +103,9 @@ export class GqlLogger {
         begin: now
       };
 
-      console.log(`  -> [${now.toJSON()}] [${context.session?.id}] [${context.id}] [${context.ipAddress}] [${context.operationName ?? ""}]: ${JSON.stringify(args.request.variables)}`);
+      console.log(`  -> [${now.toJSON()}] [${Environment.instanceId}] [${context.session?.id}] [${context.id}] [${context.ipAddress}] [${context.operationName ?? ""}]: ${requestArgs}`);
     } else {
-      console.log(`  -> [${now.toJSON()}] [no-session] [no-context] [] [${operationName ?? ""}]: ${JSON.stringify(args.request.variables)}`);
+      console.log(`  -> [${now.toJSON()}] [${Environment.instanceId}] [no-session] [no-context] [] [${operationName ?? ""}]: ${requestArgs}`);
     }
 
     return {
@@ -115,13 +126,13 @@ export class GqlLogger {
             ? now.getTime() - pendingRequest?.begin?.getTime()
             : -1;
 
-          console.log(` <-  [${now.toJSON()}] [${context.session?.id}] [${context.id}] [${ipAddr}] [${operationName ?? ""}]: took ${duration} ms.`);
+          console.log(` <-  [${now.toJSON()}] [${Environment.instanceId}] [${context.session?.id}] [${context.id}] [${ipAddr}] [${operationName ?? ""}]: took ${duration} ms.`);
 
           if (pendingRequest) {
             delete _pendingRequests[context.id]
           }
         } else {
-          console.log(` <-  [${now.toJSON()}] [no-session] [no-context] [${operationName ?? ""}]`);
+          console.log(` <-  [${now.toJSON()}] [${Environment.instanceId}] [no-session] [no-context] [${operationName ?? ""}]`);
         }
       },
       didEncounterErrors(requestContext: any) {
