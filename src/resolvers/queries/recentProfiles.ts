@@ -41,9 +41,9 @@ export const recentProfiles = async (
       circlesAddress: true,
     },
     take: limit,
-    // orderBy: {
-    //   createdAt: args.pagination?.order == SortOrder.Asc ? "asc" : "desc",
-    // },
+    orderBy: {
+      id: "desc",
+    },
   });
 
   const safeAddresses = result.reduce((p, c) => {
@@ -57,11 +57,13 @@ export const recentProfiles = async (
     Environment.readWriteApiDb,
     safeAddresses
   );
-  return <Profile[]>Object.values(profiles.idProfileMap).map((o) => {
-    // @ts-ignore
-    delete o.newsletter;
-    // @ts-ignore
-    o.memberships = [];
-    return o;
-  });
+  return <Profile[]>Object.values(profiles.idProfileMap)
+    .map((o) => {
+      // @ts-ignore
+      delete o.newsletter;
+      // @ts-ignore
+      o.memberships = [];
+      return o;
+    })
+    .reverse();
 };
