@@ -207,7 +207,7 @@ export class Main {
             upgradeRequest.connection.remoteAddress;
 
           console.log(
-            `-->X [${new Date().toJSON()}] [] [] [${ip}] [subscriptionServer.onConnect]: Websocket connection closed.`
+            `-->X [${new Date().toJSON()}] [${Environment.instanceId}] [] [] [${ip}] [subscriptionServer.onConnect]: Websocket connection closed.`
           );
         },
         async onConnect(connectionParams: any, webSocket: any) {
@@ -232,13 +232,11 @@ export class Main {
           );
           if (session) {
             console.log(
-              `-->] [${new Date().toJSON()}] [${
-                session.id
-              }] [${contextId}] [${ip}] [subscriptionServer.onConnect]: New websocket subscription client.`
+              `-->] [${new Date().toJSON()}] [${Environment.instanceId}] [${session.id}] [${contextId}] [${ip}] [subscriptionServer.onConnect]: New websocket subscription client.`
             );
           } else {
             console.log(
-              `-->] [${new Date().toJSON()}] [] [${contextId}] [${ip}] [subscriptionServer.onConnect]: New websocket subscription client.`
+              `-->] [${new Date().toJSON()}] [${Environment.instanceId}] [] [${contextId}] [${ip}] [subscriptionServer.onConnect]: New websocket subscription client.`
             );
           }
 

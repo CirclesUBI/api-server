@@ -220,11 +220,7 @@ export const resolvers: Resolvers = {
           : "subscriber ethAddress: " + callerInfo.session.ethAddress;
 
         console.log(
-          `-->: [${new Date().toJSON()}] [${context.session?.id}] [${
-            context.id
-          }] [${
-            context.ipAddress
-          }] [Subscription.events.subscribe]: ${subscriberInfo}`
+          `-->: [${new Date().toJSON()}] [${Environment.instanceId}] [${context.session?.id}] [${context.id}] [${context.ipAddress}] [Subscription.events.subscribe]: ${subscriberInfo}`
         );
 
         if (
@@ -234,43 +230,13 @@ export const resolvers: Resolvers = {
           return ApiPubSub.instance.pubSub.asyncIterator([
             `events_${callerInfo.session.ethAddress.toLowerCase()}`,
           ]);
-          // return logSubscriptionEvents(context, subscriberInfo, ai);
-          /*
-          let n:any;
-          while (n = await ai.next()) {
-            console.log(` <-* [${new Date().toJSON()}] [${context.id}] [${context.ipAddress}] [Subscription.events]: Sending event to '${subscriberInfo}': ${JSON.stringify(n)}`);
-            yield n;
-          }
-/*
-          for await (let item of ai) {
-            console.log(` <-* [${new Date().toJSON()}] [${context.id}] [${context.ipAddress}] [Subscription.events]: Sending event to '${subscriberInfo}': ${JSON.stringify(item)}`);
-            yield item;
-          }
- */
         } else if (callerInfo.profile?.circlesAddress) {
           return ApiPubSub.instance.pubSub.asyncIterator([
             `events_${callerInfo.profile?.circlesAddress.toLowerCase()}`,
           ]);
-          /*
-          let n:any;
-          while (n = await ai.next()) {
-            console.log(` <-* [${new Date().toJSON()}] [${context.id}] [${context.ipAddress}] [Subscription.events]: Sending event to '${subscriberInfo}': ${JSON.stringify(n)}`);
-            yield n;
-          }
-          // return logSubscriptionEvents(context, subscriberInfo, ai);
-/*
-          for await (let item of ai) {
-            console.log(` <-* [${new Date().toJSON()}] [${context.id}] [${context.ipAddress}] [Subscription.events]: Sending event to '${subscriberInfo}': ${JSON.stringify(item)}`);
-            yield item;
-          }
- */
         }
 
-        console.error(
-          `Err: [${new Date().toJSON()}] [${context.id}] [${
-            context.ipAddress
-          }] [Subscription.events]: Cannot subscribe without an eoa- or safe-address`
-        );
+        console.error(`Err: [${new Date().toJSON()}] [${Environment.instanceId}] [${context.id}] [${context.ipAddress}] [Subscription.events]: Cannot subscribe without an eoa- or safe-address`);
         throw new Error(`Cannot subscribe without an eoa- or safe-address.`);
       },
     },
