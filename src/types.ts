@@ -719,7 +719,8 @@ export type OrganisationCreated = IEventPayload & {
 };
 
 export type PaginationArgs = {
-  continueAt: Scalars['String'];
+  continueAt?: Maybe<Scalars['String']>;
+  continueAtId?: Maybe<Scalars['Int']>;
   order: SortOrder;
   limit: Scalars['Int'];
 };

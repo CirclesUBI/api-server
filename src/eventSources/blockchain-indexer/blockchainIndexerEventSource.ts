@@ -1,7 +1,14 @@
-import {EventSource} from "../eventSource";
-import {Direction, Maybe, PaginationArgs, ProfileEvent, ProfileEventFilter, SortOrder} from "../../types";
-import {getDateWithOffset} from "../../indexer-api/blockchainEventSource";
-import {Environment} from "../../environment";
+import { EventSource } from "../eventSource";
+import {
+  Direction,
+  Maybe,
+  PaginationArgs,
+  ProfileEvent,
+  ProfileEventFilter,
+  SortOrder,
+} from "../../types";
+import { getDateWithOffset } from "../../indexer-api/blockchainEventSource";
+import { Environment } from "../../environment";
 
 export enum BlockchainEventType {
   CrcSignup = "CrcSignup",
@@ -10,12 +17,11 @@ export enum BlockchainEventType {
   CrcMinting = "CrcMinting",
   EthTransfer = "EthTransfer",
   GnosisSafeEthTransfer = "GnosisSafeEthTransfer",
-  Erc20Transfer = "Erc20Transfer"
+  Erc20Transfer = "Erc20Transfer",
 }
 
-export class BlockchainIndexerEventSource implements EventSource
-{
-  private _in() : string {
+export class BlockchainIndexerEventSource implements EventSource {
+  private _in(): string {
     let sql = `
       select timestamp
            , block_number
@@ -30,16 +36,16 @@ export class BlockchainIndexerEventSource implements EventSource
       from crc_safe_timeline_2
       where direction = 'in'`;
 
-      sql += `
+    sql += `
       and ($5 = '' or contact_address = $5) --you`;
 
-      sql += `
+    sql += `
       and ($6 = '' or safe_address = $6) -- me`;
 
     return sql;
   }
 
-  private _out() : string {
+  private _out(): string {
     let sql = `
       select timestamp
            , block_number
@@ -54,17 +60,20 @@ export class BlockchainIndexerEventSource implements EventSource
       from crc_safe_timeline_2
       where direction = 'out'`;
 
-      sql += `
+    sql += `
       and ($6 = '' or contact_address = $6) --you`;
 
-      sql += `
+    sql += `
       and ($5 = '' or safe_address = $5) -- me`;
 
     return sql;
   }
 
-
-  private cte(_in:string, _out:string, filter: Maybe<ProfileEventFilter>) : string {
+  private cte(
+    _in: string,
+    _out: string,
+    filter: Maybe<ProfileEventFilter>
+  ): string {
     let sql = `
       with "in" as (
           ${_in}
@@ -112,35 +121,39 @@ export class BlockchainIndexerEventSource implements EventSource
     return sql;
   }
 
-  private readonly _types:BlockchainEventType[];
+  private readonly _types: BlockchainEventType[];
 
-  constructor(types:BlockchainEventType[]) {
+  constructor(types: BlockchainEventType[]) {
     this._types = types;
   }
 
-  async getEvents(forSafeAddress: string, pagination:PaginationArgs, filter: Maybe<ProfileEventFilter>): Promise<ProfileEvent[]> {
+  async getEvents(
+    forSafeAddress: string,
+    pagination: PaginationArgs,
+    filter: Maybe<ProfileEventFilter>
+  ): Promise<ProfileEvent[]> {
     const inSql = this._in();
     const outSql = this._out();
     const baseQuery = this.cte(inSql, outSql, filter);
-    const queryWithFilter = (<any>baseQuery).replaceAll("~~SORT_ORDER~~", pagination.order == SortOrder.Asc ? "asc" : "desc");
+    const queryWithFilter = (<any>baseQuery).replaceAll(
+      "~~SORT_ORDER~~",
+      pagination.order == SortOrder.Asc ? "asc" : "desc"
+    );
 
     const params = [
       this._types,
       forSafeAddress,
-      pagination.continueAt,
+      pagination.continueAt ? pagination.continueAt : undefined,
       pagination.limit,
       filter?.from ?? "",
       filter?.to ?? "",
       filter?.with ?? "",
-      filter?.transactionHash ?? ""
+      filter?.transactionHash ?? "",
     ];
 
-    const eventRows = await Environment.indexDb.query(
-      queryWithFilter,
-      params
-    );
+    const eventRows = await Environment.indexDb.query(queryWithFilter, params);
 
-    const results = eventRows.rows.map((r:any) => {
+    const results = eventRows.rows.map((r: any) => {
       const ts = getDateWithOffset(r.timestamp);
       return <ProfileEvent>{
         __typename: "ProfileEvent",
@@ -157,7 +170,7 @@ export class BlockchainIndexerEventSource implements EventSource
           __typename: r.type,
           transaction_hash: r.transaction_hash,
           ...(Array.isArray(r.payload) ? r.payload[0] : r.payload),
-        }
+        },
       };
     });
 

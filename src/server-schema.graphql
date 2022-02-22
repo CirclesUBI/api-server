@@ -930,7 +930,8 @@ enum SortOrder {
 }
 
 input PaginationArgs {
-  continueAt: String!
+  continueAt: String
+  continueAtId: Int
   order: SortOrder!
   limit: Int!
 }

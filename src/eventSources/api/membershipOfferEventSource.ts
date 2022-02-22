@@ -8,7 +8,7 @@ import {
   ProfileEventFilter,
 } from "../../types";
 import { Prisma } from "../../api-db/client";
-import {Environment} from "../../environment";
+import { Environment } from "../../environment";
 
 export class MembershipOfferEventSource implements EventSource {
   async getEvents(
@@ -20,38 +20,46 @@ export class MembershipOfferEventSource implements EventSource {
       // Exists only for "in"
       return [];
     }
-    const pendingMembershipOffers = await Environment.readonlyApiDb.membership.findMany({
-      where: {
-        createdAt:
-          pagination.order == "ASC"
-            ? {
-                gt: new Date(pagination.continueAt),
-              }
-            : {
-                lt: new Date(pagination.continueAt),
-              },
-        memberAddress: forSafeAddress
-      },
-      include: {
-        createdBy: {
-          select: {
-            circlesAddress: true,
+
+    const createdAt = pagination.continueAt
+      ? {
+          createdAt:
+            pagination.order == "ASC"
+              ? {
+                  gt: new Date(pagination.continueAt),
+                }
+              : {
+                  lt: new Date(pagination.continueAt),
+                },
+        }
+      : {};
+
+    const pendingMembershipOffers =
+      await Environment.readonlyApiDb.membership.findMany({
+        where: {
+          ...createdAt,
+          memberAddress: forSafeAddress,
+        },
+        include: {
+          createdBy: {
+            select: {
+              circlesAddress: true,
+            },
+          },
+          memberAt: {
+            select: {
+              circlesAddress: true,
+            },
           },
         },
-        memberAt: {
-          select: {
-            circlesAddress: true,
-          },
+        orderBy: {
+          createdAt:
+            pagination.order == "ASC"
+              ? Prisma.SortOrder.asc
+              : Prisma.SortOrder.desc,
         },
-      },
-      orderBy: {
-        createdAt:
-          pagination.order == "ASC"
-            ? Prisma.SortOrder.asc
-            : Prisma.SortOrder.desc,
-      },
-      take: pagination.limit ?? 50,
-    });
+        take: pagination.limit ?? 50,
+      });
 
     return pendingMembershipOffers.map((r) => {
       return <ProfileEvent>{

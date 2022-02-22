@@ -1,31 +1,46 @@
-import {EventSource} from "../eventSource";
+import { EventSource } from "../eventSource";
 import {
   Direction,
   InvoiceLine,
   Maybe,
   PaginationArgs,
   ProfileEvent,
-  ProfileEventFilter, SaleEvent,
+  ProfileEventFilter,
+  SaleEvent,
 } from "../../types";
-import {Prisma} from "../../api-db/client";
-import {Environment} from "../../environment";
+import { Prisma } from "../../api-db/client";
+import { Environment } from "../../environment";
 
 export class SalesEventSource implements EventSource {
-  async getEvents(forSafeAddress: string, pagination: PaginationArgs, filter: Maybe<ProfileEventFilter>): Promise<ProfileEvent[]> {
+  async getEvents(
+    forSafeAddress: string,
+    pagination: PaginationArgs,
+    filter: Maybe<ProfileEventFilter>
+  ): Promise<ProfileEvent[]> {
     if (filter?.direction && filter.direction == Direction.Out) {
       // Exists only for "in"
       return [];
     }
+
+    const createdAt = pagination.continueAt
+      ? {
+          createdAt:
+            pagination.order == "ASC"
+              ? {
+                  gt: new Date(pagination.continueAt),
+                }
+              : {
+                  lt: new Date(pagination.continueAt),
+                },
+        }
+      : {};
+
     const sales = await Environment.readonlyApiDb.invoice.findMany({
       where: {
         sellerProfile: {
-          circlesAddress: forSafeAddress
+          circlesAddress: forSafeAddress,
         },
-        createdAt: pagination.order == "ASC" ? {
-          gt: new Date(pagination.continueAt)
-        } : {
-          lt: new Date(pagination.continueAt)
-        }
+        ...createdAt,
       },
       include: {
         customerProfile: true,
@@ -35,25 +50,28 @@ export class SalesEventSource implements EventSource {
               include: {
                 createdBy: {
                   select: {
-                    circlesAddress: true
-                  }
-                }
-              }
-            }
-          }
-        }
+                    circlesAddress: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
       orderBy: {
-        createdAt: pagination.order == "ASC" ? Prisma.SortOrder.asc : Prisma.SortOrder.desc
+        createdAt:
+          pagination.order == "ASC"
+            ? Prisma.SortOrder.asc
+            : Prisma.SortOrder.desc,
       },
-      take: pagination.limit ?? 50
+      take: pagination.limit ?? 50,
     });
 
-    return sales.map(salesInvoice => {
+    return sales.map((salesInvoice) => {
       if (!salesInvoice.customerProfile) {
         throw new Error("");
       }
-      return <ProfileEvent> {
+      return <ProfileEvent>{
         __typename: "ProfileEvent",
         safe_address: forSafeAddress,
         type: "Purchased",
@@ -63,7 +81,7 @@ export class SalesEventSource implements EventSource {
         value: null,
         transaction_hash: null,
         transaction_index: null,
-        payload: <SaleEvent> {
+        payload: <SaleEvent>{
           __typename: "SaleEvent",
           transaction_hash: "",
           buyer: salesInvoice.customerProfile.circlesAddress,
@@ -72,19 +90,19 @@ export class SalesEventSource implements EventSource {
             ...salesInvoice,
             sellerAddress: forSafeAddress,
             buyerAddress: salesInvoice.customerProfile.circlesAddress,
-            lines: salesInvoice.lines.map(o => {
+            lines: salesInvoice.lines.map((o) => {
               return <InvoiceLine>{
                 id: o.id,
                 offer: {
                   ...o.product,
                   createdByAddress: o.product.createdBy.circlesAddress,
-                  createdAt: o.product.createdAt.toJSON()
+                  createdAt: o.product.createdAt.toJSON(),
                 },
-                amount: o.amount
-              }
-            })
-          }
-        }
+                amount: o.amount,
+              };
+            }),
+          },
+        },
       };
     });
   }
