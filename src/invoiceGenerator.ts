@@ -1,9 +1,13 @@
 import PDFDocument from "pdfkit";
-import dayjs from "dayjs";
 import { Invoice, InvoiceLine, Offer, Profile } from "./api-db/client";
 import AWS from "aws-sdk";
 import { PromiseResult } from "aws-sdk/lib/request";
 import { Environment } from "./environment";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone"; // dependent on utc plugin
+import dayjs from "dayjs";
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export type PdfInvoiceLine = {
   amount: number;
@@ -92,17 +96,18 @@ export function pdfInvoiceDataFromDbInvoice(
     },
     seller: {
       name: displayableName(seller.firstName, seller.lastName),
-      address: "Reifenstuehlstr. 9",
+      address: "Reifenstuehlstr. 6",
       city: "München",
       country: "Deutschland",
       postal_code: "80469",
       safe_address: seller.circlesAddress,
     },
-    invoice_date: dayjs(data.createdAt).format("YYYY-MM-DD HH:mm:ss"),
+    // TODO: Use the user's timezone
+    invoice_date: dayjs(data.createdAt).tz("Europe/Berlin").format("YYYY-MM-DD HH:mm:ss"),
     invoice_nr: data.invoiceNo,
     transactionHash: paymentTransaction?.hash ?? "",
     transferTime: paymentTransaction
-      ? dayjs(paymentTransaction.timestamp).format("YYYY-MM-DD HH:mm:ss")
+      ? dayjs(paymentTransaction.timestamp).tz("Europe/Berlin").format("YYYY-MM-DD HH:mm:ss")
       : "",
     items: items,
     subtotal: total,

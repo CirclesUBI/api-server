@@ -40,6 +40,9 @@ export class SalesEventSource implements EventSource {
         sellerProfile: {
           circlesAddress: forSafeAddress,
         },
+        customerProfile: {
+          circlesAddress: filter?.with
+        },
         ...createdAt,
       },
       include: {

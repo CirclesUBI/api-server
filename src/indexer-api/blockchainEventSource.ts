@@ -372,9 +372,9 @@ export class BlockchainEventSource {
         select 'GnosisSafeEthTransfer' as type, hash, "initiator" as address1, "from" as address2, "to" as address3
         from gnosis_safe_eth_transfer_2
     )
-                                    select type, hash, address1, address2, address3
-                                    from a
-                                    where hash = ANY ($1);`;
+    select type, hash, address1, address2, address3
+    from a
+    where hash = ANY ($1);`;
 
     const relatedEvents = await Environment.indexDb.query(
       affectedAddressesQuery,
