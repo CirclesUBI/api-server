@@ -412,13 +412,13 @@ export class BlockchainEventSource {
   ): Promise<{ [safeAddress: string]: PdfDbInvoiceData[] }> {
     const invoices = await Environment.readWriteApiDb.invoice.findMany({
       where: {
-        purchase: {
-          sticksToInstanceId: Environment.instanceId // Only process invoices for purchases that are handled by this instance
-        },
         customerProfile: {
           circlesAddress: {
             in: addresses,
           },
+        },
+        purchase: {
+          sticksToInstanceId: Environment.instanceId // Only handle invoices of purchases that have been created by this node
         },
         paymentTransactionHash: null,
         cancelledAt: null,
@@ -426,6 +426,11 @@ export class BlockchainEventSource {
       include: {
         customerProfile: true,
         sellerProfile: true,
+        purchase: {
+          select: {
+            sticksToInstanceId: true
+          }
+        },
         lines: {
           include: {
             product: {
