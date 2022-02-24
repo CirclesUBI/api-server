@@ -5,7 +5,8 @@ import {
   Maybe,
   PaginationArgs,
   ProfileEvent,
-  ProfileEventFilter, PurchaseEvent,
+  ProfileEventFilter,
+  Purchased,
   SaleEvent,
 } from "../../types";
 import { Prisma } from "../../api-db/client";
@@ -41,7 +42,7 @@ export class PurchasesEventSource implements EventSource {
           circlesAddress: forSafeAddress,
         },
         sellerProfile: {
-          circlesAddress: filter?.with
+          circlesAddress: filter?.with,
         },
         ...createdAt,
       },
@@ -84,8 +85,8 @@ export class PurchasesEventSource implements EventSource {
         value: null,
         transaction_hash: null,
         transaction_index: null,
-        payload: <PurchaseEvent>{
-          __typename: "PurchaseEvent",
+        payload: <Purchased>{
+          __typename: "Purchased",
           transaction_hash: "",
           seller: purchaseInvoide.sellerProfile.circlesAddress,
           seller_profile: purchaseInvoide.sellerProfile,

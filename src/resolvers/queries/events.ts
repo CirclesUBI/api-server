@@ -1,31 +1,41 @@
-import {Context} from "../../context";
-import {EventSource} from "../../eventSources/eventSource";
+import { Context } from "../../context";
+import { EventSource } from "../../eventSources/eventSource";
 import {
   BlockchainEventType,
-  BlockchainIndexerEventSource
+  BlockchainIndexerEventSource,
 } from "../../eventSources/blockchain-indexer/blockchainIndexerEventSource";
-import {EventType, ProfileEvent, QueryEventsArgs, SortOrder} from "../../types";
-import {canAccess} from "../../canAccess";
-import {ChatMessageEventSource} from "../../eventSources/api/chatMessageEventSource";
-import {MembershipOfferEventSource} from "../../eventSources/api/membershipOfferEventSource";
-import {AcceptedMembershipOfferEventSource} from "../../eventSources/api/acceptedMembershipOfferEventSource";
-import {RejectedMembershipOfferEventSource} from "../../eventSources/api/rejectedMembershipOfferEventSource";
-import {WelcomeMessageEventSource} from "../../eventSources/api/welcomeMessageEventSource";
-import {CreatedInvitationsEventSource} from "../../eventSources/api/createdInvitationsEventSource";
-import {RedeemedInvitationsEventSource} from "../../eventSources/api/redeemedInvitationsEventSource";
-import {SalesEventSource} from "../../eventSources/api/salesEventSource";
-import {CombinedEventSource} from "../../eventSources/combinedEventSource";
-import {EventAugmenter} from "../../eventSources/eventAugmenter";
-import {SafeVerifiedEventSource} from "../../eventSources/api/safeVerifiedEventSource";
-import {PurchasesEventSource} from "../../eventSources/api/purchasesEventSource";
+import {
+  EventType,
+  ProfileEvent,
+  QueryEventsArgs,
+  SortOrder,
+} from "../../types";
+import { canAccess } from "../../canAccess";
+import { ChatMessageEventSource } from "../../eventSources/api/chatMessageEventSource";
+import { MembershipOfferEventSource } from "../../eventSources/api/membershipOfferEventSource";
+import { AcceptedMembershipOfferEventSource } from "../../eventSources/api/acceptedMembershipOfferEventSource";
+import { RejectedMembershipOfferEventSource } from "../../eventSources/api/rejectedMembershipOfferEventSource";
+import { WelcomeMessageEventSource } from "../../eventSources/api/welcomeMessageEventSource";
+import { CreatedInvitationsEventSource } from "../../eventSources/api/createdInvitationsEventSource";
+import { RedeemedInvitationsEventSource } from "../../eventSources/api/redeemedInvitationsEventSource";
+import { SalesEventSource } from "../../eventSources/api/salesEventSource";
+import { CombinedEventSource } from "../../eventSources/combinedEventSource";
+import { EventAugmenter } from "../../eventSources/eventAugmenter";
+import { SafeVerifiedEventSource } from "../../eventSources/api/safeVerifiedEventSource";
+import { PurchasesEventSource } from "../../eventSources/api/purchasesEventSource";
 
-export const events = async (parent:any, args:QueryEventsArgs, context: Context) => {
+export const events = async (
+  parent: any,
+  args: QueryEventsArgs,
+  context: Context
+) => {
   const eventSources: EventSource[] = [];
-  const types = args.types?.reduce((p, c) => {
-    if (!c) return p;
-    p[c] = true;
-    return p;
-  }, <{ [x: string]: any }>{}) ?? {};
+  const types =
+    args.types?.reduce((p, c) => {
+      if (!c) return p;
+      p[c] = true;
+      return p;
+    }, <{ [x: string]: any }>{}) ?? {};
 
   if (args.pagination.limit > 250) {
     throw new Error(`You cannot query more than 250 events in one request.`);
@@ -115,7 +125,7 @@ export const events = async (parent:any, args:QueryEventsArgs, context: Context)
     if (canAccessPrivateDetails && types[EventType.SaleEvent]) {
       eventSources.push(new SalesEventSource());
     }
-    if (canAccessPrivateDetails && types[EventType.PurchaseEvent]) {
+    if (canAccessPrivateDetails && types[EventType.Purchased]) {
       eventSources.push(new PurchasesEventSource());
     }
   }
@@ -148,7 +158,8 @@ export const events = async (parent:any, args:QueryEventsArgs, context: Context)
     events = await aggregateEventSource.getEvents(
       args.safeAddress,
       args.pagination,
-      args.filter ?? null);
+      args.filter ?? null
+    );
 
     events = events.sort((a, b) => {
       const aTime = new Date(a.timestamp).getTime();
@@ -156,12 +167,12 @@ export const events = async (parent:any, args:QueryEventsArgs, context: Context)
       return (
         //args.pagination.order == SortOrder.Asc
         /*?*/ aTime < bTime
-        //: aTime > bTime
-      )
-        ? -1
-        : aTime < bTime
+          ? //: aTime > bTime
+            -1
+          : aTime < bTime
           ? 1
-          : 0;
+          : 0
+      );
     });
 
     // TODO: Cache all new events
@@ -174,7 +185,7 @@ export const events = async (parent:any, args:QueryEventsArgs, context: Context)
   }
 
   const augmentation = new EventAugmenter();
-  events.forEach(e => {
+  events.forEach((e) => {
     augmentation.add(e);
   });
   events = await augmentation.augment();
@@ -183,16 +194,14 @@ export const events = async (parent:any, args:QueryEventsArgs, context: Context)
     const aTime = new Date(a.timestamp).getTime();
     const bTime = new Date(b.timestamp).getTime();
     return (
-      args.pagination.order == SortOrder.Asc
-        ? aTime < bTime
-        : aTime > bTime
+      args.pagination.order == SortOrder.Asc ? aTime < bTime : aTime > bTime
     )
       ? -1
       : aTime < bTime
-        ? 1
-        : 0;
+      ? 1
+      : 0;
   });
   events = events.slice(0, Math.min(events.length, args.pagination.limit));
 
   return events;
-}
+};

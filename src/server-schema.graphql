@@ -530,7 +530,7 @@ type SaleEvent implements IEventPayload {
 }
 
 # ${seller} sold ${amount} ${offer}(s)
-type PurchaseEvent implements IEventPayload {
+type Purchased implements IEventPayload {
   transaction_hash: String
   seller: String!
   seller_profile: Profile
@@ -564,7 +564,7 @@ union EventPayload =
   | OrganisationCreated
   | MemberAdded
   | SaleEvent
-  | PurchaseEvent
+  | Purchased
   | SafeVerified
 
 enum EventType {
@@ -586,7 +586,7 @@ enum EventType {
   OrganisationCreated
   MemberAdded
   SaleEvent
-  PurchaseEvent
+  Purchased
   SafeVerified
 }
 
@@ -852,7 +852,10 @@ type AnnouncePaymentResult {
 }
 
 type Mutation {
-  announcePayment(invoiceId: Int! transactionHash: String!) : AnnouncePaymentResult!
+  announcePayment(
+    invoiceId: Int!
+    transactionHash: String!
+  ): AnnouncePaymentResult!
   purchase(lines: [PurchaseLineInput!]!): [Invoice!]!
   completePurchase(invoiceId: Int!, revoke: Boolean): Invoice!
   completeSale(invoiceId: Int!, revoke: Boolean): Invoice!
