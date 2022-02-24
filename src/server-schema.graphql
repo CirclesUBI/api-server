@@ -848,6 +848,7 @@ type ProofPaymentResult {
 type AnnouncePaymentResult {
   invoiceId: Int!
   transactionHash: String!
+  pickupCode: String!
 }
 
 type Mutation {

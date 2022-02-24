@@ -60,6 +60,8 @@ import { verifications, verificationsCount } from "./queries/verifications";
 import { Environment } from "../environment";
 import { findInvitationCreator } from "./queries/findInvitationCreator";
 import { recentProfiles } from "./queries/recentProfiles";
+import {Generate} from "../generate";
+import {announcePayment} from "./mutations/announcePayment";
 
 const packageJson = require("../../package.json");
 
@@ -174,39 +176,7 @@ export const resolvers: Resolvers = {
     completeSale: completeSale,
     verifySafe: verifySafe,
     revokeSafeVerification: revokeSafeVerification,
-    announcePayment: async (parent, args, context) => {
-      const session = await context.verifySession();
-      if (!session.profileId)
-        throw new Error(`You need a profile to use this feature.`);
-
-      let invoice = await Environment.readWriteApiDb.invoice.findUnique({
-        where: {
-          id: args.invoiceId
-        }
-      });
-
-      if (invoice?.customerProfileId != session.profileId) {
-        invoice = null;
-      }
-
-      if (!invoice) {
-        throw new Error(`Couldn't find an invoice with id ${args.invoiceId}.`);
-      }
-
-      await Environment.readWriteApiDb.invoice.update({
-        where: {
-          id: args.invoiceId
-        },
-        data: {
-          pendingPaymentTransactionHash: args.transactionHash
-        }
-      });
-
-      return {
-        invoiceId: args.invoiceId,
-        transactionHash: args.transactionHash
-      };
-    }
+    announcePayment: announcePayment()
   },
   Subscription: {
     events: {

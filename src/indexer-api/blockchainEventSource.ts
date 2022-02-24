@@ -265,10 +265,6 @@ export class BlockchainEventSource {
           continue;
         }
 
-        const pickupCode = Generate.randomHexString(6);
-
-        // TODO: Currently all running processes will update the invoice with a different pickupCode but with the same transaction hash.
-        //       Maybe this should be synchronized?
         const invoiceNo = await getNextInvoiceNo(invoice.sellerProfile.id);
         const invoiceNoStr =
           (invoice.sellerProfile.invoiceNoPrefix ?? "") +
@@ -281,8 +277,7 @@ export class BlockchainEventSource {
             },
             data: {
               paymentTransactionHash: match.paymentTransaction.hash,
-              pickupCode: pickupCode,
-              invoiceNo: invoiceNoStr,
+              invoiceNo: invoiceNoStr
             },
             include: {
               customerProfile: true,

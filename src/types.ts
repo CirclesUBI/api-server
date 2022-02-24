@@ -48,6 +48,7 @@ export type AnnouncePaymentResult = {
   __typename?: 'AnnouncePaymentResult';
   invoiceId: Scalars['Int'];
   transactionHash: Scalars['String'];
+  pickupCode: Scalars['String'];
 };
 
 export type AssetBalance = {
@@ -1649,6 +1650,7 @@ export type AggregatePayloadResolvers<ContextType = any, ParentType extends Reso
 export type AnnouncePaymentResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['AnnouncePaymentResult'] = ResolversParentTypes['AnnouncePaymentResult']> = ResolversObject<{
   invoiceId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   transactionHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  pickupCode?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
