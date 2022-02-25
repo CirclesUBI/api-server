@@ -2,13 +2,11 @@ import { createServer } from "http";
 import { execute, subscribe } from "graphql";
 import { SubscriptionServer } from "subscriptions-transport-ws";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import express from "express";
 import { Request, Response } from "express";
 import { ApolloServer } from "apollo-server-express";
 import { resolvers } from "./resolvers/resolvers";
 import { importSchema } from "graphql-import";
 import { Context } from "./context";
-import { BlockchainEventSource } from "./indexer-api/blockchainEventSource";
 import { ApiPubSub } from "./pubsub";
 import { RpcGateway } from "./rpcGateway";
 import { Notification, PoolClient } from "pg";
@@ -17,11 +15,17 @@ import { Session as PrismaSession } from "./api-db/client";
 import { Session } from "./session";
 import { Server, ServerOptions } from "ws";
 import { Dropper } from "./dropper/dropper";
-import AWS from "aws-sdk";
 import { PromiseResult } from "aws-sdk/lib/request";
-
 import { Environment } from "./environment";
+import { IndexerEvents } from "./indexer-api/indexerEvents";
+import { PaymentProcessor } from "./indexer-api/paymentProcessor";
+import { AppNotificationProcessor } from "./indexer-api/appNotificationProcessor";
+import { EmailNotificationProcessor } from "./indexer-api/emailNotificationProcessor";
 import {ninetyDaysLater} from "./90days";
+//import { BlockchainEventSource } from "./indexer-api/blockchainEventSource";
+import express from "express";
+import AWS from "aws-sdk";
+
 
 var cors = require("cors");
 
@@ -261,8 +265,21 @@ export class Main {
     console.log(
       `Subscribing to blockchain events from the indexer at ${Environment.blockchainIndexerUrl} ..`
     );
-    const conn = new BlockchainEventSource(Environment.blockchainIndexerUrl);
-    conn.connect();
+
+    const indexerEventProcessor = new IndexerEvents(
+        Environment.blockchainIndexerUrl,
+        2500,
+        [
+            new PaymentProcessor(),
+            new AppNotificationProcessor(),
+            new EmailNotificationProcessor()
+        ]
+    );
+
+    indexerEventProcessor.run();
+
+    //const conn = new BlockchainEventSource(Environment.blockchainIndexerUrl);
+    //conn.connect();
     console.log("Subscription ready.");
 
     this.listenForDbEvents("new_message").catch((e) => {

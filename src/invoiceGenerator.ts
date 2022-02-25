@@ -6,6 +6,7 @@ import { Environment } from "./environment";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone"; // dependent on utc plugin
 import dayjs from "dayjs";
+import {getDateWithOffset} from "./getDateWithOffset";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -107,7 +108,7 @@ export function pdfInvoiceDataFromDbInvoice(
     invoice_nr: data.invoiceNo,
     transactionHash: paymentTransaction?.hash ?? "",
     transferTime: paymentTransaction
-      ? dayjs(paymentTransaction.timestamp).tz("Europe/Berlin").format("YYYY-MM-DD HH:mm:ss")
+      ? dayjs(getDateWithOffset(paymentTransaction.timestamp)).tz("Europe/Berlin").format("YYYY-MM-DD HH:mm:ss")
       : "",
     items: items,
     subtotal: total,

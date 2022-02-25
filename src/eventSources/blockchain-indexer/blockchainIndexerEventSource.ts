@@ -7,8 +7,8 @@ import {
   ProfileEventFilter,
   SortOrder,
 } from "../../types";
-import { getDateWithOffset } from "../../indexer-api/blockchainEventSource";
 import { Environment } from "../../environment";
+import {getDateWithOffset} from "../../getDateWithOffset";
 
 export enum BlockchainEventType {
   CrcSignup = "CrcSignup",

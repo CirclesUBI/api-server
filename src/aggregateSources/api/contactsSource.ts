@@ -8,8 +8,8 @@ import {
   ProfileAggregate,
   ProfileAggregateFilter, Maybe, EventType
 } from "../../types";
-import {getDateWithOffset} from "../../indexer-api/blockchainEventSource";
 import {Environment} from "../../environment";
+import {getDateWithOffset} from "../../getDateWithOffset";
 
 async function trustContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const trustContactsResult = await Environment.indexDb.query(`

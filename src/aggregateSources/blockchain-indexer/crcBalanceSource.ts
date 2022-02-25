@@ -5,8 +5,8 @@ import {
   ProfileAggregate,
   ProfileAggregateFilter
 } from "../../types";
-import {getDateWithOffset} from "../../indexer-api/blockchainEventSource";
 import {Environment} from "../../environment";
+import {getDateWithOffset} from "../../getDateWithOffset";
 
 // All CRC balances of a safe
 export class CrcBalanceSource implements AggregateSource {
