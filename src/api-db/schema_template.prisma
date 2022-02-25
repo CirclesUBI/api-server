@@ -354,3 +354,10 @@ model Tag {
 
     value String?
 }
+
+model Job {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    topic text
+    payload text
+}
