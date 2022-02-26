@@ -140,6 +140,10 @@ export class Environment {
     await this.indexDb.query("select 1");
     console.log(`  Success`);
 
+    console.log(`* Testing connection to the pgReadWriteApiDb ...`);
+    await this.pgReadWriteApiDb.query("select 1");
+    console.log(`  Success`);
+
     console.log(`* Testing connection to the readonly api-db ...`);
     await this.readonlyApiDb.$queryRaw("select 1");
     console.log(`  Success`);
@@ -208,6 +212,16 @@ export class Environment {
   });
   static get indexDb(): Pool {
     return Environment._indexDb;
+  }
+
+  private static _pgReadWriteApiDb: Pool = new Pool({
+    connectionString: process.env.CONNECTION_STRING_RW,
+    ssl: !process.env.DEBUG,
+  }).on("error", (err) => {
+    console.error("An idle client has experienced an error", err.stack);
+  });
+  static get pgReadWriteApiDb(): Pool {
+    return Environment._pgReadWriteApiDb;
   }
 
   private static _readonlyApiDb: PrismaClient;

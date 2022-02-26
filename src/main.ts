@@ -1,30 +1,33 @@
-import { createServer } from "http";
-import { execute, subscribe } from "graphql";
-import { SubscriptionServer } from "subscriptions-transport-ws";
-import { makeExecutableSchema } from "@graphql-tools/schema";
-import { Request, Response } from "express";
-import { ApolloServer } from "apollo-server-express";
-import { resolvers } from "./resolvers/resolvers";
-import { importSchema } from "graphql-import";
-import { Context } from "./context";
-import { ApiPubSub } from "./pubsub";
-import { RpcGateway } from "./rpcGateway";
-import { Notification, PoolClient } from "pg";
-import { GqlLogger } from "./gqlLogger";
-import { Session as PrismaSession } from "./api-db/client";
-import { Session } from "./session";
-import { Server, ServerOptions } from "ws";
-import { Dropper } from "./dropper/dropper";
-import { PromiseResult } from "aws-sdk/lib/request";
-import { Environment } from "./environment";
-import { IndexerEvents } from "./indexer-api/indexerEvents";
-import { PaymentProcessor } from "./indexer-api/paymentProcessor";
-import { AppNotificationProcessor } from "./indexer-api/appNotificationProcessor";
-import { EmailNotificationProcessor } from "./indexer-api/emailNotificationProcessor";
+import {createServer} from "http";
+import {execute, subscribe} from "graphql";
+import {SubscriptionServer} from "subscriptions-transport-ws";
+import {makeExecutableSchema} from "@graphql-tools/schema";
+import {Request, Response} from "express";
+import {ApolloServer} from "apollo-server-express";
+import {resolvers} from "./resolvers/resolvers";
+import {importSchema} from "graphql-import";
+import {Context} from "./context";
+import {ApiPubSub} from "./pubsub";
+import {RpcGateway} from "./rpcGateway";
+import {Notification, PoolClient} from "pg";
+import {GqlLogger} from "./gqlLogger";
+import {Session as PrismaSession} from "./api-db/client";
+import {Session} from "./session";
+import {Server, ServerOptions} from "ws";
+import {Dropper} from "./dropper/dropper";
+import {PromiseResult} from "aws-sdk/lib/request";
+import {Environment} from "./environment";
+import {IndexerEvents} from "./indexer-api/indexerEvents";
+import {PaymentProcessor} from "./indexer-api/paymentProcessor";
+import {AppNotificationProcessor} from "./indexer-api/appNotificationProcessor";
 import {ninetyDaysLater} from "./90days";
-//import { BlockchainEventSource } from "./indexer-api/blockchainEventSource";
 import express from "express";
 import AWS from "aws-sdk";
+import {JobQueue} from "./api-db/jobQueue";
+import {newChatMessage} from "./jobs/newChatMessage";
+import {emailCrcReceived} from "./jobs/emailCrcReceived";
+import {emailCrcTrustChanged} from "./jobs/emailCrcTrustChanged";
+import {emailOrderConfirmation} from "./jobs/emailOrderConfirmation";
 
 
 var cors = require("cors");
@@ -64,7 +67,7 @@ export class Main {
 
     app.use(cors(corsOptions));
 
-    app.use(express.json({ limit: "50mb" }));
+    app.use(express.json({limit: "50mb"}));
 
     app.use(
       express.urlencoded({
@@ -267,21 +270,59 @@ export class Main {
     );
 
     const indexerEventProcessor = new IndexerEvents(
-        Environment.blockchainIndexerUrl,
-        2500,
-        [
-            new PaymentProcessor(),
-            new AppNotificationProcessor(),
-            new EmailNotificationProcessor()
-        ]
+      Environment.blockchainIndexerUrl,
+      2500,
+      [
+        //new PaymentProcessor(),
+        new AppNotificationProcessor()
+      ]
     );
 
     indexerEventProcessor.run();
 
+    const jobQueue = new JobQueue("jobQueue");
+    jobQueue.consume([
+        "new_message",
+        "QUEUE_email_crc_received",
+        "QUEUE_email_crc_trust_changed",
+        "QUEUE_email_order_confirmation"
+      ],
+      async (jobs) => {
+        for (let job of jobs) {
+          switch (job.topic) {
+            case "new_message":
+              await newChatMessage(job);
+              break;
+            case "QUEUE_email_crc_received":
+              await emailCrcReceived(job);
+              break;
+            case "QUEUE_email_crc_trust_changed":
+              await emailCrcTrustChanged(job);
+              break;
+            case "QUEUE_email_order_confirmation":
+              await emailOrderConfirmation(job);
+              break;
+          }
+        }
+      },
+      10,
+      false
+      ).then(() => {
+        console.info("JobQueue stopped.");
+      }).catch(e => {
+        console.error("JobQueue crashed.", e);
+      });
+
+    setInterval(() => {
+      // JobQueue.produce([
+      //  {topic: "QUEUE_email_order_confirmation", payload: `Hello World. The time is ${new Date()}`},
+      // ]);
+    }, 1000);
+
     //const conn = new BlockchainEventSource(Environment.blockchainIndexerUrl);
     //conn.connect();
     console.log("Subscription ready.");
-
+/*
     this.listenForDbEvents("new_message").catch((e) => {
       console.error(`The notifyConnection for 'new_message' events died:`, e);
     });
@@ -289,6 +330,7 @@ export class Main {
     this.listenForDbEvents("follow_trust").catch((e) => {
       console.error(`The notifyConnection for 'follow_trust' events died:`, e);
     });
+ */
 
     // await this._dropper.start();
 
@@ -332,7 +374,7 @@ export class Main {
 
     return to;
   }
-
+/*
   private async listenForDbEvents(channel: string) {
     while (true) {
       let newMessageConnection: PoolClient | null = null;
@@ -401,6 +443,7 @@ export class Main {
       });
     }
   }
+ */
 }
 
 new Main().run2().then(() => console.log("Started")).then(async () => {
