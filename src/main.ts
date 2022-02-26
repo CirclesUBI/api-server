@@ -7,9 +7,8 @@ import {ApolloServer} from "apollo-server-express";
 import {resolvers} from "./resolvers/resolvers";
 import {importSchema} from "graphql-import";
 import {Context} from "./context";
-import {ApiPubSub} from "./pubsub";
 import {RpcGateway} from "./rpcGateway";
-import {Notification, PoolClient} from "pg";
+import {Notification} from "pg";
 import {GqlLogger} from "./gqlLogger";
 import {Session as PrismaSession} from "./api-db/client";
 import {Session} from "./session";
@@ -23,11 +22,15 @@ import {AppNotificationProcessor} from "./indexer-api/appNotificationProcessor";
 import {ninetyDaysLater} from "./90days";
 import express from "express";
 import AWS from "aws-sdk";
-import {JobQueue} from "./api-db/jobQueue";
-import {newChatMessage} from "./jobs/newChatMessage";
-import {emailCrcReceived} from "./jobs/emailCrcReceived";
-import {emailCrcTrustChanged} from "./jobs/emailCrcTrustChanged";
-import {emailOrderConfirmation} from "./jobs/emailOrderConfirmation";
+import {JobQueue} from "./jobQueue";
+import {BroadcastChatMessage} from "./jobs/descriptions/chat/broadcastChatMessage";
+import {BroadcastChatMessageWorker} from "./jobs/worker/chat/broadcastChatMessageWorker";
+import {SendCrcReceivedEmailWorker} from "./jobs/worker/emailNotifications/sendCrcReceivedEmailWorker";
+import {SendCrcTrustChangedEmailWorker} from "./jobs/worker/emailNotifications/sendCrcTrustChangedEmailWorker";
+import {SendCrcReceivedEmail} from "./jobs/descriptions/emailNotifications/sendCrcReceivedEmail";
+import {SendCrcTrustChangedEmail} from "./jobs/descriptions/emailNotifications/sendCrcTrustChangedEmail";
+import {SendOrderConfirmationEmailWorker} from "./jobs/worker/emailNotifications/sendOrderConfirmationEmailWorker";
+import {SendOrderConfirmationEmail} from "./jobs/descriptions/emailNotifications/sendOrderConfirmationEmail";
 
 
 var cors = require("cors");
@@ -273,7 +276,7 @@ export class Main {
       Environment.blockchainIndexerUrl,
       2500,
       [
-        //new PaymentProcessor(),
+        new PaymentProcessor(),
         new AppNotificationProcessor()
       ]
     );
@@ -282,25 +285,25 @@ export class Main {
 
     const jobQueue = new JobQueue("jobQueue");
     jobQueue.consume([
-        "new_message",
-        "QUEUE_email_crc_received",
-        "QUEUE_email_crc_trust_changed",
-        "QUEUE_email_order_confirmation"
+        "broadcastChatMessage",
+        "sendCrcReceivedEmail",
+        "sendCrcTrustChangedEmail",
+        "sendOrderConfirmationEmail"
       ],
       async (jobs) => {
         for (let job of jobs) {
           switch (job.topic) {
-            case "new_message":
-              await newChatMessage(job);
+            case "broadcastChatMessage".toLowerCase():
+              await new BroadcastChatMessageWorker().run(job.id, BroadcastChatMessage.parse(job.payload));
               break;
-            case "QUEUE_email_crc_received":
-              await emailCrcReceived(job);
+            case "sendCrcReceivedEmail".toLowerCase():
+              await new SendCrcReceivedEmailWorker().run(job.id, SendCrcReceivedEmail.parse(job.payload));
               break;
-            case "QUEUE_email_crc_trust_changed":
-              await emailCrcTrustChanged(job);
+            case "sendCrcTrustChangedEmail".toLowerCase():
+              await new SendCrcTrustChangedEmailWorker().run(job.id, SendCrcTrustChangedEmail.parse(job.payload));
               break;
-            case "QUEUE_email_order_confirmation":
-              await emailOrderConfirmation(job);
+            case "sendOrderConfirmationEmail".toLowerCase():
+              await new SendOrderConfirmationEmailWorker().run(job.id, SendOrderConfirmationEmail.parse(job.payload));
               break;
           }
         }

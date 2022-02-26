@@ -3,8 +3,8 @@ import { Context } from "../../context";
 import { PrismaClient } from "../../api-db/client";
 import {RpcGateway} from "../../rpcGateway";
 import {canAccess} from "../../canAccess";
-import {Environment} from "../../environment";
-import {JobQueue} from "../../api-db/jobQueue";
+import {JobQueue} from "../../jobQueue";
+import {BroadcastChatMessage} from "../../jobs/descriptions/chat/broadcastChatMessage";
 
 export function sendMessage(prisma: PrismaClient) {
   return async (
@@ -46,7 +46,7 @@ export function sendMessage(prisma: PrismaClient) {
     });
 
     if (toProfile.circlesAddress && RpcGateway.get().utils.isAddress(toProfile.circlesAddress)) {
-      await JobQueue.broadcast("new_message",`{"to":"${toProfile.circlesAddress.toLowerCase()}"}`);
+      await JobQueue.broadcast(new BroadcastChatMessage(toProfile.circlesAddress));
       /*
       await Environment.indexDb.query(
         `call publish_event('new_message', '{"to":"${toProfile.circlesAddress.toLowerCase()}"}');`);

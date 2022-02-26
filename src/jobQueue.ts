@@ -1,22 +1,12 @@
-import {Environment} from "../environment";
+import {Environment} from "./environment";
 import {PoolClient} from "pg";
-import {log} from "../log";
-
-export type JobQueueTopics =
-  "QUEUE_email_crc_trust_changed" |
-  "QUEUE_email_crc_received" |
-  "QUEUE_email_order_confirmation" |
-  "new_message"
-
-export type JobData = {
-    topic: JobQueueTopics,
-    payload: string
-}
+import {log} from "./log";
+import {JobDescription, JobType} from "./jobs/descriptions/jobDescription";
 
 export type Job = {
     id: number,
     createdAt: Date,
-    topic: string,
+    topic: JobType,
     payload: string
 }
 
@@ -28,7 +18,7 @@ export class JobQueue {
     }
 
     public async consume(
-      topics: JobQueueTopics[],
+      topics: JobType[],
       worker: (jobs:Job[]) => Promise<void>,
       maxBatchSize: number = 1,
       throwOnError: boolean = false)
@@ -47,7 +37,7 @@ export class JobQueue {
 
             let error:Error|null = null;
             let listenerConnection:PoolClient|undefined = undefined;
-            let topicMap = topics.reduce((p,c) => {p[c]=true;return p;}, <{ [x: string]: any }>{});
+            let topicMap = topics.reduce((p,c) => {p[c.toLowerCase()]=true;return p;}, <{ [x: string]: any }>{});
 
             try {
                 listenerConnection = await Environment.pgReadWriteApiDb.connect();
@@ -65,26 +55,28 @@ export class JobQueue {
                         reject(err);
                     });
                     listenerConnection.on("notification", async function (msg) {
-                        if (!topicMap[msg.channel]) {
+                        if (!topicMap[msg.channel.toLowerCase()]) {
                             return;
                         }
 
                         try {
-                            if (msg.channel.startsWith("BROADCAST_")) {
+                            if (msg.payload && msg.payload?.trim() != "") {
+                                // Everything with a non-empty payload is considered a 'broadcast message'.
+                                // Broadcast messages are executed right away whenever an instance receives them.
                                 await worker([{
                                     id: -1,
                                     createdAt: new Date(),
-                                    topic: msg.channel,
+                                    topic: <JobType>msg.channel.toLowerCase(),
                                     payload: msg.payload ?? "",
-                                }])
+                                }]);
                             } else {
+                                // Everything else is a regular job queue entry and is only processed once
                                 let processedJobs = 1;
                                 while (processedJobs > 0) {
-                                    processedJobs = await JobQueue.consume(msg.channel, maxBatchSize, worker);
+                                    processedJobs = await JobQueue.consume(msg.channel.toLowerCase(), maxBatchSize, worker);
                                 }
                             }
                         } catch (e) {
-                            console.error("Ola!")
                             reject(e);
                         }
                     });
@@ -95,11 +87,15 @@ export class JobQueue {
                               `[${self.name}] [${topic}] [JobQueue.consume]`,
                               `Subscribing to '${topic}' events ..`);
 
-                            await listenerConnection.query(`LISTEN ${topic}`);
+                            await listenerConnection.query(`LISTEN ${topic.toLowerCase()}`);
+
+                            log(" ->] ",
+                              `[${self.name}] [${topic}] [JobQueue.consume]`,
+                              `Processing initial '${topic}' events ..`);
 
                             let processedJobs = 1;
                             while (processedJobs > 0) {
-                                processedJobs = await JobQueue.consume(topic, maxBatchSize, worker);
+                                processedJobs = await JobQueue.consume(topic.toLowerCase(), maxBatchSize, worker);
                             }
                         }
 
@@ -141,30 +137,31 @@ export class JobQueue {
         };
     }
 
-    public static async broadcast(topic: JobQueueTopics, payload: string) : Promise<void> {
-        await Environment.pgReadWriteApiDb.query(`call publish_event($1, $2);`, [topic, payload]);
+    public static async broadcast(jobDescription: JobDescription) : Promise<void> {
+        await Environment.pgReadWriteApiDb.query(`call publish_event($1, $2);`,
+          [jobDescription.topic.toLowerCase(), jobDescription.payload()]);
     }
 
-    public static async produce(jobs:JobData[]) : Promise<void> {
+    public static async produce(jobs:JobDescription[]) : Promise<void> {
         const client = await Environment.pgReadWriteApiDb.connect();
         try {
             await client.query('BEGIN');
 
-            const insertSql = "INSERT INTO \"Job\" (topic, payload) VALUES ($1, $2) RETURNING id;";
+            const insertSql = "INSERT INTO \"Job\" (topic, payload) VALUES ($1, $2);";
             const topics:{[x:string]:any} = {};
 
             for(let job of jobs) {
                 await client.query(insertSql, [
-                    job.topic,
-                    job.payload
+                    job.topic.toLowerCase(),
+                    job.payload()
                 ]);
-                topics[job.topic] = null;
+                topics[job.topic.toLowerCase()] = null;
             }
 
             await client.query('COMMIT');
 
             for(let topic of Object.keys(topics)) {
-                await client.query(`call publish_event($1, $2);`, [topic, ""]);
+                await client.query(`call publish_event($1, $2);`, [topic.toLowerCase(), ""]);
             }
         } finally {
             client.release();
@@ -188,12 +185,12 @@ export class JobQueue {
                   AND q.topic = "Job".topic
                 RETURNING "Job".*;`;
 
-            const queryResult = await client.query(getJobsSql, [topic]);
+            const queryResult = await client.query(getJobsSql, [topic.toLowerCase()]);
             const jobs = queryResult.rows.map(o => {
                 return <Job> {
                     id: o.id,
                     createdAt: o.createdAt,
-                    topic: o.topic,
+                    topic: o.topic.toLowerCase(),
                     payload: o.payload
                 };
             });

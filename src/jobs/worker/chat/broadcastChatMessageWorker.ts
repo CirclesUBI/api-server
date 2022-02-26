@@ -1,0 +1,28 @@
+import {ApiPubSub} from "../../../pubsub";
+import {RpcGateway} from "../../../rpcGateway";
+import {BroadcastChatMessage} from "../../descriptions/chat/broadcastChatMessage";
+import {JobWorker, JobWorkerConfiguration} from "../jobWorker";
+
+export class BroadcastChatMessageWorker extends JobWorker<BroadcastChatMessage> {
+  name(): string {
+    return "BroadcastChatMessageWorker";
+  }
+
+  constructor(configuration?:JobWorkerConfiguration) {
+    super(configuration);
+  }
+
+  async doWork(job: BroadcastChatMessage): Promise<void> {
+    if (!job.to) {
+      return;
+    }
+    if (!RpcGateway.get().utils.isAddress(job.to)) {
+      return;
+    }
+    await ApiPubSub.instance.pubSub.publish(`events_${job.to}`, {
+      events: {
+        type: "new_message",
+      },
+    });
+  }
+}
