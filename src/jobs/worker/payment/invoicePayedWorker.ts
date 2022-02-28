@@ -1,0 +1,114 @@
+import {JobWorker, JobWorkerConfiguration} from "../jobWorker";
+import {SendCrcReceivedEmail} from "../../descriptions/emailNotifications/sendCrcReceivedEmail";
+import {InvoicePayed} from "../../descriptions/payment/invoicePayed";
+import {
+  InvoicePdfGenerator,
+  PdfDbInvoiceData,
+  pdfInvoiceDataFromDbInvoice,
+  PdfInvoicePaymentTransaction
+} from "../../../invoiceGenerator";
+import {getNextInvoiceNo} from "../../../resolvers/mutations/purchase";
+import {Environment} from "../../../environment";
+import {log, logErr} from "../../../log";
+
+type Transfer = {
+  hash: string,
+  timestamp: Date,
+};
+
+export class InvoicePayedWorker extends JobWorker<InvoicePayed> {
+  name(): string {
+    return "InvoicePayedWorker";
+  }
+
+  constructor(configuration?:JobWorkerConfiguration) {
+    super(configuration);
+  }
+
+  async doWork(job: InvoicePayed): Promise<void> {
+
+    const transferMetadata = {
+      hash: job.transactionHash,
+      timestamp: job.transactionTime
+    };
+
+    const paidInvoice = await this.markInvoiceAsPaid(job.invoiceId, job.sellerProfileId, transferMetadata);
+
+    await this.persistInvoice(
+      paidInvoice,
+      transferMetadata);
+  }
+
+  private async markInvoiceAsPaid(
+    invoiceId: number,
+    sellerProfileId: number,
+    transfer:Transfer) {
+
+    const invoiceNo = await getNextInvoiceNo(sellerProfileId);
+
+    const updateInvoiceResult =
+      await Environment.readWriteApiDb.invoice.update({
+        where: {
+          id: invoiceId,
+        },
+        data: {
+          paymentTransactionHash: transfer.hash,
+          invoiceNo: invoiceNo
+        },
+        include: {
+          customerProfile: true,
+          sellerProfile: true,
+          lines: {
+            include: {
+              product: true,
+            },
+          },
+        },
+      });
+
+    log(`     `,
+      `[] [invoiceId: ${invoiceId}] [InvoicePayedWorker.markInvoiceAsPayed]`,
+      `Updated invoice ${updateInvoiceResult.id}. ` +
+      `Invoice no.: ${updateInvoiceResult.invoiceNo}, ` +
+      `Payment transaction: '${updateInvoiceResult.paymentTransactionHash}', ` +
+      `Pickup code: '${updateInvoiceResult.pickupCode}'.`
+    );
+
+    return updateInvoiceResult;
+  }
+
+  private async persistInvoice(
+    invoice:PdfDbInvoiceData,
+    transfer:Transfer) {
+
+    log(`     `,
+      `[] [invoiceId: ${invoice.id}] [InvoicePayedWorker.persistInvoice]`,
+      `Storing the invoice `);
+
+    const paymentPdfData: PdfInvoicePaymentTransaction = {
+      hash: transfer.hash,
+      timestamp: transfer.timestamp,
+    };
+
+    const invoicePdfData = pdfInvoiceDataFromDbInvoice(
+      invoice,
+      paymentPdfData
+    );
+
+    const invoiceGenerator = new InvoicePdfGenerator(invoicePdfData);
+    const invoicePdfDocument = invoiceGenerator.generate();
+    const saveResult = await invoiceGenerator.savePdfToS3(
+      invoicePdfData.storageKey,
+      invoicePdfDocument
+    );
+
+    if (saveResult.$response.error) {
+      const errMessage =
+        `An error occurred while saving the pdf of invoice '${invoicePdfData.invoice_nr}' ` +
+        `(id: ${invoice.id}) to ${Environment.filesBucket.endpoint.href}: ${JSON.stringify(saveResult.$response.error)}`;
+
+      logErr(`ERR  `, `[] [invoiceId: ${invoice.id}] [InvoicePayedWorker.persistInvoice]`, errMessage);
+    }
+  }
+
+}

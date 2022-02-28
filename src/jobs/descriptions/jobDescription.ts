@@ -2,7 +2,8 @@ export type JobType =
   "broadcastChatMessage" |
   "sendCrcReceivedEmail" |
   "sendCrcTrustChangedEmail" |
-  "sendOrderConfirmationEmail";
+  "sendOrderConfirmationEmail" |
+  "invoicePayed";
 
 export interface JobDescription {
   topic: JobType;

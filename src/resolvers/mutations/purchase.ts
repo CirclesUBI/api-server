@@ -147,7 +147,6 @@ async function lookupOffers(args: MutationPurchaseArgs): Promise<OfferLookup> {
 async function createPurchase(caller:Profile, args: MutationPurchaseArgs, offersLookup: OfferLookup) : Promise<CreatedDbPurchase> {
   const purchase = await Environment.readWriteApiDb.purchase.create({
     data: {
-      sticksToInstanceId: Environment.instanceId,
       createdByProfileId: caller.id,
       createdAt: new Date(),
       lines: {
@@ -192,13 +191,14 @@ async function createPurchase(caller:Profile, args: MutationPurchaseArgs, offers
   };
 }
 
-export async function getNextInvoiceNo(profileId: number) : Promise<number> {
+export async function getNextInvoiceNo(profileId: number) : Promise<string> {
   const p = await Environment.readWriteApiDb.$queryRaw(`
       WITH updated AS (
-        UPDATE "Profile" SET "lastInvoiceNo" = "lastInvoiceNo" + 1
-            WHERE id = ${profileId} RETURNING "lastInvoiceNo"
-    )
-    SELECT "lastInvoiceNo" as invoice_no FROM updated;`);
+          UPDATE "Profile" SET "lastInvoiceNo" = "lastInvoiceNo" + 1
+              WHERE id = ${profileId} RETURNING *
+      )
+      SELECT "invoiceNoPrefix" || TO_CHAR("lastInvoiceNo", 'fm00000000') as invoice_no
+      FROM updated;`);
 
   return p[0].invoice_no;
 }

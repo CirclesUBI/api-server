@@ -29,6 +29,8 @@ import {SendCrcReceivedEmailWorker} from "./jobs/worker/emailNotifications/sendC
 import {SendCrcTrustChangedEmailWorker} from "./jobs/worker/emailNotifications/sendCrcTrustChangedEmailWorker";
 import {SendCrcReceivedEmail} from "./jobs/descriptions/emailNotifications/sendCrcReceivedEmail";
 import {SendCrcTrustChangedEmail} from "./jobs/descriptions/emailNotifications/sendCrcTrustChangedEmail";
+import {InvoicePayedWorker} from "./jobs/worker/payment/invoicePayedWorker";
+import {InvoicePayed} from "./jobs/descriptions/payment/invoicePayed";
 
 
 var cors = require("cors");
@@ -286,7 +288,8 @@ export class Main {
         "broadcastChatMessage",
         "sendCrcReceivedEmail",
         "sendCrcTrustChangedEmail",
-        "sendOrderConfirmationEmail"
+        "sendOrderConfirmationEmail",
+        "invoicePayed"
       ],
       async (jobs) => {
         for (let job of jobs) {
@@ -299,6 +302,9 @@ export class Main {
               break;
             case "sendCrcTrustChangedEmail".toLowerCase():
               await new SendCrcTrustChangedEmailWorker().run(job.id, SendCrcTrustChangedEmail.parse(job.payload));
+              break;
+            case "invoicePayed".toLowerCase():
+              await new InvoicePayedWorker().run(job.id, InvoicePayed.parse(job.payload));
               break;
           }
         }

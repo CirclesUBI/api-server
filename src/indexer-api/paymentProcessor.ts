@@ -13,6 +13,8 @@ import {RpcGateway} from "../rpcGateway";
 import {convertTimeCirclesToCircles} from "../timeCircles";
 import {getNextInvoiceNo} from "../resolvers/mutations/purchase";
 import {getDateWithOffset} from "../getDateWithOffset";
+import {JobQueue} from "../jobQueue";
+import {InvoicePayed} from "../jobs/descriptions/payment/invoicePayed";
 
 type Transfer = {
     hash: string,
@@ -69,97 +71,14 @@ export class PaymentProcessor implements IndexerEventProcessor {
                     `[${messageNo}] [${sourceUrl}] [PaymentProcessor.onMessage]`,
                     `Found payment ${match.payment.hash} from ${sender} for invoice ${match.invoice.id}.`);
 
-                const paidInvoice = await this.markInvoiceAsPaid(
-                    messageNo,
-                    sourceUrl,
-                    match.invoice,
-                    match.payment);
-/*
-                await this.persistInvoice(
-                    messageNo,
-                    sourceUrl,
-                    paidInvoice,
-                    match.payment);
- */
+                await JobQueue.produce([
+                  new InvoicePayed(match.invoice.id
+                    , match.invoice.sellerProfileId
+                    , match.payment.hash
+                    , match.payment.timestamp)
+                ]);
             }
         }
-    }
-
-    private async persistInvoice(
-        messageNo:number,
-        source:string,
-        invoice:PdfDbInvoiceData,
-        transfer:Transfer) {
-
-        log(`     `,
-            `[${messageNo}] [${source}] [PaymentProcessor.persistInvoice]`,
-            `Storing the invoice `);
-
-        const paymentPdfData: PdfInvoicePaymentTransaction = {
-            hash: transfer.hash,
-            timestamp: transfer.timestamp,
-        };
-
-        const invoicePdfData = pdfInvoiceDataFromDbInvoice(
-            invoice,
-            paymentPdfData
-        );
-
-        const invoiceGenerator = new InvoicePdfGenerator(invoicePdfData);
-        const invoicePdfDocument = invoiceGenerator.generate();
-        const saveResult = await invoiceGenerator.savePdfToS3(
-            invoicePdfData.storageKey,
-            invoicePdfDocument
-        );
-
-        if (saveResult.$response.error) {
-            const errMessage =
-                `An error occurred while saving the pdf of invoice '${invoicePdfData.invoice_nr}' ` +
-                `(id: ${invoice.id}) to ${Environment.filesBucket.endpoint.href}: ${JSON.stringify(saveResult.$response.error)}`;
-
-            logErr(`ERR  `, `[${messageNo}] [${source}] [PaymentProcessor.persistInvoice]`, errMessage);
-        }
-    }
-
-    private async markInvoiceAsPaid(
-        messageNo:number,
-        source:string,
-        invoice:PdfDbInvoiceData,
-        transfer:Transfer) {
-        const invoiceNo = await getNextInvoiceNo(invoice.sellerProfile.id);
-        const invoiceNoStr =
-            (invoice.sellerProfile.invoiceNoPrefix ?? "") +
-            invoiceNo.toString().padStart(8, "0");
-
-        const updateInvoiceResult =
-            await Environment.readWriteApiDb.invoice.update({
-                where: {
-                    id: invoice.id,
-                },
-                data: {
-                    paymentTransactionHash: transfer.hash,
-                    invoiceNo: invoiceNoStr
-                },
-                include: {
-                    customerProfile: true,
-                    sellerProfile: true,
-                    lines: {
-                        include: {
-                            product: true,
-                        },
-                    },
-                },
-            });
-
-        log(`     `,
-            `[${messageNo}] [${source}] [PaymentProcessor.markInvoiceAsPaid]`,
-            `Updated invoice ${invoice.id}. ` +
-            `Invoice no.: ${updateInvoiceResult.invoiceNo}, ` +
-            `Payment transaction: '${updateInvoiceResult.paymentTransactionHash}', ` +
-            `Pickup code: '${updateInvoiceResult.pickupCode}'.`
-        );
-
-        return updateInvoiceResult;
     }
 
     private findMatchingPayments (
@@ -223,21 +142,12 @@ export class PaymentProcessor implements IndexerEventProcessor {
                         in: addresses,
                     },
                 },
-                purchase: {
-                    // Only handle invoices of purchases that have been created by this node
-                    sticksToInstanceId: Environment.instanceId
-                },
                 paymentTransactionHash: null,
                 cancelledAt: null,
             },
             include: {
                 customerProfile: true,
                 sellerProfile: true,
-                purchase: {
-                    select: {
-                        sticksToInstanceId: true
-                    }
-                },
                 lines: {
                     include: {
                         product: {

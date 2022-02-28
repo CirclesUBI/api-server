@@ -149,21 +149,26 @@ export class JobQueue {
         try {
             await client.query('BEGIN');
 
-            const insertSql = "INSERT INTO \"Job\" (hash, topic, payload) VALUES (sha256($1 || $2), $1, $2) ON CONFLICT DO NOTHING;";
-            const topics:{[x:string]:any} = {};
+            const insertSql = "INSERT INTO \"Job\" (hash, topic, payload) VALUES (sha256(($1 || $2)::bytea), $1, $2) ON CONFLICT DO NOTHING RETURNING id;";
+            const topics:{[x:string]:boolean} = {};
 
             for(let job of jobs) {
-                await client.query(insertSql, [
+                const result = await client.query(insertSql, [
                     job.topic.toLowerCase(),
                     job.payload()
                 ]);
-                topics[job.topic.toLowerCase()] = null;
+
+                // only notify about successful inserts
+                topics[job.topic.toLowerCase()] = result.rowCount > 0;
             }
 
             await client.query('COMMIT');
 
-            for(let topic of Object.keys(topics)) {
-                await client.query(`call publish_event($1, $2);`, [topic.toLowerCase(), ""]);
+            for(let topic of Object.entries(topics)) {
+                if (!topic[1]) { // only notify about successful inserts
+                    continue;
+                }
+                await client.query(`call publish_event($1, $2);`, [topic[0].toLowerCase(), ""]);
             }
         } finally {
             client.release();
