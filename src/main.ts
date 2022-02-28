@@ -316,26 +316,13 @@ export class Main {
         console.error("JobQueue crashed.", e);
       });
 
-    setInterval(() => {
-      // JobQueue.produce([
-      //  {topic: "QUEUE_email_order_confirmation", payload: `Hello World. The time is ${new Date()}`},
-      // ]);
-    }, 1000);
+    // TODO: Add follow trust job handling
 
-    //const conn = new BlockchainEventSource(Environment.blockchainIndexerUrl);
-    //conn.connect();
-    console.log("Subscription ready.");
 /*
-    this.listenForDbEvents("new_message").catch((e) => {
-      console.error(`The notifyConnection for 'new_message' events died:`, e);
-    });
-
     this.listenForDbEvents("follow_trust").catch((e) => {
       console.error(`The notifyConnection for 'follow_trust' events died:`, e);
     });
- */
-
-    // await this._dropper.start();
+*/
 
     const PORT = 8989;
     httpServer.listen(PORT, () =>
@@ -359,94 +346,6 @@ export class Main {
     }
     return sessionToken;
   }
-
-  private static findRecipientInPayload(msg: Notification) {
-    if (!msg.payload) {
-      return null;
-    }
-
-    const payload = JSON.parse(msg.payload);
-    if (!payload.to) {
-      return null;
-    }
-
-    const to: string = payload.to;
-    if (!RpcGateway.get().utils.isAddress(to)) {
-      return null;
-    }
-
-    return to;
-  }
-/*
-  private async listenForDbEvents(channel: string) {
-    while (true) {
-      let newMessageConnection: PoolClient | null = null;
-      console.log(
-        `Trying to create the notifyConnection for channel '${channel}' ..`
-      );
-      try {
-        newMessageConnection = await Environment.indexDb.connect();
-        await new Promise(async (resolve, reject) => {
-          if (!newMessageConnection) {
-            reject(
-              new Error(
-                `The notifyConnection for channel '${channel}' couldn't be established and is 'null'.`
-              )
-            );
-            return;
-          }
-          // Listen for all pg_notify channel messages
-          newMessageConnection.on("error", async function (err) {
-            reject(err);
-          });
-          newMessageConnection.on("notification", async function (msg) {
-            if (msg.channel != channel) {
-              return;
-            }
-            const to = Main.findRecipientInPayload(msg);
-            if (!to) {
-              return;
-            }
-            console.log(
-              ` *-> [${new Date().toJSON()}] [] [] [listenForDbEvents.onNotification: ${channel}]: ${JSON.stringify(
-                msg.payload
-              )}`
-            );
-            await ApiPubSub.instance.pubSub.publish(`events_${to}`, {
-              events: {
-                type: channel,
-              },
-            });
-          });
-
-          console.log(`notifyConnection for channel '${channel}' established.`);
-          await newMessageConnection.query(`LISTEN ${channel}`);
-        });
-      } catch (e) {
-        console.error(
-          `The notifyConnection for channel '${channel}' experienced an error: `,
-          e
-        );
-      } finally {
-        try {
-          newMessageConnection?.release();
-        } catch (e) {
-          console.error(
-            `Couldn't release the notifyConnection for channel '${channel}' on error:`,
-            e
-          );
-        }
-      }
-
-      console.log(
-        `Retrying notifyConnection for channel '${channel}' in 10 sec. ..`
-      );
-      await new Promise((resolve) => {
-        setTimeout(resolve, 10000);
-      });
-    }
-  }
- */
 }
 
 new Main().run2().then(() => console.log("Started")).then(async () => {
