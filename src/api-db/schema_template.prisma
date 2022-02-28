@@ -357,6 +357,7 @@ model Tag {
 
 model Job {
     id Int @id @default(autoincrement())
+    hash String @unique
     createdAt DateTime @default(now())
     topic String
     payload String
