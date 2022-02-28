@@ -29,8 +29,6 @@ import {SendCrcReceivedEmailWorker} from "./jobs/worker/emailNotifications/sendC
 import {SendCrcTrustChangedEmailWorker} from "./jobs/worker/emailNotifications/sendCrcTrustChangedEmailWorker";
 import {SendCrcReceivedEmail} from "./jobs/descriptions/emailNotifications/sendCrcReceivedEmail";
 import {SendCrcTrustChangedEmail} from "./jobs/descriptions/emailNotifications/sendCrcTrustChangedEmail";
-import {SendOrderConfirmationEmailWorker} from "./jobs/worker/emailNotifications/sendOrderConfirmationEmailWorker";
-import {SendOrderConfirmationEmail} from "./jobs/descriptions/emailNotifications/sendOrderConfirmationEmail";
 
 
 var cors = require("cors");
@@ -301,9 +299,6 @@ export class Main {
               break;
             case "sendCrcTrustChangedEmail".toLowerCase():
               await new SendCrcTrustChangedEmailWorker().run(job.id, SendCrcTrustChangedEmail.parse(job.payload));
-              break;
-            case "sendOrderConfirmationEmail".toLowerCase():
-              await new SendOrderConfirmationEmailWorker().run(job.id, SendOrderConfirmationEmail.parse(job.payload));
               break;
           }
         }

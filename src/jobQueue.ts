@@ -5,6 +5,7 @@ import {JobDescription, JobType} from "./jobs/descriptions/jobDescription";
 
 export type Job = {
     id: number,
+    hash: string,
     createdAt: Date,
     topic: JobType,
     payload: string
@@ -65,6 +66,7 @@ export class JobQueue {
                                 // Broadcast messages are executed right away whenever an instance receives them.
                                 await worker([{
                                     id: -1,
+                                    hash: "",
                                     createdAt: new Date(),
                                     topic: <JobType>msg.channel.toLowerCase(),
                                     payload: msg.payload ?? "",
@@ -147,7 +149,7 @@ export class JobQueue {
         try {
             await client.query('BEGIN');
 
-            const insertSql = "INSERT INTO \"Job\" (topic, payload) VALUES ($1, $2);";
+            const insertSql = "INSERT INTO \"Job\" (hash, topic, payload) VALUES (sha256($1 || $2), $1, $2) ON CONFLICT DO NOTHING;";
             const topics:{[x:string]:any} = {};
 
             for(let job of jobs) {
@@ -189,6 +191,7 @@ export class JobQueue {
             const jobs = queryResult.rows.map(o => {
                 return <Job> {
                     id: o.id,
+                    hash: o.hash,
                     createdAt: o.createdAt,
                     topic: o.topic.toLowerCase(),
                     payload: o.payload

@@ -1,15 +1,17 @@
 import {JobDescription, JobType} from "../jobDescription";
+import {ProfileEvent} from "../../../types";
 
 export class SendCrcTrustChangedEmail implements JobDescription {
   readonly topic: JobType = "sendCrcTrustChangedEmail";
 
   payload(): string {
-    return this._payload;
+    return JSON.stringify(this.trustChangedEvent);
   }
-  private readonly _payload: string;
 
-  constructor(payload:string) {
-    this._payload = payload;
+  readonly trustChangedEvent: ProfileEvent;
+
+  constructor(hubTransfer:ProfileEvent) {
+    this.trustChangedEvent = hubTransfer;
   }
 
   static parse(payload: string) {

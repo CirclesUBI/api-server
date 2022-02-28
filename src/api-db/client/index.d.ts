@@ -289,6 +289,7 @@ export type Tag = {
 
 export type Job = {
   id: number
+  hash: string
   createdAt: Date
   topic: string
   payload: string
@@ -17411,6 +17412,7 @@ export namespace Prisma {
 
   export type JobMinAggregateOutputType = {
     id: number | null
+    hash: string | null
     createdAt: Date | null
     topic: string | null
     payload: string | null
@@ -17418,6 +17420,7 @@ export namespace Prisma {
 
   export type JobMaxAggregateOutputType = {
     id: number | null
+    hash: string | null
     createdAt: Date | null
     topic: string | null
     payload: string | null
@@ -17425,6 +17428,7 @@ export namespace Prisma {
 
   export type JobCountAggregateOutputType = {
     id: number
+    hash: number
     createdAt: number
     topic: number
     payload: number
@@ -17442,6 +17446,7 @@ export namespace Prisma {
 
   export type JobMinAggregateInputType = {
     id?: true
+    hash?: true
     createdAt?: true
     topic?: true
     payload?: true
@@ -17449,6 +17454,7 @@ export namespace Prisma {
 
   export type JobMaxAggregateInputType = {
     id?: true
+    hash?: true
     createdAt?: true
     topic?: true
     payload?: true
@@ -17456,6 +17462,7 @@ export namespace Prisma {
 
   export type JobCountAggregateInputType = {
     id?: true
+    hash?: true
     createdAt?: true
     topic?: true
     payload?: true
@@ -17576,6 +17583,7 @@ export namespace Prisma {
 
   export type JobGroupByOutputType = {
     id: number
+    hash: string
     createdAt: Date
     topic: string
     payload: string
@@ -17602,6 +17610,7 @@ export namespace Prisma {
 
   export type JobSelect = {
     id?: boolean
+    hash?: boolean
     createdAt?: boolean
     topic?: boolean
     payload?: boolean
@@ -18497,6 +18506,7 @@ export namespace Prisma {
 
   export const JobScalarFieldEnum: {
     id: 'id',
+    hash: 'hash',
     createdAt: 'createdAt',
     topic: 'topic',
     payload: 'payload'
@@ -19368,6 +19378,7 @@ export namespace Prisma {
     OR?: Enumerable<JobWhereInput>
     NOT?: Enumerable<JobWhereInput>
     id?: IntFilter | number
+    hash?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     topic?: StringFilter | string
     payload?: StringFilter | string
@@ -19375,6 +19386,7 @@ export namespace Prisma {
 
   export type JobOrderByInput = {
     id?: SortOrder
+    hash?: SortOrder
     createdAt?: SortOrder
     topic?: SortOrder
     payload?: SortOrder
@@ -19382,6 +19394,7 @@ export namespace Prisma {
 
   export type JobWhereUniqueInput = {
     id?: number
+    hash?: string
   }
 
   export type JobScalarWhereWithAggregatesInput = {
@@ -19389,6 +19402,7 @@ export namespace Prisma {
     OR?: Enumerable<JobScalarWhereWithAggregatesInput>
     NOT?: Enumerable<JobScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
+    hash?: StringWithAggregatesFilter | string
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     topic?: StringWithAggregatesFilter | string
     payload?: StringWithAggregatesFilter | string
@@ -20861,6 +20875,7 @@ export namespace Prisma {
   }
 
   export type JobCreateInput = {
+    hash: string
     createdAt?: Date | string
     topic: string
     payload: string
@@ -20868,12 +20883,14 @@ export namespace Prisma {
 
   export type JobUncheckedCreateInput = {
     id?: number
+    hash: string
     createdAt?: Date | string
     topic: string
     payload: string
   }
 
   export type JobUpdateInput = {
+    hash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     topic?: StringFieldUpdateOperationsInput | string
     payload?: StringFieldUpdateOperationsInput | string
@@ -20881,6 +20898,7 @@ export namespace Prisma {
 
   export type JobUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
+    hash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     topic?: StringFieldUpdateOperationsInput | string
     payload?: StringFieldUpdateOperationsInput | string
@@ -20888,12 +20906,14 @@ export namespace Prisma {
 
   export type JobCreateManyInput = {
     id?: number
+    hash: string
     createdAt?: Date | string
     topic: string
     payload: string
   }
 
   export type JobUpdateManyMutationInput = {
+    hash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     topic?: StringFieldUpdateOperationsInput | string
     payload?: StringFieldUpdateOperationsInput | string
@@ -20901,6 +20921,7 @@ export namespace Prisma {
 
   export type JobUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
+    hash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     topic?: StringFieldUpdateOperationsInput | string
     payload?: StringFieldUpdateOperationsInput | string

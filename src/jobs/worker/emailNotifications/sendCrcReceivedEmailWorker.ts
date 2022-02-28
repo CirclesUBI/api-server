@@ -11,5 +11,6 @@ export class SendCrcReceivedEmailWorker extends JobWorker<SendCrcReceivedEmail> 
   }
 
   async doWork(job: SendCrcReceivedEmail): Promise<void> {
+
   }
 }

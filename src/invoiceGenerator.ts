@@ -54,7 +54,7 @@ export type PdfDbInvoiceData = Invoice & {
   sellerProfile: Profile;
   lines: (InvoiceLine & { product: Offer })[];
 };
-export type PdfInvoicePaymentTransaction = { hash: string; timestamp: Date };
+export type PdfInvoicePaymentTransaction = { hash: string; timestamp: Date|null };
 
 export function pdfInvoiceDataFromDbInvoice(
   data: PdfDbInvoiceData,
@@ -107,9 +107,9 @@ export function pdfInvoiceDataFromDbInvoice(
     invoice_date: dayjs(data.createdAt).tz("Europe/Berlin").format("YYYY-MM-DD HH:mm:ss"),
     invoice_nr: data.invoiceNo,
     transactionHash: paymentTransaction?.hash ?? "",
-    transferTime: paymentTransaction
+    transferTime: paymentTransaction?.timestamp ? (paymentTransaction
       ? dayjs(getDateWithOffset(paymentTransaction.timestamp)).tz("Europe/Berlin").format("YYYY-MM-DD HH:mm:ss")
-      : "",
+      : "") : "",
     items: items,
     subtotal: total,
     salesTax: [

@@ -74,12 +74,13 @@ export class PaymentProcessor implements IndexerEventProcessor {
                     sourceUrl,
                     match.invoice,
                     match.payment);
-
+/*
                 await this.persistInvoice(
                     messageNo,
                     sourceUrl,
                     paidInvoice,
                     match.payment);
+ */
             }
         }
     }
