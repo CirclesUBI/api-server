@@ -359,6 +359,7 @@ model Job {
     id Int @id @default(autoincrement())
     hash String @unique
     createdAt DateTime @default(now())
+    finishedAt DateTime?
     topic String
     payload String
 }
@@ -367,6 +368,7 @@ model Job_History {
     id Int @id
     hash String
     createdAt DateTime
+    finishedAt DateTime?
     topic String
     payload String
 }
