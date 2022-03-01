@@ -14,6 +14,9 @@ export class Mailer
             auth: {
                 user: Environment.smtpConfig.user,
                 pass: Environment.smtpConfig.password
+            },
+            tls: {
+                ciphers:'SSLv3'
             }
         });
 
