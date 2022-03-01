@@ -39,7 +39,7 @@ export function upsertProfileResolver() {
                     circlesAddress: args.data.circlesAddress?.toLowerCase(),
                     circlesTokenAddress: args.data.circlesTokenAddress?.toLowerCase(),
                     lastUpdateAt: new Date(),
-                    emailAddress: session.emailAddress ?? undefined,
+                    emailAddress: args.data.emailAddress,
                     circlesSafeOwner: session.ethAddress?.toLowerCase(),
                     displayCurrency: <DisplayCurrency>args.data.displayCurrency
                 }
@@ -50,7 +50,7 @@ export function upsertProfileResolver() {
                     ...args.data,
                     id: undefined,
                     lastUpdateAt: new Date(),
-                    emailAddress: session.emailAddress,
+                    emailAddress: args.data.emailAddress,
                     circlesSafeOwner: session.ethAddress?.toLowerCase(),
                     successorOfCirclesAddress: args.data.successorOfCirclesAddress?.toLowerCase(),
                     circlesAddress: args.data.circlesAddress?.toLowerCase(),
