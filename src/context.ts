@@ -92,6 +92,7 @@ export class Context {
       arg.res);
   }
 
+
   async verifySession(): Promise<PrismaSession> {
     if (!this.session) {
       throw new Error("No session on context.");

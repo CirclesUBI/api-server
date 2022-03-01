@@ -60,7 +60,6 @@ import { verifications, verificationsCount } from "./queries/verifications";
 import { Environment } from "../environment";
 import { findInvitationCreator } from "./queries/findInvitationCreator";
 import { recentProfiles } from "./queries/recentProfiles";
-import {Generate} from "../generate";
 import {announcePayment} from "./mutations/announcePayment";
 
 const packageJson = require("../../package.json");
@@ -75,8 +74,7 @@ export const resolvers: Resolvers = {
         return null;
       }
       try {
-        const session = await context.verifySession();
-        if (session.profileId != parent.id) {
+        if (context.session.profileId != parent.id) {
           return null;
         }
       } catch (e) {
@@ -84,6 +82,20 @@ export const resolvers: Resolvers = {
       }
 
       return parent.emailAddress ?? null;
+    },
+    newsletter: async (parent: Profile, args:any, context:Context) => {
+      if (!context.session) {
+        return null;
+      }
+      try {
+        if (context.session.profileId != parent.id) {
+          return null;
+        }
+      } catch (e) {
+        return null;
+      }
+
+      return parent.newsletter ?? null;
     },
     city: async (parent: Profile) => {
       if (!parent.cityGeonameid) return null;
