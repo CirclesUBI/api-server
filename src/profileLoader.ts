@@ -214,6 +214,7 @@ export class ProfileLoader {
     safeAddresses: string[]
   ): Promise<SafeProfileMap> {
     // Batch all safeAddresses (max. 50)
+
     const safeAddressCopy = JSON.parse(JSON.stringify(safeAddresses));
     const batches: string[][] = [];
 
@@ -222,6 +223,11 @@ export class ProfileLoader {
     }
 
     const safeProfileMap: SafeProfileMap = {};
+
+    if (batches.length == 0) {
+      return safeProfileMap;
+    }
+
     for (let batch of batches) {
       const query = batch.reduce(
         (p, c) =>

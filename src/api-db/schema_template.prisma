@@ -360,15 +360,7 @@ model Job {
     hash String @unique
     createdAt DateTime @default(now())
     finishedAt DateTime?
-    topic String
-    payload String
-}
-
-model Job_History {
-    id Int @id
-    hash String
-    createdAt DateTime
-    finishedAt DateTime?
+    error String?
     topic String
     payload String
 }

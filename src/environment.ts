@@ -20,39 +20,43 @@ export type SmtpConfig = {
 export class Environment {
 
   static async validateAndSummarize() {
+    const errors:string[] = [];
 
     if (!this.corsOrigins) {
-      throw new Error(`The CORS_ORIGNS environment variable is not set.`);
+      errors.push(`The CORS_ORIGNS environment variable is not set.`);
+    }
+    if (!this.appUrl) {
+      errors.push(`The APP_URL environment variable is not set.`);
     }
     if (!this.blockchainIndexerUrl) {
-      throw new Error(
+      errors.push(
         `The BLOCKCHAIN_INDEX_WS_URL environment variable is not set.`
       );
     }
     if (!this.rpcGatewayUrl) {
-      throw new Error(`The RPC_GATEWAY_URL environment variable is not set.`);
+      errors.push(`The RPC_GATEWAY_URL environment variable is not set.`);
     }
     if (!this.readonlyApiConnectionString) {
-      throw new Error(
+      errors.push(
         `The CONNECTION_STRING_RO environment variable is not set.`
       );
     }
     if (!this.readWriteApiConnectionString) {
-      throw new Error(
+      errors.push(
         `The CONNECTION_STRING_RW environment variable is not set.`
       );
     }
     if (!this.appId) {
-      throw new Error(`The APP_ID environment variable is not set.`);
+      errors.push(`The APP_ID environment variable is not set.`);
     }
     if (!this.acceptedIssuer) {
-      throw new Error(`The ACCEPTED_ISSUER environment variable is not set.`);
+      errors.push(`The ACCEPTED_ISSUER environment variable is not set.`);
     }
     if (!this.externalDomain) {
-      throw new Error(`The EXTERNAL_DOMAIN environment variable is not set.`);
+      errors.push(`The EXTERNAL_DOMAIN environment variable is not set.`);
     }
     if (!this.operatorOrganisationAddress) {
-      throw new Error(
+      errors.push(
         `The OPERATOR_ORGANISATION_ADDRESS environment variable is not set.`
       );
     }
@@ -68,7 +72,7 @@ export class Environment {
     if (rpcGateway.status < 500) {
       console.log("  Success. Body: " + (await rpcGateway.text()));
     } else {
-      throw new Error(
+      errors.push(
         `The json rpc gateway responded with a non 200 code: ${
           rpcGateway.status
         }. Body: ${await rpcGateway.text()}`
@@ -83,7 +87,7 @@ export class Environment {
     console.log(`  ${this.operatorOrganisationAddress} nonce is: ${nonce}`);
 
     if (!process.env.INVITATION_FUNDS_SAFE_ADDRESS) {
-      throw new Error(
+      errors.push(
         `The INVITATION_FUNDS_SAFE_ADDRESS environment variable is not set.`
       );
     }
@@ -93,18 +97,18 @@ export class Environment {
     console.log(`  ${this.invitationFundsSafe.address} nonce is: ${nonce}`);
 
     if (!process.env.INVITATION_FUNDS_SAFE_KEY) {
-      throw new Error(
+      errors.push(
         `The INVITATION_FUNDS_SAFE_KEY environment variable is not set.`
       );
     }
 
     /*
     if (!process.env.REWARD_TOKEN_ADDRESS) {
-      throw new Error(`The REWARD_TOKEN_ADDRESS environment variable is not set.`);
+      errors.push(`The REWARD_TOKEN_ADDRESS environment variable is not set.`);
     }
 
     if (!process.env.VERIFICATION_REWARD_FUNDS_SAFE_ADDRESS) {
-      throw new Error(
+      errors.push(
         `The VERIFICATION_REWARD_FUNDS_SAFE_ADDRESS environment variable is not set.`
       );
     }
@@ -116,7 +120,7 @@ export class Environment {
     );
 
     if (!process.env.VERIFICATION_REWARD_FUNDS_KEY) {
-      throw new Error(
+      errors.push(
         `The VERIFICATION_REWARD_FUNDS_KEY environment variable is not set.`
       );
     }
@@ -127,7 +131,7 @@ export class Environment {
       !process.env.DIGITALOCEAN_SPACES_KEY ||
       !process.env.DIGITALOCEAN_SPACES_SECRET
     ) {
-      throw new Error(
+      errors.push(
         `The DIGITALOCEAN_SPACES_ENDPOINT, DIGITALOCEAN_SPACES_KEY or DIGITALOCEAN_SPACES_SECRET environment variable is not set.`
       );
     }
@@ -171,10 +175,18 @@ export class Environment {
       console.log("  Success. Body: " + (await indexerWsEndpoint.text()));
     } else {
       const body = await indexerWsEndpoint.text();
-      throw new Error(
+      errors.push(
         `The indexer ws endpoint responded with a non 200 code: ${indexerWsEndpoint.status}. Body: ${body}`
       );
     }
+
+    if (errors.length > 0) {
+      throw new Error(errors.join("\n"));
+    }
+  }
+
+  static get appUrl(): string {
+    return <string>process.env.APP_URL;
   }
 
   static get smtpConfig(): SmtpConfig {

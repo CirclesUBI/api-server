@@ -23,7 +23,7 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                     break;
                 case "CrcHubTransfer":
                     await JobQueue.produce([
-                        new SendCrcReceivedEmail(event.hash, event.address1, event.address2)
+                        new SendCrcReceivedEmail(event.hash, event.address1, event.address2, event.value)
                     ]);
                     break;
                 case "CrcSignup":

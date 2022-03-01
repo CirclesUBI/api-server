@@ -13,9 +13,7 @@ export class BroadcastChatMessage implements JobDescription {
   }
 
   getPayload(): string {
-    return JSON.stringify({
-      to: this.to
-    });
+    return JSON.stringify(this);
   }
 
   public static parse(payload:string) : BroadcastChatMessage {

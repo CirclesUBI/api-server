@@ -109,28 +109,28 @@ export class IndexerEvents {
         : Promise<{ affectedAddresses:string[], events: IndexerEvent[] }> {
         // Find all blockchainEvents in the reported new range
         const affectedAddressesQuery = `with a as (
-            select 'CrcSignup' as type, hash, "user" as address1, null as address2, null as address3
+            select 'CrcSignup' as type, hash, "user" as address1, null as address2, null as address3, null as value
             from crc_signup_2
             union all
-            select 'CrcTrust' as type, hash, address as address1, can_send_to as address2, null as address3
+            select 'CrcTrust' as type, hash, address as address1, can_send_to as address2, null as address3, "limit"::text as value
             from crc_trust_2
             union all
-            select 'CrcOrganisationSignup' as type, hash, organisation as address1, null as address2, null as address3
+            select 'CrcOrganisationSignup' as type, hash, organisation as address1, null as address2, null as address3, null as value
             from crc_organisation_signup_2
             union all
-            select 'CrcHubTransfer' as type, hash, "from" as address1, "to" as address2, null as address3
+            select 'CrcHubTransfer' as type, hash, "from" as address1, "to" as address2, null as address3, value::text as value
             from crc_hub_transfer_2
             union all
-            select 'Erc20Transfer' as type, hash, "from" as address1, "to" as address2, null as address3
+            select 'Erc20Transfer' as type, hash, "from" as address1, "to" as address2, null as address3, value::text as value
             from erc20_transfer_2
             union all
-            select 'EthTransfer' as type, hash, "from" as address1, "to" as address2, null as address3
+            select 'EthTransfer' as type, hash, "from" as address1, "to" as address2, null as address3, value::text as value
             from eth_transfer_2
             union all
-            select 'GnosisSafeEthTransfer' as type, hash, "initiator" as address1, "from" as address2, "to" as address3
+            select 'GnosisSafeEthTransfer' as type, hash, "initiator" as address1, "from" as address2, "to" as address3, value::text as value
             from gnosis_safe_eth_transfer_2
         )
-        select type, hash, address1, address2, address3
+        select type, hash, address1, address2, address3, value
         from a
         where hash = ANY ($1);`;
 
@@ -160,7 +160,8 @@ export class IndexerEvents {
                     hash: o.hash,
                     address1: o.address1,
                     address2: o.address2,
-                    address3: o.address3
+                    address3: o.address3,
+                    value: o.value
                 };
             }),
         };

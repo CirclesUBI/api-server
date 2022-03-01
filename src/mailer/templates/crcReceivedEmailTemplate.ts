@@ -1,48 +1,13 @@
-import {JobWorker, JobWorkerConfiguration} from "../jobWorker";
-import {SendCrcTrustChangedEmail} from "../../descriptions/emailNotifications/sendCrcTrustChangedEmail";
-import {Mailer} from "../../../mailer/mailer";
-import {ProfileLoader} from "../../../profileLoader";
-import {Environment} from "../../../environment";
-import {crcTrustChangedEmailTemplate} from "../../../mailer/templates/crcTrustChangedEmailTemplate";
+import {MailTemplate} from "../mailTemplate";
 
-export class SendCrcTrustChangedEmailWorker extends JobWorker<SendCrcTrustChangedEmail> {
-  name(): string {
-    return "SendCrcTrustChangedEmailWorker";
-  }
-
-  constructor(configuration?:JobWorkerConfiguration) {
-    super(configuration);
-  }
-
-  async doWork(job: SendCrcTrustChangedEmail): Promise<void> {
-    // TODO: Use a different template when an organization trusts you
-    const profiles = await (new ProfileLoader()
-      .profilesBySafeAddress(Environment.readonlyApiDb, [job.user, job.canSendTo]));
-
-    const user = profiles[job.user];
-    const canSendTo = profiles[job.canSendTo];
-
-    if (!user?.emailAddress) {
-      console.warn(`Couldn't send a notification email to profile ${profiles[job.user]?.id} because it has no email address.`);
-      return;
-    }
-    if (!canSendTo?.circlesAddress) {
-      console.warn(`Couldn't send a notification email for transaction ${job.hash} because no 'canSendTo' profile could be loaded.`);
-      return;
-    }
-
-    await Mailer.send(crcTrustChangedEmailTemplate, {
-      user: `${user.firstName} ${user.lastName}`,
-      canSendTo: `${canSendTo.firstName} ${canSendTo.lastName}`,
-      canSendToProfileUrl: `${Environment.appUrl}#/contacts/profile/${canSendTo.circlesAddress}`
-    }, user.emailAddress);
-  }
-}
-
-const htmlTemplate = `
+/**
+ * Fields: sender, recipient, amount, currency, bankingUrl
+ */
+export const crcReceivedEmailTemplate:MailTemplate = {
+  subject: `{{sender}} sent you {{amount}} {{currency}}`,
+  bodyHtml:`
 <!DOCTYPE html>
 <html lang="en" xmlns:v="urn:schemas-microsoft-com:vml">
-
   <head>
     <meta charset="utf-8">
     <meta name="x-apple-disable-message-reformatting">
@@ -79,7 +44,7 @@ const htmlTemplate = `
         }
       </style>
     <![endif]-->
-    <title>New incoming trust!</title>
+    <title>Ca-tching!</title>
     <style>
       @font-face {
         font-family: 'Ostrich Sans Heavy';
@@ -124,7 +89,7 @@ const htmlTemplate = `
         </div>
       </div>
     </div>
-    <div role="article" aria-roledescription="email" aria-label="New incoming trust!" lang="en">
+    <div role="article" aria-roledescription="email" aria-label="Ca-tching!" lang="en">
       <table style="height: 100%; width: 100%;" cellpadding="0" cellspacing="0" role="presentation">
         <tr>
           <td align="center">
@@ -151,11 +116,10 @@ const htmlTemplate = `
                       <td class="sm-px-24" style="background-color: #ffffff; padding: 48px; text-align: center;">
                         <p style="margin: 0; font-size: 18px; font-weight: 600;">Hi {USERNAME},</p>
                         <p style="font-size: 16px; color: #0a2262;">
-                          {THEOTEHRGUY} just trusted you on Circles.land
+                          {XXX} sent you money on Circles.land
                           <br>
                           <br>
-                          Go to Circles.land to see the details and trust
-                          {THEOTEHRGUY} back
+                          Go to your Circles.land banking to see the details
                         </p>
                         <div class="sm-h-24" style="line-height: 24px;">&zwnj;</div>
                         <a href="{{ .ConfirmationURL }}" class="hover-bg-primary-dark" style="display: inline-block; border-radius: 8px; background-color: #41c7f1; padding: 20px 24px; font-size: 14px; font-weight: 600; text-transform: uppercase; line-height: 1; color: #ffffff; text-decoration: none;">
@@ -168,7 +132,7 @@ const htmlTemplate = `
                             "
                             >&nbsp;</i><!
                         [endif]-->
-                          <span style="mso-text-raise: 13pt">Go to Circles.land &rarr;</span>
+                          <span style="mso-text-raise: 13pt">Go to Banking &rarr;</span>
                           <!--[if mso
                           ]><i
                             style="letter-spacing: 24px; mso-font-width: -100%"
@@ -183,9 +147,6 @@ const htmlTemplate = `
                     <tr>
                       <td style="padding: 32px; text-align: center; font-size: 12px; color: #4b5563;">
                         <p style="margin: 0 0 4px; text-transform: uppercase;">© 2022 CirclesLand. All rights reserved.</p>
-                        <p style="margin: 0; font-style: italic;">
-                          If you haven't requested this e-mail you can simply ignore it.
-                        </p>
                         <p style="cursor: default;">
                           <a href="https://dev.circles.land/" class="hover-underline" style="color: #3b82f6; text-decoration: none;">Circles.Land</a>
                           &bull;
@@ -204,6 +165,5 @@ const htmlTemplate = `
       </table>
     </div>
   </body>
-
-</html>
-`;
+</html>`
+}

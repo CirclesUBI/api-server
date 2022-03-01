@@ -186,19 +186,6 @@ export class JobQueue {
         try {
             await client.query('BEGIN');
 
-            /*
-            const getJobsSql = `
-                DELETE FROM "Job"
-                    USING (
-                        SELECT * 
-                        FROM "Job" 
-                        WHERE topic = $1
-                        LIMIT ${parseInt(count.toString())} FOR UPDATE SKIP LOCKED
-                    ) q
-                WHERE q.id = "Job".id
-                  AND q.topic = "Job".topic
-                RETURNING "Job".*;`;
-            */
             const getJobsSql = `
                 UPDATE "Job"
                 SET "finishedAt" = now()
@@ -206,12 +193,11 @@ export class JobQueue {
                          SELECT *
                          FROM "Job"
                          WHERE topic = $1
+                           AND "finishedAt" is null
                          LIMIT ${parseInt(count.toString())} FOR UPDATE SKIP LOCKED
                      ) j
                 WHERE j.id = "Job".id
-                  AND j.topic = "Job".topic
-                  AND j."finishedAt" is null
-                RETURNING "Job".*;`;
+                RETURNING j.*;`;
 
             const queryResult = await client.query(getJobsSql, [topic.toLowerCase()]);
             const jobs = queryResult.rows.map(o => {

@@ -1,48 +1,13 @@
-import {JobWorker, JobWorkerConfiguration} from "../jobWorker";
-import {SendCrcTrustChangedEmail} from "../../descriptions/emailNotifications/sendCrcTrustChangedEmail";
-import {Mailer} from "../../../mailer/mailer";
-import {ProfileLoader} from "../../../profileLoader";
-import {Environment} from "../../../environment";
-import {crcTrustChangedEmailTemplate} from "../../../mailer/templates/crcTrustChangedEmailTemplate";
+import {MailTemplate} from "../mailTemplate";
 
-export class SendCrcTrustChangedEmailWorker extends JobWorker<SendCrcTrustChangedEmail> {
-  name(): string {
-    return "SendCrcTrustChangedEmailWorker";
-  }
-
-  constructor(configuration?:JobWorkerConfiguration) {
-    super(configuration);
-  }
-
-  async doWork(job: SendCrcTrustChangedEmail): Promise<void> {
-    // TODO: Use a different template when an organization trusts you
-    const profiles = await (new ProfileLoader()
-      .profilesBySafeAddress(Environment.readonlyApiDb, [job.user, job.canSendTo]));
-
-    const user = profiles[job.user];
-    const canSendTo = profiles[job.canSendTo];
-
-    if (!user?.emailAddress) {
-      console.warn(`Couldn't send a notification email to profile ${profiles[job.user]?.id} because it has no email address.`);
-      return;
-    }
-    if (!canSendTo?.circlesAddress) {
-      console.warn(`Couldn't send a notification email for transaction ${job.hash} because no 'canSendTo' profile could be loaded.`);
-      return;
-    }
-
-    await Mailer.send(crcTrustChangedEmailTemplate, {
-      user: `${user.firstName} ${user.lastName}`,
-      canSendTo: `${canSendTo.firstName} ${canSendTo.lastName}`,
-      canSendToProfileUrl: `${Environment.appUrl}#/contacts/profile/${canSendTo.circlesAddress}`
-    }, user.emailAddress);
-  }
-}
-
-const htmlTemplate = `
+/**
+ * Fields: sender, recipient, amount, currency, bankingUrl
+ */
+export const crcTrustChangedEmailTemplate:MailTemplate = {
+  subject: `{{canSendTo}} trusted you`,
+  bodyHtml: `
 <!DOCTYPE html>
 <html lang="en" xmlns:v="urn:schemas-microsoft-com:vml">
-
   <head>
     <meta charset="utf-8">
     <meta name="x-apple-disable-message-reformatting">
@@ -133,7 +98,9 @@ const htmlTemplate = `
                 <td style="padding-top: 28px; text-align: center;">
                   <header style="margin-top: 12px; display: grid; height: 60px; place-content: center; overflow: hidden; background-image: linear-gradient(to right, var(--tw-gradient-stops)); --tw-gradient-from: #1dd6a4; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(29, 214, 164, 0)); --tw-gradient-to: #41c7f1; background-size: cover; padding-top: 52px; padding-bottom: 52px; color: #ffffff;">
                     <div style="display: block; align-self: center; text-align: center;">
-                      <span style="display: inline-block; font-family: 'Ostrich Sans Heavy', 'Nunito', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 36px; text-transform: uppercase; letter-spacing: -0.05em;">You got cash!</span>
+                      <span style="display: inline-block; font-family: 'Ostrich Sans Heavy', 'Nunito', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 36px; text-transform: uppercase; letter-spacing: -0.05em;">
+                      You made new friends!
+                      </span>
                     </div>
                   </header>
                 </td>
@@ -149,16 +116,16 @@ const htmlTemplate = `
                   <table class="sm-w-full" style="width: 75%;" cellpadding="0" cellspacing="0" role="presentation">
                     <tr>
                       <td class="sm-px-24" style="background-color: #ffffff; padding: 48px; text-align: center;">
-                        <p style="margin: 0; font-size: 18px; font-weight: 600;">Hi {USERNAME},</p>
+                        <p style="margin: 0; font-size: 18px; font-weight: 600;">Hi {user},</p>
                         <p style="font-size: 16px; color: #0a2262;">
-                          {THEOTEHRGUY} just trusted you on Circles.land
+                          {canSendTo} just trusted you on Circles.land
                           <br>
                           <br>
                           Go to Circles.land to see the details and trust
-                          {THEOTEHRGUY} back
+                          {canSendTo} back
                         </p>
                         <div class="sm-h-24" style="line-height: 24px;">&zwnj;</div>
-                        <a href="{{ .ConfirmationURL }}" class="hover-bg-primary-dark" style="display: inline-block; border-radius: 8px; background-color: #41c7f1; padding: 20px 24px; font-size: 14px; font-weight: 600; text-transform: uppercase; line-height: 1; color: #ffffff; text-decoration: none;">
+                        <a href="{{canSendToProfileUrl}}" class="hover-bg-primary-dark" style="display: inline-block; border-radius: 8px; background-color: #41c7f1; padding: 20px 24px; font-size: 14px; font-weight: 600; text-transform: uppercase; line-height: 1; color: #ffffff; text-decoration: none;">
                           <!--[if mso
                           ]><i
                             style="
@@ -183,9 +150,6 @@ const htmlTemplate = `
                     <tr>
                       <td style="padding: 32px; text-align: center; font-size: 12px; color: #4b5563;">
                         <p style="margin: 0 0 4px; text-transform: uppercase;">© 2022 CirclesLand. All rights reserved.</p>
-                        <p style="margin: 0; font-style: italic;">
-                          If you haven't requested this e-mail you can simply ignore it.
-                        </p>
                         <p style="cursor: default;">
                           <a href="https://dev.circles.land/" class="hover-underline" style="color: #3b82f6; text-decoration: none;">Circles.Land</a>
                           &bull;
@@ -204,6 +168,5 @@ const htmlTemplate = `
       </table>
     </div>
   </body>
-
-</html>
-`;
+</html>`
+}

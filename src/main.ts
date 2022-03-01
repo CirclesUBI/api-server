@@ -30,7 +30,6 @@ import {SendCrcReceivedEmail} from "./jobs/descriptions/emailNotifications/sendC
 import {SendCrcTrustChangedEmail} from "./jobs/descriptions/emailNotifications/sendCrcTrustChangedEmail";
 import {InvoicePayedWorker} from "./jobs/worker/payment/invoicePayedWorker";
 import {InvoicePayed} from "./jobs/descriptions/payment/invoicePayed";
-import {Mailer} from "./mailer/mailer";
 
 
 var cors = require("cors");

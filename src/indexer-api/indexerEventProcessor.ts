@@ -9,7 +9,8 @@ export type IndexerEvent = {
     hash: string,
     address1: string,
     address2: string,
-    address3: string
+    address3: string,
+    value: string
 }
 
 export interface IndexerEventProcessor {
