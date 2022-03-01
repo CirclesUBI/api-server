@@ -739,6 +739,7 @@ export type Profile = {
   circlesTokenAddress?: Maybe<Scalars['String']>;
   firstName: Scalars['String'];
   lastName?: Maybe<Scalars['String']>;
+  emailAddress?: Maybe<Scalars['String']>;
   dream?: Maybe<Scalars['String']>;
   country?: Maybe<Scalars['String']>;
   avatarUrl?: Maybe<Scalars['String']>;
@@ -2133,6 +2134,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   circlesTokenAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  emailAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   dream?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   country?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

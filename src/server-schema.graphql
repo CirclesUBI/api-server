@@ -19,6 +19,7 @@ type Profile {
   circlesTokenAddress: String
   firstName: String!
   lastName: String
+  emailAddress: String
   dream: String
   country: String
   avatarUrl: String
