@@ -8,7 +8,6 @@ import {resolvers} from "./resolvers/resolvers";
 import {importSchema} from "graphql-import";
 import {Context} from "./context";
 import {RpcGateway} from "./rpcGateway";
-import {Notification} from "pg";
 import {GqlLogger} from "./gqlLogger";
 import {Session as PrismaSession} from "./api-db/client";
 import {Session} from "./session";
@@ -316,7 +315,7 @@ export class Main {
           }
         }
       },
-      10,
+      1,
       false
       ).then(() => {
         console.info("JobQueue stopped.");

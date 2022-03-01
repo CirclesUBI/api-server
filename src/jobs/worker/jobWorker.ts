@@ -1,5 +1,6 @@
 import {log} from "../../log";
 import {JobDescription} from "../descriptions/jobDescription";
+import {Environment} from "../../environment";
 
 export type ErrorStrategy =
   "throw" |
@@ -29,7 +30,7 @@ export abstract class JobWorker<TJob extends JobDescription> {
     this.cleanStatsIfNecessary();
 
     this._errorStats[jobId] = 0;
-    console.log(` *-> [${new Date().toJSON()}] [${jobDescription.topic}] [jobId:${jobId}] [${this.name()}.run]: ${jobDescription.payload()}`);
+    console.log(` *-> [${new Date().toJSON()}] [${Environment.instanceId}] [${jobDescription.topic}] [jobId:${jobId}] [${this.name()}.run]: ${jobDescription.payload()}`);
 
     try {
       await this.doWork(jobDescription);
@@ -41,13 +42,13 @@ export abstract class JobWorker<TJob extends JobDescription> {
         throw e;
       }
       if (this.configuration.errorStrategy == "logAndDrop") {
-        console.log(`     [${new Date().toJSON()}] [${jobDescription.topic}] [jobId:${jobId}] [${this.name()}.run]: A job ran into an error and the error strategy is 'logAndDrop'.`);
-        console.log(`ERR  [${new Date().toJSON()}] [${jobDescription.topic}] [jobId:${jobId}] [${this.name()}.run]: ${e.message + "\n" + e.stack}`);
+        console.log(`     [${new Date().toJSON()}] [${Environment.instanceId}] [${jobDescription.topic}] [jobId:${jobId}] [${this.name()}.run]: A job ran into an error and the error strategy is 'logAndDrop'.`);
+        console.log(`ERR  [${new Date().toJSON()}] [${Environment.instanceId}] [${jobDescription.topic}] [jobId:${jobId}] [${this.name()}.run]: ${e.message + "\n" + e.stack}`);
 
         delete this._errorStats[jobId];
       }
       if (this.configuration.errorStrategy == "logAndDropAfterThreshold") {
-        console.log(`     [${new Date().toJSON()}] [${jobDescription.topic}] [jobId:${jobId}] [${this.name()}.run]: A job ran into an error and the error strategy is 'logAndDropAfterThreshold'.`);
+        console.log(`     [${new Date().toJSON()}] [${Environment.instanceId}] [${jobDescription.topic}] [jobId:${jobId}] [${this.name()}.run]: A job ran into an error and the error strategy is 'logAndDropAfterThreshold'.`);
 
         this._errorStats[jobId]++;
 
