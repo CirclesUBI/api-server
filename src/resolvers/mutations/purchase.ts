@@ -82,6 +82,7 @@ export async function purchaseResolver(parent: any, args: MutationPurchaseArgs, 
   const apiInvoices = invoices.map(o => {
     return <Invoice> {
       id: o.id,
+      invoiceNo: o.invoiceNo,
       purchaseId: o.purchaseId,
       buyerAddress: o.customerProfile.circlesAddress,
       sellerAddress: o.sellerProfile.circlesAddress,
@@ -225,7 +226,9 @@ async function createInvoices(caller:Profile, args: MutationPurchaseArgs, offers
     if (!seller.circlesAddress) {
       throw new Error(`Encountered a seller without circlesAddress: ${JSON.stringify(seller)}`);
     }
+
     const sellerLines = sellersLines[seller.circlesAddress];
+    const invoiceNo = await getNextInvoiceNo(seller.id);
 
     const invoice = Environment.readWriteApiDb.invoice.create({
       data: {
@@ -233,7 +236,7 @@ async function createInvoices(caller:Profile, args: MutationPurchaseArgs, offers
         customerProfileId: caller.id,
         purchaseId: purchase.id,
         createdAt: new Date(),
-        invoiceNo: "",
+        invoiceNo: invoiceNo,
         lines: {
           create: sellerLines.map(l => {
             return {

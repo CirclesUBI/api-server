@@ -1,17 +1,13 @@
 import {IndexerEvent, IndexerEventProcessor} from "./indexerEventProcessor";
 import {
-    InvoicePdfGenerator,
-    PdfDbInvoiceData,
-    pdfInvoiceDataFromDbInvoice,
-    PdfInvoicePaymentTransaction
+    PdfDbInvoiceData
 } from "../invoiceGenerator";
 import {Environment} from "../environment";
-import {log, logErr} from "../log";
+import {log} from "../log";
 import {EventType} from "../types";
 import BN from "bn.js";
 import {RpcGateway} from "../rpcGateway";
 import {convertTimeCirclesToCircles} from "../timeCircles";
-import {getNextInvoiceNo} from "../resolvers/mutations/purchase";
 import {getDateWithOffset} from "../getDateWithOffset";
 import {JobQueue} from "../jobQueue";
 import {InvoicePayed} from "../jobs/descriptions/payment/invoicePayed";
@@ -45,7 +41,7 @@ export class PaymentProcessor implements IndexerEventProcessor {
             affectedAddresses);
 
         const hubTransferEvents = events.filter((event: any) => event.type === EventType.CrcHubTransfer).map(o => o.hash);
-        const hubTransfersBySender = await this.findRelatedHubTransfers(messageNo, sourceUrl, hubTransferEvents);
+        const hubTransfersBySender = await this.findRelatedHubTransfers(hubTransferEvents);
 
         for (let sender of Object.keys(hubTransfersBySender)) {
             const transfers = hubTransfersBySender[sender];
@@ -56,8 +52,6 @@ export class PaymentProcessor implements IndexerEventProcessor {
                 `Found ${invoices.length} open invoice(s) of ${sender} for ${transfers.length} possible payment transfers.`);
 
             const matches = this.findMatchingPayments(
-                messageNo,
-                sourceUrl,
                 invoices,
                 transfers
             );
@@ -82,8 +76,6 @@ export class PaymentProcessor implements IndexerEventProcessor {
     }
 
     private findMatchingPayments (
-        messageNo:number,
-        source:string,
         invoices:PdfDbInvoiceData[],
         transfers:Transfer[]) {
 
@@ -177,8 +169,6 @@ export class PaymentProcessor implements IndexerEventProcessor {
     }
 
     private async findRelatedHubTransfers (
-        messageNo: number,
-        sourceUrl: string,
         transactionHashes: string[])
         : Promise<TransfersBySender> {
 

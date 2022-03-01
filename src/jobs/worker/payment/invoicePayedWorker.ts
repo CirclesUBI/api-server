@@ -32,7 +32,7 @@ export class InvoicePayedWorker extends JobWorker<InvoicePayed> {
       timestamp: job.transactionTime
     };
 
-    const paidInvoice = await this.markInvoiceAsPaid(job.invoiceId, job.sellerProfileId, transferMetadata);
+    const paidInvoice = await this.markInvoiceAsPaid(job.invoiceId, transferMetadata);
 
     await this.persistInvoice(
       paidInvoice,
@@ -41,10 +41,7 @@ export class InvoicePayedWorker extends JobWorker<InvoicePayed> {
 
   private async markInvoiceAsPaid(
     invoiceId: number,
-    sellerProfileId: number,
     transfer:Transfer) {
-
-    const invoiceNo = await getNextInvoiceNo(sellerProfileId);
 
     const updateInvoiceResult =
       await Environment.readWriteApiDb.invoice.update({
@@ -52,8 +49,7 @@ export class InvoicePayedWorker extends JobWorker<InvoicePayed> {
           id: invoiceId,
         },
         data: {
-          paymentTransactionHash: transfer.hash,
-          invoiceNo: invoiceNo
+          paymentTransactionHash: transfer.hash
         },
         include: {
           customerProfile: true,

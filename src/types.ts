@@ -400,6 +400,7 @@ export type Invoice = {
   buyerAddress: Scalars['String'];
   buyerProfile?: Maybe<Profile>;
   lines: Array<InvoiceLine>;
+  invoiceNo: Scalars['String'];
   pickupCode?: Maybe<Scalars['String']>;
   buyerSignature?: Maybe<Scalars['Boolean']>;
   buyerSignedDate?: Maybe<Scalars['String']>;
@@ -1947,6 +1948,7 @@ export type InvoiceResolvers<ContextType = any, ParentType extends ResolversPare
   buyerAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   buyerProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   lines?: Resolver<Array<ResolversTypes['InvoiceLine']>, ParentType, ContextType>;
+  invoiceNo?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   pickupCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   buyerSignature?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   buyerSignedDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
