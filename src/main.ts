@@ -298,13 +298,20 @@ export class Main {
               await new BroadcastChatMessageWorker().run(job.id, BroadcastChatMessage.parse(job.payload));
               break;
             case "sendCrcReceivedEmail".toLowerCase():
-              await new SendCrcReceivedEmailWorker().run(job.id, SendCrcReceivedEmail.parse(job.payload));
+              await new SendCrcReceivedEmailWorker({
+                errorStrategy: "logAndDrop"
+              }).run(job.id, SendCrcReceivedEmail.parse(job.payload));
               break;
             case "sendCrcTrustChangedEmail".toLowerCase():
-              await new SendCrcTrustChangedEmailWorker().run(job.id, SendCrcTrustChangedEmail.parse(job.payload));
+              await new SendCrcTrustChangedEmailWorker({
+                errorStrategy: "logAndDrop"
+              }).run(job.id, SendCrcTrustChangedEmail.parse(job.payload));
               break;
             case "invoicePayed".toLowerCase():
-              await new InvoicePayedWorker().run(job.id, InvoicePayed.parse(job.payload));
+              await new InvoicePayedWorker({
+                errorStrategy: "logAndDropAfterThreshold",
+                dropThreshold: 3
+              }).run(job.id, InvoicePayed.parse(job.payload));
               break;
           }
         }

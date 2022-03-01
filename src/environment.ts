@@ -180,11 +180,11 @@ export class Environment {
   static get smtpConfig(): SmtpConfig {
     return {
       from: <string>process.env.MAIL_FROM,
-      server: <string>process.env.SMTP_SERVER,
+      server: <string>process.env.SMTP_HOST,
       user: <string>process.env.SMTP_USER,
-      password: <string>process.env.SMTP_PASS,
+      password: <string>process.env.SMTP_PASSWORD,
       port: parseInt(<string>process.env.SMTP_PORT),
-      secure: !!process.env.SMTP_SECURE,
+      secure: true,
     };
   }
 

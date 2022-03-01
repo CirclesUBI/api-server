@@ -22,7 +22,7 @@ export class Mailer
             to: to,
             subject: mustache.render(template.subject, data),
             html: mustache.render(template.bodyHtml, data),
-            text: mustache.render(template.bodyPlain, data),
+            // text: mustache.render(template.bodyPlain, data),
         })
     }
 }

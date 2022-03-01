@@ -46,6 +46,9 @@ export class PaymentProcessor implements IndexerEventProcessor {
         for (let sender of Object.keys(hubTransfersBySender)) {
             const transfers = hubTransfersBySender[sender];
             const invoices = openInvoicesByCustomerAddress[sender];
+            if (!invoices) {
+                continue;
+            }
 
             log(`     `,
                 `[${messageNo}] [${sourceUrl}] [PaymentProcessor.onMessage]`,

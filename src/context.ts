@@ -4,7 +4,6 @@ import {Session as PrismaSession} from "./api-db/client";
 import {Session} from "./session";
 import {Profile} from "./api-db/client";
 import {Environment} from "./environment";
-import {MutationUpsertProfileArgs} from "./types";
 import {GnosisSafeProxy} from "./web3Contract";
 import {RpcGateway} from "./rpcGateway";
 
