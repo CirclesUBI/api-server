@@ -364,7 +364,7 @@ model Job {
 }
 
 model Job_History {
-    id Int
+    id Int @id
     hash String
     createdAt DateTime
     topic String
