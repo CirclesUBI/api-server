@@ -361,4 +361,8 @@ export class ProfileLoader {
 
     return allProfilesMap;
   }
+
+  static displayName(profile: Profile) {
+    return `${profile.firstName}${profile.lastName ? " " + profile.lastName : ""}`
+  }
 }

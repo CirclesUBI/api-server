@@ -114,15 +114,15 @@ export const crcReceivedEmailTemplate:MailTemplate = {
                   <table class="sm-w-full" style="width: 75%;" cellpadding="0" cellspacing="0" role="presentation">
                     <tr>
                       <td class="sm-px-24" style="background-color: #ffffff; padding: 48px; text-align: center;">
-                        <p style="margin: 0; font-size: 18px; font-weight: 600;">Hi {USERNAME},</p>
+                        <p style="margin: 0; font-size: 18px; font-weight: 600;">Hi {{recipient}},</p>
                         <p style="font-size: 16px; color: #0a2262;">
-                          {XXX} sent you money on Circles.land
+                          {{sender}} sent you {{amount}} {{currency}} on Circles.land
                           <br>
                           <br>
                           Go to your Circles.land banking to see the details
                         </p>
                         <div class="sm-h-24" style="line-height: 24px;">&zwnj;</div>
-                        <a href="{{ .ConfirmationURL }}" class="hover-bg-primary-dark" style="display: inline-block; border-radius: 8px; background-color: #41c7f1; padding: 20px 24px; font-size: 14px; font-weight: 600; text-transform: uppercase; line-height: 1; color: #ffffff; text-decoration: none;">
+                        <a href="{{transactionDetailUrl}}" class="hover-bg-primary-dark" style="display: inline-block; border-radius: 8px; background-color: #41c7f1; padding: 20px 24px; font-size: 14px; font-weight: 600; text-transform: uppercase; line-height: 1; color: #ffffff; text-decoration: none;">
                           <!--[if mso
                           ]><i
                             style="

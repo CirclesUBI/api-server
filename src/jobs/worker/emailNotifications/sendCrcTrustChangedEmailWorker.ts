@@ -32,8 +32,8 @@ export class SendCrcTrustChangedEmailWorker extends JobWorker<SendCrcTrustChange
     }
 
     await Mailer.send(crcTrustChangedEmailTemplate, {
-      user: `${user.firstName} ${user.lastName}`,
-      canSendTo: `${canSendTo.firstName} ${canSendTo.lastName}`,
+      user: `${ProfileLoader.displayName(user)}`,
+      canSendTo: `${ProfileLoader.displayName(canSendTo)}`,
       canSendToProfileUrl: `${Environment.appUrl}#/contacts/profile/${canSendTo.circlesAddress}`
     }, user.emailAddress);
   }

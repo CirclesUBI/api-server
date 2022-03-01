@@ -32,11 +32,11 @@ export class SendCrcReceivedEmailWorker extends JobWorker<SendCrcReceivedEmail> 
     }
 
     await Mailer.send(crcReceivedEmailTemplate, {
-      sender: `${sender.firstName} ${sender.lastName}`,
-      recipient: `${recipient.firstName} ${recipient.lastName}`,
+      sender: `${ProfileLoader.displayName(sender)}`,
+      recipient: `${ProfileLoader.displayName(recipient)}`,
       amount: job.amount,
       currency: "Time Circles",
-      bankingUrl: `${Environment.appUrl}#/banking/transactions/${job.hash}`
+      transactionDetailUrl: `${Environment.appUrl}#/banking/transactions/${job.hash}`
     }, recipient.emailAddress);
   }
 }
