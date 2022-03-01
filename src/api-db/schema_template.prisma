@@ -362,3 +362,11 @@ model Job {
     topic String
     payload String
 }
+
+model Job_History {
+    id Int @unique
+    hash String
+    createdAt DateTime
+    topic String
+    payload String
+}
