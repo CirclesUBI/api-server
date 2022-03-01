@@ -1,5 +1,11 @@
 export type IndexerEvent = {
-    type: string,
+    type: "CrcSignup"
+        | "CrcTrust"
+        | "CrcOrganisationSignup"
+        | "CrcHubTransfer"
+        | "Erc20Transfer"
+        | "EthTransfer"
+        | "GnosisSafeEthTransfer",
     hash: string,
     address1: string,
     address2: string,

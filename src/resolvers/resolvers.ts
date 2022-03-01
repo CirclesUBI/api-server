@@ -70,6 +70,21 @@ export const resolvers: Resolvers = {
     origin: (parent: Profile) => {
       return !parent.origin ? ProfileOrigin.Unknown : parent.origin;
     },
+    emailAddress: async (parent: Profile, args:any, context:Context) => {
+      if (!context.session) {
+        return null;
+      }
+      try {
+        const session = await context.verifySession();
+        if (session.profileId != parent.id) {
+          return null;
+        }
+      } catch (e) {
+        return null;
+      }
+
+      return parent.emailAddress ?? null;
+    },
     city: async (parent: Profile) => {
       if (!parent.cityGeonameid) return null;
       return await profileCityDataLoader.load(parent.cityGeonameid);

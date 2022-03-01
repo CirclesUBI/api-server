@@ -1,5 +1,4 @@
 import {JobWorker, JobWorkerConfiguration} from "../jobWorker";
-import {SendCrcReceivedEmail} from "../../descriptions/emailNotifications/sendCrcReceivedEmail";
 import {InvoicePayed} from "../../descriptions/payment/invoicePayed";
 import {
   InvoicePdfGenerator,
@@ -7,7 +6,6 @@ import {
   pdfInvoiceDataFromDbInvoice,
   PdfInvoicePaymentTransaction
 } from "../../../invoiceGenerator";
-import {getNextInvoiceNo} from "../../../resolvers/mutations/purchase";
 import {Environment} from "../../../environment";
 import {log, logErr} from "../../../log";
 
@@ -26,7 +24,6 @@ export class InvoicePayedWorker extends JobWorker<InvoicePayed> {
   }
 
   async doWork(job: InvoicePayed): Promise<void> {
-
     const transferMetadata = {
       hash: job.transactionHash,
       timestamp: job.transactionTime

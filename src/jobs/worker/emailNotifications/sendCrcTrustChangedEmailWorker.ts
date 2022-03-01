@@ -11,5 +11,6 @@ export class SendCrcTrustChangedEmailWorker extends JobWorker<SendCrcTrustChange
   }
 
   async doWork(job: SendCrcTrustChangedEmail): Promise<void> {
+
   }
 }

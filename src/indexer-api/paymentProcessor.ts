@@ -67,7 +67,6 @@ export class PaymentProcessor implements IndexerEventProcessor {
 
                 await JobQueue.produce([
                   new InvoicePayed(match.invoice.id
-                    , match.invoice.sellerProfileId
                     , match.payment.hash
                     , match.payment.timestamp)
                 ]);

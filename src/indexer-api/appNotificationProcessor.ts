@@ -1,5 +1,8 @@
 import {IndexerEvent, IndexerEventProcessor} from "./indexerEventProcessor";
 import {ApiPubSub} from "../pubsub";
+import {JobQueue} from "../jobQueue";
+import {SendCrcTrustChangedEmail} from "../jobs/descriptions/emailNotifications/sendCrcTrustChangedEmail";
+import {SendCrcReceivedEmail} from "../jobs/descriptions/emailNotifications/sendCrcReceivedEmail";
 
 export class AppNotificationProcessor implements IndexerEventProcessor {
     constructor() {
@@ -10,6 +13,28 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                     affectedAddresses:string[],
                     events:IndexerEvent[])
         : Promise<void> {
+
+        for(let event of events) {
+            switch (event.type) {
+                case "CrcTrust":
+                    await JobQueue.produce([
+                      new SendCrcTrustChangedEmail(event.hash, event.address1, event.address2)
+                    ]);
+                    break;
+                case "CrcHubTransfer":
+                    await JobQueue.produce([
+                        new SendCrcReceivedEmail(event.hash, event.address1, event.address2)
+                    ]);
+                    break;
+                case "CrcSignup":
+                case "CrcOrganisationSignup":
+                case "EthTransfer":
+                case "Erc20Transfer":
+                case "GnosisSafeEthTransfer":
+                    break;
+            }
+        }
+
         await AppNotificationProcessor.notifyClients(affectedAddresses);
     }
 
