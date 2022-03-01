@@ -1,7 +1,7 @@
 import {Environment} from "./environment";
 import {PoolClient} from "pg";
 import {log} from "./log";
-import {JobDescription, JobType} from "./jobs/descriptions/jobDescription";
+import {JobDescription, JobKind, JobType} from "./jobs/descriptions/jobDescription";
 
 export type Job = {
     id: number,
@@ -64,9 +64,14 @@ export class JobQueue {
                             if (msg.payload && msg.payload?.trim() != "") {
                                 // Everything with a non-empty payload is considered a 'broadcast message'.
                                 // Broadcast messages are executed right away whenever an instance receives them.
+                                const payloadObj = JSON.parse(msg.payload);
+                                if (payloadObj._kind != "broadcast") {
+                                    console.error(`Encountered an invalid payload in a 'broadcast' job (wrong _kind): `, msg.payload);
+                                    return;
+                                }
                                 await worker([{
                                     id: -1,
-                                    hash: "",
+                                    hash: payloadObj._identity,
                                     createdAt: new Date(),
                                     topic: <JobType>msg.channel.toLowerCase(),
                                     payload: msg.payload ?? "",
@@ -141,7 +146,7 @@ export class JobQueue {
 
     public static async broadcast(jobDescription: JobDescription) : Promise<void> {
         await Environment.pgReadWriteApiDb.query(`call publish_event($1, $2);`,
-          [jobDescription.topic.toLowerCase(), jobDescription.payload()]);
+          [jobDescription._topic.toLowerCase(), jobDescription.getPayload()]);
     }
 
     public static async produce(jobs:JobDescription[]) : Promise<void> {
@@ -149,17 +154,18 @@ export class JobQueue {
         try {
             await client.query('BEGIN');
 
-            const insertSql = "INSERT INTO \"Job\" (hash, topic, payload) VALUES (sha256(($1 || $2)::bytea), $1, $2) ON CONFLICT DO NOTHING RETURNING id;";
+            const insertSql = "INSERT INTO \"Job\" (hash, topic, payload) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING RETURNING id;";
             const topics:{[x:string]:boolean} = {};
 
             for(let job of jobs) {
                 const result = await client.query(insertSql, [
-                    job.topic.toLowerCase(),
-                    job.payload()
+                    job._identity,
+                    job._topic.toLowerCase(),
+                    job.getPayload()
                 ]);
 
                 // only notify about successful inserts
-                topics[job.topic.toLowerCase()] = result.rowCount > 0;
+                topics[job._topic.toLowerCase()] = result.rowCount > 0;
             }
 
             await client.query('COMMIT');
@@ -180,6 +186,7 @@ export class JobQueue {
         try {
             await client.query('BEGIN');
 
+            /*
             const getJobsSql = `
                 DELETE FROM "Job"
                     USING (
@@ -190,6 +197,20 @@ export class JobQueue {
                     ) q
                 WHERE q.id = "Job".id
                   AND q.topic = "Job".topic
+                RETURNING "Job".*;`;
+            */
+            const getJobsSql = `
+                UPDATE "Job"
+                SET "finishedAt" = now()
+                FROM (
+                         SELECT *
+                         FROM "Job"
+                         WHERE topic = $1
+                         LIMIT ${parseInt(count.toString())} FOR UPDATE SKIP LOCKED
+                     ) j
+                WHERE j.id = "Job".id
+                  AND j.topic = "Job".topic
+                  AND j."finishedAt" is null
                 RETURNING "Job".*;`;
 
             const queryResult = await client.query(getJobsSql, [topic.toLowerCase()]);

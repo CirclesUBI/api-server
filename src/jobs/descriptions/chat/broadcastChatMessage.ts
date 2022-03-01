@@ -1,14 +1,18 @@
 import {JobDescription, JobType} from "../jobDescription";
+import {Generate} from "../../../generate";
 
 export class BroadcastChatMessage implements JobDescription {
-  readonly topic: JobType = "broadcastChatMessage";
+  readonly _topic: JobType = "broadcastChatMessage";
   readonly to: string;
+  readonly _kind = "broadcast";
+  readonly _identity: string;
 
   constructor(to:string) {
     this.to = to.toLowerCase();
+    this._identity = this._topic + Generate.randomHexString(8);
   }
 
-  payload(): string {
+  getPayload(): string {
     return JSON.stringify({
       to: this.to
     });

@@ -30,6 +30,7 @@ import {SendCrcReceivedEmail} from "./jobs/descriptions/emailNotifications/sendC
 import {SendCrcTrustChangedEmail} from "./jobs/descriptions/emailNotifications/sendCrcTrustChangedEmail";
 import {InvoicePayedWorker} from "./jobs/worker/payment/invoicePayedWorker";
 import {InvoicePayed} from "./jobs/descriptions/payment/invoicePayed";
+import {Mailer} from "./mailer/mailer";
 
 
 var cors = require("cors");
@@ -357,4 +358,9 @@ export class Main {
 
 new Main().run2().then(() => console.log("Started")).then(async () => {
   // await ninetyDaysLater()
+
+  await Mailer.send({
+    subject: "Hello!",
+    bodyHtml: "This is a test!"
+  }, {}, "daniel@circles.name");
 });

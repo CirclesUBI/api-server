@@ -1,9 +1,11 @@
 import {JobDescription, JobType} from "../jobDescription";
 
 export class InvoicePayed implements JobDescription {
-  readonly topic: JobType = "invoicePayed";
+  readonly _topic: JobType = "invoicePayed";
+  readonly _kind = "atMostOnce";
+  readonly _identity: string;
 
-  payload(): string {
+  getPayload(): string {
     return JSON.stringify(this);
   }
 
@@ -15,6 +17,7 @@ export class InvoicePayed implements JobDescription {
     this.invoiceId = invoiceId;
     this.transactionHash = transactionHash;
     this.transactionTime = transactionTime;
+    this._identity = this._topic + this.invoiceId + this.transactionHash;
   }
 
   static parse(payload: string) {

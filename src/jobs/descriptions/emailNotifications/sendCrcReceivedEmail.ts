@@ -1,9 +1,11 @@
 import {JobDescription, JobType} from "../jobDescription";
 
 export class SendCrcReceivedEmail implements JobDescription {
-  readonly topic: JobType = "sendCrcReceivedEmail";
+  readonly _topic: JobType = "sendCrcReceivedEmail";
+  readonly _kind = "atMostOnce";
+  readonly _identity: string;
 
-  payload(): string {
+  getPayload(): string {
     return JSON.stringify(this);
   }
 
@@ -15,6 +17,7 @@ export class SendCrcReceivedEmail implements JobDescription {
     this.hash  = hash;
     this.from  = from;
     this.to  = to;
+    this._identity = this._topic + this.hash;
   }
 
   static parse(payload: string) {

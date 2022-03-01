@@ -5,7 +5,14 @@ export type JobType =
   "sendOrderConfirmationEmail" |
   "invoicePayed";
 
+export type JobKind =
+  "broadcast" |
+  "regular" |
+  "atMostOnce";
+
 export interface JobDescription {
-  topic: JobType;
-  payload(): string;
+  _kind: JobKind;
+  _topic: JobType;
+  _identity: string;
+  getPayload(): string;
 }
