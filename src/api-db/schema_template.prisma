@@ -359,8 +359,10 @@ model Tag {
 
 model Job {
     id Int @id @default(autoincrement())
+    kind String? @default("atMostOnce")
     hash String @unique
     createdAt DateTime @default(now())
+    timeoutAt DateTime?
     finishedAt DateTime?
     error String?
     warning String?
