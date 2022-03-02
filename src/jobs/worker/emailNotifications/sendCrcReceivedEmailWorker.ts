@@ -4,6 +4,8 @@ import {Mailer} from "../../../mailer/mailer";
 import {ProfileLoader} from "../../../profileLoader";
 import {Environment} from "../../../environment";
 import {crcReceivedEmailTemplate} from "../../../mailer/templates/crcReceivedEmailTemplate";
+import {convertCirclesToTimeCircles} from "../../../../dist/timeCircles";
+import {RpcGateway} from "../../../rpcGateway";
 
 export class SendCrcReceivedEmailWorker extends JobWorker<SendCrcReceivedEmail> {
   name(): string {
@@ -36,7 +38,9 @@ export class SendCrcReceivedEmailWorker extends JobWorker<SendCrcReceivedEmail> 
     await Mailer.send(crcReceivedEmailTemplate, {
       sender: `${ProfileLoader.displayName(sender)}`,
       recipient: `${ProfileLoader.displayName(recipient)}`,
-      amount: job.amount,
+      amount: convertCirclesToTimeCircles(
+        parseFloat(RpcGateway.get().utils.fromWei(job.amount, "ether")),
+        job.timestamp.toJSON()),
       currency: "Time Circles",
       transactionDetailUrl: `${Environment.appUrl}#/banking/transactions/${job.hash}`
     }, recipient.emailAddress);

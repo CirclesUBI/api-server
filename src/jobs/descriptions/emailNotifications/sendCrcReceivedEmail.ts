@@ -6,15 +6,20 @@ export class SendCrcReceivedEmail implements JobDescription {
   readonly _identity: string;
 
   getPayload(): string {
-    return JSON.stringify(this);
+    return JSON.stringify({
+      ...this,
+      timestamp: this.timestamp.toJSON()
+    });
   }
 
+  readonly timestamp: Date;
   readonly hash: string;
   readonly from: string;
   readonly to: string;
   readonly amount: string;
 
-  constructor(hash: string, from: string, to: string, amount: string) {
+  constructor(timestamp: Date, hash: string, from: string, to: string, amount: string) {
+    this.timestamp = timestamp;
     this.hash  = hash;
     this.from  = from;
     this.to  = to;
@@ -24,6 +29,6 @@ export class SendCrcReceivedEmail implements JobDescription {
 
   static parse(payload: string) {
     const obj = JSON.parse(payload);
-    return new SendCrcReceivedEmail(obj.hash, obj.from, obj.to, obj.amount);
+    return new SendCrcReceivedEmail(new Date(obj.timestamp), obj.hash, obj.from, obj.to, obj.amount);
   }
 }

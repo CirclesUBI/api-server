@@ -6,6 +6,7 @@ export type IndexerEvent = {
         | "Erc20Transfer"
         | "EthTransfer"
         | "GnosisSafeEthTransfer",
+    timestamp: Date,
     hash: string,
     address1: string,
     address2: string,

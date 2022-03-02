@@ -8,17 +8,14 @@ export class Mailer
     static async send(template:MailTemplate, data:object, to:string)
     {
         const transport = nodemailer.createTransport({
-            service: "Mailjet",
-              auth: {
+            auth: {
                   user: Environment.smtpConfig.user,
                   pass: Environment.smtpConfig.password
             },
-            /*
             host: Environment.smtpConfig.server,
             port: Environment.smtpConfig.port,
             secure: Environment.smtpConfig.secure,
             localAddress: Environment.smtpConfig.localAddress,
-            */
             debug: Environment.smtpConfig.debug
         });
 
