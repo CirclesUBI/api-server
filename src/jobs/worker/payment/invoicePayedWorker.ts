@@ -23,7 +23,7 @@ export class InvoicePayedWorker extends JobWorker<InvoicePayed> {
     super(configuration);
   }
 
-  async doWork(job: InvoicePayed): Promise<void> {
+  async doWork(job: InvoicePayed) {
     const transferMetadata = {
       hash: job.transactionHash,
       timestamp: job.transactionTime
@@ -34,6 +34,8 @@ export class InvoicePayedWorker extends JobWorker<InvoicePayed> {
     await this.persistInvoice(
       paidInvoice,
       transferMetadata);
+
+    return undefined;
   }
 
   private async markInvoiceAsPaid(

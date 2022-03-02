@@ -361,6 +361,8 @@ model Job {
     createdAt DateTime @default(now())
     finishedAt DateTime?
     error String?
+    warning String?
+    info String?
     topic String
     payload String
 }

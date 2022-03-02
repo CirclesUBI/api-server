@@ -1,6 +1,7 @@
 import {log} from "../../log";
 import {JobDescription} from "../descriptions/jobDescription";
 import {Environment} from "../../environment";
+import {JobResult} from "../../jobQueue";
 
 export type ErrorStrategy =
   "throw" |
@@ -26,15 +27,17 @@ export abstract class JobWorker<TJob extends JobDescription> {
   private _jobCounter: number = 0;
   private _statsCleanupInterval = 200;
 
-  async run(jobId: number, jobDescription: TJob) {
+  async run(jobId: number, jobDescription: TJob) : Promise<JobResult|undefined> {
     this.cleanStatsIfNecessary();
 
     this._errorStats[jobId] = 0;
     console.log(` *-> [${new Date().toJSON()}] [${Environment.instanceId}] [${jobDescription._topic}] [jobId:${jobId}] [${this.name()}.run]: ${jobDescription.getPayload()}`);
 
     try {
-      await this.doWork(jobDescription);
+      const result = await this.doWork(jobDescription);
       delete this._errorStats[jobId];
+
+      return result;
     } catch (e) {
       if (this.configuration.errorStrategy == "throw") {
         delete this._errorStats[jobId];
@@ -79,9 +82,10 @@ export abstract class JobWorker<TJob extends JobDescription> {
         }
       }
     }
+    return undefined;
   }
 
-  abstract doWork(job: TJob) : Promise<void>;
+  abstract doWork(job: TJob) : Promise<JobResult|undefined>;
 
   private cleanStatsIfNecessary() {
     this._jobCounter++;

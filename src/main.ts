@@ -21,7 +21,7 @@ import {AppNotificationProcessor} from "./indexer-api/appNotificationProcessor";
 import {ninetyDaysLater} from "./90days";
 import express from "express";
 import AWS from "aws-sdk";
-import {JobQueue} from "./jobQueue";
+import {JobQueue, JobResult} from "./jobQueue";
 import {BroadcastChatMessage} from "./jobs/descriptions/chat/broadcastChatMessage";
 import {BroadcastChatMessageWorker} from "./jobs/worker/chat/broadcastChatMessageWorker";
 import {SendCrcReceivedEmailWorker} from "./jobs/worker/emailNotifications/sendCrcReceivedEmailWorker";
@@ -290,32 +290,27 @@ export class Main {
         "sendOrderConfirmationEmail",
         "invoicePayed"
       ],
-      async (jobs) => {
-        for (let job of jobs) {
-          switch (job.topic) {
-            case "broadcastChatMessage".toLowerCase():
-              await new BroadcastChatMessageWorker().run(job.id, BroadcastChatMessage.parse(job.payload));
-              break;
-            case "sendCrcReceivedEmail".toLowerCase():
-              await new SendCrcReceivedEmailWorker({
-                errorStrategy: "logAndDrop"
-              }).run(job.id, SendCrcReceivedEmail.parse(job.payload));
-              break;
-            case "sendCrcTrustChangedEmail".toLowerCase():
-              await new SendCrcTrustChangedEmailWorker({
-                errorStrategy: "logAndDrop"
-              }).run(job.id, SendCrcTrustChangedEmail.parse(job.payload));
-              break;
-            case "invoicePayed".toLowerCase():
-              await new InvoicePayedWorker({
-                errorStrategy: "logAndDropAfterThreshold",
-                dropThreshold: 3
-              }).run(job.id, InvoicePayed.parse(job.payload));
-              break;
-          }
+      async (job) => {
+        switch (job.topic) {
+          case "broadcastChatMessage".toLowerCase():
+            return await new BroadcastChatMessageWorker().run(job.id, BroadcastChatMessage.parse(job.payload));
+          case "sendCrcReceivedEmail".toLowerCase():
+            return new SendCrcReceivedEmailWorker({
+              errorStrategy: "logAndDrop"
+            }).run(job.id, SendCrcReceivedEmail.parse(job.payload));
+          case "sendCrcTrustChangedEmail".toLowerCase():
+            return  new SendCrcTrustChangedEmailWorker({
+              errorStrategy: "logAndDrop"
+            }).run(job.id, SendCrcTrustChangedEmail.parse(job.payload));
+          case "invoicePayed".toLowerCase():
+            return new InvoicePayedWorker({
+              errorStrategy: "logAndDropAfterThreshold",
+              dropThreshold: 3
+            }).run(job.id, InvoicePayed.parse(job.payload));
+          default:
+            return undefined;
         }
       },
-      1,
       false
       ).then(() => {
         console.info("JobQueue stopped.");

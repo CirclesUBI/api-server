@@ -14,7 +14,7 @@ export class SendCrcReceivedEmailWorker extends JobWorker<SendCrcReceivedEmail> 
     super(configuration);
   }
 
-  async doWork(job: SendCrcReceivedEmail): Promise<void> {
+  async doWork(job: SendCrcReceivedEmail) {
     const profiles = await (new ProfileLoader()
       .profilesBySafeAddress(Environment.readonlyApiDb, [job.from, job.to]));
 
@@ -22,13 +22,15 @@ export class SendCrcReceivedEmailWorker extends JobWorker<SendCrcReceivedEmail> 
     const recipient = profiles[job.to];
 
     if (!recipient?.emailAddress) {
-      console.warn(`Couldn't send a notification email to profile ${profiles[job.to]?.id} because it has no email address.`);
-      return;
+      return {
+        info: `Couldn't send a notification email to profile ${profiles[job.to]?.id} because it has no email address.`
+      };
     }
 
     if (!sender?.circlesAddress) {
-      console.warn(`Couldn't send a notification email for transaction ${job.hash} because no sender profile could be loaded.`);
-      return;
+      return {
+        warning: `Couldn't send a notification email for transaction ${job.hash} because no sender profile could be loaded.`
+      };
     }
 
     await Mailer.send(crcReceivedEmailTemplate, {
@@ -38,5 +40,7 @@ export class SendCrcReceivedEmailWorker extends JobWorker<SendCrcReceivedEmail> 
       currency: "Time Circles",
       transactionDetailUrl: `${Environment.appUrl}#/banking/transactions/${job.hash}`
     }, recipient.emailAddress);
+
+    return undefined;
   }
 }

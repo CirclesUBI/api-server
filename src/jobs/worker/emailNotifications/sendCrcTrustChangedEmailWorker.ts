@@ -14,10 +14,12 @@ export class SendCrcTrustChangedEmailWorker extends JobWorker<SendCrcTrustChange
     super(configuration);
   }
 
-  async doWork(job: SendCrcTrustChangedEmail): Promise<void> {
+  async doWork(job: SendCrcTrustChangedEmail) {
     // TODO: Use a different template when an organization trusts you
     if (job.limit == 0) {
-      return;
+      return {
+        info: `Doesn't send a notification for removed trust at the moment.`
+      }
     }
 
     const profiles = await (new ProfileLoader()
@@ -27,12 +29,14 @@ export class SendCrcTrustChangedEmailWorker extends JobWorker<SendCrcTrustChange
     const canSendTo = profiles[job.canSendTo];
 
     if (!user?.emailAddress) {
-      console.warn(`Couldn't send a notification email to profile ${profiles[job.user]?.id} because it has no email address.`);
-      return;
+      return {
+        info: `Couldn't send a notification email to profile ${profiles[job.user]?.id} because it has no email address.`
+      };
     }
     if (!canSendTo?.circlesAddress) {
-      console.warn(`Couldn't send a notification email for transaction ${job.hash} because no 'canSendTo' profile could be loaded.`);
-      return;
+      return {
+        warning: `Couldn't send a notification email for transaction ${job.hash} because no 'canSendTo' profile could be loaded.`
+      };
     }
 
     await Mailer.send(crcTrustChangedEmailTemplate, {
@@ -40,6 +44,8 @@ export class SendCrcTrustChangedEmailWorker extends JobWorker<SendCrcTrustChange
       canSendTo: `${ProfileLoader.displayName(canSendTo)}`,
       canSendToProfileUrl: `${Environment.appUrl}#/contacts/profile/${canSendTo.circlesAddress}`
     }, user.emailAddress);
+
+    return undefined;
   }
 }
 

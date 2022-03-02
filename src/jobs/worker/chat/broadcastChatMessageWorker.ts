@@ -12,7 +12,7 @@ export class BroadcastChatMessageWorker extends JobWorker<BroadcastChatMessage> 
     super(configuration);
   }
 
-  async doWork(job: BroadcastChatMessage): Promise<void> {
+  async doWork(job: BroadcastChatMessage) {
     if (!job.to) {
       return;
     }
@@ -24,5 +24,7 @@ export class BroadcastChatMessageWorker extends JobWorker<BroadcastChatMessage> 
         type: "new_message",
       },
     });
+
+    return undefined;
   }
 }

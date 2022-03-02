@@ -1,7 +1,7 @@
 import {Environment} from "./environment";
 import {PoolClient} from "pg";
 import {log} from "./log";
-import {JobDescription, JobKind, JobType} from "./jobs/descriptions/jobDescription";
+import {JobDescription, JobType} from "./jobs/descriptions/jobDescription";
 
 export type Job = {
     id: number,
@@ -9,6 +9,11 @@ export type Job = {
     createdAt: Date,
     topic: JobType,
     payload: string
+}
+
+export type JobResult = {
+    warning?: string,
+    info?: string
 }
 
 export class JobQueue {
@@ -20,8 +25,7 @@ export class JobQueue {
 
     public async consume(
       topics: JobType[],
-      worker: (jobs:Job[]) => Promise<void>,
-      maxBatchSize: number = 1,
+      worker: (job:Job) => Promise<JobResult|undefined>,
       throwOnError: boolean = false)
       : Promise<() => void> {
 
@@ -69,18 +73,18 @@ export class JobQueue {
                                     console.error(`Encountered an invalid payload in a 'broadcast' job (wrong _kind): `, msg.payload);
                                     return;
                                 }
-                                await worker([{
+                                await worker({
                                     id: -1,
                                     hash: payloadObj._identity,
                                     createdAt: new Date(),
                                     topic: <JobType>msg.channel.toLowerCase(),
                                     payload: msg.payload ?? "",
-                                }]);
+                                });
                             } else {
                                 // Everything else is a regular job queue entry and is only processed once
                                 let processedJobs = 1;
                                 while (processedJobs > 0) {
-                                    processedJobs = await JobQueue.consume(msg.channel.toLowerCase(), maxBatchSize, worker);
+                                    processedJobs = await JobQueue.consume(msg.channel.toLowerCase(), worker);
                                 }
                             }
                         } catch (e) {
@@ -102,7 +106,7 @@ export class JobQueue {
 
                             let processedJobs = 1;
                             while (processedJobs > 0) {
-                                processedJobs = await JobQueue.consume(topic.toLowerCase(), maxBatchSize, worker);
+                                processedJobs = await JobQueue.consume(topic.toLowerCase(), worker);
                             }
                         }
 
@@ -181,8 +185,11 @@ export class JobQueue {
         }
     }
 
-    private static async consume(topic:string, count:number, worker:(jobs:Job[]) => Promise<void>) {
-        const client = await Environment.pgReadWriteApiDb.connect()
+    private static async consume(topic:string, worker:(job:Job) => Promise<JobResult|undefined>) {
+        const client = await Environment.pgReadWriteApiDb.connect();
+        let jobId: number|undefined;
+        let jobResult: JobResult|undefined;
+
         try {
             await client.query('BEGIN');
 
@@ -194,7 +201,7 @@ export class JobQueue {
                          FROM "Job"
                          WHERE topic = $1
                            AND "finishedAt" is null
-                         LIMIT ${parseInt(count.toString())} FOR UPDATE SKIP LOCKED
+                         LIMIT 1 FOR UPDATE SKIP LOCKED
                      ) j
                 WHERE j.id = "Job".id
                 RETURNING j.*;`;
@@ -210,13 +217,34 @@ export class JobQueue {
                 };
             });
 
-            await worker(jobs);
+            if (jobs.length > 0) {
+                const job = jobs[0];
+
+                jobId = job.id;
+                jobResult = await worker(job);
+            }
 
             await client.query('COMMIT');
+
+            if (jobResult?.info || jobResult?.warning) {
+                await client.query(`update "Job" set info = $1, warning = $2 where id = $3`, [
+                    jobResult.info,
+                    jobResult.warning,
+                    jobId
+                ]);
+            }
 
             return jobs.length;
         } catch (e) {
             await client.query('ROLLBACK');
+            if (jobId) {
+                await client.query(`update "Job"
+                                    set error = $1
+                                    where id = $2`, [
+                    `${e.message}\n${e.stack}`,
+                    jobId
+                ]);
+            }
             throw e
         } finally {
             client.release();
