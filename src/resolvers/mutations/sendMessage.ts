@@ -12,6 +12,10 @@ export function sendMessage(prisma: PrismaClient) {
     args: MutationSendMessageArgs,
     context: Context
   ) => {
+    if (args.content?.length > 4096) {
+      throw new Error(`The chat message is too long. 4096 characters are allowed.`)
+    }
+
     const fromProfile = await context.callerInfo;
     if (!fromProfile || !fromProfile.profile?.circlesAddress) {
       return {
