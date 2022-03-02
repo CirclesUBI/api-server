@@ -1,12 +1,9 @@
 import {JobWorker, JobWorkerConfiguration} from "../jobWorker";
 import {Environment} from "../../../environment";
-import {VerifyEmailAddress} from "../../descriptions/emailNotifications/verifyEmailAddress";
 import {Mailer} from "../../../mailer/mailer";
-import {crcReceivedEmailTemplate} from "./templates/crcReceivedEmailTemplate";
-import {ProfileLoader} from "../../../querySources/profileLoader";
 import {SendVerifyEmailAddressEmail} from "../../descriptions/emailNotifications/sendVerifyEmailAddressEmail";
-import {JobCreationTime} from "aws-sdk/clients/s3control";
 import {JobType} from "../../descriptions/jobDescription";
+import {verifyEmailAddressEmailTemplate} from "./templates/verifyEmailAddressEmailTemplate";
 
 export class SendVerifyEmailAddressEmailWorker extends JobWorker<SendVerifyEmailAddressEmail> {
   name(): string {
@@ -18,10 +15,8 @@ export class SendVerifyEmailAddressEmailWorker extends JobWorker<SendVerifyEmail
   }
 
   async doWork(job: SendVerifyEmailAddressEmail) {
-    await Mailer.send({
-      subject: `Circles.land: Please verify your email address`,
-      bodyHtml: `Go to ${Environment.externalDomain}:8989/trigger?topic=${<JobType>"verifyEmailAddress".toLowerCase()}&code=${job.triggerCode} to verify your email address.`
-    }, {
+    await Mailer.send(verifyEmailAddressEmailTemplate, {
+      confirmUrl: `https://${Environment.externalDomain}${Environment.externalDomain == "localhost" ? ":8989" : ""}/trigger?topic=${<JobType>"verifyEmailAddress".toLowerCase()}&code=${job.triggerCode}`
     }, job.emailAddress);
 
     return undefined;
