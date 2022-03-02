@@ -1,15 +1,18 @@
 import {AggregateSource} from "../aggregateSource";
 import {
-  ContactDirection,
   Contact,
+  ContactDirection,
   ContactPoint,
   Contacts,
   CrcTrust,
+  EventType,
+  Maybe,
   ProfileAggregate,
-  ProfileAggregateFilter, Maybe, EventType
+  ProfileAggregateFilter
 } from "../../types";
 import {Environment} from "../../environment";
 import {getDateWithOffset} from "../../getDateWithOffset";
+import {ProfileLoader} from "../../profileLoader";
 
 async function trustContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const trustContactsResult = await Environment.indexDb.query(`
@@ -446,6 +449,24 @@ export class ContactsSource implements AggregateSource {
       return p;
     }, <{ [x: string]:Contact }>{});
 
+    if (Object.keys(distinctAddresses).length == 0 && filter?.contacts?.addresses) {
+      const profiles = await new ProfileLoader().profilesBySafeAddress(Environment.readonlyApiDb, filter.contacts.addresses);
+      Object.entries(profiles).forEach(o => {
+        const contact = <Contact> {
+          contactAddress: o[1]?.circlesAddress,
+          lastContactAt: new Date().toJSON(),
+          contactAddress_Profile: o[1],
+          metadata: [{
+            name: "Search",
+            directions: [ContactDirection.Out],
+            timestamps: [new Date().toJSON()],
+            values: [""]
+          }]
+        };
+        distinctAddresses[o[0]] = contact;
+      });
+    }
+
     return [{
       safe_address: forSafeAddress,
       type: "Contacts",
@@ -454,6 +475,6 @@ export class ContactsSource implements AggregateSource {
         lastUpdatedAt: latestEventAt.toString(),
         contacts: Object.values(distinctAddresses)
       }
-    }]
+    }];
   }
 }
