@@ -16,6 +16,10 @@ export class SendCrcTrustChangedEmailWorker extends JobWorker<SendCrcTrustChange
 
   async doWork(job: SendCrcTrustChangedEmail): Promise<void> {
     // TODO: Use a different template when an organization trusts you
+    if (job.limit == 0) {
+      return;
+    }
+
     const profiles = await (new ProfileLoader()
       .profilesBySafeAddress(Environment.readonlyApiDb, [job.user, job.canSendTo]));
 

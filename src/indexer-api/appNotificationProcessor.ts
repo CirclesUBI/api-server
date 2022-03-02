@@ -18,7 +18,7 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
             switch (event.type) {
                 case "CrcTrust":
                     await JobQueue.produce([
-                      new SendCrcTrustChangedEmail(event.hash, event.address1, event.address2)
+                      new SendCrcTrustChangedEmail(event.hash, event.address1, event.address2, parseInt(event.value))
                     ]);
                     break;
                 case "CrcHubTransfer":
