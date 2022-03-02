@@ -207,7 +207,7 @@ export const resolvers: Resolvers = {
   },
   Subscription: {
     events: {
-      subscribe: async function subscribe(parent, args, context: Context) {
+      subscribe: async function subscribe(parent:any, args:any, context: Context) : Promise<AsyncIterable<any>> {
         const callerInfo = await context.callerInfo;
         if (!callerInfo?.profile && !callerInfo?.session.ethAddress)
           throw new Error(`You need a registration to subscribe`);
@@ -220,17 +220,22 @@ export const resolvers: Resolvers = {
           `-->: [${new Date().toJSON()}] [${Environment.instanceId}] [${context.session?.id}] [${context.id}] [${context.ipAddress}] [Subscription.events.subscribe]: ${subscriberInfo}`
         );
 
-        if (
-          !callerInfo.profile?.circlesAddress &&
-          callerInfo.session.ethAddress
-        ) {
-          return ApiPubSub.instance.pubSub.asyncIterator([
-            `events_${callerInfo.session.ethAddress.toLowerCase()}`,
-          ]);
+        const subscriptionIterable = class implements AsyncIterable<any> {
+          readonly address:string;
+          constructor(address:string) {
+            this.address = address;
+          }
+          [Symbol.asyncIterator](): AsyncIterator<any> {
+            return ApiPubSub.instance.pubSub.asyncIterator([
+              `events_${this.address}`
+            ]);
+          }
+        };
+
+        if (!callerInfo.profile?.circlesAddress && callerInfo.session.ethAddress) {
+          return new subscriptionIterable(callerInfo.session.ethAddress.toLowerCase());
         } else if (callerInfo.profile?.circlesAddress) {
-          return ApiPubSub.instance.pubSub.asyncIterator([
-            `events_${callerInfo.profile?.circlesAddress.toLowerCase()}`,
-          ]);
+          return new subscriptionIterable(callerInfo.profile?.circlesAddress.toLowerCase());
         }
 
         console.error(`Err: [${new Date().toJSON()}] [${Environment.instanceId}] [${context.id}] [${context.ipAddress}] [Subscription.events]: Cannot subscribe without an eoa- or safe-address`);

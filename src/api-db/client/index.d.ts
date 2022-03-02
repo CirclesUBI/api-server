@@ -291,6 +291,10 @@ export type Job = {
   id: number
   hash: string
   createdAt: Date
+  finishedAt: Date | null
+  error: string | null
+  warning: string | null
+  info: string | null
   topic: string
   payload: string
 }
@@ -642,7 +646,7 @@ export namespace Prisma {
   export import Decimal = runtime.Decimal
 
   /**
-   * Prisma Client JS version: 2.30.2
+   * Prisma Client JS version: 2.30.3
    * Query Engine version: b8c35d44de987a9691890b3ddf3e2e7effb9bf20
    */
   export type PrismaVersion = {
@@ -17414,6 +17418,10 @@ export namespace Prisma {
     id: number | null
     hash: string | null
     createdAt: Date | null
+    finishedAt: Date | null
+    error: string | null
+    warning: string | null
+    info: string | null
     topic: string | null
     payload: string | null
   }
@@ -17422,6 +17430,10 @@ export namespace Prisma {
     id: number | null
     hash: string | null
     createdAt: Date | null
+    finishedAt: Date | null
+    error: string | null
+    warning: string | null
+    info: string | null
     topic: string | null
     payload: string | null
   }
@@ -17430,6 +17442,10 @@ export namespace Prisma {
     id: number
     hash: number
     createdAt: number
+    finishedAt: number
+    error: number
+    warning: number
+    info: number
     topic: number
     payload: number
     _all: number
@@ -17448,6 +17464,10 @@ export namespace Prisma {
     id?: true
     hash?: true
     createdAt?: true
+    finishedAt?: true
+    error?: true
+    warning?: true
+    info?: true
     topic?: true
     payload?: true
   }
@@ -17456,6 +17476,10 @@ export namespace Prisma {
     id?: true
     hash?: true
     createdAt?: true
+    finishedAt?: true
+    error?: true
+    warning?: true
+    info?: true
     topic?: true
     payload?: true
   }
@@ -17464,6 +17488,10 @@ export namespace Prisma {
     id?: true
     hash?: true
     createdAt?: true
+    finishedAt?: true
+    error?: true
+    warning?: true
+    info?: true
     topic?: true
     payload?: true
     _all?: true
@@ -17585,6 +17613,10 @@ export namespace Prisma {
     id: number
     hash: string
     createdAt: Date
+    finishedAt: Date | null
+    error: string | null
+    warning: string | null
+    info: string | null
     topic: string
     payload: string
     _count: JobCountAggregateOutputType | null
@@ -17612,6 +17644,10 @@ export namespace Prisma {
     id?: boolean
     hash?: boolean
     createdAt?: boolean
+    finishedAt?: boolean
+    error?: boolean
+    warning?: boolean
+    info?: boolean
     topic?: boolean
     payload?: boolean
   }
@@ -18508,6 +18544,10 @@ export namespace Prisma {
     id: 'id',
     hash: 'hash',
     createdAt: 'createdAt',
+    finishedAt: 'finishedAt',
+    error: 'error',
+    warning: 'warning',
+    info: 'info',
     topic: 'topic',
     payload: 'payload'
   };
@@ -19380,6 +19420,10 @@ export namespace Prisma {
     id?: IntFilter | number
     hash?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
+    finishedAt?: DateTimeNullableFilter | Date | string | null
+    error?: StringNullableFilter | string | null
+    warning?: StringNullableFilter | string | null
+    info?: StringNullableFilter | string | null
     topic?: StringFilter | string
     payload?: StringFilter | string
   }
@@ -19388,6 +19432,10 @@ export namespace Prisma {
     id?: SortOrder
     hash?: SortOrder
     createdAt?: SortOrder
+    finishedAt?: SortOrder
+    error?: SortOrder
+    warning?: SortOrder
+    info?: SortOrder
     topic?: SortOrder
     payload?: SortOrder
   }
@@ -19404,6 +19452,10 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter | number
     hash?: StringWithAggregatesFilter | string
     createdAt?: DateTimeWithAggregatesFilter | Date | string
+    finishedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
+    error?: StringNullableWithAggregatesFilter | string | null
+    warning?: StringNullableWithAggregatesFilter | string | null
+    info?: StringNullableWithAggregatesFilter | string | null
     topic?: StringWithAggregatesFilter | string
     payload?: StringWithAggregatesFilter | string
   }
@@ -20877,6 +20929,10 @@ export namespace Prisma {
   export type JobCreateInput = {
     hash: string
     createdAt?: Date | string
+    finishedAt?: Date | string | null
+    error?: string | null
+    warning?: string | null
+    info?: string | null
     topic: string
     payload: string
   }
@@ -20885,6 +20941,10 @@ export namespace Prisma {
     id?: number
     hash: string
     createdAt?: Date | string
+    finishedAt?: Date | string | null
+    error?: string | null
+    warning?: string | null
+    info?: string | null
     topic: string
     payload: string
   }
@@ -20892,6 +20952,10 @@ export namespace Prisma {
   export type JobUpdateInput = {
     hash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    warning?: NullableStringFieldUpdateOperationsInput | string | null
+    info?: NullableStringFieldUpdateOperationsInput | string | null
     topic?: StringFieldUpdateOperationsInput | string
     payload?: StringFieldUpdateOperationsInput | string
   }
@@ -20900,6 +20964,10 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     hash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    warning?: NullableStringFieldUpdateOperationsInput | string | null
+    info?: NullableStringFieldUpdateOperationsInput | string | null
     topic?: StringFieldUpdateOperationsInput | string
     payload?: StringFieldUpdateOperationsInput | string
   }
@@ -20908,6 +20976,10 @@ export namespace Prisma {
     id?: number
     hash: string
     createdAt?: Date | string
+    finishedAt?: Date | string | null
+    error?: string | null
+    warning?: string | null
+    info?: string | null
     topic: string
     payload: string
   }
@@ -20915,6 +20987,10 @@ export namespace Prisma {
   export type JobUpdateManyMutationInput = {
     hash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    warning?: NullableStringFieldUpdateOperationsInput | string | null
+    info?: NullableStringFieldUpdateOperationsInput | string | null
     topic?: StringFieldUpdateOperationsInput | string
     payload?: StringFieldUpdateOperationsInput | string
   }
@@ -20923,6 +20999,10 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     hash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    warning?: NullableStringFieldUpdateOperationsInput | string | null
+    info?: NullableStringFieldUpdateOperationsInput | string | null
     topic?: StringFieldUpdateOperationsInput | string
     payload?: StringFieldUpdateOperationsInput | string
   }
