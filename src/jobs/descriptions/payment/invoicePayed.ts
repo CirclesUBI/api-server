@@ -4,6 +4,7 @@ export class InvoicePayed implements JobDescription {
   readonly _topic: JobType = "invoicePayed";
   readonly _kind = "atMostOnce";
   readonly _identity: string;
+  readonly _timeoutAt: undefined;
 
   getPayload(): string {
     return JSON.stringify(this);

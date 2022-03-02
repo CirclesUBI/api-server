@@ -5,12 +5,25 @@ import {ProfileLoader} from "../../querySources/profileLoader";
 import {Environment} from "../../environment";
 import {TestData} from "../../api-db/testData";
 import {RpcGateway} from "../../circles/rpcGateway";
+import {JobQueue} from "../../jobs/jobQueue";
+import {VerifyEmailAddress} from "../../jobs/descriptions/emailNotifications/verifyEmailAddress";
+import {Generate} from "../../utils/generate";
+import {SendVerifyEmailAddressEmail} from "../../jobs/descriptions/emailNotifications/sendVerifyEmailAddressEmail";
+
+const validateEmail = (email:string) => {
+    return email.match(
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+};
 
 export function upsertProfileResolver() {
     return async (parent:any, args:MutationUpsertProfileArgs, context:Context) => {
         const session = await context.verifySession();
         let profile:Profile;
 
+        if (args.data.emailAddress && !validateEmail(args.data.emailAddress)) {
+            throw new Error(`Invalid email address format.`);
+        }
         if (args.data.circlesAddress && !RpcGateway.get().utils.isAddress(args.data.circlesAddress)) {
             throw new Error(`Invalid 'circlesAddress': ${args.data.circlesAddress}`);
         }
@@ -28,6 +41,10 @@ export function upsertProfileResolver() {
             if (args.data.id != session.profileId) {
                 throw new Error(`'${session.sessionToken}' (profile id: ${session.profileId ?? "<undefined>"}) can not upsert other profile '${args.data.id}'.`);
             }
+            const oldProfile = await Environment.readWriteApiDb.profile.findUnique({where:{id: args.data.id}});
+            if (!oldProfile){
+                throw new Error(`Cannot update profile ${args.data.id} because it doesn't exist.`)
+            }
             profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({
                 where: {
                     id: args.data.id
@@ -44,6 +61,15 @@ export function upsertProfileResolver() {
                     displayCurrency: <DisplayCurrency>args.data.displayCurrency
                 }
             }));
+
+            if (oldProfile.emailAddress != profile.emailAddress) {
+                profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({
+                    where: {id: args.data.id},
+                    data: {
+                        emailAddressVerified: false
+                    }
+                }));
+            }
         } else {
             profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.create({
                 data: {
@@ -68,6 +94,13 @@ export function upsertProfileResolver() {
             // Insert the test data when the first profile with a safe-address was created
             console.log("First circles user. Deploying test data ..");
             await TestData.insertIfEmpty(profile.circlesAddress);
+        }
+
+        if (profile?.emailAddress && !(<any>profile)?.emailAddressVerified) {
+            const challengeTrigger = new VerifyEmailAddress(
+              new Date(), 1000 * 60 * 24, Generate.randomHexString(), profile.id, profile.emailAddress);
+            const sendEmail = new SendVerifyEmailAddressEmail(challengeTrigger._identity, <string>args.data.emailAddress);
+            await JobQueue.produce([challengeTrigger, sendEmail]);
         }
 
         return profile;

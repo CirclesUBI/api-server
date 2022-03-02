@@ -6,6 +6,7 @@ export class BroadcastChatMessage implements JobDescription {
   readonly to: string;
   readonly _kind = "broadcast";
   readonly _identity: string;
+  readonly _timeoutAt: undefined;
 
   constructor(to:string) {
     this.to = to.toLowerCase();

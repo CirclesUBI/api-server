@@ -15,16 +15,13 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
         : Promise<void> {
 
         for(let event of events) {
+            let job:any = undefined;
             switch (event.type) {
                 case "CrcTrust":
-                    await JobQueue.produce([
-                      new SendCrcTrustChangedEmail(event.hash, event.address1, event.address2, parseInt(event.value))
-                    ]);
+                    job = new SendCrcTrustChangedEmail(event.hash, event.address1, event.address2, parseInt(event.value));
                     break;
                 case "CrcHubTransfer":
-                    await JobQueue.produce([
-                        new SendCrcReceivedEmail(event.timestamp, event.hash, event.address1, event.address2, event.value)
-                    ]);
+                    job = new SendCrcReceivedEmail(event.timestamp, event.hash, event.address1, event.address2, event.value);
                     break;
                 case "CrcSignup":
                 case "CrcOrganisationSignup":
@@ -32,6 +29,9 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                 case "Erc20Transfer":
                 case "GnosisSafeEthTransfer":
                     break;
+            }
+            if (job) {
+                await JobQueue.produce([job]);
             }
         }
 

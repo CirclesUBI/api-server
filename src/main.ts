@@ -14,12 +14,14 @@ import {ninetyDaysLater} from "./utils/90days";
 import express from "express";
 import {JobQueue} from "./jobs/jobQueue";
 import {gqlSubscriptionServer} from "./gqlSubscriptionServer";
-import {uploadPostHandler} from "./postHandlers/upload";
-import {triggerPostHandler} from "./postHandlers/trigger";
+import {uploadPostHandler} from "./httpHandlers/post/upload";
+import {triggerGetHandler} from "./httpHandlers/get/trigger";
 import cors from "cors";
 import {jobSink} from "./jobs/jobSink";
-import {JobType} from "./jobs/descriptions/jobDescription";
+import {JobKind, JobType} from "./jobs/descriptions/jobDescription";
 import * as graphqlImport from "@graphql-tools/import";
+import {VerifyEmailAddress} from "./jobs/descriptions/emailNotifications/verifyEmailAddress";
+import {Generate} from "./utils/generate";
 
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
@@ -61,15 +63,8 @@ export class Main {
       })
     );
 
-    app.post(
-      "/upload",
-      cors(corsOptions),
-      uploadPostHandler);
-
-    app.post(
-      "/trigger",
-      cors(corsOptions),
-      triggerPostHandler);
+    app.post("/upload", cors(corsOptions), uploadPostHandler);
+    app.get("/trigger", cors(corsOptions), triggerGetHandler);
 
     const httpServer = createServer(app);
     const schema = makeExecutableSchema({
@@ -130,7 +125,9 @@ export class Main {
       "sendCrcReceivedEmail",
       "sendCrcTrustChangedEmail",
       "sendOrderConfirmationEmail",
-      "invoicePayed"
+      "invoicePayed",
+      "verifyEmailAddress",
+      "sendVerifyEmailAddressEmail"
     ];
 
     jobQueue.consume(jobTopics, jobSink, false)

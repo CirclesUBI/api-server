@@ -1,10 +1,10 @@
 import {Request, Response} from "express";
-import {Session} from "../session";
-import {Environment} from "../environment";
+import {Session} from "../../session";
+import {Environment} from "../../environment";
 import {PromiseResult} from "aws-sdk/lib/request";
 import AWS from "aws-sdk";
-import {Main} from "../main";
-import {tryGetSessionToken} from "../utils/tryGetSessionToken";
+import {Main} from "../../main";
+import {tryGetSessionToken} from "../../utils/tryGetSessionToken";
 
 export const uploadPostHandler = async (req: Request, res: Response) => {
   try {

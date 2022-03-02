@@ -291,8 +291,10 @@ export type Tag = {
  */
 export type Job = {
   id: number
+  kind: string | null
   hash: string
   createdAt: Date
+  timeoutAt: Date | null
   finishedAt: Date | null
   error: string | null
   warning: string | null
@@ -17642,8 +17644,10 @@ export namespace Prisma {
 
   export type JobMinAggregateOutputType = {
     id: number | null
+    kind: string | null
     hash: string | null
     createdAt: Date | null
+    timeoutAt: Date | null
     finishedAt: Date | null
     error: string | null
     warning: string | null
@@ -17654,8 +17658,10 @@ export namespace Prisma {
 
   export type JobMaxAggregateOutputType = {
     id: number | null
+    kind: string | null
     hash: string | null
     createdAt: Date | null
+    timeoutAt: Date | null
     finishedAt: Date | null
     error: string | null
     warning: string | null
@@ -17666,8 +17672,10 @@ export namespace Prisma {
 
   export type JobCountAggregateOutputType = {
     id: number
+    kind: number
     hash: number
     createdAt: number
+    timeoutAt: number
     finishedAt: number
     error: number
     warning: number
@@ -17688,8 +17696,10 @@ export namespace Prisma {
 
   export type JobMinAggregateInputType = {
     id?: true
+    kind?: true
     hash?: true
     createdAt?: true
+    timeoutAt?: true
     finishedAt?: true
     error?: true
     warning?: true
@@ -17700,8 +17710,10 @@ export namespace Prisma {
 
   export type JobMaxAggregateInputType = {
     id?: true
+    kind?: true
     hash?: true
     createdAt?: true
+    timeoutAt?: true
     finishedAt?: true
     error?: true
     warning?: true
@@ -17712,8 +17724,10 @@ export namespace Prisma {
 
   export type JobCountAggregateInputType = {
     id?: true
+    kind?: true
     hash?: true
     createdAt?: true
+    timeoutAt?: true
     finishedAt?: true
     error?: true
     warning?: true
@@ -17817,8 +17831,10 @@ export namespace Prisma {
 
   export type JobGroupByOutputType = {
     id: number
+    kind: string | null
     hash: string
     createdAt: Date
+    timeoutAt: Date | null
     finishedAt: Date | null
     error: string | null
     warning: string | null
@@ -17848,8 +17864,10 @@ export namespace Prisma {
 
   export type JobSelect = {
     id?: boolean
+    kind?: boolean
     hash?: boolean
     createdAt?: boolean
+    timeoutAt?: boolean
     finishedAt?: boolean
     error?: boolean
     warning?: boolean
@@ -18765,8 +18783,10 @@ export namespace Prisma {
 
   export const JobScalarFieldEnum: {
     id: 'id',
+    kind: 'kind',
     hash: 'hash',
     createdAt: 'createdAt',
+    timeoutAt: 'timeoutAt',
     finishedAt: 'finishedAt',
     error: 'error',
     warning: 'warning',
@@ -19992,8 +20012,10 @@ export namespace Prisma {
     OR?: Enumerable<JobWhereInput>
     NOT?: Enumerable<JobWhereInput>
     id?: IntFilter | number
+    kind?: StringNullableFilter | string | null
     hash?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
+    timeoutAt?: DateTimeNullableFilter | Date | string | null
     finishedAt?: DateTimeNullableFilter | Date | string | null
     error?: StringNullableFilter | string | null
     warning?: StringNullableFilter | string | null
@@ -20004,8 +20026,10 @@ export namespace Prisma {
 
   export type JobOrderByWithRelationInput = {
     id?: SortOrder
+    kind?: SortOrder
     hash?: SortOrder
     createdAt?: SortOrder
+    timeoutAt?: SortOrder
     finishedAt?: SortOrder
     error?: SortOrder
     warning?: SortOrder
@@ -20021,8 +20045,10 @@ export namespace Prisma {
 
   export type JobOrderByWithAggregationInput = {
     id?: SortOrder
+    kind?: SortOrder
     hash?: SortOrder
     createdAt?: SortOrder
+    timeoutAt?: SortOrder
     finishedAt?: SortOrder
     error?: SortOrder
     warning?: SortOrder
@@ -20041,8 +20067,10 @@ export namespace Prisma {
     OR?: Enumerable<JobScalarWhereWithAggregatesInput>
     NOT?: Enumerable<JobScalarWhereWithAggregatesInput>
     id?: IntWithAggregatesFilter | number
+    kind?: StringNullableWithAggregatesFilter | string | null
     hash?: StringWithAggregatesFilter | string
     createdAt?: DateTimeWithAggregatesFilter | Date | string
+    timeoutAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
     finishedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
     error?: StringNullableWithAggregatesFilter | string | null
     warning?: StringNullableWithAggregatesFilter | string | null
@@ -21532,8 +21560,10 @@ export namespace Prisma {
   }
 
   export type JobCreateInput = {
+    kind?: string | null
     hash: string
     createdAt?: Date | string
+    timeoutAt?: Date | string | null
     finishedAt?: Date | string | null
     error?: string | null
     warning?: string | null
@@ -21544,8 +21574,10 @@ export namespace Prisma {
 
   export type JobUncheckedCreateInput = {
     id?: number
+    kind?: string | null
     hash: string
     createdAt?: Date | string
+    timeoutAt?: Date | string | null
     finishedAt?: Date | string | null
     error?: string | null
     warning?: string | null
@@ -21555,8 +21587,10 @@ export namespace Prisma {
   }
 
   export type JobUpdateInput = {
+    kind?: NullableStringFieldUpdateOperationsInput | string | null
     hash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeoutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     error?: NullableStringFieldUpdateOperationsInput | string | null
     warning?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21567,8 +21601,10 @@ export namespace Prisma {
 
   export type JobUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
+    kind?: NullableStringFieldUpdateOperationsInput | string | null
     hash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeoutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     error?: NullableStringFieldUpdateOperationsInput | string | null
     warning?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21579,8 +21615,10 @@ export namespace Prisma {
 
   export type JobCreateManyInput = {
     id?: number
+    kind?: string | null
     hash: string
     createdAt?: Date | string
+    timeoutAt?: Date | string | null
     finishedAt?: Date | string | null
     error?: string | null
     warning?: string | null
@@ -21590,8 +21628,10 @@ export namespace Prisma {
   }
 
   export type JobUpdateManyMutationInput = {
+    kind?: NullableStringFieldUpdateOperationsInput | string | null
     hash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeoutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     error?: NullableStringFieldUpdateOperationsInput | string | null
     warning?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21602,8 +21642,10 @@ export namespace Prisma {
 
   export type JobUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
+    kind?: NullableStringFieldUpdateOperationsInput | string | null
     hash?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeoutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     error?: NullableStringFieldUpdateOperationsInput | string | null
     warning?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22766,8 +22808,10 @@ export namespace Prisma {
 
   export type JobCountOrderByAggregateInput = {
     id?: SortOrder
+    kind?: SortOrder
     hash?: SortOrder
     createdAt?: SortOrder
+    timeoutAt?: SortOrder
     finishedAt?: SortOrder
     error?: SortOrder
     warning?: SortOrder
@@ -22782,8 +22826,10 @@ export namespace Prisma {
 
   export type JobMaxOrderByAggregateInput = {
     id?: SortOrder
+    kind?: SortOrder
     hash?: SortOrder
     createdAt?: SortOrder
+    timeoutAt?: SortOrder
     finishedAt?: SortOrder
     error?: SortOrder
     warning?: SortOrder
@@ -22794,8 +22840,10 @@ export namespace Prisma {
 
   export type JobMinOrderByAggregateInput = {
     id?: SortOrder
+    kind?: SortOrder
     hash?: SortOrder
     createdAt?: SortOrder
+    timeoutAt?: SortOrder
     finishedAt?: SortOrder
     error?: SortOrder
     warning?: SortOrder
