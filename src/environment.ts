@@ -15,6 +15,8 @@ export type SmtpConfig = {
   password: string;
   secure: boolean;
   port: number;
+  localAddress?: string;
+  debug?: boolean;
 };
 
 export class Environment {
@@ -195,6 +197,8 @@ export class Environment {
       server: <string>process.env.SMTP_HOST,
       user: <string>process.env.SMTP_USER,
       password: <string>process.env.SMTP_PASSWORD,
+      localAddress: <string>process.env.SMTP_LOCAL_ADDRESS,
+      debug: !!process.env.SMTP_DEBUG,
       port: parseInt(<string>process.env.SMTP_PORT),
       secure: true,
     };
