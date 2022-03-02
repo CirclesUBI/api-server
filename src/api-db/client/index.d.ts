@@ -3,7 +3,7 @@
  * Client
 **/
 
-import * as runtime from './runtime';
+import * as runtime from './runtime/index';
 declare const prisma: unique symbol
 export type PrismaPromise<A> = Promise<A> & {[prisma]: true}
 type UnwrapPromise<P extends any> = P extends Promise<infer R> ? R : P
@@ -14,8 +14,8 @@ type UnwrapTuple<Tuple extends readonly unknown[]> = {
 
 /**
  * Model Session
+ * 
  */
-
 export type Session = {
   id: string
   sessionToken: string
@@ -35,8 +35,8 @@ export type Session = {
 
 /**
  * Model Invitation
+ * 
  */
-
 export type Invitation = {
   id: number
   createdByProfileId: number
@@ -56,8 +56,8 @@ export type Invitation = {
 
 /**
  * Model InvitationFundsEOA
+ * 
  */
-
 export type InvitationFundsEOA = {
   id: number
   address: string
@@ -67,8 +67,8 @@ export type InvitationFundsEOA = {
 
 /**
  * Model VerifiedSafe
+ * 
  */
-
 export type VerifiedSafe = {
   safeAddress: string
   createdAt: Date
@@ -88,8 +88,8 @@ export type VerifiedSafe = {
 
 /**
  * Model Profile
+ * 
  */
-
 export type Profile = {
   id: number
   lastUpdateAt: Date
@@ -123,8 +123,8 @@ export type Profile = {
 
 /**
  * Model ExternalProfiles
+ * 
  */
-
 export type ExternalProfiles = {
   circlesAddress: string
   name: string
@@ -133,8 +133,8 @@ export type ExternalProfiles = {
 
 /**
  * Model Membership
+ * 
  */
-
 export type Membership = {
   id: number
   createdAt: Date
@@ -149,8 +149,8 @@ export type Membership = {
 
 /**
  * Model ChatMessage
+ * 
  */
-
 export type ChatMessage = {
   id: number
   createdAt: Date
@@ -162,8 +162,8 @@ export type ChatMessage = {
 
 /**
  * Model DelegatedChallenges
+ * 
  */
-
 export type DelegatedChallenges = {
   id: number
   createdAt: Date
@@ -179,8 +179,8 @@ export type DelegatedChallenges = {
 
 /**
  * Model Offer
+ * 
  */
-
 export type Offer = {
   id: number
   version: number
@@ -196,8 +196,8 @@ export type Offer = {
 
 /**
  * Model Purchase
+ * 
  */
-
 export type Purchase = {
   id: number
   createdByProfileId: number
@@ -207,8 +207,8 @@ export type Purchase = {
 
 /**
  * Model PurchaseLine
+ * 
  */
-
 export type PurchaseLine = {
   id: number
   purchaseId: number
@@ -219,8 +219,8 @@ export type PurchaseLine = {
 
 /**
  * Model Invoice
+ * 
  */
-
 export type Invoice = {
   id: number
   createdAt: Date
@@ -242,8 +242,8 @@ export type Invoice = {
 
 /**
  * Model InvoiceLine
+ * 
  */
-
 export type InvoiceLine = {
   id: number
   invoiceId: number
@@ -254,24 +254,24 @@ export type InvoiceLine = {
 
 /**
  * Model TagType
+ * 
  */
-
 export type TagType = {
   id: string
 }
 
 /**
  * Model Transaction
+ * 
  */
-
 export type Transaction = {
   transactionHash: string
 }
 
 /**
  * Model Tag
+ * 
  */
-
 export type Tag = {
   id: number
   createdAt: Date
@@ -285,8 +285,8 @@ export type Tag = {
 
 /**
  * Model Job
+ * 
  */
-
 export type Job = {
   id: number
   hash: string
@@ -388,40 +388,58 @@ export class PrismaClient<
   /**
    * Disconnect from the database
    */
-  $disconnect(): Promise<any>;
+  $disconnect(): Promise<void>;
 
   /**
    * Add a middleware
    */
   $use(cb: Prisma.Middleware): void
 
-  /**
-   * Executes a raw query and returns the number of affected rows
+/**
+   * Executes a prepared raw query and returns the number of affected rows.
    * @example
    * ```
-   * // With parameters use prisma.$executeRaw``, values will be escaped automatically
-   * const result = await prisma.$executeRaw`UPDATE User SET cool = ${true} WHERE id = ${1};`
-   * // Or
-   * const result = await prisma.$executeRaw('UPDATE User SET cool = $1 WHERE id = $2 ;', true, 1)
-  * ```
-  * 
-  * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
-  */
-  $executeRaw < T = any > (query: string | TemplateStringsArray | Prisma.Sql, ...values: any[]): PrismaPromise<number>;
+   * const result = await prisma.$executeRaw`UPDATE User SET cool = ${true} WHERE email = ${'user@email.com'};`
+   * ```
+   * 
+   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   */
+  $executeRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): PrismaPromise<number>;
 
   /**
-   * Performs a raw query and returns the SELECT data
+   * Executes a raw query and returns the number of affected rows.
+   * Susceptible to SQL injections, see documentation.
    * @example
    * ```
-   * // With parameters use prisma.$queryRaw``, values will be escaped automatically
-   * const result = await prisma.$queryRaw`SELECT * FROM User WHERE id = ${1} OR email = ${'ema.il'};`
-   * // Or
-   * const result = await prisma.$queryRaw('SELECT * FROM User WHERE id = $1 OR email = $2;', 1, 'ema.il')
-  * ```
-  * 
-  * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
-  */
-  $queryRaw < T = any > (query: string | TemplateStringsArray | Prisma.Sql, ...values: any[]): PrismaPromise<T>;
+   * const result = await prisma.$executeRawUnsafe('UPDATE User SET cool = $1 WHERE email = $2 ;', true, 'user@email.com')
+   * ```
+   * 
+   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   */
+  $executeRawUnsafe<T = unknown>(query: string, ...values: any[]): PrismaPromise<number>;
+
+  /**
+   * Performs a prepared raw query and returns the `SELECT` data.
+   * @example
+   * ```
+   * const result = await prisma.$queryRaw`SELECT * FROM User WHERE id = ${1} OR email = ${'user@email.com'};`
+   * ```
+   * 
+   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   */
+  $queryRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): PrismaPromise<T>;
+
+  /**
+   * Performs a raw query and returns the `SELECT` data.
+   * Susceptible to SQL injections, see documentation.
+   * @example
+   * ```
+   * const result = await prisma.$queryRawUnsafe('SELECT * FROM User WHERE id = $1 OR email = $2;', 1, 'user@email.com')
+   * ```
+   * 
+   * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
+   */
+  $queryRawUnsafe<T = unknown>(query: string, ...values: any[]): PrismaPromise<T>;
 
   /**
    * Allows the running of a sequence of read/write operations that are guaranteed to either succeed or fail as a whole.
@@ -436,7 +454,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client/transactions).
    */
-  $transaction<P extends PrismaPromise<any>[]>(arg: [...P]): Promise<UnwrapTuple<P>>
+  $transaction<P extends PrismaPromise<any>[]>(arg: [...P]): Promise<UnwrapTuple<P>>;
 
       /**
    * `prisma.session`: Exposes CRUD operations for the **Session** model.
@@ -646,8 +664,8 @@ export namespace Prisma {
   export import Decimal = runtime.Decimal
 
   /**
-   * Prisma Client JS version: 2.30.3
-   * Query Engine version: b8c35d44de987a9691890b3ddf3e2e7effb9bf20
+   * Prisma Client JS version: 3.10.0
+   * Query Engine version: 73e60b76d394f8d37d8ebd1f8918c79029f0db86
    */
   export type PrismaVersion = {
     client: string
@@ -665,28 +683,68 @@ export namespace Prisma {
    * This type can be useful to enforce some input to be JSON-compatible or as a super-type to be extended from. 
    */
   export type JsonObject = {[Key in string]?: JsonValue}
- 
+
   /**
    * From https://github.com/sindresorhus/type-fest/
    * Matches a JSON array.
    */
   export interface JsonArray extends Array<JsonValue> {}
- 
+
   /**
    * From https://github.com/sindresorhus/type-fest/
    * Matches any valid JSON value.
    */
-  export type JsonValue = string | number | boolean | null | JsonObject | JsonArray
+  export type JsonValue = string | number | boolean | JsonObject | JsonArray | null
 
   /**
-   * Same as JsonObject, but allows undefined
+   * Matches a JSON object.
+   * Unlike `JsonObject`, this type allows undefined and read-only properties.
    */
-  export type InputJsonObject = {[Key in string]?: JsonValue}
- 
-  export interface InputJsonArray extends Array<JsonValue> {}
- 
-  export type InputJsonValue = undefined |  string | number | boolean | null | InputJsonObject | InputJsonArray
-   type SelectAndInclude = {
+  export type InputJsonObject = {readonly [Key in string]?: InputJsonValue | null}
+
+  /**
+   * Matches a JSON array.
+   * Unlike `JsonArray`, readonly arrays are assignable to this type.
+   */
+  export interface InputJsonArray extends ReadonlyArray<InputJsonValue | null> {}
+
+  /**
+   * Matches any valid value that can be used as an input for operations like
+   * create and update as the value of a JSON field. Unlike `JsonValue`, this
+   * type allows read-only arrays and read-only object properties and disallows
+   * `null` at the top level.
+   *
+   * `null` cannot be used as the value of a JSON field because its meaning
+   * would be ambiguous. Use `Prisma.JsonNull` to store the JSON null value or
+   * `Prisma.DbNull` to clear the JSON value and set the field to the database
+   * NULL value instead.
+   *
+   * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-by-null-values
+   */
+  export type InputJsonValue = string | number | boolean | InputJsonObject | InputJsonArray
+
+  /**
+   * Helper for filtering JSON entries that have `null` on the database (empty on the db)
+   * 
+   * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
+   */
+  export const DbNull: 'DbNull'
+
+  /**
+   * Helper for filtering JSON entries that have JSON `null` values (not empty on the db)
+   * 
+   * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
+   */
+  export const JsonNull: 'JsonNull'
+
+  /**
+   * Helper for filtering JSON entries that are `Prisma.DbNull` or `Prisma.JsonNull`
+   * 
+   * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
+   */
+  export const AnyNull: 'AnyNull'
+
+  type SelectAndInclude = {
     select: any
     include: any
   }
@@ -769,7 +827,11 @@ export namespace Prisma {
    * XOR is needed to have a real mutually exclusive union type
    * https://stackoverflow.com/questions/42123407/does-typescript-support-mutually-exclusive-types
    */
-  type XOR<T, U> = (T | U) extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U;
+  type XOR<T, U> =
+    T extends object ?
+    U extends object ?
+      (Without<T, U> & U) | (Without<U, T> & T)
+    : U : T
 
 
   /**
@@ -1128,6 +1190,7 @@ export namespace Prisma {
     | 'queryRaw'
     | 'aggregate'
     | 'count'
+    | 'runCommandRaw'
 
   /**
    * These options are being passed in to the middleware as "params"
@@ -1159,6 +1222,380 @@ export namespace Prisma {
    */
 
 
+  /**
+   * Count Type ProfileCountOutputType
+   */
+
+
+  export type ProfileCountOutputType = {
+    sessions: number
+    tags: number
+    offers: number
+    purchases: number
+    invitations: number
+    redeemedInvitations: number
+    claimedInvitations: number
+    members: number
+    createdMemberships: number
+    payableInvoices: number
+    receivableInvoices: number
+    cancelledInvoices: number
+    safesVerifiedByPerson: number
+    safesVerifiedByOrganisation: number
+    safesRevokedByPerson: number
+  }
+
+  export type ProfileCountOutputTypeSelect = {
+    sessions?: boolean
+    tags?: boolean
+    offers?: boolean
+    purchases?: boolean
+    invitations?: boolean
+    redeemedInvitations?: boolean
+    claimedInvitations?: boolean
+    members?: boolean
+    createdMemberships?: boolean
+    payableInvoices?: boolean
+    receivableInvoices?: boolean
+    cancelledInvoices?: boolean
+    safesVerifiedByPerson?: boolean
+    safesVerifiedByOrganisation?: boolean
+    safesRevokedByPerson?: boolean
+  }
+
+  export type ProfileCountOutputTypeGetPayload<
+    S extends boolean | null | undefined | ProfileCountOutputTypeArgs,
+    U = keyof S
+      > = S extends true
+        ? ProfileCountOutputType
+    : S extends undefined
+    ? never
+    : S extends ProfileCountOutputTypeArgs
+    ?'include' extends U
+    ? ProfileCountOutputType 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+    P extends keyof ProfileCountOutputType ? ProfileCountOutputType[P] : never
+  } 
+    : ProfileCountOutputType
+  : ProfileCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * ProfileCountOutputType without action
+   */
+  export type ProfileCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the ProfileCountOutputType
+     * 
+    **/
+    select?: ProfileCountOutputTypeSelect | null
+  }
+
+
+
+  /**
+   * Count Type ChatMessageCountOutputType
+   */
+
+
+  export type ChatMessageCountOutputType = {
+    tags: number
+  }
+
+  export type ChatMessageCountOutputTypeSelect = {
+    tags?: boolean
+  }
+
+  export type ChatMessageCountOutputTypeGetPayload<
+    S extends boolean | null | undefined | ChatMessageCountOutputTypeArgs,
+    U = keyof S
+      > = S extends true
+        ? ChatMessageCountOutputType
+    : S extends undefined
+    ? never
+    : S extends ChatMessageCountOutputTypeArgs
+    ?'include' extends U
+    ? ChatMessageCountOutputType 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+    P extends keyof ChatMessageCountOutputType ? ChatMessageCountOutputType[P] : never
+  } 
+    : ChatMessageCountOutputType
+  : ChatMessageCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * ChatMessageCountOutputType without action
+   */
+  export type ChatMessageCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the ChatMessageCountOutputType
+     * 
+    **/
+    select?: ChatMessageCountOutputTypeSelect | null
+  }
+
+
+
+  /**
+   * Count Type OfferCountOutputType
+   */
+
+
+  export type OfferCountOutputType = {
+    purchaseLines: number
+    invoiceLines: number
+  }
+
+  export type OfferCountOutputTypeSelect = {
+    purchaseLines?: boolean
+    invoiceLines?: boolean
+  }
+
+  export type OfferCountOutputTypeGetPayload<
+    S extends boolean | null | undefined | OfferCountOutputTypeArgs,
+    U = keyof S
+      > = S extends true
+        ? OfferCountOutputType
+    : S extends undefined
+    ? never
+    : S extends OfferCountOutputTypeArgs
+    ?'include' extends U
+    ? OfferCountOutputType 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+    P extends keyof OfferCountOutputType ? OfferCountOutputType[P] : never
+  } 
+    : OfferCountOutputType
+  : OfferCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * OfferCountOutputType without action
+   */
+  export type OfferCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the OfferCountOutputType
+     * 
+    **/
+    select?: OfferCountOutputTypeSelect | null
+  }
+
+
+
+  /**
+   * Count Type PurchaseCountOutputType
+   */
+
+
+  export type PurchaseCountOutputType = {
+    lines: number
+    invoices: number
+  }
+
+  export type PurchaseCountOutputTypeSelect = {
+    lines?: boolean
+    invoices?: boolean
+  }
+
+  export type PurchaseCountOutputTypeGetPayload<
+    S extends boolean | null | undefined | PurchaseCountOutputTypeArgs,
+    U = keyof S
+      > = S extends true
+        ? PurchaseCountOutputType
+    : S extends undefined
+    ? never
+    : S extends PurchaseCountOutputTypeArgs
+    ?'include' extends U
+    ? PurchaseCountOutputType 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+    P extends keyof PurchaseCountOutputType ? PurchaseCountOutputType[P] : never
+  } 
+    : PurchaseCountOutputType
+  : PurchaseCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * PurchaseCountOutputType without action
+   */
+  export type PurchaseCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the PurchaseCountOutputType
+     * 
+    **/
+    select?: PurchaseCountOutputTypeSelect | null
+  }
+
+
+
+  /**
+   * Count Type InvoiceCountOutputType
+   */
+
+
+  export type InvoiceCountOutputType = {
+    lines: number
+  }
+
+  export type InvoiceCountOutputTypeSelect = {
+    lines?: boolean
+  }
+
+  export type InvoiceCountOutputTypeGetPayload<
+    S extends boolean | null | undefined | InvoiceCountOutputTypeArgs,
+    U = keyof S
+      > = S extends true
+        ? InvoiceCountOutputType
+    : S extends undefined
+    ? never
+    : S extends InvoiceCountOutputTypeArgs
+    ?'include' extends U
+    ? InvoiceCountOutputType 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+    P extends keyof InvoiceCountOutputType ? InvoiceCountOutputType[P] : never
+  } 
+    : InvoiceCountOutputType
+  : InvoiceCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * InvoiceCountOutputType without action
+   */
+  export type InvoiceCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the InvoiceCountOutputType
+     * 
+    **/
+    select?: InvoiceCountOutputTypeSelect | null
+  }
+
+
+
+  /**
+   * Count Type TagTypeCountOutputType
+   */
+
+
+  export type TagTypeCountOutputType = {
+    tags: number
+  }
+
+  export type TagTypeCountOutputTypeSelect = {
+    tags?: boolean
+  }
+
+  export type TagTypeCountOutputTypeGetPayload<
+    S extends boolean | null | undefined | TagTypeCountOutputTypeArgs,
+    U = keyof S
+      > = S extends true
+        ? TagTypeCountOutputType
+    : S extends undefined
+    ? never
+    : S extends TagTypeCountOutputTypeArgs
+    ?'include' extends U
+    ? TagTypeCountOutputType 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+    P extends keyof TagTypeCountOutputType ? TagTypeCountOutputType[P] : never
+  } 
+    : TagTypeCountOutputType
+  : TagTypeCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * TagTypeCountOutputType without action
+   */
+  export type TagTypeCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the TagTypeCountOutputType
+     * 
+    **/
+    select?: TagTypeCountOutputTypeSelect | null
+  }
+
+
+
+  /**
+   * Count Type TransactionCountOutputType
+   */
+
+
+  export type TransactionCountOutputType = {
+    tags: number
+  }
+
+  export type TransactionCountOutputTypeSelect = {
+    tags?: boolean
+  }
+
+  export type TransactionCountOutputTypeGetPayload<
+    S extends boolean | null | undefined | TransactionCountOutputTypeArgs,
+    U = keyof S
+      > = S extends true
+        ? TransactionCountOutputType
+    : S extends undefined
+    ? never
+    : S extends TransactionCountOutputTypeArgs
+    ?'include' extends U
+    ? TransactionCountOutputType 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+    P extends keyof TransactionCountOutputType ? TransactionCountOutputType[P] : never
+  } 
+    : TransactionCountOutputType
+  : TransactionCountOutputType
+
+
+
+
+  // Custom InputTypes
+
+  /**
+   * TransactionCountOutputType without action
+   */
+  export type TransactionCountOutputTypeArgs = {
+    /**
+     * Select specific fields to fetch from the TransactionCountOutputType
+     * 
+    **/
+    select?: TransactionCountOutputTypeSelect | null
+  }
+
+
 
   /**
    * Models
@@ -1171,15 +1608,10 @@ export namespace Prisma {
 
   export type AggregateSession = {
     _count: SessionCountAggregateOutputType | null
-    count: SessionCountAggregateOutputType | null
     _avg: SessionAvgAggregateOutputType | null
-    avg: SessionAvgAggregateOutputType | null
     _sum: SessionSumAggregateOutputType | null
-    sum: SessionSumAggregateOutputType | null
     _min: SessionMinAggregateOutputType | null
-    min: SessionMinAggregateOutputType | null
     _max: SessionMaxAggregateOutputType | null
-    max: SessionMaxAggregateOutputType | null
   }
 
   export type SessionAvgAggregateOutputType = {
@@ -1319,7 +1751,7 @@ export namespace Prisma {
      * Determine the order of Sessions to fetch.
      * 
     **/
-    orderBy?: Enumerable<SessionOrderByInput>
+    orderBy?: Enumerable<SessionOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -1348,19 +1780,11 @@ export namespace Prisma {
     **/
     _count?: true | SessionCountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | SessionCountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
     _avg?: SessionAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: SessionAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
@@ -1368,29 +1792,17 @@ export namespace Prisma {
     **/
     _sum?: SessionSumAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: SessionSumAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: SessionMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: SessionMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: SessionMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: SessionMaxAggregateInputType
   }
 
   export type GetSessionAggregateType<T extends SessionAggregateArgs> = {
@@ -1402,11 +1814,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type SessionGroupByArgs = {
     where?: SessionWhereInput
-    orderBy?: Enumerable<SessionOrderByInput>
+    orderBy?: Enumerable<SessionOrderByWithAggregationInput>
     by: Array<SessionScalarFieldEnum>
     having?: SessionScalarWhereWithAggregatesInput
     take?: number
@@ -1441,17 +1853,17 @@ export namespace Prisma {
     _max: SessionMaxAggregateOutputType | null
   }
 
-  type GetSessionGroupByPayload<T extends SessionGroupByArgs> = Promise<
+  type GetSessionGroupByPayload<T extends SessionGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<SessionGroupByOutputType, T['by']> & 
+      PickArray<SessionGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof SessionGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], SessionGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof SessionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SessionGroupByOutputType[P]>
             : GetScalarType<T[P], SessionGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
@@ -1487,16 +1899,13 @@ export namespace Prisma {
     : S extends SessionArgs | SessionFindManyArgs
     ?'include' extends U
     ? Session  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'profile'
-        ? ProfileGetPayload<S['include'][P]> | null : never
+    [P in TrueKeys<S['include']>]:
+        P extends 'profile' ? ProfileGetPayload<S['include'][P]> | null :  never
   } 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof Session ?Session [P]
-  : 
-          P extends 'profile'
-        ? ProfileGetPayload<S['select'][P]> | null : never
+    [P in TrueKeys<S['select']>]:
+        P extends 'profile' ? ProfileGetPayload<S['select'][P]> | null :  P extends keyof Session ? Session[P] : never
   } 
     : Session
   : Session
@@ -1810,13 +2219,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, SessionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSessionGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, SessionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSessionGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for Session.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__SessionClient<T> implements PrismaPromise<T> {
@@ -1920,7 +2329,7 @@ export namespace Prisma {
      * Determine the order of Sessions to fetch.
      * 
     **/
-    orderBy?: Enumerable<SessionOrderByInput>
+    orderBy?: Enumerable<SessionOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -1977,7 +2386,7 @@ export namespace Prisma {
      * Determine the order of Sessions to fetch.
      * 
     **/
-    orderBy?: Enumerable<SessionOrderByInput>
+    orderBy?: Enumerable<SessionOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -2029,6 +2438,10 @@ export namespace Prisma {
    * Session createMany
    */
   export type SessionCreateManyArgs = {
+    /**
+     * The data used to create many Sessions.
+     * 
+    **/
     data: Enumerable<SessionCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -2065,7 +2478,15 @@ export namespace Prisma {
    * Session updateMany
    */
   export type SessionUpdateManyArgs = {
+    /**
+     * The data used to update Sessions.
+     * 
+    **/
     data: XOR<SessionUpdateManyMutationInput, SessionUncheckedUpdateManyInput>
+    /**
+     * Filter which Sessions to update
+     * 
+    **/
     where?: SessionWhereInput
   }
 
@@ -2128,6 +2549,10 @@ export namespace Prisma {
    * Session deleteMany
    */
   export type SessionDeleteManyArgs = {
+    /**
+     * Filter which Sessions to delete
+     * 
+    **/
     where?: SessionWhereInput
   }
 
@@ -2157,15 +2582,10 @@ export namespace Prisma {
 
   export type AggregateInvitation = {
     _count: InvitationCountAggregateOutputType | null
-    count: InvitationCountAggregateOutputType | null
     _avg: InvitationAvgAggregateOutputType | null
-    avg: InvitationAvgAggregateOutputType | null
     _sum: InvitationSumAggregateOutputType | null
-    sum: InvitationSumAggregateOutputType | null
     _min: InvitationMinAggregateOutputType | null
-    min: InvitationMinAggregateOutputType | null
     _max: InvitationMaxAggregateOutputType | null
-    max: InvitationMaxAggregateOutputType | null
   }
 
   export type InvitationAvgAggregateOutputType = {
@@ -2313,7 +2733,7 @@ export namespace Prisma {
      * Determine the order of Invitations to fetch.
      * 
     **/
-    orderBy?: Enumerable<InvitationOrderByInput>
+    orderBy?: Enumerable<InvitationOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -2342,19 +2762,11 @@ export namespace Prisma {
     **/
     _count?: true | InvitationCountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | InvitationCountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
     _avg?: InvitationAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: InvitationAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
@@ -2362,29 +2774,17 @@ export namespace Prisma {
     **/
     _sum?: InvitationSumAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: InvitationSumAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: InvitationMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: InvitationMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: InvitationMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: InvitationMaxAggregateInputType
   }
 
   export type GetInvitationAggregateType<T extends InvitationAggregateArgs> = {
@@ -2396,11 +2796,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type InvitationGroupByArgs = {
     where?: InvitationWhereInput
-    orderBy?: Enumerable<InvitationOrderByInput>
+    orderBy?: Enumerable<InvitationOrderByWithAggregationInput>
     by: Array<InvitationScalarFieldEnum>
     having?: InvitationScalarWhereWithAggregatesInput
     take?: number
@@ -2435,17 +2835,17 @@ export namespace Prisma {
     _max: InvitationMaxAggregateOutputType | null
   }
 
-  type GetInvitationGroupByPayload<T extends InvitationGroupByArgs> = Promise<
+  type GetInvitationGroupByPayload<T extends InvitationGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<InvitationGroupByOutputType, T['by']> & 
+      PickArray<InvitationGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof InvitationGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], InvitationGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof InvitationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], InvitationGroupByOutputType[P]>
             : GetScalarType<T[P], InvitationGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
@@ -2485,24 +2885,17 @@ export namespace Prisma {
     : S extends InvitationArgs | InvitationFindManyArgs
     ?'include' extends U
     ? Invitation  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'createdBy'
-        ? ProfileGetPayload<S['include'][P]> :
-        P extends 'claimedBy'
-        ? ProfileGetPayload<S['include'][P]> | null :
-        P extends 'redeemedBy'
-        ? ProfileGetPayload<S['include'][P]> | null : never
+    [P in TrueKeys<S['include']>]:
+        P extends 'createdBy' ? ProfileGetPayload<S['include'][P]> :
+        P extends 'claimedBy' ? ProfileGetPayload<S['include'][P]> | null :
+        P extends 'redeemedBy' ? ProfileGetPayload<S['include'][P]> | null :  never
   } 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof Invitation ?Invitation [P]
-  : 
-          P extends 'createdBy'
-        ? ProfileGetPayload<S['select'][P]> :
-        P extends 'claimedBy'
-        ? ProfileGetPayload<S['select'][P]> | null :
-        P extends 'redeemedBy'
-        ? ProfileGetPayload<S['select'][P]> | null : never
+    [P in TrueKeys<S['select']>]:
+        P extends 'createdBy' ? ProfileGetPayload<S['select'][P]> :
+        P extends 'claimedBy' ? ProfileGetPayload<S['select'][P]> | null :
+        P extends 'redeemedBy' ? ProfileGetPayload<S['select'][P]> | null :  P extends keyof Invitation ? Invitation[P] : never
   } 
     : Invitation
   : Invitation
@@ -2816,13 +3209,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, InvitationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInvitationGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, InvitationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInvitationGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for Invitation.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__InvitationClient<T> implements PrismaPromise<T> {
@@ -2930,7 +3323,7 @@ export namespace Prisma {
      * Determine the order of Invitations to fetch.
      * 
     **/
-    orderBy?: Enumerable<InvitationOrderByInput>
+    orderBy?: Enumerable<InvitationOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -2987,7 +3380,7 @@ export namespace Prisma {
      * Determine the order of Invitations to fetch.
      * 
     **/
-    orderBy?: Enumerable<InvitationOrderByInput>
+    orderBy?: Enumerable<InvitationOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -3039,6 +3432,10 @@ export namespace Prisma {
    * Invitation createMany
    */
   export type InvitationCreateManyArgs = {
+    /**
+     * The data used to create many Invitations.
+     * 
+    **/
     data: Enumerable<InvitationCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -3075,7 +3472,15 @@ export namespace Prisma {
    * Invitation updateMany
    */
   export type InvitationUpdateManyArgs = {
+    /**
+     * The data used to update Invitations.
+     * 
+    **/
     data: XOR<InvitationUpdateManyMutationInput, InvitationUncheckedUpdateManyInput>
+    /**
+     * Filter which Invitations to update
+     * 
+    **/
     where?: InvitationWhereInput
   }
 
@@ -3138,6 +3543,10 @@ export namespace Prisma {
    * Invitation deleteMany
    */
   export type InvitationDeleteManyArgs = {
+    /**
+     * Filter which Invitations to delete
+     * 
+    **/
     where?: InvitationWhereInput
   }
 
@@ -3167,15 +3576,10 @@ export namespace Prisma {
 
   export type AggregateInvitationFundsEOA = {
     _count: InvitationFundsEOACountAggregateOutputType | null
-    count: InvitationFundsEOACountAggregateOutputType | null
     _avg: InvitationFundsEOAAvgAggregateOutputType | null
-    avg: InvitationFundsEOAAvgAggregateOutputType | null
     _sum: InvitationFundsEOASumAggregateOutputType | null
-    sum: InvitationFundsEOASumAggregateOutputType | null
     _min: InvitationFundsEOAMinAggregateOutputType | null
-    min: InvitationFundsEOAMinAggregateOutputType | null
     _max: InvitationFundsEOAMaxAggregateOutputType | null
-    max: InvitationFundsEOAMaxAggregateOutputType | null
   }
 
   export type InvitationFundsEOAAvgAggregateOutputType = {
@@ -3255,7 +3659,7 @@ export namespace Prisma {
      * Determine the order of InvitationFundsEOAS to fetch.
      * 
     **/
-    orderBy?: Enumerable<InvitationFundsEOAOrderByInput>
+    orderBy?: Enumerable<InvitationFundsEOAOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -3284,19 +3688,11 @@ export namespace Prisma {
     **/
     _count?: true | InvitationFundsEOACountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | InvitationFundsEOACountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
     _avg?: InvitationFundsEOAAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: InvitationFundsEOAAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
@@ -3304,29 +3700,17 @@ export namespace Prisma {
     **/
     _sum?: InvitationFundsEOASumAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: InvitationFundsEOASumAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: InvitationFundsEOAMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: InvitationFundsEOAMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: InvitationFundsEOAMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: InvitationFundsEOAMaxAggregateInputType
   }
 
   export type GetInvitationFundsEOAAggregateType<T extends InvitationFundsEOAAggregateArgs> = {
@@ -3338,11 +3722,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type InvitationFundsEOAGroupByArgs = {
     where?: InvitationFundsEOAWhereInput
-    orderBy?: Enumerable<InvitationFundsEOAOrderByInput>
+    orderBy?: Enumerable<InvitationFundsEOAOrderByWithAggregationInput>
     by: Array<InvitationFundsEOAScalarFieldEnum>
     having?: InvitationFundsEOAScalarWhereWithAggregatesInput
     take?: number
@@ -3367,17 +3751,17 @@ export namespace Prisma {
     _max: InvitationFundsEOAMaxAggregateOutputType | null
   }
 
-  type GetInvitationFundsEOAGroupByPayload<T extends InvitationFundsEOAGroupByArgs> = Promise<
+  type GetInvitationFundsEOAGroupByPayload<T extends InvitationFundsEOAGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<InvitationFundsEOAGroupByOutputType, T['by']> & 
+      PickArray<InvitationFundsEOAGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof InvitationFundsEOAGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], InvitationFundsEOAGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof InvitationFundsEOAGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], InvitationFundsEOAGroupByOutputType[P]>
             : GetScalarType<T[P], InvitationFundsEOAGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
@@ -3403,16 +3787,13 @@ export namespace Prisma {
     : S extends InvitationFundsEOAArgs | InvitationFundsEOAFindManyArgs
     ?'include' extends U
     ? InvitationFundsEOA  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'profile'
-        ? ProfileGetPayload<S['include'][P]> : never
+    [P in TrueKeys<S['include']>]:
+        P extends 'profile' ? ProfileGetPayload<S['include'][P]> :  never
   } 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof InvitationFundsEOA ?InvitationFundsEOA [P]
-  : 
-          P extends 'profile'
-        ? ProfileGetPayload<S['select'][P]> : never
+    [P in TrueKeys<S['select']>]:
+        P extends 'profile' ? ProfileGetPayload<S['select'][P]> :  P extends keyof InvitationFundsEOA ? InvitationFundsEOA[P] : never
   } 
     : InvitationFundsEOA
   : InvitationFundsEOA
@@ -3726,13 +4107,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, InvitationFundsEOAGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInvitationFundsEOAGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, InvitationFundsEOAGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInvitationFundsEOAGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for InvitationFundsEOA.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__InvitationFundsEOAClient<T> implements PrismaPromise<T> {
@@ -3836,7 +4217,7 @@ export namespace Prisma {
      * Determine the order of InvitationFundsEOAS to fetch.
      * 
     **/
-    orderBy?: Enumerable<InvitationFundsEOAOrderByInput>
+    orderBy?: Enumerable<InvitationFundsEOAOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -3893,7 +4274,7 @@ export namespace Prisma {
      * Determine the order of InvitationFundsEOAS to fetch.
      * 
     **/
-    orderBy?: Enumerable<InvitationFundsEOAOrderByInput>
+    orderBy?: Enumerable<InvitationFundsEOAOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -3945,6 +4326,10 @@ export namespace Prisma {
    * InvitationFundsEOA createMany
    */
   export type InvitationFundsEOACreateManyArgs = {
+    /**
+     * The data used to create many InvitationFundsEOAS.
+     * 
+    **/
     data: Enumerable<InvitationFundsEOACreateManyInput>
     skipDuplicates?: boolean
   }
@@ -3981,7 +4366,15 @@ export namespace Prisma {
    * InvitationFundsEOA updateMany
    */
   export type InvitationFundsEOAUpdateManyArgs = {
+    /**
+     * The data used to update InvitationFundsEOAS.
+     * 
+    **/
     data: XOR<InvitationFundsEOAUpdateManyMutationInput, InvitationFundsEOAUncheckedUpdateManyInput>
+    /**
+     * Filter which InvitationFundsEOAS to update
+     * 
+    **/
     where?: InvitationFundsEOAWhereInput
   }
 
@@ -4044,6 +4437,10 @@ export namespace Prisma {
    * InvitationFundsEOA deleteMany
    */
   export type InvitationFundsEOADeleteManyArgs = {
+    /**
+     * Filter which InvitationFundsEOAS to delete
+     * 
+    **/
     where?: InvitationFundsEOAWhereInput
   }
 
@@ -4073,15 +4470,10 @@ export namespace Prisma {
 
   export type AggregateVerifiedSafe = {
     _count: VerifiedSafeCountAggregateOutputType | null
-    count: VerifiedSafeCountAggregateOutputType | null
     _avg: VerifiedSafeAvgAggregateOutputType | null
-    avg: VerifiedSafeAvgAggregateOutputType | null
     _sum: VerifiedSafeSumAggregateOutputType | null
-    sum: VerifiedSafeSumAggregateOutputType | null
     _min: VerifiedSafeMinAggregateOutputType | null
-    min: VerifiedSafeMinAggregateOutputType | null
     _max: VerifiedSafeMaxAggregateOutputType | null
-    max: VerifiedSafeMaxAggregateOutputType | null
   }
 
   export type VerifiedSafeAvgAggregateOutputType = {
@@ -4229,7 +4621,7 @@ export namespace Prisma {
      * Determine the order of VerifiedSafes to fetch.
      * 
     **/
-    orderBy?: Enumerable<VerifiedSafeOrderByInput>
+    orderBy?: Enumerable<VerifiedSafeOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -4258,19 +4650,11 @@ export namespace Prisma {
     **/
     _count?: true | VerifiedSafeCountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | VerifiedSafeCountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
     _avg?: VerifiedSafeAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: VerifiedSafeAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
@@ -4278,29 +4662,17 @@ export namespace Prisma {
     **/
     _sum?: VerifiedSafeSumAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: VerifiedSafeSumAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: VerifiedSafeMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: VerifiedSafeMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: VerifiedSafeMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: VerifiedSafeMaxAggregateInputType
   }
 
   export type GetVerifiedSafeAggregateType<T extends VerifiedSafeAggregateArgs> = {
@@ -4312,11 +4684,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type VerifiedSafeGroupByArgs = {
     where?: VerifiedSafeWhereInput
-    orderBy?: Enumerable<VerifiedSafeOrderByInput>
+    orderBy?: Enumerable<VerifiedSafeOrderByWithAggregationInput>
     by: Array<VerifiedSafeScalarFieldEnum>
     having?: VerifiedSafeScalarWhereWithAggregatesInput
     take?: number
@@ -4351,17 +4723,17 @@ export namespace Prisma {
     _max: VerifiedSafeMaxAggregateOutputType | null
   }
 
-  type GetVerifiedSafeGroupByPayload<T extends VerifiedSafeGroupByArgs> = Promise<
+  type GetVerifiedSafeGroupByPayload<T extends VerifiedSafeGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<VerifiedSafeGroupByOutputType, T['by']> & 
+      PickArray<VerifiedSafeGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof VerifiedSafeGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], VerifiedSafeGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof VerifiedSafeGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], VerifiedSafeGroupByOutputType[P]>
             : GetScalarType<T[P], VerifiedSafeGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
@@ -4407,36 +4779,23 @@ export namespace Prisma {
     : S extends VerifiedSafeArgs | VerifiedSafeFindManyArgs
     ?'include' extends U
     ? VerifiedSafe  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'createdBy'
-        ? ProfileGetPayload<S['include'][P]> :
-        P extends 'createdByOrganisation'
-        ? ProfileGetPayload<S['include'][P]> :
-        P extends 'revokedBy'
-        ? ProfileGetPayload<S['include'][P]> | null :
-        P extends 'inviteeRewardTransaction'
-        ? TransactionGetPayload<S['include'][P]> | null :
-        P extends 'inviterRewardTransaction'
-        ? TransactionGetPayload<S['include'][P]> | null :
-        P extends 'swapFundingTransaction'
-        ? TransactionGetPayload<S['include'][P]> | null : never
+    [P in TrueKeys<S['include']>]:
+        P extends 'createdBy' ? ProfileGetPayload<S['include'][P]> :
+        P extends 'createdByOrganisation' ? ProfileGetPayload<S['include'][P]> :
+        P extends 'revokedBy' ? ProfileGetPayload<S['include'][P]> | null :
+        P extends 'inviteeRewardTransaction' ? TransactionGetPayload<S['include'][P]> | null :
+        P extends 'inviterRewardTransaction' ? TransactionGetPayload<S['include'][P]> | null :
+        P extends 'swapFundingTransaction' ? TransactionGetPayload<S['include'][P]> | null :  never
   } 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof VerifiedSafe ?VerifiedSafe [P]
-  : 
-          P extends 'createdBy'
-        ? ProfileGetPayload<S['select'][P]> :
-        P extends 'createdByOrganisation'
-        ? ProfileGetPayload<S['select'][P]> :
-        P extends 'revokedBy'
-        ? ProfileGetPayload<S['select'][P]> | null :
-        P extends 'inviteeRewardTransaction'
-        ? TransactionGetPayload<S['select'][P]> | null :
-        P extends 'inviterRewardTransaction'
-        ? TransactionGetPayload<S['select'][P]> | null :
-        P extends 'swapFundingTransaction'
-        ? TransactionGetPayload<S['select'][P]> | null : never
+    [P in TrueKeys<S['select']>]:
+        P extends 'createdBy' ? ProfileGetPayload<S['select'][P]> :
+        P extends 'createdByOrganisation' ? ProfileGetPayload<S['select'][P]> :
+        P extends 'revokedBy' ? ProfileGetPayload<S['select'][P]> | null :
+        P extends 'inviteeRewardTransaction' ? TransactionGetPayload<S['select'][P]> | null :
+        P extends 'inviterRewardTransaction' ? TransactionGetPayload<S['select'][P]> | null :
+        P extends 'swapFundingTransaction' ? TransactionGetPayload<S['select'][P]> | null :  P extends keyof VerifiedSafe ? VerifiedSafe[P] : never
   } 
     : VerifiedSafe
   : VerifiedSafe
@@ -4750,13 +5109,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, VerifiedSafeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetVerifiedSafeGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, VerifiedSafeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetVerifiedSafeGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for VerifiedSafe.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__VerifiedSafeClient<T> implements PrismaPromise<T> {
@@ -4870,7 +5229,7 @@ export namespace Prisma {
      * Determine the order of VerifiedSafes to fetch.
      * 
     **/
-    orderBy?: Enumerable<VerifiedSafeOrderByInput>
+    orderBy?: Enumerable<VerifiedSafeOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -4927,7 +5286,7 @@ export namespace Prisma {
      * Determine the order of VerifiedSafes to fetch.
      * 
     **/
-    orderBy?: Enumerable<VerifiedSafeOrderByInput>
+    orderBy?: Enumerable<VerifiedSafeOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -4979,6 +5338,10 @@ export namespace Prisma {
    * VerifiedSafe createMany
    */
   export type VerifiedSafeCreateManyArgs = {
+    /**
+     * The data used to create many VerifiedSafes.
+     * 
+    **/
     data: Enumerable<VerifiedSafeCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -5015,7 +5378,15 @@ export namespace Prisma {
    * VerifiedSafe updateMany
    */
   export type VerifiedSafeUpdateManyArgs = {
+    /**
+     * The data used to update VerifiedSafes.
+     * 
+    **/
     data: XOR<VerifiedSafeUpdateManyMutationInput, VerifiedSafeUncheckedUpdateManyInput>
+    /**
+     * Filter which VerifiedSafes to update
+     * 
+    **/
     where?: VerifiedSafeWhereInput
   }
 
@@ -5078,6 +5449,10 @@ export namespace Prisma {
    * VerifiedSafe deleteMany
    */
   export type VerifiedSafeDeleteManyArgs = {
+    /**
+     * Filter which VerifiedSafes to delete
+     * 
+    **/
     where?: VerifiedSafeWhereInput
   }
 
@@ -5107,15 +5482,10 @@ export namespace Prisma {
 
   export type AggregateProfile = {
     _count: ProfileCountAggregateOutputType | null
-    count: ProfileCountAggregateOutputType | null
     _avg: ProfileAvgAggregateOutputType | null
-    avg: ProfileAvgAggregateOutputType | null
     _sum: ProfileSumAggregateOutputType | null
-    sum: ProfileSumAggregateOutputType | null
     _min: ProfileMinAggregateOutputType | null
-    min: ProfileMinAggregateOutputType | null
     _max: ProfileMaxAggregateOutputType | null
-    max: ProfileMaxAggregateOutputType | null
   }
 
   export type ProfileAvgAggregateOutputType = {
@@ -5347,7 +5717,7 @@ export namespace Prisma {
      * Determine the order of Profiles to fetch.
      * 
     **/
-    orderBy?: Enumerable<ProfileOrderByInput>
+    orderBy?: Enumerable<ProfileOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -5376,19 +5746,11 @@ export namespace Prisma {
     **/
     _count?: true | ProfileCountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | ProfileCountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
     _avg?: ProfileAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: ProfileAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
@@ -5396,29 +5758,17 @@ export namespace Prisma {
     **/
     _sum?: ProfileSumAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: ProfileSumAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: ProfileMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: ProfileMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: ProfileMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: ProfileMaxAggregateInputType
   }
 
   export type GetProfileAggregateType<T extends ProfileAggregateArgs> = {
@@ -5430,11 +5780,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type ProfileGroupByArgs = {
     where?: ProfileWhereInput
-    orderBy?: Enumerable<ProfileOrderByInput>
+    orderBy?: Enumerable<ProfileOrderByWithAggregationInput>
     by: Array<ProfileScalarFieldEnum>
     having?: ProfileScalarWhereWithAggregatesInput
     take?: number
@@ -5483,17 +5833,17 @@ export namespace Prisma {
     _max: ProfileMaxAggregateOutputType | null
   }
 
-  type GetProfileGroupByPayload<T extends ProfileGroupByArgs> = Promise<
+  type GetProfileGroupByPayload<T extends ProfileGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<ProfileGroupByOutputType, T['by']> & 
+      PickArray<ProfileGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof ProfileGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], ProfileGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof ProfileGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ProfileGroupByOutputType[P]>
             : GetScalarType<T[P], ProfileGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
@@ -5542,6 +5892,7 @@ export namespace Prisma {
     safesVerifiedByPerson?: boolean | VerifiedSafeFindManyArgs
     safesVerifiedByOrganisation?: boolean | VerifiedSafeFindManyArgs
     safesRevokedByPerson?: boolean | VerifiedSafeFindManyArgs
+    _count?: boolean | ProfileCountOutputTypeArgs
   }
 
   export type ProfileInclude = {
@@ -5561,6 +5912,7 @@ export namespace Prisma {
     safesVerifiedByPerson?: boolean | VerifiedSafeFindManyArgs
     safesVerifiedByOrganisation?: boolean | VerifiedSafeFindManyArgs
     safesRevokedByPerson?: boolean | VerifiedSafeFindManyArgs
+    _count?: boolean | ProfileCountOutputTypeArgs
   }
 
   export type ProfileGetPayload<
@@ -5573,76 +5925,45 @@ export namespace Prisma {
     : S extends ProfileArgs | ProfileFindManyArgs
     ?'include' extends U
     ? Profile  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'sessions'
-        ? Array < SessionGetPayload<S['include'][P]>>  :
-        P extends 'tags'
-        ? Array < TagGetPayload<S['include'][P]>>  :
-        P extends 'offers'
-        ? Array < OfferGetPayload<S['include'][P]>>  :
-        P extends 'purchases'
-        ? Array < PurchaseGetPayload<S['include'][P]>>  :
-        P extends 'invitations'
-        ? Array < InvitationGetPayload<S['include'][P]>>  :
-        P extends 'invitationFunds'
-        ? InvitationFundsEOAGetPayload<S['include'][P]> | null :
-        P extends 'redeemedInvitations'
-        ? Array < InvitationGetPayload<S['include'][P]>>  :
-        P extends 'claimedInvitations'
-        ? Array < InvitationGetPayload<S['include'][P]>>  :
-        P extends 'members'
-        ? Array < MembershipGetPayload<S['include'][P]>>  :
-        P extends 'createdMemberships'
-        ? Array < MembershipGetPayload<S['include'][P]>>  :
-        P extends 'payableInvoices'
-        ? Array < InvoiceGetPayload<S['include'][P]>>  :
-        P extends 'receivableInvoices'
-        ? Array < InvoiceGetPayload<S['include'][P]>>  :
-        P extends 'cancelledInvoices'
-        ? Array < InvoiceGetPayload<S['include'][P]>>  :
-        P extends 'safesVerifiedByPerson'
-        ? Array < VerifiedSafeGetPayload<S['include'][P]>>  :
-        P extends 'safesVerifiedByOrganisation'
-        ? Array < VerifiedSafeGetPayload<S['include'][P]>>  :
-        P extends 'safesRevokedByPerson'
-        ? Array < VerifiedSafeGetPayload<S['include'][P]>>  : never
+    [P in TrueKeys<S['include']>]:
+        P extends 'sessions' ? Array < SessionGetPayload<S['include'][P]>>  :
+        P extends 'tags' ? Array < TagGetPayload<S['include'][P]>>  :
+        P extends 'offers' ? Array < OfferGetPayload<S['include'][P]>>  :
+        P extends 'purchases' ? Array < PurchaseGetPayload<S['include'][P]>>  :
+        P extends 'invitations' ? Array < InvitationGetPayload<S['include'][P]>>  :
+        P extends 'invitationFunds' ? InvitationFundsEOAGetPayload<S['include'][P]> | null :
+        P extends 'redeemedInvitations' ? Array < InvitationGetPayload<S['include'][P]>>  :
+        P extends 'claimedInvitations' ? Array < InvitationGetPayload<S['include'][P]>>  :
+        P extends 'members' ? Array < MembershipGetPayload<S['include'][P]>>  :
+        P extends 'createdMemberships' ? Array < MembershipGetPayload<S['include'][P]>>  :
+        P extends 'payableInvoices' ? Array < InvoiceGetPayload<S['include'][P]>>  :
+        P extends 'receivableInvoices' ? Array < InvoiceGetPayload<S['include'][P]>>  :
+        P extends 'cancelledInvoices' ? Array < InvoiceGetPayload<S['include'][P]>>  :
+        P extends 'safesVerifiedByPerson' ? Array < VerifiedSafeGetPayload<S['include'][P]>>  :
+        P extends 'safesVerifiedByOrganisation' ? Array < VerifiedSafeGetPayload<S['include'][P]>>  :
+        P extends 'safesRevokedByPerson' ? Array < VerifiedSafeGetPayload<S['include'][P]>>  :
+        P extends '_count' ? ProfileCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof Profile ?Profile [P]
-  : 
-          P extends 'sessions'
-        ? Array < SessionGetPayload<S['select'][P]>>  :
-        P extends 'tags'
-        ? Array < TagGetPayload<S['select'][P]>>  :
-        P extends 'offers'
-        ? Array < OfferGetPayload<S['select'][P]>>  :
-        P extends 'purchases'
-        ? Array < PurchaseGetPayload<S['select'][P]>>  :
-        P extends 'invitations'
-        ? Array < InvitationGetPayload<S['select'][P]>>  :
-        P extends 'invitationFunds'
-        ? InvitationFundsEOAGetPayload<S['select'][P]> | null :
-        P extends 'redeemedInvitations'
-        ? Array < InvitationGetPayload<S['select'][P]>>  :
-        P extends 'claimedInvitations'
-        ? Array < InvitationGetPayload<S['select'][P]>>  :
-        P extends 'members'
-        ? Array < MembershipGetPayload<S['select'][P]>>  :
-        P extends 'createdMemberships'
-        ? Array < MembershipGetPayload<S['select'][P]>>  :
-        P extends 'payableInvoices'
-        ? Array < InvoiceGetPayload<S['select'][P]>>  :
-        P extends 'receivableInvoices'
-        ? Array < InvoiceGetPayload<S['select'][P]>>  :
-        P extends 'cancelledInvoices'
-        ? Array < InvoiceGetPayload<S['select'][P]>>  :
-        P extends 'safesVerifiedByPerson'
-        ? Array < VerifiedSafeGetPayload<S['select'][P]>>  :
-        P extends 'safesVerifiedByOrganisation'
-        ? Array < VerifiedSafeGetPayload<S['select'][P]>>  :
-        P extends 'safesRevokedByPerson'
-        ? Array < VerifiedSafeGetPayload<S['select'][P]>>  : never
+    [P in TrueKeys<S['select']>]:
+        P extends 'sessions' ? Array < SessionGetPayload<S['select'][P]>>  :
+        P extends 'tags' ? Array < TagGetPayload<S['select'][P]>>  :
+        P extends 'offers' ? Array < OfferGetPayload<S['select'][P]>>  :
+        P extends 'purchases' ? Array < PurchaseGetPayload<S['select'][P]>>  :
+        P extends 'invitations' ? Array < InvitationGetPayload<S['select'][P]>>  :
+        P extends 'invitationFunds' ? InvitationFundsEOAGetPayload<S['select'][P]> | null :
+        P extends 'redeemedInvitations' ? Array < InvitationGetPayload<S['select'][P]>>  :
+        P extends 'claimedInvitations' ? Array < InvitationGetPayload<S['select'][P]>>  :
+        P extends 'members' ? Array < MembershipGetPayload<S['select'][P]>>  :
+        P extends 'createdMemberships' ? Array < MembershipGetPayload<S['select'][P]>>  :
+        P extends 'payableInvoices' ? Array < InvoiceGetPayload<S['select'][P]>>  :
+        P extends 'receivableInvoices' ? Array < InvoiceGetPayload<S['select'][P]>>  :
+        P extends 'cancelledInvoices' ? Array < InvoiceGetPayload<S['select'][P]>>  :
+        P extends 'safesVerifiedByPerson' ? Array < VerifiedSafeGetPayload<S['select'][P]>>  :
+        P extends 'safesVerifiedByOrganisation' ? Array < VerifiedSafeGetPayload<S['select'][P]>>  :
+        P extends 'safesRevokedByPerson' ? Array < VerifiedSafeGetPayload<S['select'][P]>>  :
+        P extends '_count' ? ProfileCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Profile ? Profile[P] : never
   } 
     : Profile
   : Profile
@@ -5956,13 +6277,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, ProfileGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProfileGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, ProfileGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProfileGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for Profile.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__ProfileClient<T> implements PrismaPromise<T> {
@@ -6096,7 +6417,7 @@ export namespace Prisma {
      * Determine the order of Profiles to fetch.
      * 
     **/
-    orderBy?: Enumerable<ProfileOrderByInput>
+    orderBy?: Enumerable<ProfileOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -6153,7 +6474,7 @@ export namespace Prisma {
      * Determine the order of Profiles to fetch.
      * 
     **/
-    orderBy?: Enumerable<ProfileOrderByInput>
+    orderBy?: Enumerable<ProfileOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -6205,6 +6526,10 @@ export namespace Prisma {
    * Profile createMany
    */
   export type ProfileCreateManyArgs = {
+    /**
+     * The data used to create many Profiles.
+     * 
+    **/
     data: Enumerable<ProfileCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -6241,7 +6566,15 @@ export namespace Prisma {
    * Profile updateMany
    */
   export type ProfileUpdateManyArgs = {
+    /**
+     * The data used to update Profiles.
+     * 
+    **/
     data: XOR<ProfileUpdateManyMutationInput, ProfileUncheckedUpdateManyInput>
+    /**
+     * Filter which Profiles to update
+     * 
+    **/
     where?: ProfileWhereInput
   }
 
@@ -6304,6 +6637,10 @@ export namespace Prisma {
    * Profile deleteMany
    */
   export type ProfileDeleteManyArgs = {
+    /**
+     * Filter which Profiles to delete
+     * 
+    **/
     where?: ProfileWhereInput
   }
 
@@ -6333,11 +6670,8 @@ export namespace Prisma {
 
   export type AggregateExternalProfiles = {
     _count: ExternalProfilesCountAggregateOutputType | null
-    count: ExternalProfilesCountAggregateOutputType | null
     _min: ExternalProfilesMinAggregateOutputType | null
-    min: ExternalProfilesMinAggregateOutputType | null
     _max: ExternalProfilesMaxAggregateOutputType | null
-    max: ExternalProfilesMaxAggregateOutputType | null
   }
 
   export type ExternalProfilesMinAggregateOutputType = {
@@ -6391,7 +6725,7 @@ export namespace Prisma {
      * Determine the order of ExternalProfiles to fetch.
      * 
     **/
-    orderBy?: Enumerable<ExternalProfilesOrderByInput>
+    orderBy?: Enumerable<ExternalProfilesOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -6420,29 +6754,17 @@ export namespace Prisma {
     **/
     _count?: true | ExternalProfilesCountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | ExternalProfilesCountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: ExternalProfilesMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: ExternalProfilesMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: ExternalProfilesMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: ExternalProfilesMaxAggregateInputType
   }
 
   export type GetExternalProfilesAggregateType<T extends ExternalProfilesAggregateArgs> = {
@@ -6454,11 +6776,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type ExternalProfilesGroupByArgs = {
     where?: ExternalProfilesWhereInput
-    orderBy?: Enumerable<ExternalProfilesOrderByInput>
+    orderBy?: Enumerable<ExternalProfilesOrderByWithAggregationInput>
     by: Array<ExternalProfilesScalarFieldEnum>
     having?: ExternalProfilesScalarWhereWithAggregatesInput
     take?: number
@@ -6478,17 +6800,17 @@ export namespace Prisma {
     _max: ExternalProfilesMaxAggregateOutputType | null
   }
 
-  type GetExternalProfilesGroupByPayload<T extends ExternalProfilesGroupByArgs> = Promise<
+  type GetExternalProfilesGroupByPayload<T extends ExternalProfilesGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<ExternalProfilesGroupByOutputType, T['by']> & 
+      PickArray<ExternalProfilesGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof ExternalProfilesGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], ExternalProfilesGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof ExternalProfilesGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ExternalProfilesGroupByOutputType[P]>
             : GetScalarType<T[P], ExternalProfilesGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
@@ -6510,9 +6832,8 @@ export namespace Prisma {
     ? ExternalProfiles 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof ExternalProfiles ?ExternalProfiles [P]
-  : 
-     never
+    [P in TrueKeys<S['select']>]:
+    P extends keyof ExternalProfiles ? ExternalProfiles[P] : never
   } 
     : ExternalProfiles
   : ExternalProfiles
@@ -6826,13 +7147,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, ExternalProfilesGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetExternalProfilesGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, ExternalProfilesGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetExternalProfilesGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for ExternalProfiles.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__ExternalProfilesClient<T> implements PrismaPromise<T> {
@@ -6925,7 +7246,7 @@ export namespace Prisma {
      * Determine the order of ExternalProfiles to fetch.
      * 
     **/
-    orderBy?: Enumerable<ExternalProfilesOrderByInput>
+    orderBy?: Enumerable<ExternalProfilesOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -6977,7 +7298,7 @@ export namespace Prisma {
      * Determine the order of ExternalProfiles to fetch.
      * 
     **/
-    orderBy?: Enumerable<ExternalProfilesOrderByInput>
+    orderBy?: Enumerable<ExternalProfilesOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -7024,6 +7345,10 @@ export namespace Prisma {
    * ExternalProfiles createMany
    */
   export type ExternalProfilesCreateManyArgs = {
+    /**
+     * The data used to create many ExternalProfiles.
+     * 
+    **/
     data: Enumerable<ExternalProfilesCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -7055,7 +7380,15 @@ export namespace Prisma {
    * ExternalProfiles updateMany
    */
   export type ExternalProfilesUpdateManyArgs = {
+    /**
+     * The data used to update ExternalProfiles.
+     * 
+    **/
     data: XOR<ExternalProfilesUpdateManyMutationInput, ExternalProfilesUncheckedUpdateManyInput>
+    /**
+     * Filter which ExternalProfiles to update
+     * 
+    **/
     where?: ExternalProfilesWhereInput
   }
 
@@ -7108,6 +7441,10 @@ export namespace Prisma {
    * ExternalProfiles deleteMany
    */
   export type ExternalProfilesDeleteManyArgs = {
+    /**
+     * Filter which ExternalProfiles to delete
+     * 
+    **/
     where?: ExternalProfilesWhereInput
   }
 
@@ -7132,15 +7469,10 @@ export namespace Prisma {
 
   export type AggregateMembership = {
     _count: MembershipCountAggregateOutputType | null
-    count: MembershipCountAggregateOutputType | null
     _avg: MembershipAvgAggregateOutputType | null
-    avg: MembershipAvgAggregateOutputType | null
     _sum: MembershipSumAggregateOutputType | null
-    sum: MembershipSumAggregateOutputType | null
     _min: MembershipMinAggregateOutputType | null
-    min: MembershipMinAggregateOutputType | null
     _max: MembershipMaxAggregateOutputType | null
-    max: MembershipMaxAggregateOutputType | null
   }
 
   export type MembershipAvgAggregateOutputType = {
@@ -7254,7 +7586,7 @@ export namespace Prisma {
      * Determine the order of Memberships to fetch.
      * 
     **/
-    orderBy?: Enumerable<MembershipOrderByInput>
+    orderBy?: Enumerable<MembershipOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -7283,19 +7615,11 @@ export namespace Prisma {
     **/
     _count?: true | MembershipCountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | MembershipCountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
     _avg?: MembershipAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: MembershipAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
@@ -7303,29 +7627,17 @@ export namespace Prisma {
     **/
     _sum?: MembershipSumAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: MembershipSumAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: MembershipMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: MembershipMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: MembershipMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: MembershipMaxAggregateInputType
   }
 
   export type GetMembershipAggregateType<T extends MembershipAggregateArgs> = {
@@ -7337,11 +7649,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type MembershipGroupByArgs = {
     where?: MembershipWhereInput
-    orderBy?: Enumerable<MembershipOrderByInput>
+    orderBy?: Enumerable<MembershipOrderByWithAggregationInput>
     by: Array<MembershipScalarFieldEnum>
     having?: MembershipScalarWhereWithAggregatesInput
     take?: number
@@ -7371,17 +7683,17 @@ export namespace Prisma {
     _max: MembershipMaxAggregateOutputType | null
   }
 
-  type GetMembershipGroupByPayload<T extends MembershipGroupByArgs> = Promise<
+  type GetMembershipGroupByPayload<T extends MembershipGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<MembershipGroupByOutputType, T['by']> & 
+      PickArray<MembershipGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof MembershipGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], MembershipGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof MembershipGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MembershipGroupByOutputType[P]>
             : GetScalarType<T[P], MembershipGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
@@ -7414,20 +7726,15 @@ export namespace Prisma {
     : S extends MembershipArgs | MembershipFindManyArgs
     ?'include' extends U
     ? Membership  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'createdBy'
-        ? ProfileGetPayload<S['include'][P]> :
-        P extends 'memberAt'
-        ? ProfileGetPayload<S['include'][P]> : never
+    [P in TrueKeys<S['include']>]:
+        P extends 'createdBy' ? ProfileGetPayload<S['include'][P]> :
+        P extends 'memberAt' ? ProfileGetPayload<S['include'][P]> :  never
   } 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof Membership ?Membership [P]
-  : 
-          P extends 'createdBy'
-        ? ProfileGetPayload<S['select'][P]> :
-        P extends 'memberAt'
-        ? ProfileGetPayload<S['select'][P]> : never
+    [P in TrueKeys<S['select']>]:
+        P extends 'createdBy' ? ProfileGetPayload<S['select'][P]> :
+        P extends 'memberAt' ? ProfileGetPayload<S['select'][P]> :  P extends keyof Membership ? Membership[P] : never
   } 
     : Membership
   : Membership
@@ -7741,13 +8048,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, MembershipGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMembershipGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, MembershipGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMembershipGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for Membership.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__MembershipClient<T> implements PrismaPromise<T> {
@@ -7853,7 +8160,7 @@ export namespace Prisma {
      * Determine the order of Memberships to fetch.
      * 
     **/
-    orderBy?: Enumerable<MembershipOrderByInput>
+    orderBy?: Enumerable<MembershipOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -7910,7 +8217,7 @@ export namespace Prisma {
      * Determine the order of Memberships to fetch.
      * 
     **/
-    orderBy?: Enumerable<MembershipOrderByInput>
+    orderBy?: Enumerable<MembershipOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -7962,6 +8269,10 @@ export namespace Prisma {
    * Membership createMany
    */
   export type MembershipCreateManyArgs = {
+    /**
+     * The data used to create many Memberships.
+     * 
+    **/
     data: Enumerable<MembershipCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -7998,7 +8309,15 @@ export namespace Prisma {
    * Membership updateMany
    */
   export type MembershipUpdateManyArgs = {
+    /**
+     * The data used to update Memberships.
+     * 
+    **/
     data: XOR<MembershipUpdateManyMutationInput, MembershipUncheckedUpdateManyInput>
+    /**
+     * Filter which Memberships to update
+     * 
+    **/
     where?: MembershipWhereInput
   }
 
@@ -8061,6 +8380,10 @@ export namespace Prisma {
    * Membership deleteMany
    */
   export type MembershipDeleteManyArgs = {
+    /**
+     * Filter which Memberships to delete
+     * 
+    **/
     where?: MembershipWhereInput
   }
 
@@ -8090,15 +8413,10 @@ export namespace Prisma {
 
   export type AggregateChatMessage = {
     _count: ChatMessageCountAggregateOutputType | null
-    count: ChatMessageCountAggregateOutputType | null
     _avg: ChatMessageAvgAggregateOutputType | null
-    avg: ChatMessageAvgAggregateOutputType | null
     _sum: ChatMessageSumAggregateOutputType | null
-    sum: ChatMessageSumAggregateOutputType | null
     _min: ChatMessageMinAggregateOutputType | null
-    min: ChatMessageMinAggregateOutputType | null
     _max: ChatMessageMaxAggregateOutputType | null
-    max: ChatMessageMaxAggregateOutputType | null
   }
 
   export type ChatMessageAvgAggregateOutputType = {
@@ -8186,7 +8504,7 @@ export namespace Prisma {
      * Determine the order of ChatMessages to fetch.
      * 
     **/
-    orderBy?: Enumerable<ChatMessageOrderByInput>
+    orderBy?: Enumerable<ChatMessageOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -8215,19 +8533,11 @@ export namespace Prisma {
     **/
     _count?: true | ChatMessageCountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | ChatMessageCountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
     _avg?: ChatMessageAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: ChatMessageAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
@@ -8235,29 +8545,17 @@ export namespace Prisma {
     **/
     _sum?: ChatMessageSumAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: ChatMessageSumAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: ChatMessageMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: ChatMessageMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: ChatMessageMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: ChatMessageMaxAggregateInputType
   }
 
   export type GetChatMessageAggregateType<T extends ChatMessageAggregateArgs> = {
@@ -8269,11 +8567,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type ChatMessageGroupByArgs = {
     where?: ChatMessageWhereInput
-    orderBy?: Enumerable<ChatMessageOrderByInput>
+    orderBy?: Enumerable<ChatMessageOrderByWithAggregationInput>
     by: Array<ChatMessageScalarFieldEnum>
     having?: ChatMessageScalarWhereWithAggregatesInput
     take?: number
@@ -8300,17 +8598,17 @@ export namespace Prisma {
     _max: ChatMessageMaxAggregateOutputType | null
   }
 
-  type GetChatMessageGroupByPayload<T extends ChatMessageGroupByArgs> = Promise<
+  type GetChatMessageGroupByPayload<T extends ChatMessageGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<ChatMessageGroupByOutputType, T['by']> & 
+      PickArray<ChatMessageGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof ChatMessageGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], ChatMessageGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof ChatMessageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ChatMessageGroupByOutputType[P]>
             : GetScalarType<T[P], ChatMessageGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
@@ -8322,10 +8620,12 @@ export namespace Prisma {
     to?: boolean
     text?: boolean
     tags?: boolean | TagFindManyArgs
+    _count?: boolean | ChatMessageCountOutputTypeArgs
   }
 
   export type ChatMessageInclude = {
     tags?: boolean | TagFindManyArgs
+    _count?: boolean | ChatMessageCountOutputTypeArgs
   }
 
   export type ChatMessageGetPayload<
@@ -8338,16 +8638,15 @@ export namespace Prisma {
     : S extends ChatMessageArgs | ChatMessageFindManyArgs
     ?'include' extends U
     ? ChatMessage  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'tags'
-        ? Array < TagGetPayload<S['include'][P]>>  : never
+    [P in TrueKeys<S['include']>]:
+        P extends 'tags' ? Array < TagGetPayload<S['include'][P]>>  :
+        P extends '_count' ? ChatMessageCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof ChatMessage ?ChatMessage [P]
-  : 
-          P extends 'tags'
-        ? Array < TagGetPayload<S['select'][P]>>  : never
+    [P in TrueKeys<S['select']>]:
+        P extends 'tags' ? Array < TagGetPayload<S['select'][P]>>  :
+        P extends '_count' ? ChatMessageCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof ChatMessage ? ChatMessage[P] : never
   } 
     : ChatMessage
   : ChatMessage
@@ -8661,13 +8960,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, ChatMessageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetChatMessageGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, ChatMessageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetChatMessageGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for ChatMessage.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__ChatMessageClient<T> implements PrismaPromise<T> {
@@ -8771,7 +9070,7 @@ export namespace Prisma {
      * Determine the order of ChatMessages to fetch.
      * 
     **/
-    orderBy?: Enumerable<ChatMessageOrderByInput>
+    orderBy?: Enumerable<ChatMessageOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -8828,7 +9127,7 @@ export namespace Prisma {
      * Determine the order of ChatMessages to fetch.
      * 
     **/
-    orderBy?: Enumerable<ChatMessageOrderByInput>
+    orderBy?: Enumerable<ChatMessageOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -8880,6 +9179,10 @@ export namespace Prisma {
    * ChatMessage createMany
    */
   export type ChatMessageCreateManyArgs = {
+    /**
+     * The data used to create many ChatMessages.
+     * 
+    **/
     data: Enumerable<ChatMessageCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -8916,7 +9219,15 @@ export namespace Prisma {
    * ChatMessage updateMany
    */
   export type ChatMessageUpdateManyArgs = {
+    /**
+     * The data used to update ChatMessages.
+     * 
+    **/
     data: XOR<ChatMessageUpdateManyMutationInput, ChatMessageUncheckedUpdateManyInput>
+    /**
+     * Filter which ChatMessages to update
+     * 
+    **/
     where?: ChatMessageWhereInput
   }
 
@@ -8979,6 +9290,10 @@ export namespace Prisma {
    * ChatMessage deleteMany
    */
   export type ChatMessageDeleteManyArgs = {
+    /**
+     * Filter which ChatMessages to delete
+     * 
+    **/
     where?: ChatMessageWhereInput
   }
 
@@ -9008,15 +9323,10 @@ export namespace Prisma {
 
   export type AggregateDelegatedChallenges = {
     _count: DelegatedChallengesCountAggregateOutputType | null
-    count: DelegatedChallengesCountAggregateOutputType | null
     _avg: DelegatedChallengesAvgAggregateOutputType | null
-    avg: DelegatedChallengesAvgAggregateOutputType | null
     _sum: DelegatedChallengesSumAggregateOutputType | null
-    sum: DelegatedChallengesSumAggregateOutputType | null
     _min: DelegatedChallengesMinAggregateOutputType | null
-    min: DelegatedChallengesMinAggregateOutputType | null
     _max: DelegatedChallengesMaxAggregateOutputType | null
-    max: DelegatedChallengesMaxAggregateOutputType | null
   }
 
   export type DelegatedChallengesAvgAggregateOutputType = {
@@ -9128,7 +9438,7 @@ export namespace Prisma {
      * Determine the order of DelegatedChallenges to fetch.
      * 
     **/
-    orderBy?: Enumerable<DelegatedChallengesOrderByInput>
+    orderBy?: Enumerable<DelegatedChallengesOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -9157,19 +9467,11 @@ export namespace Prisma {
     **/
     _count?: true | DelegatedChallengesCountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | DelegatedChallengesCountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
     _avg?: DelegatedChallengesAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: DelegatedChallengesAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
@@ -9177,29 +9479,17 @@ export namespace Prisma {
     **/
     _sum?: DelegatedChallengesSumAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: DelegatedChallengesSumAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: DelegatedChallengesMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: DelegatedChallengesMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: DelegatedChallengesMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: DelegatedChallengesMaxAggregateInputType
   }
 
   export type GetDelegatedChallengesAggregateType<T extends DelegatedChallengesAggregateArgs> = {
@@ -9211,11 +9501,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type DelegatedChallengesGroupByArgs = {
     where?: DelegatedChallengesWhereInput
-    orderBy?: Enumerable<DelegatedChallengesOrderByInput>
+    orderBy?: Enumerable<DelegatedChallengesOrderByWithAggregationInput>
     by: Array<DelegatedChallengesScalarFieldEnum>
     having?: DelegatedChallengesScalarWhereWithAggregatesInput
     take?: number
@@ -9246,17 +9536,17 @@ export namespace Prisma {
     _max: DelegatedChallengesMaxAggregateOutputType | null
   }
 
-  type GetDelegatedChallengesGroupByPayload<T extends DelegatedChallengesGroupByArgs> = Promise<
+  type GetDelegatedChallengesGroupByPayload<T extends DelegatedChallengesGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<DelegatedChallengesGroupByOutputType, T['by']> & 
+      PickArray<DelegatedChallengesGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof DelegatedChallengesGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], DelegatedChallengesGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof DelegatedChallengesGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DelegatedChallengesGroupByOutputType[P]>
             : GetScalarType<T[P], DelegatedChallengesGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
@@ -9285,9 +9575,8 @@ export namespace Prisma {
     ? DelegatedChallenges 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof DelegatedChallenges ?DelegatedChallenges [P]
-  : 
-     never
+    [P in TrueKeys<S['select']>]:
+    P extends keyof DelegatedChallenges ? DelegatedChallenges[P] : never
   } 
     : DelegatedChallenges
   : DelegatedChallenges
@@ -9601,13 +9890,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, DelegatedChallengesGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDelegatedChallengesGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, DelegatedChallengesGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDelegatedChallengesGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for DelegatedChallenges.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__DelegatedChallengesClient<T> implements PrismaPromise<T> {
@@ -9700,7 +9989,7 @@ export namespace Prisma {
      * Determine the order of DelegatedChallenges to fetch.
      * 
     **/
-    orderBy?: Enumerable<DelegatedChallengesOrderByInput>
+    orderBy?: Enumerable<DelegatedChallengesOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -9752,7 +10041,7 @@ export namespace Prisma {
      * Determine the order of DelegatedChallenges to fetch.
      * 
     **/
-    orderBy?: Enumerable<DelegatedChallengesOrderByInput>
+    orderBy?: Enumerable<DelegatedChallengesOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -9799,6 +10088,10 @@ export namespace Prisma {
    * DelegatedChallenges createMany
    */
   export type DelegatedChallengesCreateManyArgs = {
+    /**
+     * The data used to create many DelegatedChallenges.
+     * 
+    **/
     data: Enumerable<DelegatedChallengesCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -9830,7 +10123,15 @@ export namespace Prisma {
    * DelegatedChallenges updateMany
    */
   export type DelegatedChallengesUpdateManyArgs = {
+    /**
+     * The data used to update DelegatedChallenges.
+     * 
+    **/
     data: XOR<DelegatedChallengesUpdateManyMutationInput, DelegatedChallengesUncheckedUpdateManyInput>
+    /**
+     * Filter which DelegatedChallenges to update
+     * 
+    **/
     where?: DelegatedChallengesWhereInput
   }
 
@@ -9883,6 +10184,10 @@ export namespace Prisma {
    * DelegatedChallenges deleteMany
    */
   export type DelegatedChallengesDeleteManyArgs = {
+    /**
+     * Filter which DelegatedChallenges to delete
+     * 
+    **/
     where?: DelegatedChallengesWhereInput
   }
 
@@ -9907,15 +10212,10 @@ export namespace Prisma {
 
   export type AggregateOffer = {
     _count: OfferCountAggregateOutputType | null
-    count: OfferCountAggregateOutputType | null
     _avg: OfferAvgAggregateOutputType | null
-    avg: OfferAvgAggregateOutputType | null
     _sum: OfferSumAggregateOutputType | null
-    sum: OfferSumAggregateOutputType | null
     _min: OfferMinAggregateOutputType | null
-    min: OfferMinAggregateOutputType | null
     _max: OfferMaxAggregateOutputType | null
-    max: OfferMaxAggregateOutputType | null
   }
 
   export type OfferAvgAggregateOutputType = {
@@ -10039,7 +10339,7 @@ export namespace Prisma {
      * Determine the order of Offers to fetch.
      * 
     **/
-    orderBy?: Enumerable<OfferOrderByInput>
+    orderBy?: Enumerable<OfferOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -10068,19 +10368,11 @@ export namespace Prisma {
     **/
     _count?: true | OfferCountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | OfferCountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
     _avg?: OfferAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: OfferAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
@@ -10088,29 +10380,17 @@ export namespace Prisma {
     **/
     _sum?: OfferSumAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: OfferSumAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: OfferMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: OfferMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: OfferMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: OfferMaxAggregateInputType
   }
 
   export type GetOfferAggregateType<T extends OfferAggregateArgs> = {
@@ -10122,11 +10402,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type OfferGroupByArgs = {
     where?: OfferWhereInput
-    orderBy?: Enumerable<OfferOrderByInput>
+    orderBy?: Enumerable<OfferOrderByWithAggregationInput>
     by: Array<OfferScalarFieldEnum>
     having?: OfferScalarWhereWithAggregatesInput
     take?: number
@@ -10157,17 +10437,17 @@ export namespace Prisma {
     _max: OfferMaxAggregateOutputType | null
   }
 
-  type GetOfferGroupByPayload<T extends OfferGroupByArgs> = Promise<
+  type GetOfferGroupByPayload<T extends OfferGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<OfferGroupByOutputType, T['by']> & 
+      PickArray<OfferGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof OfferGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], OfferGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof OfferGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], OfferGroupByOutputType[P]>
             : GetScalarType<T[P], OfferGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
@@ -10185,12 +10465,14 @@ export namespace Prisma {
     timeCirclesPriceShare?: boolean
     purchaseLines?: boolean | PurchaseLineFindManyArgs
     invoiceLines?: boolean | InvoiceLineFindManyArgs
+    _count?: boolean | OfferCountOutputTypeArgs
   }
 
   export type OfferInclude = {
     createdBy?: boolean | ProfileArgs
     purchaseLines?: boolean | PurchaseLineFindManyArgs
     invoiceLines?: boolean | InvoiceLineFindManyArgs
+    _count?: boolean | OfferCountOutputTypeArgs
   }
 
   export type OfferGetPayload<
@@ -10203,24 +10485,19 @@ export namespace Prisma {
     : S extends OfferArgs | OfferFindManyArgs
     ?'include' extends U
     ? Offer  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'createdBy'
-        ? ProfileGetPayload<S['include'][P]> :
-        P extends 'purchaseLines'
-        ? Array < PurchaseLineGetPayload<S['include'][P]>>  :
-        P extends 'invoiceLines'
-        ? Array < InvoiceLineGetPayload<S['include'][P]>>  : never
+    [P in TrueKeys<S['include']>]:
+        P extends 'createdBy' ? ProfileGetPayload<S['include'][P]> :
+        P extends 'purchaseLines' ? Array < PurchaseLineGetPayload<S['include'][P]>>  :
+        P extends 'invoiceLines' ? Array < InvoiceLineGetPayload<S['include'][P]>>  :
+        P extends '_count' ? OfferCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof Offer ?Offer [P]
-  : 
-          P extends 'createdBy'
-        ? ProfileGetPayload<S['select'][P]> :
-        P extends 'purchaseLines'
-        ? Array < PurchaseLineGetPayload<S['select'][P]>>  :
-        P extends 'invoiceLines'
-        ? Array < InvoiceLineGetPayload<S['select'][P]>>  : never
+    [P in TrueKeys<S['select']>]:
+        P extends 'createdBy' ? ProfileGetPayload<S['select'][P]> :
+        P extends 'purchaseLines' ? Array < PurchaseLineGetPayload<S['select'][P]>>  :
+        P extends 'invoiceLines' ? Array < InvoiceLineGetPayload<S['select'][P]>>  :
+        P extends '_count' ? OfferCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Offer ? Offer[P] : never
   } 
     : Offer
   : Offer
@@ -10534,13 +10811,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, OfferGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOfferGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, OfferGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOfferGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for Offer.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__OfferClient<T> implements PrismaPromise<T> {
@@ -10648,7 +10925,7 @@ export namespace Prisma {
      * Determine the order of Offers to fetch.
      * 
     **/
-    orderBy?: Enumerable<OfferOrderByInput>
+    orderBy?: Enumerable<OfferOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -10705,7 +10982,7 @@ export namespace Prisma {
      * Determine the order of Offers to fetch.
      * 
     **/
-    orderBy?: Enumerable<OfferOrderByInput>
+    orderBy?: Enumerable<OfferOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -10757,6 +11034,10 @@ export namespace Prisma {
    * Offer createMany
    */
   export type OfferCreateManyArgs = {
+    /**
+     * The data used to create many Offers.
+     * 
+    **/
     data: Enumerable<OfferCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -10793,7 +11074,15 @@ export namespace Prisma {
    * Offer updateMany
    */
   export type OfferUpdateManyArgs = {
+    /**
+     * The data used to update Offers.
+     * 
+    **/
     data: XOR<OfferUpdateManyMutationInput, OfferUncheckedUpdateManyInput>
+    /**
+     * Filter which Offers to update
+     * 
+    **/
     where?: OfferWhereInput
   }
 
@@ -10856,6 +11145,10 @@ export namespace Prisma {
    * Offer deleteMany
    */
   export type OfferDeleteManyArgs = {
+    /**
+     * Filter which Offers to delete
+     * 
+    **/
     where?: OfferWhereInput
   }
 
@@ -10885,15 +11178,10 @@ export namespace Prisma {
 
   export type AggregatePurchase = {
     _count: PurchaseCountAggregateOutputType | null
-    count: PurchaseCountAggregateOutputType | null
     _avg: PurchaseAvgAggregateOutputType | null
-    avg: PurchaseAvgAggregateOutputType | null
     _sum: PurchaseSumAggregateOutputType | null
-    sum: PurchaseSumAggregateOutputType | null
     _min: PurchaseMinAggregateOutputType | null
-    min: PurchaseMinAggregateOutputType | null
     _max: PurchaseMaxAggregateOutputType | null
-    max: PurchaseMaxAggregateOutputType | null
   }
 
   export type PurchaseAvgAggregateOutputType = {
@@ -10973,7 +11261,7 @@ export namespace Prisma {
      * Determine the order of Purchases to fetch.
      * 
     **/
-    orderBy?: Enumerable<PurchaseOrderByInput>
+    orderBy?: Enumerable<PurchaseOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -11002,19 +11290,11 @@ export namespace Prisma {
     **/
     _count?: true | PurchaseCountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | PurchaseCountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
     _avg?: PurchaseAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: PurchaseAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
@@ -11022,29 +11302,17 @@ export namespace Prisma {
     **/
     _sum?: PurchaseSumAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: PurchaseSumAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: PurchaseMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: PurchaseMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: PurchaseMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: PurchaseMaxAggregateInputType
   }
 
   export type GetPurchaseAggregateType<T extends PurchaseAggregateArgs> = {
@@ -11056,11 +11324,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type PurchaseGroupByArgs = {
     where?: PurchaseWhereInput
-    orderBy?: Enumerable<PurchaseOrderByInput>
+    orderBy?: Enumerable<PurchaseOrderByWithAggregationInput>
     by: Array<PurchaseScalarFieldEnum>
     having?: PurchaseScalarWhereWithAggregatesInput
     take?: number
@@ -11085,17 +11353,17 @@ export namespace Prisma {
     _max: PurchaseMaxAggregateOutputType | null
   }
 
-  type GetPurchaseGroupByPayload<T extends PurchaseGroupByArgs> = Promise<
+  type GetPurchaseGroupByPayload<T extends PurchaseGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<PurchaseGroupByOutputType, T['by']> & 
+      PickArray<PurchaseGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof PurchaseGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], PurchaseGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof PurchaseGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PurchaseGroupByOutputType[P]>
             : GetScalarType<T[P], PurchaseGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
@@ -11107,12 +11375,14 @@ export namespace Prisma {
     sticksToInstanceId?: boolean
     lines?: boolean | PurchaseLineFindManyArgs
     invoices?: boolean | InvoiceFindManyArgs
+    _count?: boolean | PurchaseCountOutputTypeArgs
   }
 
   export type PurchaseInclude = {
     createdBy?: boolean | ProfileArgs
     lines?: boolean | PurchaseLineFindManyArgs
     invoices?: boolean | InvoiceFindManyArgs
+    _count?: boolean | PurchaseCountOutputTypeArgs
   }
 
   export type PurchaseGetPayload<
@@ -11125,24 +11395,19 @@ export namespace Prisma {
     : S extends PurchaseArgs | PurchaseFindManyArgs
     ?'include' extends U
     ? Purchase  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'createdBy'
-        ? ProfileGetPayload<S['include'][P]> :
-        P extends 'lines'
-        ? Array < PurchaseLineGetPayload<S['include'][P]>>  :
-        P extends 'invoices'
-        ? Array < InvoiceGetPayload<S['include'][P]>>  : never
+    [P in TrueKeys<S['include']>]:
+        P extends 'createdBy' ? ProfileGetPayload<S['include'][P]> :
+        P extends 'lines' ? Array < PurchaseLineGetPayload<S['include'][P]>>  :
+        P extends 'invoices' ? Array < InvoiceGetPayload<S['include'][P]>>  :
+        P extends '_count' ? PurchaseCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof Purchase ?Purchase [P]
-  : 
-          P extends 'createdBy'
-        ? ProfileGetPayload<S['select'][P]> :
-        P extends 'lines'
-        ? Array < PurchaseLineGetPayload<S['select'][P]>>  :
-        P extends 'invoices'
-        ? Array < InvoiceGetPayload<S['select'][P]>>  : never
+    [P in TrueKeys<S['select']>]:
+        P extends 'createdBy' ? ProfileGetPayload<S['select'][P]> :
+        P extends 'lines' ? Array < PurchaseLineGetPayload<S['select'][P]>>  :
+        P extends 'invoices' ? Array < InvoiceGetPayload<S['select'][P]>>  :
+        P extends '_count' ? PurchaseCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Purchase ? Purchase[P] : never
   } 
     : Purchase
   : Purchase
@@ -11456,13 +11721,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, PurchaseGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPurchaseGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, PurchaseGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPurchaseGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for Purchase.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__PurchaseClient<T> implements PrismaPromise<T> {
@@ -11570,7 +11835,7 @@ export namespace Prisma {
      * Determine the order of Purchases to fetch.
      * 
     **/
-    orderBy?: Enumerable<PurchaseOrderByInput>
+    orderBy?: Enumerable<PurchaseOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -11627,7 +11892,7 @@ export namespace Prisma {
      * Determine the order of Purchases to fetch.
      * 
     **/
-    orderBy?: Enumerable<PurchaseOrderByInput>
+    orderBy?: Enumerable<PurchaseOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -11679,6 +11944,10 @@ export namespace Prisma {
    * Purchase createMany
    */
   export type PurchaseCreateManyArgs = {
+    /**
+     * The data used to create many Purchases.
+     * 
+    **/
     data: Enumerable<PurchaseCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -11715,7 +11984,15 @@ export namespace Prisma {
    * Purchase updateMany
    */
   export type PurchaseUpdateManyArgs = {
+    /**
+     * The data used to update Purchases.
+     * 
+    **/
     data: XOR<PurchaseUpdateManyMutationInput, PurchaseUncheckedUpdateManyInput>
+    /**
+     * Filter which Purchases to update
+     * 
+    **/
     where?: PurchaseWhereInput
   }
 
@@ -11778,6 +12055,10 @@ export namespace Prisma {
    * Purchase deleteMany
    */
   export type PurchaseDeleteManyArgs = {
+    /**
+     * Filter which Purchases to delete
+     * 
+    **/
     where?: PurchaseWhereInput
   }
 
@@ -11807,15 +12088,10 @@ export namespace Prisma {
 
   export type AggregatePurchaseLine = {
     _count: PurchaseLineCountAggregateOutputType | null
-    count: PurchaseLineCountAggregateOutputType | null
     _avg: PurchaseLineAvgAggregateOutputType | null
-    avg: PurchaseLineAvgAggregateOutputType | null
     _sum: PurchaseLineSumAggregateOutputType | null
-    sum: PurchaseLineSumAggregateOutputType | null
     _min: PurchaseLineMinAggregateOutputType | null
-    min: PurchaseLineMinAggregateOutputType | null
     _max: PurchaseLineMaxAggregateOutputType | null
-    max: PurchaseLineMaxAggregateOutputType | null
   }
 
   export type PurchaseLineAvgAggregateOutputType = {
@@ -11913,7 +12189,7 @@ export namespace Prisma {
      * Determine the order of PurchaseLines to fetch.
      * 
     **/
-    orderBy?: Enumerable<PurchaseLineOrderByInput>
+    orderBy?: Enumerable<PurchaseLineOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -11942,19 +12218,11 @@ export namespace Prisma {
     **/
     _count?: true | PurchaseLineCountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | PurchaseLineCountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
     _avg?: PurchaseLineAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: PurchaseLineAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
@@ -11962,29 +12230,17 @@ export namespace Prisma {
     **/
     _sum?: PurchaseLineSumAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: PurchaseLineSumAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: PurchaseLineMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: PurchaseLineMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: PurchaseLineMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: PurchaseLineMaxAggregateInputType
   }
 
   export type GetPurchaseLineAggregateType<T extends PurchaseLineAggregateArgs> = {
@@ -11996,11 +12252,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type PurchaseLineGroupByArgs = {
     where?: PurchaseLineWhereInput
-    orderBy?: Enumerable<PurchaseLineOrderByInput>
+    orderBy?: Enumerable<PurchaseLineOrderByWithAggregationInput>
     by: Array<PurchaseLineScalarFieldEnum>
     having?: PurchaseLineScalarWhereWithAggregatesInput
     take?: number
@@ -12026,17 +12282,17 @@ export namespace Prisma {
     _max: PurchaseLineMaxAggregateOutputType | null
   }
 
-  type GetPurchaseLineGroupByPayload<T extends PurchaseLineGroupByArgs> = Promise<
+  type GetPurchaseLineGroupByPayload<T extends PurchaseLineGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<PurchaseLineGroupByOutputType, T['by']> & 
+      PickArray<PurchaseLineGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof PurchaseLineGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], PurchaseLineGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof PurchaseLineGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PurchaseLineGroupByOutputType[P]>
             : GetScalarType<T[P], PurchaseLineGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
@@ -12065,20 +12321,15 @@ export namespace Prisma {
     : S extends PurchaseLineArgs | PurchaseLineFindManyArgs
     ?'include' extends U
     ? PurchaseLine  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'purchase'
-        ? PurchaseGetPayload<S['include'][P]> :
-        P extends 'product'
-        ? OfferGetPayload<S['include'][P]> : never
+    [P in TrueKeys<S['include']>]:
+        P extends 'purchase' ? PurchaseGetPayload<S['include'][P]> :
+        P extends 'product' ? OfferGetPayload<S['include'][P]> :  never
   } 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof PurchaseLine ?PurchaseLine [P]
-  : 
-          P extends 'purchase'
-        ? PurchaseGetPayload<S['select'][P]> :
-        P extends 'product'
-        ? OfferGetPayload<S['select'][P]> : never
+    [P in TrueKeys<S['select']>]:
+        P extends 'purchase' ? PurchaseGetPayload<S['select'][P]> :
+        P extends 'product' ? OfferGetPayload<S['select'][P]> :  P extends keyof PurchaseLine ? PurchaseLine[P] : never
   } 
     : PurchaseLine
   : PurchaseLine
@@ -12392,13 +12643,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, PurchaseLineGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPurchaseLineGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, PurchaseLineGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPurchaseLineGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for PurchaseLine.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__PurchaseLineClient<T> implements PrismaPromise<T> {
@@ -12504,7 +12755,7 @@ export namespace Prisma {
      * Determine the order of PurchaseLines to fetch.
      * 
     **/
-    orderBy?: Enumerable<PurchaseLineOrderByInput>
+    orderBy?: Enumerable<PurchaseLineOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -12561,7 +12812,7 @@ export namespace Prisma {
      * Determine the order of PurchaseLines to fetch.
      * 
     **/
-    orderBy?: Enumerable<PurchaseLineOrderByInput>
+    orderBy?: Enumerable<PurchaseLineOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -12613,6 +12864,10 @@ export namespace Prisma {
    * PurchaseLine createMany
    */
   export type PurchaseLineCreateManyArgs = {
+    /**
+     * The data used to create many PurchaseLines.
+     * 
+    **/
     data: Enumerable<PurchaseLineCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -12649,7 +12904,15 @@ export namespace Prisma {
    * PurchaseLine updateMany
    */
   export type PurchaseLineUpdateManyArgs = {
+    /**
+     * The data used to update PurchaseLines.
+     * 
+    **/
     data: XOR<PurchaseLineUpdateManyMutationInput, PurchaseLineUncheckedUpdateManyInput>
+    /**
+     * Filter which PurchaseLines to update
+     * 
+    **/
     where?: PurchaseLineWhereInput
   }
 
@@ -12712,6 +12975,10 @@ export namespace Prisma {
    * PurchaseLine deleteMany
    */
   export type PurchaseLineDeleteManyArgs = {
+    /**
+     * Filter which PurchaseLines to delete
+     * 
+    **/
     where?: PurchaseLineWhereInput
   }
 
@@ -12741,15 +13008,10 @@ export namespace Prisma {
 
   export type AggregateInvoice = {
     _count: InvoiceCountAggregateOutputType | null
-    count: InvoiceCountAggregateOutputType | null
     _avg: InvoiceAvgAggregateOutputType | null
-    avg: InvoiceAvgAggregateOutputType | null
     _sum: InvoiceSumAggregateOutputType | null
-    sum: InvoiceSumAggregateOutputType | null
     _min: InvoiceMinAggregateOutputType | null
-    min: InvoiceMinAggregateOutputType | null
     _max: InvoiceMaxAggregateOutputType | null
-    max: InvoiceMaxAggregateOutputType | null
   }
 
   export type InvoiceAvgAggregateOutputType = {
@@ -12913,7 +13175,7 @@ export namespace Prisma {
      * Determine the order of Invoices to fetch.
      * 
     **/
-    orderBy?: Enumerable<InvoiceOrderByInput>
+    orderBy?: Enumerable<InvoiceOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -12942,19 +13204,11 @@ export namespace Prisma {
     **/
     _count?: true | InvoiceCountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | InvoiceCountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
     _avg?: InvoiceAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: InvoiceAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
@@ -12962,29 +13216,17 @@ export namespace Prisma {
     **/
     _sum?: InvoiceSumAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: InvoiceSumAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: InvoiceMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: InvoiceMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: InvoiceMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: InvoiceMaxAggregateInputType
   }
 
   export type GetInvoiceAggregateType<T extends InvoiceAggregateArgs> = {
@@ -12996,11 +13238,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type InvoiceGroupByArgs = {
     where?: InvoiceWhereInput
-    orderBy?: Enumerable<InvoiceOrderByInput>
+    orderBy?: Enumerable<InvoiceOrderByWithAggregationInput>
     by: Array<InvoiceScalarFieldEnum>
     having?: InvoiceScalarWhereWithAggregatesInput
     take?: number
@@ -13037,17 +13279,17 @@ export namespace Prisma {
     _max: InvoiceMaxAggregateOutputType | null
   }
 
-  type GetInvoiceGroupByPayload<T extends InvoiceGroupByArgs> = Promise<
+  type GetInvoiceGroupByPayload<T extends InvoiceGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<InvoiceGroupByOutputType, T['by']> & 
+      PickArray<InvoiceGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof InvoiceGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], InvoiceGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof InvoiceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], InvoiceGroupByOutputType[P]>
             : GetScalarType<T[P], InvoiceGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
@@ -13074,6 +13316,7 @@ export namespace Prisma {
     cancelledBy?: boolean | ProfileArgs
     cancelledByProfileId?: boolean
     cancelReason?: boolean
+    _count?: boolean | InvoiceCountOutputTypeArgs
   }
 
   export type InvoiceInclude = {
@@ -13083,6 +13326,7 @@ export namespace Prisma {
     lines?: boolean | InvoiceLineFindManyArgs
     paymentTransaction?: boolean | TransactionArgs
     cancelledBy?: boolean | ProfileArgs
+    _count?: boolean | InvoiceCountOutputTypeArgs
   }
 
   export type InvoiceGetPayload<
@@ -13095,36 +13339,25 @@ export namespace Prisma {
     : S extends InvoiceArgs | InvoiceFindManyArgs
     ?'include' extends U
     ? Invoice  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'customerProfile'
-        ? ProfileGetPayload<S['include'][P]> :
-        P extends 'sellerProfile'
-        ? ProfileGetPayload<S['include'][P]> :
-        P extends 'purchase'
-        ? PurchaseGetPayload<S['include'][P]> :
-        P extends 'lines'
-        ? Array < InvoiceLineGetPayload<S['include'][P]>>  :
-        P extends 'paymentTransaction'
-        ? TransactionGetPayload<S['include'][P]> | null :
-        P extends 'cancelledBy'
-        ? ProfileGetPayload<S['include'][P]> | null : never
+    [P in TrueKeys<S['include']>]:
+        P extends 'customerProfile' ? ProfileGetPayload<S['include'][P]> :
+        P extends 'sellerProfile' ? ProfileGetPayload<S['include'][P]> :
+        P extends 'purchase' ? PurchaseGetPayload<S['include'][P]> :
+        P extends 'lines' ? Array < InvoiceLineGetPayload<S['include'][P]>>  :
+        P extends 'paymentTransaction' ? TransactionGetPayload<S['include'][P]> | null :
+        P extends 'cancelledBy' ? ProfileGetPayload<S['include'][P]> | null :
+        P extends '_count' ? InvoiceCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof Invoice ?Invoice [P]
-  : 
-          P extends 'customerProfile'
-        ? ProfileGetPayload<S['select'][P]> :
-        P extends 'sellerProfile'
-        ? ProfileGetPayload<S['select'][P]> :
-        P extends 'purchase'
-        ? PurchaseGetPayload<S['select'][P]> :
-        P extends 'lines'
-        ? Array < InvoiceLineGetPayload<S['select'][P]>>  :
-        P extends 'paymentTransaction'
-        ? TransactionGetPayload<S['select'][P]> | null :
-        P extends 'cancelledBy'
-        ? ProfileGetPayload<S['select'][P]> | null : never
+    [P in TrueKeys<S['select']>]:
+        P extends 'customerProfile' ? ProfileGetPayload<S['select'][P]> :
+        P extends 'sellerProfile' ? ProfileGetPayload<S['select'][P]> :
+        P extends 'purchase' ? PurchaseGetPayload<S['select'][P]> :
+        P extends 'lines' ? Array < InvoiceLineGetPayload<S['select'][P]>>  :
+        P extends 'paymentTransaction' ? TransactionGetPayload<S['select'][P]> | null :
+        P extends 'cancelledBy' ? ProfileGetPayload<S['select'][P]> | null :
+        P extends '_count' ? InvoiceCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Invoice ? Invoice[P] : never
   } 
     : Invoice
   : Invoice
@@ -13438,13 +13671,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, InvoiceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInvoiceGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, InvoiceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInvoiceGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for Invoice.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__InvoiceClient<T> implements PrismaPromise<T> {
@@ -13558,7 +13791,7 @@ export namespace Prisma {
      * Determine the order of Invoices to fetch.
      * 
     **/
-    orderBy?: Enumerable<InvoiceOrderByInput>
+    orderBy?: Enumerable<InvoiceOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -13615,7 +13848,7 @@ export namespace Prisma {
      * Determine the order of Invoices to fetch.
      * 
     **/
-    orderBy?: Enumerable<InvoiceOrderByInput>
+    orderBy?: Enumerable<InvoiceOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -13667,6 +13900,10 @@ export namespace Prisma {
    * Invoice createMany
    */
   export type InvoiceCreateManyArgs = {
+    /**
+     * The data used to create many Invoices.
+     * 
+    **/
     data: Enumerable<InvoiceCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -13703,7 +13940,15 @@ export namespace Prisma {
    * Invoice updateMany
    */
   export type InvoiceUpdateManyArgs = {
+    /**
+     * The data used to update Invoices.
+     * 
+    **/
     data: XOR<InvoiceUpdateManyMutationInput, InvoiceUncheckedUpdateManyInput>
+    /**
+     * Filter which Invoices to update
+     * 
+    **/
     where?: InvoiceWhereInput
   }
 
@@ -13766,6 +14011,10 @@ export namespace Prisma {
    * Invoice deleteMany
    */
   export type InvoiceDeleteManyArgs = {
+    /**
+     * Filter which Invoices to delete
+     * 
+    **/
     where?: InvoiceWhereInput
   }
 
@@ -13795,15 +14044,10 @@ export namespace Prisma {
 
   export type AggregateInvoiceLine = {
     _count: InvoiceLineCountAggregateOutputType | null
-    count: InvoiceLineCountAggregateOutputType | null
     _avg: InvoiceLineAvgAggregateOutputType | null
-    avg: InvoiceLineAvgAggregateOutputType | null
     _sum: InvoiceLineSumAggregateOutputType | null
-    sum: InvoiceLineSumAggregateOutputType | null
     _min: InvoiceLineMinAggregateOutputType | null
-    min: InvoiceLineMinAggregateOutputType | null
     _max: InvoiceLineMaxAggregateOutputType | null
-    max: InvoiceLineMaxAggregateOutputType | null
   }
 
   export type InvoiceLineAvgAggregateOutputType = {
@@ -13901,7 +14145,7 @@ export namespace Prisma {
      * Determine the order of InvoiceLines to fetch.
      * 
     **/
-    orderBy?: Enumerable<InvoiceLineOrderByInput>
+    orderBy?: Enumerable<InvoiceLineOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -13930,19 +14174,11 @@ export namespace Prisma {
     **/
     _count?: true | InvoiceLineCountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | InvoiceLineCountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
     _avg?: InvoiceLineAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: InvoiceLineAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
@@ -13950,29 +14186,17 @@ export namespace Prisma {
     **/
     _sum?: InvoiceLineSumAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: InvoiceLineSumAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: InvoiceLineMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: InvoiceLineMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: InvoiceLineMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: InvoiceLineMaxAggregateInputType
   }
 
   export type GetInvoiceLineAggregateType<T extends InvoiceLineAggregateArgs> = {
@@ -13984,11 +14208,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type InvoiceLineGroupByArgs = {
     where?: InvoiceLineWhereInput
-    orderBy?: Enumerable<InvoiceLineOrderByInput>
+    orderBy?: Enumerable<InvoiceLineOrderByWithAggregationInput>
     by: Array<InvoiceLineScalarFieldEnum>
     having?: InvoiceLineScalarWhereWithAggregatesInput
     take?: number
@@ -14014,17 +14238,17 @@ export namespace Prisma {
     _max: InvoiceLineMaxAggregateOutputType | null
   }
 
-  type GetInvoiceLineGroupByPayload<T extends InvoiceLineGroupByArgs> = Promise<
+  type GetInvoiceLineGroupByPayload<T extends InvoiceLineGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<InvoiceLineGroupByOutputType, T['by']> & 
+      PickArray<InvoiceLineGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof InvoiceLineGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], InvoiceLineGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof InvoiceLineGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], InvoiceLineGroupByOutputType[P]>
             : GetScalarType<T[P], InvoiceLineGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
@@ -14053,20 +14277,15 @@ export namespace Prisma {
     : S extends InvoiceLineArgs | InvoiceLineFindManyArgs
     ?'include' extends U
     ? InvoiceLine  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'invoice'
-        ? InvoiceGetPayload<S['include'][P]> :
-        P extends 'product'
-        ? OfferGetPayload<S['include'][P]> : never
+    [P in TrueKeys<S['include']>]:
+        P extends 'invoice' ? InvoiceGetPayload<S['include'][P]> :
+        P extends 'product' ? OfferGetPayload<S['include'][P]> :  never
   } 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof InvoiceLine ?InvoiceLine [P]
-  : 
-          P extends 'invoice'
-        ? InvoiceGetPayload<S['select'][P]> :
-        P extends 'product'
-        ? OfferGetPayload<S['select'][P]> : never
+    [P in TrueKeys<S['select']>]:
+        P extends 'invoice' ? InvoiceGetPayload<S['select'][P]> :
+        P extends 'product' ? OfferGetPayload<S['select'][P]> :  P extends keyof InvoiceLine ? InvoiceLine[P] : never
   } 
     : InvoiceLine
   : InvoiceLine
@@ -14380,13 +14599,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, InvoiceLineGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInvoiceLineGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, InvoiceLineGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInvoiceLineGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for InvoiceLine.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__InvoiceLineClient<T> implements PrismaPromise<T> {
@@ -14492,7 +14711,7 @@ export namespace Prisma {
      * Determine the order of InvoiceLines to fetch.
      * 
     **/
-    orderBy?: Enumerable<InvoiceLineOrderByInput>
+    orderBy?: Enumerable<InvoiceLineOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -14549,7 +14768,7 @@ export namespace Prisma {
      * Determine the order of InvoiceLines to fetch.
      * 
     **/
-    orderBy?: Enumerable<InvoiceLineOrderByInput>
+    orderBy?: Enumerable<InvoiceLineOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -14601,6 +14820,10 @@ export namespace Prisma {
    * InvoiceLine createMany
    */
   export type InvoiceLineCreateManyArgs = {
+    /**
+     * The data used to create many InvoiceLines.
+     * 
+    **/
     data: Enumerable<InvoiceLineCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -14637,7 +14860,15 @@ export namespace Prisma {
    * InvoiceLine updateMany
    */
   export type InvoiceLineUpdateManyArgs = {
+    /**
+     * The data used to update InvoiceLines.
+     * 
+    **/
     data: XOR<InvoiceLineUpdateManyMutationInput, InvoiceLineUncheckedUpdateManyInput>
+    /**
+     * Filter which InvoiceLines to update
+     * 
+    **/
     where?: InvoiceLineWhereInput
   }
 
@@ -14700,6 +14931,10 @@ export namespace Prisma {
    * InvoiceLine deleteMany
    */
   export type InvoiceLineDeleteManyArgs = {
+    /**
+     * Filter which InvoiceLines to delete
+     * 
+    **/
     where?: InvoiceLineWhereInput
   }
 
@@ -14729,11 +14964,8 @@ export namespace Prisma {
 
   export type AggregateTagType = {
     _count: TagTypeCountAggregateOutputType | null
-    count: TagTypeCountAggregateOutputType | null
     _min: TagTypeMinAggregateOutputType | null
-    min: TagTypeMinAggregateOutputType | null
     _max: TagTypeMaxAggregateOutputType | null
-    max: TagTypeMaxAggregateOutputType | null
   }
 
   export type TagTypeMinAggregateOutputType = {
@@ -14775,7 +15007,7 @@ export namespace Prisma {
      * Determine the order of TagTypes to fetch.
      * 
     **/
-    orderBy?: Enumerable<TagTypeOrderByInput>
+    orderBy?: Enumerable<TagTypeOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -14804,29 +15036,17 @@ export namespace Prisma {
     **/
     _count?: true | TagTypeCountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | TagTypeCountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: TagTypeMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: TagTypeMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: TagTypeMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: TagTypeMaxAggregateInputType
   }
 
   export type GetTagTypeAggregateType<T extends TagTypeAggregateArgs> = {
@@ -14838,11 +15058,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type TagTypeGroupByArgs = {
     where?: TagTypeWhereInput
-    orderBy?: Enumerable<TagTypeOrderByInput>
+    orderBy?: Enumerable<TagTypeOrderByWithAggregationInput>
     by: Array<TagTypeScalarFieldEnum>
     having?: TagTypeScalarWhereWithAggregatesInput
     take?: number
@@ -14860,27 +15080,29 @@ export namespace Prisma {
     _max: TagTypeMaxAggregateOutputType | null
   }
 
-  type GetTagTypeGroupByPayload<T extends TagTypeGroupByArgs> = Promise<
+  type GetTagTypeGroupByPayload<T extends TagTypeGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<TagTypeGroupByOutputType, T['by']> & 
+      PickArray<TagTypeGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof TagTypeGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], TagTypeGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof TagTypeGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TagTypeGroupByOutputType[P]>
             : GetScalarType<T[P], TagTypeGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
   export type TagTypeSelect = {
     id?: boolean
     tags?: boolean | TagFindManyArgs
+    _count?: boolean | TagTypeCountOutputTypeArgs
   }
 
   export type TagTypeInclude = {
     tags?: boolean | TagFindManyArgs
+    _count?: boolean | TagTypeCountOutputTypeArgs
   }
 
   export type TagTypeGetPayload<
@@ -14893,16 +15115,15 @@ export namespace Prisma {
     : S extends TagTypeArgs | TagTypeFindManyArgs
     ?'include' extends U
     ? TagType  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'tags'
-        ? Array < TagGetPayload<S['include'][P]>>  : never
+    [P in TrueKeys<S['include']>]:
+        P extends 'tags' ? Array < TagGetPayload<S['include'][P]>>  :
+        P extends '_count' ? TagTypeCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof TagType ?TagType [P]
-  : 
-          P extends 'tags'
-        ? Array < TagGetPayload<S['select'][P]>>  : never
+    [P in TrueKeys<S['select']>]:
+        P extends 'tags' ? Array < TagGetPayload<S['select'][P]>>  :
+        P extends '_count' ? TagTypeCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof TagType ? TagType[P] : never
   } 
     : TagType
   : TagType
@@ -15216,13 +15437,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, TagTypeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTagTypeGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, TagTypeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTagTypeGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for TagType.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__TagTypeClient<T> implements PrismaPromise<T> {
@@ -15326,7 +15547,7 @@ export namespace Prisma {
      * Determine the order of TagTypes to fetch.
      * 
     **/
-    orderBy?: Enumerable<TagTypeOrderByInput>
+    orderBy?: Enumerable<TagTypeOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -15383,7 +15604,7 @@ export namespace Prisma {
      * Determine the order of TagTypes to fetch.
      * 
     **/
-    orderBy?: Enumerable<TagTypeOrderByInput>
+    orderBy?: Enumerable<TagTypeOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -15435,6 +15656,10 @@ export namespace Prisma {
    * TagType createMany
    */
   export type TagTypeCreateManyArgs = {
+    /**
+     * The data used to create many TagTypes.
+     * 
+    **/
     data: Enumerable<TagTypeCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -15471,7 +15696,15 @@ export namespace Prisma {
    * TagType updateMany
    */
   export type TagTypeUpdateManyArgs = {
+    /**
+     * The data used to update TagTypes.
+     * 
+    **/
     data: XOR<TagTypeUpdateManyMutationInput, TagTypeUncheckedUpdateManyInput>
+    /**
+     * Filter which TagTypes to update
+     * 
+    **/
     where?: TagTypeWhereInput
   }
 
@@ -15534,6 +15767,10 @@ export namespace Prisma {
    * TagType deleteMany
    */
   export type TagTypeDeleteManyArgs = {
+    /**
+     * Filter which TagTypes to delete
+     * 
+    **/
     where?: TagTypeWhereInput
   }
 
@@ -15563,11 +15800,8 @@ export namespace Prisma {
 
   export type AggregateTransaction = {
     _count: TransactionCountAggregateOutputType | null
-    count: TransactionCountAggregateOutputType | null
     _min: TransactionMinAggregateOutputType | null
-    min: TransactionMinAggregateOutputType | null
     _max: TransactionMaxAggregateOutputType | null
-    max: TransactionMaxAggregateOutputType | null
   }
 
   export type TransactionMinAggregateOutputType = {
@@ -15609,7 +15843,7 @@ export namespace Prisma {
      * Determine the order of Transactions to fetch.
      * 
     **/
-    orderBy?: Enumerable<TransactionOrderByInput>
+    orderBy?: Enumerable<TransactionOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -15638,29 +15872,17 @@ export namespace Prisma {
     **/
     _count?: true | TransactionCountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | TransactionCountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: TransactionMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: TransactionMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: TransactionMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: TransactionMaxAggregateInputType
   }
 
   export type GetTransactionAggregateType<T extends TransactionAggregateArgs> = {
@@ -15672,11 +15894,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type TransactionGroupByArgs = {
     where?: TransactionWhereInput
-    orderBy?: Enumerable<TransactionOrderByInput>
+    orderBy?: Enumerable<TransactionOrderByWithAggregationInput>
     by: Array<TransactionScalarFieldEnum>
     having?: TransactionScalarWhereWithAggregatesInput
     take?: number
@@ -15694,17 +15916,17 @@ export namespace Prisma {
     _max: TransactionMaxAggregateOutputType | null
   }
 
-  type GetTransactionGroupByPayload<T extends TransactionGroupByArgs> = Promise<
+  type GetTransactionGroupByPayload<T extends TransactionGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<TransactionGroupByOutputType, T['by']> & 
+      PickArray<TransactionGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof TransactionGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], TransactionGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof TransactionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TransactionGroupByOutputType[P]>
             : GetScalarType<T[P], TransactionGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
@@ -15715,6 +15937,7 @@ export namespace Prisma {
     InviteeReward_VerifiedSafe?: boolean | VerifiedSafeArgs
     InviterReward_VerifiedSafe?: boolean | VerifiedSafeArgs
     SwapFunding_VerifiedSafe?: boolean | VerifiedSafeArgs
+    _count?: boolean | TransactionCountOutputTypeArgs
   }
 
   export type TransactionInclude = {
@@ -15723,6 +15946,7 @@ export namespace Prisma {
     InviteeReward_VerifiedSafe?: boolean | VerifiedSafeArgs
     InviterReward_VerifiedSafe?: boolean | VerifiedSafeArgs
     SwapFunding_VerifiedSafe?: boolean | VerifiedSafeArgs
+    _count?: boolean | TransactionCountOutputTypeArgs
   }
 
   export type TransactionGetPayload<
@@ -15735,32 +15959,23 @@ export namespace Prisma {
     : S extends TransactionArgs | TransactionFindManyArgs
     ?'include' extends U
     ? Transaction  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'tags'
-        ? Array < TagGetPayload<S['include'][P]>>  :
-        P extends 'payedInvoice'
-        ? InvoiceGetPayload<S['include'][P]> | null :
-        P extends 'InviteeReward_VerifiedSafe'
-        ? VerifiedSafeGetPayload<S['include'][P]> | null :
-        P extends 'InviterReward_VerifiedSafe'
-        ? VerifiedSafeGetPayload<S['include'][P]> | null :
-        P extends 'SwapFunding_VerifiedSafe'
-        ? VerifiedSafeGetPayload<S['include'][P]> | null : never
+    [P in TrueKeys<S['include']>]:
+        P extends 'tags' ? Array < TagGetPayload<S['include'][P]>>  :
+        P extends 'payedInvoice' ? InvoiceGetPayload<S['include'][P]> | null :
+        P extends 'InviteeReward_VerifiedSafe' ? VerifiedSafeGetPayload<S['include'][P]> | null :
+        P extends 'InviterReward_VerifiedSafe' ? VerifiedSafeGetPayload<S['include'][P]> | null :
+        P extends 'SwapFunding_VerifiedSafe' ? VerifiedSafeGetPayload<S['include'][P]> | null :
+        P extends '_count' ? TransactionCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof Transaction ?Transaction [P]
-  : 
-          P extends 'tags'
-        ? Array < TagGetPayload<S['select'][P]>>  :
-        P extends 'payedInvoice'
-        ? InvoiceGetPayload<S['select'][P]> | null :
-        P extends 'InviteeReward_VerifiedSafe'
-        ? VerifiedSafeGetPayload<S['select'][P]> | null :
-        P extends 'InviterReward_VerifiedSafe'
-        ? VerifiedSafeGetPayload<S['select'][P]> | null :
-        P extends 'SwapFunding_VerifiedSafe'
-        ? VerifiedSafeGetPayload<S['select'][P]> | null : never
+    [P in TrueKeys<S['select']>]:
+        P extends 'tags' ? Array < TagGetPayload<S['select'][P]>>  :
+        P extends 'payedInvoice' ? InvoiceGetPayload<S['select'][P]> | null :
+        P extends 'InviteeReward_VerifiedSafe' ? VerifiedSafeGetPayload<S['select'][P]> | null :
+        P extends 'InviterReward_VerifiedSafe' ? VerifiedSafeGetPayload<S['select'][P]> | null :
+        P extends 'SwapFunding_VerifiedSafe' ? VerifiedSafeGetPayload<S['select'][P]> | null :
+        P extends '_count' ? TransactionCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Transaction ? Transaction[P] : never
   } 
     : Transaction
   : Transaction
@@ -16074,13 +16289,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, TransactionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTransactionGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, TransactionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTransactionGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for Transaction.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__TransactionClient<T> implements PrismaPromise<T> {
@@ -16192,7 +16407,7 @@ export namespace Prisma {
      * Determine the order of Transactions to fetch.
      * 
     **/
-    orderBy?: Enumerable<TransactionOrderByInput>
+    orderBy?: Enumerable<TransactionOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -16249,7 +16464,7 @@ export namespace Prisma {
      * Determine the order of Transactions to fetch.
      * 
     **/
-    orderBy?: Enumerable<TransactionOrderByInput>
+    orderBy?: Enumerable<TransactionOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -16301,6 +16516,10 @@ export namespace Prisma {
    * Transaction createMany
    */
   export type TransactionCreateManyArgs = {
+    /**
+     * The data used to create many Transactions.
+     * 
+    **/
     data: Enumerable<TransactionCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -16337,7 +16556,15 @@ export namespace Prisma {
    * Transaction updateMany
    */
   export type TransactionUpdateManyArgs = {
+    /**
+     * The data used to update Transactions.
+     * 
+    **/
     data: XOR<TransactionUpdateManyMutationInput, TransactionUncheckedUpdateManyInput>
+    /**
+     * Filter which Transactions to update
+     * 
+    **/
     where?: TransactionWhereInput
   }
 
@@ -16400,6 +16627,10 @@ export namespace Prisma {
    * Transaction deleteMany
    */
   export type TransactionDeleteManyArgs = {
+    /**
+     * Filter which Transactions to delete
+     * 
+    **/
     where?: TransactionWhereInput
   }
 
@@ -16429,15 +16660,10 @@ export namespace Prisma {
 
   export type AggregateTag = {
     _count: TagCountAggregateOutputType | null
-    count: TagCountAggregateOutputType | null
     _avg: TagAvgAggregateOutputType | null
-    avg: TagAvgAggregateOutputType | null
     _sum: TagSumAggregateOutputType | null
-    sum: TagSumAggregateOutputType | null
     _min: TagMinAggregateOutputType | null
-    min: TagMinAggregateOutputType | null
     _max: TagMaxAggregateOutputType | null
-    max: TagMaxAggregateOutputType | null
   }
 
   export type TagAvgAggregateOutputType = {
@@ -16545,7 +16771,7 @@ export namespace Prisma {
      * Determine the order of Tags to fetch.
      * 
     **/
-    orderBy?: Enumerable<TagOrderByInput>
+    orderBy?: Enumerable<TagOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -16574,19 +16800,11 @@ export namespace Prisma {
     **/
     _count?: true | TagCountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | TagCountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
     _avg?: TagAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: TagAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
@@ -16594,29 +16812,17 @@ export namespace Prisma {
     **/
     _sum?: TagSumAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: TagSumAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: TagMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: TagMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: TagMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: TagMaxAggregateInputType
   }
 
   export type GetTagAggregateType<T extends TagAggregateArgs> = {
@@ -16628,11 +16834,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type TagGroupByArgs = {
     where?: TagWhereInput
-    orderBy?: Enumerable<TagOrderByInput>
+    orderBy?: Enumerable<TagOrderByWithAggregationInput>
     by: Array<TagScalarFieldEnum>
     having?: TagScalarWhereWithAggregatesInput
     take?: number
@@ -16661,17 +16867,17 @@ export namespace Prisma {
     _max: TagMaxAggregateOutputType | null
   }
 
-  type GetTagGroupByPayload<T extends TagGroupByArgs> = Promise<
+  type GetTagGroupByPayload<T extends TagGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<TagGroupByOutputType, T['by']> & 
+      PickArray<TagGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof TagGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], TagGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof TagGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TagGroupByOutputType[P]>
             : GetScalarType<T[P], TagGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
@@ -16707,28 +16913,19 @@ export namespace Prisma {
     : S extends TagArgs | TagFindManyArgs
     ?'include' extends U
     ? Tag  & {
-    [P in TrueKeys<S['include']>]: 
-          P extends 'createdBy'
-        ? ProfileGetPayload<S['include'][P]> :
-        P extends 'transaction'
-        ? TransactionGetPayload<S['include'][P]> | null :
-        P extends 'type'
-        ? TagTypeGetPayload<S['include'][P]> :
-        P extends 'chatMessage'
-        ? ChatMessageGetPayload<S['include'][P]> | null : never
+    [P in TrueKeys<S['include']>]:
+        P extends 'createdBy' ? ProfileGetPayload<S['include'][P]> :
+        P extends 'transaction' ? TransactionGetPayload<S['include'][P]> | null :
+        P extends 'type' ? TagTypeGetPayload<S['include'][P]> :
+        P extends 'chatMessage' ? ChatMessageGetPayload<S['include'][P]> | null :  never
   } 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof Tag ?Tag [P]
-  : 
-          P extends 'createdBy'
-        ? ProfileGetPayload<S['select'][P]> :
-        P extends 'transaction'
-        ? TransactionGetPayload<S['select'][P]> | null :
-        P extends 'type'
-        ? TagTypeGetPayload<S['select'][P]> :
-        P extends 'chatMessage'
-        ? ChatMessageGetPayload<S['select'][P]> | null : never
+    [P in TrueKeys<S['select']>]:
+        P extends 'createdBy' ? ProfileGetPayload<S['select'][P]> :
+        P extends 'transaction' ? TransactionGetPayload<S['select'][P]> | null :
+        P extends 'type' ? TagTypeGetPayload<S['select'][P]> :
+        P extends 'chatMessage' ? ChatMessageGetPayload<S['select'][P]> | null :  P extends keyof Tag ? Tag[P] : never
   } 
     : Tag
   : Tag
@@ -17042,13 +17239,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, TagGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTagGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, TagGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTagGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for Tag.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__TagClient<T> implements PrismaPromise<T> {
@@ -17158,7 +17355,7 @@ export namespace Prisma {
      * Determine the order of Tags to fetch.
      * 
     **/
-    orderBy?: Enumerable<TagOrderByInput>
+    orderBy?: Enumerable<TagOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -17215,7 +17412,7 @@ export namespace Prisma {
      * Determine the order of Tags to fetch.
      * 
     **/
-    orderBy?: Enumerable<TagOrderByInput>
+    orderBy?: Enumerable<TagOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -17267,6 +17464,10 @@ export namespace Prisma {
    * Tag createMany
    */
   export type TagCreateManyArgs = {
+    /**
+     * The data used to create many Tags.
+     * 
+    **/
     data: Enumerable<TagCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -17303,7 +17504,15 @@ export namespace Prisma {
    * Tag updateMany
    */
   export type TagUpdateManyArgs = {
+    /**
+     * The data used to update Tags.
+     * 
+    **/
     data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyInput>
+    /**
+     * Filter which Tags to update
+     * 
+    **/
     where?: TagWhereInput
   }
 
@@ -17366,6 +17575,10 @@ export namespace Prisma {
    * Tag deleteMany
    */
   export type TagDeleteManyArgs = {
+    /**
+     * Filter which Tags to delete
+     * 
+    **/
     where?: TagWhereInput
   }
 
@@ -17395,15 +17608,10 @@ export namespace Prisma {
 
   export type AggregateJob = {
     _count: JobCountAggregateOutputType | null
-    count: JobCountAggregateOutputType | null
     _avg: JobAvgAggregateOutputType | null
-    avg: JobAvgAggregateOutputType | null
     _sum: JobSumAggregateOutputType | null
-    sum: JobSumAggregateOutputType | null
     _min: JobMinAggregateOutputType | null
-    min: JobMinAggregateOutputType | null
     _max: JobMaxAggregateOutputType | null
-    max: JobMaxAggregateOutputType | null
   }
 
   export type JobAvgAggregateOutputType = {
@@ -17509,7 +17717,7 @@ export namespace Prisma {
      * Determine the order of Jobs to fetch.
      * 
     **/
-    orderBy?: Enumerable<JobOrderByInput>
+    orderBy?: Enumerable<JobOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -17538,19 +17746,11 @@ export namespace Prisma {
     **/
     _count?: true | JobCountAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_count`
-    **/
-    count?: true | JobCountAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
     _avg?: JobAvgAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_avg`
-    **/
-    avg?: JobAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
@@ -17558,29 +17758,17 @@ export namespace Prisma {
     **/
     _sum?: JobSumAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_sum`
-    **/
-    sum?: JobSumAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
     _min?: JobMinAggregateInputType
     /**
-     * @deprecated since 2.23.0 please use `_min`
-    **/
-    min?: JobMinAggregateInputType
-    /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
     _max?: JobMaxAggregateInputType
-    /**
-     * @deprecated since 2.23.0 please use `_max`
-    **/
-    max?: JobMaxAggregateInputType
   }
 
   export type GetJobAggregateType<T extends JobAggregateArgs> = {
@@ -17592,11 +17780,11 @@ export namespace Prisma {
   }
 
 
-    
-    
+
+
   export type JobGroupByArgs = {
     where?: JobWhereInput
-    orderBy?: Enumerable<JobOrderByInput>
+    orderBy?: Enumerable<JobOrderByWithAggregationInput>
     by: Array<JobScalarFieldEnum>
     having?: JobScalarWhereWithAggregatesInput
     take?: number
@@ -17626,17 +17814,17 @@ export namespace Prisma {
     _max: JobMaxAggregateOutputType | null
   }
 
-  type GetJobGroupByPayload<T extends JobGroupByArgs> = Promise<
+  type GetJobGroupByPayload<T extends JobGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<JobGroupByOutputType, T['by']> & 
+      PickArray<JobGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof JobGroupByOutputType))]: P extends '_count' 
-            ? T[P] extends boolean 
-              ? number 
-              : GetScalarType<T[P], JobGroupByOutputType[P]> 
+          [P in ((keyof T) & (keyof JobGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], JobGroupByOutputType[P]>
             : GetScalarType<T[P], JobGroupByOutputType[P]>
         }
-      > 
+      >
     >
 
 
@@ -17664,9 +17852,8 @@ export namespace Prisma {
     ? Job 
     : 'select' extends U
     ? {
-    [P in TrueKeys<S['select']>]: P extends keyof Job ?Job [P]
-  : 
-     never
+    [P in TrueKeys<S['select']>]:
+    P extends keyof Job ? Job[P] : never
   } 
     : Job
   : Job
@@ -17980,13 +18167,13 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, JobGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetJobGroupByPayload<T> : Promise<InputErrors>
+    >(args: SubsetIntersection<T, JobGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetJobGroupByPayload<T> : PrismaPromise<InputErrors>
   }
 
   /**
    * The delegate class that acts as a "Promise-like" for Job.
    * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in 
+   * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
   export class Prisma__JobClient<T> implements PrismaPromise<T> {
@@ -18079,7 +18266,7 @@ export namespace Prisma {
      * Determine the order of Jobs to fetch.
      * 
     **/
-    orderBy?: Enumerable<JobOrderByInput>
+    orderBy?: Enumerable<JobOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -18131,7 +18318,7 @@ export namespace Prisma {
      * Determine the order of Jobs to fetch.
      * 
     **/
-    orderBy?: Enumerable<JobOrderByInput>
+    orderBy?: Enumerable<JobOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
@@ -18178,6 +18365,10 @@ export namespace Prisma {
    * Job createMany
    */
   export type JobCreateManyArgs = {
+    /**
+     * The data used to create many Jobs.
+     * 
+    **/
     data: Enumerable<JobCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -18209,7 +18400,15 @@ export namespace Prisma {
    * Job updateMany
    */
   export type JobUpdateManyArgs = {
+    /**
+     * The data used to update Jobs.
+     * 
+    **/
     data: XOR<JobUpdateManyMutationInput, JobUncheckedUpdateManyInput>
+    /**
+     * Filter which Jobs to update
+     * 
+    **/
     where?: JobWhereInput
   }
 
@@ -18262,6 +18461,10 @@ export namespace Prisma {
    * Job deleteMany
    */
   export type JobDeleteManyArgs = {
+    /**
+     * Filter which Jobs to delete
+     * 
+    **/
     where?: JobWhereInput
   }
 
@@ -18597,7 +18800,30 @@ export namespace Prisma {
     maxLifetime?: IntFilter | number
   }
 
-  export type SessionOrderByInput = {
+  export type SessionOrderByWithRelationInput = {
+    id?: SortOrder
+    sessionToken?: SortOrder
+    emailAddress?: SortOrder
+    ethAddress?: SortOrder
+    challengeHash?: SortOrder
+    signature?: SortOrder
+    profile?: ProfileOrderByWithRelationInput
+    profileId?: SortOrder
+    issuedBy?: SortOrder
+    jti?: SortOrder
+    createdAt?: SortOrder
+    validFrom?: SortOrder
+    endedAt?: SortOrder
+    endReason?: SortOrder
+    maxLifetime?: SortOrder
+  }
+
+  export type SessionWhereUniqueInput = {
+    id?: string
+    sessionToken?: string
+  }
+
+  export type SessionOrderByWithAggregationInput = {
     id?: SortOrder
     sessionToken?: SortOrder
     emailAddress?: SortOrder
@@ -18612,11 +18838,11 @@ export namespace Prisma {
     endedAt?: SortOrder
     endReason?: SortOrder
     maxLifetime?: SortOrder
-  }
-
-  export type SessionWhereUniqueInput = {
-    id?: string
-    sessionToken?: string
+    _count?: SessionCountOrderByAggregateInput
+    _avg?: SessionAvgOrderByAggregateInput
+    _max?: SessionMaxOrderByAggregateInput
+    _min?: SessionMinOrderByAggregateInput
+    _sum?: SessionSumOrderByAggregateInput
   }
 
   export type SessionScalarWhereWithAggregatesInput = {
@@ -18662,7 +18888,31 @@ export namespace Prisma {
     key?: StringFilter | string
   }
 
-  export type InvitationOrderByInput = {
+  export type InvitationOrderByWithRelationInput = {
+    id?: SortOrder
+    createdBy?: ProfileOrderByWithRelationInput
+    createdByProfileId?: SortOrder
+    createdAt?: SortOrder
+    fundedAt?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    claimedBy?: ProfileOrderByWithRelationInput
+    claimedByProfileId?: SortOrder
+    claimedAt?: SortOrder
+    redeemedBy?: ProfileOrderByWithRelationInput
+    redeemedByProfileId?: SortOrder
+    redeemedAt?: SortOrder
+    redeemTxHash?: SortOrder
+    forSafeAddress?: SortOrder
+    address?: SortOrder
+    key?: SortOrder
+  }
+
+  export type InvitationWhereUniqueInput = {
+    id?: number
+  }
+
+  export type InvitationOrderByWithAggregationInput = {
     id?: SortOrder
     createdByProfileId?: SortOrder
     createdAt?: SortOrder
@@ -18677,10 +18927,11 @@ export namespace Prisma {
     forSafeAddress?: SortOrder
     address?: SortOrder
     key?: SortOrder
-  }
-
-  export type InvitationWhereUniqueInput = {
-    id?: number
+    _count?: InvitationCountOrderByAggregateInput
+    _avg?: InvitationAvgOrderByAggregateInput
+    _max?: InvitationMaxOrderByAggregateInput
+    _min?: InvitationMinOrderByAggregateInput
+    _sum?: InvitationSumOrderByAggregateInput
   }
 
   export type InvitationScalarWhereWithAggregatesInput = {
@@ -18714,15 +18965,29 @@ export namespace Prisma {
     profile?: XOR<ProfileRelationFilter, ProfileWhereInput>
   }
 
-  export type InvitationFundsEOAOrderByInput = {
+  export type InvitationFundsEOAOrderByWithRelationInput = {
     id?: SortOrder
     address?: SortOrder
     privateKey?: SortOrder
     profileId?: SortOrder
+    profile?: ProfileOrderByWithRelationInput
   }
 
   export type InvitationFundsEOAWhereUniqueInput = {
     id?: number
+    profileId?: number
+  }
+
+  export type InvitationFundsEOAOrderByWithAggregationInput = {
+    id?: SortOrder
+    address?: SortOrder
+    privateKey?: SortOrder
+    profileId?: SortOrder
+    _count?: InvitationFundsEOACountOrderByAggregateInput
+    _avg?: InvitationFundsEOAAvgOrderByAggregateInput
+    _max?: InvitationFundsEOAMaxOrderByAggregateInput
+    _min?: InvitationFundsEOAMinOrderByAggregateInput
+    _sum?: InvitationFundsEOASumOrderByAggregateInput
   }
 
   export type InvitationFundsEOAScalarWhereWithAggregatesInput = {
@@ -18761,7 +19026,37 @@ export namespace Prisma {
     inviteCount?: IntFilter | number
   }
 
-  export type VerifiedSafeOrderByInput = {
+  export type VerifiedSafeOrderByWithRelationInput = {
+    safeAddress?: SortOrder
+    createdAt?: SortOrder
+    createdBy?: ProfileOrderByWithRelationInput
+    createdByProfileId?: SortOrder
+    createdByOrganisation?: ProfileOrderByWithRelationInput
+    createdByOrganisationId?: SortOrder
+    revokedAt?: SortOrder
+    revokedByProfileId?: SortOrder
+    revokedBy?: ProfileOrderByWithRelationInput
+    swapEoaAddress?: SortOrder
+    swapEoaKey?: SortOrder
+    rewardProcessingStartedAt?: SortOrder
+    rewardProcessingWorker?: SortOrder
+    inviteeRewardTransaction?: TransactionOrderByWithRelationInput
+    inviteeRewardTransactionHash?: SortOrder
+    inviterRewardTransaction?: TransactionOrderByWithRelationInput
+    inviterRewardTransactionHash?: SortOrder
+    swapFundingTransaction?: TransactionOrderByWithRelationInput
+    swapFundingTransactionHash?: SortOrder
+    inviteCount?: SortOrder
+  }
+
+  export type VerifiedSafeWhereUniqueInput = {
+    safeAddress?: string
+    inviteeRewardTransactionHash?: string
+    inviterRewardTransactionHash?: string
+    swapFundingTransactionHash?: string
+  }
+
+  export type VerifiedSafeOrderByWithAggregationInput = {
     safeAddress?: SortOrder
     createdAt?: SortOrder
     createdByProfileId?: SortOrder
@@ -18776,10 +19071,11 @@ export namespace Prisma {
     inviterRewardTransactionHash?: SortOrder
     swapFundingTransactionHash?: SortOrder
     inviteCount?: SortOrder
-  }
-
-  export type VerifiedSafeWhereUniqueInput = {
-    safeAddress?: string
+    _count?: VerifiedSafeCountOrderByAggregateInput
+    _avg?: VerifiedSafeAvgOrderByAggregateInput
+    _max?: VerifiedSafeMaxOrderByAggregateInput
+    _min?: VerifiedSafeMinOrderByAggregateInput
+    _sum?: VerifiedSafeSumOrderByAggregateInput
   }
 
   export type VerifiedSafeScalarWhereWithAggregatesInput = {
@@ -18852,7 +19148,58 @@ export namespace Prisma {
     safesRevokedByPerson?: VerifiedSafeListRelationFilter
   }
 
-  export type ProfileOrderByInput = {
+  export type ProfileOrderByWithRelationInput = {
+    id?: SortOrder
+    lastUpdateAt?: SortOrder
+    emailAddress?: SortOrder
+    createdAt?: SortOrder
+    status?: SortOrder
+    type?: SortOrder
+    successorOfCirclesAddress?: SortOrder
+    circlesAddress?: SortOrder
+    circlesSafeOwner?: SortOrder
+    circlesTokenAddress?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
+    avatarUrl?: SortOrder
+    avatarCid?: SortOrder
+    avatarMimeType?: SortOrder
+    dream?: SortOrder
+    country?: SortOrder
+    newsletter?: SortOrder
+    displayTimeCircles?: SortOrder
+    cityGeonameid?: SortOrder
+    lastAcknowledged?: SortOrder
+    verifySafeChallenge?: SortOrder
+    newSafeAddress?: SortOrder
+    sessions?: SessionOrderByRelationAggregateInput
+    tags?: TagOrderByRelationAggregateInput
+    offers?: OfferOrderByRelationAggregateInput
+    purchases?: PurchaseOrderByRelationAggregateInput
+    invitations?: InvitationOrderByRelationAggregateInput
+    invitationFunds?: InvitationFundsEOAOrderByWithRelationInput
+    redeemedInvitations?: InvitationOrderByRelationAggregateInput
+    claimedInvitations?: InvitationOrderByRelationAggregateInput
+    members?: MembershipOrderByRelationAggregateInput
+    createdMemberships?: MembershipOrderByRelationAggregateInput
+    payableInvoices?: InvoiceOrderByRelationAggregateInput
+    receivableInvoices?: InvoiceOrderByRelationAggregateInput
+    cancelledInvoices?: InvoiceOrderByRelationAggregateInput
+    invoiceNoPrefix?: SortOrder
+    lastInvoiceNo?: SortOrder
+    refundNoPrefix?: SortOrder
+    lastRefundNo?: SortOrder
+    displayCurrency?: SortOrder
+    safesVerifiedByPerson?: VerifiedSafeOrderByRelationAggregateInput
+    safesVerifiedByOrganisation?: VerifiedSafeOrderByRelationAggregateInput
+    safesRevokedByPerson?: VerifiedSafeOrderByRelationAggregateInput
+  }
+
+  export type ProfileWhereUniqueInput = {
+    id?: number
+  }
+
+  export type ProfileOrderByWithAggregationInput = {
     id?: SortOrder
     lastUpdateAt?: SortOrder
     emailAddress?: SortOrder
@@ -18881,10 +19228,11 @@ export namespace Prisma {
     refundNoPrefix?: SortOrder
     lastRefundNo?: SortOrder
     displayCurrency?: SortOrder
-  }
-
-  export type ProfileWhereUniqueInput = {
-    id?: number
+    _count?: ProfileCountOrderByAggregateInput
+    _avg?: ProfileAvgOrderByAggregateInput
+    _max?: ProfileMaxOrderByAggregateInput
+    _min?: ProfileMinOrderByAggregateInput
+    _sum?: ProfileSumOrderByAggregateInput
   }
 
   export type ProfileScalarWhereWithAggregatesInput = {
@@ -18930,7 +19278,7 @@ export namespace Prisma {
     avatarUrl?: StringNullableFilter | string | null
   }
 
-  export type ExternalProfilesOrderByInput = {
+  export type ExternalProfilesOrderByWithRelationInput = {
     circlesAddress?: SortOrder
     name?: SortOrder
     avatarUrl?: SortOrder
@@ -18938,6 +19286,15 @@ export namespace Prisma {
 
   export type ExternalProfilesWhereUniqueInput = {
     circlesAddress?: string
+  }
+
+  export type ExternalProfilesOrderByWithAggregationInput = {
+    circlesAddress?: SortOrder
+    name?: SortOrder
+    avatarUrl?: SortOrder
+    _count?: ExternalProfilesCountOrderByAggregateInput
+    _max?: ExternalProfilesMaxOrderByAggregateInput
+    _min?: ExternalProfilesMinOrderByAggregateInput
   }
 
   export type ExternalProfilesScalarWhereWithAggregatesInput = {
@@ -18966,7 +19323,25 @@ export namespace Prisma {
     memberAt?: XOR<ProfileRelationFilter, ProfileWhereInput>
   }
 
-  export type MembershipOrderByInput = {
+  export type MembershipOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    createdBy?: ProfileOrderByWithRelationInput
+    createdByProfileId?: SortOrder
+    acceptedAt?: SortOrder
+    rejectedAt?: SortOrder
+    validTo?: SortOrder
+    isAdmin?: SortOrder
+    memberAddress?: SortOrder
+    memberAtId?: SortOrder
+    memberAt?: ProfileOrderByWithRelationInput
+  }
+
+  export type MembershipWhereUniqueInput = {
+    id?: number
+  }
+
+  export type MembershipOrderByWithAggregationInput = {
     id?: SortOrder
     createdAt?: SortOrder
     createdByProfileId?: SortOrder
@@ -18976,10 +19351,11 @@ export namespace Prisma {
     isAdmin?: SortOrder
     memberAddress?: SortOrder
     memberAtId?: SortOrder
-  }
-
-  export type MembershipWhereUniqueInput = {
-    id?: number
+    _count?: MembershipCountOrderByAggregateInput
+    _avg?: MembershipAvgOrderByAggregateInput
+    _max?: MembershipMaxOrderByAggregateInput
+    _min?: MembershipMinOrderByAggregateInput
+    _sum?: MembershipSumOrderByAggregateInput
   }
 
   export type MembershipScalarWhereWithAggregatesInput = {
@@ -19010,17 +19386,32 @@ export namespace Prisma {
     tags?: TagListRelationFilter
   }
 
-  export type ChatMessageOrderByInput = {
+  export type ChatMessageOrderByWithRelationInput = {
     id?: SortOrder
     createdAt?: SortOrder
     openedAt?: SortOrder
     from?: SortOrder
     to?: SortOrder
     text?: SortOrder
+    tags?: TagOrderByRelationAggregateInput
   }
 
   export type ChatMessageWhereUniqueInput = {
     id?: number
+  }
+
+  export type ChatMessageOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    openedAt?: SortOrder
+    from?: SortOrder
+    to?: SortOrder
+    text?: SortOrder
+    _count?: ChatMessageCountOrderByAggregateInput
+    _avg?: ChatMessageAvgOrderByAggregateInput
+    _max?: ChatMessageMaxOrderByAggregateInput
+    _min?: ChatMessageMinOrderByAggregateInput
+    _sum?: ChatMessageSumOrderByAggregateInput
   }
 
   export type ChatMessageScalarWhereWithAggregatesInput = {
@@ -19051,7 +19442,7 @@ export namespace Prisma {
     challengedReadAt?: DateTimeNullableFilter | Date | string | null
   }
 
-  export type DelegatedChallengesOrderByInput = {
+  export type DelegatedChallengesOrderByWithRelationInput = {
     id?: SortOrder
     createdAt?: SortOrder
     appId?: SortOrder
@@ -19067,6 +19458,24 @@ export namespace Prisma {
   export type DelegatedChallengesWhereUniqueInput = {
     id?: number
     delegateAuthCode?: string
+  }
+
+  export type DelegatedChallengesOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    appId?: SortOrder
+    sessionId?: SortOrder
+    requestValidTo?: SortOrder
+    delegateAuthCode?: SortOrder
+    challenge?: SortOrder
+    challengeDepositedAt?: SortOrder
+    challengeValidTo?: SortOrder
+    challengedReadAt?: SortOrder
+    _count?: DelegatedChallengesCountOrderByAggregateInput
+    _avg?: DelegatedChallengesAvgOrderByAggregateInput
+    _max?: DelegatedChallengesMaxOrderByAggregateInput
+    _min?: DelegatedChallengesMinOrderByAggregateInput
+    _sum?: DelegatedChallengesSumOrderByAggregateInput
   }
 
   export type DelegatedChallengesScalarWhereWithAggregatesInput = {
@@ -19104,7 +19513,27 @@ export namespace Prisma {
     invoiceLines?: InvoiceLineListRelationFilter
   }
 
-  export type OfferOrderByInput = {
+  export type OfferOrderByWithRelationInput = {
+    id?: SortOrder
+    version?: SortOrder
+    createdBy?: ProfileOrderByWithRelationInput
+    createdByProfileId?: SortOrder
+    createdAt?: SortOrder
+    title?: SortOrder
+    pictureUrl?: SortOrder
+    pictureMimeType?: SortOrder
+    description?: SortOrder
+    pricePerUnit?: SortOrder
+    timeCirclesPriceShare?: SortOrder
+    purchaseLines?: PurchaseLineOrderByRelationAggregateInput
+    invoiceLines?: InvoiceLineOrderByRelationAggregateInput
+  }
+
+  export type OfferWhereUniqueInput = {
+    id_version?: OfferIdVersionCompoundUniqueInput
+  }
+
+  export type OfferOrderByWithAggregationInput = {
     id?: SortOrder
     version?: SortOrder
     createdByProfileId?: SortOrder
@@ -19115,10 +19544,11 @@ export namespace Prisma {
     description?: SortOrder
     pricePerUnit?: SortOrder
     timeCirclesPriceShare?: SortOrder
-  }
-
-  export type OfferWhereUniqueInput = {
-    id_version?: OfferIdVersionCompoundUniqueInput
+    _count?: OfferCountOrderByAggregateInput
+    _avg?: OfferAvgOrderByAggregateInput
+    _max?: OfferMaxOrderByAggregateInput
+    _min?: OfferMinOrderByAggregateInput
+    _sum?: OfferSumOrderByAggregateInput
   }
 
   export type OfferScalarWhereWithAggregatesInput = {
@@ -19150,15 +19580,30 @@ export namespace Prisma {
     invoices?: InvoiceListRelationFilter
   }
 
-  export type PurchaseOrderByInput = {
+  export type PurchaseOrderByWithRelationInput = {
     id?: SortOrder
+    createdBy?: ProfileOrderByWithRelationInput
     createdByProfileId?: SortOrder
     createdAt?: SortOrder
     sticksToInstanceId?: SortOrder
+    lines?: PurchaseLineOrderByRelationAggregateInput
+    invoices?: InvoiceOrderByRelationAggregateInput
   }
 
   export type PurchaseWhereUniqueInput = {
     id?: number
+  }
+
+  export type PurchaseOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdByProfileId?: SortOrder
+    createdAt?: SortOrder
+    sticksToInstanceId?: SortOrder
+    _count?: PurchaseCountOrderByAggregateInput
+    _avg?: PurchaseAvgOrderByAggregateInput
+    _max?: PurchaseMaxOrderByAggregateInput
+    _min?: PurchaseMinOrderByAggregateInput
+    _sum?: PurchaseSumOrderByAggregateInput
   }
 
   export type PurchaseScalarWhereWithAggregatesInput = {
@@ -19184,16 +19629,31 @@ export namespace Prisma {
     productVersion?: IntFilter | number
   }
 
-  export type PurchaseLineOrderByInput = {
+  export type PurchaseLineOrderByWithRelationInput = {
     id?: SortOrder
+    purchase?: PurchaseOrderByWithRelationInput
     purchaseId?: SortOrder
     amount?: SortOrder
+    product?: OfferOrderByWithRelationInput
     productId?: SortOrder
     productVersion?: SortOrder
   }
 
   export type PurchaseLineWhereUniqueInput = {
     id?: number
+  }
+
+  export type PurchaseLineOrderByWithAggregationInput = {
+    id?: SortOrder
+    purchaseId?: SortOrder
+    amount?: SortOrder
+    productId?: SortOrder
+    productVersion?: SortOrder
+    _count?: PurchaseLineCountOrderByAggregateInput
+    _avg?: PurchaseLineAvgOrderByAggregateInput
+    _max?: PurchaseLineMaxOrderByAggregateInput
+    _min?: PurchaseLineMinOrderByAggregateInput
+    _sum?: PurchaseLineSumOrderByAggregateInput
   }
 
   export type PurchaseLineScalarWhereWithAggregatesInput = {
@@ -19235,7 +19695,37 @@ export namespace Prisma {
     cancelReason?: StringNullableFilter | string | null
   }
 
-  export type InvoiceOrderByInput = {
+  export type InvoiceOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    invoiceNo?: SortOrder
+    customerProfile?: ProfileOrderByWithRelationInput
+    customerProfileId?: SortOrder
+    sellerProfile?: ProfileOrderByWithRelationInput
+    sellerProfileId?: SortOrder
+    purchase?: PurchaseOrderByWithRelationInput
+    purchaseId?: SortOrder
+    lines?: InvoiceLineOrderByRelationAggregateInput
+    pendingPaymentTransactionHash?: SortOrder
+    paymentTransaction?: TransactionOrderByWithRelationInput
+    paymentTransactionHash?: SortOrder
+    pickupCode?: SortOrder
+    buyerSignature?: SortOrder
+    buyerSignedDate?: SortOrder
+    sellerSignature?: SortOrder
+    sellerSignedDate?: SortOrder
+    cancelledAt?: SortOrder
+    cancelledBy?: ProfileOrderByWithRelationInput
+    cancelledByProfileId?: SortOrder
+    cancelReason?: SortOrder
+  }
+
+  export type InvoiceWhereUniqueInput = {
+    id?: number
+    paymentTransactionHash?: string
+  }
+
+  export type InvoiceOrderByWithAggregationInput = {
     id?: SortOrder
     createdAt?: SortOrder
     invoiceNo?: SortOrder
@@ -19252,10 +19742,11 @@ export namespace Prisma {
     cancelledAt?: SortOrder
     cancelledByProfileId?: SortOrder
     cancelReason?: SortOrder
-  }
-
-  export type InvoiceWhereUniqueInput = {
-    id?: number
+    _count?: InvoiceCountOrderByAggregateInput
+    _avg?: InvoiceAvgOrderByAggregateInput
+    _max?: InvoiceMaxOrderByAggregateInput
+    _min?: InvoiceMinOrderByAggregateInput
+    _sum?: InvoiceSumOrderByAggregateInput
   }
 
   export type InvoiceScalarWhereWithAggregatesInput = {
@@ -19293,16 +19784,31 @@ export namespace Prisma {
     productVersion?: IntFilter | number
   }
 
-  export type InvoiceLineOrderByInput = {
+  export type InvoiceLineOrderByWithRelationInput = {
     id?: SortOrder
+    invoice?: InvoiceOrderByWithRelationInput
     invoiceId?: SortOrder
     amount?: SortOrder
+    product?: OfferOrderByWithRelationInput
     productId?: SortOrder
     productVersion?: SortOrder
   }
 
   export type InvoiceLineWhereUniqueInput = {
     id?: number
+  }
+
+  export type InvoiceLineOrderByWithAggregationInput = {
+    id?: SortOrder
+    invoiceId?: SortOrder
+    amount?: SortOrder
+    productId?: SortOrder
+    productVersion?: SortOrder
+    _count?: InvoiceLineCountOrderByAggregateInput
+    _avg?: InvoiceLineAvgOrderByAggregateInput
+    _max?: InvoiceLineMaxOrderByAggregateInput
+    _min?: InvoiceLineMinOrderByAggregateInput
+    _sum?: InvoiceLineSumOrderByAggregateInput
   }
 
   export type InvoiceLineScalarWhereWithAggregatesInput = {
@@ -19324,12 +19830,20 @@ export namespace Prisma {
     tags?: TagListRelationFilter
   }
 
-  export type TagTypeOrderByInput = {
+  export type TagTypeOrderByWithRelationInput = {
     id?: SortOrder
+    tags?: TagOrderByRelationAggregateInput
   }
 
   export type TagTypeWhereUniqueInput = {
     id?: string
+  }
+
+  export type TagTypeOrderByWithAggregationInput = {
+    id?: SortOrder
+    _count?: TagTypeCountOrderByAggregateInput
+    _max?: TagTypeMaxOrderByAggregateInput
+    _min?: TagTypeMinOrderByAggregateInput
   }
 
   export type TagTypeScalarWhereWithAggregatesInput = {
@@ -19351,12 +19865,24 @@ export namespace Prisma {
     SwapFunding_VerifiedSafe?: XOR<VerifiedSafeRelationFilter, VerifiedSafeWhereInput> | null
   }
 
-  export type TransactionOrderByInput = {
+  export type TransactionOrderByWithRelationInput = {
     transactionHash?: SortOrder
+    tags?: TagOrderByRelationAggregateInput
+    payedInvoice?: InvoiceOrderByWithRelationInput
+    InviteeReward_VerifiedSafe?: VerifiedSafeOrderByWithRelationInput
+    InviterReward_VerifiedSafe?: VerifiedSafeOrderByWithRelationInput
+    SwapFunding_VerifiedSafe?: VerifiedSafeOrderByWithRelationInput
   }
 
   export type TransactionWhereUniqueInput = {
     transactionHash?: string
+  }
+
+  export type TransactionOrderByWithAggregationInput = {
+    transactionHash?: SortOrder
+    _count?: TransactionCountOrderByAggregateInput
+    _max?: TransactionMaxOrderByAggregateInput
+    _min?: TransactionMinOrderByAggregateInput
   }
 
   export type TransactionScalarWhereWithAggregatesInput = {
@@ -19384,7 +19910,26 @@ export namespace Prisma {
     value?: StringNullableFilter | string | null
   }
 
-  export type TagOrderByInput = {
+  export type TagOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    createdBy?: ProfileOrderByWithRelationInput
+    createdByProfileId?: SortOrder
+    isPrivate?: SortOrder
+    transaction?: TransactionOrderByWithRelationInput
+    transactionHash?: SortOrder
+    type?: TagTypeOrderByWithRelationInput
+    typeId?: SortOrder
+    chatMessage?: ChatMessageOrderByWithRelationInput
+    chatMessageId?: SortOrder
+    value?: SortOrder
+  }
+
+  export type TagWhereUniqueInput = {
+    id?: number
+  }
+
+  export type TagOrderByWithAggregationInput = {
     id?: SortOrder
     createdAt?: SortOrder
     createdByProfileId?: SortOrder
@@ -19393,10 +19938,11 @@ export namespace Prisma {
     typeId?: SortOrder
     chatMessageId?: SortOrder
     value?: SortOrder
-  }
-
-  export type TagWhereUniqueInput = {
-    id?: number
+    _count?: TagCountOrderByAggregateInput
+    _avg?: TagAvgOrderByAggregateInput
+    _max?: TagMaxOrderByAggregateInput
+    _min?: TagMinOrderByAggregateInput
+    _sum?: TagSumOrderByAggregateInput
   }
 
   export type TagScalarWhereWithAggregatesInput = {
@@ -19428,7 +19974,7 @@ export namespace Prisma {
     payload?: StringFilter | string
   }
 
-  export type JobOrderByInput = {
+  export type JobOrderByWithRelationInput = {
     id?: SortOrder
     hash?: SortOrder
     createdAt?: SortOrder
@@ -19443,6 +19989,23 @@ export namespace Prisma {
   export type JobWhereUniqueInput = {
     id?: number
     hash?: string
+  }
+
+  export type JobOrderByWithAggregationInput = {
+    id?: SortOrder
+    hash?: SortOrder
+    createdAt?: SortOrder
+    finishedAt?: SortOrder
+    error?: SortOrder
+    warning?: SortOrder
+    info?: SortOrder
+    topic?: SortOrder
+    payload?: SortOrder
+    _count?: JobCountOrderByAggregateInput
+    _avg?: JobAvgOrderByAggregateInput
+    _max?: JobMaxOrderByAggregateInput
+    _min?: JobMinOrderByAggregateInput
+    _sum?: JobSumOrderByAggregateInput
   }
 
   export type JobScalarWhereWithAggregatesInput = {
@@ -19467,6 +20030,7 @@ export namespace Prisma {
     ethAddress?: string | null
     challengeHash?: string | null
     signature?: string | null
+    profile?: ProfileCreateNestedOneWithoutSessionsInput
     issuedBy: string
     jti?: string | null
     createdAt: Date | string
@@ -19474,7 +20038,6 @@ export namespace Prisma {
     endedAt?: Date | string | null
     endReason?: string | null
     maxLifetime: number
-    profile?: ProfileCreateNestedOneWithoutSessionsInput
   }
 
   export type SessionUncheckedCreateInput = {
@@ -19501,6 +20064,7 @@ export namespace Prisma {
     ethAddress?: NullableStringFieldUpdateOperationsInput | string | null
     challengeHash?: NullableStringFieldUpdateOperationsInput | string | null
     signature?: NullableStringFieldUpdateOperationsInput | string | null
+    profile?: ProfileUpdateOneWithoutSessionsInput
     issuedBy?: StringFieldUpdateOperationsInput | string
     jti?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19508,7 +20072,6 @@ export namespace Prisma {
     endedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endReason?: NullableStringFieldUpdateOperationsInput | string | null
     maxLifetime?: IntFieldUpdateOperationsInput | number
-    profile?: ProfileUpdateOneWithoutSessionsInput
   }
 
   export type SessionUncheckedUpdateInput = {
@@ -19579,19 +20142,19 @@ export namespace Prisma {
   }
 
   export type InvitationCreateInput = {
+    createdBy: ProfileCreateNestedOneWithoutInvitationsInput
     createdAt: Date | string
     fundedAt?: Date | string | null
     name: string
     code: string
+    claimedBy?: ProfileCreateNestedOneWithoutClaimedInvitationsInput
     claimedAt?: Date | string | null
+    redeemedBy?: ProfileCreateNestedOneWithoutRedeemedInvitationsInput
     redeemedAt?: Date | string | null
     redeemTxHash?: string | null
     forSafeAddress?: string | null
     address: string
     key: string
-    createdBy: ProfileCreateNestedOneWithoutInvitationsInput
-    claimedBy?: ProfileCreateNestedOneWithoutClaimedInvitationsInput
-    redeemedBy?: ProfileCreateNestedOneWithoutRedeemedInvitationsInput
   }
 
   export type InvitationUncheckedCreateInput = {
@@ -19612,19 +20175,19 @@ export namespace Prisma {
   }
 
   export type InvitationUpdateInput = {
+    createdBy?: ProfileUpdateOneRequiredWithoutInvitationsInput
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
+    claimedBy?: ProfileUpdateOneWithoutClaimedInvitationsInput
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemedBy?: ProfileUpdateOneWithoutRedeemedInvitationsInput
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
     forSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-    createdBy?: ProfileUpdateOneRequiredWithoutInvitationsInput
-    claimedBy?: ProfileUpdateOneWithoutClaimedInvitationsInput
-    redeemedBy?: ProfileUpdateOneWithoutRedeemedInvitationsInput
   }
 
   export type InvitationUncheckedUpdateInput = {
@@ -19739,18 +20302,18 @@ export namespace Prisma {
   export type VerifiedSafeCreateInput = {
     safeAddress: string
     createdAt?: Date | string
+    createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
+    createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     revokedAt?: Date | string | null
+    revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
-    inviteCount?: number
-    createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
-    createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
-    revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
     inviterRewardTransaction?: TransactionCreateNestedOneWithoutInviterReward_VerifiedSafeInput
     swapFundingTransaction?: TransactionCreateNestedOneWithoutSwapFunding_VerifiedSafeInput
+    inviteCount?: number
   }
 
   export type VerifiedSafeUncheckedCreateInput = {
@@ -19773,18 +20336,18 @@ export namespace Prisma {
   export type VerifiedSafeUpdateInput = {
     safeAddress?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
+    createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
-    inviteCount?: IntFieldUpdateOperationsInput | number
-    createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
-    createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
-    revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
     inviterRewardTransaction?: TransactionUpdateOneWithoutInviterReward_VerifiedSafeInput
     swapFundingTransaction?: TransactionUpdateOneWithoutSwapFunding_VerifiedSafeInput
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type VerifiedSafeUncheckedUpdateInput = {
@@ -19872,11 +20435,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -19890,6 +20448,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -19919,11 +20482,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -19937,6 +20495,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -19965,11 +20528,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -19983,6 +20541,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -20012,11 +20575,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -20030,6 +20588,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -20171,12 +20734,12 @@ export namespace Prisma {
 
   export type MembershipCreateInput = {
     createdAt?: Date | string
+    createdBy: ProfileCreateNestedOneWithoutCreatedMembershipsInput
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
     isAdmin?: boolean | null
     memberAddress: string
-    createdBy: ProfileCreateNestedOneWithoutCreatedMembershipsInput
     memberAt: ProfileCreateNestedOneWithoutMembersInput
   }
 
@@ -20194,12 +20757,12 @@ export namespace Prisma {
 
   export type MembershipUpdateInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: ProfileUpdateOneRequiredWithoutCreatedMembershipsInput
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
     memberAddress?: StringFieldUpdateOperationsInput | string
-    createdBy?: ProfileUpdateOneRequiredWithoutCreatedMembershipsInput
     memberAt?: ProfileUpdateOneRequiredWithoutMembersInput
   }
 
@@ -20403,6 +20966,7 @@ export namespace Prisma {
   export type OfferCreateInput = {
     id?: number
     version: number
+    createdBy: ProfileCreateNestedOneWithoutOffersInput
     createdAt: Date | string
     title: string
     pictureUrl?: string | null
@@ -20410,7 +20974,6 @@ export namespace Prisma {
     description?: string | null
     pricePerUnit: string
     timeCirclesPriceShare: number
-    createdBy: ProfileCreateNestedOneWithoutOffersInput
     purchaseLines?: PurchaseLineCreateNestedManyWithoutProductInput
     invoiceLines?: InvoiceLineCreateNestedManyWithoutProductInput
   }
@@ -20433,6 +20996,7 @@ export namespace Prisma {
   export type OfferUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     version?: IntFieldUpdateOperationsInput | number
+    createdBy?: ProfileUpdateOneRequiredWithoutOffersInput
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: StringFieldUpdateOperationsInput | string
     pictureUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20440,7 +21004,6 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
     timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
-    createdBy?: ProfileUpdateOneRequiredWithoutOffersInput
     purchaseLines?: PurchaseLineUpdateManyWithoutProductInput
     invoiceLines?: InvoiceLineUpdateManyWithoutProductInput
   }
@@ -20499,9 +21062,9 @@ export namespace Prisma {
   }
 
   export type PurchaseCreateInput = {
+    createdBy: ProfileCreateNestedOneWithoutPurchasesInput
     createdAt: Date | string
     sticksToInstanceId?: string | null
-    createdBy: ProfileCreateNestedOneWithoutPurchasesInput
     lines?: PurchaseLineCreateNestedManyWithoutPurchaseInput
     invoices?: InvoiceCreateNestedManyWithoutPurchaseInput
   }
@@ -20516,9 +21079,9 @@ export namespace Prisma {
   }
 
   export type PurchaseUpdateInput = {
+    createdBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sticksToInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
     lines?: PurchaseLineUpdateManyWithoutPurchaseInput
     invoices?: InvoiceUpdateManyWithoutPurchaseInput
   }
@@ -20552,8 +21115,8 @@ export namespace Prisma {
   }
 
   export type PurchaseLineCreateInput = {
-    amount: number
     purchase: PurchaseCreateNestedOneWithoutLinesInput
+    amount: number
     product: OfferCreateNestedOneWithoutPurchaseLinesInput
   }
 
@@ -20566,8 +21129,8 @@ export namespace Prisma {
   }
 
   export type PurchaseLineUpdateInput = {
-    amount?: IntFieldUpdateOperationsInput | number
     purchase?: PurchaseUpdateOneRequiredWithoutLinesInput
+    amount?: IntFieldUpdateOperationsInput | number
     product?: OfferUpdateOneRequiredWithoutPurchaseLinesInput
   }
 
@@ -20602,20 +21165,20 @@ export namespace Prisma {
   export type InvoiceCreateInput = {
     createdAt: Date | string
     invoiceNo: string
+    customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
+    sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
+    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
+    lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: string | null
+    paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
     pickupCode?: string | null
     buyerSignature?: boolean | null
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
     cancelledAt?: Date | string | null
-    cancelReason?: string | null
-    customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
-    sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
-    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
-    lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
-    paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
     cancelledBy?: ProfileCreateNestedOneWithoutCancelledInvoicesInput
+    cancelReason?: string | null
   }
 
   export type InvoiceUncheckedCreateInput = {
@@ -20625,6 +21188,7 @@ export namespace Prisma {
     customerProfileId: number
     sellerProfileId: number
     purchaseId: number
+    lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: string | null
     paymentTransactionHash?: string | null
     pickupCode?: string | null
@@ -20635,26 +21199,25 @@ export namespace Prisma {
     cancelledAt?: Date | string | null
     cancelledByProfileId?: number | null
     cancelReason?: string | null
-    lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
   export type InvoiceUpdateInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNo?: StringFieldUpdateOperationsInput | string
+    customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
+    sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
+    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
+    lines?: InvoiceLineUpdateManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
     buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
-    customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
-    sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
-    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
-    lines?: InvoiceLineUpdateManyWithoutInvoiceInput
-    paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
     cancelledBy?: ProfileUpdateOneWithoutCancelledInvoicesInput
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type InvoiceUncheckedUpdateInput = {
@@ -20664,6 +21227,7 @@ export namespace Prisma {
     customerProfileId?: IntFieldUpdateOperationsInput | number
     sellerProfileId?: IntFieldUpdateOperationsInput | number
     purchaseId?: IntFieldUpdateOperationsInput | number
+    lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20674,7 +21238,6 @@ export namespace Prisma {
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
-    lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
   export type InvoiceCreateManyInput = {
@@ -20729,8 +21292,8 @@ export namespace Prisma {
   }
 
   export type InvoiceLineCreateInput = {
-    amount: number
     invoice: InvoiceCreateNestedOneWithoutLinesInput
+    amount: number
     product: OfferCreateNestedOneWithoutInvoiceLinesInput
   }
 
@@ -20743,8 +21306,8 @@ export namespace Prisma {
   }
 
   export type InvoiceLineUpdateInput = {
-    amount?: IntFieldUpdateOperationsInput | number
     invoice?: InvoiceUpdateOneRequiredWithoutLinesInput
+    amount?: IntFieldUpdateOperationsInput | number
     product?: OfferUpdateOneRequiredWithoutInvoiceLinesInput
   }
 
@@ -20858,12 +21421,12 @@ export namespace Prisma {
 
   export type TagCreateInput = {
     createdAt: Date | string
-    isPrivate: boolean
-    value?: string | null
     createdBy: ProfileCreateNestedOneWithoutTagsInput
+    isPrivate: boolean
     transaction?: TransactionCreateNestedOneWithoutTagsInput
     type: TagTypeCreateNestedOneWithoutTagsInput
     chatMessage?: ChatMessageCreateNestedOneWithoutTagsInput
+    value?: string | null
   }
 
   export type TagUncheckedCreateInput = {
@@ -20879,12 +21442,12 @@ export namespace Prisma {
 
   export type TagUpdateInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    value?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     transaction?: TransactionUpdateOneWithoutTagsInput
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
     chatMessage?: ChatMessageUpdateOneWithoutTagsInput
+    value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TagUncheckedUpdateInput = {
@@ -21086,6 +21649,67 @@ export namespace Prisma {
     not?: NestedIntFilter | number
   }
 
+  export type SessionCountOrderByAggregateInput = {
+    id?: SortOrder
+    sessionToken?: SortOrder
+    emailAddress?: SortOrder
+    ethAddress?: SortOrder
+    challengeHash?: SortOrder
+    signature?: SortOrder
+    profileId?: SortOrder
+    issuedBy?: SortOrder
+    jti?: SortOrder
+    createdAt?: SortOrder
+    validFrom?: SortOrder
+    endedAt?: SortOrder
+    endReason?: SortOrder
+    maxLifetime?: SortOrder
+  }
+
+  export type SessionAvgOrderByAggregateInput = {
+    profileId?: SortOrder
+    maxLifetime?: SortOrder
+  }
+
+  export type SessionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    sessionToken?: SortOrder
+    emailAddress?: SortOrder
+    ethAddress?: SortOrder
+    challengeHash?: SortOrder
+    signature?: SortOrder
+    profileId?: SortOrder
+    issuedBy?: SortOrder
+    jti?: SortOrder
+    createdAt?: SortOrder
+    validFrom?: SortOrder
+    endedAt?: SortOrder
+    endReason?: SortOrder
+    maxLifetime?: SortOrder
+  }
+
+  export type SessionMinOrderByAggregateInput = {
+    id?: SortOrder
+    sessionToken?: SortOrder
+    emailAddress?: SortOrder
+    ethAddress?: SortOrder
+    challengeHash?: SortOrder
+    signature?: SortOrder
+    profileId?: SortOrder
+    issuedBy?: SortOrder
+    jti?: SortOrder
+    createdAt?: SortOrder
+    validFrom?: SortOrder
+    endedAt?: SortOrder
+    endReason?: SortOrder
+    maxLifetime?: SortOrder
+  }
+
+  export type SessionSumOrderByAggregateInput = {
+    profileId?: SortOrder
+    maxLifetime?: SortOrder
+  }
+
   export type StringWithAggregatesFilter = {
     equals?: string
     in?: Enumerable<string>
@@ -21100,23 +21724,8 @@ export namespace Prisma {
     mode?: QueryMode
     not?: NestedStringWithAggregatesFilter | string
     _count?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntFilter
     _min?: NestedStringFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedStringFilter
     _max?: NestedStringFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedStringFilter
   }
 
   export type StringNullableWithAggregatesFilter = {
@@ -21133,23 +21742,8 @@ export namespace Prisma {
     mode?: QueryMode
     not?: NestedStringNullableWithAggregatesFilter | string | null
     _count?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntNullableFilter
     _min?: NestedStringNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedStringNullableFilter
     _max?: NestedStringNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedStringNullableFilter
   }
 
   export type IntNullableWithAggregatesFilter = {
@@ -21162,35 +21756,10 @@ export namespace Prisma {
     gte?: number
     not?: NestedIntNullableWithAggregatesFilter | number | null
     _count?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntNullableFilter
     _avg?: NestedFloatNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    avg?: NestedFloatNullableFilter
     _sum?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    sum?: NestedIntNullableFilter
     _min?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedIntNullableFilter
     _max?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedIntNullableFilter
   }
 
   export type DateTimeWithAggregatesFilter = {
@@ -21203,23 +21772,8 @@ export namespace Prisma {
     gte?: Date | string
     not?: NestedDateTimeWithAggregatesFilter | Date | string
     _count?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntFilter
     _min?: NestedDateTimeFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedDateTimeFilter
     _max?: NestedDateTimeFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedDateTimeFilter
   }
 
   export type DateTimeNullableWithAggregatesFilter = {
@@ -21232,23 +21786,8 @@ export namespace Prisma {
     gte?: Date | string
     not?: NestedDateTimeNullableWithAggregatesFilter | Date | string | null
     _count?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntNullableFilter
     _min?: NestedDateTimeNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedDateTimeNullableFilter
     _max?: NestedDateTimeNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedDateTimeNullableFilter
   }
 
   export type IntWithAggregatesFilter = {
@@ -21261,40 +21800,176 @@ export namespace Prisma {
     gte?: number
     not?: NestedIntWithAggregatesFilter | number
     _count?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntFilter
     _avg?: NestedFloatFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    avg?: NestedFloatFilter
     _sum?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    sum?: NestedIntFilter
     _min?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedIntFilter
     _max?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedIntFilter
+  }
+
+  export type InvitationCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdByProfileId?: SortOrder
+    createdAt?: SortOrder
+    fundedAt?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    claimedByProfileId?: SortOrder
+    claimedAt?: SortOrder
+    redeemedByProfileId?: SortOrder
+    redeemedAt?: SortOrder
+    redeemTxHash?: SortOrder
+    forSafeAddress?: SortOrder
+    address?: SortOrder
+    key?: SortOrder
+  }
+
+  export type InvitationAvgOrderByAggregateInput = {
+    id?: SortOrder
+    createdByProfileId?: SortOrder
+    claimedByProfileId?: SortOrder
+    redeemedByProfileId?: SortOrder
+  }
+
+  export type InvitationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdByProfileId?: SortOrder
+    createdAt?: SortOrder
+    fundedAt?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    claimedByProfileId?: SortOrder
+    claimedAt?: SortOrder
+    redeemedByProfileId?: SortOrder
+    redeemedAt?: SortOrder
+    redeemTxHash?: SortOrder
+    forSafeAddress?: SortOrder
+    address?: SortOrder
+    key?: SortOrder
+  }
+
+  export type InvitationMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdByProfileId?: SortOrder
+    createdAt?: SortOrder
+    fundedAt?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    claimedByProfileId?: SortOrder
+    claimedAt?: SortOrder
+    redeemedByProfileId?: SortOrder
+    redeemedAt?: SortOrder
+    redeemTxHash?: SortOrder
+    forSafeAddress?: SortOrder
+    address?: SortOrder
+    key?: SortOrder
+  }
+
+  export type InvitationSumOrderByAggregateInput = {
+    id?: SortOrder
+    createdByProfileId?: SortOrder
+    claimedByProfileId?: SortOrder
+    redeemedByProfileId?: SortOrder
+  }
+
+  export type InvitationFundsEOACountOrderByAggregateInput = {
+    id?: SortOrder
+    address?: SortOrder
+    privateKey?: SortOrder
+    profileId?: SortOrder
+  }
+
+  export type InvitationFundsEOAAvgOrderByAggregateInput = {
+    id?: SortOrder
+    profileId?: SortOrder
+  }
+
+  export type InvitationFundsEOAMaxOrderByAggregateInput = {
+    id?: SortOrder
+    address?: SortOrder
+    privateKey?: SortOrder
+    profileId?: SortOrder
+  }
+
+  export type InvitationFundsEOAMinOrderByAggregateInput = {
+    id?: SortOrder
+    address?: SortOrder
+    privateKey?: SortOrder
+    profileId?: SortOrder
+  }
+
+  export type InvitationFundsEOASumOrderByAggregateInput = {
+    id?: SortOrder
+    profileId?: SortOrder
   }
 
   export type TransactionRelationFilter = {
     is?: TransactionWhereInput | null
     isNot?: TransactionWhereInput | null
+  }
+
+  export type VerifiedSafeCountOrderByAggregateInput = {
+    safeAddress?: SortOrder
+    createdAt?: SortOrder
+    createdByProfileId?: SortOrder
+    createdByOrganisationId?: SortOrder
+    revokedAt?: SortOrder
+    revokedByProfileId?: SortOrder
+    swapEoaAddress?: SortOrder
+    swapEoaKey?: SortOrder
+    rewardProcessingStartedAt?: SortOrder
+    rewardProcessingWorker?: SortOrder
+    inviteeRewardTransactionHash?: SortOrder
+    inviterRewardTransactionHash?: SortOrder
+    swapFundingTransactionHash?: SortOrder
+    inviteCount?: SortOrder
+  }
+
+  export type VerifiedSafeAvgOrderByAggregateInput = {
+    createdByProfileId?: SortOrder
+    createdByOrganisationId?: SortOrder
+    revokedByProfileId?: SortOrder
+    inviteCount?: SortOrder
+  }
+
+  export type VerifiedSafeMaxOrderByAggregateInput = {
+    safeAddress?: SortOrder
+    createdAt?: SortOrder
+    createdByProfileId?: SortOrder
+    createdByOrganisationId?: SortOrder
+    revokedAt?: SortOrder
+    revokedByProfileId?: SortOrder
+    swapEoaAddress?: SortOrder
+    swapEoaKey?: SortOrder
+    rewardProcessingStartedAt?: SortOrder
+    rewardProcessingWorker?: SortOrder
+    inviteeRewardTransactionHash?: SortOrder
+    inviterRewardTransactionHash?: SortOrder
+    swapFundingTransactionHash?: SortOrder
+    inviteCount?: SortOrder
+  }
+
+  export type VerifiedSafeMinOrderByAggregateInput = {
+    safeAddress?: SortOrder
+    createdAt?: SortOrder
+    createdByProfileId?: SortOrder
+    createdByOrganisationId?: SortOrder
+    revokedAt?: SortOrder
+    revokedByProfileId?: SortOrder
+    swapEoaAddress?: SortOrder
+    swapEoaKey?: SortOrder
+    rewardProcessingStartedAt?: SortOrder
+    rewardProcessingWorker?: SortOrder
+    inviteeRewardTransactionHash?: SortOrder
+    inviterRewardTransactionHash?: SortOrder
+    swapFundingTransactionHash?: SortOrder
+    inviteCount?: SortOrder
+  }
+
+  export type VerifiedSafeSumOrderByAggregateInput = {
+    createdByProfileId?: SortOrder
+    createdByOrganisationId?: SortOrder
+    revokedByProfileId?: SortOrder
+    inviteCount?: SortOrder
   }
 
   export type EnumProfileTypeNullableFilter = {
@@ -21362,52 +22037,309 @@ export namespace Prisma {
     none?: VerifiedSafeWhereInput
   }
 
+  export type SessionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TagOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type OfferOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PurchaseOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type InvitationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type MembershipOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type InvoiceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type VerifiedSafeOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ProfileCountOrderByAggregateInput = {
+    id?: SortOrder
+    lastUpdateAt?: SortOrder
+    emailAddress?: SortOrder
+    createdAt?: SortOrder
+    status?: SortOrder
+    type?: SortOrder
+    successorOfCirclesAddress?: SortOrder
+    circlesAddress?: SortOrder
+    circlesSafeOwner?: SortOrder
+    circlesTokenAddress?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
+    avatarUrl?: SortOrder
+    avatarCid?: SortOrder
+    avatarMimeType?: SortOrder
+    dream?: SortOrder
+    country?: SortOrder
+    newsletter?: SortOrder
+    displayTimeCircles?: SortOrder
+    cityGeonameid?: SortOrder
+    lastAcknowledged?: SortOrder
+    verifySafeChallenge?: SortOrder
+    newSafeAddress?: SortOrder
+    invoiceNoPrefix?: SortOrder
+    lastInvoiceNo?: SortOrder
+    refundNoPrefix?: SortOrder
+    lastRefundNo?: SortOrder
+    displayCurrency?: SortOrder
+  }
+
+  export type ProfileAvgOrderByAggregateInput = {
+    id?: SortOrder
+    cityGeonameid?: SortOrder
+    lastInvoiceNo?: SortOrder
+    lastRefundNo?: SortOrder
+  }
+
+  export type ProfileMaxOrderByAggregateInput = {
+    id?: SortOrder
+    lastUpdateAt?: SortOrder
+    emailAddress?: SortOrder
+    createdAt?: SortOrder
+    status?: SortOrder
+    type?: SortOrder
+    successorOfCirclesAddress?: SortOrder
+    circlesAddress?: SortOrder
+    circlesSafeOwner?: SortOrder
+    circlesTokenAddress?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
+    avatarUrl?: SortOrder
+    avatarCid?: SortOrder
+    avatarMimeType?: SortOrder
+    dream?: SortOrder
+    country?: SortOrder
+    newsletter?: SortOrder
+    displayTimeCircles?: SortOrder
+    cityGeonameid?: SortOrder
+    lastAcknowledged?: SortOrder
+    verifySafeChallenge?: SortOrder
+    newSafeAddress?: SortOrder
+    invoiceNoPrefix?: SortOrder
+    lastInvoiceNo?: SortOrder
+    refundNoPrefix?: SortOrder
+    lastRefundNo?: SortOrder
+    displayCurrency?: SortOrder
+  }
+
+  export type ProfileMinOrderByAggregateInput = {
+    id?: SortOrder
+    lastUpdateAt?: SortOrder
+    emailAddress?: SortOrder
+    createdAt?: SortOrder
+    status?: SortOrder
+    type?: SortOrder
+    successorOfCirclesAddress?: SortOrder
+    circlesAddress?: SortOrder
+    circlesSafeOwner?: SortOrder
+    circlesTokenAddress?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
+    avatarUrl?: SortOrder
+    avatarCid?: SortOrder
+    avatarMimeType?: SortOrder
+    dream?: SortOrder
+    country?: SortOrder
+    newsletter?: SortOrder
+    displayTimeCircles?: SortOrder
+    cityGeonameid?: SortOrder
+    lastAcknowledged?: SortOrder
+    verifySafeChallenge?: SortOrder
+    newSafeAddress?: SortOrder
+    invoiceNoPrefix?: SortOrder
+    lastInvoiceNo?: SortOrder
+    refundNoPrefix?: SortOrder
+    lastRefundNo?: SortOrder
+    displayCurrency?: SortOrder
+  }
+
+  export type ProfileSumOrderByAggregateInput = {
+    id?: SortOrder
+    cityGeonameid?: SortOrder
+    lastInvoiceNo?: SortOrder
+    lastRefundNo?: SortOrder
+  }
+
   export type EnumProfileTypeNullableWithAggregatesFilter = {
     equals?: ProfileType | null
     in?: Enumerable<ProfileType> | null
     notIn?: Enumerable<ProfileType> | null
     not?: NestedEnumProfileTypeNullableWithAggregatesFilter | ProfileType | null
     _count?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntNullableFilter
     _min?: NestedEnumProfileTypeNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedEnumProfileTypeNullableFilter
     _max?: NestedEnumProfileTypeNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedEnumProfileTypeNullableFilter
   }
 
   export type BoolNullableWithAggregatesFilter = {
     equals?: boolean | null
     not?: NestedBoolNullableWithAggregatesFilter | boolean | null
     _count?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntNullableFilter
     _min?: NestedBoolNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedBoolNullableFilter
     _max?: NestedBoolNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedBoolNullableFilter
+  }
+
+  export type ExternalProfilesCountOrderByAggregateInput = {
+    circlesAddress?: SortOrder
+    name?: SortOrder
+    avatarUrl?: SortOrder
+  }
+
+  export type ExternalProfilesMaxOrderByAggregateInput = {
+    circlesAddress?: SortOrder
+    name?: SortOrder
+    avatarUrl?: SortOrder
+  }
+
+  export type ExternalProfilesMinOrderByAggregateInput = {
+    circlesAddress?: SortOrder
+    name?: SortOrder
+    avatarUrl?: SortOrder
+  }
+
+  export type MembershipCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    createdByProfileId?: SortOrder
+    acceptedAt?: SortOrder
+    rejectedAt?: SortOrder
+    validTo?: SortOrder
+    isAdmin?: SortOrder
+    memberAddress?: SortOrder
+    memberAtId?: SortOrder
+  }
+
+  export type MembershipAvgOrderByAggregateInput = {
+    id?: SortOrder
+    createdByProfileId?: SortOrder
+    memberAtId?: SortOrder
+  }
+
+  export type MembershipMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    createdByProfileId?: SortOrder
+    acceptedAt?: SortOrder
+    rejectedAt?: SortOrder
+    validTo?: SortOrder
+    isAdmin?: SortOrder
+    memberAddress?: SortOrder
+    memberAtId?: SortOrder
+  }
+
+  export type MembershipMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    createdByProfileId?: SortOrder
+    acceptedAt?: SortOrder
+    rejectedAt?: SortOrder
+    validTo?: SortOrder
+    isAdmin?: SortOrder
+    memberAddress?: SortOrder
+    memberAtId?: SortOrder
+  }
+
+  export type MembershipSumOrderByAggregateInput = {
+    id?: SortOrder
+    createdByProfileId?: SortOrder
+    memberAtId?: SortOrder
+  }
+
+  export type ChatMessageCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    openedAt?: SortOrder
+    from?: SortOrder
+    to?: SortOrder
+    text?: SortOrder
+  }
+
+  export type ChatMessageAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type ChatMessageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    openedAt?: SortOrder
+    from?: SortOrder
+    to?: SortOrder
+    text?: SortOrder
+  }
+
+  export type ChatMessageMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    openedAt?: SortOrder
+    from?: SortOrder
+    to?: SortOrder
+    text?: SortOrder
+  }
+
+  export type ChatMessageSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type DelegatedChallengesCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    appId?: SortOrder
+    sessionId?: SortOrder
+    requestValidTo?: SortOrder
+    delegateAuthCode?: SortOrder
+    challenge?: SortOrder
+    challengeDepositedAt?: SortOrder
+    challengeValidTo?: SortOrder
+    challengedReadAt?: SortOrder
+  }
+
+  export type DelegatedChallengesAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type DelegatedChallengesMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    appId?: SortOrder
+    sessionId?: SortOrder
+    requestValidTo?: SortOrder
+    delegateAuthCode?: SortOrder
+    challenge?: SortOrder
+    challengeDepositedAt?: SortOrder
+    challengeValidTo?: SortOrder
+    challengedReadAt?: SortOrder
+  }
+
+  export type DelegatedChallengesMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    appId?: SortOrder
+    sessionId?: SortOrder
+    requestValidTo?: SortOrder
+    delegateAuthCode?: SortOrder
+    challenge?: SortOrder
+    challengeDepositedAt?: SortOrder
+    challengeValidTo?: SortOrder
+    challengedReadAt?: SortOrder
+  }
+
+  export type DelegatedChallengesSumOrderByAggregateInput = {
+    id?: SortOrder
   }
 
   export type PurchaseLineListRelationFilter = {
@@ -21422,9 +22354,101 @@ export namespace Prisma {
     none?: InvoiceLineWhereInput
   }
 
+  export type PurchaseLineOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type InvoiceLineOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type OfferIdVersionCompoundUniqueInput = {
     id: number
     version: number
+  }
+
+  export type OfferCountOrderByAggregateInput = {
+    id?: SortOrder
+    version?: SortOrder
+    createdByProfileId?: SortOrder
+    createdAt?: SortOrder
+    title?: SortOrder
+    pictureUrl?: SortOrder
+    pictureMimeType?: SortOrder
+    description?: SortOrder
+    pricePerUnit?: SortOrder
+    timeCirclesPriceShare?: SortOrder
+  }
+
+  export type OfferAvgOrderByAggregateInput = {
+    id?: SortOrder
+    version?: SortOrder
+    createdByProfileId?: SortOrder
+    timeCirclesPriceShare?: SortOrder
+  }
+
+  export type OfferMaxOrderByAggregateInput = {
+    id?: SortOrder
+    version?: SortOrder
+    createdByProfileId?: SortOrder
+    createdAt?: SortOrder
+    title?: SortOrder
+    pictureUrl?: SortOrder
+    pictureMimeType?: SortOrder
+    description?: SortOrder
+    pricePerUnit?: SortOrder
+    timeCirclesPriceShare?: SortOrder
+  }
+
+  export type OfferMinOrderByAggregateInput = {
+    id?: SortOrder
+    version?: SortOrder
+    createdByProfileId?: SortOrder
+    createdAt?: SortOrder
+    title?: SortOrder
+    pictureUrl?: SortOrder
+    pictureMimeType?: SortOrder
+    description?: SortOrder
+    pricePerUnit?: SortOrder
+    timeCirclesPriceShare?: SortOrder
+  }
+
+  export type OfferSumOrderByAggregateInput = {
+    id?: SortOrder
+    version?: SortOrder
+    createdByProfileId?: SortOrder
+    timeCirclesPriceShare?: SortOrder
+  }
+
+  export type PurchaseCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdByProfileId?: SortOrder
+    createdAt?: SortOrder
+    sticksToInstanceId?: SortOrder
+  }
+
+  export type PurchaseAvgOrderByAggregateInput = {
+    id?: SortOrder
+    createdByProfileId?: SortOrder
+  }
+
+  export type PurchaseMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdByProfileId?: SortOrder
+    createdAt?: SortOrder
+    sticksToInstanceId?: SortOrder
+  }
+
+  export type PurchaseMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdByProfileId?: SortOrder
+    createdAt?: SortOrder
+    sticksToInstanceId?: SortOrder
+  }
+
+  export type PurchaseSumOrderByAggregateInput = {
+    id?: SortOrder
+    createdByProfileId?: SortOrder
   }
 
   export type PurchaseRelationFilter = {
@@ -21437,14 +22461,191 @@ export namespace Prisma {
     isNot?: OfferWhereInput
   }
 
+  export type PurchaseLineCountOrderByAggregateInput = {
+    id?: SortOrder
+    purchaseId?: SortOrder
+    amount?: SortOrder
+    productId?: SortOrder
+    productVersion?: SortOrder
+  }
+
+  export type PurchaseLineAvgOrderByAggregateInput = {
+    id?: SortOrder
+    purchaseId?: SortOrder
+    amount?: SortOrder
+    productId?: SortOrder
+    productVersion?: SortOrder
+  }
+
+  export type PurchaseLineMaxOrderByAggregateInput = {
+    id?: SortOrder
+    purchaseId?: SortOrder
+    amount?: SortOrder
+    productId?: SortOrder
+    productVersion?: SortOrder
+  }
+
+  export type PurchaseLineMinOrderByAggregateInput = {
+    id?: SortOrder
+    purchaseId?: SortOrder
+    amount?: SortOrder
+    productId?: SortOrder
+    productVersion?: SortOrder
+  }
+
+  export type PurchaseLineSumOrderByAggregateInput = {
+    id?: SortOrder
+    purchaseId?: SortOrder
+    amount?: SortOrder
+    productId?: SortOrder
+    productVersion?: SortOrder
+  }
+
+  export type InvoiceCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    invoiceNo?: SortOrder
+    customerProfileId?: SortOrder
+    sellerProfileId?: SortOrder
+    purchaseId?: SortOrder
+    pendingPaymentTransactionHash?: SortOrder
+    paymentTransactionHash?: SortOrder
+    pickupCode?: SortOrder
+    buyerSignature?: SortOrder
+    buyerSignedDate?: SortOrder
+    sellerSignature?: SortOrder
+    sellerSignedDate?: SortOrder
+    cancelledAt?: SortOrder
+    cancelledByProfileId?: SortOrder
+    cancelReason?: SortOrder
+  }
+
+  export type InvoiceAvgOrderByAggregateInput = {
+    id?: SortOrder
+    customerProfileId?: SortOrder
+    sellerProfileId?: SortOrder
+    purchaseId?: SortOrder
+    cancelledByProfileId?: SortOrder
+  }
+
+  export type InvoiceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    invoiceNo?: SortOrder
+    customerProfileId?: SortOrder
+    sellerProfileId?: SortOrder
+    purchaseId?: SortOrder
+    pendingPaymentTransactionHash?: SortOrder
+    paymentTransactionHash?: SortOrder
+    pickupCode?: SortOrder
+    buyerSignature?: SortOrder
+    buyerSignedDate?: SortOrder
+    sellerSignature?: SortOrder
+    sellerSignedDate?: SortOrder
+    cancelledAt?: SortOrder
+    cancelledByProfileId?: SortOrder
+    cancelReason?: SortOrder
+  }
+
+  export type InvoiceMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    invoiceNo?: SortOrder
+    customerProfileId?: SortOrder
+    sellerProfileId?: SortOrder
+    purchaseId?: SortOrder
+    pendingPaymentTransactionHash?: SortOrder
+    paymentTransactionHash?: SortOrder
+    pickupCode?: SortOrder
+    buyerSignature?: SortOrder
+    buyerSignedDate?: SortOrder
+    sellerSignature?: SortOrder
+    sellerSignedDate?: SortOrder
+    cancelledAt?: SortOrder
+    cancelledByProfileId?: SortOrder
+    cancelReason?: SortOrder
+  }
+
+  export type InvoiceSumOrderByAggregateInput = {
+    id?: SortOrder
+    customerProfileId?: SortOrder
+    sellerProfileId?: SortOrder
+    purchaseId?: SortOrder
+    cancelledByProfileId?: SortOrder
+  }
+
   export type InvoiceRelationFilter = {
     is?: InvoiceWhereInput
     isNot?: InvoiceWhereInput
   }
 
+  export type InvoiceLineCountOrderByAggregateInput = {
+    id?: SortOrder
+    invoiceId?: SortOrder
+    amount?: SortOrder
+    productId?: SortOrder
+    productVersion?: SortOrder
+  }
+
+  export type InvoiceLineAvgOrderByAggregateInput = {
+    id?: SortOrder
+    invoiceId?: SortOrder
+    amount?: SortOrder
+    productId?: SortOrder
+    productVersion?: SortOrder
+  }
+
+  export type InvoiceLineMaxOrderByAggregateInput = {
+    id?: SortOrder
+    invoiceId?: SortOrder
+    amount?: SortOrder
+    productId?: SortOrder
+    productVersion?: SortOrder
+  }
+
+  export type InvoiceLineMinOrderByAggregateInput = {
+    id?: SortOrder
+    invoiceId?: SortOrder
+    amount?: SortOrder
+    productId?: SortOrder
+    productVersion?: SortOrder
+  }
+
+  export type InvoiceLineSumOrderByAggregateInput = {
+    id?: SortOrder
+    invoiceId?: SortOrder
+    amount?: SortOrder
+    productId?: SortOrder
+    productVersion?: SortOrder
+  }
+
+  export type TagTypeCountOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type TagTypeMaxOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type TagTypeMinOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
   export type VerifiedSafeRelationFilter = {
     is?: VerifiedSafeWhereInput | null
     isNot?: VerifiedSafeWhereInput | null
+  }
+
+  export type TransactionCountOrderByAggregateInput = {
+    transactionHash?: SortOrder
+  }
+
+  export type TransactionMaxOrderByAggregateInput = {
+    transactionHash?: SortOrder
+  }
+
+  export type TransactionMinOrderByAggregateInput = {
+    transactionHash?: SortOrder
   }
 
   export type BoolFilter = {
@@ -21462,27 +22663,101 @@ export namespace Prisma {
     isNot?: ChatMessageWhereInput | null
   }
 
+  export type TagCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    createdByProfileId?: SortOrder
+    isPrivate?: SortOrder
+    transactionHash?: SortOrder
+    typeId?: SortOrder
+    chatMessageId?: SortOrder
+    value?: SortOrder
+  }
+
+  export type TagAvgOrderByAggregateInput = {
+    id?: SortOrder
+    createdByProfileId?: SortOrder
+    chatMessageId?: SortOrder
+  }
+
+  export type TagMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    createdByProfileId?: SortOrder
+    isPrivate?: SortOrder
+    transactionHash?: SortOrder
+    typeId?: SortOrder
+    chatMessageId?: SortOrder
+    value?: SortOrder
+  }
+
+  export type TagMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    createdByProfileId?: SortOrder
+    isPrivate?: SortOrder
+    transactionHash?: SortOrder
+    typeId?: SortOrder
+    chatMessageId?: SortOrder
+    value?: SortOrder
+  }
+
+  export type TagSumOrderByAggregateInput = {
+    id?: SortOrder
+    createdByProfileId?: SortOrder
+    chatMessageId?: SortOrder
+  }
+
   export type BoolWithAggregatesFilter = {
     equals?: boolean
     not?: NestedBoolWithAggregatesFilter | boolean
     _count?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntFilter
     _min?: NestedBoolFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedBoolFilter
     _max?: NestedBoolFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedBoolFilter
+  }
+
+  export type JobCountOrderByAggregateInput = {
+    id?: SortOrder
+    hash?: SortOrder
+    createdAt?: SortOrder
+    finishedAt?: SortOrder
+    error?: SortOrder
+    warning?: SortOrder
+    info?: SortOrder
+    topic?: SortOrder
+    payload?: SortOrder
+  }
+
+  export type JobAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type JobMaxOrderByAggregateInput = {
+    id?: SortOrder
+    hash?: SortOrder
+    createdAt?: SortOrder
+    finishedAt?: SortOrder
+    error?: SortOrder
+    warning?: SortOrder
+    info?: SortOrder
+    topic?: SortOrder
+    payload?: SortOrder
+  }
+
+  export type JobMinOrderByAggregateInput = {
+    id?: SortOrder
+    hash?: SortOrder
+    createdAt?: SortOrder
+    finishedAt?: SortOrder
+    error?: SortOrder
+    warning?: SortOrder
+    info?: SortOrder
+    topic?: SortOrder
+    payload?: SortOrder
+  }
+
+  export type JobSumOrderByAggregateInput = {
+    id?: SortOrder
   }
 
   export type ProfileCreateNestedOneWithoutSessionsInput = {
@@ -21499,6 +22774,16 @@ export namespace Prisma {
     set?: string | null
   }
 
+  export type ProfileUpdateOneWithoutSessionsInput = {
+    create?: XOR<ProfileCreateWithoutSessionsInput, ProfileUncheckedCreateWithoutSessionsInput>
+    connectOrCreate?: ProfileCreateOrConnectWithoutSessionsInput
+    upsert?: ProfileUpsertWithoutSessionsInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: ProfileWhereUniqueInput
+    update?: XOR<ProfileUpdateWithoutSessionsInput, ProfileUncheckedUpdateWithoutSessionsInput>
+  }
+
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
   }
@@ -21513,16 +22798,6 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type ProfileUpdateOneWithoutSessionsInput = {
-    create?: XOR<ProfileCreateWithoutSessionsInput, ProfileUncheckedCreateWithoutSessionsInput>
-    connectOrCreate?: ProfileCreateOrConnectWithoutSessionsInput
-    upsert?: ProfileUpsertWithoutSessionsInput
-    connect?: ProfileWhereUniqueInput
-    disconnect?: boolean
-    delete?: boolean
-    update?: XOR<ProfileUpdateWithoutSessionsInput, ProfileUncheckedUpdateWithoutSessionsInput>
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -21563,9 +22838,9 @@ export namespace Prisma {
     create?: XOR<ProfileCreateWithoutClaimedInvitationsInput, ProfileUncheckedCreateWithoutClaimedInvitationsInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutClaimedInvitationsInput
     upsert?: ProfileUpsertWithoutClaimedInvitationsInput
-    connect?: ProfileWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: ProfileWhereUniqueInput
     update?: XOR<ProfileUpdateWithoutClaimedInvitationsInput, ProfileUncheckedUpdateWithoutClaimedInvitationsInput>
   }
 
@@ -21573,9 +22848,9 @@ export namespace Prisma {
     create?: XOR<ProfileCreateWithoutRedeemedInvitationsInput, ProfileUncheckedCreateWithoutRedeemedInvitationsInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutRedeemedInvitationsInput
     upsert?: ProfileUpsertWithoutRedeemedInvitationsInput
-    connect?: ProfileWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: ProfileWhereUniqueInput
     update?: XOR<ProfileUpdateWithoutRedeemedInvitationsInput, ProfileUncheckedUpdateWithoutRedeemedInvitationsInput>
   }
 
@@ -21649,9 +22924,9 @@ export namespace Prisma {
     create?: XOR<ProfileCreateWithoutSafesRevokedByPersonInput, ProfileUncheckedCreateWithoutSafesRevokedByPersonInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutSafesRevokedByPersonInput
     upsert?: ProfileUpsertWithoutSafesRevokedByPersonInput
-    connect?: ProfileWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: ProfileWhereUniqueInput
     update?: XOR<ProfileUpdateWithoutSafesRevokedByPersonInput, ProfileUncheckedUpdateWithoutSafesRevokedByPersonInput>
   }
 
@@ -21659,9 +22934,9 @@ export namespace Prisma {
     create?: XOR<TransactionCreateWithoutInviteeReward_VerifiedSafeInput, TransactionUncheckedCreateWithoutInviteeReward_VerifiedSafeInput>
     connectOrCreate?: TransactionCreateOrConnectWithoutInviteeReward_VerifiedSafeInput
     upsert?: TransactionUpsertWithoutInviteeReward_VerifiedSafeInput
-    connect?: TransactionWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: TransactionWhereUniqueInput
     update?: XOR<TransactionUpdateWithoutInviteeReward_VerifiedSafeInput, TransactionUncheckedUpdateWithoutInviteeReward_VerifiedSafeInput>
   }
 
@@ -21669,9 +22944,9 @@ export namespace Prisma {
     create?: XOR<TransactionCreateWithoutInviterReward_VerifiedSafeInput, TransactionUncheckedCreateWithoutInviterReward_VerifiedSafeInput>
     connectOrCreate?: TransactionCreateOrConnectWithoutInviterReward_VerifiedSafeInput
     upsert?: TransactionUpsertWithoutInviterReward_VerifiedSafeInput
-    connect?: TransactionWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: TransactionWhereUniqueInput
     update?: XOR<TransactionUpdateWithoutInviterReward_VerifiedSafeInput, TransactionUncheckedUpdateWithoutInviterReward_VerifiedSafeInput>
   }
 
@@ -21679,9 +22954,9 @@ export namespace Prisma {
     create?: XOR<TransactionCreateWithoutSwapFunding_VerifiedSafeInput, TransactionUncheckedCreateWithoutSwapFunding_VerifiedSafeInput>
     connectOrCreate?: TransactionCreateOrConnectWithoutSwapFunding_VerifiedSafeInput
     upsert?: TransactionUpsertWithoutSwapFunding_VerifiedSafeInput
-    connect?: TransactionWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: TransactionWhereUniqueInput
     update?: XOR<TransactionUpdateWithoutSwapFunding_VerifiedSafeInput, TransactionUncheckedUpdateWithoutSwapFunding_VerifiedSafeInput>
   }
 
@@ -21920,10 +23195,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<SessionCreateOrConnectWithoutProfileInput>
     upsert?: Enumerable<SessionUpsertWithWhereUniqueWithoutProfileInput>
     createMany?: SessionCreateManyProfileInputEnvelope
-    connect?: Enumerable<SessionWhereUniqueInput>
     set?: Enumerable<SessionWhereUniqueInput>
     disconnect?: Enumerable<SessionWhereUniqueInput>
     delete?: Enumerable<SessionWhereUniqueInput>
+    connect?: Enumerable<SessionWhereUniqueInput>
     update?: Enumerable<SessionUpdateWithWhereUniqueWithoutProfileInput>
     updateMany?: Enumerable<SessionUpdateManyWithWhereWithoutProfileInput>
     deleteMany?: Enumerable<SessionScalarWhereInput>
@@ -21934,10 +23209,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<TagCreateOrConnectWithoutCreatedByInput>
     upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutCreatedByInput>
     createMany?: TagCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
     set?: Enumerable<TagWhereUniqueInput>
     disconnect?: Enumerable<TagWhereUniqueInput>
     delete?: Enumerable<TagWhereUniqueInput>
+    connect?: Enumerable<TagWhereUniqueInput>
     update?: Enumerable<TagUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<TagUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<TagScalarWhereInput>
@@ -21948,10 +23223,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<OfferCreateOrConnectWithoutCreatedByInput>
     upsert?: Enumerable<OfferUpsertWithWhereUniqueWithoutCreatedByInput>
     createMany?: OfferCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<OfferWhereUniqueInput>
     set?: Enumerable<OfferWhereUniqueInput>
     disconnect?: Enumerable<OfferWhereUniqueInput>
     delete?: Enumerable<OfferWhereUniqueInput>
+    connect?: Enumerable<OfferWhereUniqueInput>
     update?: Enumerable<OfferUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<OfferUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<OfferScalarWhereInput>
@@ -21962,10 +23237,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<PurchaseCreateOrConnectWithoutCreatedByInput>
     upsert?: Enumerable<PurchaseUpsertWithWhereUniqueWithoutCreatedByInput>
     createMany?: PurchaseCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<PurchaseWhereUniqueInput>
     set?: Enumerable<PurchaseWhereUniqueInput>
     disconnect?: Enumerable<PurchaseWhereUniqueInput>
     delete?: Enumerable<PurchaseWhereUniqueInput>
+    connect?: Enumerable<PurchaseWhereUniqueInput>
     update?: Enumerable<PurchaseUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<PurchaseUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<PurchaseScalarWhereInput>
@@ -21976,10 +23251,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvitationCreateOrConnectWithoutCreatedByInput>
     upsert?: Enumerable<InvitationUpsertWithWhereUniqueWithoutCreatedByInput>
     createMany?: InvitationCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<InvitationWhereUniqueInput>
     set?: Enumerable<InvitationWhereUniqueInput>
     disconnect?: Enumerable<InvitationWhereUniqueInput>
     delete?: Enumerable<InvitationWhereUniqueInput>
+    connect?: Enumerable<InvitationWhereUniqueInput>
     update?: Enumerable<InvitationUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<InvitationUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<InvitationScalarWhereInput>
@@ -21989,9 +23264,9 @@ export namespace Prisma {
     create?: XOR<InvitationFundsEOACreateWithoutProfileInput, InvitationFundsEOAUncheckedCreateWithoutProfileInput>
     connectOrCreate?: InvitationFundsEOACreateOrConnectWithoutProfileInput
     upsert?: InvitationFundsEOAUpsertWithoutProfileInput
-    connect?: InvitationFundsEOAWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: InvitationFundsEOAWhereUniqueInput
     update?: XOR<InvitationFundsEOAUpdateWithoutProfileInput, InvitationFundsEOAUncheckedUpdateWithoutProfileInput>
   }
 
@@ -22000,10 +23275,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvitationCreateOrConnectWithoutRedeemedByInput>
     upsert?: Enumerable<InvitationUpsertWithWhereUniqueWithoutRedeemedByInput>
     createMany?: InvitationCreateManyRedeemedByInputEnvelope
-    connect?: Enumerable<InvitationWhereUniqueInput>
     set?: Enumerable<InvitationWhereUniqueInput>
     disconnect?: Enumerable<InvitationWhereUniqueInput>
     delete?: Enumerable<InvitationWhereUniqueInput>
+    connect?: Enumerable<InvitationWhereUniqueInput>
     update?: Enumerable<InvitationUpdateWithWhereUniqueWithoutRedeemedByInput>
     updateMany?: Enumerable<InvitationUpdateManyWithWhereWithoutRedeemedByInput>
     deleteMany?: Enumerable<InvitationScalarWhereInput>
@@ -22014,10 +23289,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvitationCreateOrConnectWithoutClaimedByInput>
     upsert?: Enumerable<InvitationUpsertWithWhereUniqueWithoutClaimedByInput>
     createMany?: InvitationCreateManyClaimedByInputEnvelope
-    connect?: Enumerable<InvitationWhereUniqueInput>
     set?: Enumerable<InvitationWhereUniqueInput>
     disconnect?: Enumerable<InvitationWhereUniqueInput>
     delete?: Enumerable<InvitationWhereUniqueInput>
+    connect?: Enumerable<InvitationWhereUniqueInput>
     update?: Enumerable<InvitationUpdateWithWhereUniqueWithoutClaimedByInput>
     updateMany?: Enumerable<InvitationUpdateManyWithWhereWithoutClaimedByInput>
     deleteMany?: Enumerable<InvitationScalarWhereInput>
@@ -22028,10 +23303,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<MembershipCreateOrConnectWithoutMemberAtInput>
     upsert?: Enumerable<MembershipUpsertWithWhereUniqueWithoutMemberAtInput>
     createMany?: MembershipCreateManyMemberAtInputEnvelope
-    connect?: Enumerable<MembershipWhereUniqueInput>
     set?: Enumerable<MembershipWhereUniqueInput>
     disconnect?: Enumerable<MembershipWhereUniqueInput>
     delete?: Enumerable<MembershipWhereUniqueInput>
+    connect?: Enumerable<MembershipWhereUniqueInput>
     update?: Enumerable<MembershipUpdateWithWhereUniqueWithoutMemberAtInput>
     updateMany?: Enumerable<MembershipUpdateManyWithWhereWithoutMemberAtInput>
     deleteMany?: Enumerable<MembershipScalarWhereInput>
@@ -22042,10 +23317,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<MembershipCreateOrConnectWithoutCreatedByInput>
     upsert?: Enumerable<MembershipUpsertWithWhereUniqueWithoutCreatedByInput>
     createMany?: MembershipCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<MembershipWhereUniqueInput>
     set?: Enumerable<MembershipWhereUniqueInput>
     disconnect?: Enumerable<MembershipWhereUniqueInput>
     delete?: Enumerable<MembershipWhereUniqueInput>
+    connect?: Enumerable<MembershipWhereUniqueInput>
     update?: Enumerable<MembershipUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<MembershipUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<MembershipScalarWhereInput>
@@ -22056,10 +23331,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutCustomerProfileInput>
     upsert?: Enumerable<InvoiceUpsertWithWhereUniqueWithoutCustomerProfileInput>
     createMany?: InvoiceCreateManyCustomerProfileInputEnvelope
-    connect?: Enumerable<InvoiceWhereUniqueInput>
     set?: Enumerable<InvoiceWhereUniqueInput>
     disconnect?: Enumerable<InvoiceWhereUniqueInput>
     delete?: Enumerable<InvoiceWhereUniqueInput>
+    connect?: Enumerable<InvoiceWhereUniqueInput>
     update?: Enumerable<InvoiceUpdateWithWhereUniqueWithoutCustomerProfileInput>
     updateMany?: Enumerable<InvoiceUpdateManyWithWhereWithoutCustomerProfileInput>
     deleteMany?: Enumerable<InvoiceScalarWhereInput>
@@ -22070,10 +23345,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutSellerProfileInput>
     upsert?: Enumerable<InvoiceUpsertWithWhereUniqueWithoutSellerProfileInput>
     createMany?: InvoiceCreateManySellerProfileInputEnvelope
-    connect?: Enumerable<InvoiceWhereUniqueInput>
     set?: Enumerable<InvoiceWhereUniqueInput>
     disconnect?: Enumerable<InvoiceWhereUniqueInput>
     delete?: Enumerable<InvoiceWhereUniqueInput>
+    connect?: Enumerable<InvoiceWhereUniqueInput>
     update?: Enumerable<InvoiceUpdateWithWhereUniqueWithoutSellerProfileInput>
     updateMany?: Enumerable<InvoiceUpdateManyWithWhereWithoutSellerProfileInput>
     deleteMany?: Enumerable<InvoiceScalarWhereInput>
@@ -22084,10 +23359,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutCancelledByInput>
     upsert?: Enumerable<InvoiceUpsertWithWhereUniqueWithoutCancelledByInput>
     createMany?: InvoiceCreateManyCancelledByInputEnvelope
-    connect?: Enumerable<InvoiceWhereUniqueInput>
     set?: Enumerable<InvoiceWhereUniqueInput>
     disconnect?: Enumerable<InvoiceWhereUniqueInput>
     delete?: Enumerable<InvoiceWhereUniqueInput>
+    connect?: Enumerable<InvoiceWhereUniqueInput>
     update?: Enumerable<InvoiceUpdateWithWhereUniqueWithoutCancelledByInput>
     updateMany?: Enumerable<InvoiceUpdateManyWithWhereWithoutCancelledByInput>
     deleteMany?: Enumerable<InvoiceScalarWhereInput>
@@ -22098,10 +23373,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<VerifiedSafeCreateOrConnectWithoutCreatedByInput>
     upsert?: Enumerable<VerifiedSafeUpsertWithWhereUniqueWithoutCreatedByInput>
     createMany?: VerifiedSafeCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<VerifiedSafeWhereUniqueInput>
     set?: Enumerable<VerifiedSafeWhereUniqueInput>
     disconnect?: Enumerable<VerifiedSafeWhereUniqueInput>
     delete?: Enumerable<VerifiedSafeWhereUniqueInput>
+    connect?: Enumerable<VerifiedSafeWhereUniqueInput>
     update?: Enumerable<VerifiedSafeUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<VerifiedSafeUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<VerifiedSafeScalarWhereInput>
@@ -22112,10 +23387,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<VerifiedSafeCreateOrConnectWithoutCreatedByOrganisationInput>
     upsert?: Enumerable<VerifiedSafeUpsertWithWhereUniqueWithoutCreatedByOrganisationInput>
     createMany?: VerifiedSafeCreateManyCreatedByOrganisationInputEnvelope
-    connect?: Enumerable<VerifiedSafeWhereUniqueInput>
     set?: Enumerable<VerifiedSafeWhereUniqueInput>
     disconnect?: Enumerable<VerifiedSafeWhereUniqueInput>
     delete?: Enumerable<VerifiedSafeWhereUniqueInput>
+    connect?: Enumerable<VerifiedSafeWhereUniqueInput>
     update?: Enumerable<VerifiedSafeUpdateWithWhereUniqueWithoutCreatedByOrganisationInput>
     updateMany?: Enumerable<VerifiedSafeUpdateManyWithWhereWithoutCreatedByOrganisationInput>
     deleteMany?: Enumerable<VerifiedSafeScalarWhereInput>
@@ -22126,10 +23401,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<VerifiedSafeCreateOrConnectWithoutRevokedByInput>
     upsert?: Enumerable<VerifiedSafeUpsertWithWhereUniqueWithoutRevokedByInput>
     createMany?: VerifiedSafeCreateManyRevokedByInputEnvelope
-    connect?: Enumerable<VerifiedSafeWhereUniqueInput>
     set?: Enumerable<VerifiedSafeWhereUniqueInput>
     disconnect?: Enumerable<VerifiedSafeWhereUniqueInput>
     delete?: Enumerable<VerifiedSafeWhereUniqueInput>
+    connect?: Enumerable<VerifiedSafeWhereUniqueInput>
     update?: Enumerable<VerifiedSafeUpdateWithWhereUniqueWithoutRevokedByInput>
     updateMany?: Enumerable<VerifiedSafeUpdateManyWithWhereWithoutRevokedByInput>
     deleteMany?: Enumerable<VerifiedSafeScalarWhereInput>
@@ -22140,10 +23415,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<SessionCreateOrConnectWithoutProfileInput>
     upsert?: Enumerable<SessionUpsertWithWhereUniqueWithoutProfileInput>
     createMany?: SessionCreateManyProfileInputEnvelope
-    connect?: Enumerable<SessionWhereUniqueInput>
     set?: Enumerable<SessionWhereUniqueInput>
     disconnect?: Enumerable<SessionWhereUniqueInput>
     delete?: Enumerable<SessionWhereUniqueInput>
+    connect?: Enumerable<SessionWhereUniqueInput>
     update?: Enumerable<SessionUpdateWithWhereUniqueWithoutProfileInput>
     updateMany?: Enumerable<SessionUpdateManyWithWhereWithoutProfileInput>
     deleteMany?: Enumerable<SessionScalarWhereInput>
@@ -22154,10 +23429,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<TagCreateOrConnectWithoutCreatedByInput>
     upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutCreatedByInput>
     createMany?: TagCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
     set?: Enumerable<TagWhereUniqueInput>
     disconnect?: Enumerable<TagWhereUniqueInput>
     delete?: Enumerable<TagWhereUniqueInput>
+    connect?: Enumerable<TagWhereUniqueInput>
     update?: Enumerable<TagUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<TagUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<TagScalarWhereInput>
@@ -22168,10 +23443,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<OfferCreateOrConnectWithoutCreatedByInput>
     upsert?: Enumerable<OfferUpsertWithWhereUniqueWithoutCreatedByInput>
     createMany?: OfferCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<OfferWhereUniqueInput>
     set?: Enumerable<OfferWhereUniqueInput>
     disconnect?: Enumerable<OfferWhereUniqueInput>
     delete?: Enumerable<OfferWhereUniqueInput>
+    connect?: Enumerable<OfferWhereUniqueInput>
     update?: Enumerable<OfferUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<OfferUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<OfferScalarWhereInput>
@@ -22182,10 +23457,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<PurchaseCreateOrConnectWithoutCreatedByInput>
     upsert?: Enumerable<PurchaseUpsertWithWhereUniqueWithoutCreatedByInput>
     createMany?: PurchaseCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<PurchaseWhereUniqueInput>
     set?: Enumerable<PurchaseWhereUniqueInput>
     disconnect?: Enumerable<PurchaseWhereUniqueInput>
     delete?: Enumerable<PurchaseWhereUniqueInput>
+    connect?: Enumerable<PurchaseWhereUniqueInput>
     update?: Enumerable<PurchaseUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<PurchaseUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<PurchaseScalarWhereInput>
@@ -22196,10 +23471,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvitationCreateOrConnectWithoutCreatedByInput>
     upsert?: Enumerable<InvitationUpsertWithWhereUniqueWithoutCreatedByInput>
     createMany?: InvitationCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<InvitationWhereUniqueInput>
     set?: Enumerable<InvitationWhereUniqueInput>
     disconnect?: Enumerable<InvitationWhereUniqueInput>
     delete?: Enumerable<InvitationWhereUniqueInput>
+    connect?: Enumerable<InvitationWhereUniqueInput>
     update?: Enumerable<InvitationUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<InvitationUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<InvitationScalarWhereInput>
@@ -22209,9 +23484,9 @@ export namespace Prisma {
     create?: XOR<InvitationFundsEOACreateWithoutProfileInput, InvitationFundsEOAUncheckedCreateWithoutProfileInput>
     connectOrCreate?: InvitationFundsEOACreateOrConnectWithoutProfileInput
     upsert?: InvitationFundsEOAUpsertWithoutProfileInput
-    connect?: InvitationFundsEOAWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: InvitationFundsEOAWhereUniqueInput
     update?: XOR<InvitationFundsEOAUpdateWithoutProfileInput, InvitationFundsEOAUncheckedUpdateWithoutProfileInput>
   }
 
@@ -22220,10 +23495,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvitationCreateOrConnectWithoutRedeemedByInput>
     upsert?: Enumerable<InvitationUpsertWithWhereUniqueWithoutRedeemedByInput>
     createMany?: InvitationCreateManyRedeemedByInputEnvelope
-    connect?: Enumerable<InvitationWhereUniqueInput>
     set?: Enumerable<InvitationWhereUniqueInput>
     disconnect?: Enumerable<InvitationWhereUniqueInput>
     delete?: Enumerable<InvitationWhereUniqueInput>
+    connect?: Enumerable<InvitationWhereUniqueInput>
     update?: Enumerable<InvitationUpdateWithWhereUniqueWithoutRedeemedByInput>
     updateMany?: Enumerable<InvitationUpdateManyWithWhereWithoutRedeemedByInput>
     deleteMany?: Enumerable<InvitationScalarWhereInput>
@@ -22234,10 +23509,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvitationCreateOrConnectWithoutClaimedByInput>
     upsert?: Enumerable<InvitationUpsertWithWhereUniqueWithoutClaimedByInput>
     createMany?: InvitationCreateManyClaimedByInputEnvelope
-    connect?: Enumerable<InvitationWhereUniqueInput>
     set?: Enumerable<InvitationWhereUniqueInput>
     disconnect?: Enumerable<InvitationWhereUniqueInput>
     delete?: Enumerable<InvitationWhereUniqueInput>
+    connect?: Enumerable<InvitationWhereUniqueInput>
     update?: Enumerable<InvitationUpdateWithWhereUniqueWithoutClaimedByInput>
     updateMany?: Enumerable<InvitationUpdateManyWithWhereWithoutClaimedByInput>
     deleteMany?: Enumerable<InvitationScalarWhereInput>
@@ -22248,10 +23523,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<MembershipCreateOrConnectWithoutMemberAtInput>
     upsert?: Enumerable<MembershipUpsertWithWhereUniqueWithoutMemberAtInput>
     createMany?: MembershipCreateManyMemberAtInputEnvelope
-    connect?: Enumerable<MembershipWhereUniqueInput>
     set?: Enumerable<MembershipWhereUniqueInput>
     disconnect?: Enumerable<MembershipWhereUniqueInput>
     delete?: Enumerable<MembershipWhereUniqueInput>
+    connect?: Enumerable<MembershipWhereUniqueInput>
     update?: Enumerable<MembershipUpdateWithWhereUniqueWithoutMemberAtInput>
     updateMany?: Enumerable<MembershipUpdateManyWithWhereWithoutMemberAtInput>
     deleteMany?: Enumerable<MembershipScalarWhereInput>
@@ -22262,10 +23537,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<MembershipCreateOrConnectWithoutCreatedByInput>
     upsert?: Enumerable<MembershipUpsertWithWhereUniqueWithoutCreatedByInput>
     createMany?: MembershipCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<MembershipWhereUniqueInput>
     set?: Enumerable<MembershipWhereUniqueInput>
     disconnect?: Enumerable<MembershipWhereUniqueInput>
     delete?: Enumerable<MembershipWhereUniqueInput>
+    connect?: Enumerable<MembershipWhereUniqueInput>
     update?: Enumerable<MembershipUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<MembershipUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<MembershipScalarWhereInput>
@@ -22276,10 +23551,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutCustomerProfileInput>
     upsert?: Enumerable<InvoiceUpsertWithWhereUniqueWithoutCustomerProfileInput>
     createMany?: InvoiceCreateManyCustomerProfileInputEnvelope
-    connect?: Enumerable<InvoiceWhereUniqueInput>
     set?: Enumerable<InvoiceWhereUniqueInput>
     disconnect?: Enumerable<InvoiceWhereUniqueInput>
     delete?: Enumerable<InvoiceWhereUniqueInput>
+    connect?: Enumerable<InvoiceWhereUniqueInput>
     update?: Enumerable<InvoiceUpdateWithWhereUniqueWithoutCustomerProfileInput>
     updateMany?: Enumerable<InvoiceUpdateManyWithWhereWithoutCustomerProfileInput>
     deleteMany?: Enumerable<InvoiceScalarWhereInput>
@@ -22290,10 +23565,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutSellerProfileInput>
     upsert?: Enumerable<InvoiceUpsertWithWhereUniqueWithoutSellerProfileInput>
     createMany?: InvoiceCreateManySellerProfileInputEnvelope
-    connect?: Enumerable<InvoiceWhereUniqueInput>
     set?: Enumerable<InvoiceWhereUniqueInput>
     disconnect?: Enumerable<InvoiceWhereUniqueInput>
     delete?: Enumerable<InvoiceWhereUniqueInput>
+    connect?: Enumerable<InvoiceWhereUniqueInput>
     update?: Enumerable<InvoiceUpdateWithWhereUniqueWithoutSellerProfileInput>
     updateMany?: Enumerable<InvoiceUpdateManyWithWhereWithoutSellerProfileInput>
     deleteMany?: Enumerable<InvoiceScalarWhereInput>
@@ -22304,10 +23579,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutCancelledByInput>
     upsert?: Enumerable<InvoiceUpsertWithWhereUniqueWithoutCancelledByInput>
     createMany?: InvoiceCreateManyCancelledByInputEnvelope
-    connect?: Enumerable<InvoiceWhereUniqueInput>
     set?: Enumerable<InvoiceWhereUniqueInput>
     disconnect?: Enumerable<InvoiceWhereUniqueInput>
     delete?: Enumerable<InvoiceWhereUniqueInput>
+    connect?: Enumerable<InvoiceWhereUniqueInput>
     update?: Enumerable<InvoiceUpdateWithWhereUniqueWithoutCancelledByInput>
     updateMany?: Enumerable<InvoiceUpdateManyWithWhereWithoutCancelledByInput>
     deleteMany?: Enumerable<InvoiceScalarWhereInput>
@@ -22318,10 +23593,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<VerifiedSafeCreateOrConnectWithoutCreatedByInput>
     upsert?: Enumerable<VerifiedSafeUpsertWithWhereUniqueWithoutCreatedByInput>
     createMany?: VerifiedSafeCreateManyCreatedByInputEnvelope
-    connect?: Enumerable<VerifiedSafeWhereUniqueInput>
     set?: Enumerable<VerifiedSafeWhereUniqueInput>
     disconnect?: Enumerable<VerifiedSafeWhereUniqueInput>
     delete?: Enumerable<VerifiedSafeWhereUniqueInput>
+    connect?: Enumerable<VerifiedSafeWhereUniqueInput>
     update?: Enumerable<VerifiedSafeUpdateWithWhereUniqueWithoutCreatedByInput>
     updateMany?: Enumerable<VerifiedSafeUpdateManyWithWhereWithoutCreatedByInput>
     deleteMany?: Enumerable<VerifiedSafeScalarWhereInput>
@@ -22332,10 +23607,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<VerifiedSafeCreateOrConnectWithoutCreatedByOrganisationInput>
     upsert?: Enumerable<VerifiedSafeUpsertWithWhereUniqueWithoutCreatedByOrganisationInput>
     createMany?: VerifiedSafeCreateManyCreatedByOrganisationInputEnvelope
-    connect?: Enumerable<VerifiedSafeWhereUniqueInput>
     set?: Enumerable<VerifiedSafeWhereUniqueInput>
     disconnect?: Enumerable<VerifiedSafeWhereUniqueInput>
     delete?: Enumerable<VerifiedSafeWhereUniqueInput>
+    connect?: Enumerable<VerifiedSafeWhereUniqueInput>
     update?: Enumerable<VerifiedSafeUpdateWithWhereUniqueWithoutCreatedByOrganisationInput>
     updateMany?: Enumerable<VerifiedSafeUpdateManyWithWhereWithoutCreatedByOrganisationInput>
     deleteMany?: Enumerable<VerifiedSafeScalarWhereInput>
@@ -22346,10 +23621,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<VerifiedSafeCreateOrConnectWithoutRevokedByInput>
     upsert?: Enumerable<VerifiedSafeUpsertWithWhereUniqueWithoutRevokedByInput>
     createMany?: VerifiedSafeCreateManyRevokedByInputEnvelope
-    connect?: Enumerable<VerifiedSafeWhereUniqueInput>
     set?: Enumerable<VerifiedSafeWhereUniqueInput>
     disconnect?: Enumerable<VerifiedSafeWhereUniqueInput>
     delete?: Enumerable<VerifiedSafeWhereUniqueInput>
+    connect?: Enumerable<VerifiedSafeWhereUniqueInput>
     update?: Enumerable<VerifiedSafeUpdateWithWhereUniqueWithoutRevokedByInput>
     updateMany?: Enumerable<VerifiedSafeUpdateManyWithWhereWithoutRevokedByInput>
     deleteMany?: Enumerable<VerifiedSafeScalarWhereInput>
@@ -22402,10 +23677,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<TagCreateOrConnectWithoutChatMessageInput>
     upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutChatMessageInput>
     createMany?: TagCreateManyChatMessageInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
     set?: Enumerable<TagWhereUniqueInput>
     disconnect?: Enumerable<TagWhereUniqueInput>
     delete?: Enumerable<TagWhereUniqueInput>
+    connect?: Enumerable<TagWhereUniqueInput>
     update?: Enumerable<TagUpdateWithWhereUniqueWithoutChatMessageInput>
     updateMany?: Enumerable<TagUpdateManyWithWhereWithoutChatMessageInput>
     deleteMany?: Enumerable<TagScalarWhereInput>
@@ -22416,10 +23691,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<TagCreateOrConnectWithoutChatMessageInput>
     upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutChatMessageInput>
     createMany?: TagCreateManyChatMessageInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
     set?: Enumerable<TagWhereUniqueInput>
     disconnect?: Enumerable<TagWhereUniqueInput>
     delete?: Enumerable<TagWhereUniqueInput>
+    connect?: Enumerable<TagWhereUniqueInput>
     update?: Enumerable<TagUpdateWithWhereUniqueWithoutChatMessageInput>
     updateMany?: Enumerable<TagUpdateManyWithWhereWithoutChatMessageInput>
     deleteMany?: Enumerable<TagScalarWhereInput>
@@ -22472,10 +23747,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<PurchaseLineCreateOrConnectWithoutProductInput>
     upsert?: Enumerable<PurchaseLineUpsertWithWhereUniqueWithoutProductInput>
     createMany?: PurchaseLineCreateManyProductInputEnvelope
-    connect?: Enumerable<PurchaseLineWhereUniqueInput>
     set?: Enumerable<PurchaseLineWhereUniqueInput>
     disconnect?: Enumerable<PurchaseLineWhereUniqueInput>
     delete?: Enumerable<PurchaseLineWhereUniqueInput>
+    connect?: Enumerable<PurchaseLineWhereUniqueInput>
     update?: Enumerable<PurchaseLineUpdateWithWhereUniqueWithoutProductInput>
     updateMany?: Enumerable<PurchaseLineUpdateManyWithWhereWithoutProductInput>
     deleteMany?: Enumerable<PurchaseLineScalarWhereInput>
@@ -22486,10 +23761,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvoiceLineCreateOrConnectWithoutProductInput>
     upsert?: Enumerable<InvoiceLineUpsertWithWhereUniqueWithoutProductInput>
     createMany?: InvoiceLineCreateManyProductInputEnvelope
-    connect?: Enumerable<InvoiceLineWhereUniqueInput>
     set?: Enumerable<InvoiceLineWhereUniqueInput>
     disconnect?: Enumerable<InvoiceLineWhereUniqueInput>
     delete?: Enumerable<InvoiceLineWhereUniqueInput>
+    connect?: Enumerable<InvoiceLineWhereUniqueInput>
     update?: Enumerable<InvoiceLineUpdateWithWhereUniqueWithoutProductInput>
     updateMany?: Enumerable<InvoiceLineUpdateManyWithWhereWithoutProductInput>
     deleteMany?: Enumerable<InvoiceLineScalarWhereInput>
@@ -22500,10 +23775,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<PurchaseLineCreateOrConnectWithoutProductInput>
     upsert?: Enumerable<PurchaseLineUpsertWithWhereUniqueWithoutProductInput>
     createMany?: PurchaseLineCreateManyProductInputEnvelope
-    connect?: Enumerable<PurchaseLineWhereUniqueInput>
     set?: Enumerable<PurchaseLineWhereUniqueInput>
     disconnect?: Enumerable<PurchaseLineWhereUniqueInput>
     delete?: Enumerable<PurchaseLineWhereUniqueInput>
+    connect?: Enumerable<PurchaseLineWhereUniqueInput>
     update?: Enumerable<PurchaseLineUpdateWithWhereUniqueWithoutProductInput>
     updateMany?: Enumerable<PurchaseLineUpdateManyWithWhereWithoutProductInput>
     deleteMany?: Enumerable<PurchaseLineScalarWhereInput>
@@ -22514,10 +23789,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvoiceLineCreateOrConnectWithoutProductInput>
     upsert?: Enumerable<InvoiceLineUpsertWithWhereUniqueWithoutProductInput>
     createMany?: InvoiceLineCreateManyProductInputEnvelope
-    connect?: Enumerable<InvoiceLineWhereUniqueInput>
     set?: Enumerable<InvoiceLineWhereUniqueInput>
     disconnect?: Enumerable<InvoiceLineWhereUniqueInput>
     delete?: Enumerable<InvoiceLineWhereUniqueInput>
+    connect?: Enumerable<InvoiceLineWhereUniqueInput>
     update?: Enumerable<InvoiceLineUpdateWithWhereUniqueWithoutProductInput>
     updateMany?: Enumerable<InvoiceLineUpdateManyWithWhereWithoutProductInput>
     deleteMany?: Enumerable<InvoiceLineScalarWhereInput>
@@ -22570,10 +23845,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<PurchaseLineCreateOrConnectWithoutPurchaseInput>
     upsert?: Enumerable<PurchaseLineUpsertWithWhereUniqueWithoutPurchaseInput>
     createMany?: PurchaseLineCreateManyPurchaseInputEnvelope
-    connect?: Enumerable<PurchaseLineWhereUniqueInput>
     set?: Enumerable<PurchaseLineWhereUniqueInput>
     disconnect?: Enumerable<PurchaseLineWhereUniqueInput>
     delete?: Enumerable<PurchaseLineWhereUniqueInput>
+    connect?: Enumerable<PurchaseLineWhereUniqueInput>
     update?: Enumerable<PurchaseLineUpdateWithWhereUniqueWithoutPurchaseInput>
     updateMany?: Enumerable<PurchaseLineUpdateManyWithWhereWithoutPurchaseInput>
     deleteMany?: Enumerable<PurchaseLineScalarWhereInput>
@@ -22584,10 +23859,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutPurchaseInput>
     upsert?: Enumerable<InvoiceUpsertWithWhereUniqueWithoutPurchaseInput>
     createMany?: InvoiceCreateManyPurchaseInputEnvelope
-    connect?: Enumerable<InvoiceWhereUniqueInput>
     set?: Enumerable<InvoiceWhereUniqueInput>
     disconnect?: Enumerable<InvoiceWhereUniqueInput>
     delete?: Enumerable<InvoiceWhereUniqueInput>
+    connect?: Enumerable<InvoiceWhereUniqueInput>
     update?: Enumerable<InvoiceUpdateWithWhereUniqueWithoutPurchaseInput>
     updateMany?: Enumerable<InvoiceUpdateManyWithWhereWithoutPurchaseInput>
     deleteMany?: Enumerable<InvoiceScalarWhereInput>
@@ -22598,10 +23873,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<PurchaseLineCreateOrConnectWithoutPurchaseInput>
     upsert?: Enumerable<PurchaseLineUpsertWithWhereUniqueWithoutPurchaseInput>
     createMany?: PurchaseLineCreateManyPurchaseInputEnvelope
-    connect?: Enumerable<PurchaseLineWhereUniqueInput>
     set?: Enumerable<PurchaseLineWhereUniqueInput>
     disconnect?: Enumerable<PurchaseLineWhereUniqueInput>
     delete?: Enumerable<PurchaseLineWhereUniqueInput>
+    connect?: Enumerable<PurchaseLineWhereUniqueInput>
     update?: Enumerable<PurchaseLineUpdateWithWhereUniqueWithoutPurchaseInput>
     updateMany?: Enumerable<PurchaseLineUpdateManyWithWhereWithoutPurchaseInput>
     deleteMany?: Enumerable<PurchaseLineScalarWhereInput>
@@ -22612,10 +23887,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvoiceCreateOrConnectWithoutPurchaseInput>
     upsert?: Enumerable<InvoiceUpsertWithWhereUniqueWithoutPurchaseInput>
     createMany?: InvoiceCreateManyPurchaseInputEnvelope
-    connect?: Enumerable<InvoiceWhereUniqueInput>
     set?: Enumerable<InvoiceWhereUniqueInput>
     disconnect?: Enumerable<InvoiceWhereUniqueInput>
     delete?: Enumerable<InvoiceWhereUniqueInput>
+    connect?: Enumerable<InvoiceWhereUniqueInput>
     update?: Enumerable<InvoiceUpdateWithWhereUniqueWithoutPurchaseInput>
     updateMany?: Enumerable<InvoiceUpdateManyWithWhereWithoutPurchaseInput>
     deleteMany?: Enumerable<InvoiceScalarWhereInput>
@@ -22722,10 +23997,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvoiceLineCreateOrConnectWithoutInvoiceInput>
     upsert?: Enumerable<InvoiceLineUpsertWithWhereUniqueWithoutInvoiceInput>
     createMany?: InvoiceLineCreateManyInvoiceInputEnvelope
-    connect?: Enumerable<InvoiceLineWhereUniqueInput>
     set?: Enumerable<InvoiceLineWhereUniqueInput>
     disconnect?: Enumerable<InvoiceLineWhereUniqueInput>
     delete?: Enumerable<InvoiceLineWhereUniqueInput>
+    connect?: Enumerable<InvoiceLineWhereUniqueInput>
     update?: Enumerable<InvoiceLineUpdateWithWhereUniqueWithoutInvoiceInput>
     updateMany?: Enumerable<InvoiceLineUpdateManyWithWhereWithoutInvoiceInput>
     deleteMany?: Enumerable<InvoiceLineScalarWhereInput>
@@ -22735,9 +24010,9 @@ export namespace Prisma {
     create?: XOR<TransactionCreateWithoutPayedInvoiceInput, TransactionUncheckedCreateWithoutPayedInvoiceInput>
     connectOrCreate?: TransactionCreateOrConnectWithoutPayedInvoiceInput
     upsert?: TransactionUpsertWithoutPayedInvoiceInput
-    connect?: TransactionWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: TransactionWhereUniqueInput
     update?: XOR<TransactionUpdateWithoutPayedInvoiceInput, TransactionUncheckedUpdateWithoutPayedInvoiceInput>
   }
 
@@ -22745,9 +24020,9 @@ export namespace Prisma {
     create?: XOR<ProfileCreateWithoutCancelledInvoicesInput, ProfileUncheckedCreateWithoutCancelledInvoicesInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutCancelledInvoicesInput
     upsert?: ProfileUpsertWithoutCancelledInvoicesInput
-    connect?: ProfileWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: ProfileWhereUniqueInput
     update?: XOR<ProfileUpdateWithoutCancelledInvoicesInput, ProfileUncheckedUpdateWithoutCancelledInvoicesInput>
   }
 
@@ -22756,10 +24031,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvoiceLineCreateOrConnectWithoutInvoiceInput>
     upsert?: Enumerable<InvoiceLineUpsertWithWhereUniqueWithoutInvoiceInput>
     createMany?: InvoiceLineCreateManyInvoiceInputEnvelope
-    connect?: Enumerable<InvoiceLineWhereUniqueInput>
     set?: Enumerable<InvoiceLineWhereUniqueInput>
     disconnect?: Enumerable<InvoiceLineWhereUniqueInput>
     delete?: Enumerable<InvoiceLineWhereUniqueInput>
+    connect?: Enumerable<InvoiceLineWhereUniqueInput>
     update?: Enumerable<InvoiceLineUpdateWithWhereUniqueWithoutInvoiceInput>
     updateMany?: Enumerable<InvoiceLineUpdateManyWithWhereWithoutInvoiceInput>
     deleteMany?: Enumerable<InvoiceLineScalarWhereInput>
@@ -22812,10 +24087,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<TagCreateOrConnectWithoutTypeInput>
     upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutTypeInput>
     createMany?: TagCreateManyTypeInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
     set?: Enumerable<TagWhereUniqueInput>
     disconnect?: Enumerable<TagWhereUniqueInput>
     delete?: Enumerable<TagWhereUniqueInput>
+    connect?: Enumerable<TagWhereUniqueInput>
     update?: Enumerable<TagUpdateWithWhereUniqueWithoutTypeInput>
     updateMany?: Enumerable<TagUpdateManyWithWhereWithoutTypeInput>
     deleteMany?: Enumerable<TagScalarWhereInput>
@@ -22826,10 +24101,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<TagCreateOrConnectWithoutTypeInput>
     upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutTypeInput>
     createMany?: TagCreateManyTypeInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
     set?: Enumerable<TagWhereUniqueInput>
     disconnect?: Enumerable<TagWhereUniqueInput>
     delete?: Enumerable<TagWhereUniqueInput>
+    connect?: Enumerable<TagWhereUniqueInput>
     update?: Enumerable<TagUpdateWithWhereUniqueWithoutTypeInput>
     updateMany?: Enumerable<TagUpdateManyWithWhereWithoutTypeInput>
     deleteMany?: Enumerable<TagScalarWhereInput>
@@ -22902,10 +24177,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<TagCreateOrConnectWithoutTransactionInput>
     upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutTransactionInput>
     createMany?: TagCreateManyTransactionInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
     set?: Enumerable<TagWhereUniqueInput>
     disconnect?: Enumerable<TagWhereUniqueInput>
     delete?: Enumerable<TagWhereUniqueInput>
+    connect?: Enumerable<TagWhereUniqueInput>
     update?: Enumerable<TagUpdateWithWhereUniqueWithoutTransactionInput>
     updateMany?: Enumerable<TagUpdateManyWithWhereWithoutTransactionInput>
     deleteMany?: Enumerable<TagScalarWhereInput>
@@ -22915,9 +24190,9 @@ export namespace Prisma {
     create?: XOR<InvoiceCreateWithoutPaymentTransactionInput, InvoiceUncheckedCreateWithoutPaymentTransactionInput>
     connectOrCreate?: InvoiceCreateOrConnectWithoutPaymentTransactionInput
     upsert?: InvoiceUpsertWithoutPaymentTransactionInput
-    connect?: InvoiceWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: InvoiceWhereUniqueInput
     update?: XOR<InvoiceUpdateWithoutPaymentTransactionInput, InvoiceUncheckedUpdateWithoutPaymentTransactionInput>
   }
 
@@ -22925,9 +24200,9 @@ export namespace Prisma {
     create?: XOR<VerifiedSafeCreateWithoutInviteeRewardTransactionInput, VerifiedSafeUncheckedCreateWithoutInviteeRewardTransactionInput>
     connectOrCreate?: VerifiedSafeCreateOrConnectWithoutInviteeRewardTransactionInput
     upsert?: VerifiedSafeUpsertWithoutInviteeRewardTransactionInput
-    connect?: VerifiedSafeWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: VerifiedSafeWhereUniqueInput
     update?: XOR<VerifiedSafeUpdateWithoutInviteeRewardTransactionInput, VerifiedSafeUncheckedUpdateWithoutInviteeRewardTransactionInput>
   }
 
@@ -22935,9 +24210,9 @@ export namespace Prisma {
     create?: XOR<VerifiedSafeCreateWithoutInviterRewardTransactionInput, VerifiedSafeUncheckedCreateWithoutInviterRewardTransactionInput>
     connectOrCreate?: VerifiedSafeCreateOrConnectWithoutInviterRewardTransactionInput
     upsert?: VerifiedSafeUpsertWithoutInviterRewardTransactionInput
-    connect?: VerifiedSafeWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: VerifiedSafeWhereUniqueInput
     update?: XOR<VerifiedSafeUpdateWithoutInviterRewardTransactionInput, VerifiedSafeUncheckedUpdateWithoutInviterRewardTransactionInput>
   }
 
@@ -22945,9 +24220,9 @@ export namespace Prisma {
     create?: XOR<VerifiedSafeCreateWithoutSwapFundingTransactionInput, VerifiedSafeUncheckedCreateWithoutSwapFundingTransactionInput>
     connectOrCreate?: VerifiedSafeCreateOrConnectWithoutSwapFundingTransactionInput
     upsert?: VerifiedSafeUpsertWithoutSwapFundingTransactionInput
-    connect?: VerifiedSafeWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: VerifiedSafeWhereUniqueInput
     update?: XOR<VerifiedSafeUpdateWithoutSwapFundingTransactionInput, VerifiedSafeUncheckedUpdateWithoutSwapFundingTransactionInput>
   }
 
@@ -22956,10 +24231,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<TagCreateOrConnectWithoutTransactionInput>
     upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutTransactionInput>
     createMany?: TagCreateManyTransactionInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
     set?: Enumerable<TagWhereUniqueInput>
     disconnect?: Enumerable<TagWhereUniqueInput>
     delete?: Enumerable<TagWhereUniqueInput>
+    connect?: Enumerable<TagWhereUniqueInput>
     update?: Enumerable<TagUpdateWithWhereUniqueWithoutTransactionInput>
     updateMany?: Enumerable<TagUpdateManyWithWhereWithoutTransactionInput>
     deleteMany?: Enumerable<TagScalarWhereInput>
@@ -22969,9 +24244,9 @@ export namespace Prisma {
     create?: XOR<InvoiceCreateWithoutPaymentTransactionInput, InvoiceUncheckedCreateWithoutPaymentTransactionInput>
     connectOrCreate?: InvoiceCreateOrConnectWithoutPaymentTransactionInput
     upsert?: InvoiceUpsertWithoutPaymentTransactionInput
-    connect?: InvoiceWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: InvoiceWhereUniqueInput
     update?: XOR<InvoiceUpdateWithoutPaymentTransactionInput, InvoiceUncheckedUpdateWithoutPaymentTransactionInput>
   }
 
@@ -22979,9 +24254,9 @@ export namespace Prisma {
     create?: XOR<VerifiedSafeCreateWithoutInviteeRewardTransactionInput, VerifiedSafeUncheckedCreateWithoutInviteeRewardTransactionInput>
     connectOrCreate?: VerifiedSafeCreateOrConnectWithoutInviteeRewardTransactionInput
     upsert?: VerifiedSafeUpsertWithoutInviteeRewardTransactionInput
-    connect?: VerifiedSafeWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: VerifiedSafeWhereUniqueInput
     update?: XOR<VerifiedSafeUpdateWithoutInviteeRewardTransactionInput, VerifiedSafeUncheckedUpdateWithoutInviteeRewardTransactionInput>
   }
 
@@ -22989,9 +24264,9 @@ export namespace Prisma {
     create?: XOR<VerifiedSafeCreateWithoutInviterRewardTransactionInput, VerifiedSafeUncheckedCreateWithoutInviterRewardTransactionInput>
     connectOrCreate?: VerifiedSafeCreateOrConnectWithoutInviterRewardTransactionInput
     upsert?: VerifiedSafeUpsertWithoutInviterRewardTransactionInput
-    connect?: VerifiedSafeWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: VerifiedSafeWhereUniqueInput
     update?: XOR<VerifiedSafeUpdateWithoutInviterRewardTransactionInput, VerifiedSafeUncheckedUpdateWithoutInviterRewardTransactionInput>
   }
 
@@ -22999,9 +24274,9 @@ export namespace Prisma {
     create?: XOR<VerifiedSafeCreateWithoutSwapFundingTransactionInput, VerifiedSafeUncheckedCreateWithoutSwapFundingTransactionInput>
     connectOrCreate?: VerifiedSafeCreateOrConnectWithoutSwapFundingTransactionInput
     upsert?: VerifiedSafeUpsertWithoutSwapFundingTransactionInput
-    connect?: VerifiedSafeWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: VerifiedSafeWhereUniqueInput
     update?: XOR<VerifiedSafeUpdateWithoutSwapFundingTransactionInput, VerifiedSafeUncheckedUpdateWithoutSwapFundingTransactionInput>
   }
 
@@ -23029,10 +24304,6 @@ export namespace Prisma {
     connect?: ChatMessageWhereUniqueInput
   }
 
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
-  }
-
   export type ProfileUpdateOneRequiredWithoutTagsInput = {
     create?: XOR<ProfileCreateWithoutTagsInput, ProfileUncheckedCreateWithoutTagsInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutTagsInput
@@ -23041,13 +24312,17 @@ export namespace Prisma {
     update?: XOR<ProfileUpdateWithoutTagsInput, ProfileUncheckedUpdateWithoutTagsInput>
   }
 
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
   export type TransactionUpdateOneWithoutTagsInput = {
     create?: XOR<TransactionCreateWithoutTagsInput, TransactionUncheckedCreateWithoutTagsInput>
     connectOrCreate?: TransactionCreateOrConnectWithoutTagsInput
     upsert?: TransactionUpsertWithoutTagsInput
-    connect?: TransactionWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: TransactionWhereUniqueInput
     update?: XOR<TransactionUpdateWithoutTagsInput, TransactionUncheckedUpdateWithoutTagsInput>
   }
 
@@ -23063,9 +24338,9 @@ export namespace Prisma {
     create?: XOR<ChatMessageCreateWithoutTagsInput, ChatMessageUncheckedCreateWithoutTagsInput>
     connectOrCreate?: ChatMessageCreateOrConnectWithoutTagsInput
     upsert?: ChatMessageUpsertWithoutTagsInput
-    connect?: ChatMessageWhereUniqueInput
     disconnect?: boolean
     delete?: boolean
+    connect?: ChatMessageWhereUniqueInput
     update?: XOR<ChatMessageUpdateWithoutTagsInput, ChatMessageUncheckedUpdateWithoutTagsInput>
   }
 
@@ -23154,23 +24429,8 @@ export namespace Prisma {
     endsWith?: string
     not?: NestedStringWithAggregatesFilter | string
     _count?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntFilter
     _min?: NestedStringFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedStringFilter
     _max?: NestedStringFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedStringFilter
   }
 
   export type NestedStringNullableWithAggregatesFilter = {
@@ -23186,23 +24446,8 @@ export namespace Prisma {
     endsWith?: string
     not?: NestedStringNullableWithAggregatesFilter | string | null
     _count?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntNullableFilter
     _min?: NestedStringNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedStringNullableFilter
     _max?: NestedStringNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedStringNullableFilter
   }
 
   export type NestedIntNullableWithAggregatesFilter = {
@@ -23215,35 +24460,10 @@ export namespace Prisma {
     gte?: number
     not?: NestedIntNullableWithAggregatesFilter | number | null
     _count?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntNullableFilter
     _avg?: NestedFloatNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    avg?: NestedFloatNullableFilter
     _sum?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    sum?: NestedIntNullableFilter
     _min?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedIntNullableFilter
     _max?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedIntNullableFilter
   }
 
   export type NestedFloatNullableFilter = {
@@ -23267,23 +24487,8 @@ export namespace Prisma {
     gte?: Date | string
     not?: NestedDateTimeWithAggregatesFilter | Date | string
     _count?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntFilter
     _min?: NestedDateTimeFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedDateTimeFilter
     _max?: NestedDateTimeFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedDateTimeFilter
   }
 
   export type NestedDateTimeNullableWithAggregatesFilter = {
@@ -23296,23 +24501,8 @@ export namespace Prisma {
     gte?: Date | string
     not?: NestedDateTimeNullableWithAggregatesFilter | Date | string | null
     _count?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntNullableFilter
     _min?: NestedDateTimeNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedDateTimeNullableFilter
     _max?: NestedDateTimeNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedDateTimeNullableFilter
   }
 
   export type NestedIntWithAggregatesFilter = {
@@ -23325,35 +24515,10 @@ export namespace Prisma {
     gte?: number
     not?: NestedIntWithAggregatesFilter | number
     _count?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntFilter
     _avg?: NestedFloatFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    avg?: NestedFloatFilter
     _sum?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    sum?: NestedIntFilter
     _min?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedIntFilter
     _max?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedIntFilter
   }
 
   export type NestedFloatFilter = {
@@ -23385,46 +24550,16 @@ export namespace Prisma {
     notIn?: Enumerable<ProfileType> | null
     not?: NestedEnumProfileTypeNullableWithAggregatesFilter | ProfileType | null
     _count?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntNullableFilter
     _min?: NestedEnumProfileTypeNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedEnumProfileTypeNullableFilter
     _max?: NestedEnumProfileTypeNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedEnumProfileTypeNullableFilter
   }
 
   export type NestedBoolNullableWithAggregatesFilter = {
     equals?: boolean | null
     not?: NestedBoolNullableWithAggregatesFilter | boolean | null
     _count?: NestedIntNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntNullableFilter
     _min?: NestedBoolNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedBoolNullableFilter
     _max?: NestedBoolNullableFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedBoolNullableFilter
   }
 
   export type NestedBoolFilter = {
@@ -23436,23 +24571,8 @@ export namespace Prisma {
     equals?: boolean
     not?: NestedBoolWithAggregatesFilter | boolean
     _count?: NestedIntFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    count?: NestedIntFilter
     _min?: NestedBoolFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    min?: NestedBoolFilter
     _max?: NestedBoolFilter
-    /**
-     * @deprecated since 2.23 because Aggregation keywords got unified to use underscore as prefix to prevent field clashes.
-     * 
-    **/
-    max?: NestedBoolFilter
   }
 
   export type ProfileCreateWithoutSessionsInput = {
@@ -23478,11 +24598,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
@@ -23495,6 +24610,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -23524,11 +24644,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
@@ -23541,6 +24656,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -23579,11 +24699,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
@@ -23596,6 +24711,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -23625,11 +24745,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
@@ -23642,6 +24757,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -23670,11 +24790,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -23687,6 +24802,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -23716,11 +24836,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -23733,6 +24848,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -23766,11 +24886,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -23783,6 +24898,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -23812,11 +24932,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -23829,6 +24944,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -23862,11 +24982,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -23879,6 +24994,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -23908,11 +25028,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -23925,6 +25040,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -23963,11 +25083,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -23980,6 +25095,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -24009,11 +25129,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -24026,6 +25141,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -24059,11 +25179,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -24076,6 +25191,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -24105,11 +25225,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -24122,6 +25237,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -24155,11 +25275,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -24172,6 +25287,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -24201,11 +25321,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -24218,6 +25333,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -24246,11 +25366,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -24263,6 +25378,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -24292,11 +25412,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -24309,6 +25424,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -24347,11 +25467,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -24364,6 +25479,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -24393,11 +25513,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -24410,6 +25525,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -24438,11 +25558,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -24456,6 +25571,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
   }
@@ -24484,11 +25604,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -24502,6 +25617,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
   }
@@ -24534,11 +25654,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -24552,6 +25667,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
   }
@@ -24580,11 +25700,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -24598,6 +25713,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
   }
@@ -24630,11 +25750,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -24648,6 +25763,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
   }
@@ -24676,11 +25796,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -24694,6 +25809,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
   }
@@ -24794,11 +25914,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -24812,6 +25927,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
   }
@@ -24840,11 +25960,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -24858,6 +25973,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
   }
@@ -24890,11 +26010,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -24908,6 +26023,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
   }
@@ -24936,11 +26056,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -24954,6 +26069,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
   }
@@ -24986,11 +26106,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -25004,6 +26119,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
   }
@@ -25032,11 +26152,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -25050,6 +26165,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
   }
@@ -25162,10 +26282,10 @@ export namespace Prisma {
   export type TagCreateWithoutCreatedByInput = {
     createdAt: Date | string
     isPrivate: boolean
-    value?: string | null
     transaction?: TransactionCreateNestedOneWithoutTagsInput
     type: TagTypeCreateNestedOneWithoutTagsInput
     chatMessage?: ChatMessageCreateNestedOneWithoutTagsInput
+    value?: string | null
   }
 
   export type TagUncheckedCreateWithoutCreatedByInput = {
@@ -25256,14 +26376,14 @@ export namespace Prisma {
     fundedAt?: Date | string | null
     name: string
     code: string
+    claimedBy?: ProfileCreateNestedOneWithoutClaimedInvitationsInput
     claimedAt?: Date | string | null
+    redeemedBy?: ProfileCreateNestedOneWithoutRedeemedInvitationsInput
     redeemedAt?: Date | string | null
     redeemTxHash?: string | null
     forSafeAddress?: string | null
     address: string
     key: string
-    claimedBy?: ProfileCreateNestedOneWithoutClaimedInvitationsInput
-    redeemedBy?: ProfileCreateNestedOneWithoutRedeemedInvitationsInput
   }
 
   export type InvitationUncheckedCreateWithoutCreatedByInput = {
@@ -25309,18 +26429,18 @@ export namespace Prisma {
   }
 
   export type InvitationCreateWithoutRedeemedByInput = {
+    createdBy: ProfileCreateNestedOneWithoutInvitationsInput
     createdAt: Date | string
     fundedAt?: Date | string | null
     name: string
     code: string
+    claimedBy?: ProfileCreateNestedOneWithoutClaimedInvitationsInput
     claimedAt?: Date | string | null
     redeemedAt?: Date | string | null
     redeemTxHash?: string | null
     forSafeAddress?: string | null
     address: string
     key: string
-    createdBy: ProfileCreateNestedOneWithoutInvitationsInput
-    claimedBy?: ProfileCreateNestedOneWithoutClaimedInvitationsInput
   }
 
   export type InvitationUncheckedCreateWithoutRedeemedByInput = {
@@ -25350,18 +26470,18 @@ export namespace Prisma {
   }
 
   export type InvitationCreateWithoutClaimedByInput = {
+    createdBy: ProfileCreateNestedOneWithoutInvitationsInput
     createdAt: Date | string
     fundedAt?: Date | string | null
     name: string
     code: string
     claimedAt?: Date | string | null
+    redeemedBy?: ProfileCreateNestedOneWithoutRedeemedInvitationsInput
     redeemedAt?: Date | string | null
     redeemTxHash?: string | null
     forSafeAddress?: string | null
     address: string
     key: string
-    createdBy: ProfileCreateNestedOneWithoutInvitationsInput
-    redeemedBy?: ProfileCreateNestedOneWithoutRedeemedInvitationsInput
   }
 
   export type InvitationUncheckedCreateWithoutClaimedByInput = {
@@ -25392,12 +26512,12 @@ export namespace Prisma {
 
   export type MembershipCreateWithoutMemberAtInput = {
     createdAt?: Date | string
+    createdBy: ProfileCreateNestedOneWithoutCreatedMembershipsInput
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     validTo?: Date | string | null
     isAdmin?: boolean | null
     memberAddress: string
-    createdBy: ProfileCreateNestedOneWithoutCreatedMembershipsInput
   }
 
   export type MembershipUncheckedCreateWithoutMemberAtInput = {
@@ -25455,19 +26575,19 @@ export namespace Prisma {
   export type InvoiceCreateWithoutCustomerProfileInput = {
     createdAt: Date | string
     invoiceNo: string
+    sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
+    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
+    lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: string | null
+    paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
     pickupCode?: string | null
     buyerSignature?: boolean | null
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
     cancelledAt?: Date | string | null
-    cancelReason?: string | null
-    sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
-    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
-    lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
-    paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
     cancelledBy?: ProfileCreateNestedOneWithoutCancelledInvoicesInput
+    cancelReason?: string | null
   }
 
   export type InvoiceUncheckedCreateWithoutCustomerProfileInput = {
@@ -25476,6 +26596,7 @@ export namespace Prisma {
     invoiceNo: string
     sellerProfileId: number
     purchaseId: number
+    lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: string | null
     paymentTransactionHash?: string | null
     pickupCode?: string | null
@@ -25486,7 +26607,6 @@ export namespace Prisma {
     cancelledAt?: Date | string | null
     cancelledByProfileId?: number | null
     cancelReason?: string | null
-    lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
   export type InvoiceCreateOrConnectWithoutCustomerProfileInput = {
@@ -25502,19 +26622,19 @@ export namespace Prisma {
   export type InvoiceCreateWithoutSellerProfileInput = {
     createdAt: Date | string
     invoiceNo: string
+    customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
+    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
+    lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: string | null
+    paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
     pickupCode?: string | null
     buyerSignature?: boolean | null
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
     cancelledAt?: Date | string | null
-    cancelReason?: string | null
-    customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
-    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
-    lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
-    paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
     cancelledBy?: ProfileCreateNestedOneWithoutCancelledInvoicesInput
+    cancelReason?: string | null
   }
 
   export type InvoiceUncheckedCreateWithoutSellerProfileInput = {
@@ -25523,6 +26643,7 @@ export namespace Prisma {
     invoiceNo: string
     customerProfileId: number
     purchaseId: number
+    lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: string | null
     paymentTransactionHash?: string | null
     pickupCode?: string | null
@@ -25533,7 +26654,6 @@ export namespace Prisma {
     cancelledAt?: Date | string | null
     cancelledByProfileId?: number | null
     cancelReason?: string | null
-    lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
   export type InvoiceCreateOrConnectWithoutSellerProfileInput = {
@@ -25549,7 +26669,12 @@ export namespace Prisma {
   export type InvoiceCreateWithoutCancelledByInput = {
     createdAt: Date | string
     invoiceNo: string
+    customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
+    sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
+    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
+    lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: string | null
+    paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
     pickupCode?: string | null
     buyerSignature?: boolean | null
     buyerSignedDate?: Date | string | null
@@ -25557,11 +26682,6 @@ export namespace Prisma {
     sellerSignedDate?: Date | string | null
     cancelledAt?: Date | string | null
     cancelReason?: string | null
-    customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
-    sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
-    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
-    lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
-    paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
   }
 
   export type InvoiceUncheckedCreateWithoutCancelledByInput = {
@@ -25571,6 +26691,7 @@ export namespace Prisma {
     customerProfileId: number
     sellerProfileId: number
     purchaseId: number
+    lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: string | null
     paymentTransactionHash?: string | null
     pickupCode?: string | null
@@ -25580,7 +26701,6 @@ export namespace Prisma {
     sellerSignedDate?: Date | string | null
     cancelledAt?: Date | string | null
     cancelReason?: string | null
-    lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
   export type InvoiceCreateOrConnectWithoutCancelledByInput = {
@@ -25596,17 +26716,17 @@ export namespace Prisma {
   export type VerifiedSafeCreateWithoutCreatedByInput = {
     safeAddress: string
     createdAt?: Date | string
+    createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     revokedAt?: Date | string | null
+    revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
-    inviteCount?: number
-    createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
-    revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
     inviterRewardTransaction?: TransactionCreateNestedOneWithoutInviterReward_VerifiedSafeInput
     swapFundingTransaction?: TransactionCreateNestedOneWithoutSwapFunding_VerifiedSafeInput
+    inviteCount?: number
   }
 
   export type VerifiedSafeUncheckedCreateWithoutCreatedByInput = {
@@ -25638,17 +26758,17 @@ export namespace Prisma {
   export type VerifiedSafeCreateWithoutCreatedByOrganisationInput = {
     safeAddress: string
     createdAt?: Date | string
+    createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
     revokedAt?: Date | string | null
+    revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
-    inviteCount?: number
-    createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
-    revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
     inviterRewardTransaction?: TransactionCreateNestedOneWithoutInviterReward_VerifiedSafeInput
     swapFundingTransaction?: TransactionCreateNestedOneWithoutSwapFunding_VerifiedSafeInput
+    inviteCount?: number
   }
 
   export type VerifiedSafeUncheckedCreateWithoutCreatedByOrganisationInput = {
@@ -25680,17 +26800,17 @@ export namespace Prisma {
   export type VerifiedSafeCreateWithoutRevokedByInput = {
     safeAddress: string
     createdAt?: Date | string
+    createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
+    createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     revokedAt?: Date | string | null
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
-    inviteCount?: number
-    createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
-    createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
     inviterRewardTransaction?: TransactionCreateNestedOneWithoutInviterReward_VerifiedSafeInput
     swapFundingTransaction?: TransactionCreateNestedOneWithoutSwapFunding_VerifiedSafeInput
+    inviteCount?: number
   }
 
   export type VerifiedSafeUncheckedCreateWithoutRevokedByInput = {
@@ -26135,11 +27255,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -26152,6 +27267,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -26181,11 +27301,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -26198,6 +27313,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -26231,11 +27351,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -26248,6 +27363,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -26277,11 +27397,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -26294,6 +27409,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -26332,11 +27452,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -26349,6 +27464,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -26378,11 +27498,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -26395,6 +27510,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -26428,11 +27548,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -26445,6 +27560,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -26474,11 +27594,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -26491,6 +27606,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -26498,11 +27618,11 @@ export namespace Prisma {
 
   export type TagCreateWithoutChatMessageInput = {
     createdAt: Date | string
-    isPrivate: boolean
-    value?: string | null
     createdBy: ProfileCreateNestedOneWithoutTagsInput
+    isPrivate: boolean
     transaction?: TransactionCreateNestedOneWithoutTagsInput
     type: TagTypeCreateNestedOneWithoutTagsInput
+    value?: string | null
   }
 
   export type TagUncheckedCreateWithoutChatMessageInput = {
@@ -26564,11 +27684,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
@@ -26581,6 +27696,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -26610,11 +27730,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
@@ -26627,6 +27742,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -26638,8 +27758,8 @@ export namespace Prisma {
   }
 
   export type PurchaseLineCreateWithoutProductInput = {
-    amount: number
     purchase: PurchaseCreateNestedOneWithoutLinesInput
+    amount: number
   }
 
   export type PurchaseLineUncheckedCreateWithoutProductInput = {
@@ -26659,8 +27779,8 @@ export namespace Prisma {
   }
 
   export type InvoiceLineCreateWithoutProductInput = {
-    amount: number
     invoice: InvoiceCreateNestedOneWithoutLinesInput
+    amount: number
   }
 
   export type InvoiceLineUncheckedCreateWithoutProductInput = {
@@ -26707,11 +27827,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
@@ -26724,6 +27839,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -26753,11 +27873,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
@@ -26770,6 +27885,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -26852,11 +27972,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -26869,6 +27984,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -26898,11 +28018,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -26915,6 +28030,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -26950,19 +28070,19 @@ export namespace Prisma {
   export type InvoiceCreateWithoutPurchaseInput = {
     createdAt: Date | string
     invoiceNo: string
+    customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
+    sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
+    lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: string | null
+    paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
     pickupCode?: string | null
     buyerSignature?: boolean | null
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
     cancelledAt?: Date | string | null
-    cancelReason?: string | null
-    customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
-    sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
-    lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
-    paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
     cancelledBy?: ProfileCreateNestedOneWithoutCancelledInvoicesInput
+    cancelReason?: string | null
   }
 
   export type InvoiceUncheckedCreateWithoutPurchaseInput = {
@@ -26971,6 +28091,7 @@ export namespace Prisma {
     invoiceNo: string
     customerProfileId: number
     sellerProfileId: number
+    lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: string | null
     paymentTransactionHash?: string | null
     pickupCode?: string | null
@@ -26981,7 +28102,6 @@ export namespace Prisma {
     cancelledAt?: Date | string | null
     cancelledByProfileId?: number | null
     cancelReason?: string | null
-    lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
   export type InvoiceCreateOrConnectWithoutPurchaseInput = {
@@ -27022,11 +28142,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -27039,6 +28154,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -27068,11 +28188,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -27085,6 +28200,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -27123,9 +28243,9 @@ export namespace Prisma {
   }
 
   export type PurchaseCreateWithoutLinesInput = {
+    createdBy: ProfileCreateNestedOneWithoutPurchasesInput
     createdAt: Date | string
     sticksToInstanceId?: string | null
-    createdBy: ProfileCreateNestedOneWithoutPurchasesInput
     invoices?: InvoiceCreateNestedManyWithoutPurchaseInput
   }
 
@@ -27145,6 +28265,7 @@ export namespace Prisma {
   export type OfferCreateWithoutPurchaseLinesInput = {
     id?: number
     version: number
+    createdBy: ProfileCreateNestedOneWithoutOffersInput
     createdAt: Date | string
     title: string
     pictureUrl?: string | null
@@ -27152,7 +28273,6 @@ export namespace Prisma {
     description?: string | null
     pricePerUnit: string
     timeCirclesPriceShare: number
-    createdBy: ProfileCreateNestedOneWithoutOffersInput
     invoiceLines?: InvoiceLineCreateNestedManyWithoutProductInput
   }
 
@@ -27181,9 +28301,9 @@ export namespace Prisma {
   }
 
   export type PurchaseUpdateWithoutLinesInput = {
+    createdBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sticksToInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
     invoices?: InvoiceUpdateManyWithoutPurchaseInput
   }
 
@@ -27203,6 +28323,7 @@ export namespace Prisma {
   export type OfferUpdateWithoutPurchaseLinesInput = {
     id?: IntFieldUpdateOperationsInput | number
     version?: IntFieldUpdateOperationsInput | number
+    createdBy?: ProfileUpdateOneRequiredWithoutOffersInput
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: StringFieldUpdateOperationsInput | string
     pictureUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27210,7 +28331,6 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
     timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
-    createdBy?: ProfileUpdateOneRequiredWithoutOffersInput
     invoiceLines?: InvoiceLineUpdateManyWithoutProductInput
   }
 
@@ -27251,11 +28371,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -27268,6 +28383,11 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -27297,11 +28417,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -27314,6 +28429,11 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -27347,11 +28467,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -27364,6 +28479,11 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -27393,11 +28513,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -27410,6 +28525,11 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -27421,9 +28541,9 @@ export namespace Prisma {
   }
 
   export type PurchaseCreateWithoutInvoicesInput = {
+    createdBy: ProfileCreateNestedOneWithoutPurchasesInput
     createdAt: Date | string
     sticksToInstanceId?: string | null
-    createdBy: ProfileCreateNestedOneWithoutPurchasesInput
     lines?: PurchaseLineCreateNestedManyWithoutPurchaseInput
   }
 
@@ -27506,11 +28626,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
     tags?: TagCreateNestedManyWithoutCreatedByInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
@@ -27523,6 +28638,11 @@ export namespace Prisma {
     createdMemberships?: MembershipCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -27552,11 +28672,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     tags?: TagUncheckedCreateNestedManyWithoutCreatedByInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
@@ -27569,6 +28684,11 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedCreateNestedManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -27607,11 +28727,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -27624,6 +28739,11 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -27653,11 +28773,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -27670,6 +28785,11 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -27703,11 +28823,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -27720,6 +28835,11 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -27749,11 +28869,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -27766,6 +28881,11 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -27777,9 +28897,9 @@ export namespace Prisma {
   }
 
   export type PurchaseUpdateWithoutInvoicesInput = {
+    createdBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sticksToInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdBy?: ProfileUpdateOneRequiredWithoutPurchasesInput
     lines?: PurchaseLineUpdateManyWithoutPurchaseInput
   }
 
@@ -27856,11 +28976,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
     tags?: TagUpdateManyWithoutCreatedByInput
     offers?: OfferUpdateManyWithoutCreatedByInput
@@ -27873,6 +28988,11 @@ export namespace Prisma {
     createdMemberships?: MembershipUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -27902,11 +29022,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     tags?: TagUncheckedUpdateManyWithoutCreatedByInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
@@ -27919,6 +29034,11 @@ export namespace Prisma {
     createdMemberships?: MembershipUncheckedUpdateManyWithoutCreatedByInput
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -27927,19 +29047,19 @@ export namespace Prisma {
   export type InvoiceCreateWithoutLinesInput = {
     createdAt: Date | string
     invoiceNo: string
+    customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
+    sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
+    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
     pendingPaymentTransactionHash?: string | null
+    paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
     pickupCode?: string | null
     buyerSignature?: boolean | null
     buyerSignedDate?: Date | string | null
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
     cancelledAt?: Date | string | null
-    cancelReason?: string | null
-    customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
-    sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
-    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
-    paymentTransaction?: TransactionCreateNestedOneWithoutPayedInvoiceInput
     cancelledBy?: ProfileCreateNestedOneWithoutCancelledInvoicesInput
+    cancelReason?: string | null
   }
 
   export type InvoiceUncheckedCreateWithoutLinesInput = {
@@ -27969,6 +29089,7 @@ export namespace Prisma {
   export type OfferCreateWithoutInvoiceLinesInput = {
     id?: number
     version: number
+    createdBy: ProfileCreateNestedOneWithoutOffersInput
     createdAt: Date | string
     title: string
     pictureUrl?: string | null
@@ -27976,7 +29097,6 @@ export namespace Prisma {
     description?: string | null
     pricePerUnit: string
     timeCirclesPriceShare: number
-    createdBy: ProfileCreateNestedOneWithoutOffersInput
     purchaseLines?: PurchaseLineCreateNestedManyWithoutProductInput
   }
 
@@ -28007,19 +29127,19 @@ export namespace Prisma {
   export type InvoiceUpdateWithoutLinesInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNo?: StringFieldUpdateOperationsInput | string
+    customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
+    sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
+    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
     pendingPaymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
     buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
-    customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
-    sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
-    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
-    paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
     cancelledBy?: ProfileUpdateOneWithoutCancelledInvoicesInput
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type InvoiceUncheckedUpdateWithoutLinesInput = {
@@ -28049,6 +29169,7 @@ export namespace Prisma {
   export type OfferUpdateWithoutInvoiceLinesInput = {
     id?: IntFieldUpdateOperationsInput | number
     version?: IntFieldUpdateOperationsInput | number
+    createdBy?: ProfileUpdateOneRequiredWithoutOffersInput
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: StringFieldUpdateOperationsInput | string
     pictureUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -28056,7 +29177,6 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     pricePerUnit?: StringFieldUpdateOperationsInput | string
     timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
-    createdBy?: ProfileUpdateOneRequiredWithoutOffersInput
     purchaseLines?: PurchaseLineUpdateManyWithoutProductInput
   }
 
@@ -28076,11 +29196,11 @@ export namespace Prisma {
 
   export type TagCreateWithoutTypeInput = {
     createdAt: Date | string
-    isPrivate: boolean
-    value?: string | null
     createdBy: ProfileCreateNestedOneWithoutTagsInput
+    isPrivate: boolean
     transaction?: TransactionCreateNestedOneWithoutTagsInput
     chatMessage?: ChatMessageCreateNestedOneWithoutTagsInput
+    value?: string | null
   }
 
   export type TagUncheckedCreateWithoutTypeInput = {
@@ -28121,11 +29241,11 @@ export namespace Prisma {
 
   export type TagCreateWithoutTransactionInput = {
     createdAt: Date | string
-    isPrivate: boolean
-    value?: string | null
     createdBy: ProfileCreateNestedOneWithoutTagsInput
+    isPrivate: boolean
     type: TagTypeCreateNestedOneWithoutTagsInput
     chatMessage?: ChatMessageCreateNestedOneWithoutTagsInput
+    value?: string | null
   }
 
   export type TagUncheckedCreateWithoutTransactionInput = {
@@ -28151,6 +29271,10 @@ export namespace Prisma {
   export type InvoiceCreateWithoutPaymentTransactionInput = {
     createdAt: Date | string
     invoiceNo: string
+    customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
+    sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
+    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
+    lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: string | null
     pickupCode?: string | null
     buyerSignature?: boolean | null
@@ -28158,12 +29282,8 @@ export namespace Prisma {
     sellerSignature?: boolean | null
     sellerSignedDate?: Date | string | null
     cancelledAt?: Date | string | null
-    cancelReason?: string | null
-    customerProfile: ProfileCreateNestedOneWithoutPayableInvoicesInput
-    sellerProfile: ProfileCreateNestedOneWithoutReceivableInvoicesInput
-    purchase: PurchaseCreateNestedOneWithoutInvoicesInput
-    lines?: InvoiceLineCreateNestedManyWithoutInvoiceInput
     cancelledBy?: ProfileCreateNestedOneWithoutCancelledInvoicesInput
+    cancelReason?: string | null
   }
 
   export type InvoiceUncheckedCreateWithoutPaymentTransactionInput = {
@@ -28173,6 +29293,7 @@ export namespace Prisma {
     customerProfileId: number
     sellerProfileId: number
     purchaseId: number
+    lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: string | null
     pickupCode?: string | null
     buyerSignature?: boolean | null
@@ -28182,7 +29303,6 @@ export namespace Prisma {
     cancelledAt?: Date | string | null
     cancelledByProfileId?: number | null
     cancelReason?: string | null
-    lines?: InvoiceLineUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
   export type InvoiceCreateOrConnectWithoutPaymentTransactionInput = {
@@ -28193,17 +29313,17 @@ export namespace Prisma {
   export type VerifiedSafeCreateWithoutInviteeRewardTransactionInput = {
     safeAddress: string
     createdAt?: Date | string
+    createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
+    createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     revokedAt?: Date | string | null
+    revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
-    inviteCount?: number
-    createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
-    createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
-    revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
     inviterRewardTransaction?: TransactionCreateNestedOneWithoutInviterReward_VerifiedSafeInput
     swapFundingTransaction?: TransactionCreateNestedOneWithoutSwapFunding_VerifiedSafeInput
+    inviteCount?: number
   }
 
   export type VerifiedSafeUncheckedCreateWithoutInviteeRewardTransactionInput = {
@@ -28230,17 +29350,17 @@ export namespace Prisma {
   export type VerifiedSafeCreateWithoutInviterRewardTransactionInput = {
     safeAddress: string
     createdAt?: Date | string
+    createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
+    createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     revokedAt?: Date | string | null
+    revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
-    inviteCount?: number
-    createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
-    createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
-    revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
     swapFundingTransaction?: TransactionCreateNestedOneWithoutSwapFunding_VerifiedSafeInput
+    inviteCount?: number
   }
 
   export type VerifiedSafeUncheckedCreateWithoutInviterRewardTransactionInput = {
@@ -28267,17 +29387,17 @@ export namespace Prisma {
   export type VerifiedSafeCreateWithoutSwapFundingTransactionInput = {
     safeAddress: string
     createdAt?: Date | string
+    createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
+    createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
     revokedAt?: Date | string | null
+    revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
     swapEoaAddress: string
     swapEoaKey: string
     rewardProcessingStartedAt?: Date | string | null
     rewardProcessingWorker?: string | null
-    inviteCount?: number
-    createdBy: ProfileCreateNestedOneWithoutSafesVerifiedByPersonInput
-    createdByOrganisation: ProfileCreateNestedOneWithoutSafesVerifiedByOrganisationInput
-    revokedBy?: ProfileCreateNestedOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionCreateNestedOneWithoutInviteeReward_VerifiedSafeInput
     inviterRewardTransaction?: TransactionCreateNestedOneWithoutInviterReward_VerifiedSafeInput
+    inviteCount?: number
   }
 
   export type VerifiedSafeUncheckedCreateWithoutSwapFundingTransactionInput = {
@@ -28325,6 +29445,10 @@ export namespace Prisma {
   export type InvoiceUpdateWithoutPaymentTransactionInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNo?: StringFieldUpdateOperationsInput | string
+    customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
+    sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
+    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
+    lines?: InvoiceLineUpdateManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
     buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -28332,12 +29456,8 @@ export namespace Prisma {
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
-    customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
-    sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
-    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
-    lines?: InvoiceLineUpdateManyWithoutInvoiceInput
     cancelledBy?: ProfileUpdateOneWithoutCancelledInvoicesInput
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type InvoiceUncheckedUpdateWithoutPaymentTransactionInput = {
@@ -28347,6 +29467,7 @@ export namespace Prisma {
     customerProfileId?: IntFieldUpdateOperationsInput | number
     sellerProfileId?: IntFieldUpdateOperationsInput | number
     purchaseId?: IntFieldUpdateOperationsInput | number
+    lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
     buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -28356,7 +29477,6 @@ export namespace Prisma {
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
-    lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
   export type VerifiedSafeUpsertWithoutInviteeRewardTransactionInput = {
@@ -28367,17 +29487,17 @@ export namespace Prisma {
   export type VerifiedSafeUpdateWithoutInviteeRewardTransactionInput = {
     safeAddress?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
+    createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
-    inviteCount?: IntFieldUpdateOperationsInput | number
-    createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
-    createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
-    revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
     inviterRewardTransaction?: TransactionUpdateOneWithoutInviterReward_VerifiedSafeInput
     swapFundingTransaction?: TransactionUpdateOneWithoutSwapFunding_VerifiedSafeInput
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type VerifiedSafeUncheckedUpdateWithoutInviteeRewardTransactionInput = {
@@ -28404,17 +29524,17 @@ export namespace Prisma {
   export type VerifiedSafeUpdateWithoutInviterRewardTransactionInput = {
     safeAddress?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
+    createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
-    inviteCount?: IntFieldUpdateOperationsInput | number
-    createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
-    createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
-    revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
     swapFundingTransaction?: TransactionUpdateOneWithoutSwapFunding_VerifiedSafeInput
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type VerifiedSafeUncheckedUpdateWithoutInviterRewardTransactionInput = {
@@ -28441,17 +29561,17 @@ export namespace Prisma {
   export type VerifiedSafeUpdateWithoutSwapFundingTransactionInput = {
     safeAddress?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
+    createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
-    inviteCount?: IntFieldUpdateOperationsInput | number
-    createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
-    createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
-    revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
     inviterRewardTransaction?: TransactionUpdateOneWithoutInviterReward_VerifiedSafeInput
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type VerifiedSafeUncheckedUpdateWithoutSwapFundingTransactionInput = {
@@ -28493,11 +29613,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionCreateNestedManyWithoutProfileInput
     offers?: OfferCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseCreateNestedManyWithoutCreatedByInput
@@ -28510,6 +29625,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeCreateNestedManyWithoutRevokedByInput
@@ -28539,11 +29659,6 @@ export namespace Prisma {
     lastAcknowledged?: Date | string | null
     verifySafeChallenge?: string | null
     newSafeAddress?: string | null
-    invoiceNoPrefix?: string | null
-    lastInvoiceNo?: number | null
-    refundNoPrefix?: string | null
-    lastRefundNo?: number | null
-    displayCurrency?: string
     sessions?: SessionUncheckedCreateNestedManyWithoutProfileInput
     offers?: OfferUncheckedCreateNestedManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedCreateNestedManyWithoutCreatedByInput
@@ -28556,6 +29671,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedCreateNestedManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedCreateNestedManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedCreateNestedManyWithoutCancelledByInput
+    invoiceNoPrefix?: string | null
+    lastInvoiceNo?: number | null
+    refundNoPrefix?: string | null
+    lastRefundNo?: number | null
+    displayCurrency?: string
     safesVerifiedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedCreateNestedManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedCreateNestedManyWithoutRevokedByInput
@@ -28650,11 +29770,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUpdateManyWithoutProfileInput
     offers?: OfferUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUpdateManyWithoutCreatedByInput
@@ -28667,6 +29782,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUpdateManyWithoutRevokedByInput
@@ -28696,11 +29816,6 @@ export namespace Prisma {
     lastAcknowledged?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     verifySafeChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     newSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
-    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
-    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
-    displayCurrency?: StringFieldUpdateOperationsInput | string
     sessions?: SessionUncheckedUpdateManyWithoutProfileInput
     offers?: OfferUncheckedUpdateManyWithoutCreatedByInput
     purchases?: PurchaseUncheckedUpdateManyWithoutCreatedByInput
@@ -28713,6 +29828,11 @@ export namespace Prisma {
     payableInvoices?: InvoiceUncheckedUpdateManyWithoutCustomerProfileInput
     receivableInvoices?: InvoiceUncheckedUpdateManyWithoutSellerProfileInput
     cancelledInvoices?: InvoiceUncheckedUpdateManyWithoutCancelledByInput
+    invoiceNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastInvoiceNo?: NullableIntFieldUpdateOperationsInput | number | null
+    refundNoPrefix?: NullableStringFieldUpdateOperationsInput | string | null
+    lastRefundNo?: NullableIntFieldUpdateOperationsInput | number | null
+    displayCurrency?: StringFieldUpdateOperationsInput | string
     safesVerifiedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByInput
     safesVerifiedByOrganisation?: VerifiedSafeUncheckedUpdateManyWithoutCreatedByOrganisationInput
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
@@ -29041,10 +30161,10 @@ export namespace Prisma {
   export type TagUpdateWithoutCreatedByInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    value?: NullableStringFieldUpdateOperationsInput | string | null
     transaction?: TransactionUpdateOneWithoutTagsInput
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
     chatMessage?: ChatMessageUpdateOneWithoutTagsInput
+    value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TagUncheckedUpdateWithoutCreatedByInput = {
@@ -29133,14 +30253,14 @@ export namespace Prisma {
     fundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
+    claimedBy?: ProfileUpdateOneWithoutClaimedInvitationsInput
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemedBy?: ProfileUpdateOneWithoutRedeemedInvitationsInput
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
     forSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-    claimedBy?: ProfileUpdateOneWithoutClaimedInvitationsInput
-    redeemedBy?: ProfileUpdateOneWithoutRedeemedInvitationsInput
   }
 
   export type InvitationUncheckedUpdateWithoutCreatedByInput = {
@@ -29176,18 +30296,18 @@ export namespace Prisma {
   }
 
   export type InvitationUpdateWithoutRedeemedByInput = {
+    createdBy?: ProfileUpdateOneRequiredWithoutInvitationsInput
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
+    claimedBy?: ProfileUpdateOneWithoutClaimedInvitationsInput
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
     forSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-    createdBy?: ProfileUpdateOneRequiredWithoutInvitationsInput
-    claimedBy?: ProfileUpdateOneWithoutClaimedInvitationsInput
   }
 
   export type InvitationUncheckedUpdateWithoutRedeemedByInput = {
@@ -29223,18 +30343,18 @@ export namespace Prisma {
   }
 
   export type InvitationUpdateWithoutClaimedByInput = {
+    createdBy?: ProfileUpdateOneRequiredWithoutInvitationsInput
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     fundedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     name?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     claimedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    redeemedBy?: ProfileUpdateOneWithoutRedeemedInvitationsInput
     redeemedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     redeemTxHash?: NullableStringFieldUpdateOperationsInput | string | null
     forSafeAddress?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
     key?: StringFieldUpdateOperationsInput | string
-    createdBy?: ProfileUpdateOneRequiredWithoutInvitationsInput
-    redeemedBy?: ProfileUpdateOneWithoutRedeemedInvitationsInput
   }
 
   export type InvitationUncheckedUpdateWithoutClaimedByInput = {
@@ -29271,12 +30391,12 @@ export namespace Prisma {
 
   export type MembershipUpdateWithoutMemberAtInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: ProfileUpdateOneRequiredWithoutCreatedMembershipsInput
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     validTo?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isAdmin?: NullableBoolFieldUpdateOperationsInput | boolean | null
     memberAddress?: StringFieldUpdateOperationsInput | string
-    createdBy?: ProfileUpdateOneRequiredWithoutCreatedMembershipsInput
   }
 
   export type MembershipUncheckedUpdateWithoutMemberAtInput = {
@@ -29336,19 +30456,19 @@ export namespace Prisma {
   export type InvoiceUpdateWithoutCustomerProfileInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNo?: StringFieldUpdateOperationsInput | string
+    sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
+    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
+    lines?: InvoiceLineUpdateManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
     buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
-    sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
-    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
-    lines?: InvoiceLineUpdateManyWithoutInvoiceInput
-    paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
     cancelledBy?: ProfileUpdateOneWithoutCancelledInvoicesInput
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type InvoiceUncheckedUpdateWithoutCustomerProfileInput = {
@@ -29357,6 +30477,7 @@ export namespace Prisma {
     invoiceNo?: StringFieldUpdateOperationsInput | string
     sellerProfileId?: IntFieldUpdateOperationsInput | number
     purchaseId?: IntFieldUpdateOperationsInput | number
+    lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29367,7 +30488,6 @@ export namespace Prisma {
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
-    lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
   export type InvoiceUncheckedUpdateManyWithoutPayableInvoicesInput = {
@@ -29391,19 +30511,19 @@ export namespace Prisma {
   export type InvoiceUpdateWithoutSellerProfileInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNo?: StringFieldUpdateOperationsInput | string
+    customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
+    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
+    lines?: InvoiceLineUpdateManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
     buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
-    customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
-    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
-    lines?: InvoiceLineUpdateManyWithoutInvoiceInput
-    paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
     cancelledBy?: ProfileUpdateOneWithoutCancelledInvoicesInput
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type InvoiceUncheckedUpdateWithoutSellerProfileInput = {
@@ -29412,6 +30532,7 @@ export namespace Prisma {
     invoiceNo?: StringFieldUpdateOperationsInput | string
     customerProfileId?: IntFieldUpdateOperationsInput | number
     purchaseId?: IntFieldUpdateOperationsInput | number
+    lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29422,7 +30543,6 @@ export namespace Prisma {
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
-    lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
   export type InvoiceUncheckedUpdateManyWithoutReceivableInvoicesInput = {
@@ -29446,7 +30566,12 @@ export namespace Prisma {
   export type InvoiceUpdateWithoutCancelledByInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNo?: StringFieldUpdateOperationsInput | string
+    customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
+    sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
+    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
+    lines?: InvoiceLineUpdateManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
     buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -29454,11 +30579,6 @@ export namespace Prisma {
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
-    customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
-    sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
-    purchase?: PurchaseUpdateOneRequiredWithoutInvoicesInput
-    lines?: InvoiceLineUpdateManyWithoutInvoiceInput
-    paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
   }
 
   export type InvoiceUncheckedUpdateWithoutCancelledByInput = {
@@ -29468,6 +30588,7 @@ export namespace Prisma {
     customerProfileId?: IntFieldUpdateOperationsInput | number
     sellerProfileId?: IntFieldUpdateOperationsInput | number
     purchaseId?: IntFieldUpdateOperationsInput | number
+    lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29477,7 +30598,6 @@ export namespace Prisma {
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
-    lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
   export type InvoiceUncheckedUpdateManyWithoutCancelledInvoicesInput = {
@@ -29501,17 +30621,17 @@ export namespace Prisma {
   export type VerifiedSafeUpdateWithoutCreatedByInput = {
     safeAddress?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
-    inviteCount?: IntFieldUpdateOperationsInput | number
-    createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
-    revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
     inviterRewardTransaction?: TransactionUpdateOneWithoutInviterReward_VerifiedSafeInput
     swapFundingTransaction?: TransactionUpdateOneWithoutSwapFunding_VerifiedSafeInput
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type VerifiedSafeUncheckedUpdateWithoutCreatedByInput = {
@@ -29549,17 +30669,17 @@ export namespace Prisma {
   export type VerifiedSafeUpdateWithoutCreatedByOrganisationInput = {
     safeAddress?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
-    inviteCount?: IntFieldUpdateOperationsInput | number
-    createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
-    revokedBy?: ProfileUpdateOneWithoutSafesRevokedByPersonInput
     inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
     inviterRewardTransaction?: TransactionUpdateOneWithoutInviterReward_VerifiedSafeInput
     swapFundingTransaction?: TransactionUpdateOneWithoutSwapFunding_VerifiedSafeInput
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type VerifiedSafeUncheckedUpdateWithoutCreatedByOrganisationInput = {
@@ -29597,17 +30717,17 @@ export namespace Prisma {
   export type VerifiedSafeUpdateWithoutRevokedByInput = {
     safeAddress?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
+    createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     revokedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     swapEoaAddress?: StringFieldUpdateOperationsInput | string
     swapEoaKey?: StringFieldUpdateOperationsInput | string
     rewardProcessingStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rewardProcessingWorker?: NullableStringFieldUpdateOperationsInput | string | null
-    inviteCount?: IntFieldUpdateOperationsInput | number
-    createdBy?: ProfileUpdateOneRequiredWithoutSafesVerifiedByPersonInput
-    createdByOrganisation?: ProfileUpdateOneRequiredWithoutSafesVerifiedByOrganisationInput
     inviteeRewardTransaction?: TransactionUpdateOneWithoutInviteeReward_VerifiedSafeInput
     inviterRewardTransaction?: TransactionUpdateOneWithoutInviterReward_VerifiedSafeInput
     swapFundingTransaction?: TransactionUpdateOneWithoutSwapFunding_VerifiedSafeInput
+    inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
   export type VerifiedSafeUncheckedUpdateWithoutRevokedByInput = {
@@ -29654,11 +30774,11 @@ export namespace Prisma {
 
   export type TagUpdateWithoutChatMessageInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    value?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     transaction?: TransactionUpdateOneWithoutTagsInput
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
+    value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TagUncheckedUpdateWithoutChatMessageInput = {
@@ -29684,8 +30804,8 @@ export namespace Prisma {
   }
 
   export type PurchaseLineUpdateWithoutProductInput = {
-    amount?: IntFieldUpdateOperationsInput | number
     purchase?: PurchaseUpdateOneRequiredWithoutLinesInput
+    amount?: IntFieldUpdateOperationsInput | number
   }
 
   export type PurchaseLineUncheckedUpdateWithoutProductInput = {
@@ -29701,8 +30821,8 @@ export namespace Prisma {
   }
 
   export type InvoiceLineUpdateWithoutProductInput = {
-    amount?: IntFieldUpdateOperationsInput | number
     invoice?: InvoiceUpdateOneRequiredWithoutLinesInput
+    amount?: IntFieldUpdateOperationsInput | number
   }
 
   export type InvoiceLineUncheckedUpdateWithoutProductInput = {
@@ -29764,19 +30884,19 @@ export namespace Prisma {
   export type InvoiceUpdateWithoutPurchaseInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceNo?: StringFieldUpdateOperationsInput | string
+    customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
+    sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
+    lines?: InvoiceLineUpdateManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
     buyerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     buyerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     sellerSignature?: NullableBoolFieldUpdateOperationsInput | boolean | null
     sellerSignedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
-    customerProfile?: ProfileUpdateOneRequiredWithoutPayableInvoicesInput
-    sellerProfile?: ProfileUpdateOneRequiredWithoutReceivableInvoicesInput
-    lines?: InvoiceLineUpdateManyWithoutInvoiceInput
-    paymentTransaction?: TransactionUpdateOneWithoutPayedInvoiceInput
     cancelledBy?: ProfileUpdateOneWithoutCancelledInvoicesInput
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type InvoiceUncheckedUpdateWithoutPurchaseInput = {
@@ -29785,6 +30905,7 @@ export namespace Prisma {
     invoiceNo?: StringFieldUpdateOperationsInput | string
     customerProfileId?: IntFieldUpdateOperationsInput | number
     sellerProfileId?: IntFieldUpdateOperationsInput | number
+    lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
     pendingPaymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTransactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     pickupCode?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29795,7 +30916,6 @@ export namespace Prisma {
     cancelledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     cancelledByProfileId?: NullableIntFieldUpdateOperationsInput | number | null
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
-    lines?: InvoiceLineUncheckedUpdateManyWithoutInvoiceInput
   }
 
   export type InvoiceUncheckedUpdateManyWithoutInvoicesInput = {
@@ -29854,11 +30974,11 @@ export namespace Prisma {
 
   export type TagUpdateWithoutTypeInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    value?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     transaction?: TransactionUpdateOneWithoutTagsInput
     chatMessage?: ChatMessageUpdateOneWithoutTagsInput
+    value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TagUncheckedUpdateWithoutTypeInput = {
@@ -29883,11 +31003,11 @@ export namespace Prisma {
 
   export type TagUpdateWithoutTransactionInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    value?: NullableStringFieldUpdateOperationsInput | string | null
     createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
     chatMessage?: ChatMessageUpdateOneWithoutTagsInput
+    value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TagUncheckedUpdateWithoutTransactionInput = {

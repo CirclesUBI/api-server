@@ -105,12 +105,12 @@ export async function purchaseResolver(parent: any, args: MutationPurchaseArgs, 
 
 async function lookupOffers(args: MutationPurchaseArgs): Promise<OfferLookup> {
   const offerVersions = await Promise.all(args.lines.map(async o => {
-    const maxVersion = await Environment.readonlyApiDb.$queryRaw(`
+    const maxVersion:any[] = await Environment.readonlyApiDb.$queryRaw`
         select id
              , max(o.version) as version
         from "Offer" o
-        where id = $1
-        group by id`, o.offerId);
+        where id = ${o.offerId}
+        group by id`;
 
     return {
       id: o.offerId,
@@ -193,13 +193,13 @@ async function createPurchase(caller:Profile, args: MutationPurchaseArgs, offers
 }
 
 export async function getNextInvoiceNo(profileId: number) : Promise<string> {
-  const p = await Environment.readWriteApiDb.$queryRaw(`
+  const p:any[] = await Environment.readWriteApiDb.$queryRaw`
       WITH updated AS (
           UPDATE "Profile" SET "lastInvoiceNo" = "lastInvoiceNo" + 1
               WHERE id = ${profileId} RETURNING *
       )
       SELECT "invoiceNoPrefix" || TO_CHAR("lastInvoiceNo", 'fm00000000') as invoice_no
-      FROM updated;`);
+      FROM updated;`;
 
   return p[0].invoice_no;
 }

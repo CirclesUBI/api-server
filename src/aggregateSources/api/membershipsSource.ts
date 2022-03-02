@@ -4,7 +4,7 @@ import {Environment} from "../../environment";
 
 export class MembershipsSource implements AggregateSource {
   async getAggregate(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>): Promise<ProfileAggregate[]> {
-    const membershipsResult = await Environment.readonlyApiDb.$queryRaw`
+    const membershipsResult:any[] = await Environment.readonlyApiDb.$queryRaw`
         select m."acceptedAt", member_at_profile."circlesAddress" group_address
         from "Membership" m
                  join "Profile" member_profile on member_profile."circlesAddress" = m."memberAddress"
@@ -19,7 +19,7 @@ export class MembershipsSource implements AggregateSource {
       type: "Memberships",
       payload: <Memberships>{
         __typename: "Memberships",
-        lastUpdatedAt: lastUpdatedAt,
+        lastUpdatedAt: new Date(lastUpdatedAt).toJSON(),
         organisations: membershipsResult.map((o: any) => {
           return {
             circlesAddress: o.group_address

@@ -18,7 +18,7 @@ export type OfferRow = {
 
 export class OffersSource implements AggregateSource {
   async getAggregate(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>): Promise<ProfileAggregate[]> {
-    const offersResult = <OfferRow[]>(await Environment.readonlyApiDb.$queryRaw(`
+    const offersResult = <OfferRow[]>(await Environment.readonlyApiDb.$queryRawUnsafe(`
         with "latest" as (
             select id
                  , max(o.version) as latest_version

@@ -151,11 +151,11 @@ export class Environment {
     console.log(`  Success`);
 
     console.log(`* Testing connection to the readonly api-db ...`);
-    await this.readonlyApiDb.$queryRaw("select 1");
+    await this.readonlyApiDb.$queryRaw`select 1`;
     console.log(`  Success`);
 
     console.log(`* Testing connection to the read/write api-db ...`);
-    await this.readWriteApiDb.$queryRaw("select 1");
+    await this.readWriteApiDb.$queryRaw`select 1`;
     console.log(`  Success`);
 
     console.log(

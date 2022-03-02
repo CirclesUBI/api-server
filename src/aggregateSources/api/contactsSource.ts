@@ -164,7 +164,7 @@ async function erc20TransferContacts(forSafeAddress: string, filter?: Maybe<Prof
 
 async function chatMessageContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const _filter = filter?.contacts?.addresses ?? [];
-  const chatContactsResult = await Environment.readonlyApiDb.$queryRaw`
+  const chatContactsResult:any[] = await Environment.readonlyApiDb.$queryRaw`
       with "in" as (
           select max("createdAt") last_contact_at, "from" as contact_address
           from "ChatMessage"
@@ -224,7 +224,7 @@ async function chatMessageContacts(forSafeAddress: string, filter?: Maybe<Profil
 async function invitationContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const _filter = filter?.contacts?.addresses ?? [];
 
-  const invitationContactsResult = await Environment.readonlyApiDb.$queryRaw`
+  const invitationContactsResult:any[] = await Environment.readonlyApiDb.$queryRaw`
       with "in" as (
           select max(i."createdAt") last_contact_at, "creatorProfile"."circlesAddress" as contact_address
           from "Invitation" i
@@ -254,7 +254,7 @@ async function invitationContacts(forSafeAddress: string, filter?: Maybe<Profile
       where ${_filter}=ARRAY[]::text[] or contact_address=ANY(${_filter})
       group by contact_address`;
 
-  const r = invitationContactsResult.map((o:any) => {
+  const r:any[] = invitationContactsResult.map((o:any) => {
     const timestamps = o.timestamps.map((p:any) => new Date(p).getTime().toString());
     const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0);
     return <Contact> {
@@ -274,7 +274,7 @@ async function invitationContacts(forSafeAddress: string, filter?: Maybe<Profile
 async function invitationRedeemedContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const _filter = filter?.contacts?.addresses ?? [];
 
-  const invitationContactsResult = await Environment.readonlyApiDb.$queryRaw`
+  const invitationContactsResult:any[] = await Environment.readonlyApiDb.$queryRaw`
       with "in" as (
           select max(i."redeemedAt") last_contact_at, "redeemedByProfile"."circlesAddress" as contact_address
           from "Invitation" i
@@ -294,7 +294,7 @@ async function invitationRedeemedContacts(forSafeAddress: string, filter?: Maybe
       where ${_filter}=ARRAY[]::text[] or contact_address=ANY(${_filter})
       group by contact_address`;
 
-  const r = invitationContactsResult.map((o:any) => {
+  const r:any[] = invitationContactsResult.map((o:any) => {
     const timestamps = o.timestamps.map((p:any) => new Date(p).getTime().toString());
     const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0);
     return <Contact> {
@@ -317,7 +317,7 @@ async function invitationRedeemedContacts(forSafeAddress: string, filter?: Maybe
 async function membershipOfferContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
   const _filter = filter?.contacts?.addresses ?? [];
 
-  const membershipOfferContactsResult = await Environment.readonlyApiDb.$queryRaw`
+  const membershipOfferContactsResult:any[] = await Environment.readonlyApiDb.$queryRaw`
       with "in" as (
           select max(m."createdAt") as last_contact_at, "createdByProfile"."circlesAddress" as contact_address
           from "Membership" m
@@ -360,7 +360,7 @@ async function membershipOfferContacts(forSafeAddress: string, filter?: Maybe<Pr
       where ${_filter}=ARRAY[]::text[] or contact_address=ANY(${_filter})
       group by contact_address;`;
 
-  const r = membershipOfferContactsResult.map((o:any) => {
+  const r:any[] = membershipOfferContactsResult.map((o:any) => {
     const timestamps = o.timestamps.map((p:any) => new Date(p).getTime().toString());
     const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0);
     return <Contact> {
