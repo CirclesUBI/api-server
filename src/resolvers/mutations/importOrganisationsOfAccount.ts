@@ -1,5 +1,5 @@
 import {Context} from "../../context";
-import {ProfileLoader} from "../../profileLoader";
+import {ProfileLoader} from "../../querySources/profileLoader";
 import {upsertOrganisation} from "./upsertOrganisation";
 import {Environment} from "../../environment";
 

@@ -1,4 +1,4 @@
-import {ProfileLoader} from "../../profileLoader";
+import {ProfileLoader} from "../../querySources/profileLoader";
 import {MutationCompletePurchaseArgs} from "../../types";
 import {Context} from "../../context";
 import {Environment} from "../../environment";

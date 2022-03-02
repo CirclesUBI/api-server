@@ -1,11 +1,11 @@
 import {JobWorker, JobWorkerConfiguration} from "../jobWorker";
 import {SendCrcReceivedEmail} from "../../descriptions/emailNotifications/sendCrcReceivedEmail";
 import {Mailer} from "../../../mailer/mailer";
-import {ProfileLoader} from "../../../profileLoader";
+import {ProfileLoader} from "../../../querySources/profileLoader";
 import {Environment} from "../../../environment";
-import {crcReceivedEmailTemplate} from "../../../mailer/templates/crcReceivedEmailTemplate";
-import {convertCirclesToTimeCircles} from "../../../../dist/timeCircles";
-import {RpcGateway} from "../../../rpcGateway";
+import {crcReceivedEmailTemplate} from "./templates/crcReceivedEmailTemplate";
+import {RpcGateway} from "../../../circles/rpcGateway";
+import {convertCirclesToTimeCircles} from "../../../utils/timeCircles";
 
 export class SendCrcReceivedEmailWorker extends JobWorker<SendCrcReceivedEmail> {
   name(): string {

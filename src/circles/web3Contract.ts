@@ -5,7 +5,7 @@ import {Transaction, TxData} from "ethereumjs-tx";
 import type {TransactionReceipt} from "web3-core";
 import {Subject} from "rxjs";
 import {BN} from "ethereumjs-util";
-import {RpcGateway} from "../rpcGateway";
+import {RpcGateway} from "./rpcGateway";
 
 export abstract class Web3Contract {
     readonly web3: Web3;

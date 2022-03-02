@@ -1,7 +1,7 @@
 import { PrismaClient } from "../../api-db/client";
 import { Context } from "../../context";
 import { Organisation, Profile, QueryOrganisationsArgs } from "../../types";
-import { ProfileLoader } from "../../profileLoader";
+import { ProfileLoader } from "../../querySources/profileLoader";
 import { Environment } from "../../environment";
 
 export function organisations(prisma: PrismaClient) {

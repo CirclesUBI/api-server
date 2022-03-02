@@ -1,8 +1,8 @@
 import {QueryFindSafesByOwnerArgs, SafeInfo} from "../../types";
 import {Context} from "../../context";
 import {Environment} from "../../environment";
-import {Generate} from "../../generate";
-import {ProfileLoader} from "../../profileLoader";
+import {Generate} from "../../utils/generate";
+import {ProfileLoader} from "../../querySources/profileLoader";
 
 export const findSafesByOwner = async (parent:any, args: QueryFindSafesByOwnerArgs, context: Context) => {
     const safeOwnersQuery = `

@@ -1,18 +1,19 @@
 import Web3 from "web3";
 import type { AbiItem } from "web3-utils";
 import { BN } from "ethereumjs-util";
-import { Web3Contract } from "../web3Contract";
 import type { TransactionReceipt } from "web3-core";
-import {CIRCLES_HUB_ABI, ZERO_ADDRESS} from "./consts";
-import {GnosisSafeProxy} from "./safe/gnosisSafeProxy";
-import {SafeOps} from "./model/safeOps";
+import {ZERO_ADDRESS} from "./consts";
+import {GnosisSafeProxy} from "./gnosisSafeProxy";
+import {SafeOps} from "./safeOps";
+import {Web3Contract} from "./web3Contract";
+import {CIRCLES_HUB_ABI} from "./abi/circlesHubAbi";
 
 export class CirclesHub extends Web3Contract {
   constructor(web3: Web3, hubAddress: string) {
     super(
       web3,
       hubAddress,
-      new web3.eth.Contract(<AbiItem[]>CIRCLES_HUB_ABI, hubAddress)
+      new web3.eth.Contract(CIRCLES_HUB_ABI, hubAddress)
     );
   }
 

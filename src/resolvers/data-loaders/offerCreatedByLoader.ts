@@ -1,5 +1,5 @@
 import DataLoader from "dataloader";
-import {ProfileLoader} from "../../profileLoader";
+import {ProfileLoader} from "../../querySources/profileLoader";
 import {Environment} from "../../environment";
 
 export const offerCreatedByLoader = new DataLoader(async (keys: readonly any[]) => {

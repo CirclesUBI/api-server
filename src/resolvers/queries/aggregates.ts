@@ -1,21 +1,21 @@
 import {Context} from "../../context";
-import {AggregateSource} from "../../aggregateSources/aggregateSource";
+import {AggregateSource} from "../../querySources/aggregateSources/aggregateSource";
 import {AggregateType, Contacts, QueryAggregatesArgs } from "../../types";
-import {CrcBalanceSource} from "../../aggregateSources/blockchain-indexer/crcBalanceSource";
-import {Erc20BalancesSource} from "../../aggregateSources/blockchain-indexer/erc20BalancesSource";
-import {ContactPoints, ContactsSource} from "../../aggregateSources/api/contactsSource";
-import {canAccess} from "../../canAccess";
-import {PurchasesSource} from "../../aggregateSources/api/purchasesSource";
-import {SalesSource} from "../../aggregateSources/api/salesSource";
-import {MembershipsSource} from "../../aggregateSources/api/membershipsSource";
-import {MembersSource} from "../../aggregateSources/api/membersSource";
-import {OffersSource} from "../../aggregateSources/api/offersSource";
-import {CombinedAggregateSource} from "../../aggregateSources/combinedAggregateSource";
-import {AggregateAugmenter} from "../../aggregateSources/aggregateAugmenter";
+import {CrcBalanceSource} from "../../querySources/aggregateSources/blockchain-indexer/crcBalanceSource";
+import {Erc20BalancesSource} from "../../querySources/aggregateSources/blockchain-indexer/erc20BalancesSource";
+import {ContactPoints, ContactsSource} from "../../querySources/aggregateSources/api/contactsSource";
+import {canAccess} from "../../utils/canAccess";
+import {PurchasesSource} from "../../querySources/aggregateSources/api/purchasesSource";
+import {SalesSource} from "../../querySources/aggregateSources/api/salesSource";
+import {MembershipsSource} from "../../querySources/aggregateSources/api/membershipsSource";
+import {MembersSource} from "../../querySources/aggregateSources/api/membersSource";
+import {OffersSource} from "../../querySources/aggregateSources/api/offersSource";
+import {CombinedAggregateSource} from "../../querySources/aggregateSources/combinedAggregateSource";
+import {AggregateAugmenter} from "../../querySources/aggregateSources/aggregateAugmenter";
 
 export const aggregates = async (parent:any, args:QueryAggregatesArgs, context: Context) => {
     const aggregateSources: AggregateSource[] = [];
-    const types = args.types?.reduce((p, c) => {
+    const types = args.types?.reduce((p:{[p:string]:any}, c:AggregateType) => {
       if (!c) return p;
       p[c] = true;
       return p;

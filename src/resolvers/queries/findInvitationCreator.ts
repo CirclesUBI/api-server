@@ -1,5 +1,5 @@
 import {Environment} from "../../environment";
-import {ProfileLoader} from "../../profileLoader";
+import {ProfileLoader} from "../../querySources/profileLoader";
 import {QueryFindInvitationCreatorArgs} from "../../types";
 import {Context} from "../../context";
 

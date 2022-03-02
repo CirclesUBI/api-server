@@ -1,28 +1,28 @@
 import { Context } from "../../context";
-import { EventSource } from "../../eventSources/eventSource";
+import { EventSource } from "../../querySources/eventSources/eventSource";
 import {
   BlockchainEventType,
   BlockchainIndexerEventSource,
-} from "../../eventSources/blockchain-indexer/blockchainIndexerEventSource";
+} from "../../querySources/eventSources/blockchain-indexer/blockchainIndexerEventSource";
 import {
   EventType,
   ProfileEvent,
   QueryEventsArgs,
   SortOrder,
 } from "../../types";
-import { canAccess } from "../../canAccess";
-import { ChatMessageEventSource } from "../../eventSources/api/chatMessageEventSource";
-import { MembershipOfferEventSource } from "../../eventSources/api/membershipOfferEventSource";
-import { AcceptedMembershipOfferEventSource } from "../../eventSources/api/acceptedMembershipOfferEventSource";
-import { RejectedMembershipOfferEventSource } from "../../eventSources/api/rejectedMembershipOfferEventSource";
-import { WelcomeMessageEventSource } from "../../eventSources/api/welcomeMessageEventSource";
-import { CreatedInvitationsEventSource } from "../../eventSources/api/createdInvitationsEventSource";
-import { RedeemedInvitationsEventSource } from "../../eventSources/api/redeemedInvitationsEventSource";
-import { SalesEventSource } from "../../eventSources/api/salesEventSource";
-import { CombinedEventSource } from "../../eventSources/combinedEventSource";
-import { EventAugmenter } from "../../eventSources/eventAugmenter";
-import { SafeVerifiedEventSource } from "../../eventSources/api/safeVerifiedEventSource";
-import { PurchasesEventSource } from "../../eventSources/api/purchasesEventSource";
+import { canAccess } from "../../utils/canAccess";
+import { ChatMessageEventSource } from "../../querySources/eventSources/api/chatMessageEventSource";
+import { MembershipOfferEventSource } from "../../querySources/eventSources/api/membershipOfferEventSource";
+import { AcceptedMembershipOfferEventSource } from "../../querySources/eventSources/api/acceptedMembershipOfferEventSource";
+import { RejectedMembershipOfferEventSource } from "../../querySources/eventSources/api/rejectedMembershipOfferEventSource";
+import { WelcomeMessageEventSource } from "../../querySources/eventSources/api/welcomeMessageEventSource";
+import { CreatedInvitationsEventSource } from "../../querySources/eventSources/api/createdInvitationsEventSource";
+import { RedeemedInvitationsEventSource } from "../../querySources/eventSources/api/redeemedInvitationsEventSource";
+import { SalesEventSource } from "../../querySources/eventSources/api/salesEventSource";
+import { CombinedEventSource } from "../../querySources/eventSources/combinedEventSource";
+import { EventAugmenter } from "../../querySources/eventSources/eventAugmenter";
+import { SafeVerifiedEventSource } from "../../querySources/eventSources/api/safeVerifiedEventSource";
+import { PurchasesEventSource } from "../../querySources/eventSources/api/purchasesEventSource";
 
 export const events = async (
   parent: any,
@@ -31,7 +31,7 @@ export const events = async (
 ) => {
   const eventSources: EventSource[] = [];
   const types =
-    args.types?.reduce((p, c) => {
+    args.types?.reduce((p:{[p:string]:any}, c:EventType) => {
       if (!c) return p;
       p[c] = true;
       return p;

@@ -1,10 +1,8 @@
 import { myProfile, profilesBySafeAddress } from "./queries/profiles";
 import { upsertProfileResolver } from "./mutations/upsertProfile";
 import { Profile, ProfileOrigin, Purchase, Resolvers } from "../types";
-import { exchangeTokenResolver } from "./mutations/exchangeToken";
 import { logout } from "./mutations/logout";
 import { sessionInfo } from "./queries/sessionInfo";
-import { depositChallengeResolver } from "./mutations/depositChallenge";
 import { authenticateAtResolver } from "./mutations/authenticateAt";
 import { consumeDepositedChallengeResolver } from "./mutations/consumeDepositedChallenge";
 import { search } from "./queries/search";
@@ -19,7 +17,7 @@ import { tagById } from "./queries/tagById";
 import { upsertTag } from "./mutations/upsertTag";
 import { claimedInvitation } from "./queries/claimedInvitation";
 import { Context } from "../context";
-import { ApiPubSub } from "../pubsub";
+import { ApiPubSub } from "../utils/pubsub";
 import { trustRelations } from "./queries/trustRelations";
 import { commonTrust } from "./queries/commonTrust";
 import { sendMessage } from "./mutations/sendMessage";
@@ -174,11 +172,9 @@ export const resolvers: Resolvers = {
     purchase: purchaseResolver,
     upsertOrganisation: upsertOrganisation(false),
     upsertRegion: upsertOrganisation(true),
-    exchangeToken: exchangeTokenResolver(Environment.readWriteApiDb),
     logout: logout(),
     upsertProfile: upsertProfileResolver(),
     authenticateAt: authenticateAtResolver(),
-    depositChallenge: depositChallengeResolver(Environment.readWriteApiDb),
     consumeDepositedChallenge: consumeDepositedChallengeResolver(
       Environment.readWriteApiDb
     ),
@@ -188,7 +184,6 @@ export const resolvers: Resolvers = {
     tagTransaction: tagTransaction(),
     sendMessage: sendMessage(Environment.readWriteApiDb),
     acknowledge: acknowledge(),
-    // createInvitations: createInvitations(),
     claimInvitation: claimInvitation(),
     redeemClaimedInvitation: redeemClaimedInvitation(),
     requestSessionChallenge: requestSessionChallenge,

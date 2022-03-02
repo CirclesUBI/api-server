@@ -1,6 +1,6 @@
 import {Context} from "../../context";
 import {Organisation, Profile, QueryOrganisationsByAddressArgs} from "../../types";
-import {ProfileLoader} from "../../profileLoader";
+import {ProfileLoader} from "../../querySources/profileLoader";
 import {Environment} from "../../environment";
 
 export function organisationsByAddress() {

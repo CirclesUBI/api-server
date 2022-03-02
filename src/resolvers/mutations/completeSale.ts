@@ -1,5 +1,5 @@
-import {canAccess} from "../../canAccess";
-import {ProfileLoader} from "../../profileLoader";
+import {canAccess} from "../../utils/canAccess";
+import {ProfileLoader} from "../../querySources/profileLoader";
 import {MutationCompleteSaleArgs} from "../../types";
 import {Context} from "../../context";
 import {Environment} from "../../environment";

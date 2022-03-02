@@ -1,6 +1,6 @@
 import { Context } from "../../context";
 import { PrismaClient } from "../../api-db/client";
-import {ProfileLoader} from "../../profileLoader";
+import {ProfileLoader} from "../../querySources/profileLoader";
 import {Profile} from "../../types";
 
 export type ProfilesBySafeAddressLookup = {

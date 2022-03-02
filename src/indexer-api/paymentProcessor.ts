@@ -1,15 +1,15 @@
 import {IndexerEvent, IndexerEventProcessor} from "./indexerEventProcessor";
 import {
     PdfDbInvoiceData
-} from "../invoiceGenerator";
+} from "../utils/invoiceGenerator";
 import {Environment} from "../environment";
-import {log} from "../log";
+import {log} from "../utils/log";
 import {EventType} from "../types";
 import BN from "bn.js";
-import {RpcGateway} from "../rpcGateway";
-import {convertTimeCirclesToCircles} from "../timeCircles";
-import {getDateWithOffset} from "../getDateWithOffset";
-import {JobQueue} from "../jobQueue";
+import {RpcGateway} from "../circles/rpcGateway";
+import {convertTimeCirclesToCircles} from "../utils/timeCircles";
+import {getDateWithOffset} from "../utils/getDateWithOffset";
+import {JobQueue} from "../jobs/jobQueue";
 import {InvoicePayed} from "../jobs/descriptions/payment/invoicePayed";
 
 type Transfer = {

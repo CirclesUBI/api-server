@@ -1,12 +1,12 @@
 import BN from "bn.js";
-import { RpcGateway } from "./rpcGateway";
+import { RpcGateway } from "./circles/rpcGateway";
 import { Account } from "web3-core";
-import { GnosisSafeProxy } from "./circles/safe/gnosisSafeProxy";
+import { GnosisSafeProxy } from "./circles/gnosisSafeProxy";
 import AWS from "aws-sdk";
 import { Pool } from "pg";
 import fetch from "cross-fetch";
 import { PrismaClient } from "./api-db/client";
-import {Generate} from "./generate";
+import {Generate} from "./utils/generate";
 
 export type SmtpConfig = {
   from: string;

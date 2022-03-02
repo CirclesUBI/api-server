@@ -4,8 +4,8 @@ import {Session as PrismaSession} from "./api-db/client";
 import {Session} from "./session";
 import {Profile} from "./api-db/client";
 import {Environment} from "./environment";
-import {GnosisSafeProxy} from "./web3Contract";
-import {RpcGateway} from "./rpcGateway";
+import {GnosisSafeProxy} from "./circles/gnosisSafeProxy";
+import {RpcGateway} from "./circles/rpcGateway";
 
 export class Context {
   readonly id: string;
@@ -133,7 +133,7 @@ export class Context {
     }
 
     this.log(`Verifying if the associated eoa of session '${this.session.id}' (${this.session.ethAddress}) is an owner of safe ${circlesAddress} ..`);
-    const safe = new GnosisSafeProxy(RpcGateway.get(), this.session.ethAddress, circlesAddress);
+    const safe = new GnosisSafeProxy(RpcGateway.get(), circlesAddress);
     const owners = await safe.getOwners();
 
     const matchingOwners = owners.map(o => o.toLowerCase()).filter(o => o.toLowerCase() == this.session?.ethAddress?.toLowerCase());

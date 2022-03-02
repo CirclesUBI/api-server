@@ -1,8 +1,7 @@
-import {Client} from "./auth-client/client";
 import crypto from "crypto";
 import {Context} from "./context";
 import {Session as PrismaSession, PrismaClient} from "./api-db/client";
-import {RpcGateway} from "./rpcGateway";
+import {RpcGateway} from "./circles/rpcGateway";
 import {Environment} from "./environment";
 
 export class Session
@@ -148,39 +147,6 @@ export class Session
             data: {
                 validFrom: new Date(),
                 profileId: profile?.id
-            }
-        });
-
-        return session;
-    }
-
-    static async createSessionFromJWT(prisma:PrismaClient, context: Context)
-    {
-        if (!context.jwt || context.jwt.trim() == "") {
-            throw new Error("No jwt was supplied");
-        }
-
-        const authClient = new Client(Environment.appId, Environment.acceptedIssuer);
-        const tokenPayload = await authClient.verify(context.jwt);
-        if (!tokenPayload)
-        {
-            throw new Error("Couldn't decode the supplied JWT.")
-        }
-
-        // Find an agent that matches the subject
-        const profile = await prisma.profile.findFirst({where: { emailAddress: tokenPayload.sub}});
-
-        const session = await prisma.session.create({
-            data: {
-                id: Session.generateRandomBase64String(8),
-                profileId: profile?.id,
-                issuedBy: tokenPayload.iss,
-                createdAt: new Date(),
-                validFrom: new Date(),
-                maxLifetime: Environment.sessionLifetimeInSeconds,
-                sessionToken: Session.generateRandomBase64String(64),
-                emailAddress: tokenPayload.sub,
-                jti: tokenPayload.jti
             }
         });
 

@@ -1,10 +1,10 @@
 import {Context} from "../../context";
 import {MutationUpdateSafeArgs} from "../../types";
 import Web3 from "web3";
-import {GnosisSafeProxy} from "../../web3Contract";
-import {RpcGateway} from "../../rpcGateway";
+import {RpcGateway} from "../../circles/rpcGateway";
 import {PrismaClient} from "../../api-db/client";
 import {Environment} from "../../environment";
+import {GnosisSafeProxy} from "../../circles/gnosisSafeProxy";
 
 export function updateSafe(prisma:PrismaClient) {
     return async (parent: any, args:MutationUpdateSafeArgs, context: Context) => {
@@ -27,7 +27,7 @@ export function updateSafe(prisma:PrismaClient) {
         }
 
         const signingAddress = new Web3().eth.accounts.recover(currentProfile.verifySafeChallenge, args.data.signature);
-        const safe = new GnosisSafeProxy(RpcGateway.get(), signingAddress, currentProfile.newSafeAddress);
+        const safe = new GnosisSafeProxy(RpcGateway.get(), currentProfile.newSafeAddress);
         const owners = await safe.getOwners();
         if (owners.map(o => o.toLowerCase()).indexOf(signingAddress.toLowerCase()) < 0) {
             return {

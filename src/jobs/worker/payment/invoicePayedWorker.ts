@@ -5,9 +5,9 @@ import {
   PdfDbInvoiceData,
   pdfInvoiceDataFromDbInvoice,
   PdfInvoicePaymentTransaction
-} from "../../../invoiceGenerator";
+} from "../../../utils/invoiceGenerator";
 import {Environment} from "../../../environment";
-import {log, logErr} from "../../../log";
+import {log, logErr} from "../../../utils/log";
 
 type Transfer = {
   hash: string,

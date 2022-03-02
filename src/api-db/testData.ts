@@ -1,7 +1,7 @@
 import {Environment} from "../environment";
-import {RpcGateway} from "../rpcGateway";
+import {RpcGateway} from "../circles/rpcGateway";
 import {CirclesHub} from "../circles/circlesHub";
-import {GnosisSafeProxy} from "../circles/safe/gnosisSafeProxy";
+import {GnosisSafeProxy} from "../circles/gnosisSafeProxy";
 import BN from "bn.js";
 import type {TransactionReceipt} from "web3-core";
 

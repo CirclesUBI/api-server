@@ -8,11 +8,11 @@ export function search(prisma: PrismaClient) {
           .toLowerCase()
           .replace("%", "")
           .split(/\s+/)
-          .map(o => o.trim())
-          .filter(o => o != "")
-          .map(o => o + "%");
+          .map((o:string) => o.trim())
+          .filter((o:string) => o != "")
+          .map((o:string) => o + "%");
 
-        const searchWords2 = searchWords.map(o => o.replace("%", ""));
+        const searchWords2 = searchWords.map((o:string) => o.replace("%", ""));
         const fteSearch = `"${searchWords2.join("+")}":*`;
         const result: {
             id: number,

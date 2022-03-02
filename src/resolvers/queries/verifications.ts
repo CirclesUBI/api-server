@@ -1,6 +1,6 @@
 import { QueryVerificationsArgs, SortOrder, Verification } from "../../types";
 import { Context } from "../../context";
-import { ProfileLoader } from "../../profileLoader";
+import { ProfileLoader } from "../../querySources/profileLoader";
 import { Environment } from "../../environment";
 import { PrismaClient } from "../../api-db/client";
 

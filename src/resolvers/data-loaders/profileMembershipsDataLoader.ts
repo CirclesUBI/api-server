@@ -1,6 +1,6 @@
 import DataLoader from "dataloader";
 import {Membership} from "../../types";
-import {ProfileLoader} from "../../profileLoader";
+import {ProfileLoader} from "../../querySources/profileLoader";
 import {Environment} from "../../environment";
 
 export const profileMembershipsDataLoader = new DataLoader<string, Membership[]>(async (keys) => {

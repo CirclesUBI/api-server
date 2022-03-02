@@ -1,6 +1,6 @@
 import {IndexerEvent, IndexerEventProcessor} from "./indexerEventProcessor";
-import {ApiPubSub} from "../pubsub";
-import {JobQueue} from "../jobQueue";
+import {ApiPubSub} from "../utils/pubsub";
+import {JobQueue} from "../jobs/jobQueue";
 import {SendCrcTrustChangedEmail} from "../jobs/descriptions/emailNotifications/sendCrcTrustChangedEmail";
 import {SendCrcReceivedEmail} from "../jobs/descriptions/emailNotifications/sendCrcReceivedEmail";
 

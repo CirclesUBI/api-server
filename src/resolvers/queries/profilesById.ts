@@ -1,5 +1,5 @@
 import {Context} from "../../context";
-import {ProfileLoader} from "../../profileLoader";
+import {ProfileLoader} from "../../querySources/profileLoader";
 import {Profile, QueryProfilesByIdArgs} from "../../types";
 import {Environment} from "../../environment";
 

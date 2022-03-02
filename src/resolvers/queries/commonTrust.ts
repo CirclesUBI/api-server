@@ -1,7 +1,7 @@
 import {Context} from "../../context";
 import {CommonTrust} from "../../types";
 import {PrismaClient} from "../../api-db/client";
-import {ProfileLoader} from "../../profileLoader";
+import {ProfileLoader} from "../../querySources/profileLoader";
 import {Environment} from "../../environment";
 
 export function commonTrust(prisma:PrismaClient) {

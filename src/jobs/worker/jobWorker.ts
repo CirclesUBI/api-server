@@ -1,7 +1,7 @@
-import {log} from "../../log";
+import {log} from "../../utils/log";
 import {JobDescription} from "../descriptions/jobDescription";
 import {Environment} from "../../environment";
-import {JobResult} from "../../jobQueue";
+import {JobResult} from "../jobQueue";
 
 export type ErrorStrategy =
   "throw" |

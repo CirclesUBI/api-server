@@ -1,9 +1,9 @@
 import {Context} from "../../context";
-import {RpcGateway} from "../../rpcGateway";
+import {RpcGateway} from "../../circles/rpcGateway";
 import { BN } from "ethereumjs-util";
 import {RedeemClaimedInvitationResult} from "../../types";
 import {Environment} from "../../environment";
-import {Dropper} from "../../dropper/dropper";
+import {Dropper} from "../../utils/dropper";
 
 export function redeemClaimedInvitation() {
   return async (parent: any, args: any, context: Context) => {

@@ -1,8 +1,8 @@
 import {Context} from "../../context";
 import {CapabilityType, SessionInfo} from "../../types";
 import {Profile} from "../../api-db/client";
-import {ProfileLoader} from "../../profileLoader";
-import {isBILMember} from "../../canAccess";
+import {ProfileLoader} from "../../querySources/profileLoader";
+import {isBILMember} from "../../utils/canAccess";
 import {Environment} from "../../environment";
 
 export const sessionInfo = async (parent:any, args:any, context:Context) : Promise<SessionInfo> => {

@@ -1,6 +1,6 @@
 import {QueryDirectPathArgs, TransitivePath, TransitiveTransfer} from "../../types";
 import {AbiItem} from "web3-utils";
-import {RpcGateway} from "../../rpcGateway";
+import {RpcGateway} from "../../circles/rpcGateway";
 import BN from "bn.js";
 import {Context} from "../../context";
 import {Environment} from "../../environment";

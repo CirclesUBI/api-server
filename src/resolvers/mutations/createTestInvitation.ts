@@ -1,5 +1,5 @@
 import {Context} from "../../context";
-import {RpcGateway} from "../../rpcGateway";
+import {RpcGateway} from "../../circles/rpcGateway";
 import {Session} from "../../session";
 import {CreateInvitationResult} from "../../types";
 import Web3 from "web3";

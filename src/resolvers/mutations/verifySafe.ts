@@ -1,10 +1,10 @@
 import { MutationVerifySafeArgs } from "../../types";
 import { Context } from "../../context";
-import { isBILMember } from "../../canAccess";
+import { isBILMember } from "../../utils/canAccess";
 import { VerifiedSafe } from "../../api-db/client";
-import { RpcGateway } from "../../rpcGateway";
+import { RpcGateway } from "../../circles/rpcGateway";
 import { Environment } from "../../environment";
-import {Dropper} from "../../dropper/dropper";
+import {Dropper} from "../../utils/dropper";
 
 export const verifySafe = async (
   parent: any,

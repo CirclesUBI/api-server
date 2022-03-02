@@ -1,7 +1,7 @@
 import {MutationRemoveMemberArgs} from "../../types";
 import {Context} from "../../context";
 import {findGroup} from "./addMember";
-import {ProfileLoader} from "../../profileLoader";
+import {ProfileLoader} from "../../querySources/profileLoader";
 import {Environment} from "../../environment";
 
 export const removeMemberResolver =async (parent:any, args:MutationRemoveMemberArgs, context:Context) => {

@@ -1,9 +1,9 @@
 import {ChatMessage, EventType, MutationSendMessageArgs, SendMessageResult} from "../../types";
 import { Context } from "../../context";
 import { PrismaClient } from "../../api-db/client";
-import {RpcGateway} from "../../rpcGateway";
-import {canAccess} from "../../canAccess";
-import {JobQueue} from "../../jobQueue";
+import {RpcGateway} from "../../circles/rpcGateway";
+import {canAccess} from "../../utils/canAccess";
+import {JobQueue} from "../../jobs/jobQueue";
 import {BroadcastChatMessage} from "../../jobs/descriptions/chat/broadcastChatMessage";
 
 export function sendMessage(prisma: PrismaClient) {

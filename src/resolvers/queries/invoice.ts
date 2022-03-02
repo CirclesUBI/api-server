@@ -3,7 +3,7 @@ import { QueryInvoiceArgs } from "../../types";
 import { Environment } from "../../environment";
 import {AWSError, S3} from "aws-sdk";
 import {PromiseResult} from "aws-sdk/lib/request";
-import {InvoicePdfGenerator, pdfInvoiceDataFromDbInvoice, PdfInvoicePaymentTransaction} from "../../invoiceGenerator";
+import {InvoicePdfGenerator, pdfInvoiceDataFromDbInvoice, PdfInvoicePaymentTransaction} from "../../utils/invoiceGenerator";
 import {Buffer} from "buffer";
 
 export const invoice = async (

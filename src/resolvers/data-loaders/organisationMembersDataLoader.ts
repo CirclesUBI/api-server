@@ -1,6 +1,6 @@
 import DataLoader from "dataloader";
 import {ProfileOrOrganisation} from "../../types";
-import {ProfileLoader} from "../../profileLoader";
+import {ProfileLoader} from "../../querySources/profileLoader";
 import {Environment} from "../../environment";
 
 export const organisationMembersDataLoader = new DataLoader<number, ProfileOrOrganisation[]>(async (organisationIds) => {

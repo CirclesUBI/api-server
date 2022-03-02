@@ -1,4 +1,4 @@
-import { InvoicePdfGenerator } from "../invoiceGenerator";
+import { InvoicePdfGenerator } from "../utils/invoiceGenerator";
 import PDFDocument from "pdfkit";
 import * as fs from "fs";
 

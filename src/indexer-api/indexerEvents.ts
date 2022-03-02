@@ -1,6 +1,6 @@
 import WebSocket from "ws";
 import {IndexerEvent, IndexerEventProcessor} from "./indexerEventProcessor";
-import {log, logErr} from "../log";
+import {log, logErr} from "../utils/log";
 import {Environment} from "../environment";
 
 export class IndexerEvents {

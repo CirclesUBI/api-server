@@ -1,6 +1,6 @@
 import {Context} from "../../context";
 import {Environment} from "../../environment";
-import {Generate} from "../../generate";
+import {Generate} from "../../utils/generate";
 import {MutationAnnouncePaymentArgs} from "../../types";
 
 export function announcePayment() {

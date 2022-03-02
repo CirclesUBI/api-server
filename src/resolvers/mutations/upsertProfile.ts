@@ -1,10 +1,10 @@
 import {DisplayCurrency, MutationUpsertProfileArgs, Profile} from "../../types";
 import {Context} from "../../context";
 import {Session} from "../../session";
-import {ProfileLoader} from "../../profileLoader";
+import {ProfileLoader} from "../../querySources/profileLoader";
 import {Environment} from "../../environment";
 import {TestData} from "../../api-db/testData";
-import {RpcGateway} from "../../rpcGateway";
+import {RpcGateway} from "../../circles/rpcGateway";
 
 export function upsertProfileResolver() {
     return async (parent:any, args:MutationUpsertProfileArgs, context:Context) => {

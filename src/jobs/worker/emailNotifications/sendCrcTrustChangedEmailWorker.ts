@@ -1,9 +1,9 @@
 import {JobWorker, JobWorkerConfiguration} from "../jobWorker";
 import {SendCrcTrustChangedEmail} from "../../descriptions/emailNotifications/sendCrcTrustChangedEmail";
 import {Mailer} from "../../../mailer/mailer";
-import {ProfileLoader} from "../../../profileLoader";
+import {ProfileLoader} from "../../../querySources/profileLoader";
 import {Environment} from "../../../environment";
-import {crcTrustChangedEmailTemplate} from "../../../mailer/templates/crcTrustChangedEmailTemplate";
+import {crcTrustChangedEmailTemplate} from "./templates/crcTrustChangedEmailTemplate";
 
 export class SendCrcTrustChangedEmailWorker extends JobWorker<SendCrcTrustChangedEmail> {
   name(): string {

@@ -1,5 +1,5 @@
-import {ApiPubSub} from "../../../pubsub";
-import {RpcGateway} from "../../../rpcGateway";
+import {ApiPubSub} from "../../../utils/pubsub";
+import {RpcGateway} from "../../../circles/rpcGateway";
 import {BroadcastChatMessage} from "../../descriptions/chat/broadcastChatMessage";
 import {JobWorker, JobWorkerConfiguration} from "../jobWorker";
 

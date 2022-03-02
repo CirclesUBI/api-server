@@ -1,6 +1,6 @@
 import {Context} from "../../context";
 import {Maybe, QuerySafeInfoArgs, SafeInfo} from "../../types";
-import {Generate} from "../../generate";
+import {Generate} from "../../utils/generate";
 import {Environment} from "../../environment";
 
 export function safeInfo() {

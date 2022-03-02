@@ -1,8 +1,8 @@
 import {Context} from "../../context";
 import {MutationUpsertOrganisationArgs, Profile} from "../../types";
-import {ProfileLoader} from "../../profileLoader";
+import {ProfileLoader} from "../../querySources/profileLoader";
 import {Environment} from "../../environment";
-import {RpcGateway} from "../../rpcGateway";
+import {RpcGateway} from "../../circles/rpcGateway";
 
 export async function isOrgAdmin(userAddress:string, orgId: number) : Promise<boolean> {
   return !!(await Environment.readWriteApiDb.membership.findFirst({

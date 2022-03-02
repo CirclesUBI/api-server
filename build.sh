@@ -14,10 +14,6 @@ npx --no-install prisma generate --schema=src/api-db/schema_template.prisma || e
 echo " * creating ./dist directory .."
 mkdir dist
 
-echo " * copy to ./dist/auth-client .."
-mkdir dist/auth-client
-cp -f src/auth-client/* dist/auth-client
-
 echo " * copy to ./dist/api-db .."
 mkdir dist/api-db
 cp -r -f src/api-db/* dist/api-db

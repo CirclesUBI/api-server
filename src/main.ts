@@ -1,39 +1,25 @@
 import {createServer} from "http";
-import {execute, subscribe} from "graphql";
 import {SubscriptionServer} from "subscriptions-transport-ws";
 import {makeExecutableSchema} from "@graphql-tools/schema";
-import {Request, Response} from "express";
 import {ApolloServer} from "apollo-server-express";
 import {resolvers} from "./resolvers/resolvers";
-// import {importSchema} from "graphql-import";
-import * as a from "@graphql-tools/import";
 import {Context} from "./context";
-import {RpcGateway} from "./rpcGateway";
+import {RpcGateway} from "./circles/rpcGateway";
 import {GqlLogger} from "./gqlLogger";
-import {Session as PrismaSession} from "./api-db/client";
-import {Session} from "./session";
-import {Server, ServerOptions} from "ws";
-import {Dropper} from "./dropper/dropper";
-import {PromiseResult} from "aws-sdk/lib/request";
 import {Environment} from "./environment";
 import {IndexerEvents} from "./indexer-api/indexerEvents";
 import {PaymentProcessor} from "./indexer-api/paymentProcessor";
 import {AppNotificationProcessor} from "./indexer-api/appNotificationProcessor";
-import {ninetyDaysLater} from "./90days";
+import {ninetyDaysLater} from "./utils/90days";
 import express from "express";
-import AWS from "aws-sdk";
-import {JobQueue, JobResult} from "./jobQueue";
-import {BroadcastChatMessage} from "./jobs/descriptions/chat/broadcastChatMessage";
-import {BroadcastChatMessageWorker} from "./jobs/worker/chat/broadcastChatMessageWorker";
-import {SendCrcReceivedEmailWorker} from "./jobs/worker/emailNotifications/sendCrcReceivedEmailWorker";
-import {SendCrcTrustChangedEmailWorker} from "./jobs/worker/emailNotifications/sendCrcTrustChangedEmailWorker";
-import {SendCrcReceivedEmail} from "./jobs/descriptions/emailNotifications/sendCrcReceivedEmail";
-import {SendCrcTrustChangedEmail} from "./jobs/descriptions/emailNotifications/sendCrcTrustChangedEmail";
-import {InvoicePayedWorker} from "./jobs/worker/payment/invoicePayedWorker";
-import {InvoicePayed} from "./jobs/descriptions/payment/invoicePayed";
-
-
-var cors = require("cors");
+import {JobQueue} from "./jobs/jobQueue";
+import {gqlSubscriptionServer} from "./gqlSubscriptionServer";
+import {uploadPostHandler} from "./postHandlers/upload";
+import {triggerPostHandler} from "./postHandlers/trigger";
+import cors from "cors";
+import {jobSink} from "./jobs/jobSink";
+import {JobType} from "./jobs/descriptions/jobDescription";
+import * as graphqlImport from "@graphql-tools/import";
 
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
@@ -42,9 +28,7 @@ const {
 const corsOrigins = Environment.corsOrigins.split(";").map((o) => o.trim());
 
 export class Main {
-  private _dropper = new Dropper();
-
-  async run2() {
+  async run() {
     RpcGateway.setup(Environment.rpcGatewayUrl, Environment.fixedGasPrice);
 
     if (Environment.delayStart) {
@@ -67,11 +51,8 @@ export class Main {
       origin: corsOrigins,
       credentials: true,
     };
-
     app.use(cors(corsOptions));
-
     app.use(express.json({limit: "50mb"}));
-
     app.use(
       express.urlencoded({
         limit: "50mb",
@@ -83,89 +64,20 @@ export class Main {
     app.post(
       "/upload",
       cors(corsOptions),
-      async (req: Request, res: Response) => {
-        try {
-          const cookieValue = req.headers["cookie"];
-          let sessionToken = Main.tryGetSessionToken(cookieValue);
-          let validSession = null;
+      uploadPostHandler);
 
-          if (sessionToken) {
-            validSession = await Session.findSessionBysessionToken(
-              Environment.readWriteApiDb,
-              sessionToken
-            );
-          }
-          if (!validSession) {
-            return res.json({
-              status: "error",
-              message:
-                "Authentication Failed. No session could be found for the supplied sessionToken.",
-            });
-          }
-
-          const fileName = req.body.fileName;
-          const mimeType = req.body.mimeType;
-          const bytes = req.body.bytes;
-
-          const saveResult = await saveImageToS3(fileName, bytes, mimeType);
-
-          res.statusCode = 200;
-          return res.json({
-            status: "ok",
-            url: `https://circlesland-pictures.fra1.cdn.digitaloceanspaces.com/${fileName}`,
-          });
-        } catch (e) {
-          return res.json({
-            status: "error",
-            message: "Image Upload Failed.",
-          });
-        }
-      }
-    );
-
-    async function saveImageToS3(
-      key: string,
-      imageBytes: any,
-      mimeType: string
-    ) {
-      const params: {
-        Bucket: string;
-        Body?: any;
-        ContentEncoding?: string;
-        ContentType?: string;
-        Key: string;
-        ACL: string;
-      } = {
-        Bucket: "circlesland-pictures",
-        Key: key,
-        ACL: "public-read",
-      };
-
-      return new Promise<PromiseResult<AWS.S3.PutObjectOutput, AWS.AWSError>>(
-        async (resolve, reject) => {
-          try {
-            params.ContentEncoding = "base64";
-            params.ContentType = mimeType;
-            params.Body = Buffer.from(
-              imageBytes.replace(/^data:image\/\w+;base64,/, ""),
-              "base64"
-            );
-            const result = await Environment.filesBucket
-              .putObject(params)
-              .promise();
-            resolve(result);
-          } catch (e) {
-            reject(e);
-          }
-        }
-      );
-    }
+    app.post(
+      "/trigger",
+      cors(corsOptions),
+      triggerPostHandler);
 
     const httpServer = createServer(app);
     const schema = makeExecutableSchema({
-      typeDefs: a.processImport("../src/server-schema.graphql"),
+      typeDefs: graphqlImport.processImport("../src/server-schema.graphql"),
       resolvers,
     });
+
+    let subscriptionServer: SubscriptionServer|null = null;
 
     const server = new ApolloServer({
       schema,
@@ -175,7 +87,7 @@ export class Main {
           async serverWillStart() {
             return {
               async drainServer() {
-                subscriptionServer.close();
+                subscriptionServer?.close();
               },
             };
           },
@@ -184,6 +96,8 @@ export class Main {
         new GqlLogger(),
       ],
     });
+
+    subscriptionServer = await gqlSubscriptionServer(schema, httpServer, server.graphqlPath);
 
     await server.start();
     const serverMiddleware = server.getMiddleware({
@@ -199,77 +113,6 @@ export class Main {
       console.error(err.stack);
     });
 
-    const subscriptionServer = SubscriptionServer.create(
-      {
-        schema,
-        execute,
-        subscribe,
-        async onDisconnect(
-          options: ServerOptions,
-          socketOptionsOrServer: Server
-        ) {
-          const upgradeRequest = (<any>options).upgradeReq;
-          const ip =
-            upgradeRequest.headers["forwarded-for"] ??
-            upgradeRequest.headers["x-forwarded-for"] ??
-            upgradeRequest.connection.remoteAddress;
-
-          console.log(
-            `-->X [${new Date().toJSON()}] [${Environment.instanceId}] [] [] [${ip}] [subscriptionServer.onConnect]: Websocket connection closed.`
-          );
-        },
-        async onConnect(connectionParams: any, webSocket: any) {
-          // WS
-          const contextId = Session.generateRandomBase64String(8);
-          let isSubscription = false;
-          let authorizationHeaderValue: string | undefined;
-          let originHeaderValue: string | undefined;
-
-          const upgradeRequest = webSocket.upgradeReq;
-          const cookieValue = upgradeRequest.headers["cookie"];
-          const ip =
-            upgradeRequest.headers["forwarded-for"] ??
-            upgradeRequest.headers["x-forwarded-for"] ??
-            upgradeRequest.connection.remoteAddress;
-
-          isSubscription = true;
-          let sessionToken = Main.tryGetSessionToken(cookieValue);
-
-          let session: PrismaSession | null = await Context.findSession(
-            sessionToken
-          );
-          if (session) {
-            console.log(
-              `-->] [${new Date().toJSON()}] [${Environment.instanceId}] [${session.id}] [${contextId}] [${ip}] [subscriptionServer.onConnect]: New websocket subscription client.`
-            );
-          } else {
-            console.log(
-              `-->] [${new Date().toJSON()}] [${Environment.instanceId}] [] [${contextId}] [${ip}] [subscriptionServer.onConnect]: New websocket subscription client.`
-            );
-          }
-
-          const context = new Context(
-            contextId,
-            isSubscription,
-            authorizationHeaderValue,
-            originHeaderValue,
-            session,
-            ip
-          );
-
-          return context;
-        },
-      },
-      {
-        server: httpServer,
-        path: server.graphqlPath,
-      }
-    );
-
-    console.log(
-      `Subscribing to blockchain events from the indexer at ${Environment.blockchainIndexerUrl} ..`
-    );
-
     const indexerEventProcessor = new IndexerEvents(
       Environment.blockchainIndexerUrl,
       2500,
@@ -282,36 +125,16 @@ export class Main {
     indexerEventProcessor.run();
 
     const jobQueue = new JobQueue("jobQueue");
-    jobQueue.consume([
-        "broadcastChatMessage",
-        "sendCrcReceivedEmail",
-        "sendCrcTrustChangedEmail",
-        "sendOrderConfirmationEmail",
-        "invoicePayed"
-      ],
-      async (job) => {
-        switch (job.topic) {
-          case "broadcastChatMessage".toLowerCase():
-            return await new BroadcastChatMessageWorker().run(job.id, BroadcastChatMessage.parse(job.payload));
-          case "sendCrcReceivedEmail".toLowerCase():
-            return new SendCrcReceivedEmailWorker({
-              errorStrategy: "logAndDrop"
-            }).run(job.id, SendCrcReceivedEmail.parse(job.payload));
-          case "sendCrcTrustChangedEmail".toLowerCase():
-            return  new SendCrcTrustChangedEmailWorker({
-              errorStrategy: "logAndDrop"
-            }).run(job.id, SendCrcTrustChangedEmail.parse(job.payload));
-          case "invoicePayed".toLowerCase():
-            return new InvoicePayedWorker({
-              errorStrategy: "logAndDropAfterThreshold",
-              dropThreshold: 3
-            }).run(job.id, InvoicePayed.parse(job.payload));
-          default:
-            return undefined;
-        }
-      },
-      false
-      ).then(() => {
+    const jobTopics:JobType[] = [
+      "broadcastChatMessage",
+      "sendCrcReceivedEmail",
+      "sendCrcTrustChangedEmail",
+      "sendOrderConfirmationEmail",
+      "invoicePayed"
+    ];
+
+    jobQueue.consume(jobTopics, jobSink, false)
+      .then(() => {
         console.info("JobQueue stopped.");
       }).catch(e => {
         console.error("JobQueue crashed.", e);
@@ -330,25 +153,8 @@ export class Main {
       console.log(`Server is now running on http://localhost:${PORT}/graphql`)
     );
   }
-
-  private static tryGetSessionToken(cookieValue?: string) {
-    let sessionToken: string | undefined = undefined;
-    if (cookieValue) {
-      const cookies = cookieValue
-        .split(";")
-        .map((o: string) => o.trim().split("="))
-        .reduce((p: { [key: string]: any }, c: string[]) => {
-          p[c[0]] = c[1];
-          return p;
-        }, {});
-      if (cookies["session"]) {
-        sessionToken = decodeURIComponent(cookies["session"]);
-      }
-    }
-    return sessionToken;
-  }
 }
 
-new Main().run2().then(() => console.log("Started")).then(async () => {
+new Main().run().then(() => console.log("Started")).then(async () => {
   // await ninetyDaysLater()
 });

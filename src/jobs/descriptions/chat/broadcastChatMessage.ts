@@ -1,5 +1,5 @@
 import {JobDescription, JobType} from "../jobDescription";
-import {Generate} from "../../../generate";
+import {Generate} from "../../../utils/generate";
 
 export class BroadcastChatMessage implements JobDescription {
   readonly _topic: JobType = "broadcastChatMessage";
