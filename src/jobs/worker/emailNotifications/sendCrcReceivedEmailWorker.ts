@@ -35,13 +35,15 @@ export class SendCrcReceivedEmailWorker extends JobWorker<SendCrcReceivedEmail> 
       };
     }
 
+    const amount = (convertCirclesToTimeCircles(
+      parseFloat(RpcGateway.get().utils.fromWei(job.amount, "ether")),
+      job.timestamp.toJSON()) / 10).toFixed(2);
+
     await Mailer.send(crcReceivedEmailTemplate, {
       sender: `${ProfileLoader.displayName(sender)}`,
       recipient: `${ProfileLoader.displayName(recipient)}`,
-      amount: convertCirclesToTimeCircles(
-        parseFloat(RpcGateway.get().utils.fromWei(job.amount, "ether")),
-        job.timestamp.toJSON()),
-      currency: "Time Circles",
+      amount: amount,
+      currency: "€",
       transactionDetailUrl: `${Environment.appUrl}#/banking/transactions/${job.hash}`
     }, recipient.emailAddress);
 
