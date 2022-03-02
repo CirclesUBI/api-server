@@ -39,6 +39,7 @@ export abstract class JobWorker<TJob extends JobDescription> {
 
       return result;
     } catch (e) {
+      const error = <any>e;
       if (this.configuration.errorStrategy == "throw") {
         delete this._errorStats[jobId];
 
@@ -46,9 +47,13 @@ export abstract class JobWorker<TJob extends JobDescription> {
       }
       if (this.configuration.errorStrategy == "logAndDrop") {
         console.log(`     [${new Date().toJSON()}] [${Environment.instanceId}] [${jobDescription._topic}] [jobId:${jobId}] [${this.name()}.run]: A job ran into an error and the error strategy is 'logAndDrop'.`);
-        console.log(`ERR  [${new Date().toJSON()}] [${Environment.instanceId}] [${jobDescription._topic}] [jobId:${jobId}] [${this.name()}.run]: ${e.message + "\n" + e.stack}`);
+        console.log(`ERR  [${new Date().toJSON()}] [${Environment.instanceId}] [${jobDescription._topic}] [jobId:${jobId}] [${this.name()}.run]: ${error.message + "\n" + error.stack}`);
 
         delete this._errorStats[jobId];
+
+        return {
+          error: `${error.message + "\n" + error.stack}`
+        };
       }
       if (this.configuration.errorStrategy == "logAndDropAfterThreshold") {
         console.log(`     [${new Date().toJSON()}] [${Environment.instanceId}] [${jobDescription._topic}] [jobId:${jobId}] [${this.name()}.run]: A job ran into an error and the error strategy is 'logAndDropAfterThreshold'.`);
@@ -67,7 +72,7 @@ export abstract class JobWorker<TJob extends JobDescription> {
         console.log(`     [${new Date().toJSON()}] [${jobDescription._topic}] [jobId:${jobId}] [${this.name()}.run]: A job ran into an error and the error strategy is 'logAndThrowAfterThreshold'.`);
         log("WARN ",
           `[${jobDescription._topic}] [jobId:${jobId}] [${this.name()}.run]`,
-          e.message + "\n" + e.stack);
+          error.message + "\n" + error.stack);
 
         this._errorStats[jobId]++;
 
@@ -81,6 +86,9 @@ export abstract class JobWorker<TJob extends JobDescription> {
           throw e;
         }
       }
+      return {
+        error: `${error.message + "\n" + error.stack}`
+      };
     }
     return undefined;
   }

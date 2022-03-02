@@ -12,6 +12,7 @@ export type Job = {
 }
 
 export type JobResult = {
+    error?:string,
     warning?: string,
     info?: string
 }
@@ -117,7 +118,7 @@ export class JobQueue {
                 });
             } catch (e) {
                 console.error(`The job listener for topics '${topics.join(', ')}' experienced an error: `, e);
-                error = e;
+                error = <any>e;
             } finally {
                 try {
                     listenerConnection?.release();
@@ -226,10 +227,11 @@ export class JobQueue {
 
             await client.query('COMMIT');
 
-            if (jobResult?.info || jobResult?.warning) {
-                await client.query(`update "Job" set info = $1, warning = $2 where id = $3`, [
+            if (jobResult?.info || jobResult?.warning || jobResult?.error) {
+                await client.query(`update "Job" set info = $1, warning = $2, error = $3 where id = $4`, [
                     jobResult.info,
                     jobResult.warning,
+                    jobResult.error,
                     jobId
                 ]);
             }
@@ -238,10 +240,11 @@ export class JobQueue {
         } catch (e) {
             await client.query('ROLLBACK');
             if (jobId) {
+                const error = <any>e;
                 await client.query(`update "Job"
                                     set error = $1
                                     where id = $2`, [
-                    `${e.message}\n${e.stack}`,
+                    `${error.message}\n${error.stack}`,
                     jobId
                 ]);
             }

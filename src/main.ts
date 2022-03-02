@@ -5,7 +5,8 @@ import {makeExecutableSchema} from "@graphql-tools/schema";
 import {Request, Response} from "express";
 import {ApolloServer} from "apollo-server-express";
 import {resolvers} from "./resolvers/resolvers";
-import {importSchema} from "graphql-import";
+// import {importSchema} from "graphql-import";
+import * as a from "@graphql-tools/import";
 import {Context} from "./context";
 import {RpcGateway} from "./rpcGateway";
 import {GqlLogger} from "./gqlLogger";
@@ -161,10 +162,8 @@ export class Main {
     }
 
     const httpServer = createServer(app);
-
-    const apiSchemaTypeDefs = importSchema("../src/server-schema.graphql");
     const schema = makeExecutableSchema({
-      typeDefs: <any>apiSchemaTypeDefs,
+      typeDefs: a.processImport("../src/server-schema.graphql"),
       resolvers,
     });
 

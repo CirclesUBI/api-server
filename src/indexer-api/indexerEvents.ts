@@ -90,17 +90,18 @@ export class IndexerEvents {
             await Promise.all(executingHandlers);
 
         } catch (e) {
+            const error = <any>e;
             logErr("ERR  ",
                 `[${this._messageNo}] [${this._indexerUrl}] [IndexerEvents.onMessage]`,
                 `The received websocket message couldn't be processed.`
             );
             logErr("ERR  ",
                 `[${this._messageNo}] [${this._indexerUrl}] [IndexerEvents.onMessage]`,
-                `Error is: ${e.message}\n${e.message}`
+                `Error is: ${error.message}\n${error.message}`
             );
             logErr("ERR  ",
                 `[${this._messageNo}] [${this._indexerUrl}] [IndexerEvents.onMessage]`,
-                `Message was: ${e.message}\n${e.stack}`
+                `Message was: ${error.message}\n${error.stack}`
             );
         }
     }

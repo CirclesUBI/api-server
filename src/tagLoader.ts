@@ -1,7 +1,5 @@
 import {PrismaClient} from "./api-db/client";
-import {Profile, Tag} from "./types";
-import {RpcGateway} from "./rpcGateway";
-import fetch from "cross-fetch";
+import {Tag} from "./types";
 
 export type TagsByTxHashLookup = {
   [txHash: string]: Tag[] | null;
