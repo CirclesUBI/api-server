@@ -28,9 +28,9 @@ export class SendCrcTrustChangedEmailWorker extends JobWorker<SendCrcTrustChange
     const user = profiles[job.user];
     const canSendTo = profiles[job.canSendTo];
 
-    if (!user?.emailAddress) {
+    if (!user?.emailAddress || !user?.emailVerified) {
       return {
-        info: `Couldn't send a notification email to profile ${profiles[job.user]?.id} because it has no email address.`
+        info: `Couldn't send a notification email to profile ${profiles[job.user]?.id} because it has no verified email address.`
       };
     }
     if (!canSendTo?.circlesAddress) {
