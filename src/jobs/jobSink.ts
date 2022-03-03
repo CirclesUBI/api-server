@@ -13,6 +13,8 @@ import {SendVerifyEmailAddressEmailWorker} from "./worker/emailNotifications/sen
 import {SendVerifyEmailAddressEmail} from "./descriptions/emailNotifications/sendVerifyEmailAddressEmail";
 import {Echo} from "./descriptions/echo";
 import {EchoWorker} from "./worker/echoWorker";
+import {InviteCodeFromExternalTriggerWorker} from "./worker/onboarding/inviteCodeFromExternalTriggerWorker";
+import {InviteCodeFromExternalTrigger} from "./descriptions/onboarding/inviteCodeFromExternalTrigger";
 
 export const jobSink = async (job: Job) => {
   switch (job.topic) {
@@ -21,6 +23,11 @@ export const jobSink = async (job: Job) => {
         errorStrategy: "logAndDrop"
       })
         .run(job.id, Echo.parse(job.payload));
+    case "inviteCodeFromExternalTrigger".toLowerCase():
+      return await new InviteCodeFromExternalTriggerWorker({
+        errorStrategy: "logAndDrop"
+      })
+        .run(job.id, InviteCodeFromExternalTrigger.parse(job.payload));
     case "sendVerifyEmailAddressEmail".toLowerCase():
       return await new SendVerifyEmailAddressEmailWorker({
         errorStrategy: "logAndDropAfterThreshold",

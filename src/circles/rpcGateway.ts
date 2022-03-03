@@ -44,47 +44,51 @@ export class RpcGateway {
     };
 
     static async getGasPrice() {
+        /*
         const defaultGasPrice = 3;
 
         if (this.fixedGasPrice) {
-            console.warn(`Using fixed gas prices of ${this.fixedGasPrice}`);
-            return new BN(this.fixedGasPrice.toString());
+          console.warn(`Using fixed gas prices of ${this.fixedGasPrice}`);
+          return new BN(this.fixedGasPrice.toString());
         }
 
         if (
           this._lastGasPrice &&
           this._lastGasPrice.time > Date.now() - 10000
         ) {
-            return this._lastGasPrice.gasPriceInWei;
+          return this._lastGasPrice.gasPriceInWei;
         }
 
         let gasPriceInWei: BN;
         try {
-            const result = await fetch(
-              "https://blockscout.com/xdai/mainnet/api/v1/gas-price-oracle"
-            );
-            const resultJson = await result.json();
-            gasPriceInWei = new BN(
-              RpcGateway.get()
-                .utils.toWei(resultJson.average.toString(), "gwei")
-                .toString()
-            );
+          const result = await fetch(
+            "https://blockscout.com/xdai/mainnet/api/v1/gas-price-oracle"
+          );
+          const resultJson = await result.json();
+          gasPriceInWei = new BN(
+            RpcGateway.get()
+              .utils.toWei(resultJson.average.toString(), "gwei")
+              .toString()
+          );
         } catch (e) {
-            console.error(
-              `Couldn't get the current gas price from the oracle. Using '${defaultGasPrice}' as hardcoded value:`,
-              e
-            );
-            gasPriceInWei = new BN(
-              RpcGateway.get().utils.toWei(defaultGasPrice.toString(), "gwei")
-            );
+          console.error(
+            `Couldn't get the current gas price from the oracle. Using '${defaultGasPrice}' as hardcoded value:`,
+            e
+          );
+          gasPriceInWei = new BN(
+            RpcGateway.get().utils.toWei(defaultGasPrice.toString(), "gwei")
+          );
         }
 
         this._lastGasPrice = {
-            gasPriceInWei,
-            time: Date.now(),
+          gasPriceInWei,
+          time: Date.now(),
         };
 
         return gasPriceInWei;
+         */
+
+        return new BN(await RpcGateway.get().eth.getGasPrice());
     }
 
     static init() {

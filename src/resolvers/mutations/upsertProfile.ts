@@ -9,6 +9,8 @@ import {JobQueue} from "../../jobs/jobQueue";
 import {VerifyEmailAddress} from "../../jobs/descriptions/emailNotifications/verifyEmailAddress";
 import {Generate} from "../../utils/generate";
 import {SendVerifyEmailAddressEmail} from "../../jobs/descriptions/emailNotifications/sendVerifyEmailAddressEmail";
+import {claimedInvitation} from "../queries/claimedInvitation";
+import {claimInvitation} from "./claimInvitation";
 
 const validateEmail = (email:string) => {
     return email.match(
@@ -77,6 +79,7 @@ export function upsertProfileResolver() {
                     id: undefined,
                     lastUpdateAt: new Date(),
                     emailAddress: args.data.emailAddress,
+                    emailAddressVerified: false,
                     circlesSafeOwner: session.ethAddress?.toLowerCase(),
                     successorOfCirclesAddress: args.data.successorOfCirclesAddress?.toLowerCase(),
                     circlesAddress: args.data.circlesAddress?.toLowerCase(),
@@ -88,6 +91,16 @@ export function upsertProfileResolver() {
                 }
             }));
             await Session.assignProfile(session.sessionToken, profile.id, context);
+            if (context.req?.headers?.cookie) {
+                const cookies = context.req.headers.cookie.split(";").map(o => o.trim().split("=")).reduce((p: { [key: string]: any }, c) => {
+                    p[c[0]] = c[1];
+                    return p
+                }, {});
+                if (cookies["invitationCode"]) {
+                    const invitationCode = decodeURIComponent(cookies["invitationCode"]);
+                    await claimInvitation()(null, {code: invitationCode}, context);
+                }
+            }
         }
 
         if (Environment.isAutomatedTest && profile.circlesAddress) {

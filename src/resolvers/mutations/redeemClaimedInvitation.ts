@@ -84,6 +84,7 @@ export function redeemClaimedInvitation() {
         transactionHash: fundEoaReceipt.transactionHash
       }
     } catch (e) {
+      console.error(e);
       return <RedeemClaimedInvitationResult>{
         success: false,
         error: `Couldn't redeem the invitation.`

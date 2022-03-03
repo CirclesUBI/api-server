@@ -7,7 +7,7 @@ export type JobType =
   "invoicePayed" |
   "sendVerifyEmailAddressEmail" |
   "echo" |
-  "fundEoaForOnboarding";
+  "inviteCodeFromExternalTrigger";
 
 export type JobKind =
   "broadcast" |

@@ -21,6 +21,7 @@ import {jobSink} from "./jobs/jobSink";
 import {JobType} from "./jobs/descriptions/jobDescription";
 import * as graphqlImport from "@graphql-tools/import";
 import {Echo} from "./jobs/descriptions/echo";
+import {InviteCodeFromExternalTrigger} from "./jobs/descriptions/onboarding/inviteCodeFromExternalTrigger";
 
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
@@ -126,6 +127,7 @@ export class Main {
       "invoicePayed",
       "verifyEmailAddress",
       "sendVerifyEmailAddressEmail",
+      "inviteCodeFromExternalTrigger",
       "echo"
     ];
 
@@ -138,7 +140,7 @@ export class Main {
 
     // TODO: Add follow trust job handling
 
-    // await JobQueue.produce([new Echo("Hello echo!")]);
+    // await JobQueue.produce([new InviteCodeFromExternalTrigger("event_1", "http://localhost:5000", "0xde374ece6fa50e781e81aac78e811b33d16912c7")]);
 /*
     this.listenForDbEvents("follow_trust").catch((e) => {
       console.error(`The notifyConnection for 'follow_trust' events died:`, e);
