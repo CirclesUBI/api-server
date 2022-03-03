@@ -1,11 +1,6 @@
-import {JobDescription, JobType} from "../jobDescription";
+import {JobDescription} from "../jobDescription";
 
-export class InvoicePayed implements JobDescription {
-  readonly _topic: JobType = "invoicePayed";
-  readonly _kind = "atMostOnceJob";
-  readonly _identity: string;
-  readonly _timeoutAt: undefined;
-
+export class InvoicePayed extends JobDescription {
   getPayload(): string {
     return JSON.stringify(this);
   }
@@ -15,10 +10,10 @@ export class InvoicePayed implements JobDescription {
   readonly transactionTime: Date;
 
   constructor(invoiceId: number, transactionHash: string, transactionTime: Date) {
+    super("atMostOnceJob", "invoicePayed", invoiceId.toString() + transactionHash);
     this.invoiceId = invoiceId;
     this.transactionHash = transactionHash;
     this.transactionTime = transactionTime;
-    this._identity = this._topic + this.invoiceId + this.transactionHash;
   }
 
   static parse(payload: string) {

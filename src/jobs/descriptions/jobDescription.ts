@@ -1,3 +1,6 @@
+import crypto from "crypto";
+import {identity} from "ix/util/identity";
+
 export type JobType =
   "broadcastChatMessage" |
   "sendCrcReceivedEmail" |
@@ -15,10 +18,26 @@ export type JobKind =
   "atMostOnceTrigger" |
   "perpetualTrigger";
 
-export interface JobDescription {
+export abstract class JobDescription {
   _kind: JobKind;
   _topic: JobType;
   _identity: string;
   _timeoutAt: Date|undefined;
-  getPayload(): string;
+
+  protected constructor(kind: JobKind, topic: JobType, identity:string, timeoutAt?: Date) {
+    this._kind = kind;
+    this._topic = topic;
+    this._identity = identity;
+    this._timeoutAt = timeoutAt;
+  }
+
+  getPayload(): string {
+    return JSON.stringify(this);
+  }
+
+  getHash(): string {
+    return crypto.createHash('sha256')
+      .update(this._topic + this._identity)
+      .digest('hex')
+  }
 }

@@ -65,7 +65,7 @@ export class JobQueue {
       for (let job of jobs) {
         const result = await client.query(insertSql, [
           job._timeoutAt,
-          job._identity,
+          job.getHash(),
           job._kind,
           job._topic.toLowerCase(),
           job.getPayload()
@@ -230,21 +230,21 @@ export class JobQueue {
     }
   }
 
-  static async trigger(topic: JobType, hash: string): Promise<JobResult | "end" | undefined> {
-    let query = this.processAtMostOnceTriggersSql(topic, hash);
+  static async trigger(hash: string): Promise<JobResult | "end" | undefined> {
+    let query = this.processAtMostOnceTriggersSql(hash);
     let result = await this.processNextJob(query, jobSink);
 
     if (result != "end") {
       return result;
     }
 
-    query = this.processPerpetualTriggersSql(topic, hash);
+    query = this.processPerpetualTriggersSql(hash);
     result = await this.processNextJob(query, jobSink);
 
     return result;
   }
 
-  private static processAtMostOnceTriggersSql(topic: string, hash: string): {
+  private static processAtMostOnceTriggersSql(hash: string): {
     sql: string,
     params: any[]
   } {
@@ -254,10 +254,9 @@ export class JobQueue {
         FROM (
                  SELECT *
                  FROM "Job"
-                 WHERE topic = $1
-                   AND "finishedAt" is null
-                   AND "kind" = ANY($3)
-                   AND "hash" = $2
+                 WHERE "finishedAt" is null
+                   AND "kind" = ANY($2)
+                   AND "hash" = $1
                    AND ("timeoutAt" is null OR "timeoutAt" > now())
                  LIMIT 1 FOR UPDATE SKIP LOCKED
              ) j
@@ -266,27 +265,26 @@ export class JobQueue {
 
     return {
       sql: getJobsSql,
-      params: [topic, hash, <JobKind[]>["atMostOnceTrigger"]]
+      params: [hash, <JobKind[]>["atMostOnceTrigger"]]
     };
   }
 
-  private static processPerpetualTriggersSql(topic: string, hash: string): {
+  private static processPerpetualTriggersSql(hash: string): {
     sql: string,
     params: any[]
   } {
     const getJobsSql = `
         SELECT *
         FROM "Job"
-        WHERE topic = $1
-          AND "finishedAt" is null
-          AND "kind" = ANY($3)
-          AND "hash" = $2
+        WHERE "finishedAt" is null
+          AND "kind" = ANY($2)
+          AND "hash" = $1
           AND ("timeoutAt" is null OR "timeoutAt" > now())
         LIMIT 1;`;
 
     return {
       sql: getJobsSql,
-      params: [topic, hash, <JobKind[]>["perpetualTrigger"]]
+      params: [hash, <JobKind[]>["perpetualTrigger"]]
     };
   }
 

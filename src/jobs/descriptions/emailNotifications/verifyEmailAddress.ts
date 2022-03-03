@@ -1,11 +1,6 @@
 import {JobDescription, JobType} from "../jobDescription";
 
-export class VerifyEmailAddress implements JobDescription {
-  readonly _topic: JobType = "verifyEmailAddress";
-  readonly _kind = "atMostOnceTrigger";
-  readonly _identity: string;
-  readonly _timeoutAt;
-
+export class VerifyEmailAddress extends JobDescription {
   getPayload(): string {
     return JSON.stringify({
       ...this,
@@ -19,12 +14,11 @@ export class VerifyEmailAddress implements JobDescription {
   readonly emailAddress:string;
 
   constructor(timestamp: Date, lifetimeInMs: number, triggerCode: string, profileId:number, emailAddress:string) {
+    super("atMostOnceTrigger", "verifyEmailAddress", triggerCode, new Date(timestamp.getTime() + lifetimeInMs));
     this.timestamp = timestamp;
     this.profileId = profileId;
     this.lifetimeInMs = lifetimeInMs;
     this.emailAddress = emailAddress;
-    this._identity = this._topic + triggerCode;
-    this._timeoutAt = new Date(timestamp.getTime() + lifetimeInMs);
   }
 
   static parse(payload: string) {

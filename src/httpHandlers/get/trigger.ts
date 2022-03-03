@@ -1,25 +1,17 @@
 import {Request, Response} from "express";
 import {JobQueue} from "../../jobs/jobQueue";
-import {JobType} from "../../jobs/descriptions/jobDescription";
 
 export const triggerGetHandler = async (req: Request, res: Response) => {
   try {
-    if (!req.query.code) {
+    if (!req.query.hash) {
       res.statusCode = 400;
       return res.json({
         status: "error",
-        message: "no 'code' argument",
-      });
-    }
-    if (!req.query.topic) {
-      res.statusCode = 400;
-      return res.json({
-        status: "error",
-        message: "no 'topic' argument",
+        message: "no 'hash' argument",
       });
     }
 
-    const result = await JobQueue.trigger(<JobType>req.query.topic, <string>req.query.code);
+    const result = await JobQueue.trigger(<string>req.query.hash);
 
     if (result == "end") {
       res.statusCode = 404;
@@ -43,7 +35,7 @@ export const triggerGetHandler = async (req: Request, res: Response) => {
   } catch (e) {
     return res.json({
       status: "error",
-      message: "Image Upload Failed.",
+      message: "Couldn't run the trigger.",
     });
   }
 }

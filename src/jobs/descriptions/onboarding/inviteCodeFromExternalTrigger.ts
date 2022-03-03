@@ -1,11 +1,6 @@
-import {JobDescription, JobType} from "../jobDescription";
+import {JobDescription} from "../jobDescription";
 
-export class InviteCodeFromExternalTrigger implements JobDescription {
-  readonly _topic: JobType = "inviteCodeFromExternalTrigger";
-  readonly _kind = "perpetualTrigger";
-  readonly _identity: string;
-  readonly _timeoutAt: undefined;
-
+export class InviteCodeFromExternalTrigger extends JobDescription {
   getPayload(): string {
     return JSON.stringify(this);
   }
@@ -15,10 +10,10 @@ export class InviteCodeFromExternalTrigger implements JobDescription {
   readonly redirectUrl:string;
 
   constructor(id:string, redirectUrl:string, inviterSafeAddress:string) {
+    super("perpetualTrigger", "inviteCodeFromExternalTrigger", id);
     this.id = id;
     this.redirectUrl = redirectUrl;
     this.inviterSafeAddress = inviterSafeAddress;
-    this._identity = this._topic + id;
   }
 
   static parse(payload: string) {

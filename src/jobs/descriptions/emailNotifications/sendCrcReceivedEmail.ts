@@ -1,11 +1,6 @@
-import {JobDescription, JobType} from "../jobDescription";
+import {JobDescription} from "../jobDescription";
 
-export class SendCrcReceivedEmail implements JobDescription {
-  readonly _topic: JobType = "sendCrcReceivedEmail";
-  readonly _kind = "atMostOnceJob";
-  readonly _identity: string;
-  readonly _timeoutAt: undefined;
-
+export class SendCrcReceivedEmail extends JobDescription {
   getPayload(): string {
     return JSON.stringify({
       ...this,
@@ -20,12 +15,12 @@ export class SendCrcReceivedEmail implements JobDescription {
   readonly amount: string;
 
   constructor(timestamp: Date, hash: string, from: string, to: string, amount: string) {
+    super("atMostOnceJob", "sendCrcReceivedEmail", hash);
     this.timestamp = timestamp;
     this.hash  = hash;
     this.from  = from;
     this.to  = to;
     this.amount = amount;
-    this._identity = this._topic + this.hash;
   }
 
   static parse(payload: string) {

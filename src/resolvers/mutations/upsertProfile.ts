@@ -90,7 +90,10 @@ export function upsertProfileResolver() {
                     displayCurrency: <DisplayCurrency>args.data.displayCurrency
                 }
             }));
+
             await Session.assignProfile(session.sessionToken, profile.id, context);
+
+            // Try to claim an invitation right away if there's an invitationCode-cookie
             if (context.req?.headers?.cookie) {
                 const cookies = context.req.headers.cookie.split(";").map(o => o.trim().split("=")).reduce((p: { [key: string]: any }, c) => {
                     p[c[0]] = c[1];
@@ -99,6 +102,8 @@ export function upsertProfileResolver() {
                 if (cookies["invitationCode"]) {
                     const invitationCode = decodeURIComponent(cookies["invitationCode"]);
                     await claimInvitation()(null, {code: invitationCode}, context);
+
+                    context.log(`Created profile ${profile.id} with claimed invitation because the 'invitationCode' cookie was set to '${invitationCode}'.`);
                 }
             }
         }
@@ -112,7 +117,7 @@ export function upsertProfileResolver() {
         if (profile?.emailAddress && !(<any>profile)?.emailAddressVerified) {
             const challengeTrigger = new VerifyEmailAddress(
               new Date(), 1000 * 60 * 24, Generate.randomHexString(), profile.id, profile.emailAddress);
-            const sendEmail = new SendVerifyEmailAddressEmail(challengeTrigger._identity, <string>args.data.emailAddress);
+            const sendEmail = new SendVerifyEmailAddressEmail(challengeTrigger.getHash(), <string>args.data.emailAddress);
             await JobQueue.produce([challengeTrigger, sendEmail]);
         }
 
