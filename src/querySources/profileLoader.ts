@@ -9,8 +9,8 @@ import {
 import { RpcGateway } from "../circles/rpcGateway";
 import fetch from "cross-fetch";
 
-export type SafeProfileMap = { [safeAddress: string]: Profile & {emailVerified:boolean} | null };
-export type IdProfileMap = { [id: number]: Profile & {emailVerified:boolean} | null };
+export type SafeProfileMap = { [safeAddress: string]: Profile & {emailAddressVerified:boolean} | null };
+export type IdProfileMap = { [id: number]: Profile & {emailAddressVerified:boolean} | null };
 
 export class ProfileLoader {
   async queryCirclesLandById(
@@ -59,7 +59,7 @@ export class ProfileLoader {
     }
   }
 
-  static withDisplayCurrency(profile: any): Profile  & {emailVerified:boolean}{
+  static withDisplayCurrency(profile: any): Profile  & {emailAddressVerified:boolean}{
     return {
       ...profile,
       displayCurrency: ProfileLoader.getDisplayCurrency(profile),
@@ -193,12 +193,12 @@ export class ProfileLoader {
 
     const safeProfileMap = profiles
       .map((o) => {
-        return <Profile & {emailVerified:boolean}>{
+        return <Profile & {emailAddressVerified:boolean}>{
           id: -1,
           circlesAddress: o.circlesAddress,
           firstName: o.name,
           avatarUrl: o.avatarUrl,
-          emailVerified: false
+          emailAddressVerified: false
         };
       })
       .reduce((p, c) => {
@@ -240,15 +240,15 @@ export class ProfileLoader {
       const requestResult = await fetch(requestUrl);
       const requestResultJson = await requestResult.json();
 
-      const profiles: (Profile & {emailVerified:boolean})[] =
+      const profiles: (Profile & {emailAddressVerified:boolean})[] =
         requestResultJson.data.map((o: any) => {
-          return <Profile & {emailVerified: boolean}>{
+          return <Profile & {emailAddressVerified: boolean}>{
             id: -1,
             firstName: o.username,
             lastName: "",
             circlesAddress: o.safeAddress.toLowerCase(),
             avatarUrl: o.avatarUrl,
-            emailVerified: false
+            emailAddressVerified: false
           };
         }) ?? [];
 
@@ -303,7 +303,7 @@ export class ProfileLoader {
       allProfilesMap["0x0000000000000000000000000000000000000000"] = {
         id: 0,
         firstName: "Circles",
-        emailVerified: false,
+        emailAddressVerified: false,
         lastName: "Land",
         avatarUrl: "https://dev.circles.land/logos/circles.png",
         circlesAddress: "0x0000000000000000000000000000000000000000",
