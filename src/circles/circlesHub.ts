@@ -1,5 +1,4 @@
 import Web3 from "web3";
-import type { AbiItem } from "web3-utils";
 import { BN } from "ethereumjs-util";
 import type { TransactionReceipt } from "web3-core";
 import {ZERO_ADDRESS} from "./consts";

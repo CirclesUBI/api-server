@@ -231,11 +231,20 @@ export class JobQueue {
   }
 
   static async trigger(topic: JobType, hash: string): Promise<JobResult | "end" | undefined> {
-    const query = this.processTriggersSql(topic, hash);
-    return await this.processNextJob(query, jobSink);
+    let query = this.processAtMostOnceTriggersSql(topic, hash);
+    let result = await this.processNextJob(query, jobSink);
+
+    if (result != "end") {
+      return result;
+    }
+
+    query = this.processPerpetualTriggersSql(topic, hash);
+    result = await this.processNextJob(query, jobSink);
+
+    return result;
   }
 
-  private static processTriggersSql(topic: string, hash: string): {
+  private static processAtMostOnceTriggersSql(topic: string, hash: string): {
     sql: string,
     params: any[]
   } {
@@ -247,7 +256,7 @@ export class JobQueue {
                  FROM "Job"
                  WHERE topic = $1
                    AND "finishedAt" is null
-                   AND "kind" = 'externalTrigger'
+                   AND "kind" = ANY($3)
                    AND "hash" = $2
                    AND ("timeoutAt" is null OR "timeoutAt" > now())
                  LIMIT 1 FOR UPDATE SKIP LOCKED
@@ -257,7 +266,27 @@ export class JobQueue {
 
     return {
       sql: getJobsSql,
-      params: [topic, hash]
+      params: [topic, hash, <JobKind[]>["atMostOnceTrigger"]]
+    };
+  }
+
+  private static processPerpetualTriggersSql(topic: string, hash: string): {
+    sql: string,
+    params: any[]
+  } {
+    const getJobsSql = `
+        SELECT *
+        FROM "Job"
+        WHERE topic = $1
+          AND "finishedAt" is null
+          AND "kind" = ANY($3)
+          AND "hash" = $2
+          AND ("timeoutAt" is null OR "timeoutAt" > now())
+        LIMIT 1;`;
+
+    return {
+      sql: getJobsSql,
+      params: [topic, hash, <JobKind[]>["perpetualTrigger"]]
     };
   }
 
@@ -273,7 +302,7 @@ export class JobQueue {
                  FROM "Job"
                  WHERE topic = $1
                    AND "finishedAt" is null
-                   AND "kind" != 'externalTrigger'
+                   AND "kind" = ANY($2)
                    AND ("timeoutAt" is null OR "timeoutAt" > now())
                  LIMIT 1 FOR UPDATE SKIP LOCKED
              ) j
@@ -282,7 +311,7 @@ export class JobQueue {
 
     return {
       sql: getJobsSql,
-      params: [topic]
+      params: [topic, <JobKind[]>["atMostOnceJob"]]
     };
   }
 

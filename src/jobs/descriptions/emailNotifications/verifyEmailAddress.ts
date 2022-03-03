@@ -2,7 +2,7 @@ import {JobDescription, JobType} from "../jobDescription";
 
 export class VerifyEmailAddress implements JobDescription {
   readonly _topic: JobType = "verifyEmailAddress";
-  readonly _kind = "externalTrigger";
+  readonly _kind = "atMostOnceTrigger";
   readonly _identity: string;
   readonly _timeoutAt;
 

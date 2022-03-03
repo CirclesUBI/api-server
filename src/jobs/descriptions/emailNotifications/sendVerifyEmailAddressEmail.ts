@@ -2,7 +2,7 @@ import {JobDescription, JobType} from "../jobDescription";
 
 export class SendVerifyEmailAddressEmail implements JobDescription {
   readonly _topic: JobType = "sendVerifyEmailAddressEmail";
-  readonly _kind = "atMostOnce";
+  readonly _kind = "atMostOnceJob";
   readonly _identity: string;
   readonly _timeoutAt: undefined;
 

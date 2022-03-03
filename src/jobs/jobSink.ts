@@ -11,9 +11,16 @@ import {VerifyEmailAddressWorker} from "./worker/emailNotifications/verifyEmailA
 import {VerifyEmailAddress} from "./descriptions/emailNotifications/verifyEmailAddress";
 import {SendVerifyEmailAddressEmailWorker} from "./worker/emailNotifications/sendVerifyEmailAddressEmailWorker";
 import {SendVerifyEmailAddressEmail} from "./descriptions/emailNotifications/sendVerifyEmailAddressEmail";
+import {Echo} from "./descriptions/echo";
+import {EchoWorker} from "./worker/echoWorker";
 
 export const jobSink = async (job: Job) => {
   switch (job.topic) {
+    case "echo".toLowerCase():
+      return await new EchoWorker({
+        errorStrategy: "logAndDrop"
+      })
+        .run(job.id, Echo.parse(job.payload));
     case "sendVerifyEmailAddressEmail".toLowerCase():
       return await new SendVerifyEmailAddressEmailWorker({
         errorStrategy: "logAndDropAfterThreshold",

@@ -2,7 +2,7 @@ import {JobDescription, JobType} from "../jobDescription";
 
 export class SendCrcReceivedEmail implements JobDescription {
   readonly _topic: JobType = "sendCrcReceivedEmail";
-  readonly _kind = "atMostOnce";
+  readonly _kind = "atMostOnceJob";
   readonly _identity: string;
   readonly _timeoutAt: undefined;
 

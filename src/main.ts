@@ -18,10 +18,9 @@ import {uploadPostHandler} from "./httpHandlers/post/upload";
 import {triggerGetHandler} from "./httpHandlers/get/trigger";
 import cors from "cors";
 import {jobSink} from "./jobs/jobSink";
-import {JobKind, JobType} from "./jobs/descriptions/jobDescription";
+import {JobType} from "./jobs/descriptions/jobDescription";
 import * as graphqlImport from "@graphql-tools/import";
-import {VerifyEmailAddress} from "./jobs/descriptions/emailNotifications/verifyEmailAddress";
-import {Generate} from "./utils/generate";
+import {Echo} from "./jobs/descriptions/echo";
 
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
@@ -54,12 +53,11 @@ export class Main {
       credentials: true,
     };
     app.use(cors(corsOptions));
-    app.use(express.json({limit: "50mb"}));
+    app.use(express.json({limit: "10mb"}));
     app.use(
       express.urlencoded({
-        limit: "50mb",
-        extended: true,
-        parameterLimit: 200000,
+        limit: "10mb",
+        extended: true
       })
     );
 
@@ -127,7 +125,8 @@ export class Main {
       "sendOrderConfirmationEmail",
       "invoicePayed",
       "verifyEmailAddress",
-      "sendVerifyEmailAddressEmail"
+      "sendVerifyEmailAddressEmail",
+      "echo"
     ];
 
     jobQueue.consume(jobTopics, jobSink, false)
@@ -139,6 +138,7 @@ export class Main {
 
     // TODO: Add follow trust job handling
 
+    // await JobQueue.produce([new Echo("Hello echo!")]);
 /*
     this.listenForDbEvents("follow_trust").catch((e) => {
       console.error(`The notifyConnection for 'follow_trust' events died:`, e);

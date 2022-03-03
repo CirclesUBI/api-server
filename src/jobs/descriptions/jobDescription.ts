@@ -5,13 +5,15 @@ export type JobType =
   "sendOrderConfirmationEmail" |
   "verifyEmailAddress" |
   "invoicePayed" |
-  "sendVerifyEmailAddressEmail";
+  "sendVerifyEmailAddressEmail" |
+  "echo" |
+  "fundEoaForOnboarding";
 
 export type JobKind =
   "broadcast" |
-  "regular" |
-  "atMostOnce" |
-  "externalTrigger";
+  "atMostOnceJob" |
+  "atMostOnceTrigger" |
+  "perpetualTrigger";
 
 export interface JobDescription {
   _kind: JobKind;
