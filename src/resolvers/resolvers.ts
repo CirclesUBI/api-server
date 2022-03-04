@@ -1,7 +1,7 @@
 import { myProfile, profilesBySafeAddress } from "./queries/profiles";
 import { upsertProfileResolver } from "./mutations/upsertProfile";
 import {
-  AssetBalance,
+  AssetBalance, ClaimedInvitation,
   Contact,
   Invoice, InvoiceLine,
   Profile,
@@ -82,6 +82,11 @@ import {purchaseLinesDataLoader} from "./data-loaders/purchaseLinesDataLoader";
 import {purchaseLineOfferDataLoader} from "./data-loaders/purchaseLineOfferDataLoader";
 import {invoicePaymentTransactionDataLoader} from "./data-loaders/invoicePaymentTransactionDataLoader";
 import {profileEventContactProfileDataLoader} from "./data-loaders/profileEventContactProfileDataLoader";
+import {profileClaimedInvitationDataLoader} from "./data-loaders/profileClaimedInvitationDataLoader";
+import {claimedInvitationCreatedByProfileDataLoader} from "./data-loaders/claimedInvitationCreatedByProfileDataLoader";
+import {claimedInvitationClaimedByProfileDataLoader} from "./data-loaders/claimedInvitationClaimedByProfileDataLoader";
+import {profileInvitationTransactionDataLoader} from "./data-loaders/profileInvitationTransactionDataLoader";
+import {profileCirclesTokenAddressDataLoader} from "./data-loaders/profileCirclesTokenAddressDataLoader";
 
 const packageJson = require("../../package.json");
 
@@ -207,6 +212,24 @@ export const resolvers: Resolvers = {
       } else {
         return await profileAllContactsDataLoader.load(parent.circlesAddress);
       }
+    },
+    claimedInvitation: async (parent: Profile, args, context: Context) => {
+      if (!parent.circlesSafeOwner) {
+        return null;
+      }
+      return await profileClaimedInvitationDataLoader.load(parent.id);
+    },
+    invitationTransaction: async (parent: Profile, args, context: Context) => {
+      if (!parent.circlesSafeOwner) {
+        return null;
+      }
+      return await profileInvitationTransactionDataLoader.load(parent.circlesSafeOwner);
+    },
+    circlesTokenAddress: async (parent:Profile, args, context) => {
+      if (!parent.circlesAddress) {
+        return null;
+      }
+      return await profileCirclesTokenAddressDataLoader.load(parent.circlesAddress);
     }
   },
   Contact: {
@@ -247,12 +270,12 @@ export const resolvers: Resolvers = {
     }
   },
   ClaimedInvitation: {
-    createdBy: (parent, args, context) => {
-      throw new Error(`Not implemented`);
+    createdBy: async (parent: ClaimedInvitation, args: any, context: Context) => {
+      return claimedInvitationCreatedByProfileDataLoader.load(parent.createdByProfileId);
     },
-    claimedBy: (parent, args, context) => {
-      throw new Error(`Not implemented`);
-    },
+    claimedBy:async (parent: ClaimedInvitation, args: any, context: Context) => {
+      return claimedInvitationClaimedByProfileDataLoader.load(parent.claimedByProfileId);
+    }
   },
   ProfileEvent: {
     contact_address_profile: async (parent, args, context) => {

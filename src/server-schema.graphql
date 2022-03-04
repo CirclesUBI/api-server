@@ -31,6 +31,7 @@ type Profile {
   city: City
   lastEvent: ProfileEvent # The last event that concerns the safeAddress
   claimedInvitation: ClaimedInvitation
+  invitationTransaction: ProfileEvent
   memberships: [Membership!]
   displayCurrency: DisplayCurrency
   verifications: [Verification!]

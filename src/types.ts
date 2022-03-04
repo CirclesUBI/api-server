@@ -751,6 +751,7 @@ export type Profile = {
   emailAddress?: Maybe<Scalars['String']>;
   firstName: Scalars['String'];
   id: Scalars['Int'];
+  invitationTransaction?: Maybe<ProfileEvent>;
   lastEvent?: Maybe<ProfileEvent>;
   lastName?: Maybe<Scalars['String']>;
   memberships?: Maybe<Array<Membership>>;
@@ -2152,6 +2153,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   emailAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   lastEvent?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   memberships?: Resolver<Maybe<Array<ResolversTypes['Membership']>>, ParentType, ContextType>;
