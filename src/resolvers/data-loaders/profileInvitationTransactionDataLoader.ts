@@ -2,7 +2,7 @@ import DataLoader from "dataloader";
 import {Environment} from "../../environment";
 import {Profile, ProfileEvent} from "../../types";
 
-export const profileInvitationTransactionDataLoader = new DataLoader<string, ProfileEvent|undefined>(async (keys: readonly any[]) => {
+export const profileInvitationTransactionDataLoader = new DataLoader<string, ProfileEvent>(async (keys: readonly any[]) => {
   const profilesWithRedeemedInvitations = await Environment.readWriteApiDb.profile.findMany({
     where:{
       circlesSafeOwner: {
@@ -60,29 +60,29 @@ export const profileInvitationTransactionDataLoader = new DataLoader<string, Pro
   .map(o => {
       return {
         key: o.key,
-        event: o.tx ? <ProfileEvent>{
-          safe_address: o.profile.circlesSafeOwner?.toLowerCase(),
-          transaction_index: o.tx.index,
-          value: o.tx.value,
+        event: <ProfileEvent>{
+          safe_address: o.profile?.circlesSafeOwner?.toLowerCase(),
+          transaction_index: o.tx?.index,
+          value: o.tx?.value,
           direction: "in",
-          transaction_hash: o.tx.hash,
+          transaction_hash: o.tx?.hash,
           type: "EthTransfer",
-          block_number: o.tx.block_number,
-          timestamp: o.tx.timestamp.toJSON(),
+          block_number: o.tx?.block_number,
+          timestamp: o.tx?.timestamp?.toJSON(),
           safe_address_profile: o.profile,
           payload: {
             __typename: "EthTransfer",
-            transaction_hash: o.tx.redeemTxHash,
-            from: o.tx.from,
-            to: o.tx.to,
+            transaction_hash: o.tx?.redeemTxHash,
+            from: o.tx?.from,
+            to: o.tx?.to,
             to_profile: o.profile,
-            value: o.tx.value,
+            value: o.tx?.value,
             tags: []
           }
-        } : undefined
+        }
       }
   })
-    .map(o => o.event);
+    .map(o => <any>(!!o.event?.transaction_index ? o.event : undefined));
 }, {
   cache: false
 });

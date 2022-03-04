@@ -132,13 +132,13 @@ export const resolvers: Resolvers = {
       return await profileVerificationsDataLoader.load(parent.circlesAddress);
     },
     purchases: async (parent: Profile, args, context: Context) => {
-      if (!parent.circlesAddress /*|| !isOwnProfile(parent.id, context)*/) {
+      if (!parent.circlesAddress || !isOwnProfile(parent.id, context)) {
         return [];
       }
       return await profilePurchasesDataLoader.load(parent.id);
     },
     sales: async (parent: Profile, args, context: Context) => {
-      if (!parent.circlesAddress /*|| !isOwnProfile(parent.id, context)*/) {
+      if (!parent.circlesAddress || !isOwnProfile(parent.id, context)) {
         return [];
       }
       return await profileSalesDataLoader.load(parent.id);
@@ -214,13 +214,13 @@ export const resolvers: Resolvers = {
       }
     },
     claimedInvitation: async (parent: Profile, args, context: Context) => {
-      if (!parent.circlesSafeOwner) {
+      if (!parent.circlesAddress || !isOwnProfile(parent.id, context)) {
         return null;
       }
       return await profileClaimedInvitationDataLoader.load(parent.id);
     },
     invitationTransaction: async (parent: Profile, args, context: Context) => {
-      if (!parent.circlesSafeOwner) {
+      if (!parent.circlesSafeOwner || !isOwnProfile(parent.id, context)) {
         return null;
       }
       return await profileInvitationTransactionDataLoader.load(parent.circlesSafeOwner);
@@ -230,6 +230,11 @@ export const resolvers: Resolvers = {
         return null;
       }
       return await profileCirclesTokenAddressDataLoader.load(parent.circlesAddress);
+    },
+    displayName: (parent:Profile, args, context) => {
+      return parent.firstName.trim() == ""
+        ? parent.circlesAddress ?? ""
+        : `${parent.firstName}${parent.lastName ? " " + parent.lastName : ""}`;
     }
   },
   Contact: {

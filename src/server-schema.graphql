@@ -17,6 +17,7 @@ type Profile {
   successorOfCirclesAddress: String
   circlesSafeOwner: String
   circlesTokenAddress: String
+  displayName: String
   firstName: String!
   lastName: String
   emailAddress: String

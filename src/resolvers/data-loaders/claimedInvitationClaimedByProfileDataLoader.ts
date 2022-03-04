@@ -1,24 +1,24 @@
 import DataLoader from "dataloader";
 import {Environment} from "../../environment";
-import {ClaimedInvitation, Profile} from "../../types";
+import {Profile} from "../../types";
 
 export const claimedInvitationClaimedByProfileDataLoader = new DataLoader<number, Profile>(async (keys: readonly any[]) => {
   const invitations = await Environment.readWriteApiDb.invitation.findMany({
     where: {
-      createdByProfileId: {
+      claimedByProfileId: {
         in: keys.map(o => o)
       }
     },
     include: {
-      createdBy: true
+      claimedBy: true
     }
   })
   const claimedByProfiles = invitations.reduce((p,c) => {
-    if (!c.createdByProfileId)
+    if (!c.claimedByProfileId)
       return p;
 
-    p[c.createdByProfileId] = <Profile>{
-      ...c.createdBy
+    p[c.claimedByProfileId] = <Profile>{
+      ...c.claimedBy
     };
     return p;
   },<{[x:number]:Profile}>{});
