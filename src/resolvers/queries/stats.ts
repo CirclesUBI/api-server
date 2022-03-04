@@ -25,7 +25,7 @@ export async function stats() {
     verificationsCount(Environment.readonlyApiDb),
     profilesCount(Environment.readonlyApiDb)
   ]);
-  return <Stats>{
+  return <Stats> {
     verificationsCount: results[0],
     profilesCount: results[1]
   };
