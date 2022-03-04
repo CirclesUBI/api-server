@@ -34,6 +34,16 @@ type Profile {
   memberships: [Membership!]
   displayCurrency: DisplayCurrency
   verifications: [Verification!]
+  offers: [Offer!]
+  purchases: [Purchase!]
+  sales: [Sale!]
+  balances: ProfileBalances
+  contacts: [Contact!]
+}
+
+type ProfileBalances {
+  crcBalances: CrcBalances
+  erc20Balances: Erc20Balances
 }
 
 enum DisplayCurrency {
@@ -267,11 +277,11 @@ type Sale {
   createdAt: String!
 
   total: String!
-  lines: [SalesLine!]!
+  lines: [SalesLine!]
 
   paymentTransaction: ProfileEvent
 
-  invoices: [Invoice!]!
+  invoices: [Invoice!]
 }
 
 type SalesLine {
@@ -289,18 +299,16 @@ type Purchase {
   createdAt: String!
 
   total: String!
-  lines: [PurchaseLine!]!
+  lines: [PurchaseLine!]
 
-  paymentTransaction: ProfileEvent
-
-  invoices: [Invoice!]!
+  invoices: [Invoice!]
 }
 
 type PurchaseLine {
   id: Int!
 
   amount: Int!
-  offer: Offer!
+  offer: Offer
 }
 
 type Invoice {
@@ -315,7 +323,7 @@ type Invoice {
   buyerAddress: String!
   buyerProfile: Profile
 
-  lines: [InvoiceLine!]!
+  lines: [InvoiceLine!]
 
   invoiceNo: String!
   pickupCode: String
@@ -327,6 +335,7 @@ type Invoice {
   sellerSignedDate: String
 
   paymentTransactionHash: String
+  paymentTransaction: ProfileEvent
 
   cancelledAt: String
   cancelReason: String
@@ -337,7 +346,7 @@ type InvoiceLine {
   id: Int!
 
   amount: Int!
-  offer: Offer!
+  offer: Offer
 }
 
 input QueryTagsInput {
@@ -606,6 +615,7 @@ enum AggregateType {
 # All crc holdings of the user
 type CrcBalances implements IAggregatePayload {
   lastUpdatedAt: String!
+  total: String
   balances: [AssetBalance!]!
 }
 

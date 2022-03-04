@@ -161,6 +161,7 @@ export type CrcBalances = IAggregatePayload & {
   __typename?: 'CrcBalances';
   balances: Array<AssetBalance>;
   lastUpdatedAt: Scalars['String'];
+  total?: Maybe<Scalars['String']>;
 };
 
 export type CrcHubTransfer = IEventPayload & {
@@ -402,7 +403,8 @@ export type Invoice = {
   cancelledBy?: Maybe<Profile>;
   id: Scalars['Int'];
   invoiceNo: Scalars['String'];
-  lines: Array<InvoiceLine>;
+  lines?: Maybe<Array<InvoiceLine>>;
+  paymentTransaction?: Maybe<ProfileEvent>;
   paymentTransactionHash?: Maybe<Scalars['String']>;
   pickupCode?: Maybe<Scalars['String']>;
   purchase?: Maybe<Purchase>;
@@ -417,7 +419,7 @@ export type InvoiceLine = {
   __typename?: 'InvoiceLine';
   amount: Scalars['Int'];
   id: Scalars['Int'];
-  offer: Offer;
+  offer?: Maybe<Offer>;
 };
 
 export type LogoutResponse = {
@@ -734,12 +736,14 @@ export type Profile = {
   avatarCid?: Maybe<Scalars['String']>;
   avatarMimeType?: Maybe<Scalars['String']>;
   avatarUrl?: Maybe<Scalars['String']>;
+  balances?: Maybe<ProfileBalances>;
   circlesAddress?: Maybe<Scalars['String']>;
   circlesSafeOwner?: Maybe<Scalars['String']>;
   circlesTokenAddress?: Maybe<Scalars['String']>;
   city?: Maybe<City>;
   cityGeonameid?: Maybe<Scalars['Int']>;
   claimedInvitation?: Maybe<ClaimedInvitation>;
+  contacts?: Maybe<Array<Contact>>;
   country?: Maybe<Scalars['String']>;
   displayCurrency?: Maybe<DisplayCurrency>;
   displayTimeCircles?: Maybe<Scalars['Boolean']>;
@@ -751,7 +755,10 @@ export type Profile = {
   lastName?: Maybe<Scalars['String']>;
   memberships?: Maybe<Array<Membership>>;
   newsletter?: Maybe<Scalars['Boolean']>;
+  offers?: Maybe<Array<Offer>>;
   origin?: Maybe<ProfileOrigin>;
+  purchases?: Maybe<Array<Purchase>>;
+  sales?: Maybe<Array<Sale>>;
   status?: Maybe<Scalars['String']>;
   successorOfCirclesAddress?: Maybe<Scalars['String']>;
   type?: Maybe<Scalars['String']>;
@@ -772,6 +779,12 @@ export type ProfileAggregateFilter = {
   offers?: InputMaybe<OffersAggregateFilter>;
   purchases?: InputMaybe<PurchasesAggregateFilter>;
   sales?: InputMaybe<SalesAggregateFilter>;
+};
+
+export type ProfileBalances = {
+  __typename?: 'ProfileBalances';
+  crcBalances?: Maybe<CrcBalances>;
+  erc20Balances?: Maybe<Erc20Balances>;
 };
 
 export type ProfileEvent = {
@@ -830,9 +843,8 @@ export type Purchase = {
   createdByAddress: Scalars['String'];
   createdByProfile?: Maybe<Profile>;
   id: Scalars['Int'];
-  invoices: Array<Invoice>;
-  lines: Array<PurchaseLine>;
-  paymentTransaction?: Maybe<ProfileEvent>;
+  invoices?: Maybe<Array<Invoice>>;
+  lines?: Maybe<Array<PurchaseLine>>;
   total: Scalars['String'];
 };
 
@@ -840,7 +852,7 @@ export type PurchaseLine = {
   __typename?: 'PurchaseLine';
   amount: Scalars['Int'];
   id: Scalars['Int'];
-  offer: Offer;
+  offer?: Maybe<Offer>;
 };
 
 export type PurchaseLineInput = {
@@ -1102,8 +1114,8 @@ export type Sale = {
   buyerProfile?: Maybe<Profile>;
   createdAt: Scalars['String'];
   id: Scalars['Int'];
-  invoices: Array<Invoice>;
-  lines: Array<SalesLine>;
+  invoices?: Maybe<Array<Invoice>>;
+  lines?: Maybe<Array<SalesLine>>;
   paymentTransaction?: Maybe<ProfileEvent>;
   sellerAddress: Scalars['String'];
   sellerProfile?: Maybe<Profile>;
@@ -1446,6 +1458,7 @@ export type ResolversTypes = ResolversObject<{
   Profile: ResolverTypeWrapper<Profile>;
   ProfileAggregate: ResolverTypeWrapper<Omit<ProfileAggregate, 'payload'> & { payload: ResolversTypes['AggregatePayload'] }>;
   ProfileAggregateFilter: ProfileAggregateFilter;
+  ProfileBalances: ResolverTypeWrapper<ProfileBalances>;
   ProfileEvent: ResolverTypeWrapper<Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
   ProfileEventFilter: ProfileEventFilter;
   ProfileOrOrganisation: ResolversTypes['Organisation'] | ResolversTypes['Profile'];
@@ -1571,6 +1584,7 @@ export type ResolversParentTypes = ResolversObject<{
   Profile: Profile;
   ProfileAggregate: Omit<ProfileAggregate, 'payload'> & { payload: ResolversParentTypes['AggregatePayload'] };
   ProfileAggregateFilter: ProfileAggregateFilter;
+  ProfileBalances: ProfileBalances;
   ProfileEvent: Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversParentTypes['EventPayload']> };
   ProfileEventFilter: ProfileEventFilter;
   ProfileOrOrganisation: ResolversParentTypes['Organisation'] | ResolversParentTypes['Profile'];
@@ -1738,6 +1752,7 @@ export type ContactsResolvers<ContextType = any, ParentType extends ResolversPar
 export type CrcBalancesResolvers<ContextType = any, ParentType extends ResolversParentTypes['CrcBalances'] = ResolversParentTypes['CrcBalances']> = ResolversObject<{
   balances?: Resolver<Array<ResolversTypes['AssetBalance']>, ParentType, ContextType>;
   lastUpdatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  total?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1941,7 +1956,8 @@ export type InvoiceResolvers<ContextType = any, ParentType extends ResolversPare
   cancelledBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   invoiceNo?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  lines?: Resolver<Array<ResolversTypes['InvoiceLine']>, ParentType, ContextType>;
+  lines?: Resolver<Maybe<Array<ResolversTypes['InvoiceLine']>>, ParentType, ContextType>;
+  paymentTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   paymentTransactionHash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   pickupCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   purchase?: Resolver<Maybe<ResolversTypes['Purchase']>, ParentType, ContextType>;
@@ -1956,7 +1972,7 @@ export type InvoiceResolvers<ContextType = any, ParentType extends ResolversPare
 export type InvoiceLineResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvoiceLine'] = ResolversParentTypes['InvoiceLine']> = ResolversObject<{
   amount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  offer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType>;
+  offer?: Resolver<Maybe<ResolversTypes['Offer']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2121,12 +2137,14 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   avatarCid?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarMimeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  balances?: Resolver<Maybe<ResolversTypes['ProfileBalances']>, ParentType, ContextType>;
   circlesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesSafeOwner?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesTokenAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
   cityGeonameid?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
+  contacts?: Resolver<Maybe<Array<ResolversTypes['Contact']>>, ParentType, ContextType>;
   country?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   displayCurrency?: Resolver<Maybe<ResolversTypes['DisplayCurrency']>, ParentType, ContextType>;
   displayTimeCircles?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -2138,7 +2156,10 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   memberships?: Resolver<Maybe<Array<ResolversTypes['Membership']>>, ParentType, ContextType>;
   newsletter?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  offers?: Resolver<Maybe<Array<ResolversTypes['Offer']>>, ParentType, ContextType>;
   origin?: Resolver<Maybe<ResolversTypes['ProfileOrigin']>, ParentType, ContextType>;
+  purchases?: Resolver<Maybe<Array<ResolversTypes['Purchase']>>, ParentType, ContextType>;
+  sales?: Resolver<Maybe<Array<ResolversTypes['Sale']>>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   successorOfCirclesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2151,6 +2172,12 @@ export type ProfileAggregateResolvers<ContextType = any, ParentType extends Reso
   safe_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   safe_address_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ProfileBalancesResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProfileBalances'] = ResolversParentTypes['ProfileBalances']> = ResolversObject<{
+  crcBalances?: Resolver<Maybe<ResolversTypes['CrcBalances']>, ParentType, ContextType>;
+  erc20Balances?: Resolver<Maybe<ResolversTypes['Erc20Balances']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2197,9 +2224,8 @@ export type PurchaseResolvers<ContextType = any, ParentType extends ResolversPar
   createdByAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdByProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  invoices?: Resolver<Array<ResolversTypes['Invoice']>, ParentType, ContextType>;
-  lines?: Resolver<Array<ResolversTypes['PurchaseLine']>, ParentType, ContextType>;
-  paymentTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
+  invoices?: Resolver<Maybe<Array<ResolversTypes['Invoice']>>, ParentType, ContextType>;
+  lines?: Resolver<Maybe<Array<ResolversTypes['PurchaseLine']>>, ParentType, ContextType>;
   total?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -2207,7 +2233,7 @@ export type PurchaseResolvers<ContextType = any, ParentType extends ResolversPar
 export type PurchaseLineResolvers<ContextType = any, ParentType extends ResolversParentTypes['PurchaseLine'] = ResolversParentTypes['PurchaseLine']> = ResolversObject<{
   amount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  offer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType>;
+  offer?: Resolver<Maybe<ResolversTypes['Offer']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2313,8 +2339,8 @@ export type SaleResolvers<ContextType = any, ParentType extends ResolversParentT
   buyerProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  invoices?: Resolver<Array<ResolversTypes['Invoice']>, ParentType, ContextType>;
-  lines?: Resolver<Array<ResolversTypes['SalesLine']>, ParentType, ContextType>;
+  invoices?: Resolver<Maybe<Array<ResolversTypes['Invoice']>>, ParentType, ContextType>;
+  lines?: Resolver<Maybe<Array<ResolversTypes['SalesLine']>>, ParentType, ContextType>;
   paymentTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   sellerAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   sellerProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
@@ -2504,6 +2530,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   OrganisationCreated?: OrganisationCreatedResolvers<ContextType>;
   Profile?: ProfileResolvers<ContextType>;
   ProfileAggregate?: ProfileAggregateResolvers<ContextType>;
+  ProfileBalances?: ProfileBalancesResolvers<ContextType>;
   ProfileEvent?: ProfileEventResolvers<ContextType>;
   ProfileOrOrganisation?: ProfileOrOrganisationResolvers<ContextType>;
   ProofPaymentResult?: ProofPaymentResultResolvers<ContextType>;

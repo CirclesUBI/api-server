@@ -23,7 +23,7 @@ export class SendCrcReceivedEmailWorker extends JobWorker<SendCrcReceivedEmail> 
     const sender = profiles[job.from];
     const recipient = profiles[job.to];
 
-    if (!recipient?.emailAddress || !recipient?.emailVerified) {
+    if (!recipient?.emailAddress || !recipient?.emailAddressVerified) {
       return {
         info: `Couldn't send a notification email to profile ${recipient?.id} because it has no verified email address.`
       };

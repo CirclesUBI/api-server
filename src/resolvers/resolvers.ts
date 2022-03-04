@@ -1,6 +1,14 @@
 import { myProfile, profilesBySafeAddress } from "./queries/profiles";
 import { upsertProfileResolver } from "./mutations/upsertProfile";
-import { Profile, ProfileOrigin, Purchase, Resolvers } from "../types";
+import {
+  AssetBalance,
+  Contact,
+  Invoice, InvoiceLine,
+  Profile,
+  ProfileOrigin,
+  Purchase, PurchaseLine,
+  Resolvers
+} from "../types";
 import { logout } from "./mutations/logout";
 import { sessionInfo } from "./queries/sessionInfo";
 import { authenticateAtResolver } from "./mutations/authenticateAt";
@@ -41,7 +49,6 @@ import { findSafesByOwner } from "./queries/findSafesByOwner";
 import { purchaseResolver } from "./mutations/purchase";
 import { profileCityDataLoader } from "./data-loaders/profileCityDataLoader";
 import { profileMembershipsDataLoader } from "./data-loaders/profileMembershipsDataLoader";
-import { getPurchaseInvoicesDataLoader } from "./data-loaders/purchaseInvoicesDataLoader";
 import { organisationMembersDataLoader } from "./data-loaders/organisationMembersDataLoader";
 import { profilesById } from "./queries/profilesById";
 import { aggregates } from "./queries/aggregates";
@@ -59,42 +66,44 @@ import { Environment } from "../environment";
 import { findInvitationCreator } from "./queries/findInvitationCreator";
 import { recentProfiles } from "./queries/recentProfiles";
 import {announcePayment} from "./mutations/announcePayment";
+import {profileOffersDataLoader} from "./data-loaders/profileOffersDataLoader";
+import {profileVerificationsDataLoader} from "./data-loaders/profileVerificationsDataLoader";
+import {profilePurchasesDataLoader} from "./data-loaders/profilePurchasesDataLoader";
+import {profileSalesDataLoader} from "./data-loaders/profileSalesDataLoader";
+import {getDateWithOffset} from "../utils/getDateWithOffset";
+import BN from "bn.js";
+import {profileAllContactsDataLoader} from "./data-loaders/profileAllContactsDataLoader";
+import {profilePublicContactsDataLoader} from "./data-loaders/profilePublicContactsDataLoader";
+import {contactProfileDataLoader} from "./data-loaders/contactProfileDataLoader";
+import {purchaseInvoicesDataLoader} from "./data-loaders/purchaseInvoicesDataLoader";
+import {invoiceLinesDataLoader} from "./data-loaders/invoiceLinesDataLoader";
+import {invoiceLineOfferDataLoader} from "./data-loaders/invoiceLineOfferDataLoader";
+import {purchaseLinesDataLoader} from "./data-loaders/purchaseLinesDataLoader";
+import {purchaseLineOfferDataLoader} from "./data-loaders/purchaseLineOfferDataLoader";
+import {invoicePaymentTransactionDataLoader} from "./data-loaders/invoicePaymentTransactionDataLoader";
+import {profileEventContactProfileDataLoader} from "./data-loaders/profileEventContactProfileDataLoader";
 
 const packageJson = require("../../package.json");
+
+function isOwnProfile(profileId:number, context:Context) : boolean {
+  return !!context.session?.profileId && context.session.profileId == profileId;
+}
 
 export const resolvers: Resolvers = {
   Profile: {
     origin: (parent: Profile) => {
       return !parent.origin ? ProfileOrigin.Unknown : parent.origin;
     },
-    emailAddress: async (parent: Profile, args:any, context:Context) => {
-      if (!context.session) {
-        return null;
-      }
-      try {
-        if (context.session.profileId != parent.id) {
-          return null;
-        }
-      } catch (e) {
-        return null;
-      }
-
-      return parent.emailAddress ?? null;
-    },
-    newsletter: async (parent: Profile, args:any, context:Context) => {
-      if (!context.session) {
-        return null;
-      }
-      try {
-        if (context.session.profileId != parent.id) {
-          return null;
-        }
-      } catch (e) {
-        return null;
-      }
-
-      return parent.newsletter ?? null;
-    },
+    emailAddress: async (parent: Profile, args:any, context:Context) =>
+      isOwnProfile(parent.id, context)
+      && parent.emailAddress
+        ? parent.emailAddress
+        : null,
+    newsletter: async (parent: Profile, args:any, context:Context) =>
+      isOwnProfile(parent.id, context)
+      && parent.newsletter !== undefined
+        ? parent.newsletter
+        : null,
     city: async (parent: Profile) => {
       if (!parent.cityGeonameid) return null;
       return await profileCityDataLoader.load(parent.cityGeonameid);
@@ -105,17 +114,137 @@ export const resolvers: Resolvers = {
       }
       return await profileMembershipsDataLoader.load(parent.circlesAddress);
     },
+    offers: async (parent: Profile, args, context: Context) => {
+      if (!parent.circlesAddress) {
+        return [];
+      }
+      return await profileOffersDataLoader.load(parent.id);
+    },
+    verifications: async (parent: Profile, args, context: Context) => {
+      if (!parent.circlesAddress) {
+        return [];
+      }
+      return await profileVerificationsDataLoader.load(parent.circlesAddress);
+    },
+    purchases: async (parent: Profile, args, context: Context) => {
+      if (!parent.circlesAddress /*|| !isOwnProfile(parent.id, context)*/) {
+        return [];
+      }
+      return await profilePurchasesDataLoader.load(parent.id);
+    },
+    sales: async (parent: Profile, args, context: Context) => {
+      if (!parent.circlesAddress /*|| !isOwnProfile(parent.id, context)*/) {
+        return [];
+      }
+      return await profileSalesDataLoader.load(parent.id);
+    },
+    balances: async (parent: Profile, args, context: Context) => {
+      if (!parent.circlesAddress) {
+        return null;
+      }
+
+      const crcBalancesPromise = Environment.indexDb.query(`
+        select last_change_at, token, token_owner, balance
+        from crc_balances_by_safe_and_token_2
+        where safe_address = $1
+        order by balance desc;`,
+        [parent.circlesAddress.toLowerCase()]);
+
+      const erc20BalancesPromise = Environment.indexDb.query(`
+       select safe_address
+            , token
+            , balance
+            , last_changed_at
+       from erc20_balances_by_safe_and_token
+       where safe_address = $1;`,
+        [parent.circlesAddress.toLowerCase()]);
+
+      const queryResults = await Promise.all([crcBalancesPromise, erc20BalancesPromise]);
+      const crcBalancesResult = queryResults[0];
+      const erc20BalancesResult = queryResults[1];
+
+      const crcLastChangeAt = crcBalancesResult.rows.reduce((p,c) => Math.max(new Date(c.last_change_at).getTime(), p) ,0);
+      const crcLastChangeAtTs = getDateWithOffset(crcLastChangeAt);
+
+      const ercLastChangeAt = crcBalancesResult.rows.reduce((p,c) => Math.max(new Date(c.last_change_at).getTime(), p) ,0);
+      const ercLastChangeAtTs = getDateWithOffset(ercLastChangeAt);
+
+      return {
+        crcBalances: {
+          __typename: "CrcBalances",
+          lastUpdatedAt: crcLastChangeAtTs.toJSON(),
+          total: crcBalancesResult.rows.reduce((p,c) => p.add(new BN(c.balance)), new BN("0")).toString(),
+          balances: crcBalancesResult.rows.map((o: any) => {
+            return <AssetBalance> {
+              token_owner_profile: null,
+              token_symbol: "CRC",
+              token_address: o.token,
+              token_owner_address: o.token_owner,
+              token_balance: o.balance
+            }
+          })
+        },
+        erc20Balances:{
+          __typename: "Erc20Balances",
+          lastUpdatedAt: ercLastChangeAtTs.toJSON(),
+          balances: erc20BalancesResult.rows.map((o: any) => {
+            return <AssetBalance> {
+              token_address: o.token,
+              token_owner_address: "0x0000000000000000000000000000000000000000",
+              token_symbol: "erc20",
+              token_balance: o.balance
+            }
+          })
+        }
+      }
+    },
+    contacts: async (parent: Profile, args, context: Context) => {
+      if (!parent.circlesAddress) {
+        return [];
+      }
+      if (!isOwnProfile(parent.id, context)) {
+        return await profilePublicContactsDataLoader.load(parent.circlesAddress);
+      } else {
+        return await profileAllContactsDataLoader.load(parent.circlesAddress);
+      }
+    }
+  },
+  Contact: {
+    contactAddress_Profile: async (parent: Contact, args, context: Context) => {
+      return await contactProfileDataLoader.load(parent.contactAddress);
+    }
   },
   Purchase: {
     invoices: async (parent: Purchase, args: any, context: Context) => {
-      const caller = await context.callerInfo;
-      if (!caller?.profile?.circlesAddress)
-        throw new Error(`You need a safe to perform this query.`);
-
-      return await getPurchaseInvoicesDataLoader(
-        caller.profile.circlesAddress
-      ).load(parent.id);
+      return purchaseInvoicesDataLoader.load(parent.id);
     },
+    lines: async (parent: Purchase, args: any, context: Context) => {
+      return purchaseLinesDataLoader.load(parent.id);
+    }
+  },
+  Invoice: {
+    lines: async (parent: Invoice, args: any, context: Context) => {
+      return invoiceLinesDataLoader.load(parent.id);
+    },
+    paymentTransaction: async (parent: Invoice, args: any, context: Context) => {
+      if (!parent.paymentTransactionHash){
+        return null;
+      }
+      return invoicePaymentTransactionDataLoader.load({
+        buyerAddress: parent.buyerAddress,
+        transactionHash: parent.paymentTransactionHash
+      });
+    },
+  },
+  InvoiceLine: {
+    offer: async (parent: InvoiceLine, args: any, context: Context) => {
+      return invoiceLineOfferDataLoader.load(parent.id);
+    }
+  },
+  PurchaseLine: {
+    offer: async (parent: PurchaseLine, args: any, context: Context) => {
+      return purchaseLineOfferDataLoader.load(parent.id);
+    }
   },
   ClaimedInvitation: {
     createdBy: (parent, args, context) => {
@@ -125,7 +254,15 @@ export const resolvers: Resolvers = {
       throw new Error(`Not implemented`);
     },
   },
-  ProfileEvent: {},
+  ProfileEvent: {
+    contact_address_profile: async (parent, args, context) => {
+      if (!parent.contact_address)
+      {
+        return null;
+      }
+      return profileEventContactProfileDataLoader.load(parent.contact_address);
+    },
+  },
   Offer: {
     createdByProfile: async (parent, args, context) => {
       return offerCreatedByLoader.load(parent.createdByAddress);
