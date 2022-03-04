@@ -5,8 +5,7 @@ import {Context} from "../../context";
 import {Environment} from "../../environment";
 
 export const completeSale = async (parent:any, args:MutationCompleteSaleArgs, context:Context) => {
-  const callerInfo = await context.callerInfo;
-  if (!callerInfo?.profile) {
+  if (!context.session?.profileId) {
     throw new Error(`You must have a profile to use this function.`);
   }
   let invoice = await Environment.readonlyApiDb.invoice.findFirst({

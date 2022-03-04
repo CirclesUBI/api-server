@@ -483,6 +483,12 @@ type MemberAdded implements IEventPayload {
 }
 
 # ${member} accepted your|${createdBy}'s invitation to ${organisation}
+type NewUser implements IEventPayload {
+  transaction_hash: String
+  profile: Profile!
+}
+
+# ${member} accepted your|${createdBy}'s invitation to ${organisation}
 type MembershipAccepted implements IEventPayload {
   transaction_hash: String
   createdBy: String!
@@ -579,6 +585,7 @@ union EventPayload =
   | SaleEvent
   | Purchased
   | SafeVerified
+  | NewUser
 
 enum EventType {
   CrcSignup
@@ -601,6 +608,7 @@ enum EventType {
   SaleEvent
   Purchased
   SafeVerified
+  NewUser
 }
 
 enum AggregateType {
@@ -1030,7 +1038,6 @@ input VerifiedSafesFilter {
 }
 
 type Query {
-  whoami: String
   version: Version!
   sessionInfo: SessionInfo!
 
@@ -1052,6 +1059,7 @@ type Query {
     pagination: PaginationArgs!
     filter: ProfileEventFilter
   ): [ProfileEvent!]!
+
   aggregates(
     types: [AggregateType!]!
     safeAddress: String!
@@ -1074,10 +1082,7 @@ type Query {
   findSafesByOwner(owner: String!): [SafeInfo!]!
 
   search(query: SearchInput!): [Profile!]!
-
-  profilesCount: Int!
-
-  verificationsCount: Int!
+  stats : Stats!
 
   cities(query: QueryCitiesInput!): [City!]!
   tags(query: QueryTagsInput!): [Tag!]!
@@ -1087,6 +1092,11 @@ type Query {
   invoice(invoiceId: Int!): String
 
   findInvitationCreator(code: String!): Profile
+}
+
+type Stats {
+  stats: Int!
+  verificationsCount: Int!
 }
 
 type TransitiveTransfer {

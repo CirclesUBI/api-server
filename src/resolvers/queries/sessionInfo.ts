@@ -8,19 +8,9 @@ import {Environment} from "../../environment";
 export const sessionInfo = async (parent:any, args:any, context:Context) : Promise<SessionInfo> => {
     try {
         const callerInfo = await context.callerInfo;
-        //const session = await context.verifySession();
-        let profile: Profile|null = null;
-        if (callerInfo?.session.profileId) {
-            profile = await Environment.readWriteApiDb.profile.findUnique({
-                where:{
-                    id: callerInfo.session.profileId
-                }
-            });
-        }
-
         const capabilities = [];
 
-        const isBilMember = await isBILMember(callerInfo);
+        const isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
         if (isBilMember) {
             capabilities.push({
                 type: CapabilityType.Verify
@@ -35,8 +25,8 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
             isLoggedOn: true,
             hasProfile: !!callerInfo?.profile,
             profileId: callerInfo?.profile?.id,
-            profile: profile ? ProfileLoader.withDisplayCurrency(profile) : null,
-            lastAcknowledgedAt: profile?.lastAcknowledged?.toJSON(),
+            profile: callerInfo?.profile ? ProfileLoader.withDisplayCurrency(callerInfo.profile) : null,
+            lastAcknowledgedAt: callerInfo?.profile?.lastAcknowledged?.toJSON(),
             capabilities: capabilities
         }
     } catch(e) {

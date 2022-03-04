@@ -2,10 +2,8 @@ import {Context} from "../context";
 import {Session, Profile} from "../api-db/client";
 import {Environment} from "../environment";
 
-export async function isBILMember(sessionInfo: {session: Session, profile: Profile | null}|null) {
-  if (!sessionInfo)
-    return false;
-  if (!sessionInfo.profile?.circlesAddress)
+export async function isBILMember(circlesAddress?:string|null) {
+  if (!circlesAddress)
     return false;
 
   const orga = await Environment.readonlyApiDb.profile.findFirst({
@@ -13,7 +11,7 @@ export async function isBILMember(sessionInfo: {session: Session, profile: Profi
       circlesAddress: Environment.operatorOrganisationAddress,
       members: {
         some: {
-          memberAddress: sessionInfo.profile.circlesAddress
+          memberAddress: circlesAddress
         }
       }
     }

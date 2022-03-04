@@ -4,8 +4,7 @@ import {Environment} from "../../environment";
 
 export function tagTransaction() {
   return async (parent: any, args: { transactionHash: string, tag: CreateTagInput }, context: Context) => {
-    const callerInfo = await context.callerInfo;
-    if (!callerInfo?.profile) {
+    if (!context.session?.profileId) {
       return {
         success: false,
         errorMessage: "You must have a complete profile to use this function."
@@ -22,7 +21,7 @@ export function tagTransaction() {
     // 2. Create the tag
     const tag = await Environment.readWriteApiDb.tag.create({
       data: {
-        createdByProfileId: callerInfo.profile.id,
+        createdByProfileId: context.session.profileId,
         transactionHash: args.transactionHash,
         typeId: args.tag.typeId,
         value: args.tag.value,

@@ -7,15 +7,13 @@ import {Dropper} from "../../utils/dropper";
 
 export function redeemClaimedInvitation() {
   return async (parent: any, args: any, context: Context) => {
-    const callerInfo = await context.callerInfo;
-
-    if (!callerInfo?.profile?.circlesSafeOwner) {
+    if (!context?.session?.profileId) {
       throw new Error(`You need a profile and EOA to redeem a claimed invitation.`);
     }
 
     const claimedInvitation = await Environment.readWriteApiDb.invitation.findFirst({
       where: {
-        claimedByProfileId: callerInfo.profile.id,
+        claimedByProfileId: context.session.profileId,
         redeemedAt: null
       },
       include: {
@@ -24,7 +22,7 @@ export function redeemClaimedInvitation() {
     });
 
     if (!claimedInvitation) {
-      throw new Error(`No claimed invitation for profile ${callerInfo.profile.id} or the invitation was already redeemed.`);
+      throw new Error(`No claimed invitation for profile ${context.session.profileId} or the invitation was already redeemed.`);
     }
     if (!claimedInvitation.claimedBy?.circlesSafeOwner) {
       throw new Error(`Profile ${claimedInvitation.claimedByProfileId} previously claimed invitation ${claimedInvitation.code} but has no circlesSafeOwner set to redeem it to.`);
@@ -57,7 +55,7 @@ export function redeemClaimedInvitation() {
       await Environment.readWriteApiDb.invitation.updateMany({
         data: {
           redeemedAt: new Date(),
-          redeemedByProfileId: callerInfo.profile.id,
+          redeemedByProfileId: context.session.profileId,
           redeemTxHash: fundEoaReceipt.transactionHash
         },
         where: {

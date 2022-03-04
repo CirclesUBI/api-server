@@ -23,6 +23,7 @@ import { CombinedEventSource } from "../../querySources/eventSources/combinedEve
 import { EventAugmenter } from "../../querySources/eventSources/eventAugmenter";
 import { SafeVerifiedEventSource } from "../../querySources/eventSources/api/safeVerifiedEventSource";
 import { PurchasesEventSource } from "../../querySources/eventSources/api/purchasesEventSource";
+import {NewUserEventSource} from "../../querySources/eventSources/api/newUserEventSource";
 
 export const events = async (
   parent: any,
@@ -75,6 +76,10 @@ export const events = async (
   if (types[EventType.MemberAdded]) {
     delete types[EventType.MemberAdded];
     throw new Error(`Not implemented: MemberAdded`);
+  }
+  if (types[EventType.NewUser]) {
+    delete types[EventType.NewUser];
+    eventSources.push(new NewUserEventSource());
   }
   /*
   if (types[EventType.MemberRemoved]) {

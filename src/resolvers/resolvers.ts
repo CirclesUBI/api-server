@@ -14,10 +14,8 @@ import { sessionInfo } from "./queries/sessionInfo";
 import { authenticateAtResolver } from "./mutations/authenticateAt";
 import { consumeDepositedChallengeResolver } from "./mutations/consumeDepositedChallenge";
 import { search } from "./queries/search";
-import { profilesCount } from "./queries/profilesCount";
 import { requestUpdateSafe } from "./mutations/requestUpdateSafe";
 import { updateSafe } from "./mutations/updateSafe";
-import { whoami } from "./queries/whoami";
 import { cities } from "./queries/citites";
 import { version } from "./queries/version";
 import { tags } from "./queries/tags";
@@ -61,7 +59,7 @@ import { importOrganisationsOfAccount } from "./mutations/importOrganisationsOfA
 import { completePurchase } from "./mutations/completePurchase";
 import { completeSale } from "./mutations/completeSale";
 import { revokeSafeVerification, verifySafe } from "./mutations/verifySafe";
-import { verifications, verificationsCount } from "./queries/verifications";
+import { verifications } from "./queries/verifications";
 import { Environment } from "../environment";
 import { findInvitationCreator } from "./queries/findInvitationCreator";
 import { recentProfiles } from "./queries/recentProfiles";
@@ -87,6 +85,7 @@ import {claimedInvitationCreatedByProfileDataLoader} from "./data-loaders/claime
 import {claimedInvitationClaimedByProfileDataLoader} from "./data-loaders/claimedInvitationClaimedByProfileDataLoader";
 import {profileInvitationTransactionDataLoader} from "./data-loaders/profileInvitationTransactionDataLoader";
 import {profileCirclesTokenAddressDataLoader} from "./data-loaders/profileCirclesTokenAddressDataLoader";
+import {stats} from "./queries/stats";
 
 const packageJson = require("../../package.json");
 
@@ -303,7 +302,7 @@ export const resolvers: Resolvers = {
   },
   Query: {
     sessionInfo: sessionInfo,
-    whoami: whoami,
+    stats: stats,
     cities: cities,
     claimedInvitation: claimedInvitation,
     findSafesByOwner: findSafesByOwner,
@@ -316,8 +315,6 @@ export const resolvers: Resolvers = {
     organisationsByAddress: organisationsByAddress(),
     profilesBySafeAddress: profilesBySafeAddress(Environment.readonlyApiDb),
     search: search(Environment.readonlyApiDb),
-    profilesCount: profilesCount(Environment.readonlyApiDb),
-    verificationsCount: verificationsCount(Environment.readWriteApiDb),
     version: version(packageJson),
     tags: tags(Environment.readonlyApiDb),
     tagById: tagById(Environment.readonlyApiDb),

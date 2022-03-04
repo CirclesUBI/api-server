@@ -12,7 +12,7 @@ export const verifySafe = async (
   context: Context
 ) => {
   const callerInfo = await context.callerInfo;
-  const isBilMember = await isBILMember(callerInfo);
+  const isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
   if (!isBilMember || !callerInfo?.profile) {
     throw new Error(`Not allowed`);
   }
@@ -75,7 +75,7 @@ export const revokeSafeVerification = async (
   context: Context
 ) => {
   const callerInfo = await context.callerInfo;
-  const isBilMember = await isBILMember(callerInfo);
+  const isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
   if (!isBilMember || !callerInfo?.profile) {
     throw new Error(`Not allowed`);
   }

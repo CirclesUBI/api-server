@@ -4,16 +4,6 @@ import { ProfileLoader } from "../../querySources/profileLoader";
 import { Environment } from "../../environment";
 import { PrismaClient } from "../../api-db/client";
 
-export function verificationsCount(prisma: PrismaClient) {
-  return async () => {
-    return await prisma.verifiedSafe.count({
-      where: {
-        revokedAt: null,
-      },
-    });
-  };
-}
-
 export const verifications = async (
   parent: any,
   args: QueryVerificationsArgs,
