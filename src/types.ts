@@ -760,7 +760,6 @@ export type Profile = {
   firstName: Scalars['String'];
   id: Scalars['Int'];
   invitationTransaction?: Maybe<ProfileEvent>;
-  lastEvent?: Maybe<ProfileEvent>;
   lastName?: Maybe<Scalars['String']>;
   memberships?: Maybe<Array<Membership>>;
   newsletter?: Maybe<Scalars['Boolean']>;
@@ -871,7 +870,7 @@ export type PurchaseLineInput = {
 
 export type Purchased = IEventPayload & {
   __typename?: 'Purchased';
-  invoice?: Maybe<Invoice>;
+  purchase: Purchase;
   seller: Scalars['String'];
   seller_profile?: Maybe<Profile>;
   transaction_hash?: Maybe<Scalars['String']>;
@@ -2177,7 +2176,6 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
-  lastEvent?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   memberships?: Resolver<Maybe<Array<ResolversTypes['Membership']>>, ParentType, ContextType>;
   newsletter?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -2263,7 +2261,7 @@ export type PurchaseLineResolvers<ContextType = any, ParentType extends Resolver
 }>;
 
 export type PurchasedResolvers<ContextType = any, ParentType extends ResolversParentTypes['Purchased'] = ResolversParentTypes['Purchased']> = ResolversObject<{
-  invoice?: Resolver<Maybe<ResolversTypes['Invoice']>, ParentType, ContextType>;
+  purchase?: Resolver<ResolversTypes['Purchase'], ParentType, ContextType>;
   seller?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   seller_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

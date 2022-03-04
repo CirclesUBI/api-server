@@ -1,13 +1,10 @@
 import { EventSource } from "../eventSource";
 import {
-  Direction,
-  InvoiceLine,
-  Maybe,
+  Direction, Maybe,
   PaginationArgs,
   ProfileEvent,
   ProfileEventFilter,
   Purchased,
-  SaleEvent,
 } from "../../../types";
 import { Prisma } from "../../../api-db/client";
 import { Environment } from "../../../environment";
@@ -36,7 +33,7 @@ export class PurchasesEventSource implements EventSource {
         }
       : {};
 
-    const purchases = await Environment.readonlyApiDb.invoice.findMany({
+    const purchaseInvoices = await Environment.readonlyApiDb.invoice.findMany({
       where: {
         customerProfile: {
           circlesAddress: forSafeAddress,
@@ -47,6 +44,7 @@ export class PurchasesEventSource implements EventSource {
         ...createdAt,
       },
       include: {
+        purchase: true,
         sellerProfile: true,
         lines: {
           include: {
@@ -71,41 +69,34 @@ export class PurchasesEventSource implements EventSource {
       take: pagination.limit ?? 50,
     });
 
-    return purchases.map((purchaseInvoide) => {
-      if (!purchaseInvoide.sellerProfile) {
+    return purchaseInvoices.map((purchaseInvoice) => {
+      if (!purchaseInvoice.sellerProfile) {
         throw new Error("");
       }
+      const total = purchaseInvoice.lines
+        .reduce((p, c) => p + c.amount * parseFloat(c.product.pricePerUnit), 0)
+        .toString();
       return <ProfileEvent>{
         __typename: "ProfileEvent",
         safe_address: forSafeAddress,
         type: "Purchased",
         block_number: null,
-        direction: "in",
-        timestamp: purchaseInvoide.createdAt.toJSON(),
+        direction: "out",
+        timestamp: purchaseInvoice.createdAt.toJSON(),
         value: null,
         transaction_hash: null,
         transaction_index: null,
         payload: <Purchased>{
           __typename: "Purchased",
           transaction_hash: "",
-          seller: purchaseInvoide.sellerProfile.circlesAddress,
-          seller_profile: purchaseInvoide.sellerProfile,
-          invoice: {
-            ...purchaseInvoide,
-            sellerAddress: purchaseInvoide.sellerProfile.circlesAddress,
-            buyerAddress: forSafeAddress,
-            lines: purchaseInvoide.lines.map((o) => {
-              return <InvoiceLine>{
-                id: o.id,
-                offer: {
-                  ...o.product,
-                  createdByAddress: o.product.createdBy.circlesAddress,
-                  createdAt: o.product.createdAt.toJSON(),
-                },
-                amount: o.amount,
-              };
-            }),
-          },
+          seller: purchaseInvoice.sellerProfile.circlesAddress,
+          seller_profile: purchaseInvoice.sellerProfile,
+          purchase: {
+            ...purchaseInvoice.purchase,
+            createdByAddress: forSafeAddress,
+            total: total,
+            createdAt: purchaseInvoice.purchase.createdAt.toJSON()
+          }
         },
       };
     });
