@@ -44,4 +44,6 @@ export const profilePurchasesDataLoader = new DataLoader<number, Purchase[]>(asy
   }, <{[x:string]:Purchase[]}>{});
 
   return keys.map(o => purchasesByProfileId[o]);
+}, {
+  cache: false
 });

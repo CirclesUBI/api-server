@@ -36,4 +36,6 @@ export const profileVerificationsDataLoader = new DataLoader<string, Verificatio
 
 
   return keys.map(o => verificationsBySafeAddress[o]);
+}, {
+  cache: false
 });

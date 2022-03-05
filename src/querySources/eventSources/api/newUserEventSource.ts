@@ -35,6 +35,9 @@ export class NewUserEventSource implements EventSource {
         ...createdAt,
         status: {
           not: "registered"
+        },
+        circlesAddress: {
+          not: null
         }
       },
       orderBy: {

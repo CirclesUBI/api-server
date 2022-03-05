@@ -51,4 +51,6 @@ export const profileOffersDataLoader = new DataLoader<number, Offer[]>(async (ke
   }, <{[x:string]:Offer[]}>{});
 
   return keys.map(o => latestVersions[o]);
+}, {
+  cache: false
 });

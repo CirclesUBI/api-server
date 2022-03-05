@@ -75,6 +75,7 @@ export type ChatMessage = IEventPayload & {
   __typename?: 'ChatMessage';
   from: Scalars['String'];
   from_profile?: Maybe<Profile>;
+  id: Scalars['Int'];
   text: Scalars['String'];
   to: Scalars['String'];
   to_profile?: Maybe<Profile>;
@@ -1695,6 +1696,7 @@ export type CapabilityResolvers<ContextType = any, ParentType extends ResolversP
 export type ChatMessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['ChatMessage'] = ResolversParentTypes['ChatMessage']> = ResolversObject<{
   from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   from_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   text?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   to_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;

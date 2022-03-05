@@ -450,6 +450,7 @@ type GnosisSafeEthTransfer implements IEventPayload {
 
 # ${from} wrote: ${text}
 type ChatMessage implements IEventPayload {
+  id: Int!
   transaction_hash: String
   from: String!
   from_profile: Profile

@@ -23,4 +23,6 @@ export const profileAllContactsDataLoader = new DataLoader<string, Contact[]>(as
   }
 
   return keys.map(o => result[o]);
+}, {
+  cache: false
 });

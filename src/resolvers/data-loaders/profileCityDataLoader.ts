@@ -10,4 +10,6 @@ export const profileCityDataLoader = new DataLoader<number, City>(async keys => 
   }, <{[id:number]:City}>{});
 
   return keys.map(o => resultsById[o]);
+}, {
+  cache: false
 });

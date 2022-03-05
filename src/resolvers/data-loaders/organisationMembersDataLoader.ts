@@ -39,4 +39,6 @@ export const organisationMembersDataLoader = new DataLoader<number, ProfileOrOrg
     const members = memberProfilesByOrganisation[o];
     return members ?? [];
   });
+}, {
+  cache: false
 });

@@ -52,4 +52,6 @@ export const profileMembershipsDataLoader = new DataLoader<string, Membership[]>
   }, <{[x:string]:Membership[]}>{});
 
   return keys.map(o => formattedMemberships[o]);
+}, {
+  cache: false
 });

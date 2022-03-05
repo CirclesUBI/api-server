@@ -19,4 +19,6 @@ export const profilePublicContactsDataLoader = new DataLoader<string, Contact[]>
   }
 
   return keys.map(o => result[o]);
+}, {
+  cache: false
 });
