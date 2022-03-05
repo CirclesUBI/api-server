@@ -34,6 +34,11 @@ export function announcePayment() {
             }
         });
 
+        let transaction = await Environment.readWriteApiDb.transaction.findUnique({where: {transactionHash: args.transactionHash}});
+        if (!transaction?.transactionHash) {
+            await Environment.readWriteApiDb.transaction.create({data: {transactionHash: args.transactionHash}});
+        }
+
         return {
             invoiceId: args.invoiceId,
             transactionHash: args.transactionHash,
