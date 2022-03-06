@@ -816,6 +816,7 @@ export type ProfileEvent = {
 export type ProfileEventFilter = {
   direction?: InputMaybe<Direction>;
   from?: InputMaybe<Scalars['String']>;
+  purchased?: InputMaybe<PurchasedEventFilter>;
   to?: InputMaybe<Scalars['String']>;
   transactionHash?: InputMaybe<Scalars['String']>;
   with?: InputMaybe<Scalars['String']>;
@@ -875,6 +876,10 @@ export type Purchased = IEventPayload & {
   seller: Scalars['String'];
   seller_profile?: Maybe<Profile>;
   transaction_hash?: Maybe<Scalars['String']>;
+};
+
+export type PurchasedEventFilter = {
+  id: Scalars['Int'];
 };
 
 export type Purchases = IAggregatePayload & {
@@ -1483,6 +1488,7 @@ export type ResolversTypes = ResolversObject<{
   PurchaseLine: ResolverTypeWrapper<PurchaseLine>;
   PurchaseLineInput: PurchaseLineInput;
   Purchased: ResolverTypeWrapper<Purchased>;
+  PurchasedEventFilter: PurchasedEventFilter;
   Purchases: ResolverTypeWrapper<Purchases>;
   PurchasesAggregateFilter: PurchasesAggregateFilter;
   Query: ResolverTypeWrapper<{}>;
@@ -1610,6 +1616,7 @@ export type ResolversParentTypes = ResolversObject<{
   PurchaseLine: PurchaseLine;
   PurchaseLineInput: PurchaseLineInput;
   Purchased: Purchased;
+  PurchasedEventFilter: PurchasedEventFilter;
   Purchases: Purchases;
   PurchasesAggregateFilter: PurchasesAggregateFilter;
   Query: {};

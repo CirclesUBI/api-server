@@ -978,12 +978,17 @@ enum Direction {
   out
 }
 
+input PurchasedEventFilter {
+  id: Int!
+}
+
 input ProfileEventFilter {
   direction: Direction
   from: String
   to: String
   with: String
   transactionHash: String
+  purchased: PurchasedEventFilter
 }
 
 input ContactAggregateFilter {

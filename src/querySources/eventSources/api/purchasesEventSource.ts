@@ -33,8 +33,15 @@ export class PurchasesEventSource implements EventSource {
         }
       : {};
 
+    const purchaseIdFilter = filter?.purchased?.id ? {
+      purchase: {
+        id: filter.purchased.id
+      }
+    } : {};
+
     const purchaseInvoices = await Environment.readonlyApiDb.invoice.findMany({
       where: {
+        ...purchaseIdFilter,
         customerProfile: {
           circlesAddress: forSafeAddress,
         },
