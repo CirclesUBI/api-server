@@ -770,7 +770,7 @@ export type Profile = {
   sales?: Maybe<Array<Sale>>;
   status?: Maybe<Scalars['String']>;
   successorOfCirclesAddress?: Maybe<Scalars['String']>;
-  type?: Maybe<Scalars['String']>;
+  type?: Maybe<ProfileType>;
   verifications?: Maybe<Array<Verification>>;
 };
 
@@ -828,6 +828,12 @@ export enum ProfileOrigin {
   CirclesGarden = 'CirclesGarden',
   CirclesLand = 'CirclesLand',
   Unknown = 'Unknown'
+}
+
+export enum ProfileType {
+  Organisation = 'ORGANISATION',
+  Person = 'PERSON',
+  Region = 'REGION'
 }
 
 export type ProofPaymentResult = {
@@ -1482,6 +1488,7 @@ export type ResolversTypes = ResolversObject<{
   ProfileEventFilter: ProfileEventFilter;
   ProfileOrOrganisation: ResolversTypes['Organisation'] | ResolversTypes['Profile'];
   ProfileOrigin: ProfileOrigin;
+  ProfileType: ProfileType;
   ProofPaymentResult: ResolverTypeWrapper<ProofPaymentResult>;
   PublicEvent: ResolverTypeWrapper<Omit<PublicEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
   Purchase: ResolverTypeWrapper<Purchase>;
@@ -2194,7 +2201,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   sales?: Resolver<Maybe<Array<ResolversTypes['Sale']>>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   successorOfCirclesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<Maybe<ResolversTypes['ProfileType']>, ParentType, ContextType>;
   verifications?: Resolver<Maybe<Array<ResolversTypes['Verification']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

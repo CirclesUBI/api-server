@@ -8,9 +8,15 @@ enum ProfileOrigin {
   Unknown
 }
 
+enum ProfileType {
+  PERSON
+  ORGANISATION
+  REGION
+}
+
 type Profile {
   id: Int!
-  type: String
+  type: ProfileType
   origin: ProfileOrigin
   status: String
   circlesAddress: String

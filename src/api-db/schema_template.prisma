@@ -83,8 +83,8 @@ model InvitationFundsEOA {
 model VerifiedSafe {
     safeAddress String @id
     
-    createdAt DateTime
-@@index([createdAt]) @default(now())
+    createdAt DateTime @default(now())
+    @@index([createdAt])
     createdBy Profile @relation(name: "VerifiedSafe_CreatedByPerson", fields: [createdByProfileId], references: [id])
     createdByProfileId Int
 
@@ -121,8 +121,8 @@ model Profile {
     verifyEmailChallenge String?
     // @@unique([emailAddress], name:"UX_Profile_EmailAddress")
 
-    createdAt DateTime
-@@index([createdAt]) @default(now())
+    createdAt DateTime  @default(now())
+    @@index([createdAt])
 
     status String?
     type ProfileType? @default(PERSON)
@@ -188,16 +188,16 @@ model ExternalProfiles {
 
 model Membership {
     id Int @id @default(autoincrement())
-    createdAt DateTime
-    @@index([createdAt]) @default(now())
+    createdAt DateTime @default(now())
+    @@index([createdAt])
 
     createdBy Profile @relation(name: "Membership_CreatedBy", fields: [createdByProfileId], references: [id])
     createdByProfileId Int
 
     acceptedAt DateTime? // The point in time when the invitee accepted the membership
-    @@index([acceptedAt]) @default(now())
+    @@index([acceptedAt])
     rejectedAt DateTime? // The point in time when the invitee rejected the membership
-    @@index([rejectedAt]) @default(now())
+    @@index([rejectedAt])
 
     validTo DateTime?    // Memberships are only valid if this property is null or lies in the future
     isAdmin Boolean?
