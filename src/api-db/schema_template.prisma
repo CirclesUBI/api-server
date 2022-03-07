@@ -57,6 +57,8 @@ model Invitation {
 
     address String
     key String
+
+    @@index([code])
 }
 
 enum ProfileType {
@@ -72,6 +74,8 @@ model InvitationFundsEOA {
 
     profileId Int
     profile Profile @relation(name: "Profile_InvitationFundsEOA", fields: [profileId], references:[id])
+
+    @@index([address])
 }
 
 model VerifiedSafe {
@@ -169,6 +173,8 @@ model Profile {
     safesVerifiedByOrganisation VerifiedSafe[]  @relation(name: "VerifiedSafe_CreatedByOrganisation")
 
     safesRevokedByPerson VerifiedSafe[]  @relation(name: "VerifiedSafe_RevokedByPerson")
+
+    @@index([circlesAddress])
 }
 
 model ExternalProfiles {
@@ -194,6 +200,8 @@ model Membership {
 
     memberAtId Int
     memberAt Profile @relation(name: "Membership_MemberAt", fields: [memberAtId], references:[id])
+
+    @@index([memberAddress])
 }
 
 
@@ -208,6 +216,9 @@ model ChatMessage {
     text String
 
     tags Tag[] @relation(name: "ChatMessage_Tags")
+
+    @@index([from])
+    @@index([to])
 }
 
 model DelegatedChallenges {
@@ -251,8 +262,6 @@ model Purchase {
     createdBy Profile @relation(name: "Purchase_CreatedBy", fields: [createdByProfileId], references: [id])
     createdByProfileId Int
     createdAt DateTime
-
-    sticksToInstanceId String? // The instance id of the running service that created the invoice.
 
     lines PurchaseLine[] @relation(name: "Purchase_Lines")
     invoices Invoice[] @relation(name: "Purchase_Invoices")
@@ -305,6 +314,9 @@ model Invoice {
     cancelledBy Profile? @relation(name: "Invoice_CancelledByProfile", fields: [cancelledByProfileId], references: [id])
     cancelledByProfileId Int?
     cancelReason String?
+
+    @@index([invoiceNo])
+    @@index([pickupCode])
 }
 
 model InvoiceLine {
