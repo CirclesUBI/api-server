@@ -82,6 +82,10 @@ export type ChatMessage = IEventPayload & {
   transaction_hash?: Maybe<Scalars['String']>;
 };
 
+export type ChatMessageEventFilter = {
+  id: Scalars['Int'];
+};
+
 export type City = ICity & {
   __typename?: 'City';
   country: Scalars['String'];
@@ -678,6 +682,8 @@ export type NewUser = IEventPayload & {
 
 export type NotificationEvent = {
   __typename?: 'NotificationEvent';
+  from: Scalars['String'];
+  itemId: Scalars['Int'];
   type: Scalars['String'];
 };
 
@@ -814,6 +820,7 @@ export type ProfileEvent = {
 };
 
 export type ProfileEventFilter = {
+  chatMessage?: InputMaybe<ChatMessageEventFilter>;
   direction?: InputMaybe<Direction>;
   from?: InputMaybe<Scalars['String']>;
   purchased?: InputMaybe<PurchasedEventFilter>;
@@ -1420,6 +1427,7 @@ export type ResolversTypes = ResolversObject<{
   Capability: ResolverTypeWrapper<Capability>;
   CapabilityType: CapabilityType;
   ChatMessage: ResolverTypeWrapper<ChatMessage>;
+  ChatMessageEventFilter: ChatMessageEventFilter;
   City: ResolverTypeWrapper<City>;
   ClaimInvitationResult: ResolverTypeWrapper<ClaimInvitationResult>;
   ClaimedInvitation: ResolverTypeWrapper<ClaimedInvitation>;
@@ -1554,6 +1562,7 @@ export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean'];
   Capability: Capability;
   ChatMessage: ChatMessage;
+  ChatMessageEventFilter: ChatMessageEventFilter;
   City: City;
   ClaimInvitationResult: ClaimInvitationResult;
   ClaimedInvitation: ClaimedInvitation;
@@ -2121,6 +2130,8 @@ export type NewUserResolvers<ContextType = any, ParentType extends ResolversPare
 }>;
 
 export type NotificationEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['NotificationEvent'] = ResolversParentTypes['NotificationEvent']> = ResolversObject<{
+  from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  itemId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

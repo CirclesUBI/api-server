@@ -736,6 +736,8 @@ type PublicEvent {
 
 type NotificationEvent {
   type: String!
+  from: String!
+  itemId: Int!
 }
 
 type CreatedInvitation {
@@ -988,6 +990,10 @@ input PurchasedEventFilter {
   id: Int!
 }
 
+input ChatMessageEventFilter {
+  id: Int!
+}
+
 input ProfileEventFilter {
   direction: Direction
   from: String
@@ -995,6 +1001,7 @@ input ProfileEventFilter {
   with: String
   transactionHash: String
   purchased: PurchasedEventFilter
+  chatMessage: ChatMessageEventFilter
 }
 
 input ContactAggregateFilter {

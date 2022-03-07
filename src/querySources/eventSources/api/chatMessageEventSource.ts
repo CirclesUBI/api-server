@@ -121,7 +121,7 @@ export class ChatMessageEventSource implements EventSource {
         }
       : {};
 
-    const compositeFilter = {
+    let compositeFilter = {
       ...(filter?.from && filter?.to
         ? filteredWhereFromTo
         : filter?.from && !filter?.to
@@ -133,6 +133,13 @@ export class ChatMessageEventSource implements EventSource {
         : noFilter),
       ...createdAt,
     };
+
+    if (filter?.chatMessage?.id) {
+      compositeFilter = {
+        ...compositeFilter,
+        id: filter.chatMessage.id
+      }
+    }
 
     const chatMessages = await Environment.readonlyApiDb.chatMessage.findMany({
       where: compositeFilter,

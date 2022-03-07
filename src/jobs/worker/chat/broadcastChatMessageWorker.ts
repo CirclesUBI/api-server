@@ -22,6 +22,8 @@ export class BroadcastChatMessageWorker extends JobWorker<BroadcastChatMessage> 
     await ApiPubSub.instance.pubSub.publish(`events_${job.to}`, {
       events: {
         type: "new_message",
+        from: job.from,
+        itemId: job.messageId
       },
     });
 
