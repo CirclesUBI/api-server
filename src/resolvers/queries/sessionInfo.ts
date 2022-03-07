@@ -36,7 +36,7 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
         const expires = new Date();
         /// See https://www.npmjs.com/package/apollo-server-plugin-http-headers for the magic that happens below ;)
         context.setCookies.push({
-            name: "session",
+            name: `session_${Environment.appId.replace(/\./g, "_")}`,
             value: "no-session",
             options: {
                 domain: Environment.externalDomain,

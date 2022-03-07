@@ -7,7 +7,7 @@ export function logout() {
         const session = await context.verifySession();
         const loggedOutSession = await Session.logout(context, Environment.readWriteApiDb, session.sessionToken);
         context.setCookies.push({
-            name: "session",
+            name: `session_${Environment.appId.replace(/\./g, "_")}`,
             value: session.sessionToken,
             options: {
                 domain: Environment.externalDomain,

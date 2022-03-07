@@ -74,8 +74,8 @@ export class Context {
         p[c[0]] = c[1];
         return p
       }, {});
-      if (cookies["session"]) {
-        sessionToken = decodeURIComponent(cookies["session"]);
+      if (cookies[`session_${Environment.appId.replace(/\./g, "_")}`]) {
+        sessionToken = decodeURIComponent(cookies[`session_${Environment.appId.replace(/\./g, "_")}`]);
         session = await Context.findSession(sessionToken);
       }
     }

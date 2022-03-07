@@ -1,3 +1,5 @@
+import {Environment} from "../environment";
+
 export function tryGetSessionToken(cookieValue?: string) {
   let sessionToken: string | undefined = undefined;
   if (cookieValue) {
@@ -8,8 +10,8 @@ export function tryGetSessionToken(cookieValue?: string) {
         p[c[0]] = c[1];
         return p;
       }, {});
-    if (cookies["session"]) {
-      sessionToken = decodeURIComponent(cookies["session"]);
+    if (cookies[`session_${Environment.appId.replace(/\./g, "_")}`]) {
+      sessionToken = decodeURIComponent(cookies[`session_${Environment.appId.replace(/\./g, "_")}`]);
     }
   }
   return sessionToken;

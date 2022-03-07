@@ -3,7 +3,7 @@ import {
   DisplayCurrency,
   Organisation,
   Profile,
-  ProfileOrigin,
+  ProfileOrigin, ProfileType,
   Verification,
 } from "../types";
 import { RpcGateway } from "../circles/rpcGateway";
@@ -195,6 +195,7 @@ export class ProfileLoader {
       .map((o) => {
         return <Profile & {emailAddressVerified:boolean}>{
           id: -1,
+          type: ProfileType.Person,
           circlesAddress: o.circlesAddress,
           firstName: o.name,
           avatarUrl: o.avatarUrl,
@@ -244,6 +245,7 @@ export class ProfileLoader {
         requestResultJson.data.map((o: any) => {
           return <Profile & {emailAddressVerified: boolean}>{
             id: -1,
+            type: "PERSON",
             firstName: o.username,
             lastName: "",
             circlesAddress: o.safeAddress.toLowerCase(),
@@ -302,6 +304,7 @@ export class ProfileLoader {
     if (allProfilesMap["0x0000000000000000000000000000000000000000"]) {
       allProfilesMap["0x0000000000000000000000000000000000000000"] = {
         id: 0,
+        type: ProfileType.Person,
         firstName: "Circles",
         emailAddressVerified: false,
         lastName: "Land",
@@ -342,6 +345,7 @@ export class ProfileLoader {
     const notFoundProfiles = notFound.map((o) => {
       return <any>{
         origin: ProfileOrigin.Unknown,
+        type: ProfileType.Person,
         circlesAddress: o,
         name: o,
         avatarUrl: null,
@@ -354,6 +358,7 @@ export class ProfileLoader {
         if (!o || !o.circlesAddress) throw new Error(`Invalid state`);
 
         return {
+          type: ProfileType.Person,
           circlesAddress: o.circlesAddress,
           name: o.firstName ?? o.circlesAddress,
           avatarUrl: o.avatarUrl ?? null,
