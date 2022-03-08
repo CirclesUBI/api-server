@@ -358,7 +358,6 @@ export class ProfileLoader {
         if (!o || !o.circlesAddress) throw new Error(`Invalid state`);
 
         return {
-          type: ProfileType.Person,
           circlesAddress: o.circlesAddress,
           name: o.firstName ?? o.circlesAddress,
           avatarUrl: o.avatarUrl ?? null,
