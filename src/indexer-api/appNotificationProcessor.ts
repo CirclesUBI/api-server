@@ -35,6 +35,18 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
             }
         }
 
+        for(let event of events) {
+            //from
+            if (event.type == "CrcHubTransfer") {
+                await ApiPubSub.instance.pubSub.publish(`events_${event.address2}`, {
+                    events: {
+                        type: "blockchain_event",
+                        from: event.address1
+                    },
+                });
+            }
+        }
+/*
         for (let address of affectedAddresses) {
             await ApiPubSub.instance.pubSub.publish(`events_${address}`, {
                 events: {
@@ -42,5 +54,6 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                 },
             });
         }
+ */
     }
 }
