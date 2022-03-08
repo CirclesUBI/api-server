@@ -23,6 +23,7 @@ export class BroadcastChatMessageWorker extends JobWorker<BroadcastChatMessage> 
       events: {
         type: "new_message",
         from: job.from,
+        to: job.to,
         itemId: job.messageId
       },
     });
