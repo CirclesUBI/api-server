@@ -290,12 +290,14 @@ model PurchaseLine {
 
     purchase Purchase @relation(name: "Purchase_Lines", fields: [purchaseId], references: [id])
     purchaseId Int
+    @@index([purchaseId])
 
     amount Int
 
     product Offer @relation(name: "PurchaseLines_Product", fields: [productId, productVersion], references: [id, version])
     productId Int
     productVersion Int
+    @@index([productId, productVersion])
 }
 
 model Invoice {
@@ -338,6 +340,8 @@ model Invoice {
     cancelledAt DateTime?
     cancelledBy Profile? @relation(name: "Invoice_CancelledByProfile", fields: [cancelledByProfileId], references: [id])
     cancelledByProfileId Int?
+    @@index([cancelledByProfileId])
+
     cancelReason String?
 }
 
