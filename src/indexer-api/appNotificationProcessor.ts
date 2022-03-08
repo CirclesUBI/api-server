@@ -3,6 +3,7 @@ import {ApiPubSub} from "../utils/pubsub";
 import {JobQueue} from "../jobs/jobQueue";
 import {SendCrcTrustChangedEmail} from "../jobs/descriptions/emailNotifications/sendCrcTrustChangedEmail";
 import {SendCrcReceivedEmail} from "../jobs/descriptions/emailNotifications/sendCrcReceivedEmail";
+import {NotificationEvent} from "../types";
 
 export class AppNotificationProcessor implements IndexerEventProcessor {
     constructor() {
@@ -13,15 +14,43 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                     affectedAddresses:string[],
                     events:IndexerEvent[])
         : Promise<void> {
-
         for(let event of events) {
             let job:any = undefined;
+            let notification:NotificationEvent|undefined = undefined;
             switch (event.type) {
                 case "CrcTrust":
                     job = new SendCrcTrustChangedEmail(event.hash, event.address1, event.address2, parseInt(event.value));
+
+                    notification = <NotificationEvent>{
+                        type: event.type,
+                        from: event.address2,
+                        to: event.address1,
+                        transaction_hash: event.hash
+                    };
+
+                    await ApiPubSub.instance.pubSub.publish(`events_${event.address1}`, {
+                        events: notification
+                    });
+                    await ApiPubSub.instance.pubSub.publish(`events_${event.address2}`, {
+                        events: notification
+                    });
                     break;
                 case "CrcHubTransfer":
                     job = new SendCrcReceivedEmail(event.timestamp, event.hash, event.address1, event.address2, event.value);
+
+                    notification = <NotificationEvent>{
+                        type: event.type,
+                        from: event.address1,
+                        to: event.address2,
+                        transaction_hash: event.hash
+                    };
+
+                    await ApiPubSub.instance.pubSub.publish(`events_${event.address1}`, {
+                        events: notification
+                    });
+                    await ApiPubSub.instance.pubSub.publish(`events_${event.address2}`, {
+                        events: notification
+                    });
                     break;
                 case "CrcSignup":
                 case "CrcOrganisationSignup":
@@ -34,26 +63,5 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                 await JobQueue.produce([job]);
             }
         }
-
-        for(let event of events) {
-            //from
-            if (event.type == "CrcHubTransfer") {
-                await ApiPubSub.instance.pubSub.publish(`events_${event.address2}`, {
-                    events: {
-                        type: "blockchain_event",
-                        from: event.address1
-                    },
-                });
-            }
-        }
-/*
-        for (let address of affectedAddresses) {
-            await ApiPubSub.instance.pubSub.publish(`events_${address}`, {
-                events: {
-                    type: "blockchain_event"
-                },
-            });
-        }
- */
     }
 }

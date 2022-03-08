@@ -110,25 +110,67 @@ export class IndexerEvents {
         : Promise<{ affectedAddresses:string[], events: IndexerEvent[] }> {
         // Find all blockchainEvents in the reported new range
         const affectedAddressesQuery = `with a as (
-            select 'CrcSignup' as type, timestamp, hash, "user" as address1, null as address2, null as address3, null as value
+            select 'CrcSignup' as type, 
+                   timestamp, 
+                   hash, 
+                   "user" as address1, 
+                   null as address2, 
+                   null as address3, 
+                   null as value
             from crc_signup_2
             union all
-            select 'CrcTrust' as type, timestamp, hash, address as address1, can_send_to as address2, null as address3, "limit"::text as value
+            select 'CrcTrust' as type, 
+                   timestamp, 
+                   hash, 
+                   address as address1, 
+                   can_send_to as address2, 
+                   null as address3, 
+                   "limit"::text as value
             from crc_trust_2
             union all
-            select 'CrcOrganisationSignup' as type, timestamp, hash, organisation as address1, null as address2, null as address3, null as value
+            select 'CrcOrganisationSignup' as type, 
+                   timestamp, 
+                   hash, 
+                   organisation as address1, 
+                   null as address2, 
+                   null as address3, 
+                   null as value
             from crc_organisation_signup_2
             union all
-            select 'CrcHubTransfer' as type, timestamp, hash, "from" as address1, "to" as address2, null as address3, value::text as value
+            select 'CrcHubTransfer' as type, 
+                   timestamp, 
+                   hash, 
+                   "from" as address1, 
+                   "to" as address2, 
+                   null as address3, 
+                   value::text as value
             from crc_hub_transfer_2
             union all
-            select 'Erc20Transfer' as type, timestamp, hash, "from" as address1, "to" as address2, null as address3, value::text as value
+            select 'Erc20Transfer' as type, 
+                   timestamp, 
+                   hash, 
+                   "from" as address1, 
+                   "to" as address2, 
+                   null as address3, 
+                   value::text as value
             from erc20_transfer_2
             union all
-            select 'EthTransfer' as type, timestamp, hash, "from" as address1, "to" as address2, null as address3, value::text as value
+            select 'EthTransfer' as type, 
+                   timestamp,
+                   hash, 
+                   "from" as address1, 
+                   "to" as address2, 
+                   null as address3, 
+                   value::text as value
             from eth_transfer_2
             union all
-            select 'GnosisSafeEthTransfer' as type, timestamp, hash, "initiator" as address1, "from" as address2, "to" as address3, value::text as value
+            select 'GnosisSafeEthTransfer' as type, 
+                   timestamp, 
+                   hash, 
+                   "initiator" as address1, 
+                   "from" as address2, 
+                   "to" as address3, 
+                   value::text as value
             from gnosis_safe_eth_transfer_2
         )
         select type, timestamp, hash, address1, address2, address3, value

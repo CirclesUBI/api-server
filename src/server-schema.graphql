@@ -736,7 +736,8 @@ type PublicEvent {
 
 type NotificationEvent {
   type: String!
-  from: String
+  from: String!
+  to: String!
   itemId: Int
   transaction_hash: String
 }

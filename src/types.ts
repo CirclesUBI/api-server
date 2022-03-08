@@ -682,8 +682,9 @@ export type NewUser = IEventPayload & {
 
 export type NotificationEvent = {
   __typename?: 'NotificationEvent';
-  from?: Maybe<Scalars['String']>;
+  from: Scalars['String'];
   itemId?: Maybe<Scalars['Int']>;
+  to: Scalars['String'];
   transaction_hash?: Maybe<Scalars['String']>;
   type: Scalars['String'];
 };
@@ -2131,8 +2132,9 @@ export type NewUserResolvers<ContextType = any, ParentType extends ResolversPare
 }>;
 
 export type NotificationEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['NotificationEvent'] = ResolversParentTypes['NotificationEvent']> = ResolversObject<{
-  from?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   itemId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
