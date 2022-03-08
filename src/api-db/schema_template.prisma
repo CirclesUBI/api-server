@@ -11,6 +11,7 @@ generator client {
 model Session {
   id String @id
   sessionToken String @unique
+  @@index([createdAt])
   // Who is identified by the session?
   emailAddress String?
   // Who is identified by the session?
@@ -20,13 +21,14 @@ model Session {
 
   profile Profile? @relation(name: "Session_Profile", fields: [profileId], references: [id])
   profileId Int?
+  @@index([profileId])
   // Which Authoritity issued the JWT that lead to this session?
   issuedBy String
   // The id of the jwt that was exchanged for this session
   jti String?
   // When the session was created.
   createdAt DateTime
-@@index([createdAt])
+  @@index([createdAt])
   validFrom DateTime?
   endedAt DateTime?
   endReason String?
@@ -39,28 +41,30 @@ model Invitation {
 
     createdBy Profile @relation(name: "Invitation_CreatedBy", fields: [createdByProfileId], references: [id])
     createdByProfileId Int
+    @@index([createdByProfileId])
     createdAt DateTime
-@@index([createdAt])
+    @@index([createdAt])
     fundedAt DateTime?
 
     name String
     code String
+    @@index([code])
 
     claimedBy Profile? @relation(name: "Invitation_ClaimedBy", fields: [claimedByProfileId], references: [id])
     claimedByProfileId Int?
     claimedAt DateTime?
+    @@index([claimedByProfileId, claimedAt])
 
     redeemedBy Profile? @relation(name: "Invitation_RedeemedBy", fields: [redeemedByProfileId], references: [id])
     redeemedByProfileId Int?
     redeemedAt DateTime?
     redeemTxHash String?
+    @@index([redeemedByProfileId, redeemedAt, redeemTxHash])
 
     forSafeAddress String?
 
     address String
     key String
-
-    @@index([code])
 }
 
 enum ProfileType {
@@ -87,9 +91,11 @@ model VerifiedSafe {
     @@index([createdAt])
     createdBy Profile @relation(name: "VerifiedSafe_CreatedByPerson", fields: [createdByProfileId], references: [id])
     createdByProfileId Int
+    @@index([createdByProfileId])
 
     createdByOrganisation Profile @relation(name: "VerifiedSafe_CreatedByOrganisation", fields: [createdByOrganisationId], references: [id])
     createdByOrganisationId Int
+    @@index([createdByOrganisationId])
 
     revokedAt DateTime?
     revokedByProfileId Int?
@@ -193,6 +199,7 @@ model Membership {
 
     createdBy Profile @relation(name: "Membership_CreatedBy", fields: [createdByProfileId], references: [id])
     createdByProfileId Int
+    @@index([createdByProfileId])
 
     acceptedAt DateTime? // The point in time when the invitee accepted the membership
     @@index([acceptedAt])
@@ -207,6 +214,7 @@ model Membership {
 
     memberAtId Int
     memberAt Profile @relation(name: "Membership_MemberAt", fields: [memberAtId], references:[id])
+    @@index([memberAtId])
 }
 
 
@@ -249,6 +257,7 @@ model Offer {
 
     createdBy Profile @relation(name: "Offer_CreatedBy", fields: [createdByProfileId], references: [id])
     createdByProfileId Int
+    @@index([createdByProfileId])
     createdAt DateTime
     @@index([createdAt])
 
@@ -299,12 +308,15 @@ model Invoice {
 
     customerProfile Profile @relation(name: "Invoice_CustomerProfile", fields: [customerProfileId], references: [id])
     customerProfileId Int
+    @@index([customerProfile])
 
     sellerProfile Profile @relation(name: "Invoice_SellerProfile", fields: [sellerProfileId], references: [id])
     sellerProfileId Int
+    @@index([sellerProfileId])
 
     purchase Purchase @relation(name: "Purchase_Invoices", fields: [purchaseId], references: [id])
     purchaseId Int
+    @@index([purchaseId])
 
     lines InvoiceLine[] @relation(name: "Invoice_Lines")
 
@@ -312,6 +324,7 @@ model Invoice {
 
     paymentTransaction Transaction? @relation(name: "Invoice_PaymentTransaction", fields: [paymentTransactionHash], references: [transactionHash])
     paymentTransactionHash String?
+    @@index([paymentTransactionHash])
 
     pickupCode String?
     @@index([pickupCode])
@@ -333,12 +346,14 @@ model InvoiceLine {
 
     invoice Invoice @relation(name: "Invoice_Lines", fields: [invoiceId], references: [id])
     invoiceId Int
+    @@index([invoiceId])
 
     amount Int
 
     product Offer @relation(name: "InvoiceLines_Product", fields: [productId, productVersion], references: [id, version])
     productId Int
     productVersion Int
+    @@index([productId,productVersion])
 }
 
 model TagType {
@@ -364,17 +379,21 @@ model Tag {
     @@index([createdAt])
     createdBy Profile @relation(name: "Tag_CreatedBy", fields: [createdByProfileId], references: [id])
     createdByProfileId Int
+    @@index([createdByProfileId])
 
     isPrivate Boolean
 
     transaction Transaction? @relation(name: "Transaction_Tag", fields: [transactionHash], references: [transactionHash])
     transactionHash String?
+    @@index([transactionHash])
 
     type TagType @relation(name: "Tag_TagType", fields: [typeId], references: [id])
     typeId String
+    @@index([typeId])
 
     chatMessage ChatMessage? @relation(name: "ChatMessage_Tags", fields: [chatMessageId], references: [id])
     chatMessageId Int?
+    @@index([chatMessageId])
 
     value String?
 }
