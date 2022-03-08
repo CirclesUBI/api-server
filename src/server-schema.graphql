@@ -736,8 +736,9 @@ type PublicEvent {
 
 type NotificationEvent {
   type: String!
-  from: String!
-  itemId: Int!
+  from: String
+  itemId: Int
+  transaction_hash: String
 }
 
 type CreatedInvitation {

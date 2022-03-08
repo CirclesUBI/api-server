@@ -35,14 +35,10 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
             }
         }
 
-        await AppNotificationProcessor.notifyClients(affectedAddresses);
-    }
-
-    private static async notifyClients(addresses: string[]) {
-        for (let address of addresses) {
+        for (let address of affectedAddresses) {
             await ApiPubSub.instance.pubSub.publish(`events_${address}`, {
                 events: {
-                    type: "blockchain_event",
+                    type: "blockchain_event"
                 },
             });
         }

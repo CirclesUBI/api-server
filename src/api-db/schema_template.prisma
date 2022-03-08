@@ -277,6 +277,7 @@ model Purchase {
 
     createdBy Profile @relation(name: "Purchase_CreatedBy", fields: [createdByProfileId], references: [id])
     createdByProfileId Int
+    @@index([createdByProfileId])
     createdAt DateTime
     @@index([createdAt])
 
