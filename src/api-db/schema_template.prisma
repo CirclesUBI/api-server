@@ -11,7 +11,6 @@ generator client {
 model Session {
   id String @id
   sessionToken String @unique
-  @@index([createdAt])
   // Who is identified by the session?
   emailAddress String?
   // Who is identified by the session?
@@ -226,13 +225,13 @@ model ChatMessage {
     openedAt DateTime?
 
     from String
+    @@index([from])
     to String
+    @@index([to])
+
     text String
 
     tags Tag[] @relation(name: "ChatMessage_Tags")
-
-    @@index([from])
-    @@index([to])
 }
 
 model DelegatedChallenges {
@@ -308,7 +307,7 @@ model Invoice {
 
     customerProfile Profile @relation(name: "Invoice_CustomerProfile", fields: [customerProfileId], references: [id])
     customerProfileId Int
-    @@index([customerProfile])
+    @@index([customerProfileId])
 
     sellerProfile Profile @relation(name: "Invoice_SellerProfile", fields: [sellerProfileId], references: [id])
     sellerProfileId Int
