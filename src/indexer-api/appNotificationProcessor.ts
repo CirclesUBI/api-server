@@ -21,8 +21,6 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
             switch (event.type) {
                 case EventType.CrcHubTransfer:
                     job = new SendCrcReceivedEmail(event.timestamp, event.hash, event.address1, event.address2, event.value);
-                case EventType.Erc20Transfer:
-                case EventType.GnosisSafeEthTransfer:
                 case EventType.EthTransfer:
                     notification = <NotificationEvent>{
                         type: event.type,
@@ -30,7 +28,6 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                         to: event.address2,
                         transaction_hash: event.hash
                     };
-
                     await ApiPubSub.instance.pubSub.publish(`events_${event.address1}`, {
                         events: notification
                     });
@@ -38,7 +35,21 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                         events: notification
                     });
                     break;
-                case "CrcTrust":
+                case EventType.GnosisSafeEthTransfer:
+                    notification = <NotificationEvent>{
+                        type: event.type,
+                        from: event.address2,
+                        to: event.address3,
+                        transaction_hash: event.hash
+                    };
+                    await ApiPubSub.instance.pubSub.publish(`events_${event.address2}`, {
+                        events: notification
+                    });
+                    await ApiPubSub.instance.pubSub.publish(`events_${event.address3}`, {
+                        events: notification
+                    });
+                    break;
+                case EventType.CrcTrust:
                     job = new SendCrcTrustChangedEmail(event.hash, event.address1, event.address2, parseInt(event.value));
                     notification = <NotificationEvent>{
                         type: event.type,
@@ -53,9 +64,6 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                     await ApiPubSub.instance.pubSub.publish(`events_${event.address2}`, {
                         events: notification
                     });
-                    break;
-                case "CrcSignup":
-                case "CrcOrganisationSignup":
                     break;
             }
 
