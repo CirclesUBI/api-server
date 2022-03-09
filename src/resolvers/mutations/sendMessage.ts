@@ -50,7 +50,10 @@ export function sendMessage(prisma: PrismaClient) {
     });
 
     if (toProfile.circlesAddress && RpcGateway.get().utils.isAddress(toProfile.circlesAddress)) {
-      await JobQueue.broadcast(new BroadcastChatMessage(fromProfile.profile.circlesAddress, toProfile.circlesAddress, message.id));
+      await JobQueue.broadcast(new BroadcastChatMessage(
+        from,
+        toProfile.circlesAddress,
+        message.id));
       /*
       await Environment.indexDb.query(
         `call publish_event('new_message', '{"to":"${toProfile.circlesAddress.toLowerCase()}"}');`);
