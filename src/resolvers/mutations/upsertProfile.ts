@@ -9,7 +9,6 @@ import {JobQueue} from "../../jobs/jobQueue";
 import {VerifyEmailAddress} from "../../jobs/descriptions/emailNotifications/verifyEmailAddress";
 import {Generate} from "../../utils/generate";
 import {SendVerifyEmailAddressEmail} from "../../jobs/descriptions/emailNotifications/sendVerifyEmailAddressEmail";
-import {claimedInvitation} from "../queries/claimedInvitation";
 import {claimInvitation} from "./claimInvitation";
 
 const validateEmail = (email:string) => {
@@ -17,6 +16,24 @@ const validateEmail = (email:string) => {
       /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
 };
+
+export async function claimInviteCodeFromCookie(context: Context) {
+    // Try to claim an invitation right away if there's an invitationCode-cookie
+    if (!context.session?.profileId || !context.req?.headers?.cookie) {
+        return;
+    }
+    const cookies = context.req.headers.cookie.split(";").map(o => o.trim().split("=")).reduce((p: { [key: string]: any }, c) => {
+        p[c[0]] = c[1];
+        return p
+    }, {});
+
+    if (cookies["invitationCode"]) {
+        const invitationCode = decodeURIComponent(cookies["invitationCode"]);
+        await claimInvitation()(null, {code: invitationCode}, context);
+
+        context.log(`Claimed invitation ${invitationCode} for profile ${context.session?.profileId} because the 'invitationCode' cookie was set.`);
+    }
+}
 
 export function upsertProfileResolver() {
     return async (parent:any, args:MutationUpsertProfileArgs, context:Context) => {
@@ -93,19 +110,7 @@ export function upsertProfileResolver() {
 
             await Session.assignProfile(session.sessionToken, profile.id, context);
 
-            // Try to claim an invitation right away if there's an invitationCode-cookie
-            if (context.req?.headers?.cookie) {
-                const cookies = context.req.headers.cookie.split(";").map(o => o.trim().split("=")).reduce((p: { [key: string]: any }, c) => {
-                    p[c[0]] = c[1];
-                    return p
-                }, {});
-                if (cookies["invitationCode"]) {
-                    const invitationCode = decodeURIComponent(cookies["invitationCode"]);
-                    await claimInvitation()(null, {code: invitationCode}, context);
-
-                    context.log(`Created profile ${profile.id} with claimed invitation because the 'invitationCode' cookie was set to '${invitationCode}'.`);
-                }
-            }
+            await claimInviteCodeFromCookie(context);
         }
 
         if (Environment.isAutomatedTest && profile.circlesAddress) {

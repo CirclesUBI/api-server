@@ -13,7 +13,8 @@ export function claimInvitation() {
         const now = new Date();
         const updatedCount = await Environment.readWriteApiDb.invitation.updateMany({
             where: {
-                code: args.code
+                code: args.code,
+                claimedByProfileId: null
             },
             data: {
                 claimedAt: now,

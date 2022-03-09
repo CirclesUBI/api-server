@@ -86,6 +86,7 @@ import {claimedInvitationClaimedByProfileDataLoader} from "./data-loaders/claime
 import {profileInvitationTransactionDataLoader} from "./data-loaders/profileInvitationTransactionDataLoader";
 import {profileCirclesTokenAddressDataLoader} from "./data-loaders/profileCirclesTokenAddressDataLoader";
 import {stats} from "./queries/stats";
+import {init} from "./queries/init";
 
 const packageJson = require("../../package.json");
 
@@ -302,6 +303,7 @@ export const resolvers: Resolvers = {
   },
   Query: {
     sessionInfo: sessionInfo,
+    init: init,
     stats: stats,
     cities: cities,
     claimedInvitation: claimedInvitation,

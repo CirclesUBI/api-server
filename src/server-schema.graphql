@@ -1060,6 +1060,7 @@ input VerifiedSafesFilter {
 type Query {
   version: Version!
   sessionInfo: SessionInfo!
+  init: SessionInfo!
 
   # Tries to find a claimed invitation for the logged-on user.
   # A user can claim and redeem only one invitation ever.
