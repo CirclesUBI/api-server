@@ -1,6 +1,7 @@
 import {Invoice, InvoiceResolvers} from "../../types";
 import {Context} from "../../context";
-import {invoiceLinesDataLoader, invoicePaymentTransactionDataLoader} from "../../../dist/resolvers/dataLoaders";
+import {invoiceLinesDataLoader} from "../dataLoaders/invoiceLinesDataLoader";
+import {invoicePaymentTransactionDataLoader} from "../dataLoaders/invoicePaymentTransactionDataLoader";
 
 export const invoicePropertyResolver : InvoiceResolvers = {
   lines: async (parent: Invoice, args: any, context: Context) => {

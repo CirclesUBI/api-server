@@ -1,6 +1,6 @@
 import {ProfileEvent, ProfileEventResolvers} from "../../types";
 import {Context} from "../../context";
-import {profileEventContactProfileDataLoader} from "../../../dist/resolvers/dataLoaders";
+import {profileEventContactProfileDataLoader} from "../dataLoaders/profileEventContactProfileDataLoader";
 
 export const profileEventPropertyResolver : ProfileEventResolvers = {
   contact_address_profile: async (parent:ProfileEvent, args:any, context:Context) => {

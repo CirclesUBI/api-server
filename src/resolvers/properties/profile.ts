@@ -3,16 +3,19 @@ import {Context} from "../../context";
 import {Environment} from "../../environment";
 import {getDateWithOffset} from "../../utils/getDateWithOffset";
 import BN from "bn.js";
-import {
-  profileAllContactsDataLoader, profileCirclesTokenAddressDataLoader,
-  profileCityDataLoader, profileClaimedInvitationDataLoader, profileInvitationTransactionDataLoader,
-  profileMembershipsDataLoader,
-  profileOffersDataLoader,
-  profilePublicContactsDataLoader,
-  profilePurchasesDataLoader,
-  profileSalesDataLoader,
-  profileVerificationsDataLoader
-} from "../../../dist/resolvers/dataLoaders";
+import {profileCityDataLoader} from "../dataLoaders/profileCityDataLoader";
+import {profileMembershipsDataLoader} from "../dataLoaders/profileMembershipsDataLoader";
+import {profileOffersDataLoader} from "../dataLoaders/profileOffersDataLoader";
+import {profileVerificationsDataLoader} from "../dataLoaders/profileVerificationsDataLoader";
+import {profilePurchasesDataLoader} from "../dataLoaders/profilePurchasesDataLoader";
+import {profileSalesDataLoader} from "../dataLoaders/profileSalesDataLoader";
+import {profilePublicContactsDataLoader} from "../dataLoaders/profilePublicContactsDataLoader";
+import {profileAllContactsDataLoader} from "../dataLoaders/profileAllContactsDataLoader";
+import {profileClaimedInvitationDataLoader} from "../dataLoaders/profileClaimedInvitationDataLoader";
+import {profileInvitationTransactionDataLoader} from "../dataLoaders/profileInvitationTransactionDataLoader";
+import {profileCirclesTokenAddressDataLoader} from "../dataLoaders/profileCirclesTokenAddressDataLoader";
+
+;
 
 function isOwnProfile(profileId:number, context:Context) : boolean {
   return !!context.session?.profileId && context.session.profileId == profileId;

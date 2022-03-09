@@ -1,6 +1,7 @@
 import {Purchase, PurchaseResolvers} from "../../types";
 import {Context} from "../../context";
-import {purchaseInvoicesDataLoader, purchaseLinesDataLoader} from "../../../dist/resolvers/dataLoaders";
+import {purchaseInvoicesDataLoader} from "../dataLoaders/purchaseInvoicesDataLoader";
+import {purchaseLinesDataLoader} from "../dataLoaders/purchaseLinesDataLoader";
 
 export const purchasePropertyResolvers : PurchaseResolvers = {
   invoices: async (parent: Purchase, args: any, context: Context) => {

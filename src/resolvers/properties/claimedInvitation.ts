@@ -1,9 +1,7 @@
 import {ClaimedInvitation, ClaimedInvitationResolvers} from "../../types";
 import {Context} from "../../context";
-import {
-  claimedInvitationClaimedByProfileDataLoader,
-  claimedInvitationCreatedByProfileDataLoader
-} from "../../../dist/resolvers/dataLoaders";
+import {claimedInvitationCreatedByProfileDataLoader} from "../dataLoaders/claimedInvitationCreatedByProfileDataLoader";
+import {claimedInvitationClaimedByProfileDataLoader} from "../dataLoaders/claimedInvitationClaimedByProfileDataLoader";
 
 export const claimedInvitationPropertyResolver : ClaimedInvitationResolvers = {
   createdBy: async (parent: ClaimedInvitation, args: any, context: Context) => {
