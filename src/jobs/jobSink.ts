@@ -15,6 +15,8 @@ import {Echo} from "./descriptions/echo";
 import {EchoWorker} from "./worker/echoWorker";
 import {InviteCodeFromExternalTriggerWorker} from "./worker/onboarding/inviteCodeFromExternalTriggerWorker";
 import {InviteCodeFromExternalTrigger} from "./descriptions/onboarding/inviteCodeFromExternalTrigger";
+import {BroadcastPurchased} from "./descriptions/market/broadcastPurchased";
+import {BroadcastPurchasedWorker} from "./worker/market/broadcastPurchasedWorker";
 
 export const jobSink = async (job: Job) => {
   switch (job.topic) {
@@ -37,6 +39,9 @@ export const jobSink = async (job: Job) => {
     case "broadcastChatMessage".toLowerCase():
       return await new BroadcastChatMessageWorker()
         .run(job.id, BroadcastChatMessage.parse(job.payload));
+    case "broadcastPurchased".toLowerCase():
+      return await new BroadcastPurchasedWorker()
+        .run(job.id, BroadcastPurchased.parse(job.payload));
     case "sendCrcReceivedEmail".toLowerCase():
       return new SendCrcReceivedEmailWorker({
         errorStrategy: "logAndDrop"

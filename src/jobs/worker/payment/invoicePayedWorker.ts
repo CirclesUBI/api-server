@@ -8,6 +8,8 @@ import {
 } from "../../../utils/invoiceGenerator";
 import {Environment} from "../../../environment";
 import {log, logErr} from "../../../utils/log";
+import {JobQueue} from "../../jobQueue";
+import {BroadcastPurchased} from "../../descriptions/market/broadcastPurchased";
 
 type Transfer = {
   hash: string,
@@ -34,6 +36,16 @@ export class InvoicePayedWorker extends JobWorker<InvoicePayed> {
     await this.persistInvoice(
       paidInvoice,
       transferMetadata);
+
+    if (paidInvoice.customerProfile.circlesAddress
+     && paidInvoice.sellerProfile.circlesAddress) {
+      await JobQueue.produce([
+        new BroadcastPurchased(
+          paidInvoice.customerProfile.circlesAddress,
+          paidInvoice.sellerProfile.circlesAddress,
+          paidInvoice.purchaseId)
+      ]);
+    }
 
     return undefined;
   }
