@@ -27,6 +27,7 @@ export function organisationsByAddress() {
         return organisationSignupsResult.rows.map(o => {
             const p: Profile = profiles[o.organisation] ?? {
                 id: -1,
+                askedForEmailAddress: false,
                 firstName: o.organisation,
                 circlesAddress: o.organisation
             };

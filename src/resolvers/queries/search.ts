@@ -112,7 +112,8 @@ export function search(prisma: PrismaClient) {
             return {
                 ...o,
                 origin: ProfileOrigin.Unknown,
-                circlesSafeOwner: o.circlesSafeOwner?.toLowerCase()
+                circlesSafeOwner: o.circlesSafeOwner?.toLowerCase(),
+                askedForEmailAddress: false
             }
         });
     };

@@ -27,6 +27,7 @@ type Profile {
   firstName: String!
   lastName: String
   emailAddress: String
+  askedForEmailAddress: Boolean!
   dream: String
   country: String
   avatarUrl: String
@@ -115,6 +116,7 @@ input UpsertProfileInput {
   dream: String
   country: String
   emailAddress: String
+  askedForEmailAddress: Boolean
   successorOfCirclesAddress: String
   circlesAddress: String
   circlesSafeOwner: String

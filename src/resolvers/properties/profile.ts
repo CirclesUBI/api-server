@@ -15,7 +15,6 @@ import {profileClaimedInvitationDataLoader} from "../dataLoaders/profileClaimedI
 import {profileInvitationTransactionDataLoader} from "../dataLoaders/profileInvitationTransactionDataLoader";
 import {profileCirclesTokenAddressDataLoader} from "../dataLoaders/profileCirclesTokenAddressDataLoader";
 
-;
 
 function isOwnProfile(profileId:number, context:Context) : boolean {
   return !!context.session?.profileId && context.session.profileId == profileId;
@@ -30,6 +29,11 @@ export const profilePropertyResolvers : ProfileResolvers = {
     && parent.emailAddress
       ? parent.emailAddress
       : null,
+  askedForEmailAddress: async (parent: Profile, args:any, context:Context) =>
+    isOwnProfile(parent.id, context)
+    && parent.askedForEmailAddress
+      ? parent.askedForEmailAddress
+      : false,
   newsletter: async (parent: Profile, args:any, context:Context) =>
     isOwnProfile(parent.id, context)
     && parent.newsletter !== undefined

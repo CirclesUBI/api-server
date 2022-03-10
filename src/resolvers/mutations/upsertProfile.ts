@@ -17,6 +17,10 @@ const validateEmail = (email:string) => {
     );
 };
 
+export function isNullOrWhitespace(str?:string|null) :boolean {
+    return !str || str?.trim() == "";
+}
+
 export async function claimInviteCodeFromCookie(context: Context) {
     // Try to claim an invitation right away if there's an invitationCode-cookie
     if (!context.session?.profileId || !context.req?.headers?.cookie) {
@@ -76,6 +80,7 @@ export function upsertProfileResolver() {
                     circlesTokenAddress: args.data.circlesTokenAddress?.toLowerCase(),
                     lastUpdateAt: new Date(),
                     emailAddress: args.data.emailAddress,
+                    askedForEmailAddress: args.data.askedForEmailAddress ?? !isNullOrWhitespace(args.data.emailAddress),
                     circlesSafeOwner: session.ethAddress?.toLowerCase(),
                     displayCurrency: <DisplayCurrency>args.data.displayCurrency
                 }
@@ -85,7 +90,8 @@ export function upsertProfileResolver() {
                 profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({
                     where: {id: args.data.id},
                     data: {
-                        emailAddressVerified: false
+                        emailAddressVerified: false,
+                        askedForEmailAddress: false
                     }
                 }));
             }
@@ -96,6 +102,7 @@ export function upsertProfileResolver() {
                     id: undefined,
                     lastUpdateAt: new Date(),
                     emailAddress: args.data.emailAddress,
+                    askedForEmailAddress: args.data.askedForEmailAddress ?? !isNullOrWhitespace(args.data.emailAddress),
                     emailAddressVerified: false,
                     circlesSafeOwner: session.ethAddress?.toLowerCase(),
                     successorOfCirclesAddress: args.data.successorOfCirclesAddress?.toLowerCase(),

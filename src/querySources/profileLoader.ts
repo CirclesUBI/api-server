@@ -9,8 +9,8 @@ import {
 import { RpcGateway } from "../circles/rpcGateway";
 import fetch from "cross-fetch";
 
-export type SafeProfileMap = { [safeAddress: string]: Profile & {emailAddressVerified:boolean} | null };
-export type IdProfileMap = { [id: number]: Profile & {emailAddressVerified:boolean} | null };
+export type SafeProfileMap = { [safeAddress: string]: Profile & {emailAddressVerified:boolean, askedForEmailAddress:boolean} | null };
+export type IdProfileMap = { [id: number]: Profile & {emailAddressVerified:boolean, askedForEmailAddress:boolean} | null };
 
 export class ProfileLoader {
   async queryCirclesLandById(
@@ -307,6 +307,7 @@ export class ProfileLoader {
         type: ProfileType.Person,
         firstName: "Circles",
         emailAddressVerified: false,
+        askedForEmailAddress: false,
         lastName: "Land",
         avatarUrl: "https://dev.circles.land/logos/circles.png",
         circlesAddress: "0x0000000000000000000000000000000000000000",

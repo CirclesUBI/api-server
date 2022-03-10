@@ -749,6 +749,7 @@ export type PaginationArgs = {
 
 export type Profile = {
   __typename?: 'Profile';
+  askedForEmailAddress: Scalars['Boolean'];
   avatarCid?: Maybe<Scalars['String']>;
   avatarMimeType?: Maybe<Scalars['String']>;
   avatarUrl?: Maybe<Scalars['String']>;
@@ -1287,6 +1288,7 @@ export type UpsertOrganisationInput = {
 };
 
 export type UpsertProfileInput = {
+  askedForEmailAddress?: InputMaybe<Scalars['Boolean']>;
   avatarCid?: InputMaybe<Scalars['String']>;
   avatarMimeType?: InputMaybe<Scalars['String']>;
   avatarUrl?: InputMaybe<Scalars['String']>;
@@ -2188,6 +2190,7 @@ export type OrganisationCreatedResolvers<ContextType = any, ParentType extends R
 }>;
 
 export type ProfileResolvers<ContextType = any, ParentType extends ResolversParentTypes['Profile'] = ResolversParentTypes['Profile']> = ResolversObject<{
+  askedForEmailAddress?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   avatarCid?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarMimeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

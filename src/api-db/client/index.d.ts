@@ -94,6 +94,7 @@ export type Profile = {
   id: number
   lastUpdateAt: Date
   emailAddress: string | null
+  askedForEmailAddress: boolean
   emailAddressVerified: boolean | null
   verifyEmailChallenge: string | null
   createdAt: Date
@@ -5509,6 +5510,7 @@ export namespace Prisma {
     id: number | null
     lastUpdateAt: Date | null
     emailAddress: string | null
+    askedForEmailAddress: boolean | null
     emailAddressVerified: boolean | null
     verifyEmailChallenge: string | null
     createdAt: Date | null
@@ -5542,6 +5544,7 @@ export namespace Prisma {
     id: number | null
     lastUpdateAt: Date | null
     emailAddress: string | null
+    askedForEmailAddress: boolean | null
     emailAddressVerified: boolean | null
     verifyEmailChallenge: string | null
     createdAt: Date | null
@@ -5575,6 +5578,7 @@ export namespace Prisma {
     id: number
     lastUpdateAt: number
     emailAddress: number
+    askedForEmailAddress: number
     emailAddressVerified: number
     verifyEmailChallenge: number
     createdAt: number
@@ -5624,6 +5628,7 @@ export namespace Prisma {
     id?: true
     lastUpdateAt?: true
     emailAddress?: true
+    askedForEmailAddress?: true
     emailAddressVerified?: true
     verifyEmailChallenge?: true
     createdAt?: true
@@ -5657,6 +5662,7 @@ export namespace Prisma {
     id?: true
     lastUpdateAt?: true
     emailAddress?: true
+    askedForEmailAddress?: true
     emailAddressVerified?: true
     verifyEmailChallenge?: true
     createdAt?: true
@@ -5690,6 +5696,7 @@ export namespace Prisma {
     id?: true
     lastUpdateAt?: true
     emailAddress?: true
+    askedForEmailAddress?: true
     emailAddressVerified?: true
     verifyEmailChallenge?: true
     createdAt?: true
@@ -5816,6 +5823,7 @@ export namespace Prisma {
     id: number
     lastUpdateAt: Date
     emailAddress: string | null
+    askedForEmailAddress: boolean
     emailAddressVerified: boolean | null
     verifyEmailChallenge: string | null
     createdAt: Date
@@ -5868,6 +5876,7 @@ export namespace Prisma {
     id?: boolean
     lastUpdateAt?: boolean
     emailAddress?: boolean
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean
     verifyEmailChallenge?: boolean
     createdAt?: boolean
@@ -18590,6 +18599,7 @@ export namespace Prisma {
     id: 'id',
     lastUpdateAt: 'lastUpdateAt',
     emailAddress: 'emailAddress',
+    askedForEmailAddress: 'askedForEmailAddress',
     emailAddressVerified: 'emailAddressVerified',
     verifyEmailChallenge: 'verifyEmailChallenge',
     createdAt: 'createdAt',
@@ -19135,6 +19145,7 @@ export namespace Prisma {
     id?: IntFilter | number
     lastUpdateAt?: DateTimeFilter | Date | string
     emailAddress?: StringNullableFilter | string | null
+    askedForEmailAddress?: BoolFilter | boolean
     emailAddressVerified?: BoolNullableFilter | boolean | null
     verifyEmailChallenge?: StringNullableFilter | string | null
     createdAt?: DateTimeFilter | Date | string
@@ -19184,6 +19195,7 @@ export namespace Prisma {
     id?: SortOrder
     lastUpdateAt?: SortOrder
     emailAddress?: SortOrder
+    askedForEmailAddress?: SortOrder
     emailAddressVerified?: SortOrder
     verifyEmailChallenge?: SortOrder
     createdAt?: SortOrder
@@ -19237,6 +19249,7 @@ export namespace Prisma {
     id?: SortOrder
     lastUpdateAt?: SortOrder
     emailAddress?: SortOrder
+    askedForEmailAddress?: SortOrder
     emailAddressVerified?: SortOrder
     verifyEmailChallenge?: SortOrder
     createdAt?: SortOrder
@@ -19278,6 +19291,7 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter | number
     lastUpdateAt?: DateTimeWithAggregatesFilter | Date | string
     emailAddress?: StringNullableWithAggregatesFilter | string | null
+    askedForEmailAddress?: BoolWithAggregatesFilter | boolean
     emailAddressVerified?: BoolNullableWithAggregatesFilter | boolean | null
     verifyEmailChallenge?: StringNullableWithAggregatesFilter | string | null
     createdAt?: DateTimeWithAggregatesFilter | Date | string
@@ -20457,6 +20471,7 @@ export namespace Prisma {
   export type ProfileCreateInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -20506,6 +20521,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -20554,6 +20570,7 @@ export namespace Prisma {
   export type ProfileUpdateInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20603,6 +20620,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20652,6 +20670,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -20684,6 +20703,7 @@ export namespace Prisma {
   export type ProfileUpdateManyMutationInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20717,6 +20737,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22035,6 +22056,11 @@ export namespace Prisma {
     inviteCount?: SortOrder
   }
 
+  export type BoolFilter = {
+    equals?: boolean
+    not?: NestedBoolFilter | boolean
+  }
+
   export type BoolNullableFilter = {
     equals?: boolean | null
     not?: NestedBoolNullableFilter | boolean | null
@@ -22136,6 +22162,7 @@ export namespace Prisma {
     id?: SortOrder
     lastUpdateAt?: SortOrder
     emailAddress?: SortOrder
+    askedForEmailAddress?: SortOrder
     emailAddressVerified?: SortOrder
     verifyEmailChallenge?: SortOrder
     createdAt?: SortOrder
@@ -22176,6 +22203,7 @@ export namespace Prisma {
     id?: SortOrder
     lastUpdateAt?: SortOrder
     emailAddress?: SortOrder
+    askedForEmailAddress?: SortOrder
     emailAddressVerified?: SortOrder
     verifyEmailChallenge?: SortOrder
     createdAt?: SortOrder
@@ -22209,6 +22237,7 @@ export namespace Prisma {
     id?: SortOrder
     lastUpdateAt?: SortOrder
     emailAddress?: SortOrder
+    askedForEmailAddress?: SortOrder
     emailAddressVerified?: SortOrder
     verifyEmailChallenge?: SortOrder
     createdAt?: SortOrder
@@ -22243,6 +22272,14 @@ export namespace Prisma {
     cityGeonameid?: SortOrder
     lastInvoiceNo?: SortOrder
     lastRefundNo?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter = {
+    equals?: boolean
+    not?: NestedBoolWithAggregatesFilter | boolean
+    _count?: NestedIntFilter
+    _min?: NestedBoolFilter
+    _max?: NestedBoolFilter
   }
 
   export type BoolNullableWithAggregatesFilter = {
@@ -22714,11 +22751,6 @@ export namespace Prisma {
     transactionHash?: SortOrder
   }
 
-  export type BoolFilter = {
-    equals?: boolean
-    not?: NestedBoolFilter | boolean
-  }
-
   export type TagTypeRelationFilter = {
     is?: TagTypeWhereInput
     isNot?: TagTypeWhereInput
@@ -22772,14 +22804,6 @@ export namespace Prisma {
     id?: SortOrder
     createdByProfileId?: SortOrder
     chatMessageId?: SortOrder
-  }
-
-  export type BoolWithAggregatesFilter = {
-    equals?: boolean
-    not?: NestedBoolWithAggregatesFilter | boolean
-    _count?: NestedIntFilter
-    _min?: NestedBoolFilter
-    _max?: NestedBoolFilter
   }
 
   export type JobCountOrderByAggregateInput = {
@@ -23252,6 +23276,10 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<VerifiedSafeCreateOrConnectWithoutRevokedByInput>
     createMany?: VerifiedSafeCreateManyRevokedByInputEnvelope
     connect?: Enumerable<VerifiedSafeWhereUniqueInput>
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
   }
 
   export type NullableBoolFieldUpdateOperationsInput = {
@@ -24384,10 +24412,6 @@ export namespace Prisma {
     update?: XOR<ProfileUpdateWithoutTagsInput, ProfileUncheckedUpdateWithoutTagsInput>
   }
 
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
-  }
-
   export type TransactionUpdateOneWithoutTagsInput = {
     create?: XOR<TransactionCreateWithoutTagsInput, TransactionUncheckedCreateWithoutTagsInput>
     connectOrCreate?: TransactionCreateOrConnectWithoutTagsInput
@@ -24604,6 +24628,11 @@ export namespace Prisma {
     not?: NestedFloatFilter | number
   }
 
+  export type NestedBoolFilter = {
+    equals?: boolean
+    not?: NestedBoolFilter | boolean
+  }
+
   export type NestedBoolNullableFilter = {
     equals?: boolean | null
     not?: NestedBoolNullableFilter | boolean | null
@@ -24614,6 +24643,14 @@ export namespace Prisma {
     in?: Enumerable<ProfileType> | null
     notIn?: Enumerable<ProfileType> | null
     not?: NestedEnumProfileTypeNullableFilter | ProfileType | null
+  }
+
+  export type NestedBoolWithAggregatesFilter = {
+    equals?: boolean
+    not?: NestedBoolWithAggregatesFilter | boolean
+    _count?: NestedIntFilter
+    _min?: NestedBoolFilter
+    _max?: NestedBoolFilter
   }
 
   export type NestedBoolNullableWithAggregatesFilter = {
@@ -24634,22 +24671,10 @@ export namespace Prisma {
     _max?: NestedEnumProfileTypeNullableFilter
   }
 
-  export type NestedBoolFilter = {
-    equals?: boolean
-    not?: NestedBoolFilter | boolean
-  }
-
-  export type NestedBoolWithAggregatesFilter = {
-    equals?: boolean
-    not?: NestedBoolWithAggregatesFilter | boolean
-    _count?: NestedIntFilter
-    _min?: NestedBoolFilter
-    _max?: NestedBoolFilter
-  }
-
   export type ProfileCreateWithoutSessionsInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -24698,6 +24723,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -24755,6 +24781,7 @@ export namespace Prisma {
   export type ProfileUpdateWithoutSessionsInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24803,6 +24830,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24850,6 +24878,7 @@ export namespace Prisma {
   export type ProfileCreateWithoutInvitationsInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -24898,6 +24927,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -24950,6 +24980,7 @@ export namespace Prisma {
   export type ProfileCreateWithoutClaimedInvitationsInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -24998,6 +25029,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -25050,6 +25082,7 @@ export namespace Prisma {
   export type ProfileCreateWithoutRedeemedInvitationsInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -25098,6 +25131,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -25155,6 +25189,7 @@ export namespace Prisma {
   export type ProfileUpdateWithoutInvitationsInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25203,6 +25238,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25255,6 +25291,7 @@ export namespace Prisma {
   export type ProfileUpdateWithoutClaimedInvitationsInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25303,6 +25340,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25355,6 +25393,7 @@ export namespace Prisma {
   export type ProfileUpdateWithoutRedeemedInvitationsInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25403,6 +25442,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25450,6 +25490,7 @@ export namespace Prisma {
   export type ProfileCreateWithoutInvitationFundsInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -25498,6 +25539,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -25555,6 +25597,7 @@ export namespace Prisma {
   export type ProfileUpdateWithoutInvitationFundsInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25603,6 +25646,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25650,6 +25694,7 @@ export namespace Prisma {
   export type ProfileCreateWithoutSafesVerifiedByPersonInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -25698,6 +25743,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -25750,6 +25796,7 @@ export namespace Prisma {
   export type ProfileCreateWithoutSafesVerifiedByOrganisationInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -25798,6 +25845,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -25850,6 +25898,7 @@ export namespace Prisma {
   export type ProfileCreateWithoutSafesRevokedByPersonInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -25898,6 +25947,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -26018,6 +26068,7 @@ export namespace Prisma {
   export type ProfileUpdateWithoutSafesVerifiedByPersonInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26066,6 +26117,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26118,6 +26170,7 @@ export namespace Prisma {
   export type ProfileUpdateWithoutSafesVerifiedByOrganisationInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26166,6 +26219,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26218,6 +26272,7 @@ export namespace Prisma {
   export type ProfileUpdateWithoutSafesRevokedByPersonInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26266,6 +26321,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27368,6 +27424,7 @@ export namespace Prisma {
   export type ProfileCreateWithoutCreatedMembershipsInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -27416,6 +27473,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -27468,6 +27526,7 @@ export namespace Prisma {
   export type ProfileCreateWithoutMembersInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -27516,6 +27575,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -27573,6 +27633,7 @@ export namespace Prisma {
   export type ProfileUpdateWithoutCreatedMembershipsInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27621,6 +27682,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27673,6 +27735,7 @@ export namespace Prisma {
   export type ProfileUpdateWithoutMembersInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27721,6 +27784,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27813,6 +27877,7 @@ export namespace Prisma {
   export type ProfileCreateWithoutOffersInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -27861,6 +27926,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -27960,6 +28026,7 @@ export namespace Prisma {
   export type ProfileUpdateWithoutOffersInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28008,6 +28075,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28109,6 +28177,7 @@ export namespace Prisma {
   export type ProfileCreateWithoutPurchasesInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -28157,6 +28226,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -28283,6 +28353,7 @@ export namespace Prisma {
   export type ProfileUpdateWithoutPurchasesInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28331,6 +28402,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28512,6 +28584,7 @@ export namespace Prisma {
   export type ProfileCreateWithoutPayableInvoicesInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -28560,6 +28633,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -28612,6 +28686,7 @@ export namespace Prisma {
   export type ProfileCreateWithoutReceivableInvoicesInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -28660,6 +28735,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -28773,6 +28849,7 @@ export namespace Prisma {
   export type ProfileCreateWithoutCancelledInvoicesInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -28821,6 +28898,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -28878,6 +28956,7 @@ export namespace Prisma {
   export type ProfileUpdateWithoutPayableInvoicesInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28926,6 +29005,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28978,6 +29058,7 @@ export namespace Prisma {
   export type ProfileUpdateWithoutReceivableInvoicesInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -29026,6 +29107,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -29133,6 +29215,7 @@ export namespace Prisma {
   export type ProfileUpdateWithoutCancelledInvoicesInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -29181,6 +29264,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -29774,6 +29858,7 @@ export namespace Prisma {
   export type ProfileCreateWithoutTagsInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -29822,6 +29907,7 @@ export namespace Prisma {
     id?: number
     lastUpdateAt?: Date | string
     emailAddress?: string | null
+    askedForEmailAddress?: boolean
     emailAddressVerified?: boolean | null
     verifyEmailChallenge?: string | null
     createdAt?: Date | string
@@ -29935,6 +30021,7 @@ export namespace Prisma {
   export type ProfileUpdateWithoutTagsInput = {
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -29983,6 +30070,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     lastUpdateAt?: DateTimeFieldUpdateOperationsInput | Date | string
     emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    askedForEmailAddress?: BoolFieldUpdateOperationsInput | boolean
     emailAddressVerified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     verifyEmailChallenge?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

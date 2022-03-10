@@ -8,6 +8,7 @@ export const contactProfileDataLoader = new DataLoader(async (keys: readonly any
     return result[safeAddress]
       ?? {
         id: -1,
+        askedForEmailAddress: false,
         firstName: safeAddress,
         circlesAddress: safeAddress
       }
