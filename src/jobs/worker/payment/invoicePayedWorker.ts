@@ -39,12 +39,11 @@ export class InvoicePayedWorker extends JobWorker<InvoicePayed> {
 
     if (paidInvoice.customerProfile.circlesAddress
      && paidInvoice.sellerProfile.circlesAddress) {
-      await JobQueue.produce([
+      await JobQueue.broadcast(
         new BroadcastPurchased(
           paidInvoice.customerProfile.circlesAddress,
           paidInvoice.sellerProfile.circlesAddress,
-          paidInvoice.purchaseId)
-      ]);
+          paidInvoice.purchaseId));
     }
 
     return undefined;
