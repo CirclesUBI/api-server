@@ -17,6 +17,8 @@ import {InviteCodeFromExternalTriggerWorker} from "./worker/onboarding/inviteCod
 import {InviteCodeFromExternalTrigger} from "./descriptions/onboarding/inviteCodeFromExternalTrigger";
 import {BroadcastPurchased} from "./descriptions/market/broadcastPurchased";
 import {BroadcastPurchasedWorker} from "./worker/market/broadcastPurchasedWorker";
+import {SendWelcomeEmailWorker} from "./worker/emailNotifications/sendWelcomeEmailWorker";
+import {SendWelcomeEmail} from "./descriptions/emailNotifications/sendWelcomeEmail";
 
 export const jobSink = async (job: Job) => {
   switch (job.topic) {
@@ -25,6 +27,10 @@ export const jobSink = async (job: Job) => {
         errorStrategy: "logAndDrop"
       })
         .run(job.id, Echo.parse(job.payload));
+    case "sendWelcomeEmail".toLowerCase():
+      return await new SendWelcomeEmailWorker({
+        errorStrategy: "logAndDrop"
+      }).run(job.id, SendWelcomeEmail.parse(job.payload));
     case "inviteCodeFromExternalTrigger".toLowerCase():
       return await new InviteCodeFromExternalTriggerWorker({
         errorStrategy: "logAndDrop"

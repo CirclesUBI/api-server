@@ -129,7 +129,8 @@ export class Main {
             "sendVerifyEmailAddressEmail",
             "inviteCodeFromExternalTrigger",
             "echo",
-            "broadcastPurchased"
+            "broadcastPurchased",
+            "sendWelcomeEmail"
         ];
 
         jobQueue.consume(jobTopics, jobSink, false)

@@ -1,6 +1,8 @@
 import {JobWorker, JobWorkerConfiguration} from "../jobWorker";
 import {Environment} from "../../../environment";
 import {VerifyEmailAddress} from "../../descriptions/emailNotifications/verifyEmailAddress";
+import {JobQueue} from "../../jobQueue";
+import {SendWelcomeEmail} from "../../descriptions/emailNotifications/sendWelcomeEmail";
 
 export class VerifyEmailAddressWorker extends JobWorker<VerifyEmailAddress> {
   name(): string {
@@ -15,10 +17,14 @@ export class VerifyEmailAddressWorker extends JobWorker<VerifyEmailAddress> {
     const currentProfile = await Environment.readWriteApiDb.profile.findUnique({where:{id: job.profileId}});
 
     if (job.emailAddress != currentProfile?.emailAddress) {
+      const redirectUrl = Environment.appUrl + "#/passport/verifyemail/failed";
       return {
         data: {
-          statusCode: 404,
-          message: `Your code is invalid.`
+          statusCode: 302,
+          message: `Go to: ${redirectUrl}`,
+          headers: {
+            location: redirectUrl
+          }
         }
       };
     }
@@ -35,6 +41,8 @@ export class VerifyEmailAddressWorker extends JobWorker<VerifyEmailAddress> {
     }
 
     const redirectUrl = Environment.appUrl + "#/home";
+
+    await JobQueue.produce([new SendWelcomeEmail(currentProfile?.emailAddress)]);
 
     return {
       data: {

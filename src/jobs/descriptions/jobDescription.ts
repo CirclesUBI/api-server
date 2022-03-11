@@ -11,6 +11,7 @@ export type JobType =
   "sendVerifyEmailAddressEmail" |
   "echo" |
   "inviteCodeFromExternalTrigger" |
+  "sendWelcomeEmail" |
   "broadcastPurchased";
 
 export type JobKind =
