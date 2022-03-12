@@ -1,5 +1,6 @@
 import {Request, Response} from "express";
 import {JobQueue} from "../../jobs/jobQueue";
+import {Environment} from "../../environment";
 
 export const triggerGetHandler = async (req: Request, res: Response) => {
   try {
@@ -14,11 +15,23 @@ export const triggerGetHandler = async (req: Request, res: Response) => {
     const result = await JobQueue.trigger(<string>req.query.hash);
 
     if (result == "end") {
+      /*
       res.statusCode = 404;
       return res.json({
         status: "notFound",
         message: `Couldn't find the trigger with the supplied code.`
       });
+      */
+      const redirectUrl = Environment.appUrl + "#/passport/verifyemail/failed";
+      return {
+        data: {
+          statusCode: 302,
+          message: `Go to: ${redirectUrl}`,
+          headers: {
+            location: redirectUrl
+          }
+        }
+      };
     }
 
     res.statusCode = result?.data?.statusCode ?? 200;
