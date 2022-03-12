@@ -23,15 +23,8 @@ export const triggerGetHandler = async (req: Request, res: Response) => {
       });
       */
       const redirectUrl = Environment.appUrl + "#/passport/verifyemail/failed";
-      return {
-        data: {
-          statusCode: 302,
-          message: `Go to: ${redirectUrl}`,
-          headers: {
-            location: redirectUrl
-          }
-        }
-      };
+      res.statusCode = 302;
+      return res.redirect(redirectUrl);
     }
 
     res.statusCode = result?.data?.statusCode ?? 200;
