@@ -4,7 +4,7 @@ import {MailTemplate} from "../../../../mailer/mailTemplate";
  * Fields: sender, recipient, amount, currency, bankingUrl
  */
 export const welcomeEmailTemplate:MailTemplate = {
-  subject: `Circles.land: {{sender}} sent you {{amount}} {{currency}}`,
+  subject: `Welcome to Circles.Land`,
   bodyHtml:`<!DOCTYPE html>
 <html lang="en" xmlns:v="urn:schemas-microsoft-com:vml">
 
