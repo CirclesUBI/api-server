@@ -951,6 +951,9 @@ type Mutation {
   verifySafe(safeAddress: String!): VerifySafeResult!
 
   revokeSafeVerification(safeAddress: String!): VerifySafeResult!
+
+  updateValue(lang: String, key: String, createdBy: String, value: String): Int
+  addNewLang(langToCreate: String, langToCopyFrom: String): Int
 }
 
 type VerifySafeResult {
@@ -971,6 +974,14 @@ type Verification {
 
   verificationRewardTransactionHash: String!
   verificationRewardTransaction: ProfileEvent
+}
+
+type i18n {
+  lang: String
+  key: String
+  createdBy: String
+  version: Int
+  value: String
 }
 
 enum SortOrder {
@@ -1115,6 +1126,9 @@ type Query {
   invoice(invoiceId: Int!): String
 
   findInvitationCreator(code: String!): Profile
+
+  getStringsByLanguage(lang: String): [i18n!] 
+  getStringsByMaxVersion(lang: String, key: String): [i18n!]
 }
 
 type Stats {

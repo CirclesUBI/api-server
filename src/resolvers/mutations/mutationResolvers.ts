@@ -23,7 +23,8 @@ import {completeSale} from "./completeSale";
 import {revokeSafeVerification, verifySafe} from "./verifySafe";
 import {announcePayment} from "./announcePayment";
 import {Environment} from "../../environment";
-import {MutationResolvers} from "../../types";
+import {MutationAddNewLangArgs, MutationResolvers, MutationUpdateValueArgs} from "../../types";
+import { Context } from "../../context";
 
 export const mutationResolvers : MutationResolvers = {
   purchase: purchaseResolver,
@@ -51,5 +52,48 @@ export const mutationResolvers : MutationResolvers = {
   completeSale: completeSale,
   verifySafe: verifySafe,
   revokeSafeVerification: revokeSafeVerification,
-  announcePayment: announcePayment()
+  announcePayment: announcePayment(),
+  addNewLang: async (parent: any, args: MutationAddNewLangArgs, context: Context) => {
+    const queryResult = await Environment.pgReadWriteApiDb.query(`
+    insert into i18n (lang, key, "createdBy", version, value)
+        select $1 as lang
+            , i18n.key
+            , i18n."createdBy"
+            , 1 as version
+            , i18n.value
+        from i18n
+        join (
+            select lang, key, max(version) as version, value, "createdBy"
+            from i18n
+            where lang = $2
+            group by lang, key, value, "createdBy"
+        ) max_versions on i18n.key = max_versions.key
+                    and i18n.lang = max_versions.lang
+                    and i18n."createdBy" = max_versions."createdBy"
+                    and i18n.version = max_versions.version
+                    and i18n.value = max_versions.value;
+    `,
+    [args.langToCreate, args.langToCopyFrom]);
+    return queryResult.rowCount
+  },
+  updateValue: async (parent: any, args: MutationUpdateValueArgs, context: Context) => {
+    const queryResult = await Environment.pgReadWriteApiDb.query(`
+    insert into i18n (
+        lang,
+        key, 
+        "createdBy", 
+        version, 
+        value
+    ) values (
+        $1,
+        $2, 
+        $3, 
+        (select max(version) + 1 
+        from i18n 
+        where key=$2),
+        $4);
+    `,
+    [args.lang, args.key, args.createdBy, args.value]);
+    return queryResult.rowCount
+  } 
 }
