@@ -417,3 +417,11 @@ model Job {
     topic String
     payload String
 }
+
+model i18n {
+    lang String
+    key String
+    createdBy String
+    version String
+    value String
+}

@@ -237,7 +237,7 @@ export const directPath = async (parent:any, args:QueryDirectPathArgs, context:C
     };
   }
 
-  const transfers: {
+  let transfers: {
     token: string
     tokenOwner: string
     amount: BN
@@ -279,6 +279,8 @@ export const directPath = async (parent:any, args:QueryDirectPathArgs, context:C
       break;
     }
   }
+
+  transfers = transfers.filter(o => o.amount.gt(new BN("0")));
 
   if (transfers.length > 20) {
     throw new Error(`The transfer would result in more than 20 steps.`);
