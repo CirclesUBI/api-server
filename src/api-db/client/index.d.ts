@@ -303,6 +303,19 @@ export type Job = {
   payload: string
 }
 
+/**
+ * Model i18n
+ * 
+ */
+export type i18n = {
+  createdAt: Date
+  createdBy: string
+  lang: string
+  key: string
+  version: number
+  value: string
+}
+
 
 /**
  * Enums
@@ -639,6 +652,16 @@ export class PrismaClient<
     * ```
     */
   get job(): Prisma.JobDelegate<GlobalReject>;
+
+  /**
+   * `prisma.i18n`: Exposes CRUD operations for the **i18n** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more I18ns
+    * const i18ns = await prisma.i18n.findMany()
+    * ```
+    */
+  get i18n(): Prisma.i18nDelegate<GlobalReject>;
 }
 
 export namespace Prisma {
@@ -1070,7 +1093,8 @@ export namespace Prisma {
     TagType: 'TagType',
     Transaction: 'Transaction',
     Tag: 'Tag',
-    Job: 'Job'
+    Job: 'Job',
+    i18n: 'i18n'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -18519,6 +18543,863 @@ export namespace Prisma {
 
 
   /**
+   * Model i18n
+   */
+
+
+  export type AggregateI18n = {
+    _count: I18nCountAggregateOutputType | null
+    _avg: I18nAvgAggregateOutputType | null
+    _sum: I18nSumAggregateOutputType | null
+    _min: I18nMinAggregateOutputType | null
+    _max: I18nMaxAggregateOutputType | null
+  }
+
+  export type I18nAvgAggregateOutputType = {
+    version: number | null
+  }
+
+  export type I18nSumAggregateOutputType = {
+    version: number | null
+  }
+
+  export type I18nMinAggregateOutputType = {
+    createdAt: Date | null
+    createdBy: string | null
+    lang: string | null
+    key: string | null
+    version: number | null
+    value: string | null
+  }
+
+  export type I18nMaxAggregateOutputType = {
+    createdAt: Date | null
+    createdBy: string | null
+    lang: string | null
+    key: string | null
+    version: number | null
+    value: string | null
+  }
+
+  export type I18nCountAggregateOutputType = {
+    createdAt: number
+    createdBy: number
+    lang: number
+    key: number
+    version: number
+    value: number
+    _all: number
+  }
+
+
+  export type I18nAvgAggregateInputType = {
+    version?: true
+  }
+
+  export type I18nSumAggregateInputType = {
+    version?: true
+  }
+
+  export type I18nMinAggregateInputType = {
+    createdAt?: true
+    createdBy?: true
+    lang?: true
+    key?: true
+    version?: true
+    value?: true
+  }
+
+  export type I18nMaxAggregateInputType = {
+    createdAt?: true
+    createdBy?: true
+    lang?: true
+    key?: true
+    version?: true
+    value?: true
+  }
+
+  export type I18nCountAggregateInputType = {
+    createdAt?: true
+    createdBy?: true
+    lang?: true
+    key?: true
+    version?: true
+    value?: true
+    _all?: true
+  }
+
+  export type I18nAggregateArgs = {
+    /**
+     * Filter which i18n to aggregate.
+     * 
+    **/
+    where?: i18nWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of i18ns to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<i18nOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     * 
+    **/
+    cursor?: i18nWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` i18ns from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` i18ns.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned i18ns
+    **/
+    _count?: true | I18nCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: I18nAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: I18nSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: I18nMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: I18nMaxAggregateInputType
+  }
+
+  export type GetI18nAggregateType<T extends I18nAggregateArgs> = {
+        [P in keyof T & keyof AggregateI18n]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateI18n[P]>
+      : GetScalarType<T[P], AggregateI18n[P]>
+  }
+
+
+
+
+  export type I18nGroupByArgs = {
+    where?: i18nWhereInput
+    orderBy?: Enumerable<i18nOrderByWithAggregationInput>
+    by: Array<I18nScalarFieldEnum>
+    having?: i18nScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: I18nCountAggregateInputType | true
+    _avg?: I18nAvgAggregateInputType
+    _sum?: I18nSumAggregateInputType
+    _min?: I18nMinAggregateInputType
+    _max?: I18nMaxAggregateInputType
+  }
+
+
+  export type I18nGroupByOutputType = {
+    createdAt: Date
+    createdBy: string
+    lang: string
+    key: string
+    version: number
+    value: string
+    _count: I18nCountAggregateOutputType | null
+    _avg: I18nAvgAggregateOutputType | null
+    _sum: I18nSumAggregateOutputType | null
+    _min: I18nMinAggregateOutputType | null
+    _max: I18nMaxAggregateOutputType | null
+  }
+
+  type GetI18nGroupByPayload<T extends I18nGroupByArgs> = PrismaPromise<
+    Array<
+      PickArray<I18nGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof I18nGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], I18nGroupByOutputType[P]>
+            : GetScalarType<T[P], I18nGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type i18nSelect = {
+    createdAt?: boolean
+    createdBy?: boolean
+    lang?: boolean
+    key?: boolean
+    version?: boolean
+    value?: boolean
+  }
+
+  export type i18nGetPayload<
+    S extends boolean | null | undefined | i18nArgs,
+    U = keyof S
+      > = S extends true
+        ? i18n
+    : S extends undefined
+    ? never
+    : S extends i18nArgs | i18nFindManyArgs
+    ?'include' extends U
+    ? i18n 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+    P extends keyof i18n ? i18n[P] : never
+  } 
+    : i18n
+  : i18n
+
+
+  type i18nCountArgs = Merge<
+    Omit<i18nFindManyArgs, 'select' | 'include'> & {
+      select?: I18nCountAggregateInputType | true
+    }
+  >
+
+  export interface i18nDelegate<GlobalRejectSettings> {
+    /**
+     * Find zero or one I18n that matches the filter.
+     * @param {i18nFindUniqueArgs} args - Arguments to find a I18n
+     * @example
+     * // Get one I18n
+     * const i18n = await prisma.i18n.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends i18nFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, i18nFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'i18n'> extends True ? CheckSelect<T, Prisma__i18nClient<i18n>, Prisma__i18nClient<i18nGetPayload<T>>> : CheckSelect<T, Prisma__i18nClient<i18n | null >, Prisma__i18nClient<i18nGetPayload<T> | null >>
+
+    /**
+     * Find the first I18n that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {i18nFindFirstArgs} args - Arguments to find a I18n
+     * @example
+     * // Get one I18n
+     * const i18n = await prisma.i18n.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends i18nFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, i18nFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'i18n'> extends True ? CheckSelect<T, Prisma__i18nClient<i18n>, Prisma__i18nClient<i18nGetPayload<T>>> : CheckSelect<T, Prisma__i18nClient<i18n | null >, Prisma__i18nClient<i18nGetPayload<T> | null >>
+
+    /**
+     * Find zero or more I18ns that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {i18nFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all I18ns
+     * const i18ns = await prisma.i18n.findMany()
+     * 
+     * // Get first 10 I18ns
+     * const i18ns = await prisma.i18n.findMany({ take: 10 })
+     * 
+     * // Only select the `createdAt`
+     * const i18nWithCreatedAtOnly = await prisma.i18n.findMany({ select: { createdAt: true } })
+     * 
+    **/
+    findMany<T extends i18nFindManyArgs>(
+      args?: SelectSubset<T, i18nFindManyArgs>
+    ): CheckSelect<T, PrismaPromise<Array<i18n>>, PrismaPromise<Array<i18nGetPayload<T>>>>
+
+    /**
+     * Create a I18n.
+     * @param {i18nCreateArgs} args - Arguments to create a I18n.
+     * @example
+     * // Create one I18n
+     * const I18n = await prisma.i18n.create({
+     *   data: {
+     *     // ... data to create a I18n
+     *   }
+     * })
+     * 
+    **/
+    create<T extends i18nCreateArgs>(
+      args: SelectSubset<T, i18nCreateArgs>
+    ): CheckSelect<T, Prisma__i18nClient<i18n>, Prisma__i18nClient<i18nGetPayload<T>>>
+
+    /**
+     * Create many I18ns.
+     *     @param {i18nCreateManyArgs} args - Arguments to create many I18ns.
+     *     @example
+     *     // Create many I18ns
+     *     const i18n = await prisma.i18n.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends i18nCreateManyArgs>(
+      args?: SelectSubset<T, i18nCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a I18n.
+     * @param {i18nDeleteArgs} args - Arguments to delete one I18n.
+     * @example
+     * // Delete one I18n
+     * const I18n = await prisma.i18n.delete({
+     *   where: {
+     *     // ... filter to delete one I18n
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends i18nDeleteArgs>(
+      args: SelectSubset<T, i18nDeleteArgs>
+    ): CheckSelect<T, Prisma__i18nClient<i18n>, Prisma__i18nClient<i18nGetPayload<T>>>
+
+    /**
+     * Update one I18n.
+     * @param {i18nUpdateArgs} args - Arguments to update one I18n.
+     * @example
+     * // Update one I18n
+     * const i18n = await prisma.i18n.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends i18nUpdateArgs>(
+      args: SelectSubset<T, i18nUpdateArgs>
+    ): CheckSelect<T, Prisma__i18nClient<i18n>, Prisma__i18nClient<i18nGetPayload<T>>>
+
+    /**
+     * Delete zero or more I18ns.
+     * @param {i18nDeleteManyArgs} args - Arguments to filter I18ns to delete.
+     * @example
+     * // Delete a few I18ns
+     * const { count } = await prisma.i18n.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends i18nDeleteManyArgs>(
+      args?: SelectSubset<T, i18nDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more I18ns.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {i18nUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many I18ns
+     * const i18n = await prisma.i18n.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends i18nUpdateManyArgs>(
+      args: SelectSubset<T, i18nUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one I18n.
+     * @param {i18nUpsertArgs} args - Arguments to update or create a I18n.
+     * @example
+     * // Update or create a I18n
+     * const i18n = await prisma.i18n.upsert({
+     *   create: {
+     *     // ... data to create a I18n
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the I18n we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends i18nUpsertArgs>(
+      args: SelectSubset<T, i18nUpsertArgs>
+    ): CheckSelect<T, Prisma__i18nClient<i18n>, Prisma__i18nClient<i18nGetPayload<T>>>
+
+    /**
+     * Count the number of I18ns.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {i18nCountArgs} args - Arguments to filter I18ns to count.
+     * @example
+     * // Count the number of I18ns
+     * const count = await prisma.i18n.count({
+     *   where: {
+     *     // ... the filter for the I18ns we want to count
+     *   }
+     * })
+    **/
+    count<T extends i18nCountArgs>(
+      args?: Subset<T, i18nCountArgs>,
+    ): PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], I18nCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a I18n.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {I18nAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends I18nAggregateArgs>(args: Subset<T, I18nAggregateArgs>): PrismaPromise<GetI18nAggregateType<T>>
+
+    /**
+     * Group by I18n.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {I18nGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends I18nGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: I18nGroupByArgs['orderBy'] }
+        : { orderBy?: I18nGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, I18nGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetI18nGroupByPayload<T> : PrismaPromise<InputErrors>
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for i18n.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__i18nClient<T> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+  // Custom InputTypes
+
+  /**
+   * i18n findUnique
+   */
+  export type i18nFindUniqueArgs = {
+    /**
+     * Select specific fields to fetch from the i18n
+     * 
+    **/
+    select?: i18nSelect | null
+    /**
+     * Throw an Error if a i18n can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which i18n to fetch.
+     * 
+    **/
+    where: i18nWhereUniqueInput
+  }
+
+
+  /**
+   * i18n findFirst
+   */
+  export type i18nFindFirstArgs = {
+    /**
+     * Select specific fields to fetch from the i18n
+     * 
+    **/
+    select?: i18nSelect | null
+    /**
+     * Throw an Error if a i18n can't be found
+     * 
+    **/
+    rejectOnNotFound?: RejectOnNotFound
+    /**
+     * Filter, which i18n to fetch.
+     * 
+    **/
+    where?: i18nWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of i18ns to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<i18nOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for i18ns.
+     * 
+    **/
+    cursor?: i18nWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` i18ns from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` i18ns.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of i18ns.
+     * 
+    **/
+    distinct?: Enumerable<I18nScalarFieldEnum>
+  }
+
+
+  /**
+   * i18n findMany
+   */
+  export type i18nFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the i18n
+     * 
+    **/
+    select?: i18nSelect | null
+    /**
+     * Filter, which i18ns to fetch.
+     * 
+    **/
+    where?: i18nWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of i18ns to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<i18nOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing i18ns.
+     * 
+    **/
+    cursor?: i18nWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` i18ns from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` i18ns.
+     * 
+    **/
+    skip?: number
+    distinct?: Enumerable<I18nScalarFieldEnum>
+  }
+
+
+  /**
+   * i18n create
+   */
+  export type i18nCreateArgs = {
+    /**
+     * Select specific fields to fetch from the i18n
+     * 
+    **/
+    select?: i18nSelect | null
+    /**
+     * The data needed to create a i18n.
+     * 
+    **/
+    data: XOR<i18nCreateInput, i18nUncheckedCreateInput>
+  }
+
+
+  /**
+   * i18n createMany
+   */
+  export type i18nCreateManyArgs = {
+    /**
+     * The data used to create many i18ns.
+     * 
+    **/
+    data: Enumerable<i18nCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * i18n update
+   */
+  export type i18nUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the i18n
+     * 
+    **/
+    select?: i18nSelect | null
+    /**
+     * The data needed to update a i18n.
+     * 
+    **/
+    data: XOR<i18nUpdateInput, i18nUncheckedUpdateInput>
+    /**
+     * Choose, which i18n to update.
+     * 
+    **/
+    where: i18nWhereUniqueInput
+  }
+
+
+  /**
+   * i18n updateMany
+   */
+  export type i18nUpdateManyArgs = {
+    /**
+     * The data used to update i18ns.
+     * 
+    **/
+    data: XOR<i18nUpdateManyMutationInput, i18nUncheckedUpdateManyInput>
+    /**
+     * Filter which i18ns to update
+     * 
+    **/
+    where?: i18nWhereInput
+  }
+
+
+  /**
+   * i18n upsert
+   */
+  export type i18nUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the i18n
+     * 
+    **/
+    select?: i18nSelect | null
+    /**
+     * The filter to search for the i18n to update in case it exists.
+     * 
+    **/
+    where: i18nWhereUniqueInput
+    /**
+     * In case the i18n found by the `where` argument doesn't exist, create a new i18n with this data.
+     * 
+    **/
+    create: XOR<i18nCreateInput, i18nUncheckedCreateInput>
+    /**
+     * In case the i18n was found with the provided `where` argument, update it with this data.
+     * 
+    **/
+    update: XOR<i18nUpdateInput, i18nUncheckedUpdateInput>
+  }
+
+
+  /**
+   * i18n delete
+   */
+  export type i18nDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the i18n
+     * 
+    **/
+    select?: i18nSelect | null
+    /**
+     * Filter which i18n to delete.
+     * 
+    **/
+    where: i18nWhereUniqueInput
+  }
+
+
+  /**
+   * i18n deleteMany
+   */
+  export type i18nDeleteManyArgs = {
+    /**
+     * Filter which i18ns to delete
+     * 
+    **/
+    where?: i18nWhereInput
+  }
+
+
+  /**
+   * i18n without action
+   */
+  export type i18nArgs = {
+    /**
+     * Select specific fields to fetch from the i18n
+     * 
+    **/
+    select?: i18nSelect | null
+  }
+
+
+
+  /**
    * Enums
    */
 
@@ -18796,6 +19677,18 @@ export namespace Prisma {
   };
 
   export type JobScalarFieldEnum = (typeof JobScalarFieldEnum)[keyof typeof JobScalarFieldEnum]
+
+
+  export const I18nScalarFieldEnum: {
+    createdAt: 'createdAt',
+    createdBy: 'createdBy',
+    lang: 'lang',
+    key: 'key',
+    version: 'version',
+    value: 'value'
+  };
+
+  export type I18nScalarFieldEnum = (typeof I18nScalarFieldEnum)[keyof typeof I18nScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -20077,6 +20970,57 @@ export namespace Prisma {
     info?: StringNullableWithAggregatesFilter | string | null
     topic?: StringWithAggregatesFilter | string
     payload?: StringWithAggregatesFilter | string
+  }
+
+  export type i18nWhereInput = {
+    AND?: Enumerable<i18nWhereInput>
+    OR?: Enumerable<i18nWhereInput>
+    NOT?: Enumerable<i18nWhereInput>
+    createdAt?: DateTimeFilter | Date | string
+    createdBy?: StringFilter | string
+    lang?: StringFilter | string
+    key?: StringFilter | string
+    version?: IntFilter | number
+    value?: StringFilter | string
+  }
+
+  export type i18nOrderByWithRelationInput = {
+    createdAt?: SortOrder
+    createdBy?: SortOrder
+    lang?: SortOrder
+    key?: SortOrder
+    version?: SortOrder
+    value?: SortOrder
+  }
+
+  export type i18nWhereUniqueInput = {
+    lang_key_version?: i18nLangKeyVersionCompoundUniqueInput
+  }
+
+  export type i18nOrderByWithAggregationInput = {
+    createdAt?: SortOrder
+    createdBy?: SortOrder
+    lang?: SortOrder
+    key?: SortOrder
+    version?: SortOrder
+    value?: SortOrder
+    _count?: i18nCountOrderByAggregateInput
+    _avg?: i18nAvgOrderByAggregateInput
+    _max?: i18nMaxOrderByAggregateInput
+    _min?: i18nMinOrderByAggregateInput
+    _sum?: i18nSumOrderByAggregateInput
+  }
+
+  export type i18nScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<i18nScalarWhereWithAggregatesInput>
+    OR?: Enumerable<i18nScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<i18nScalarWhereWithAggregatesInput>
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    createdBy?: StringWithAggregatesFilter | string
+    lang?: StringWithAggregatesFilter | string
+    key?: StringWithAggregatesFilter | string
+    version?: IntWithAggregatesFilter | number
+    value?: StringWithAggregatesFilter | string
   }
 
   export type SessionCreateInput = {
@@ -21654,6 +22598,69 @@ export namespace Prisma {
     payload?: StringFieldUpdateOperationsInput | string
   }
 
+  export type i18nCreateInput = {
+    createdAt?: Date | string
+    createdBy: string
+    lang: string
+    key: string
+    version: number
+    value: string
+  }
+
+  export type i18nUncheckedCreateInput = {
+    createdAt?: Date | string
+    createdBy: string
+    lang: string
+    key: string
+    version: number
+    value: string
+  }
+
+  export type i18nUpdateInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
+    lang?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    value?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type i18nUncheckedUpdateInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
+    lang?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    value?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type i18nCreateManyInput = {
+    createdAt?: Date | string
+    createdBy: string
+    lang: string
+    key: string
+    version: number
+    value: string
+  }
+
+  export type i18nUpdateManyMutationInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
+    lang?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    value?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type i18nUncheckedUpdateManyInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: StringFieldUpdateOperationsInput | string
+    lang?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    value?: StringFieldUpdateOperationsInput | string
+  }
+
   export type StringFilter = {
     equals?: string
     in?: Enumerable<string>
@@ -22854,6 +23861,47 @@ export namespace Prisma {
 
   export type JobSumOrderByAggregateInput = {
     id?: SortOrder
+  }
+
+  export type i18nLangKeyVersionCompoundUniqueInput = {
+    lang: string
+    key: string
+    version: number
+  }
+
+  export type i18nCountOrderByAggregateInput = {
+    createdAt?: SortOrder
+    createdBy?: SortOrder
+    lang?: SortOrder
+    key?: SortOrder
+    version?: SortOrder
+    value?: SortOrder
+  }
+
+  export type i18nAvgOrderByAggregateInput = {
+    version?: SortOrder
+  }
+
+  export type i18nMaxOrderByAggregateInput = {
+    createdAt?: SortOrder
+    createdBy?: SortOrder
+    lang?: SortOrder
+    key?: SortOrder
+    version?: SortOrder
+    value?: SortOrder
+  }
+
+  export type i18nMinOrderByAggregateInput = {
+    createdAt?: SortOrder
+    createdBy?: SortOrder
+    lang?: SortOrder
+    key?: SortOrder
+    version?: SortOrder
+    value?: SortOrder
+  }
+
+  export type i18nSumOrderByAggregateInput = {
+    version?: SortOrder
   }
 
   export type ProfileCreateNestedOneWithoutSessionsInput = {

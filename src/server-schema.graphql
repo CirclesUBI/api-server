@@ -1090,6 +1090,7 @@ type Query {
   ): [ProfileAggregate!]!
 
   organisations(pagination: PaginationArgs): [Organisation!]!
+  organisationsWithOffers: [Organisation!]!
   regions(pagination: PaginationArgs): [Organisation!]!
   organisationsByAddress(addresses: [String!]!): [Organisation!]!
 

@@ -928,6 +928,7 @@ export type Query = {
   myProfile?: Maybe<Profile>;
   organisations: Array<Organisation>;
   organisationsByAddress: Array<Organisation>;
+  organisationsWithOffers: Array<Organisation>;
   profilesById: Array<Profile>;
   profilesBySafeAddress: Array<Profile>;
   recentProfiles: Array<Profile>;
@@ -2326,6 +2327,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   myProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, Partial<QueryOrganisationsArgs>>;
   organisationsByAddress?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsByAddressArgs, 'addresses'>>;
+  organisationsWithOffers?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   profilesById?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesByIdArgs, 'ids'>>;
   profilesBySafeAddress?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesBySafeAddressArgs, 'safeAddresses'>>;
   recentProfiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, Partial<QueryRecentProfilesArgs>>;
