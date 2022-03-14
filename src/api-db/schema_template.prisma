@@ -424,4 +424,5 @@ model i18n {
     createdBy String
     version String
     value String
+    @@unique([lang, key, version])
 }
