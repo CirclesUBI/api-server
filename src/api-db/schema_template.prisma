@@ -419,10 +419,11 @@ model Job {
 }
 
 model i18n {
+    createdAt DateTime @default(now())
+    createdBy String
     lang String
     key String
-    createdBy String
-    version String
+    version Int
     value String
     @@unique([lang, key, version])
 }
