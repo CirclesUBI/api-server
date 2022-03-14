@@ -3,12 +3,12 @@ import {Offer, ProfileOrOrganisation} from "../../types";
 import {ProfileLoader} from "../../querySources/profileLoader";
 import {Environment} from "../../environment";
 
-export const organisationOffersDataLoader = new DataLoader<number, Offer[]>(async (organisationIds) => {
+export const organisationOffersDataLoader = new DataLoader<string, Offer[]>(async (organisationAddresses) => {
   const offers = (await Environment.readonlyApiDb.offer.findMany({
     where: {
       createdBy: {
-        id: {
-          in: organisationIds.map(o => o)
+        circlesAddress: {
+          in: organisationAddresses.map(o => o)
         }
       }
     },
@@ -22,18 +22,24 @@ export const organisationOffersDataLoader = new DataLoader<number, Offer[]>(asyn
   }));
 
   const _offers = offers.reduce((p,c) => {
+    if (!c.createdBy?.circlesAddress) {
+      return p;
+    }
+
     const currentOffer = <Offer>{
       ...c,
       createdByAddress: c.createdBy.circlesAddress,
-      createdAt: c.createdAt.toJSON()
+      createdAt: c.createdAt.toJSON(),
+      pictureUrl: c.pictureUrl ?? ""
     };
-    if (!p[c.id]) {
-      p[c.id] = [currentOffer];
+
+    if (!p[c.createdBy.circlesAddress]) {
+      p[c.createdBy.circlesAddress] = [currentOffer];
     } else {
-      p[c.id].push(currentOffer);
+      p[c.createdBy.circlesAddress].push(currentOffer);
     }
     return p;
-  }, <{[offerId:number]: Offer[]}>{});
+  }, <{[createdByCirclesAddress:string]: Offer[]}>{});
 
   return Object.values(_offers);
 }, {

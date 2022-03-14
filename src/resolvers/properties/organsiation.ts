@@ -8,6 +8,10 @@ export const organisationPropertyResolver : OrganisationResolvers = {
     return organisationMembersDataLoader.load(parent.id);
   },
   offers: async (parent:Organisation, args:any, context:Context) => {
-    return organisationOffersDataLoader.load(parent.id);
+    if (!parent.circlesAddress) {
+      return [];
+    }
+
+    return organisationOffersDataLoader.load(parent.circlesAddress);
   },
 }
