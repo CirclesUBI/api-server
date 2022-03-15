@@ -90,8 +90,7 @@ export function upsertProfileResolver() {
                 profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({
                     where: {id: args.data.id},
                     data: {
-                        emailAddressVerified: false,
-                        askedForEmailAddress: false
+                        emailAddressVerified: false
                     }
                 }));
             }
