@@ -28,7 +28,10 @@ import {stats} from "./stats";
 import {init} from "./init";
 import {Environment} from "../../environment";
 import {QueryGetStringsByLanguageArgs, QueryGetStringByMaxVersionArgs, QueryResolvers} from "../../types";
-import { Context } from "apollo-server-core";
+import {QueryResolvers} from "../../types";
+import {parentPort} from "worker_threads";
+import {Context} from "../../context";
+import {ProfileLoader} from "../../querySources/profileLoader";
 const packageJson = require("../../../package.json");
 
 export const queryResolvers : QueryResolvers = {
@@ -94,4 +97,26 @@ export const queryResolvers : QueryResolvers = {
     [args.lang]);
     return queryResult.rows;
   },
+  organisationsWithOffers: async (parent:any, args:any, context:Context) => {
+    const orgasWithOffers = await Environment.readWriteApiDb.profile.findMany({
+      where: {
+        type: "ORGANISATION",
+        offers: {
+          some: {
+            id: {
+              gt: 0
+            }
+          }
+        }
+      }
+    });
+    return orgasWithOffers.map(o => {
+      return {
+        ...ProfileLoader.withDisplayCurrency(o),
+        __typename: "Organisation",
+        name: o.firstName,
+        createdAt: o.createdAt.toJSON()
+      }
+    });
+  }
 }

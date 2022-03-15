@@ -282,6 +282,8 @@ export type Tag = {
   transactionHash: string | null
   typeId: string
   chatMessageId: number | null
+  offerId: number | null
+  offerVersion: number | null
   value: string | null
 }
 
@@ -1384,11 +1386,13 @@ export namespace Prisma {
   export type OfferCountOutputType = {
     purchaseLines: number
     invoiceLines: number
+    tags: number
   }
 
   export type OfferCountOutputTypeSelect = {
     purchaseLines?: boolean
     invoiceLines?: boolean
+    tags?: boolean
   }
 
   export type OfferCountOutputTypeGetPayload<
@@ -10517,6 +10521,7 @@ export namespace Prisma {
     timeCirclesPriceShare?: boolean
     purchaseLines?: boolean | PurchaseLineFindManyArgs
     invoiceLines?: boolean | InvoiceLineFindManyArgs
+    tags?: boolean | TagFindManyArgs
     _count?: boolean | OfferCountOutputTypeArgs
   }
 
@@ -10524,6 +10529,7 @@ export namespace Prisma {
     createdBy?: boolean | ProfileArgs
     purchaseLines?: boolean | PurchaseLineFindManyArgs
     invoiceLines?: boolean | InvoiceLineFindManyArgs
+    tags?: boolean | TagFindManyArgs
     _count?: boolean | OfferCountOutputTypeArgs
   }
 
@@ -10541,6 +10547,7 @@ export namespace Prisma {
         P extends 'createdBy' ? ProfileGetPayload<S['include'][P]> :
         P extends 'purchaseLines' ? Array < PurchaseLineGetPayload<S['include'][P]>>  :
         P extends 'invoiceLines' ? Array < InvoiceLineGetPayload<S['include'][P]>>  :
+        P extends 'tags' ? Array < TagGetPayload<S['include'][P]>>  :
         P extends '_count' ? OfferCountOutputTypeGetPayload<S['include'][P]> :  never
   } 
     : 'select' extends U
@@ -10549,6 +10556,7 @@ export namespace Prisma {
         P extends 'createdBy' ? ProfileGetPayload<S['select'][P]> :
         P extends 'purchaseLines' ? Array < PurchaseLineGetPayload<S['select'][P]>>  :
         P extends 'invoiceLines' ? Array < InvoiceLineGetPayload<S['select'][P]>>  :
+        P extends 'tags' ? Array < TagGetPayload<S['select'][P]>>  :
         P extends '_count' ? OfferCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Offer ? Offer[P] : never
   } 
     : Offer
@@ -10894,6 +10902,8 @@ export namespace Prisma {
     purchaseLines<T extends PurchaseLineFindManyArgs = {}>(args?: Subset<T, PurchaseLineFindManyArgs>): CheckSelect<T, PrismaPromise<Array<PurchaseLine>>, PrismaPromise<Array<PurchaseLineGetPayload<T>>>>;
 
     invoiceLines<T extends InvoiceLineFindManyArgs = {}>(args?: Subset<T, InvoiceLineFindManyArgs>): CheckSelect<T, PrismaPromise<Array<InvoiceLine>>, PrismaPromise<Array<InvoiceLineGetPayload<T>>>>;
+
+    tags<T extends TagFindManyArgs = {}>(args?: Subset<T, TagFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Tag>>, PrismaPromise<Array<TagGetPayload<T>>>>;
 
     private get _document();
     /**
@@ -16714,12 +16724,16 @@ export namespace Prisma {
     id: number | null
     createdByProfileId: number | null
     chatMessageId: number | null
+    offerId: number | null
+    offerVersion: number | null
   }
 
   export type TagSumAggregateOutputType = {
     id: number | null
     createdByProfileId: number | null
     chatMessageId: number | null
+    offerId: number | null
+    offerVersion: number | null
   }
 
   export type TagMinAggregateOutputType = {
@@ -16730,6 +16744,8 @@ export namespace Prisma {
     transactionHash: string | null
     typeId: string | null
     chatMessageId: number | null
+    offerId: number | null
+    offerVersion: number | null
     value: string | null
   }
 
@@ -16741,6 +16757,8 @@ export namespace Prisma {
     transactionHash: string | null
     typeId: string | null
     chatMessageId: number | null
+    offerId: number | null
+    offerVersion: number | null
     value: string | null
   }
 
@@ -16752,6 +16770,8 @@ export namespace Prisma {
     transactionHash: number
     typeId: number
     chatMessageId: number
+    offerId: number
+    offerVersion: number
     value: number
     _all: number
   }
@@ -16761,12 +16781,16 @@ export namespace Prisma {
     id?: true
     createdByProfileId?: true
     chatMessageId?: true
+    offerId?: true
+    offerVersion?: true
   }
 
   export type TagSumAggregateInputType = {
     id?: true
     createdByProfileId?: true
     chatMessageId?: true
+    offerId?: true
+    offerVersion?: true
   }
 
   export type TagMinAggregateInputType = {
@@ -16777,6 +16801,8 @@ export namespace Prisma {
     transactionHash?: true
     typeId?: true
     chatMessageId?: true
+    offerId?: true
+    offerVersion?: true
     value?: true
   }
 
@@ -16788,6 +16814,8 @@ export namespace Prisma {
     transactionHash?: true
     typeId?: true
     chatMessageId?: true
+    offerId?: true
+    offerVersion?: true
     value?: true
   }
 
@@ -16799,6 +16827,8 @@ export namespace Prisma {
     transactionHash?: true
     typeId?: true
     chatMessageId?: true
+    offerId?: true
+    offerVersion?: true
     value?: true
     _all?: true
   }
@@ -16903,6 +16933,8 @@ export namespace Prisma {
     transactionHash: string | null
     typeId: string
     chatMessageId: number | null
+    offerId: number | null
+    offerVersion: number | null
     value: string | null
     _count: TagCountAggregateOutputType | null
     _avg: TagAvgAggregateOutputType | null
@@ -16937,6 +16969,9 @@ export namespace Prisma {
     typeId?: boolean
     chatMessage?: boolean | ChatMessageArgs
     chatMessageId?: boolean
+    offer?: boolean | OfferArgs
+    offerId?: boolean
+    offerVersion?: boolean
     value?: boolean
   }
 
@@ -16945,6 +16980,7 @@ export namespace Prisma {
     transaction?: boolean | TransactionArgs
     type?: boolean | TagTypeArgs
     chatMessage?: boolean | ChatMessageArgs
+    offer?: boolean | OfferArgs
   }
 
   export type TagGetPayload<
@@ -16961,7 +16997,8 @@ export namespace Prisma {
         P extends 'createdBy' ? ProfileGetPayload<S['include'][P]> :
         P extends 'transaction' ? TransactionGetPayload<S['include'][P]> | null :
         P extends 'type' ? TagTypeGetPayload<S['include'][P]> :
-        P extends 'chatMessage' ? ChatMessageGetPayload<S['include'][P]> | null :  never
+        P extends 'chatMessage' ? ChatMessageGetPayload<S['include'][P]> | null :
+        P extends 'offer' ? OfferGetPayload<S['include'][P]> | null :  never
   } 
     : 'select' extends U
     ? {
@@ -16969,7 +17006,8 @@ export namespace Prisma {
         P extends 'createdBy' ? ProfileGetPayload<S['select'][P]> :
         P extends 'transaction' ? TransactionGetPayload<S['select'][P]> | null :
         P extends 'type' ? TagTypeGetPayload<S['select'][P]> :
-        P extends 'chatMessage' ? ChatMessageGetPayload<S['select'][P]> | null :  P extends keyof Tag ? Tag[P] : never
+        P extends 'chatMessage' ? ChatMessageGetPayload<S['select'][P]> | null :
+        P extends 'offer' ? OfferGetPayload<S['select'][P]> | null :  P extends keyof Tag ? Tag[P] : never
   } 
     : Tag
   : Tag
@@ -17316,6 +17354,8 @@ export namespace Prisma {
     type<T extends TagTypeArgs = {}>(args?: Subset<T, TagTypeArgs>): CheckSelect<T, Prisma__TagTypeClient<TagType | null >, Prisma__TagTypeClient<TagTypeGetPayload<T> | null >>;
 
     chatMessage<T extends ChatMessageArgs = {}>(args?: Subset<T, ChatMessageArgs>): CheckSelect<T, Prisma__ChatMessageClient<ChatMessage | null >, Prisma__ChatMessageClient<ChatMessageGetPayload<T> | null >>;
+
+    offer<T extends OfferArgs = {}>(args?: Subset<T, OfferArgs>): CheckSelect<T, Prisma__OfferClient<Offer | null >, Prisma__OfferClient<OfferGetPayload<T> | null >>;
 
     private get _document();
     /**
@@ -19656,6 +19696,8 @@ export namespace Prisma {
     transactionHash: 'transactionHash',
     typeId: 'typeId',
     chatMessageId: 'chatMessageId',
+    offerId: 'offerId',
+    offerVersion: 'offerVersion',
     value: 'value'
   };
 
@@ -20456,6 +20498,7 @@ export namespace Prisma {
     timeCirclesPriceShare?: IntFilter | number
     purchaseLines?: PurchaseLineListRelationFilter
     invoiceLines?: InvoiceLineListRelationFilter
+    tags?: TagListRelationFilter
   }
 
   export type OfferOrderByWithRelationInput = {
@@ -20472,6 +20515,7 @@ export namespace Prisma {
     timeCirclesPriceShare?: SortOrder
     purchaseLines?: PurchaseLineOrderByRelationAggregateInput
     invoiceLines?: InvoiceLineOrderByRelationAggregateInput
+    tags?: TagOrderByRelationAggregateInput
   }
 
   export type OfferWhereUniqueInput = {
@@ -20848,6 +20892,9 @@ export namespace Prisma {
     typeId?: StringFilter | string
     chatMessage?: XOR<ChatMessageRelationFilter, ChatMessageWhereInput> | null
     chatMessageId?: IntNullableFilter | number | null
+    offer?: XOR<OfferRelationFilter, OfferWhereInput> | null
+    offerId?: IntNullableFilter | number | null
+    offerVersion?: IntNullableFilter | number | null
     value?: StringNullableFilter | string | null
   }
 
@@ -20863,6 +20910,9 @@ export namespace Prisma {
     typeId?: SortOrder
     chatMessage?: ChatMessageOrderByWithRelationInput
     chatMessageId?: SortOrder
+    offer?: OfferOrderByWithRelationInput
+    offerId?: SortOrder
+    offerVersion?: SortOrder
     value?: SortOrder
   }
 
@@ -20878,6 +20928,8 @@ export namespace Prisma {
     transactionHash?: SortOrder
     typeId?: SortOrder
     chatMessageId?: SortOrder
+    offerId?: SortOrder
+    offerVersion?: SortOrder
     value?: SortOrder
     _count?: TagCountOrderByAggregateInput
     _avg?: TagAvgOrderByAggregateInput
@@ -20897,6 +20949,8 @@ export namespace Prisma {
     transactionHash?: StringNullableWithAggregatesFilter | string | null
     typeId?: StringWithAggregatesFilter | string
     chatMessageId?: IntNullableWithAggregatesFilter | number | null
+    offerId?: IntNullableWithAggregatesFilter | number | null
+    offerVersion?: IntNullableWithAggregatesFilter | number | null
     value?: StringNullableWithAggregatesFilter | string | null
   }
 
@@ -21997,6 +22051,7 @@ export namespace Prisma {
     timeCirclesPriceShare: number
     purchaseLines?: PurchaseLineCreateNestedManyWithoutProductInput
     invoiceLines?: InvoiceLineCreateNestedManyWithoutProductInput
+    tags?: TagCreateNestedManyWithoutOfferInput
   }
 
   export type OfferUncheckedCreateInput = {
@@ -22012,6 +22067,7 @@ export namespace Prisma {
     timeCirclesPriceShare: number
     purchaseLines?: PurchaseLineUncheckedCreateNestedManyWithoutProductInput
     invoiceLines?: InvoiceLineUncheckedCreateNestedManyWithoutProductInput
+    tags?: TagUncheckedCreateNestedManyWithoutOfferInput
   }
 
   export type OfferUpdateInput = {
@@ -22027,6 +22083,7 @@ export namespace Prisma {
     timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
     purchaseLines?: PurchaseLineUpdateManyWithoutProductInput
     invoiceLines?: InvoiceLineUpdateManyWithoutProductInput
+    tags?: TagUpdateManyWithoutOfferInput
   }
 
   export type OfferUncheckedUpdateInput = {
@@ -22042,6 +22099,7 @@ export namespace Prisma {
     timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
     purchaseLines?: PurchaseLineUncheckedUpdateManyWithoutProductInput
     invoiceLines?: InvoiceLineUncheckedUpdateManyWithoutProductInput
+    tags?: TagUncheckedUpdateManyWithoutOfferInput
   }
 
   export type OfferCreateManyInput = {
@@ -22440,6 +22498,7 @@ export namespace Prisma {
     transaction?: TransactionCreateNestedOneWithoutTagsInput
     type: TagTypeCreateNestedOneWithoutTagsInput
     chatMessage?: ChatMessageCreateNestedOneWithoutTagsInput
+    offer?: OfferCreateNestedOneWithoutTagsInput
     value?: string | null
   }
 
@@ -22451,6 +22510,8 @@ export namespace Prisma {
     transactionHash?: string | null
     typeId: string
     chatMessageId?: number | null
+    offerId?: number | null
+    offerVersion?: number | null
     value?: string | null
   }
 
@@ -22461,6 +22522,7 @@ export namespace Prisma {
     transaction?: TransactionUpdateOneWithoutTagsInput
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
     chatMessage?: ChatMessageUpdateOneWithoutTagsInput
+    offer?: OfferUpdateOneWithoutTagsInput
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -22472,6 +22534,8 @@ export namespace Prisma {
     transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
     chatMessageId?: NullableIntFieldUpdateOperationsInput | number | null
+    offerId?: NullableIntFieldUpdateOperationsInput | number | null
+    offerVersion?: NullableIntFieldUpdateOperationsInput | number | null
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -22483,6 +22547,8 @@ export namespace Prisma {
     transactionHash?: string | null
     typeId: string
     chatMessageId?: number | null
+    offerId?: number | null
+    offerVersion?: number | null
     value?: string | null
   }
 
@@ -22500,6 +22566,8 @@ export namespace Prisma {
     transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
     chatMessageId?: NullableIntFieldUpdateOperationsInput | number | null
+    offerId?: NullableIntFieldUpdateOperationsInput | number | null
+    offerVersion?: NullableIntFieldUpdateOperationsInput | number | null
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -23776,6 +23844,8 @@ export namespace Prisma {
     transactionHash?: SortOrder
     typeId?: SortOrder
     chatMessageId?: SortOrder
+    offerId?: SortOrder
+    offerVersion?: SortOrder
     value?: SortOrder
   }
 
@@ -23783,6 +23853,8 @@ export namespace Prisma {
     id?: SortOrder
     createdByProfileId?: SortOrder
     chatMessageId?: SortOrder
+    offerId?: SortOrder
+    offerVersion?: SortOrder
   }
 
   export type TagMaxOrderByAggregateInput = {
@@ -23793,6 +23865,8 @@ export namespace Prisma {
     transactionHash?: SortOrder
     typeId?: SortOrder
     chatMessageId?: SortOrder
+    offerId?: SortOrder
+    offerVersion?: SortOrder
     value?: SortOrder
   }
 
@@ -23804,6 +23878,8 @@ export namespace Prisma {
     transactionHash?: SortOrder
     typeId?: SortOrder
     chatMessageId?: SortOrder
+    offerId?: SortOrder
+    offerVersion?: SortOrder
     value?: SortOrder
   }
 
@@ -23811,6 +23887,8 @@ export namespace Prisma {
     id?: SortOrder
     createdByProfileId?: SortOrder
     chatMessageId?: SortOrder
+    offerId?: SortOrder
+    offerVersion?: SortOrder
   }
 
   export type JobCountOrderByAggregateInput = {
@@ -24868,6 +24946,13 @@ export namespace Prisma {
     connect?: Enumerable<InvoiceLineWhereUniqueInput>
   }
 
+  export type TagCreateNestedManyWithoutOfferInput = {
+    create?: XOR<Enumerable<TagCreateWithoutOfferInput>, Enumerable<TagUncheckedCreateWithoutOfferInput>>
+    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutOfferInput>
+    createMany?: TagCreateManyOfferInputEnvelope
+    connect?: Enumerable<TagWhereUniqueInput>
+  }
+
   export type PurchaseLineUncheckedCreateNestedManyWithoutProductInput = {
     create?: XOR<Enumerable<PurchaseLineCreateWithoutProductInput>, Enumerable<PurchaseLineUncheckedCreateWithoutProductInput>>
     connectOrCreate?: Enumerable<PurchaseLineCreateOrConnectWithoutProductInput>
@@ -24880,6 +24965,13 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<InvoiceLineCreateOrConnectWithoutProductInput>
     createMany?: InvoiceLineCreateManyProductInputEnvelope
     connect?: Enumerable<InvoiceLineWhereUniqueInput>
+  }
+
+  export type TagUncheckedCreateNestedManyWithoutOfferInput = {
+    create?: XOR<Enumerable<TagCreateWithoutOfferInput>, Enumerable<TagUncheckedCreateWithoutOfferInput>>
+    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutOfferInput>
+    createMany?: TagCreateManyOfferInputEnvelope
+    connect?: Enumerable<TagWhereUniqueInput>
   }
 
   export type ProfileUpdateOneRequiredWithoutOffersInput = {
@@ -24918,6 +25010,20 @@ export namespace Prisma {
     deleteMany?: Enumerable<InvoiceLineScalarWhereInput>
   }
 
+  export type TagUpdateManyWithoutOfferInput = {
+    create?: XOR<Enumerable<TagCreateWithoutOfferInput>, Enumerable<TagUncheckedCreateWithoutOfferInput>>
+    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutOfferInput>
+    upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutOfferInput>
+    createMany?: TagCreateManyOfferInputEnvelope
+    set?: Enumerable<TagWhereUniqueInput>
+    disconnect?: Enumerable<TagWhereUniqueInput>
+    delete?: Enumerable<TagWhereUniqueInput>
+    connect?: Enumerable<TagWhereUniqueInput>
+    update?: Enumerable<TagUpdateWithWhereUniqueWithoutOfferInput>
+    updateMany?: Enumerable<TagUpdateManyWithWhereWithoutOfferInput>
+    deleteMany?: Enumerable<TagScalarWhereInput>
+  }
+
   export type PurchaseLineUncheckedUpdateManyWithoutProductInput = {
     create?: XOR<Enumerable<PurchaseLineCreateWithoutProductInput>, Enumerable<PurchaseLineUncheckedCreateWithoutProductInput>>
     connectOrCreate?: Enumerable<PurchaseLineCreateOrConnectWithoutProductInput>
@@ -24944,6 +25050,20 @@ export namespace Prisma {
     update?: Enumerable<InvoiceLineUpdateWithWhereUniqueWithoutProductInput>
     updateMany?: Enumerable<InvoiceLineUpdateManyWithWhereWithoutProductInput>
     deleteMany?: Enumerable<InvoiceLineScalarWhereInput>
+  }
+
+  export type TagUncheckedUpdateManyWithoutOfferInput = {
+    create?: XOR<Enumerable<TagCreateWithoutOfferInput>, Enumerable<TagUncheckedCreateWithoutOfferInput>>
+    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutOfferInput>
+    upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutOfferInput>
+    createMany?: TagCreateManyOfferInputEnvelope
+    set?: Enumerable<TagWhereUniqueInput>
+    disconnect?: Enumerable<TagWhereUniqueInput>
+    delete?: Enumerable<TagWhereUniqueInput>
+    connect?: Enumerable<TagWhereUniqueInput>
+    update?: Enumerable<TagUpdateWithWhereUniqueWithoutOfferInput>
+    updateMany?: Enumerable<TagUpdateManyWithWhereWithoutOfferInput>
+    deleteMany?: Enumerable<TagScalarWhereInput>
   }
 
   export type ProfileCreateNestedOneWithoutPurchasesInput = {
@@ -25452,6 +25572,12 @@ export namespace Prisma {
     connect?: ChatMessageWhereUniqueInput
   }
 
+  export type OfferCreateNestedOneWithoutTagsInput = {
+    create?: XOR<OfferCreateWithoutTagsInput, OfferUncheckedCreateWithoutTagsInput>
+    connectOrCreate?: OfferCreateOrConnectWithoutTagsInput
+    connect?: OfferWhereUniqueInput
+  }
+
   export type ProfileUpdateOneRequiredWithoutTagsInput = {
     create?: XOR<ProfileCreateWithoutTagsInput, ProfileUncheckedCreateWithoutTagsInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutTagsInput
@@ -25486,6 +25612,16 @@ export namespace Prisma {
     delete?: boolean
     connect?: ChatMessageWhereUniqueInput
     update?: XOR<ChatMessageUpdateWithoutTagsInput, ChatMessageUncheckedUpdateWithoutTagsInput>
+  }
+
+  export type OfferUpdateOneWithoutTagsInput = {
+    create?: XOR<OfferCreateWithoutTagsInput, OfferUncheckedCreateWithoutTagsInput>
+    connectOrCreate?: OfferCreateOrConnectWithoutTagsInput
+    upsert?: OfferUpsertWithoutTagsInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: OfferWhereUniqueInput
+    update?: XOR<OfferUpdateWithoutTagsInput, OfferUncheckedUpdateWithoutTagsInput>
   }
 
   export type NestedStringFilter = {
@@ -27525,6 +27661,7 @@ export namespace Prisma {
     transaction?: TransactionCreateNestedOneWithoutTagsInput
     type: TagTypeCreateNestedOneWithoutTagsInput
     chatMessage?: ChatMessageCreateNestedOneWithoutTagsInput
+    offer?: OfferCreateNestedOneWithoutTagsInput
     value?: string | null
   }
 
@@ -27535,6 +27672,8 @@ export namespace Prisma {
     transactionHash?: string | null
     typeId: string
     chatMessageId?: number | null
+    offerId?: number | null
+    offerVersion?: number | null
     value?: string | null
   }
 
@@ -27560,6 +27699,7 @@ export namespace Prisma {
     timeCirclesPriceShare: number
     purchaseLines?: PurchaseLineCreateNestedManyWithoutProductInput
     invoiceLines?: InvoiceLineCreateNestedManyWithoutProductInput
+    tags?: TagCreateNestedManyWithoutOfferInput
   }
 
   export type OfferUncheckedCreateWithoutCreatedByInput = {
@@ -27574,6 +27714,7 @@ export namespace Prisma {
     timeCirclesPriceShare: number
     purchaseLines?: PurchaseLineUncheckedCreateNestedManyWithoutProductInput
     invoiceLines?: InvoiceLineUncheckedCreateNestedManyWithoutProductInput
+    tags?: TagUncheckedCreateNestedManyWithoutOfferInput
   }
 
   export type OfferCreateOrConnectWithoutCreatedByInput = {
@@ -28140,6 +28281,8 @@ export namespace Prisma {
     transactionHash?: StringNullableFilter | string | null
     typeId?: StringFilter | string
     chatMessageId?: IntNullableFilter | number | null
+    offerId?: IntNullableFilter | number | null
+    offerVersion?: IntNullableFilter | number | null
     value?: StringNullableFilter | string | null
   }
 
@@ -28883,6 +29026,7 @@ export namespace Prisma {
     isPrivate: boolean
     transaction?: TransactionCreateNestedOneWithoutTagsInput
     type: TagTypeCreateNestedOneWithoutTagsInput
+    offer?: OfferCreateNestedOneWithoutTagsInput
     value?: string | null
   }
 
@@ -28893,6 +29037,8 @@ export namespace Prisma {
     isPrivate: boolean
     transactionHash?: string | null
     typeId: string
+    offerId?: number | null
+    offerVersion?: number | null
     value?: string | null
   }
 
@@ -29066,6 +29212,37 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type TagCreateWithoutOfferInput = {
+    createdAt: Date | string
+    createdBy: ProfileCreateNestedOneWithoutTagsInput
+    isPrivate: boolean
+    transaction?: TransactionCreateNestedOneWithoutTagsInput
+    type: TagTypeCreateNestedOneWithoutTagsInput
+    chatMessage?: ChatMessageCreateNestedOneWithoutTagsInput
+    value?: string | null
+  }
+
+  export type TagUncheckedCreateWithoutOfferInput = {
+    id?: number
+    createdAt: Date | string
+    createdByProfileId: number
+    isPrivate: boolean
+    transactionHash?: string | null
+    typeId: string
+    chatMessageId?: number | null
+    value?: string | null
+  }
+
+  export type TagCreateOrConnectWithoutOfferInput = {
+    where: TagWhereUniqueInput
+    create: XOR<TagCreateWithoutOfferInput, TagUncheckedCreateWithoutOfferInput>
+  }
+
+  export type TagCreateManyOfferInputEnvelope = {
+    data: Enumerable<TagCreateManyOfferInput>
+    skipDuplicates?: boolean
+  }
+
   export type ProfileUpsertWithoutOffersInput = {
     update: XOR<ProfileUpdateWithoutOffersInput, ProfileUncheckedUpdateWithoutOffersInput>
     create: XOR<ProfileCreateWithoutOffersInput, ProfileUncheckedCreateWithoutOffersInput>
@@ -29220,6 +29397,22 @@ export namespace Prisma {
     amount?: IntFilter | number
     productId?: IntFilter | number
     productVersion?: IntFilter | number
+  }
+
+  export type TagUpsertWithWhereUniqueWithoutOfferInput = {
+    where: TagWhereUniqueInput
+    update: XOR<TagUpdateWithoutOfferInput, TagUncheckedUpdateWithoutOfferInput>
+    create: XOR<TagCreateWithoutOfferInput, TagUncheckedCreateWithoutOfferInput>
+  }
+
+  export type TagUpdateWithWhereUniqueWithoutOfferInput = {
+    where: TagWhereUniqueInput
+    data: XOR<TagUpdateWithoutOfferInput, TagUncheckedUpdateWithoutOfferInput>
+  }
+
+  export type TagUpdateManyWithWhereWithoutOfferInput = {
+    where: TagScalarWhereInput
+    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyWithoutTagsInput>
   }
 
   export type ProfileCreateWithoutPurchasesInput = {
@@ -29557,6 +29750,7 @@ export namespace Prisma {
     pricePerUnit: string
     timeCirclesPriceShare: number
     invoiceLines?: InvoiceLineCreateNestedManyWithoutProductInput
+    tags?: TagCreateNestedManyWithoutOfferInput
   }
 
   export type OfferUncheckedCreateWithoutPurchaseLinesInput = {
@@ -29571,6 +29765,7 @@ export namespace Prisma {
     pricePerUnit: string
     timeCirclesPriceShare: number
     invoiceLines?: InvoiceLineUncheckedCreateNestedManyWithoutProductInput
+    tags?: TagUncheckedCreateNestedManyWithoutOfferInput
   }
 
   export type OfferCreateOrConnectWithoutPurchaseLinesInput = {
@@ -29613,6 +29808,7 @@ export namespace Prisma {
     pricePerUnit?: StringFieldUpdateOperationsInput | string
     timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
     invoiceLines?: InvoiceLineUpdateManyWithoutProductInput
+    tags?: TagUpdateManyWithoutOfferInput
   }
 
   export type OfferUncheckedUpdateWithoutPurchaseLinesInput = {
@@ -29627,6 +29823,7 @@ export namespace Prisma {
     pricePerUnit?: StringFieldUpdateOperationsInput | string
     timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
     invoiceLines?: InvoiceLineUncheckedUpdateManyWithoutProductInput
+    tags?: TagUncheckedUpdateManyWithoutOfferInput
   }
 
   export type ProfileCreateWithoutPayableInvoicesInput = {
@@ -30411,6 +30608,7 @@ export namespace Prisma {
     pricePerUnit: string
     timeCirclesPriceShare: number
     purchaseLines?: PurchaseLineCreateNestedManyWithoutProductInput
+    tags?: TagCreateNestedManyWithoutOfferInput
   }
 
   export type OfferUncheckedCreateWithoutInvoiceLinesInput = {
@@ -30425,6 +30623,7 @@ export namespace Prisma {
     pricePerUnit: string
     timeCirclesPriceShare: number
     purchaseLines?: PurchaseLineUncheckedCreateNestedManyWithoutProductInput
+    tags?: TagUncheckedCreateNestedManyWithoutOfferInput
   }
 
   export type OfferCreateOrConnectWithoutInvoiceLinesInput = {
@@ -30491,6 +30690,7 @@ export namespace Prisma {
     pricePerUnit?: StringFieldUpdateOperationsInput | string
     timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
     purchaseLines?: PurchaseLineUpdateManyWithoutProductInput
+    tags?: TagUpdateManyWithoutOfferInput
   }
 
   export type OfferUncheckedUpdateWithoutInvoiceLinesInput = {
@@ -30505,6 +30705,7 @@ export namespace Prisma {
     pricePerUnit?: StringFieldUpdateOperationsInput | string
     timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
     purchaseLines?: PurchaseLineUncheckedUpdateManyWithoutProductInput
+    tags?: TagUncheckedUpdateManyWithoutOfferInput
   }
 
   export type TagCreateWithoutTypeInput = {
@@ -30513,6 +30714,7 @@ export namespace Prisma {
     isPrivate: boolean
     transaction?: TransactionCreateNestedOneWithoutTagsInput
     chatMessage?: ChatMessageCreateNestedOneWithoutTagsInput
+    offer?: OfferCreateNestedOneWithoutTagsInput
     value?: string | null
   }
 
@@ -30523,6 +30725,8 @@ export namespace Prisma {
     isPrivate: boolean
     transactionHash?: string | null
     chatMessageId?: number | null
+    offerId?: number | null
+    offerVersion?: number | null
     value?: string | null
   }
 
@@ -30558,6 +30762,7 @@ export namespace Prisma {
     isPrivate: boolean
     type: TagTypeCreateNestedOneWithoutTagsInput
     chatMessage?: ChatMessageCreateNestedOneWithoutTagsInput
+    offer?: OfferCreateNestedOneWithoutTagsInput
     value?: string | null
   }
 
@@ -30568,6 +30773,8 @@ export namespace Prisma {
     isPrivate: boolean
     typeId: string
     chatMessageId?: number | null
+    offerId?: number | null
+    offerVersion?: number | null
     value?: string | null
   }
 
@@ -31061,6 +31268,41 @@ export namespace Prisma {
     create: XOR<ChatMessageCreateWithoutTagsInput, ChatMessageUncheckedCreateWithoutTagsInput>
   }
 
+  export type OfferCreateWithoutTagsInput = {
+    id?: number
+    version: number
+    createdBy: ProfileCreateNestedOneWithoutOffersInput
+    createdAt: Date | string
+    title: string
+    pictureUrl?: string | null
+    pictureMimeType?: string | null
+    description?: string | null
+    pricePerUnit: string
+    timeCirclesPriceShare: number
+    purchaseLines?: PurchaseLineCreateNestedManyWithoutProductInput
+    invoiceLines?: InvoiceLineCreateNestedManyWithoutProductInput
+  }
+
+  export type OfferUncheckedCreateWithoutTagsInput = {
+    id?: number
+    version: number
+    createdByProfileId: number
+    createdAt: Date | string
+    title: string
+    pictureUrl?: string | null
+    pictureMimeType?: string | null
+    description?: string | null
+    pricePerUnit: string
+    timeCirclesPriceShare: number
+    purchaseLines?: PurchaseLineUncheckedCreateNestedManyWithoutProductInput
+    invoiceLines?: InvoiceLineUncheckedCreateNestedManyWithoutProductInput
+  }
+
+  export type OfferCreateOrConnectWithoutTagsInput = {
+    where: OfferWhereUniqueInput
+    create: XOR<OfferCreateWithoutTagsInput, OfferUncheckedCreateWithoutTagsInput>
+  }
+
   export type ProfileUpsertWithoutTagsInput = {
     update: XOR<ProfileUpdateWithoutTagsInput, ProfileUncheckedUpdateWithoutTagsInput>
     create: XOR<ProfileCreateWithoutTagsInput, ProfileUncheckedCreateWithoutTagsInput>
@@ -31219,6 +31461,41 @@ export namespace Prisma {
     text?: StringFieldUpdateOperationsInput | string
   }
 
+  export type OfferUpsertWithoutTagsInput = {
+    update: XOR<OfferUpdateWithoutTagsInput, OfferUncheckedUpdateWithoutTagsInput>
+    create: XOR<OfferCreateWithoutTagsInput, OfferUncheckedCreateWithoutTagsInput>
+  }
+
+  export type OfferUpdateWithoutTagsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    createdBy?: ProfileUpdateOneRequiredWithoutOffersInput
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    pictureUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    pricePerUnit?: StringFieldUpdateOperationsInput | string
+    timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
+    purchaseLines?: PurchaseLineUpdateManyWithoutProductInput
+    invoiceLines?: InvoiceLineUpdateManyWithoutProductInput
+  }
+
+  export type OfferUncheckedUpdateWithoutTagsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    pictureUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pictureMimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    pricePerUnit?: StringFieldUpdateOperationsInput | string
+    timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
+    purchaseLines?: PurchaseLineUncheckedUpdateManyWithoutProductInput
+    invoiceLines?: InvoiceLineUncheckedUpdateManyWithoutProductInput
+  }
+
   export type SessionCreateManyProfileInput = {
     id: string
     sessionToken: string
@@ -31242,6 +31519,8 @@ export namespace Prisma {
     transactionHash?: string | null
     typeId: string
     chatMessageId?: number | null
+    offerId?: number | null
+    offerVersion?: number | null
     value?: string | null
   }
 
@@ -31488,6 +31767,7 @@ export namespace Prisma {
     transaction?: TransactionUpdateOneWithoutTagsInput
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
     chatMessage?: ChatMessageUpdateOneWithoutTagsInput
+    offer?: OfferUpdateOneWithoutTagsInput
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -31498,6 +31778,8 @@ export namespace Prisma {
     transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
     chatMessageId?: NullableIntFieldUpdateOperationsInput | number | null
+    offerId?: NullableIntFieldUpdateOperationsInput | number | null
+    offerVersion?: NullableIntFieldUpdateOperationsInput | number | null
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -31508,6 +31790,8 @@ export namespace Prisma {
     transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
     chatMessageId?: NullableIntFieldUpdateOperationsInput | number | null
+    offerId?: NullableIntFieldUpdateOperationsInput | number | null
+    offerVersion?: NullableIntFieldUpdateOperationsInput | number | null
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -31523,6 +31807,7 @@ export namespace Prisma {
     timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
     purchaseLines?: PurchaseLineUpdateManyWithoutProductInput
     invoiceLines?: InvoiceLineUpdateManyWithoutProductInput
+    tags?: TagUpdateManyWithoutOfferInput
   }
 
   export type OfferUncheckedUpdateWithoutCreatedByInput = {
@@ -31537,6 +31822,7 @@ export namespace Prisma {
     timeCirclesPriceShare?: IntFieldUpdateOperationsInput | number
     purchaseLines?: PurchaseLineUncheckedUpdateManyWithoutProductInput
     invoiceLines?: InvoiceLineUncheckedUpdateManyWithoutProductInput
+    tags?: TagUncheckedUpdateManyWithoutOfferInput
   }
 
   export type OfferUncheckedUpdateManyWithoutOffersInput = {
@@ -32090,6 +32376,8 @@ export namespace Prisma {
     isPrivate: boolean
     transactionHash?: string | null
     typeId: string
+    offerId?: number | null
+    offerVersion?: number | null
     value?: string | null
   }
 
@@ -32099,6 +32387,7 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     transaction?: TransactionUpdateOneWithoutTagsInput
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
+    offer?: OfferUpdateOneWithoutTagsInput
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -32109,6 +32398,8 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
+    offerId?: NullableIntFieldUpdateOperationsInput | number | null
+    offerVersion?: NullableIntFieldUpdateOperationsInput | number | null
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -32122,6 +32413,17 @@ export namespace Prisma {
     id?: number
     invoiceId: number
     amount: number
+  }
+
+  export type TagCreateManyOfferInput = {
+    id?: number
+    createdAt: Date | string
+    createdByProfileId: number
+    isPrivate: boolean
+    transactionHash?: string | null
+    typeId: string
+    chatMessageId?: number | null
+    value?: string | null
   }
 
   export type PurchaseLineUpdateWithoutProductInput = {
@@ -32156,6 +32458,27 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     invoiceId?: IntFieldUpdateOperationsInput | number
     amount?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type TagUpdateWithoutOfferInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    transaction?: TransactionUpdateOneWithoutTagsInput
+    type?: TagTypeUpdateOneRequiredWithoutTagsInput
+    chatMessage?: ChatMessageUpdateOneWithoutTagsInput
+    value?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TagUncheckedUpdateWithoutOfferInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByProfileId?: IntFieldUpdateOperationsInput | number
+    isPrivate?: BoolFieldUpdateOperationsInput | boolean
+    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
+    typeId?: StringFieldUpdateOperationsInput | string
+    chatMessageId?: NullableIntFieldUpdateOperationsInput | number | null
+    value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PurchaseLineCreateManyPurchaseInput = {
@@ -32290,6 +32613,8 @@ export namespace Prisma {
     isPrivate: boolean
     transactionHash?: string | null
     chatMessageId?: number | null
+    offerId?: number | null
+    offerVersion?: number | null
     value?: string | null
   }
 
@@ -32299,6 +32624,7 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     transaction?: TransactionUpdateOneWithoutTagsInput
     chatMessage?: ChatMessageUpdateOneWithoutTagsInput
+    offer?: OfferUpdateOneWithoutTagsInput
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -32309,6 +32635,8 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     chatMessageId?: NullableIntFieldUpdateOperationsInput | number | null
+    offerId?: NullableIntFieldUpdateOperationsInput | number | null
+    offerVersion?: NullableIntFieldUpdateOperationsInput | number | null
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -32319,6 +32647,8 @@ export namespace Prisma {
     isPrivate: boolean
     typeId: string
     chatMessageId?: number | null
+    offerId?: number | null
+    offerVersion?: number | null
     value?: string | null
   }
 
@@ -32328,6 +32658,7 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
     chatMessage?: ChatMessageUpdateOneWithoutTagsInput
+    offer?: OfferUpdateOneWithoutTagsInput
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -32338,6 +32669,8 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     typeId?: StringFieldUpdateOperationsInput | string
     chatMessageId?: NullableIntFieldUpdateOperationsInput | number | null
+    offerId?: NullableIntFieldUpdateOperationsInput | number | null
+    offerVersion?: NullableIntFieldUpdateOperationsInput | number | null
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 

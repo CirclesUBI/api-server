@@ -715,6 +715,7 @@ export type Offer = {
   pictureMimeType: Scalars['String'];
   pictureUrl: Scalars['String'];
   pricePerUnit: Scalars['String'];
+  tags?: Maybe<Array<Tag>>;
   timeCirclesPriceShare: Scalars['Int'];
   title: Scalars['String'];
   version: Scalars['Int'];
@@ -843,6 +844,7 @@ export type ProfileEventFilter = {
   direction?: InputMaybe<Direction>;
   from?: InputMaybe<Scalars['String']>;
   purchased?: InputMaybe<PurchasedEventFilter>;
+  sale?: InputMaybe<SaleEventFilter>;
   to?: InputMaybe<Scalars['String']>;
   transactionHash?: InputMaybe<Scalars['String']>;
   with?: InputMaybe<Scalars['String']>;
@@ -946,6 +948,7 @@ export type Query = {
   myProfile?: Maybe<Profile>;
   organisations: Array<Organisation>;
   organisationsByAddress: Array<Organisation>;
+  organisationsWithOffers: Array<Organisation>;
   profilesById: Array<Profile>;
   profilesBySafeAddress: Array<Profile>;
   recentProfiles: Array<Profile>;
@@ -1186,6 +1189,10 @@ export type SaleEvent = IEventPayload & {
   buyer_profile?: Maybe<Profile>;
   invoice?: Maybe<Invoice>;
   transaction_hash?: Maybe<Scalars['String']>;
+};
+
+export type SaleEventFilter = {
+  invoiceId: Scalars['Int'];
 };
 
 export type Sales = IAggregatePayload & {
@@ -1566,6 +1573,7 @@ export type ResolversTypes = ResolversObject<{
   SafeVerified: ResolverTypeWrapper<SafeVerified>;
   Sale: ResolverTypeWrapper<Sale>;
   SaleEvent: ResolverTypeWrapper<SaleEvent>;
+  SaleEventFilter: SaleEventFilter;
   Sales: ResolverTypeWrapper<Sales>;
   SalesAggregateFilter: SalesAggregateFilter;
   SalesLine: ResolverTypeWrapper<SalesLine>;
@@ -1696,6 +1704,7 @@ export type ResolversParentTypes = ResolversObject<{
   SafeVerified: SafeVerified;
   Sale: Sale;
   SaleEvent: SaleEvent;
+  SaleEventFilter: SaleEventFilter;
   Sales: Sales;
   SalesAggregateFilter: SalesAggregateFilter;
   SalesLine: SalesLine;
@@ -2194,6 +2203,7 @@ export type OfferResolvers<ContextType = any, ParentType extends ResolversParent
   pictureMimeType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   pictureUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   pricePerUnit?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tags?: Resolver<Maybe<Array<ResolversTypes['Tag']>>, ParentType, ContextType>;
   timeCirclesPriceShare?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   version?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -2370,6 +2380,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   myProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, Partial<QueryOrganisationsArgs>>;
   organisationsByAddress?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsByAddressArgs, 'addresses'>>;
+  organisationsWithOffers?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   profilesById?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesByIdArgs, 'ids'>>;
   profilesBySafeAddress?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesBySafeAddressArgs, 'safeAddresses'>>;
   recentProfiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, Partial<QueryRecentProfilesArgs>>;

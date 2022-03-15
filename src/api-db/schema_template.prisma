@@ -271,6 +271,7 @@ model Offer {
 
     purchaseLines PurchaseLine[] @relation(name: "PurchaseLines_Product")
     invoiceLines InvoiceLine[] @relation(name: "InvoiceLines_Product")
+    tags Tag[] @relation(name: "Offer_Tags")
 }
 
 model Purchase {
@@ -399,6 +400,11 @@ model Tag {
     chatMessage ChatMessage? @relation(name: "ChatMessage_Tags", fields: [chatMessageId], references: [id])
     chatMessageId Int?
     @@index([chatMessageId])
+
+    offer Offer? @relation(name: "Offer_Tags", fields: [offerId, offerVersion], references: [id, version])
+    offerId Int?
+    offerVersion Int?
+    @@index([offerId, offerVersion])
 
     value String?
 }

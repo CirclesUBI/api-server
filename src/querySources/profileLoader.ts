@@ -1,12 +1,6 @@
-import { PrismaClient, VerifiedSafe } from "../api-db/client";
-import {
-  DisplayCurrency,
-  Organisation,
-  Profile,
-  ProfileOrigin, ProfileType,
-  Verification,
-} from "../types";
-import { RpcGateway } from "../circles/rpcGateway";
+import {PrismaClient, VerifiedSafe} from "../api-db/client";
+import {DisplayCurrency, Organisation, Profile, ProfileOrigin, ProfileType, Verification,} from "../types";
+import {RpcGateway} from "../circles/rpcGateway";
 import fetch from "cross-fetch";
 
 export type SafeProfileMap = { [safeAddress: string]: Profile & {emailAddressVerified:boolean, askedForEmailAddress:boolean} | null };
@@ -59,7 +53,7 @@ export class ProfileLoader {
     }
   }
 
-  static withDisplayCurrency(profile: any): Profile  & {emailAddressVerified:boolean}{
+  static withDisplayCurrency(profile: any): Profile  & {emailAddressVerified:boolean, askedForSafeAddress:boolean}{
     return {
       ...profile,
       displayCurrency: ProfileLoader.getDisplayCurrency(profile),
@@ -245,7 +239,7 @@ export class ProfileLoader {
         requestResultJson.data.map((o: any) => {
           return <Profile & {emailAddressVerified: boolean}>{
             id: -1,
-            type: "PERSON",
+            type: ProfileType.Person,
             firstName: o.username,
             lastName: "",
             circlesAddress: o.safeAddress.toLowerCase(),

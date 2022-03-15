@@ -40,7 +40,7 @@ export class VerifyEmailAddressWorker extends JobWorker<VerifyEmailAddress> {
       throw new Error(`Couldn't find a profile with id '${job.profileId}' to set it's 'emailAddressVerified' field.`);
     }
 
-    const redirectUrl = Environment.appUrl + "#/home";
+    const redirectUrl = Environment.appUrl + "#/passport/verifyemail/success";
 
     await JobQueue.produce([new SendWelcomeEmail(currentProfile?.emailAddress)]);
 
