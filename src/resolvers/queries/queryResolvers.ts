@@ -27,7 +27,7 @@ import {recentProfiles} from "./recentProfiles";
 import {stats} from "./stats";
 import {init} from "./init";
 import {Environment} from "../../environment";
-import {QueryGetStringsByLanguageArgs, QueryGetStringsByMaxVersionArgs, QueryResolvers} from "../../types";
+import {QueryGetStringsByLanguageArgs, QueryGetStringByMaxVersionArgs, QueryResolvers} from "../../types";
 import { Context } from "apollo-server-core";
 const packageJson = require("../../../package.json");
 
@@ -61,7 +61,7 @@ export const queryResolvers : QueryResolvers = {
   invoice: invoice,
   verifications: verifications,
   findInvitationCreator: findInvitationCreator,
-  getStringsByMaxVersion: async (parent: any, args: QueryGetStringsByMaxVersionArgs, context: Context) => {
+  getStringByMaxVersion: async (parent: any, args: QueryGetStringByMaxVersionArgs, context: Context) => {
     const queryResult = await Environment.pgReadWriteApiDb.query(`
     select * 
     from i18n 
@@ -74,7 +74,11 @@ export const queryResolvers : QueryResolvers = {
                 and key = $2);
     `,
     [args.lang, args.key]);
-    return queryResult.rows;
+    if (queryResult.rows?.length > 0) {
+      return queryResult.rows[0];
+    } else {
+      return null;
+    }
   },
   getStringsByLanguage: async (parent: any, args: QueryGetStringsByLanguageArgs, context: Context) => {
     const queryResult = await Environment.pgReadWriteApiDb.query(`

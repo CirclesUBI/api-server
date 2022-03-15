@@ -936,8 +936,8 @@ export type Query = {
   events: Array<ProfileEvent>;
   findInvitationCreator?: Maybe<Profile>;
   findSafesByOwner: Array<SafeInfo>;
+  getStringByMaxVersion?: Maybe<I18n>;
   getStringsByLanguage?: Maybe<Array<I18n>>;
-  getStringsByMaxVersion?: Maybe<Array<I18n>>;
   hubSignupTransaction?: Maybe<ProfileEvent>;
   init: SessionInfo;
   invitationTransaction?: Maybe<ProfileEvent>;
@@ -1005,13 +1005,13 @@ export type QueryFindSafesByOwnerArgs = {
 };
 
 
-export type QueryGetStringsByLanguageArgs = {
+export type QueryGetStringByMaxVersionArgs = {
+  key?: InputMaybe<Scalars['String']>;
   lang?: InputMaybe<Scalars['String']>;
 };
 
 
-export type QueryGetStringsByMaxVersionArgs = {
-  key?: InputMaybe<Scalars['String']>;
+export type QueryGetStringsByLanguageArgs = {
   lang?: InputMaybe<Scalars['String']>;
 };
 
@@ -2360,8 +2360,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'pagination' | 'safeAddress' | 'types'>>;
   findInvitationCreator?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryFindInvitationCreatorArgs, 'code'>>;
   findSafesByOwner?: Resolver<Array<ResolversTypes['SafeInfo']>, ParentType, ContextType, RequireFields<QueryFindSafesByOwnerArgs, 'owner'>>;
+  getStringByMaxVersion?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<QueryGetStringByMaxVersionArgs>>;
   getStringsByLanguage?: Resolver<Maybe<Array<ResolversTypes['i18n']>>, ParentType, ContextType, Partial<QueryGetStringsByLanguageArgs>>;
-  getStringsByMaxVersion?: Resolver<Maybe<Array<ResolversTypes['i18n']>>, ParentType, ContextType, Partial<QueryGetStringsByMaxVersionArgs>>;
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   init?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
