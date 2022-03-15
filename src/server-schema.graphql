@@ -258,7 +258,6 @@ type City implements ICity {
 }
 
 type Offer {
-  # TODO: Keep offers immutable and add a version no.
   id: Int!
   version: Int!
 
@@ -273,6 +272,8 @@ type Offer {
 
   pricePerUnit: String! # The price in euro
   timeCirclesPriceShare: Int! # How many percent of the price can be payed in time circles
+
+  tags: [Tag!]
 }
 
 type Sale {
@@ -994,6 +995,10 @@ input PurchasedEventFilter {
   id: Int!
 }
 
+input SaleEventFilter {
+  invoiceId: Int!
+}
+
 input ChatMessageEventFilter {
   id: Int!
 }
@@ -1005,6 +1010,7 @@ input ProfileEventFilter {
   with: String
   transactionHash: String
   purchased: PurchasedEventFilter
+  sale: SaleEventFilter
   chatMessage: ChatMessageEventFilter
 }
 

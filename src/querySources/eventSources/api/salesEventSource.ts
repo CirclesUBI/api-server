@@ -35,6 +35,10 @@ export class SalesEventSource implements EventSource {
         }
       : {};
 
+    const filterById = filter?.sale?.invoiceId  ? {
+      id: filter?.sale.invoiceId
+    } : {};
+
     const sales = await Environment.readonlyApiDb.invoice.findMany({
       where: {
         sellerProfile: {
@@ -43,6 +47,7 @@ export class SalesEventSource implements EventSource {
         customerProfile: {
           circlesAddress: filter?.with
         },
+        ...filterById,
         ...createdAt,
       },
       include: {
