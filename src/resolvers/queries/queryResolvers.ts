@@ -28,8 +28,6 @@ import {stats} from "./stats";
 import {init} from "./init";
 import {Environment} from "../../environment";
 import {QueryGetStringsByLanguageArgs, QueryGetStringByMaxVersionArgs, QueryResolvers} from "../../types";
-import {QueryResolvers} from "../../types";
-import {parentPort} from "worker_threads";
 import {Context} from "../../context";
 import {ProfileLoader} from "../../querySources/profileLoader";
 const packageJson = require("../../../package.json");
