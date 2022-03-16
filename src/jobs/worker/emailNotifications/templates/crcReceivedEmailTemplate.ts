@@ -1,11 +1,11 @@
-import {MailTemplate} from "../../../../mailer/mailTemplate";
+import { MailTemplate } from "../../../../mailer/mailTemplate";
 
 /**
  * Fields: sender, recipient, amount, currency, bankingUrl
  */
-export const crcReceivedEmailTemplate:MailTemplate = {
+export const crcReceivedEmailTemplate: MailTemplate = {
   subject: `Circles.land: {{sender}} sent you {{amount}} {{currency}}`,
-  bodyHtml:`
+  bodyHtml: `
 <!DOCTYPE html>
 <html lang="en" xmlns:v="urn:schemas-microsoft-com:vml">
   <head>
@@ -146,13 +146,18 @@ export const crcReceivedEmailTemplate:MailTemplate = {
                     </tr>
                     <tr>
                       <td style="padding: 32px; text-align: center; font-size: 12px; color: #4b5563;">
-                        <p style="margin: 0 0 4px; text-transform: uppercase;">© 2022 CirclesLand. All rights reserved.</p>
+                        <p style="margin: 0 0 4px; text-transform: uppercase;">© 2021 CirclesLand. All rights reserved.</p>
+                        <p style="margin: 0; font-style: italic;">
+                          If you haven't requested this e-mail you can simply ignore it.
+                        </p>
                         <p style="cursor: default;">
-                          <a href="https://dev.circles.land/" class="hover-underline" style="color: #3b82f6; text-decoration: none;">Circles.Land</a>
+                          <a href="https://circles.land/" class="hover-underline" style="color: #3b82f6; text-decoration: none;">Circles.Land</a>
                           &bull;
-                          <a href="https://dev.circles.land/" class="hover-underline" style="color: #3b82f6; text-decoration: none;">Docs</a>
+                          <a href="https://coda.io/@circlesland/terms" class="hover-underline" style="color: #3b82f6; text-decoration: none;">Terms of service</a>
                           &bull;
-                          <a href="https://dev.circles.land/" class="hover-underline" style="color: #3b82f6; text-decoration: none;">Help & Support</a>
+                          <a href="https://coda.io/@circlesland/terms/privacy-policy-3" class="hover-underline" style="color: #3b82f6; text-decoration: none;">Privacy policy</a>
+                          &bull;
+                          <a href="https://discord.com/invite/CS6xq7jECR" class="hover-underline" style="color: #3b82f6; text-decoration: none;">Help & Support</a>
                         </p>
                       </td>
                     </tr>
@@ -165,5 +170,5 @@ export const crcReceivedEmailTemplate:MailTemplate = {
       </table>
     </div>
   </body>
-</html>`
-}
+</html>`,
+};
