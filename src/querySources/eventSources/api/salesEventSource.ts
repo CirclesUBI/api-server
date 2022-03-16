@@ -1,6 +1,6 @@
 import { EventSource } from "../eventSource";
 import {
-  Direction,
+  Direction, EventType,
   InvoiceLine,
   Maybe,
   PaginationArgs,
@@ -82,7 +82,7 @@ export class SalesEventSource implements EventSource {
       return <ProfileEvent>{
         __typename: "ProfileEvent",
         safe_address: forSafeAddress,
-        type: "Purchased",
+        type: EventType.SaleEvent,
         block_number: null,
         direction: "in",
         timestamp: salesInvoice.createdAt.toJSON(),
@@ -90,7 +90,7 @@ export class SalesEventSource implements EventSource {
         transaction_hash: null,
         transaction_index: null,
         payload: <SaleEvent>{
-          __typename: "SaleEvent",
+          __typename: EventType.SaleEvent,
           transaction_hash: "",
           buyer: salesInvoice.customerProfile.circlesAddress,
           buyer_profile: salesInvoice.customerProfile,
