@@ -996,7 +996,8 @@ input PurchasedEventFilter {
 }
 
 input SaleEventFilter {
-  invoiceId: Int!
+  invoiceId: Int
+  pickupCode: String
 }
 
 input ChatMessageEventFilter {
