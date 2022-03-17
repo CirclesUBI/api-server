@@ -16,7 +16,7 @@ export const triggerGetHandler = async (req: Request, res: Response) => {
     const result = await JobQueue.trigger(<string>req.query.hash);
 
     if (result == "end") {
-      const redirectUrl = Environment.appUrl + "#/passport/verifyemail/failed";
+      const redirectUrl = Environment.appUrl + "#/passport/verifyEmail/verify/failed";
       log(`     `,
         `[${req.ip}; ${req.headers["user-agent"]}] [hash: ${req.query.hash}] [triggerGetHandler]`,
         `The trigger was already executed. Redirecting the user to ${redirectUrl}.`);
