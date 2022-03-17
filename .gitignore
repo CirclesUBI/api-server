@@ -134,3 +134,9 @@ src/index-db/client/schema.prisma
 src/api-db/client/query-engine-darwin
 
 .vscode/launch.json
+
+src/api-db/client/libquery_engine-darwin.dylib.node
+
+config
+
+src/api-db/client/runtime/proxy.d.ts
