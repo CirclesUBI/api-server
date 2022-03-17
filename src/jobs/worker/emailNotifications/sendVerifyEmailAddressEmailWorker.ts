@@ -14,7 +14,7 @@ export class SendVerifyEmailAddressEmailWorker extends JobWorker<SendVerifyEmail
   }
 
   async doWork(job: SendVerifyEmailAddressEmail) {
-    const confirmUrl = `https://${Environment.appUrl}#/passport/verifyEmail/${job.triggerCode}`;
+    const confirmUrl = `${Environment.appUrl}#/passport/verifyEmail/${job.triggerCode}`;
     await Mailer.send(verifyEmailAddressEmailTemplate, {
       confirmUrl: confirmUrl
     }, job.emailAddress);
