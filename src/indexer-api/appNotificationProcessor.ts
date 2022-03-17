@@ -4,6 +4,7 @@ import {JobQueue} from "../jobs/jobQueue";
 import {SendCrcTrustChangedEmail} from "../jobs/descriptions/emailNotifications/sendCrcTrustChangedEmail";
 import {SendCrcReceivedEmail} from "../jobs/descriptions/emailNotifications/sendCrcReceivedEmail";
 import {EventType, NotificationEvent} from "../types";
+import {Environment} from "../environment";
 
 export class AppNotificationProcessor implements IndexerEventProcessor {
     constructor() {
@@ -66,6 +67,31 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                     });
                     break;
             }
+
+            // If one of the contacts is an organisation, then notify all members of that organisation
+            // because organisations don't subscribe.
+            if (notification) {
+                const maybeAnOrga = [notification.from, notification.to].filter(o => !!o);
+                const maybeAnOrgaResult = await Environment.readonlyApiDb.profile.findMany({
+                    where: {
+                        circlesAddress: {
+                            in: maybeAnOrga
+                        },
+                        type: "ORGANISATION"
+                    },
+                    include: {
+                        members: true
+                    }
+                });
+                await Promise.all(maybeAnOrgaResult.map(async o => {
+                    await Promise.all(o.members?.map(async m => {
+                        await ApiPubSub.instance.pubSub.publish(`events_${m.memberAddress}`, {
+                            events: notification
+                        });
+                    }));
+                }));
+            }
+
 
             if (job) {
                 await JobQueue.produce([job]);
