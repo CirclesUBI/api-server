@@ -1,4 +1,4 @@
-import {DisplayCurrency, MutationUpsertProfileArgs, Profile} from "../../types";
+import {DisplayCurrency, MutationUpsertProfileArgs, Profile, ProfileType} from "../../types";
 import {Context} from "../../context";
 import {Session} from "../../session";
 import {ProfileLoader} from "../../querySources/profileLoader";
@@ -10,6 +10,7 @@ import {VerifyEmailAddress} from "../../jobs/descriptions/emailNotifications/ver
 import {Generate} from "../../utils/generate";
 import {SendVerifyEmailAddressEmail} from "../../jobs/descriptions/emailNotifications/sendVerifyEmailAddressEmail";
 import {claimInvitation} from "./claimInvitation";
+import {Dropper} from "../../utils/dropper";
 
 const validateEmail = (email:string) => {
     return email.match(
@@ -64,9 +65,22 @@ export function upsertProfileResolver() {
             if (args.data.id != session.profileId) {
                 throw new Error(`'${session.sessionToken}' (profile id: ${session.profileId ?? "<undefined>"}) can not upsert other profile '${args.data.id}'.`);
             }
-            const oldProfile = await Environment.readWriteApiDb.profile.findUnique({where:{id: args.data.id}});
+            const oldProfile = await Environment.readWriteApiDb.profile.findUnique({
+                where:{
+                    id: args.data.id
+                },
+                include: {
+                    invitations: true
+                }
+            });
             if (!oldProfile){
                 throw new Error(`Cannot update profile ${args.data.id} because it doesn't exist.`)
+            }
+            if (oldProfile.invitations.length == 0 &&
+              oldProfile.type == ProfileType.Person &&
+              oldProfile.circlesAddress) {
+                // Create the initial invitations for the user
+                await Dropper.createInvitations(oldProfile.circlesAddress, 9);
             }
             profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({
                 where: {

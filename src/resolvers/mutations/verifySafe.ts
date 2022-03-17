@@ -62,7 +62,7 @@ export const verifySafe = async (
       `call publish_event('follow_trust', '{"to":"${bilOrga.circlesAddress.toLowerCase()}"}');`);
   }
 
-  await Dropper.createInvitations(verifiedSafe, 9);
+  // await Dropper.createInvitations(verifiedSafe, 9);
 
   return {
     success: true,

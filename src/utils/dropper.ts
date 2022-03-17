@@ -1,4 +1,4 @@
-import {Prisma, VerifiedSafe} from "../api-db/client";
+import {Prisma} from "../api-db/client";
 import {Session} from "../session";
 import {ProfileLoader} from "../querySources/profileLoader";
 import InvitationCreateManyInput = Prisma.InvitationCreateManyInput;
@@ -6,22 +6,22 @@ import {Environment} from "../environment";
 
 export class Dropper {
 
-  static async createInvitations(verifiedSafe:VerifiedSafe, newInvitationCount:number) : Promise<InvitationCreateManyInput[]> {
-    const profileResult = await new ProfileLoader().queryCirclesLandBySafeAddress(Environment.readWriteApiDb, [verifiedSafe.safeAddress]);
+  static async createInvitations(forSafeAddress:string, newInvitationCount:number) : Promise<InvitationCreateManyInput[]> {
+    const profileResult = await new ProfileLoader().queryCirclesLandBySafeAddress(Environment.readWriteApiDb, [forSafeAddress]);
     const profileResultValues = Object.values(profileResult);
     if (profileResultValues.length == 0) {
-      throw new Error(`Couldn't find a profile for the verified safe ${verifiedSafe.safeAddress}`);
+      throw new Error(`Couldn't find a profile for the verified safe ${forSafeAddress}`);
     }
 
     const profile = profileResultValues[0];
     if (!profile) {
-      throw new Error(`Couldn't find a profile for the verified safe ${verifiedSafe.safeAddress}`);
+      throw new Error(`Couldn't find a profile for the verified safe ${forSafeAddress}`);
     }
 
     const now = new Date();
     const existingInvitationCount = await Environment.readWriteApiDb.invitation.count({
       where: {
-        forSafeAddress: verifiedSafe.safeAddress
+        forSafeAddress: forSafeAddress
       }
     });
 
@@ -34,13 +34,14 @@ export class Dropper {
         address: "0x", // invitationEoa.address.toLowerCase(),
         key: "0x", //invitationEoa.privateKey,
         code: Session.generateRandomHexString(16),
-        forSafeAddress: verifiedSafe.safeAddress
+        forSafeAddress: forSafeAddress
       });
     }
 
     await Environment.readWriteApiDb.invitation.createMany({
       data: createInvitationsData
     });
+    /*
     await Environment.readWriteApiDb.verifiedSafe.update({
       where: {
         safeAddress: verifiedSafe.safeAddress
@@ -49,6 +50,7 @@ export class Dropper {
         inviteCount: verifiedSafe.inviteCount + newInvitationCount
       }
     });
+     */
 
     return createInvitationsData;
   }
