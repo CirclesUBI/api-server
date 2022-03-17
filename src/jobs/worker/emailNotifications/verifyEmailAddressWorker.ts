@@ -17,7 +17,7 @@ export class VerifyEmailAddressWorker extends JobWorker<VerifyEmailAddress> {
     const currentProfile = await Environment.readWriteApiDb.profile.findUnique({where:{id: job.profileId}});
 
     if (job.emailAddress != currentProfile?.emailAddress) {
-      const redirectUrl = Environment.appUrl + "#/passport/verifyemail/failed";
+      const redirectUrl = Environment.appUrl + "#/passport/verifyEmail/verify/failed";
       return {
         data: {
           statusCode: 302,
