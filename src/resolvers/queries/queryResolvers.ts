@@ -81,7 +81,7 @@ export const queryResolvers : QueryResolvers = {
       return null;
     }
   },
-  getStringsByLanguage: async (parent: any, args: QueryGetStringsByLanguageArgs, context: Context) => {
+  getStringByLanguage: async (parent: any, args: QueryGetStringByLanguageArgs, context: Context) => {
     const queryResult = await Environment.pgReadWriteApiDb.query(`
     select * 
         from i18n 

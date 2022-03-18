@@ -63,15 +63,13 @@ export const mutationResolvers : MutationResolvers = {
             , i18n.value
         from i18n
         join (
-            select lang, key, max(version) as version, value, "createdBy"
+			select lang, key, max(version) as version
             from i18n
             where lang = $2
-            group by lang, key, value, "createdBy"
+            group by lang, key
         ) max_versions on i18n.key = max_versions.key
                     and i18n.lang = max_versions.lang
-                    and i18n."createdBy" = max_versions."createdBy"
-                    and i18n.version = max_versions.version
-                    and i18n.value = max_versions.value;
+                    and i18n.version = max_versions.version;
     `,
     [args.langToCreate, args.langToCopyFrom]);
     return queryResult.rowCount
@@ -90,7 +88,7 @@ export const mutationResolvers : MutationResolvers = {
         $3, 
         (select max(version) + 1 
         from i18n 
-        where key=$2),
+        where key=$2 and lang=$1),
         $4);
     `,
     [args.lang, args.key, args.createdBy, args.value]);
