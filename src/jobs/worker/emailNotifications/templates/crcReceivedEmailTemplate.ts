@@ -130,7 +130,7 @@ export const crcReceivedEmailTemplate: MailTemplate = {
                           Go to your Circles.land banking to see the details
                         </p>
                         <div class="sm-h-24" style="line-height: 24px;">&zwnj;</div>
-                        <a href="undefined" class="hover-bg-primary-dark" style="display: inline-block; border-radius: 8px; background-color: #41c7f1; padding: 20px 24px; font-size: 14px; font-weight: 600; text-transform: uppercase; line-height: 1; color: #ffffff; text-decoration: none;">
+                        <a href="{{transactionDetailUrl}}" class="hover-bg-primary-dark" style="display: inline-block; border-radius: 8px; background-color: #41c7f1; padding: 20px 24px; font-size: 14px; font-weight: 600; text-transform: uppercase; line-height: 1; color: #ffffff; text-decoration: none;">
                           <!--[if mso
                           ]><i
                             style="
