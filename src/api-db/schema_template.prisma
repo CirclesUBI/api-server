@@ -401,7 +401,6 @@ model Tag {
     chatMessageId Int?
     @@index([chatMessageId])
 
-    offer Offer? @relation(name: "Offer_Tags", fields: [offerId], references: [id])
     offer Offer? @relation(name: "Offer_Tags", fields: [offerId, offerVersion], references: [id, version])
     offerId Int?
     @@index([offerId])
