@@ -231,8 +231,6 @@ model ChatMessage {
     @@index([to])
 
     text String
-
-    tags Tag[] @relation(name: "ChatMessage_Tags")
 }
 
 model DelegatedChallenges {
@@ -396,10 +394,6 @@ model Tag {
     type TagType @relation(name: "Tag_TagType", fields: [typeId], references: [id])
     typeId String
     @@index([typeId])
-
-    chatMessage ChatMessage? @relation(name: "ChatMessage_Tags", fields: [chatMessageId], references: [id])
-    chatMessageId Int?
-    @@index([chatMessageId])
 
     offer Offer? @relation(name: "Offer_Tags", fields: [offerId, offerVersion], references: [id, version])
     offerId Int?
