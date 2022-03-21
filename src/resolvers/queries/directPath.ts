@@ -72,122 +72,122 @@ export const directPath = async (parent:any, args:QueryDirectPathArgs, context:C
   };
 
   const usableTokensWithBalanceSql = `
-    with my_tokens as (
-      select token
-      from crc_balances_by_safe_and_token_2
-      where safe_address = $1
-    ),
-    accepted_tokens as (
-      select user_token as token
-      from crc_current_trust_2
-      where can_send_to = $2
-        and "limit" > 0
-    ),
-    intersection as (
+      with my_tokens as (
+          select token
+          from crc_balances_by_safe_and_token_2
+          where safe_address = $1
+      ),
+           accepted_tokens as (
+               select user_token as token
+               from crc_current_trust_2
+               where can_send_to = $2
+                 and "limit" > 0
+           ),
+           intersection as (
+               select *
+               from my_tokens
+               intersect
+               select *
+               from accepted_tokens
+           ),
+           relevant_balances as (
+               select b.token, b.token_owner, b.balance as balance
+               from intersection i
+                        join crc_balances_by_safe_and_token_2 b on i.token = b.token
+               where safe_address = $1
+                 and balance > 0
+               order by b.balance desc
+           )
       select *
-      from my_tokens
-      intersect
-      select *
-      from accepted_tokens
-    ),
-    relevant_balances as (
-      select b.token, b.token_owner, b.balance as balance
-      from intersection i
-         join crc_balances_by_safe_and_token_2 b on i.token = b.token
-      where safe_address = $1
-        and balance > 0
-      order by b.balance desc
-    )
-    select *
-    from relevant_balances;`;
+      from relevant_balances;`;
 
   const usableTokensWithBalanceResult =
-      await Environment.indexDb.query(
-          usableTokensWithBalanceSql, [
-              from,
-              to
-          ]);
+    await Environment.indexDb.query(
+      usableTokensWithBalanceSql, [
+        from,
+        to
+      ]);
 
   const maxTheoreticallyTransferableAmount = usableTokensWithBalanceResult.rows.reduce((p,c) => p.add(new BN(c.balance)), new BN("0"));
   context.log(`The max. theoretically transferable amount is: ${maxTheoreticallyTransferableAmount.toString()}`);
 
   const tokenOwnerOwnTokenBalancesSql = `
-    with own_balances as (
-      select safe_address
-           , token
-           , token_owner
-           , balance as owner_balance
-      from crc_balances_by_safe_and_token_2 bbsat
-      where bbsat.token_owner = ANY($3)
-        and bbsat.token_owner = bbsat.safe_address
-    ), own_balances_with_limits as (
-      select ob.*, ct.can_send_to, ct."limit"
-      from own_balances ob
-             join crc_current_trust_2 ct on ct.can_send_to = $2
-        and ct."user" = ob.safe_address
-    ), including_sender_balances as (
-      select o.*, m.balance as sender_balance
-      from own_balances_with_limits o
-             join crc_balances_by_safe_and_token_2 m on m.safe_address = $1
-        and m.token = o.token
-        and m.token_owner = o.token_owner
-    ), including_receiver_balances as (
-      select m.*, n.balance as receiver_balance
-      from including_sender_balances m
-             left join crc_balances_by_safe_and_token_2 n on n.safe_address = $2
-        and n.token = m.token
-        and n.token_owner = m.token_owner
-    ), cleaned as (
+      with own_balances as (
+          select safe_address
+               , token
+               , token_owner
+               , balance as owner_balance
+          from crc_balances_by_safe_and_token_2 bbsat
+          where bbsat.token_owner = ANY($3)
+            and bbsat.token_owner = bbsat.safe_address
+      ), own_balances_with_limits as (
+          select ob.*, ct.can_send_to, ct."limit"
+          from own_balances ob
+                   join crc_current_trust_2 ct on ct.can_send_to = $2
+              and ct."user" = ob.safe_address
+      ), including_sender_balances as (
+          select o.*, m.balance as sender_balance
+          from own_balances_with_limits o
+                   join crc_balances_by_safe_and_token_2 m on m.safe_address = $1
+              and m.token = o.token
+              and m.token_owner = o.token_owner
+      ), including_receiver_balances as (
+          select m.*, n.balance as receiver_balance
+          from including_sender_balances m
+                   left join crc_balances_by_safe_and_token_2 n on n.safe_address = $2
+              and n.token = m.token
+              and n.token_owner = m.token_owner
+      ), cleaned as (
+          select token
+               , token_owner
+               , "limit"
+               , owner_balance
+               , coalesce(sender_balance, 0) src_balance
+               , coalesce(receiver_balance, 0) dest_balance
+          from including_receiver_balances
+      ), max_transferable as (
+          select cleaned.token_owner
+               , cleaned.token
+               , cleaned."limit"
+               , cleaned.src_balance
+               , cleaned.dest_balance
+               -- uint256 max = (userToToken[dest].balanceOf(dest).mul(limits[dest][tokenOwner])).div(oneHundred);
+               , case when(exists(select * from crc_organisation_signup_2 where organisation = $2))
+                          then
+                          cleaned.src_balance
+                      else
+                          ((select balance
+                            from crc_balances_by_safe_and_token_2
+                            where safe_address = $2
+                              and token = (
+                                select token
+                                from crc_signup_2
+                                where "user" = $2
+                                limit 1)
+                           ) * cleaned."limit" / 100)
+              end as max
+               , (dest_balance * (100 - cleaned."limit") / 100) as dest_balance_scaled
+          from cleaned
+      )
       select token
            , token_owner
-           , "limit"
-           , owner_balance
-           , coalesce(sender_balance, 0) src_balance
-           , coalesce(receiver_balance, 0) dest_balance
-      from including_receiver_balances
-    ), max_transferable as (
-      select cleaned.token_owner
-           , cleaned.token
-           , cleaned."limit"
-           , cleaned.src_balance
-           , cleaned.dest_balance
-           -- uint256 max = (userToToken[dest].balanceOf(dest).mul(limits[dest][tokenOwner])).div(oneHundred);
-           , case when(exists(select * from crc_organisation_signup_2 where organisation = $2)) 
-             then
-                cleaned.src_balance
-             else
-               ((select balance
-                 from crc_balances_by_safe_and_token_2
-                 where safe_address = $2
-                   and token = (
-                   select token
-                   from crc_signup_2
-                   where "user" = $2
-                   limit 1)
-                ) * cleaned."limit" / 100)
-             end as max
-           , (dest_balance * (100 - cleaned."limit") / 100) as dest_balance_scaled
-      from cleaned
-    )
-    select token
-         , token_owner
-         , max
-         , dest_balance_scaled
-         , (case when max < dest_balance
-                  then 0
-                else (
-                  case when max - dest_balance_scaled > src_balance then src_balance else max - dest_balance_scaled end
-                  )
-      end) as max_transferable_amount
-    from max_transferable;`;
+           , max
+           , dest_balance_scaled
+           , (case when max < dest_balance and (not exists(select * from crc_organisation_signup_2 where organisation = $2))
+                       then 0
+                   else (
+                       case when max - dest_balance_scaled > src_balance then src_balance else max - dest_balance_scaled end
+                       )
+          end) as max_transferable_amount
+      from max_transferable;`;
 
   const tokenOwners = usableTokensWithBalanceResult.rows.map(o => o.token_owner);
   const tokenOwnerOwnTokenBalancesResult = await Environment.indexDb.query(
-      tokenOwnerOwnTokenBalancesSql, [
-          from,
-          to,
-          tokenOwners
-      ]);
+    tokenOwnerOwnTokenBalancesSql, [
+      from,
+      to,
+      tokenOwners
+    ]);
 
   const tokenOwnersOwnTokenBalances:{[tokenOwner:string]:{
       token: string
