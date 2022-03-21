@@ -272,7 +272,6 @@ type Offer {
 
   pricePerUnit: String! # The price in euro
   timeCirclesPriceShare: Int! # How many percent of the price can be payed in time circles
-
   tags: [Tag!]
 }
 
@@ -332,6 +331,8 @@ type Invoice {
 
   buyerAddress: String!
   buyerProfile: Profile
+
+  createdAt: String
 
   lines: [InvoiceLine!]
 
@@ -1113,7 +1114,7 @@ type Query {
   findSafesByOwner(owner: String!): [SafeInfo!]!
 
   search(query: SearchInput!): [Profile!]!
-  stats : Stats!
+  stats: Stats!
 
   cities(query: QueryCitiesInput!): [City!]!
   tags(query: QueryTagsInput!): [Tag!]!

@@ -407,6 +407,7 @@ export type Invoice = {
   cancelReason?: Maybe<Scalars['String']>;
   cancelledAt?: Maybe<Scalars['String']>;
   cancelledBy?: Maybe<Profile>;
+  createdAt?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   invoiceNo: Scalars['String'];
   lines?: Maybe<Array<InvoiceLine>>;
@@ -2010,6 +2011,7 @@ export type InvoiceResolvers<ContextType = any, ParentType extends ResolversPare
   cancelReason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cancelledAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cancelledBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   invoiceNo?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lines?: Resolver<Maybe<Array<ResolversTypes['InvoiceLine']>>, ParentType, ContextType>;
