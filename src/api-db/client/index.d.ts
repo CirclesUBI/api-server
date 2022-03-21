@@ -281,7 +281,6 @@ export type Tag = {
   isPrivate: boolean
   transactionHash: string | null
   typeId: string
-  chatMessageId: number | null
   offerId: number | null
   offerVersion: number | null
   value: string | null
@@ -1325,55 +1324,6 @@ export namespace Prisma {
      * 
     **/
     select?: ProfileCountOutputTypeSelect | null
-  }
-
-
-
-  /**
-   * Count Type ChatMessageCountOutputType
-   */
-
-
-  export type ChatMessageCountOutputType = {
-    tags: number
-  }
-
-  export type ChatMessageCountOutputTypeSelect = {
-    tags?: boolean
-  }
-
-  export type ChatMessageCountOutputTypeGetPayload<
-    S extends boolean | null | undefined | ChatMessageCountOutputTypeArgs,
-    U = keyof S
-      > = S extends true
-        ? ChatMessageCountOutputType
-    : S extends undefined
-    ? never
-    : S extends ChatMessageCountOutputTypeArgs
-    ?'include' extends U
-    ? ChatMessageCountOutputType 
-    : 'select' extends U
-    ? {
-    [P in TrueKeys<S['select']>]:
-    P extends keyof ChatMessageCountOutputType ? ChatMessageCountOutputType[P] : never
-  } 
-    : ChatMessageCountOutputType
-  : ChatMessageCountOutputType
-
-
-
-
-  // Custom InputTypes
-
-  /**
-   * ChatMessageCountOutputType without action
-   */
-  export type ChatMessageCountOutputTypeArgs = {
-    /**
-     * Select specific fields to fetch from the ChatMessageCountOutputType
-     * 
-    **/
-    select?: ChatMessageCountOutputTypeSelect | null
   }
 
 
@@ -8675,13 +8625,6 @@ export namespace Prisma {
     from?: boolean
     to?: boolean
     text?: boolean
-    tags?: boolean | TagFindManyArgs
-    _count?: boolean | ChatMessageCountOutputTypeArgs
-  }
-
-  export type ChatMessageInclude = {
-    tags?: boolean | TagFindManyArgs
-    _count?: boolean | ChatMessageCountOutputTypeArgs
   }
 
   export type ChatMessageGetPayload<
@@ -8693,16 +8636,11 @@ export namespace Prisma {
     ? never
     : S extends ChatMessageArgs | ChatMessageFindManyArgs
     ?'include' extends U
-    ? ChatMessage  & {
-    [P in TrueKeys<S['include']>]:
-        P extends 'tags' ? Array < TagGetPayload<S['include'][P]>>  :
-        P extends '_count' ? ChatMessageCountOutputTypeGetPayload<S['include'][P]> :  never
-  } 
+    ? ChatMessage 
     : 'select' extends U
     ? {
     [P in TrueKeys<S['select']>]:
-        P extends 'tags' ? Array < TagGetPayload<S['select'][P]>>  :
-        P extends '_count' ? ChatMessageCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof ChatMessage ? ChatMessage[P] : never
+    P extends keyof ChatMessage ? ChatMessage[P] : never
   } 
     : ChatMessage
   : ChatMessage
@@ -9042,7 +8980,6 @@ export namespace Prisma {
     constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
     readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    tags<T extends TagFindManyArgs = {}>(args?: Subset<T, TagFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Tag>>, PrismaPromise<Array<TagGetPayload<T>>>>;
 
     private get _document();
     /**
@@ -9079,11 +9016,6 @@ export namespace Prisma {
     **/
     select?: ChatMessageSelect | null
     /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: ChatMessageInclude | null
-    /**
      * Throw an Error if a ChatMessage can't be found
      * 
     **/
@@ -9105,11 +9037,6 @@ export namespace Prisma {
      * 
     **/
     select?: ChatMessageSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: ChatMessageInclude | null
     /**
      * Throw an Error if a ChatMessage can't be found
      * 
@@ -9168,11 +9095,6 @@ export namespace Prisma {
     **/
     select?: ChatMessageSelect | null
     /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: ChatMessageInclude | null
-    /**
      * Filter, which ChatMessages to fetch.
      * 
     **/
@@ -9219,11 +9141,6 @@ export namespace Prisma {
     **/
     select?: ChatMessageSelect | null
     /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: ChatMessageInclude | null
-    /**
      * The data needed to create a ChatMessage.
      * 
     **/
@@ -9253,11 +9170,6 @@ export namespace Prisma {
      * 
     **/
     select?: ChatMessageSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: ChatMessageInclude | null
     /**
      * The data needed to update a ChatMessage.
      * 
@@ -9298,11 +9210,6 @@ export namespace Prisma {
     **/
     select?: ChatMessageSelect | null
     /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: ChatMessageInclude | null
-    /**
      * The filter to search for the ChatMessage to update in case it exists.
      * 
     **/
@@ -9329,11 +9236,6 @@ export namespace Prisma {
      * 
     **/
     select?: ChatMessageSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: ChatMessageInclude | null
     /**
      * Filter which ChatMessage to delete.
      * 
@@ -9363,11 +9265,6 @@ export namespace Prisma {
      * 
     **/
     select?: ChatMessageSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: ChatMessageInclude | null
   }
 
 
@@ -16723,7 +16620,6 @@ export namespace Prisma {
   export type TagAvgAggregateOutputType = {
     id: number | null
     createdByProfileId: number | null
-    chatMessageId: number | null
     offerId: number | null
     offerVersion: number | null
   }
@@ -16731,7 +16627,6 @@ export namespace Prisma {
   export type TagSumAggregateOutputType = {
     id: number | null
     createdByProfileId: number | null
-    chatMessageId: number | null
     offerId: number | null
     offerVersion: number | null
   }
@@ -16743,7 +16638,6 @@ export namespace Prisma {
     isPrivate: boolean | null
     transactionHash: string | null
     typeId: string | null
-    chatMessageId: number | null
     offerId: number | null
     offerVersion: number | null
     value: string | null
@@ -16756,7 +16650,6 @@ export namespace Prisma {
     isPrivate: boolean | null
     transactionHash: string | null
     typeId: string | null
-    chatMessageId: number | null
     offerId: number | null
     offerVersion: number | null
     value: string | null
@@ -16769,7 +16662,6 @@ export namespace Prisma {
     isPrivate: number
     transactionHash: number
     typeId: number
-    chatMessageId: number
     offerId: number
     offerVersion: number
     value: number
@@ -16780,7 +16672,6 @@ export namespace Prisma {
   export type TagAvgAggregateInputType = {
     id?: true
     createdByProfileId?: true
-    chatMessageId?: true
     offerId?: true
     offerVersion?: true
   }
@@ -16788,7 +16679,6 @@ export namespace Prisma {
   export type TagSumAggregateInputType = {
     id?: true
     createdByProfileId?: true
-    chatMessageId?: true
     offerId?: true
     offerVersion?: true
   }
@@ -16800,7 +16690,6 @@ export namespace Prisma {
     isPrivate?: true
     transactionHash?: true
     typeId?: true
-    chatMessageId?: true
     offerId?: true
     offerVersion?: true
     value?: true
@@ -16813,7 +16702,6 @@ export namespace Prisma {
     isPrivate?: true
     transactionHash?: true
     typeId?: true
-    chatMessageId?: true
     offerId?: true
     offerVersion?: true
     value?: true
@@ -16826,7 +16714,6 @@ export namespace Prisma {
     isPrivate?: true
     transactionHash?: true
     typeId?: true
-    chatMessageId?: true
     offerId?: true
     offerVersion?: true
     value?: true
@@ -16932,7 +16819,6 @@ export namespace Prisma {
     isPrivate: boolean
     transactionHash: string | null
     typeId: string
-    chatMessageId: number | null
     offerId: number | null
     offerVersion: number | null
     value: string | null
@@ -16967,8 +16853,6 @@ export namespace Prisma {
     transactionHash?: boolean
     type?: boolean | TagTypeArgs
     typeId?: boolean
-    chatMessage?: boolean | ChatMessageArgs
-    chatMessageId?: boolean
     offer?: boolean | OfferArgs
     offerId?: boolean
     offerVersion?: boolean
@@ -16979,7 +16863,6 @@ export namespace Prisma {
     createdBy?: boolean | ProfileArgs
     transaction?: boolean | TransactionArgs
     type?: boolean | TagTypeArgs
-    chatMessage?: boolean | ChatMessageArgs
     offer?: boolean | OfferArgs
   }
 
@@ -16997,7 +16880,6 @@ export namespace Prisma {
         P extends 'createdBy' ? ProfileGetPayload<S['include'][P]> :
         P extends 'transaction' ? TransactionGetPayload<S['include'][P]> | null :
         P extends 'type' ? TagTypeGetPayload<S['include'][P]> :
-        P extends 'chatMessage' ? ChatMessageGetPayload<S['include'][P]> | null :
         P extends 'offer' ? OfferGetPayload<S['include'][P]> | null :  never
   } 
     : 'select' extends U
@@ -17006,7 +16888,6 @@ export namespace Prisma {
         P extends 'createdBy' ? ProfileGetPayload<S['select'][P]> :
         P extends 'transaction' ? TransactionGetPayload<S['select'][P]> | null :
         P extends 'type' ? TagTypeGetPayload<S['select'][P]> :
-        P extends 'chatMessage' ? ChatMessageGetPayload<S['select'][P]> | null :
         P extends 'offer' ? OfferGetPayload<S['select'][P]> | null :  P extends keyof Tag ? Tag[P] : never
   } 
     : Tag
@@ -17352,8 +17233,6 @@ export namespace Prisma {
     transaction<T extends TransactionArgs = {}>(args?: Subset<T, TransactionArgs>): CheckSelect<T, Prisma__TransactionClient<Transaction | null >, Prisma__TransactionClient<TransactionGetPayload<T> | null >>;
 
     type<T extends TagTypeArgs = {}>(args?: Subset<T, TagTypeArgs>): CheckSelect<T, Prisma__TagTypeClient<TagType | null >, Prisma__TagTypeClient<TagTypeGetPayload<T> | null >>;
-
-    chatMessage<T extends ChatMessageArgs = {}>(args?: Subset<T, ChatMessageArgs>): CheckSelect<T, Prisma__ChatMessageClient<ChatMessage | null >, Prisma__ChatMessageClient<ChatMessageGetPayload<T> | null >>;
 
     offer<T extends OfferArgs = {}>(args?: Subset<T, OfferArgs>): CheckSelect<T, Prisma__OfferClient<Offer | null >, Prisma__OfferClient<OfferGetPayload<T> | null >>;
 
@@ -19695,7 +19574,6 @@ export namespace Prisma {
     isPrivate: 'isPrivate',
     transactionHash: 'transactionHash',
     typeId: 'typeId',
-    chatMessageId: 'chatMessageId',
     offerId: 'offerId',
     offerVersion: 'offerVersion',
     value: 'value'
@@ -20370,7 +20248,6 @@ export namespace Prisma {
     from?: StringFilter | string
     to?: StringFilter | string
     text?: StringFilter | string
-    tags?: TagListRelationFilter
   }
 
   export type ChatMessageOrderByWithRelationInput = {
@@ -20380,7 +20257,6 @@ export namespace Prisma {
     from?: SortOrder
     to?: SortOrder
     text?: SortOrder
-    tags?: TagOrderByRelationAggregateInput
   }
 
   export type ChatMessageWhereUniqueInput = {
@@ -20890,8 +20766,6 @@ export namespace Prisma {
     transactionHash?: StringNullableFilter | string | null
     type?: XOR<TagTypeRelationFilter, TagTypeWhereInput>
     typeId?: StringFilter | string
-    chatMessage?: XOR<ChatMessageRelationFilter, ChatMessageWhereInput> | null
-    chatMessageId?: IntNullableFilter | number | null
     offer?: XOR<OfferRelationFilter, OfferWhereInput> | null
     offerId?: IntNullableFilter | number | null
     offerVersion?: IntNullableFilter | number | null
@@ -20908,8 +20782,6 @@ export namespace Prisma {
     transactionHash?: SortOrder
     type?: TagTypeOrderByWithRelationInput
     typeId?: SortOrder
-    chatMessage?: ChatMessageOrderByWithRelationInput
-    chatMessageId?: SortOrder
     offer?: OfferOrderByWithRelationInput
     offerId?: SortOrder
     offerVersion?: SortOrder
@@ -20927,7 +20799,6 @@ export namespace Prisma {
     isPrivate?: SortOrder
     transactionHash?: SortOrder
     typeId?: SortOrder
-    chatMessageId?: SortOrder
     offerId?: SortOrder
     offerVersion?: SortOrder
     value?: SortOrder
@@ -20948,7 +20819,6 @@ export namespace Prisma {
     isPrivate?: BoolWithAggregatesFilter | boolean
     transactionHash?: StringNullableWithAggregatesFilter | string | null
     typeId?: StringWithAggregatesFilter | string
-    chatMessageId?: IntNullableWithAggregatesFilter | number | null
     offerId?: IntNullableWithAggregatesFilter | number | null
     offerVersion?: IntNullableWithAggregatesFilter | number | null
     value?: StringNullableWithAggregatesFilter | string | null
@@ -21892,7 +21762,6 @@ export namespace Prisma {
     from: string
     to: string
     text: string
-    tags?: TagCreateNestedManyWithoutChatMessageInput
   }
 
   export type ChatMessageUncheckedCreateInput = {
@@ -21902,7 +21771,6 @@ export namespace Prisma {
     from: string
     to: string
     text: string
-    tags?: TagUncheckedCreateNestedManyWithoutChatMessageInput
   }
 
   export type ChatMessageUpdateInput = {
@@ -21911,7 +21779,6 @@ export namespace Prisma {
     from?: StringFieldUpdateOperationsInput | string
     to?: StringFieldUpdateOperationsInput | string
     text?: StringFieldUpdateOperationsInput | string
-    tags?: TagUpdateManyWithoutChatMessageInput
   }
 
   export type ChatMessageUncheckedUpdateInput = {
@@ -21921,7 +21788,6 @@ export namespace Prisma {
     from?: StringFieldUpdateOperationsInput | string
     to?: StringFieldUpdateOperationsInput | string
     text?: StringFieldUpdateOperationsInput | string
-    tags?: TagUncheckedUpdateManyWithoutChatMessageInput
   }
 
   export type ChatMessageCreateManyInput = {
@@ -22497,7 +22363,6 @@ export namespace Prisma {
     isPrivate: boolean
     transaction?: TransactionCreateNestedOneWithoutTagsInput
     type: TagTypeCreateNestedOneWithoutTagsInput
-    chatMessage?: ChatMessageCreateNestedOneWithoutTagsInput
     offer?: OfferCreateNestedOneWithoutTagsInput
     value?: string | null
   }
@@ -22509,7 +22374,6 @@ export namespace Prisma {
     isPrivate: boolean
     transactionHash?: string | null
     typeId: string
-    chatMessageId?: number | null
     offerId?: number | null
     offerVersion?: number | null
     value?: string | null
@@ -22521,7 +22385,6 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     transaction?: TransactionUpdateOneWithoutTagsInput
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
-    chatMessage?: ChatMessageUpdateOneWithoutTagsInput
     offer?: OfferUpdateOneWithoutTagsInput
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -22533,7 +22396,6 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
-    chatMessageId?: NullableIntFieldUpdateOperationsInput | number | null
     offerId?: NullableIntFieldUpdateOperationsInput | number | null
     offerVersion?: NullableIntFieldUpdateOperationsInput | number | null
     value?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22546,7 +22408,6 @@ export namespace Prisma {
     isPrivate: boolean
     transactionHash?: string | null
     typeId: string
-    chatMessageId?: number | null
     offerId?: number | null
     offerVersion?: number | null
     value?: string | null
@@ -22565,7 +22426,6 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
-    chatMessageId?: NullableIntFieldUpdateOperationsInput | number | null
     offerId?: NullableIntFieldUpdateOperationsInput | number | null
     offerVersion?: NullableIntFieldUpdateOperationsInput | number | null
     value?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23831,11 +23691,6 @@ export namespace Prisma {
     isNot?: TagTypeWhereInput
   }
 
-  export type ChatMessageRelationFilter = {
-    is?: ChatMessageWhereInput | null
-    isNot?: ChatMessageWhereInput | null
-  }
-
   export type TagCountOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
@@ -23843,7 +23698,6 @@ export namespace Prisma {
     isPrivate?: SortOrder
     transactionHash?: SortOrder
     typeId?: SortOrder
-    chatMessageId?: SortOrder
     offerId?: SortOrder
     offerVersion?: SortOrder
     value?: SortOrder
@@ -23852,7 +23706,6 @@ export namespace Prisma {
   export type TagAvgOrderByAggregateInput = {
     id?: SortOrder
     createdByProfileId?: SortOrder
-    chatMessageId?: SortOrder
     offerId?: SortOrder
     offerVersion?: SortOrder
   }
@@ -23864,7 +23717,6 @@ export namespace Prisma {
     isPrivate?: SortOrder
     transactionHash?: SortOrder
     typeId?: SortOrder
-    chatMessageId?: SortOrder
     offerId?: SortOrder
     offerVersion?: SortOrder
     value?: SortOrder
@@ -23877,7 +23729,6 @@ export namespace Prisma {
     isPrivate?: SortOrder
     transactionHash?: SortOrder
     typeId?: SortOrder
-    chatMessageId?: SortOrder
     offerId?: SortOrder
     offerVersion?: SortOrder
     value?: SortOrder
@@ -23886,7 +23737,6 @@ export namespace Prisma {
   export type TagSumOrderByAggregateInput = {
     id?: SortOrder
     createdByProfileId?: SortOrder
-    chatMessageId?: SortOrder
     offerId?: SortOrder
     offerVersion?: SortOrder
   }
@@ -24884,48 +24734,6 @@ export namespace Prisma {
     update?: XOR<ProfileUpdateWithoutMembersInput, ProfileUncheckedUpdateWithoutMembersInput>
   }
 
-  export type TagCreateNestedManyWithoutChatMessageInput = {
-    create?: XOR<Enumerable<TagCreateWithoutChatMessageInput>, Enumerable<TagUncheckedCreateWithoutChatMessageInput>>
-    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutChatMessageInput>
-    createMany?: TagCreateManyChatMessageInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
-  }
-
-  export type TagUncheckedCreateNestedManyWithoutChatMessageInput = {
-    create?: XOR<Enumerable<TagCreateWithoutChatMessageInput>, Enumerable<TagUncheckedCreateWithoutChatMessageInput>>
-    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutChatMessageInput>
-    createMany?: TagCreateManyChatMessageInputEnvelope
-    connect?: Enumerable<TagWhereUniqueInput>
-  }
-
-  export type TagUpdateManyWithoutChatMessageInput = {
-    create?: XOR<Enumerable<TagCreateWithoutChatMessageInput>, Enumerable<TagUncheckedCreateWithoutChatMessageInput>>
-    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutChatMessageInput>
-    upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutChatMessageInput>
-    createMany?: TagCreateManyChatMessageInputEnvelope
-    set?: Enumerable<TagWhereUniqueInput>
-    disconnect?: Enumerable<TagWhereUniqueInput>
-    delete?: Enumerable<TagWhereUniqueInput>
-    connect?: Enumerable<TagWhereUniqueInput>
-    update?: Enumerable<TagUpdateWithWhereUniqueWithoutChatMessageInput>
-    updateMany?: Enumerable<TagUpdateManyWithWhereWithoutChatMessageInput>
-    deleteMany?: Enumerable<TagScalarWhereInput>
-  }
-
-  export type TagUncheckedUpdateManyWithoutChatMessageInput = {
-    create?: XOR<Enumerable<TagCreateWithoutChatMessageInput>, Enumerable<TagUncheckedCreateWithoutChatMessageInput>>
-    connectOrCreate?: Enumerable<TagCreateOrConnectWithoutChatMessageInput>
-    upsert?: Enumerable<TagUpsertWithWhereUniqueWithoutChatMessageInput>
-    createMany?: TagCreateManyChatMessageInputEnvelope
-    set?: Enumerable<TagWhereUniqueInput>
-    disconnect?: Enumerable<TagWhereUniqueInput>
-    delete?: Enumerable<TagWhereUniqueInput>
-    connect?: Enumerable<TagWhereUniqueInput>
-    update?: Enumerable<TagUpdateWithWhereUniqueWithoutChatMessageInput>
-    updateMany?: Enumerable<TagUpdateManyWithWhereWithoutChatMessageInput>
-    deleteMany?: Enumerable<TagScalarWhereInput>
-  }
-
   export type ProfileCreateNestedOneWithoutOffersInput = {
     create?: XOR<ProfileCreateWithoutOffersInput, ProfileUncheckedCreateWithoutOffersInput>
     connectOrCreate?: ProfileCreateOrConnectWithoutOffersInput
@@ -25566,12 +25374,6 @@ export namespace Prisma {
     connect?: TagTypeWhereUniqueInput
   }
 
-  export type ChatMessageCreateNestedOneWithoutTagsInput = {
-    create?: XOR<ChatMessageCreateWithoutTagsInput, ChatMessageUncheckedCreateWithoutTagsInput>
-    connectOrCreate?: ChatMessageCreateOrConnectWithoutTagsInput
-    connect?: ChatMessageWhereUniqueInput
-  }
-
   export type OfferCreateNestedOneWithoutTagsInput = {
     create?: XOR<OfferCreateWithoutTagsInput, OfferUncheckedCreateWithoutTagsInput>
     connectOrCreate?: OfferCreateOrConnectWithoutTagsInput
@@ -25602,16 +25404,6 @@ export namespace Prisma {
     upsert?: TagTypeUpsertWithoutTagsInput
     connect?: TagTypeWhereUniqueInput
     update?: XOR<TagTypeUpdateWithoutTagsInput, TagTypeUncheckedUpdateWithoutTagsInput>
-  }
-
-  export type ChatMessageUpdateOneWithoutTagsInput = {
-    create?: XOR<ChatMessageCreateWithoutTagsInput, ChatMessageUncheckedCreateWithoutTagsInput>
-    connectOrCreate?: ChatMessageCreateOrConnectWithoutTagsInput
-    upsert?: ChatMessageUpsertWithoutTagsInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: ChatMessageWhereUniqueInput
-    update?: XOR<ChatMessageUpdateWithoutTagsInput, ChatMessageUncheckedUpdateWithoutTagsInput>
   }
 
   export type OfferUpdateOneWithoutTagsInput = {
@@ -27660,7 +27452,6 @@ export namespace Prisma {
     isPrivate: boolean
     transaction?: TransactionCreateNestedOneWithoutTagsInput
     type: TagTypeCreateNestedOneWithoutTagsInput
-    chatMessage?: ChatMessageCreateNestedOneWithoutTagsInput
     offer?: OfferCreateNestedOneWithoutTagsInput
     value?: string | null
   }
@@ -27671,7 +27462,6 @@ export namespace Prisma {
     isPrivate: boolean
     transactionHash?: string | null
     typeId: string
-    chatMessageId?: number | null
     offerId?: number | null
     offerVersion?: number | null
     value?: string | null
@@ -28280,7 +28070,6 @@ export namespace Prisma {
     isPrivate?: BoolFilter | boolean
     transactionHash?: StringNullableFilter | string | null
     typeId?: StringFilter | string
-    chatMessageId?: IntNullableFilter | number | null
     offerId?: IntNullableFilter | number | null
     offerVersion?: IntNullableFilter | number | null
     value?: StringNullableFilter | string | null
@@ -29020,54 +28809,6 @@ export namespace Prisma {
     safesRevokedByPerson?: VerifiedSafeUncheckedUpdateManyWithoutRevokedByInput
   }
 
-  export type TagCreateWithoutChatMessageInput = {
-    createdAt: Date | string
-    createdBy: ProfileCreateNestedOneWithoutTagsInput
-    isPrivate: boolean
-    transaction?: TransactionCreateNestedOneWithoutTagsInput
-    type: TagTypeCreateNestedOneWithoutTagsInput
-    offer?: OfferCreateNestedOneWithoutTagsInput
-    value?: string | null
-  }
-
-  export type TagUncheckedCreateWithoutChatMessageInput = {
-    id?: number
-    createdAt: Date | string
-    createdByProfileId: number
-    isPrivate: boolean
-    transactionHash?: string | null
-    typeId: string
-    offerId?: number | null
-    offerVersion?: number | null
-    value?: string | null
-  }
-
-  export type TagCreateOrConnectWithoutChatMessageInput = {
-    where: TagWhereUniqueInput
-    create: XOR<TagCreateWithoutChatMessageInput, TagUncheckedCreateWithoutChatMessageInput>
-  }
-
-  export type TagCreateManyChatMessageInputEnvelope = {
-    data: Enumerable<TagCreateManyChatMessageInput>
-    skipDuplicates?: boolean
-  }
-
-  export type TagUpsertWithWhereUniqueWithoutChatMessageInput = {
-    where: TagWhereUniqueInput
-    update: XOR<TagUpdateWithoutChatMessageInput, TagUncheckedUpdateWithoutChatMessageInput>
-    create: XOR<TagCreateWithoutChatMessageInput, TagUncheckedCreateWithoutChatMessageInput>
-  }
-
-  export type TagUpdateWithWhereUniqueWithoutChatMessageInput = {
-    where: TagWhereUniqueInput
-    data: XOR<TagUpdateWithoutChatMessageInput, TagUncheckedUpdateWithoutChatMessageInput>
-  }
-
-  export type TagUpdateManyWithWhereWithoutChatMessageInput = {
-    where: TagScalarWhereInput
-    data: XOR<TagUpdateManyMutationInput, TagUncheckedUpdateManyWithoutTagsInput>
-  }
-
   export type ProfileCreateWithoutOffersInput = {
     lastUpdateAt?: Date | string
     emailAddress?: string | null
@@ -29218,7 +28959,6 @@ export namespace Prisma {
     isPrivate: boolean
     transaction?: TransactionCreateNestedOneWithoutTagsInput
     type: TagTypeCreateNestedOneWithoutTagsInput
-    chatMessage?: ChatMessageCreateNestedOneWithoutTagsInput
     value?: string | null
   }
 
@@ -29229,7 +28969,6 @@ export namespace Prisma {
     isPrivate: boolean
     transactionHash?: string | null
     typeId: string
-    chatMessageId?: number | null
     value?: string | null
   }
 
@@ -30713,7 +30452,6 @@ export namespace Prisma {
     createdBy: ProfileCreateNestedOneWithoutTagsInput
     isPrivate: boolean
     transaction?: TransactionCreateNestedOneWithoutTagsInput
-    chatMessage?: ChatMessageCreateNestedOneWithoutTagsInput
     offer?: OfferCreateNestedOneWithoutTagsInput
     value?: string | null
   }
@@ -30724,7 +30462,6 @@ export namespace Prisma {
     createdByProfileId: number
     isPrivate: boolean
     transactionHash?: string | null
-    chatMessageId?: number | null
     offerId?: number | null
     offerVersion?: number | null
     value?: string | null
@@ -30761,7 +30498,6 @@ export namespace Prisma {
     createdBy: ProfileCreateNestedOneWithoutTagsInput
     isPrivate: boolean
     type: TagTypeCreateNestedOneWithoutTagsInput
-    chatMessage?: ChatMessageCreateNestedOneWithoutTagsInput
     offer?: OfferCreateNestedOneWithoutTagsInput
     value?: string | null
   }
@@ -30772,7 +30508,6 @@ export namespace Prisma {
     createdByProfileId: number
     isPrivate: boolean
     typeId: string
-    chatMessageId?: number | null
     offerId?: number | null
     offerVersion?: number | null
     value?: string | null
@@ -31246,28 +30981,6 @@ export namespace Prisma {
     create: XOR<TagTypeCreateWithoutTagsInput, TagTypeUncheckedCreateWithoutTagsInput>
   }
 
-  export type ChatMessageCreateWithoutTagsInput = {
-    createdAt: Date | string
-    openedAt?: Date | string | null
-    from: string
-    to: string
-    text: string
-  }
-
-  export type ChatMessageUncheckedCreateWithoutTagsInput = {
-    id?: number
-    createdAt: Date | string
-    openedAt?: Date | string | null
-    from: string
-    to: string
-    text: string
-  }
-
-  export type ChatMessageCreateOrConnectWithoutTagsInput = {
-    where: ChatMessageWhereUniqueInput
-    create: XOR<ChatMessageCreateWithoutTagsInput, ChatMessageUncheckedCreateWithoutTagsInput>
-  }
-
   export type OfferCreateWithoutTagsInput = {
     id?: number
     version: number
@@ -31439,28 +31152,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
   }
 
-  export type ChatMessageUpsertWithoutTagsInput = {
-    update: XOR<ChatMessageUpdateWithoutTagsInput, ChatMessageUncheckedUpdateWithoutTagsInput>
-    create: XOR<ChatMessageCreateWithoutTagsInput, ChatMessageUncheckedCreateWithoutTagsInput>
-  }
-
-  export type ChatMessageUpdateWithoutTagsInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    text?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type ChatMessageUncheckedUpdateWithoutTagsInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    openedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    from?: StringFieldUpdateOperationsInput | string
-    to?: StringFieldUpdateOperationsInput | string
-    text?: StringFieldUpdateOperationsInput | string
-  }
-
   export type OfferUpsertWithoutTagsInput = {
     update: XOR<OfferUpdateWithoutTagsInput, OfferUncheckedUpdateWithoutTagsInput>
     create: XOR<OfferCreateWithoutTagsInput, OfferUncheckedCreateWithoutTagsInput>
@@ -31518,7 +31209,6 @@ export namespace Prisma {
     isPrivate: boolean
     transactionHash?: string | null
     typeId: string
-    chatMessageId?: number | null
     offerId?: number | null
     offerVersion?: number | null
     value?: string | null
@@ -31766,7 +31456,6 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     transaction?: TransactionUpdateOneWithoutTagsInput
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
-    chatMessage?: ChatMessageUpdateOneWithoutTagsInput
     offer?: OfferUpdateOneWithoutTagsInput
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -31777,7 +31466,6 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
-    chatMessageId?: NullableIntFieldUpdateOperationsInput | number | null
     offerId?: NullableIntFieldUpdateOperationsInput | number | null
     offerVersion?: NullableIntFieldUpdateOperationsInput | number | null
     value?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31789,7 +31477,6 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
-    chatMessageId?: NullableIntFieldUpdateOperationsInput | number | null
     offerId?: NullableIntFieldUpdateOperationsInput | number | null
     offerVersion?: NullableIntFieldUpdateOperationsInput | number | null
     value?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32369,40 +32056,6 @@ export namespace Prisma {
     inviteCount?: IntFieldUpdateOperationsInput | number
   }
 
-  export type TagCreateManyChatMessageInput = {
-    id?: number
-    createdAt: Date | string
-    createdByProfileId: number
-    isPrivate: boolean
-    transactionHash?: string | null
-    typeId: string
-    offerId?: number | null
-    offerVersion?: number | null
-    value?: string | null
-  }
-
-  export type TagUpdateWithoutChatMessageInput = {
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    transaction?: TransactionUpdateOneWithoutTagsInput
-    type?: TagTypeUpdateOneRequiredWithoutTagsInput
-    offer?: OfferUpdateOneWithoutTagsInput
-    value?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type TagUncheckedUpdateWithoutChatMessageInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdByProfileId?: IntFieldUpdateOperationsInput | number
-    isPrivate?: BoolFieldUpdateOperationsInput | boolean
-    transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
-    typeId?: StringFieldUpdateOperationsInput | string
-    offerId?: NullableIntFieldUpdateOperationsInput | number | null
-    offerVersion?: NullableIntFieldUpdateOperationsInput | number | null
-    value?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
   export type PurchaseLineCreateManyProductInput = {
     id?: number
     purchaseId: number
@@ -32422,7 +32075,6 @@ export namespace Prisma {
     isPrivate: boolean
     transactionHash?: string | null
     typeId: string
-    chatMessageId?: number | null
     value?: string | null
   }
 
@@ -32466,7 +32118,6 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     transaction?: TransactionUpdateOneWithoutTagsInput
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
-    chatMessage?: ChatMessageUpdateOneWithoutTagsInput
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -32477,7 +32128,6 @@ export namespace Prisma {
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
     typeId?: StringFieldUpdateOperationsInput | string
-    chatMessageId?: NullableIntFieldUpdateOperationsInput | number | null
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -32612,7 +32262,6 @@ export namespace Prisma {
     createdByProfileId: number
     isPrivate: boolean
     transactionHash?: string | null
-    chatMessageId?: number | null
     offerId?: number | null
     offerVersion?: number | null
     value?: string | null
@@ -32623,7 +32272,6 @@ export namespace Prisma {
     createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     transaction?: TransactionUpdateOneWithoutTagsInput
-    chatMessage?: ChatMessageUpdateOneWithoutTagsInput
     offer?: OfferUpdateOneWithoutTagsInput
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -32634,7 +32282,6 @@ export namespace Prisma {
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     transactionHash?: NullableStringFieldUpdateOperationsInput | string | null
-    chatMessageId?: NullableIntFieldUpdateOperationsInput | number | null
     offerId?: NullableIntFieldUpdateOperationsInput | number | null
     offerVersion?: NullableIntFieldUpdateOperationsInput | number | null
     value?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32646,7 +32293,6 @@ export namespace Prisma {
     createdByProfileId: number
     isPrivate: boolean
     typeId: string
-    chatMessageId?: number | null
     offerId?: number | null
     offerVersion?: number | null
     value?: string | null
@@ -32657,7 +32303,6 @@ export namespace Prisma {
     createdBy?: ProfileUpdateOneRequiredWithoutTagsInput
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     type?: TagTypeUpdateOneRequiredWithoutTagsInput
-    chatMessage?: ChatMessageUpdateOneWithoutTagsInput
     offer?: OfferUpdateOneWithoutTagsInput
     value?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -32668,7 +32313,6 @@ export namespace Prisma {
     createdByProfileId?: IntFieldUpdateOperationsInput | number
     isPrivate?: BoolFieldUpdateOperationsInput | boolean
     typeId?: StringFieldUpdateOperationsInput | string
-    chatMessageId?: NullableIntFieldUpdateOperationsInput | number | null
     offerId?: NullableIntFieldUpdateOperationsInput | number | null
     offerVersion?: NullableIntFieldUpdateOperationsInput | number | null
     value?: NullableStringFieldUpdateOperationsInput | string | null
