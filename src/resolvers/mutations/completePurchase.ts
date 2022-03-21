@@ -1,9 +1,13 @@
-import {ProfileLoader} from "../../querySources/profileLoader";
-import {MutationCompletePurchaseArgs} from "../../types";
-import {Context} from "../../context";
-import {Environment} from "../../environment";
+import { ProfileLoader } from "../../querySources/profileLoader";
+import { MutationCompletePurchaseArgs, Invoice } from "../../types";
+import { Context } from "../../context";
+import { Environment } from "../../environment";
 
-export const completePurchase = async (parent:any, args:MutationCompletePurchaseArgs, context:Context) => {
+export const completePurchase = async (
+  parent: any,
+  args: MutationCompletePurchaseArgs,
+  context: Context
+) => {
   const callerInfo = await context.callerInfo;
   if (!callerInfo?.profile) {
     throw new Error(`You must have a profile to use this function.`);
@@ -12,8 +16,8 @@ export const completePurchase = async (parent:any, args:MutationCompletePurchase
     where: {
       id: args.invoiceId,
       customerProfile: {
-        circlesAddress: callerInfo.profile.circlesAddress
-      }
+        circlesAddress: callerInfo.profile.circlesAddress,
+      },
     },
     include: {
       sellerProfile: true,
@@ -23,44 +27,45 @@ export const completePurchase = async (parent:any, args:MutationCompletePurchase
         include: {
           product: {
             include: {
-              createdBy: true
-            }
-          }
-        }
-      }
-    }
+              createdBy: true,
+            },
+          },
+        },
+      },
+    },
   });
   if (!invoice) {
     throw new Error(`Couldn't find a invoice with id ${args.invoiceId}.`);
   }
   if (invoice.buyerSignature && invoice.sellerSignature) {
-    throw new Error(`The purchase is already accepted by both parties.`)
+    throw new Error(`The purchase is already accepted by both parties.`);
   }
   const data = {
     buyerSignature: !args.revoke,
-    buyerSignedDate: !args.revoke ? new Date() : null
+    buyerSignedDate: !args.revoke ? new Date() : null,
   };
   await Environment.readWriteApiDb.invoice.update({
     where: {
-      id: args.invoiceId
+      id: args.invoiceId,
     },
-    data: data
+    data: data,
   });
   invoice.buyerSignature = data.buyerSignature;
   invoice.buyerSignedDate = data.buyerSignedDate;
 
-  return {
+  return <Invoice>{
     ...invoice,
     buyerAddress: invoice.customerProfile.circlesAddress ?? "",
     sellerAddress: invoice.sellerProfile.circlesAddress ?? "",
     buyerProfile: ProfileLoader.withDisplayCurrency(invoice.customerProfile),
     sellerProfile: ProfileLoader.withDisplayCurrency(invoice.sellerProfile),
-    buyerSignedDate: invoice.buyerSignedDate?.toJSON(),
-    sellerSignedDate: invoice.sellerSignedDate?.toJSON(),
-    cancelledAt: invoice.cancelledAt?.toJSON(),
+    buyerSignedDate: invoice.buyerSignedDate?.toJSON() ?? null,
+    sellerSignedDate: invoice.sellerSignedDate?.toJSON() ?? null,
+    cancelledAt: invoice.cancelledAt?.toJSON() ?? null,
+    createdAt: invoice.createdAt?.toJSON() ?? null,
     cancelledBy: ProfileLoader.withDisplayCurrency(invoice.cancelledBy),
     cancelReason: invoice.cancelReason,
-    lines: invoice.lines.map(l => {
+    lines: invoice.lines.map((l) => {
       return {
         ...l,
         offer: {
@@ -69,9 +74,11 @@ export const completePurchase = async (parent:any, args:MutationCompletePurchase
           pictureMimeType: l.product.pictureMimeType ?? "",
           createdAt: l.product.createdAt.toJSON(),
           createdByAddress: l.product.createdBy.circlesAddress ?? "",
-          createdByProfile: ProfileLoader.withDisplayCurrency(l.product.createdBy)
-        }
-      }
-    })
+          createdByProfile: ProfileLoader.withDisplayCurrency(
+            l.product.createdBy
+          ),
+        },
+      };
+    }),
   };
 };

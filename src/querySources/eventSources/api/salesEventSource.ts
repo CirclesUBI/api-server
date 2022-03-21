@@ -1,6 +1,7 @@
 import { EventSource } from "../eventSource";
 import {
-  Direction, EventType,
+  Direction,
+  EventType,
   InvoiceLine,
   Maybe,
   PaginationArgs,
@@ -35,13 +36,17 @@ export class SalesEventSource implements EventSource {
         }
       : {};
 
-    const filterById = filter?.sale?.invoiceId  ? {
-      id: filter?.sale.invoiceId
-    } : {};
+    const filterById = filter?.sale?.invoiceId
+      ? {
+          id: filter?.sale.invoiceId,
+        }
+      : {};
 
-    const filterByPickupCode = filter?.sale?.pickupCode  ? {
-      pickupCode: filter?.sale.pickupCode
-    } : {};
+    const filterByPickupCode = filter?.sale?.pickupCode
+      ? {
+          pickupCode: filter?.sale.pickupCode,
+        }
+      : {};
 
     const sales = await Environment.readonlyApiDb.invoice.findMany({
       where: {
@@ -49,11 +54,11 @@ export class SalesEventSource implements EventSource {
           circlesAddress: forSafeAddress,
         },
         customerProfile: {
-          circlesAddress: filter?.with
+          circlesAddress: filter?.with,
         },
         ...filterById,
         ...createdAt,
-        ...filterByPickupCode
+        ...filterByPickupCode,
       },
       include: {
         customerProfile: true,
@@ -103,6 +108,7 @@ export class SalesEventSource implements EventSource {
             ...salesInvoice,
             sellerAddress: forSafeAddress,
             buyerAddress: salesInvoice.customerProfile.circlesAddress,
+            createdAt: salesInvoice.createdAt.toJSON(),
             lines: salesInvoice.lines.map((o) => {
               return <InvoiceLine>{
                 id: o.id,
