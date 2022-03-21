@@ -9,30 +9,30 @@ generator client {
 }
 
 model Session {
-    id String @id
-    sessionToken String @unique
-    // Who is identified by the session?
-    emailAddress String?
-    // Who is identified by the session?
-    ethAddress String?
-    challengeHash String?
-    signature String?
+  id String @id
+  sessionToken String @unique
+  // Who is identified by the session?
+  emailAddress String?
+  // Who is identified by the session?
+  ethAddress String?
+  challengeHash String?
+  signature String?
 
-    profile Profile? @relation(name: "Session_Profile", fields: [profileId], references: [id])
-    profileId Int?
-    @@index([profileId])
-    // Which Authoritity issued the JWT that lead to this session?
-    issuedBy String
-    // The id of the jwt that was exchanged for this session
-    jti String?
-    // When the session was created.
-    createdAt DateTime
-    @@index([createdAt])
-    validFrom DateTime?
-    endedAt DateTime?
-    endReason String?
-    // This fields specifies the max. session lifetime in seconds.
-    maxLifetime Int
+  profile Profile? @relation(name: "Session_Profile", fields: [profileId], references: [id])
+  profileId Int?
+  @@index([profileId])
+  // Which Authoritity issued the JWT that lead to this session?
+  issuedBy String
+  // The id of the jwt that was exchanged for this session
+  jti String?
+  // When the session was created.
+  createdAt DateTime
+  @@index([createdAt])
+  validFrom DateTime?
+  endedAt DateTime?
+  endReason String?
+  // This fields specifies the max. session lifetime in seconds.
+  maxLifetime Int
 }
 
 model Invitation {
@@ -67,9 +67,9 @@ model Invitation {
 }
 
 enum ProfileType {
-    PERSON
-    ORGANISATION
-    REGION
+      PERSON
+      ORGANISATION
+      REGION
 }
 
 model InvitationFundsEOA {
@@ -271,7 +271,7 @@ model Offer {
 
     purchaseLines PurchaseLine[] @relation(name: "PurchaseLines_Product")
     invoiceLines InvoiceLine[] @relation(name: "InvoiceLines_Product")
-    tags TagMap[] @relation(name: "Offer_TagMap")
+    tags Tag[] @relation(name: "Offer_Tags")
 }
 
 model Purchase {
@@ -369,7 +369,7 @@ model TagType {
 
 model Transaction {
     transactionHash String @unique @id
-    tags TagMap[] @relation(name: "Transaction_TagMap")
+    tags Tag[] @relation(name: "Transaction_Tag")
 
     payedInvoice Invoice? @relation(name: "Invoice_PaymentTransaction")
 
@@ -389,6 +389,10 @@ model Tag {
 
     isPrivate Boolean
 
+    transaction Transaction? @relation(name: "Transaction_Tag", fields: [transactionHash], references: [transactionHash])
+    transactionHash String?
+    @@index([transactionHash])
+
     type TagType @relation(name: "Tag_TagType", fields: [typeId], references: [id])
     typeId String
     @@index([typeId])
@@ -397,26 +401,14 @@ model Tag {
     chatMessageId Int?
     @@index([chatMessageId])
 
-    value String?
-}
-
-model TagMap {
-    id Int @id @default(autoincrement())
-
-    createdAt DateTime
-    @@index([createdAt])
-    createdBy Profile @relation(name: "TagMap_CreatedBy", fields: [createdByProfileId], references: [id])
-    createdByProfileId Int
-    @@index([createdByProfileId])
-
-    transaction Transaction? @relation(name: "Transaction_TagMap", fields: [transactionHash], references: [transactionHash])
-    transactionHash String?
-    @@index([transactionHash])
-
-    offer Offer? @relation(name: "Offer_TagMap", fields: [offerId, offerVersion], references: [id, version])
+    offer Offer? @relation(name: "Offer_Tags", fields: [offerId], references: [id])
+    offer Offer? @relation(name: "Offer_Tags", fields: [offerId, offerVersion], references: [id, version])
     offerId Int?
+    @@index([offerId])
     offerVersion Int?
     @@index([offerId, offerVersion])
+
+    value String?
 }
 
 model Job {
