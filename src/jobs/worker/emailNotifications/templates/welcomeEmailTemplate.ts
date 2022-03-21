@@ -6,6 +6,7 @@ import { MailTemplate } from "../../../../mailer/mailTemplate";
 export const welcomeEmailTemplate: MailTemplate = {
   subject: `Welcome to Circles.Land`,
   bodyHtml: `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" xmlns:v="urn:schemas-microsoft-com:vml">
 
   <head>
@@ -127,20 +128,11 @@ export const welcomeEmailTemplate: MailTemplate = {
                           Welcome to Circlesland – your time is your money! With
                           every hour that goes by you get one circle.
                           <br><br>
-                          Save your circles to buy drinks!
-                          <br><br>
-                          Where: Alte Utting
-                          <br>
-                          When: 19th of March 2022, starting at 3 pm
-                          <br><br>
-                          Your time is worth a shot! Or two … Maybe three …
-                          Damn, five again!
-                          <br><br>
                           Your universal basic income starts today!
                         </p>
                         <div class="sm-h-24" style="line-height: 24px;">&zwnj;</div>
                         <div style="text-align: center;">
-                          <a href="{{loginUrl}}" class="hover-bg-primary-dark" style="display: inline-block; border-radius: 8px; background-color: #41c7f1; padding: 20px 24px; font-size: 14px; font-weight: 600; text-transform: uppercase; line-height: 1; color: #ffffff; text-decoration: none;">
+                          <a href="@{{loginUrl}}" class="hover-bg-primary-dark" style="display: inline-block; border-radius: 8px; background-color: #41c7f1; padding: 20px 24px; font-size: 14px; font-weight: 600; text-transform: uppercase; line-height: 1; color: #ffffff; text-decoration: none;">
                             <!--[if mso
                               ]><i
                                 style="
