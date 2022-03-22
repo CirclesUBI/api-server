@@ -19,7 +19,7 @@ export class ProfileLoader {
       },
       orderBy: {
         lastUpdateAt: "asc",
-      },
+      }
     });
 
     const safeProfileMap = profiles.reduce((p, c) => {
