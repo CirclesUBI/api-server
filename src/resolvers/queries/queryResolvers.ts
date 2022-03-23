@@ -27,7 +27,7 @@ import {recentProfiles} from "./recentProfiles";
 import {stats} from "./stats";
 import {init} from "./init";
 import {Environment} from "../../environment";
-import {QueryGetStringsByLanguageArgs, QueryGetStringByMaxVersionArgs, QueryResolvers} from "../../types";
+import { QueryGetStringByMaxVersionArgs, QueryResolvers, QueryGetStringByLanguageArgs} from "../../types";
 import {Context} from "../../context";
 import {ProfileLoader} from "../../querySources/profileLoader";
 const packageJson = require("../../../package.json");
@@ -116,5 +116,13 @@ export const queryResolvers : QueryResolvers = {
         createdAt: o.createdAt.toJSON()
       }
     });
+  },
+  getAvailableLanguages: async (parent: any, args: any, context: Context) => {
+    const queryResult = await Environment.pgReadWriteApiDb.query(`
+    select lang
+      from i18n
+        group by lang;
+    `);
+    return queryResult.rows;
   }
 }

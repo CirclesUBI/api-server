@@ -75,23 +75,30 @@ export const mutationResolvers : MutationResolvers = {
     return queryResult.rowCount
   },
   updateValue: async (parent: any, args: MutationUpdateValueArgs, context: Context) => {
-    const queryResult = await Environment.pgReadWriteApiDb.query(`
-    insert into i18n (
-        lang,
-        key, 
-        "createdBy", 
-        version, 
-        value
-    ) values (
-        $1,
-        $2, 
-        $3, 
-        (select max(version) + 1 
-        from i18n 
-        where key=$2 and lang=$1),
-        $4);
-    `,
-    [args.lang, args.key, args.createdBy, args.value]);
-    return queryResult.rowCount
+    let callerInfo = await context.callerInfo;
+    if (!callerInfo?.profile) {
+      throw new Error(`You need a profile to edit the content.`)
+    } else {
+      let createdBy = callerInfo?.profile?.circlesAddress
+      const queryResult = await Environment.pgReadWriteApiDb.query(`
+      insert into i18n (
+          lang,
+          key, 
+          "createdBy", 
+          version, 
+          value
+      ) values (
+          $1,
+          $2, 
+          $3, 
+          (select max(version) + 1 
+          from i18n 
+          where key=$2 and lang=$1),
+          $4);
+      `,
+      [args.lang, args.key, createdBy, args.value]);
+      return queryResult.rowCount
+    };
   } 
 }
+
