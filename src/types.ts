@@ -543,6 +543,7 @@ export type MutationAcceptMembershipArgs = {
 
 
 export type MutationAcknowledgeArgs = {
+  safeAddress?: InputMaybe<Scalars['String']>;
   until: Scalars['String'];
 };
 

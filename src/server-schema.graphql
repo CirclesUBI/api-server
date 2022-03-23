@@ -921,7 +921,7 @@ type Mutation {
   removeMember(groupId: String!, memberAddress: String!): RemoveMemberResult
   rejectMembership(membershipId: Int!): RejectMembershipResult
 
-  acknowledge(until: String!): Boolean!
+  acknowledge(until: String! safeAddress: String): Boolean!
 
   requestInvitationOffer(for: String!): Offer!
 
