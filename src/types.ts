@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -13,6 +13,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Date: any;
 };
 
 export type AcceptMembershipResult = {
@@ -544,7 +545,7 @@ export type MutationAcceptMembershipArgs = {
 
 export type MutationAcknowledgeArgs = {
   safeAddress?: InputMaybe<Scalars['String']>;
-  until: Scalars['String'];
+  until: Scalars['Date'];
 };
 
 
@@ -928,6 +929,7 @@ export type Query = {
   init: SessionInfo;
   invitationTransaction?: Maybe<ProfileEvent>;
   invoice?: Maybe<Scalars['String']>;
+  lastAcknowledgedAt?: Maybe<Scalars['Date']>;
   myInvitations: Array<CreatedInvitation>;
   myProfile?: Maybe<Profile>;
   organisations: Array<Organisation>;
@@ -994,6 +996,11 @@ export type QueryFindSafesByOwnerArgs = {
 
 export type QueryInvoiceArgs = {
   invoiceId: Scalars['Int'];
+};
+
+
+export type QueryLastAcknowledgedAtArgs = {
+  safeAddress: Scalars['String'];
 };
 
 
@@ -1209,7 +1216,6 @@ export type SessionInfo = {
   capabilities: Array<Capability>;
   hasProfile?: Maybe<Scalars['Boolean']>;
   isLoggedOn: Scalars['Boolean'];
-  lastAcknowledgedAt?: Maybe<Scalars['String']>;
   profile?: Maybe<Profile>;
   profileId?: Maybe<Scalars['Int']>;
 };
@@ -1465,6 +1471,7 @@ export type ResolversTypes = ResolversObject<{
   CreateTagInput: CreateTagInput;
   CreatedInvitation: ResolverTypeWrapper<CreatedInvitation>;
   CreatedInviteEoa: ResolverTypeWrapper<CreatedInviteEoa>;
+  Date: ResolverTypeWrapper<Scalars['Date']>;
   DelegateAuthInit: ResolverTypeWrapper<DelegateAuthInit>;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
@@ -1600,6 +1607,7 @@ export type ResolversParentTypes = ResolversObject<{
   CreateTagInput: CreateTagInput;
   CreatedInvitation: CreatedInvitation;
   CreatedInviteEoa: CreatedInviteEoa;
+  Date: Scalars['Date'];
   DelegateAuthInit: DelegateAuthInit;
   DepositChallenge: DepositChallenge;
   DepositChallengeResponse: DepositChallengeResponse;
@@ -1900,6 +1908,10 @@ export type CreatedInviteEoaResolvers<ContextType = any, ParentType extends Reso
   for?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
+
+export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
+  name: 'Date';
+}
 
 export type DelegateAuthInitResolvers<ContextType = any, ParentType extends ResolversParentTypes['DelegateAuthInit'] = ResolversParentTypes['DelegateAuthInit']> = ResolversObject<{
   appId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2336,6 +2348,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   init?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   invoice?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryInvoiceArgs, 'invoiceId'>>;
+  lastAcknowledgedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType, RequireFields<QueryLastAcknowledgedAtArgs, 'safeAddress'>>;
   myInvitations?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
   myProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, Partial<QueryOrganisationsArgs>>;
@@ -2457,7 +2470,6 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
   capabilities?: Resolver<Array<ResolversTypes['Capability']>, ParentType, ContextType>;
   hasProfile?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   isLoggedOn?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  lastAcknowledgedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   profileId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -2577,6 +2589,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   CreateOrganisationResult?: CreateOrganisationResultResolvers<ContextType>;
   CreatedInvitation?: CreatedInvitationResolvers<ContextType>;
   CreatedInviteEoa?: CreatedInviteEoaResolvers<ContextType>;
+  Date?: GraphQLScalarType;
   DelegateAuthInit?: DelegateAuthInitResolvers<ContextType>;
   DepositChallengeResponse?: DepositChallengeResponseResolvers<ContextType>;
   Erc20Balances?: Erc20BalancesResolvers<ContextType>;

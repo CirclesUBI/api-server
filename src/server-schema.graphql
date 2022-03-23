@@ -1,3 +1,5 @@
+scalar Date
+
 type Server {
   version: String!
 }
@@ -169,7 +171,6 @@ type SessionInfo {
   isLoggedOn: Boolean!
   hasProfile: Boolean
   profileId: Int
-  lastAcknowledgedAt: String
   profile: Profile
   capabilities: [Capability!]!
 }
@@ -921,7 +922,7 @@ type Mutation {
   removeMember(groupId: String!, memberAddress: String!): RemoveMemberResult
   rejectMembership(membershipId: Int!): RejectMembershipResult
 
-  acknowledge(until: String! safeAddress: String): Boolean!
+  acknowledge(until: Date! safeAddress: String): Boolean!
 
   requestInvitationOffer(for: String!): Offer!
 
@@ -1078,6 +1079,7 @@ type Query {
   invitationTransaction: ProfileEvent
   hubSignupTransaction: ProfileEvent
   safeInfo(safeAddress: String): SafeInfo
+  lastAcknowledgedAt(safeAddress: String!): Date
 
   verifications(
     pagination: PaginationArgs

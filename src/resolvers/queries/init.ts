@@ -29,7 +29,7 @@ export const init = async (parent:any, args:any, context:Context) : Promise<Sess
             hasProfile: !!callerInfo?.profile,
             profileId: callerInfo?.profile?.id,
             profile: callerInfo?.profile ? ProfileLoader.withDisplayCurrency(callerInfo.profile) : null,
-            lastAcknowledgedAt: callerInfo?.profile?.lastAcknowledged?.toJSON(),
+            // lastAcknowledgedAt: callerInfo?.profile?.lastAcknowledged?.toJSON(),
             capabilities: capabilities
         }
     } catch(e) {
