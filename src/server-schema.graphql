@@ -340,6 +340,7 @@ type Invoice {
 
   invoiceNo: String!
   pickupCode: String
+  simplePickupCode: String
 
   buyerSignature: Boolean
   buyerSignedDate: String

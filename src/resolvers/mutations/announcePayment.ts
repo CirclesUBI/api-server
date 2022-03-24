@@ -24,7 +24,7 @@ export function announcePayment() {
         }
 
         const pickupCode = Generate.randomHexString(6);
-        const simplePickupCode:{lastSimplePickupCode:number} = await Environment.readWriteApiDb.$queryRaw`
+        const simplePickupCode:{lastSimplePickupCode:number}[] = await Environment.readWriteApiDb.$queryRaw`
             update "Profile"
             set "lastSimplePickupCode" = case when coalesce("lastSimplePickupCode", 0) + 1 >= 100
                                               then 1
@@ -44,7 +44,7 @@ export function announcePayment() {
             data: {
                 pendingPaymentTransactionHash: args.transactionHash,
                 pickupCode: pickupCode,
-                simplePickupCode: simplePickupCode?.lastSimplePickupCode?.toString()
+                simplePickupCode: simplePickupCode ? simplePickupCode[0].lastSimplePickupCode.toString() : null
             }
         });
 
