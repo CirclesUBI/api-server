@@ -180,9 +180,9 @@ model Profile {
     lastRefundNo Int? // Is used in organisations only and represents the current value of the refund number series.
 
     currentSimplePickupCodeRound Int?
-    lastSimplePickupCode String? // A value in the range from 1 to 99. Every new purchase will
-                                 // get the next number assigned. When 99 is reached the number
-                                 // will wrap around and 'currentSimplePickupCodeRound' will be incremented by 1.
+    lastSimplePickupCode Int? // A value in the range from 1 to 99. Every new purchase will
+                              // get the next number assigned. When 99 is reached the number
+                              // will wrap around and 'currentSimplePickupCodeRound' will be incremented by 1.
 
     displayCurrency String @default(value: "EURS")
     safesVerifiedByPerson VerifiedSafe[]  @relation(name: "VerifiedSafe_CreatedByPerson")
