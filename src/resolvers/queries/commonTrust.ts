@@ -39,13 +39,8 @@ export function commonTrust(prisma:PrismaClient) {
       return [];
     }
 
-    const allSafeAddresses = commonTrustsResult.rows.reduce((p,c) => {
-      p[c.user] = true;
-      return p;
-    },{});
-
-    const profileLoader = new ProfileLoader();
-    const profiles = await profileLoader.profilesBySafeAddress(prisma, Object.keys(allSafeAddresses));
+    const allSafeAddresses = commonTrustsResult.rows.toLookup(c => c.user);
+    const profiles = await new ProfileLoader().profilesBySafeAddress(prisma, Object.keys(allSafeAddresses));
 
     return commonTrustsResult.rows.map(o => {
       return <CommonTrust>{

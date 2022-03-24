@@ -28,13 +28,7 @@ export const purchaseInvoicesDataLoader = new DataLoader<number, Invoice[]>(
           sellerAddress: i.sellerProfile.circlesAddress,
         };
       })
-      .reduce((p, c) => {
-        if (!p[c.purchaseId]) {
-          p[c.purchaseId] = [];
-        }
-        p[c.purchaseId].push(c);
-        return p;
-      }, <{ [x: number]: Invoice[] }>{});
+      .groupBy(c => c.purchaseId);
 
     return keys.map((o) => formattedInvoices[o]).filter((o) => !!o);
   },

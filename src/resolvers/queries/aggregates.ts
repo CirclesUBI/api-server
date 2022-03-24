@@ -15,11 +15,7 @@ import {AggregateAugmenter} from "../../querySources/aggregateSources/aggregateA
 
 export const aggregates = async (parent:any, args:QueryAggregatesArgs, context: Context) => {
     const aggregateSources: AggregateSource[] = [];
-    const types = args.types?.reduce((p:{[p:string]:any}, c:AggregateType) => {
-      if (!c) return p;
-      p[c] = true;
-      return p;
-    }, <{ [x: string]: any }>{}) ?? {};
+    const types = args.types?.toLookup(c => c) ?? {};
 
     if (types[AggregateType.CrcBalances]) {
       aggregateSources.push(new CrcBalanceSource());

@@ -15,12 +15,7 @@ export function organisationsByAddress() {
             return [];
         }
 
-        const allCreationDates = organisationSignupsResult.rows.reduce((p, c) => {
-            p[c.organisation] = new Date(c.timestamp);
-            return p;
-        }, {});
-
-
+        const allCreationDates = organisationSignupsResult.rows.toLookup(c => c.organisation, c => new Date(c.timestamp));
         const profileLoader = new ProfileLoader();
         const profiles = await profileLoader.profilesBySafeAddress(Environment.readonlyApiDb, Object.keys(allCreationDates));
 
@@ -33,7 +28,7 @@ export function organisationsByAddress() {
             };
             return <Organisation>{
                 id: p.id,
-                createdAt: allCreationDates[p.circlesAddress ?? ""],
+                createdAt: allCreationDates[p.circlesAddress ?? ""]?.toJSON(),
                 name: p.firstName,
                 cityGeonameid: p.cityGeonameid,
                 circlesAddress: p.circlesAddress,
