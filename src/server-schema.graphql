@@ -81,7 +81,7 @@ type Organisation {
   createdAt: String!
   circlesAddress: String
   circlesSafeOwner: String
-  displayName: String!
+  displayName: String
   name: String!
   description: String
   avatarUrl: String
