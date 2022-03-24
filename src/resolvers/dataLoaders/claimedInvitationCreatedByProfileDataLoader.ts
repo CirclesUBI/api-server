@@ -13,16 +13,7 @@ export const claimedInvitationCreatedByProfileDataLoader = new DataLoader<number
       createdBy: true
     }
   })
-  const createdByProfile = invitations.reduce((p,c) => {
-    if (!c.createdByProfileId)
-      return p;
-
-    p[c.createdByProfileId] = <Profile>{
-      ...c.createdBy
-    };
-    return p;
-  },<{[x:number]:Profile}>{});
-
+  const createdByProfile = invitations.toLookup(c => c.createdByProfileId, c => <Profile>c.createdBy);
   return keys.map(o => createdByProfile[o]);
 }, {
   cache: false

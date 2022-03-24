@@ -18,22 +18,7 @@ export class TagLoader {
       }
     });
 
-    const txHashTagMap = tags.reduce((p,c)=> {
-      if (!c.transactionHash) {
-        return p;
-      }
-
-      if (!p[c.transactionHash]) {
-        p[c.transactionHash] = [];
-      }
-
-      // @ts-ignore
-      p[c.transactionHash].push(c);
-
-      return p;
-    }, <TagsByTxHashLookup>{});
-
-    return txHashTagMap;
+    return tags.groupBy(c => c.transactionHash);
   }
 
   async tagsByTransactionHash(prisma:PrismaClient, hashes:string[]) : Promise<TagsByTxHashLookup> {

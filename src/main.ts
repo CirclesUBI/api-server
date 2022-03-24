@@ -35,6 +35,13 @@ declare global {
     toLookup<TValue>(keySelector: (item: T) => string|number|null|undefined, valueSelector?: (item: T) => TValue): { [key: string]: TValue };
   }
 }
+declare global {
+  interface ReadonlyArray<T> {
+    groupBy(groupSelector: (item: T) => string|number|null|undefined): { [group: string]: T[] };
+    toLookup(keySelector: (item: T) => string): { [key: string]: boolean };
+    toLookup<TValue>(keySelector: (item: T) => string|number|null|undefined, valueSelector?: (item: T) => TValue): { [key: string]: TValue };
+  }
+}
 
 Array.prototype.groupBy = function groupBy<T>(groupSelector: (item: T) => string): { [group: string]: T[] } {
   return (<T[]>this).reduce((p, c) => {
@@ -50,7 +57,7 @@ Array.prototype.groupBy = function groupBy<T>(groupSelector: (item: T) => string
   }, <{ [group: string]: T[] }>{});
 }
 
-Array.prototype.toLookup = function oLookup<T, TValue>(keySelector: (item: T) => string, valueSelector?: (item: T) => TValue): { [key: string]: TValue } {
+Array.prototype.toLookup = function toLookup<T, TValue>(keySelector: (item: T) => string, valueSelector?: (item: T) => TValue): { [key: string]: TValue } {
   return this.reduce((p, c) => {
     const key = keySelector(c);
     if (key === undefined || key === null) {
