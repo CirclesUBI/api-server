@@ -333,6 +333,8 @@ model Invoice {
     pickupCode String?
     @@index([pickupCode])
 
+    simplePickupCode String?
+
     buyerSignature Boolean?
     buyerSignedDate DateTime?
 

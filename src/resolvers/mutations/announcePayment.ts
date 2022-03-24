@@ -24,13 +24,16 @@ export function announcePayment() {
         }
 
         const pickupCode = Generate.randomHexString(6);
+        //const simplePickupCode = "123";
+
         await Environment.readWriteApiDb.invoice.update({
             where: {
                 id: args.invoiceId
             },
             data: {
                 pendingPaymentTransactionHash: args.transactionHash,
-                pickupCode: pickupCode
+                pickupCode: pickupCode,
+                // simplePickupCode: simplePickupCode
             }
         });
 
