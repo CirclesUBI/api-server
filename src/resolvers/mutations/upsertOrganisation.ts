@@ -84,6 +84,7 @@ export function upsertOrganisation(isRegion:boolean) {
           id: organisationProfile.id,
           createdAt: new Date().toJSON(),
           name: organisationProfile.firstName,
+          displayName: organisationProfile.firstName,
           members: []
         }
       };
