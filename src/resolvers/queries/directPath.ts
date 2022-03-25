@@ -5,303 +5,393 @@ import BN from "bn.js";
 import {Context} from "../../context";
 import {Environment} from "../../environment";
 
-export const directPath = async (parent:any, args:QueryDirectPathArgs, context:Context) => {
+type TokenWithBalance = {
+  token: string,
+  tokenOwner: string,
+  balanceStr: string,
+  balance: BN
+}
+
+type TokenWithBalanceAndLimit = TokenWithBalance & {
+  limit: number
+  limitBn: BN
+}
+
+type TokenWithBalanceAndMaxTransferableAmount = TokenWithBalanceAndLimit & {
+  maxTransferableAmount: BN
+}
+
+const zeroBN = new BN("0")
+const oneHundred = new BN("100")
+
+export const directPath = async (parent: any, args: QueryDirectPathArgs, context: Context) => {
   const from = args.from.toLowerCase();
   const to = args.to.toLowerCase();
-  const requestedAmount = new BN(args.amount);
 
-  let validateTransfers = async function (transfers: TransitivePath) {
-    var token = [];
-    var from = [];
-    var to = [];
-    var value = [];
-    for (let step of transfers.transfers) {
-      token.push(step.tokenOwner);
-      from.push(step.from);
-      to.push(step.to);
-      value.push(step.value);
-    }
+  const path = await findDirectPath(from, to, args.amount);
 
-    const abiItem: AbiItem = {
-      "inputs": [
-        {
-          "internalType": "address[]",
-          "name": "tokenOwners",
-          "type": "address[]"
-        },
-        {
-          "internalType": "address[]",
-          "name": "srcs",
-          "type": "address[]"
-        },
-        {
-          "internalType": "address[]",
-          "name": "dests",
-          "type": "address[]"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "wads",
-          "type": "uint256[]"
-        }
-      ],
-      "name": "transferThrough",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    };
-
-    const callData = RpcGateway.get().eth.abi.encodeFunctionSignature(abiItem)
-      + RpcGateway.get().eth.abi.encodeParameters([
-        "address[]", "address[]", "address[]", "uint256[]"
-      ], [
-        token, from, to, value
-      ]).substr(2)/* remove preceding 0x */;
-
-    try {
-      await RpcGateway.get().eth.call({
-        from: from[0],
-        to: Environment.circlesHubAddress,
-        data: callData
-      });
-      return true;
-    } catch(e) {
-      console.log(e);
-      throw new Error("Cannot validate the following path: " + JSON.stringify(transfers, null, 2));
-    }
-  };
-
-  const usableTokensWithBalanceSql = `
-      with my_tokens as (
-          select token
-          from crc_balances_by_safe_and_token_2
-          where safe_address = $1
-      ),
-           accepted_tokens as (
-               select user_token as token
-               from crc_current_trust_2
-               where can_send_to = $2
-                 and "limit" > 0
-           ),
-           intersection as (
-               select *
-               from my_tokens
-               intersect
-               select *
-               from accepted_tokens
-           ),
-           relevant_balances as (
-               select b.token, b.token_owner, b.balance as balance
-               from intersection i
-                        join crc_balances_by_safe_and_token_2 b on i.token = b.token
-               where safe_address = $1
-                 and balance > 0
-               order by b.balance desc
-           )
-      select *
-      from relevant_balances;`;
-
-  const usableTokensWithBalanceResult =
-    await Environment.indexDb.query(
-      usableTokensWithBalanceSql, [
-        from,
-        to
-      ]);
-
-  const maxTheoreticallyTransferableAmount = usableTokensWithBalanceResult.rows.reduce((p,c) => p.add(new BN(c.balance)), new BN("0"));
-  context.log(`The max. theoretically transferable amount is: ${maxTheoreticallyTransferableAmount.toString()}`);
-
-  const tokenOwnerOwnTokenBalancesSql = `
-      with own_balances as (
-          select safe_address
-               , token
-               , token_owner
-               , balance as owner_balance
-          from crc_balances_by_safe_and_token_2 bbsat
-          where bbsat.token_owner = ANY($3)
-            and bbsat.token_owner = bbsat.safe_address
-      ), own_balances_with_limits as (
-          select ob.*, ct.can_send_to, ct."limit"
-          from own_balances ob
-                   join crc_current_trust_2 ct on ct.can_send_to = $2
-              and ct."user" = ob.safe_address
-      ), including_sender_balances as (
-          select o.*, m.balance as sender_balance
-          from own_balances_with_limits o
-                   join crc_balances_by_safe_and_token_2 m on m.safe_address = $1
-              and m.token = o.token
-              and m.token_owner = o.token_owner
-      ), including_receiver_balances as (
-          select m.*, n.balance as receiver_balance
-          from including_sender_balances m
-                   left join crc_balances_by_safe_and_token_2 n on n.safe_address = $2
-              and n.token = m.token
-              and n.token_owner = m.token_owner
-      ), cleaned as (
-          select token
-               , token_owner
-               , "limit"
-               , owner_balance
-               , coalesce(sender_balance, 0) src_balance
-               , coalesce(receiver_balance, 0) dest_balance
-          from including_receiver_balances
-      ), max_transferable as (
-          select cleaned.token_owner
-               , cleaned.token
-               , cleaned."limit"
-               , cleaned.src_balance
-               , cleaned.dest_balance
-               -- uint256 max = (userToToken[dest].balanceOf(dest).mul(limits[dest][tokenOwner])).div(oneHundred);
-               , case when(exists(select * from crc_organisation_signup_2 where organisation = $2))
-                          then
-                          cleaned.src_balance
-                      else
-                          ((select balance
-                            from crc_balances_by_safe_and_token_2
-                            where safe_address = $2
-                              and token = (
-                                select token
-                                from crc_signup_2
-                                where "user" = $2
-                                limit 1)
-                           ) * cleaned."limit" / 100)
-              end as max
-               , (dest_balance * (100 - cleaned."limit") / 100) as dest_balance_scaled
-          from cleaned
-      )
-      select token
-           , token_owner
-           , max
-           , dest_balance_scaled
-           , (case when max < dest_balance and (not exists(select * from crc_organisation_signup_2 where organisation = $2))
-                       then 0
-                   else (
-                       case when max - dest_balance_scaled > src_balance then src_balance else max - dest_balance_scaled end
-                       )
-          end) as max_transferable_amount
-      from max_transferable;`;
-
-  const tokenOwners = usableTokensWithBalanceResult.rows.map(o => o.token_owner);
-  const tokenOwnerOwnTokenBalancesResult = await Environment.indexDb.query(
-    tokenOwnerOwnTokenBalancesSql, [
-      from,
-      to,
-      tokenOwners
-    ]);
-
-  const tokenOwnersOwnTokenBalances:{[tokenOwner:string]:{
-      token: string
-      tokenOwner: string
-      limit: number
-      maxTransferableAmount: BN
-      maxTransferableAmountStr: string
-    }
-  } = tokenOwnerOwnTokenBalancesResult.rows.reduce((p,c) => {
-    const decimalPointPos = c.max_transferable_amount.indexOf(".");
-    let maxTransferableAmount = c.max_transferable_amount;
-    if (decimalPointPos > -1) {
-      maxTransferableAmount = maxTransferableAmount.substr(0, decimalPointPos);
-    }
-    p[c.token_owner] = {
-      maxTransferableAmount: new BN(maxTransferableAmount),
-      token: c.token,
-      tokenOwner: c.token_owner
-    };
-
-    p[c.token_owner].maxTransferableAmountStr = p[c.token_owner].maxTransferableAmount.toString();
-
-    return p;
-  }, <{
-    [tokenOwner:string]:{
-      token: string
-      tokenOwner: string
-      limit: number
-      maxTransferableAmount: BN
-      maxTransferableAmountStr: string
-    }
-  }>{});
-
-  const usableTokensWithLimitResult = Object.values(tokenOwnersOwnTokenBalances);
-  const maxPracticallyTransferableAmount = usableTokensWithLimitResult.reduce((p,c) => p.add(c.maxTransferableAmount), new BN("0"));
-  context.log(`The max. practically transferable amount is: ${maxPracticallyTransferableAmount.toString()}`);
-
-  if (requestedAmount.gt(maxTheoreticallyTransferableAmount)) {
-    context.log(`The amount exceeds the max. theoretically transferable amount by ${requestedAmount.sub(maxTheoreticallyTransferableAmount).toString()} wei`);
-  }
-  if (requestedAmount.gt(maxPracticallyTransferableAmount)) {
-    context.log(`The amount exceeds the max. practically transferable amount by ${requestedAmount.sub(maxPracticallyTransferableAmount).toString()} wei`);
-    return <TransitivePath>{
-      requestedAmount: requestedAmount.toString(),
-      flow: maxPracticallyTransferableAmount.toString(),
-      transfers: []
-    };
-  }
-
-  let transfers: {
-    token: string
-    tokenOwner: string
-    amount: BN
-  }[] = [];
-
-  const zeroBN = new BN("0")
-  let remainingAmount = requestedAmount;
-  let rowIndex = 0;
-
-  while (remainingAmount.gt(zeroBN)) {
-    const currentBalanceRow = usableTokensWithLimitResult[rowIndex];
-    const remainingAfterThis = remainingAmount.sub(currentBalanceRow.maxTransferableAmount);
-
-    if (remainingAfterThis.gt(new BN("0"))) {
-      // Transfer wouldn't be saturated. Also use the next balance.
-      remainingAmount = remainingAfterThis;
-      transfers.push({
-        token: currentBalanceRow.token,
-        tokenOwner: currentBalanceRow.tokenOwner,
-        amount: currentBalanceRow.maxTransferableAmount
-      });
-      rowIndex++;
-    } else if (remainingAfterThis.lt(new BN("0"))) {
-      // Transfer would be over-saturated. Stop at this balance and only take the necessary part.
-      const partialAmount = currentBalanceRow.maxTransferableAmount.add(remainingAfterThis);
-      transfers.push({
-        token: currentBalanceRow.token,
-        tokenOwner: currentBalanceRow.tokenOwner,
-        amount: partialAmount
-      });
-      break;
-    } else {
-      // Perfect. Stop and use the whole balance.
-      transfers.push({
-        token: currentBalanceRow.token,
-        tokenOwner: currentBalanceRow.tokenOwner,
-        amount: currentBalanceRow.maxTransferableAmount
-      });
-      break;
-    }
-  }
-
-  transfers = transfers.filter(o => o.amount.gt(new BN("0")));
-
-  if (transfers.length > 20) {
-    throw new Error(`The transfer would result in more than 20 steps.`);
-  }
-
-  const flow = transfers.reduce((p, c) => p.add(c.amount), new BN("0"));
-  const path = <TransitivePath>{
-    requestedAmount: requestedAmount.toString(),
-    flow: flow.toString(),
-    transfers: transfers.map(o => {
-      return <TransitiveTransfer>{
-        token: o.token,
-        from: args.from,
-        to: args.to,
-        tokenOwner: o.tokenOwner,
-        value: o.amount.toString()
-      }
-    })
-  };
+  const sumFlow = path.transfers.reduce((p,c) => {
+    return p.add(new BN(c.value))
+  }, new BN("0")).toString();
+  console.log(sumFlow);
 
   await validateTransfers(path);
 
   return path;
 };
+
+async function findDirectPath(from: string, to: string, amountInWei: string) : Promise<TransitivePath> {
+  const recipientIsOrganization = (await Environment.indexDb.query(`
+          select hash
+          from crc_organisation_signup_2
+          where organisation = $1`,
+    [to])).rowCount > 0;
+
+  // 1) Get the balances of all tokens of "from" that are accepted by "to"
+  const acceptedTokensWithBalance = await getAcceptedTokensWithBalanceAndLimit(from, to);
+
+  // 2) Get the balance of each owner's own token holdings
+  const allTokenOwners = Object.keys(acceptedTokensWithBalance.toLookup(o => o.tokenOwner));
+  const tokenOwnerOwnTokenBalances = await getTokenOwnerOwnTokenBalances(allTokenOwners);
+  const tokenOwnersOwnBalancesLookup = tokenOwnerOwnTokenBalances.toLookup(o => o.tokenOwner, o => o.balance);
+
+  // 3) Get the receiver's current balance of every transferable token
+  const receiverTokenBalances = await getReceiverTokenBalances(to, allTokenOwners);
+  const receiverTokenBalancesLookup = receiverTokenBalances.toLookup(o => o.tokenOwner, o => o.balance);
+
+
+  // 4) Calculate the max. transferable amount of each token:
+  //    * Get the destination's balance of their own token
+  //    * multiply it with the limit that's set for the relation:
+  //      'tokenOwner' -can-send-to-> 'to' of each transferable token
+  //    * divide by 100
+  //
+  // Original code:
+  // uint256 max = (userToToken[dest].balanceOf(dest).mul(limits[dest][tokenOwner])).div(oneHundred);
+  const acceptedTokensWithMaxTransferableAmount = acceptedTokensWithBalance.map(o => {
+    // The owner of a token always accepts all of their tokens
+    let max = o.tokenOwner == to || recipientIsOrganization
+      ? o.balance
+      : tokenOwnersOwnBalancesLookup[o.tokenOwner].mul(o.limitBn).div(oneHundred);
+
+    // Subtract the current holdings of the receivers from the max transferable amount:
+    // userToToken[tokenOwner].balanceOf(dest).mul(oneHundred.sub(limits[dest][tokenOwner])).div(oneHundred)
+    const destBalance = receiverTokenBalancesLookup[o.tokenOwner];
+    if (destBalance) {
+      if (max.lt(destBalance)) {
+        // if trustLimit has already been overridden by a direct transfer, nothing more can be sent
+        max = zeroBN;
+      } else {
+        const destBalanceScaled = destBalance.mul(oneHundred.sub(o.limitBn)).div(oneHundred);
+        max = max.sub(destBalanceScaled);
+      }
+    }
+
+    return <TokenWithBalanceAndMaxTransferableAmount>{
+      ...o,
+      maxTransferableAmount: max.lte(o.balance)
+        ? max
+        : o.balance
+    }
+  });
+
+  // 5) Try to saturate the full transfer amount with the accepted token balances in the following order:
+  //    1. Use all the receiver's own tokens first
+  //    2. Then use all other tokens ordered by 'balance desc' except the own ones
+  //    3. If 1. and 2. aren't sufficient then use the own tokens as well
+  const transferAmountInWei = new BN(amountInWei);
+  let remainingAmountInWei = new BN(amountInWei);
+
+  const receiversOwnTokens = acceptedTokensWithMaxTransferableAmount.find(o => o.tokenOwner == to);
+  const sendersOwnTokens = acceptedTokensWithMaxTransferableAmount.find(o => o.tokenOwner == from);
+  const otherAcceptedTokens = acceptedTokensWithMaxTransferableAmount.filter(o => o.tokenOwner != from && o.tokenOwner != to);
+
+  const transfer: TransitivePath = {
+    requestedAmount: transferAmountInWei.toString(),
+    flow: "",
+    transfers: []
+  };
+
+  // Use recipient's tokens first (if any)
+  if (receiversOwnTokens) {
+    if (remainingAmountInWei.lte(receiversOwnTokens.maxTransferableAmount)) {
+      // The transfer amount can be saturated entirely with the recipient's own tokens
+      transfer.flow = transferAmountInWei.toString();
+      if (transferAmountInWei.gt(zeroBN)) {
+        transfer.transfers.push({
+          token: receiversOwnTokens.token,
+          tokenOwner: receiversOwnTokens.tokenOwner,
+          value: transferAmountInWei.toString(),
+          from: from,
+          to: to
+        });
+      }
+      remainingAmountInWei = remainingAmountInWei.sub(transferAmountInWei);
+    } else {
+      // Use all tokens and proceed
+      transfer.flow = receiversOwnTokens.maxTransferableAmount.toString();
+      if (receiversOwnTokens.maxTransferableAmount.gt(zeroBN)) {
+        transfer.transfers.push({
+          token: receiversOwnTokens.token,
+          tokenOwner: receiversOwnTokens.tokenOwner,
+          value: receiversOwnTokens.maxTransferableAmount.toString(),
+          from: from,
+          to: to
+        });
+      }
+      remainingAmountInWei = remainingAmountInWei.sub(receiversOwnTokens.maxTransferableAmount);
+    }
+  }
+
+  if (remainingAmountInWei.eq(new BN("0"))){
+    return transfer;
+  }
+
+  // More tokens are needed. Use the other accepted tokens.
+  let rowIndex = 0;
+
+  while (remainingAmountInWei.gt(zeroBN) && rowIndex < otherAcceptedTokens.length) {
+    const currentBalanceRow = otherAcceptedTokens[rowIndex];
+    const remainingAfterThis = remainingAmountInWei.sub(currentBalanceRow.maxTransferableAmount);
+
+    if (remainingAfterThis.gt(new BN("0"))) {
+      // Transfer wouldn't be saturated. Also use the next balance.
+      remainingAmountInWei = remainingAfterThis;
+      transfer.flow = new BN(transfer.flow).add(currentBalanceRow.maxTransferableAmount).toString();
+      if (currentBalanceRow.maxTransferableAmount.gt(zeroBN)) {
+        transfer.transfers.push({
+          token: currentBalanceRow.token,
+          tokenOwner: currentBalanceRow.tokenOwner,
+          value: currentBalanceRow.maxTransferableAmount.toString(),
+          from: from,
+          to: to
+        });
+      }
+      rowIndex++;
+    } else if (remainingAfterThis.lt(zeroBN)) {
+      // Transfer would be over-saturated. Stop at this balance and only take the necessary part.
+      const partialAmount = currentBalanceRow.maxTransferableAmount.add(remainingAfterThis);
+      remainingAmountInWei = remainingAmountInWei.sub(partialAmount);
+      transfer.flow = new BN(transfer.flow).add(partialAmount).toString();
+      if (partialAmount.gt(zeroBN)) {
+        transfer.transfers.push({
+          token: currentBalanceRow.token,
+          tokenOwner: currentBalanceRow.tokenOwner,
+          value: partialAmount.toString(),
+          from: from,
+          to: to
+        });
+      }
+      break;
+    } else {
+      // Perfect. Stop and use the whole balance.
+      remainingAmountInWei = remainingAmountInWei.sub(currentBalanceRow.maxTransferableAmount);
+      transfer.flow = new BN(transfer.flow).add(currentBalanceRow.maxTransferableAmount).toString();
+      if (currentBalanceRow.maxTransferableAmount.gt(zeroBN)) {
+        transfer.transfers.push({
+          token: currentBalanceRow.token,
+          tokenOwner: currentBalanceRow.tokenOwner,
+          value: currentBalanceRow.maxTransferableAmount.toString(),
+          from: from,
+          to: to
+        });
+      }
+      break;
+    }
+  }
+
+  if (remainingAmountInWei.eq(new BN("0"))){
+    return transfer;
+  }
+
+  // Still more tokens are needed. Use own tokens.
+  if (sendersOwnTokens) {
+    if (remainingAmountInWei.lte(sendersOwnTokens.maxTransferableAmount)) {
+      transfer.flow = new BN(transfer.flow).add(remainingAmountInWei).toString();
+      if (remainingAmountInWei.gt(zeroBN)) {
+        transfer.transfers.push({
+          token: sendersOwnTokens.token,
+          tokenOwner: sendersOwnTokens.tokenOwner,
+          value: remainingAmountInWei.toString(),
+          from: from,
+          to: to
+        });
+      }
+      remainingAmountInWei = remainingAmountInWei.sub(remainingAmountInWei);
+    } else {
+      transfer.flow = new BN(transfer.flow).add(sendersOwnTokens.maxTransferableAmount).toString();
+      if (sendersOwnTokens.maxTransferableAmount.gt(zeroBN)) {
+        transfer.transfers.push({
+          token: sendersOwnTokens.token,
+          tokenOwner: sendersOwnTokens.tokenOwner,
+          value: sendersOwnTokens.maxTransferableAmount.toString(),
+          from: from,
+          to: to
+        });
+      }
+      remainingAmountInWei = remainingAmountInWei.sub(sendersOwnTokens.maxTransferableAmount);
+    }
+  }
+
+  if (remainingAmountInWei.eq(new BN("0"))){
+    return transfer;
+  }
+
+  // Couldn't find a path with enough liquidity
+  transfer.transfers = [];
+  return transfer;
+}
+
+async function getAcceptedTokensWithBalanceAndLimit(from: string, to: string) : Promise<TokenWithBalanceAndLimit[]> {
+  const acceptedTokensWithBalanceAndLimitSql = `
+      with my_tokens as (
+          select token
+          from crc_balances_by_safe_and_token_2
+          where safe_address = $1
+      ),
+      accepted_tokens as (
+          select user_token as token
+          from crc_current_trust_2
+          where can_send_to = $2
+            and "limit" > 0
+      ),
+      intersection as (
+          select *
+          from my_tokens
+          intersect
+          select *
+          from accepted_tokens
+      ),
+      relevant_balances as (
+          select b.token, b.token_owner, b.balance
+          from intersection i
+          join crc_balances_by_safe_and_token_2 b on i.token = b.token
+          where safe_address = $1
+            and balance > 0
+      ),
+      relevant_balances_with_limits as (
+          select b.token
+               , b.token_owner
+               , b.balance
+               , t."limit"
+          from crc_current_trust_2 t
+          join relevant_balances b on b.token_owner = t."user" 
+                                  and t.can_send_to = $2
+      )
+      select token
+           , token_owner
+           , balance::text
+           , "limit"
+      from relevant_balances_with_limits
+      order by balance::numeric desc;`;
+
+  const result = await Environment.indexDb.query(acceptedTokensWithBalanceAndLimitSql, [from, to]);
+  return result.rows.map(o => {
+    return <TokenWithBalanceAndLimit>{
+      token: o.token,
+      tokenOwner: o.token_owner,
+      balanceStr: o.balance,
+      balance: new BN(o.balance),
+      limit: o.limit,
+      limitBn: new BN(o.limit.toString())
+    }
+  });
+}
+
+async function getTokenOwnerOwnTokenBalances(tokenOwners:string[]) : Promise<TokenWithBalance[]> {
+  const sql = `
+      select token_owner, token, balance
+      from crc_balances_by_safe_and_token_2
+      where token_owner = ANY($1)
+        and safe_address = ANY($1)
+        and token_owner = safe_address;`;
+
+  const result = await Environment.indexDb.query(sql, [tokenOwners]);
+  return result.rows.map(o => {
+    return <TokenWithBalance>{
+      token: o.token,
+      tokenOwner: o.token_owner,
+      balanceStr: o.balance,
+      balance: new BN(o.balance)
+    }
+  });
+}
+
+async function getReceiverTokenBalances(to: string, tokenOwners:string[]) : Promise<TokenWithBalance[]> {
+  const sql = `
+    select token_owner, token, balance
+    from crc_balances_by_safe_and_token_2
+    where token_owner = ANY($2)
+      and safe_address = $1;`;
+
+  const result = await Environment.indexDb.query(sql, [to, tokenOwners]);
+  return result.rows.map(o => {
+    return <TokenWithBalance>{
+      token: o.token,
+      tokenOwner: o.token_owner,
+      balanceStr: o.balance,
+      balance: new BN(o.balance)
+    }
+  });
+}
+
+async function validateTransfers(transfers: TransitivePath) {
+  var token = [];
+  var from = [];
+  var to = [];
+  var value = [];
+  for (let step of transfers.transfers) {
+    token.push(step.tokenOwner);
+    from.push(step.from);
+    to.push(step.to);
+    value.push(step.value);
+  }
+
+  const abiItem: AbiItem = {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "tokenOwners",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "srcs",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "dests",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "wads",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "transferThrough",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  };
+
+  const callData = RpcGateway.get().eth.abi.encodeFunctionSignature(abiItem)
+    + RpcGateway.get().eth.abi.encodeParameters([
+      "address[]", "address[]", "address[]", "uint256[]"
+    ], [
+      token, from, to, value
+    ]).substr(2)/* remove preceding 0x */;
+
+  try {
+    await RpcGateway.get().eth.call({
+      from: from[0],
+      to: Environment.circlesHubAddress,
+      data: callData
+    });
+    return true;
+  } catch (e) {
+    console.log(e);
+    throw new Error("Cannot validate the following path: " + JSON.stringify(transfers, null, 2));
+  }
+}

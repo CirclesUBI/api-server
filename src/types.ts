@@ -421,6 +421,7 @@ export type Invoice = {
   sellerProfile?: Maybe<Profile>;
   sellerSignature?: Maybe<Scalars['Boolean']>;
   sellerSignedDate?: Maybe<Scalars['String']>;
+  simplePickupCode?: Maybe<Scalars['String']>;
 };
 
 export type InvoiceLine = {
@@ -2038,6 +2039,7 @@ export type InvoiceResolvers<ContextType = any, ParentType extends ResolversPare
   sellerProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   sellerSignature?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   sellerSignedDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  simplePickupCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

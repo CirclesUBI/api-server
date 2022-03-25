@@ -198,3 +198,123 @@ export class Main {
 new Main().run().then(() => console.log("Started")).then(async () => {
   // await ninetyDaysLater()
 });
+
+/*
+import BN from "bn.js";
+import fetch from "cross-fetch";
+var xpath = require('xpath')
+var dom = require('xmldom').DOMParser
+
+function test() {
+// The minimum ABI to get ERC20 Token balance
+const minABI = [
+  // balanceOf
+  {
+    "constant":true,
+    "inputs":[{"name":"_owner","type":"address"}],
+    "name":"balanceOf",
+    "outputs":[{"name":"balance","type":"uint256"}],
+    "type":"function"
+  },
+  // decimals
+  {
+    "constant":true,
+    "inputs":[],
+    "name":"decimals",
+    "outputs":[{"name":"","type":"uint8"}],
+    "type":"function"
+  }
+];
+
+async function getBalance(tokenAddress:string, accountAddress:string) {
+  const contract = new (RpcGateway.get().eth.Contract)(<any>minABI, tokenAddress);
+  return  await contract.methods.balanceOf(accountAddress).call();
+}
+
+const bla = [
+  {
+    "token": "0x73ffa325faae2a3dfe267733a8e706121d164946",
+    "tokenOwner": "0x009626daded5e90aecee30ad3ebf2b3e510fe256",
+    "value": "2199363516775023934576",
+    "from": "0xde374ece6fa50e781e81aac78e811b33d16912c7",
+    "to": "0xc5a786eafefcf703c114558c443e4f17969d9573"
+  },
+  {
+    "token": "0x4261ae3bdf4ffc77cc05f946e8d71fcc52d0159e",
+    "tokenOwner": "0x475a1b36d540c05c1c7b7ca4598347c695ac1ec6",
+    "value": "292781019127139598445",
+    "from": "0xde374ece6fa50e781e81aac78e811b33d16912c7",
+    "to": "0xc5a786eafefcf703c114558c443e4f17969d9573"
+  },
+  {
+    "token": "0xf8263847879fb40360690f4fc686c0ce19455d8c",
+    "tokenOwner": "0xec39d9c81acf2b7c4d847651757363ec1959d77d",
+    "value": "31900270972726955813",
+    "from": "0xde374ece6fa50e781e81aac78e811b33d16912c7",
+    "to": "0xc5a786eafefcf703c114558c443e4f17969d9573"
+  },
+  {
+    "token": "0x6b35c6da733836be97ced8627c3747824450926b",
+    "tokenOwner": "0xde374ece6fa50e781e81aac78e811b33d16912c7",
+    "value": "1327028843931182619366",
+    "from": "0xde374ece6fa50e781e81aac78e811b33d16912c7",
+    "to": "0xc5a786eafefcf703c114558c443e4f17969d9573"
+  }
+];
+
+const balances = await Promise.all(bla.map(async o => {
+  const balance = await getBalance(o.token, o.from);
+  return balance;
+}));
+
+
+let startBlock = 19589380;
+let stopBlock = 12529457;
+let currentBlock = startBlock;
+let nextPage = `/xdai/mainnet/blocks?block_number=${currentBlock}&block_type=Reorg&items_count=0`;
+
+const blocks:number[] = [];
+
+while (currentBlock > stopBlock && nextPage) {
+  try {
+    const result = await fetch(`https://blockscout.com` + nextPage + "&type=JSON")
+
+    const data = <any>await result.json();
+    const items:string[] = data.items;
+
+    const regex = new RegExp(".*#(\d*)?.*");
+    items.forEach(item => {
+      const matches = regex[Symbol.matchAll](item);
+      for (let match of matches) {
+        const blockNo = parseInt(match[0].trim().substring(1));
+        console.log(blockNo);
+        currentBlock = blockNo;
+        blocks.push(blockNo);
+      }
+    });
+
+    nextPage = data.next_page_path;
+  } catch (e) {
+    console.error(e);
+  }
+  await new Promise((r) => setTimeout(r, 1000));
+}
+
+
+const uniqueBlocks = Object.keys(blocks.toLookup(o => o));
+console.log(uniqueBlocks);
+
+const diff = blubb.my.map((o,i) => {
+  const a:any = {
+    my: o,
+    orig: blubb.original[i],
+  };
+  a.diff = a.my.sub(a.orig).toString();
+  a.myStr = a.my.toString();
+  a.origStr = a.orig.toString();
+  return a;
+});
+
+console.log(diff);
+}
+*/
