@@ -1,4 +1,4 @@
-import {QueryDirectPathArgs, TransitivePath, TransitiveTransfer} from "../../types";
+import {QueryDirectPathArgs, TransitivePath} from "../../types";
 import {AbiItem} from "web3-utils";
 import {RpcGateway} from "../../circles/rpcGateway";
 import BN from "bn.js";
@@ -30,12 +30,12 @@ export const directPath = async (parent: any, args: QueryDirectPathArgs, context
 
   const path = await findDirectPath(from, to, args.amount);
 
-  const sumFlow = path.transfers.reduce((p,c) => {
-    return p.add(new BN(c.value))
-  }, new BN("0")).toString();
-  console.log(sumFlow);
-
-  await validateTransfers(path);
+  try {
+    await validateTransfers(path);
+  } catch (e) {
+    console.log(e);
+    path.transfers = [];
+  }
 
   return path;
 };
