@@ -42,6 +42,7 @@ type Profile {
   claimedInvitation: ClaimedInvitation
   invitationTransaction: ProfileEvent
   memberships: [Membership!]
+  members: [Profile!]
   displayCurrency: DisplayCurrency
   verifications: [Verification!]
   offers: [Offer!]

@@ -1,4 +1,4 @@
-import {Resolvers} from "../types";
+import {Organisation, Profile, Resolvers, Verification} from "../types";
 import {queryResolvers} from "./queries/queryResolvers";
 import {mutationResolvers} from "./mutations/mutationResolvers";
 import {subscriptionResolvers} from "./subscriptions/subscriptionResolvers";
@@ -13,6 +13,8 @@ import {profileEventPropertyResolver} from "./properties/profileEvent";
 import {offerPropertyResolver} from "./properties/offer";
 import {organisationPropertyResolver} from "./properties/organsiation";
 import {GraphQLScalarType, Kind} from "graphql";
+import {Context} from "../context";
+import {verificationProfileDataLoader} from "./dataLoaders/verificationProfileDataLoader";
 
 export const resolvers: Resolvers = {
   Date: new GraphQLScalarType({
@@ -41,7 +43,21 @@ export const resolvers: Resolvers = {
     ClaimedInvitation: claimedInvitationPropertyResolver,
     ProfileEvent: profileEventPropertyResolver,
     Offer: offerPropertyResolver,
-    Organisation: organisationPropertyResolver
+    Organisation: organisationPropertyResolver,
+    Verification: {
+      verifierProfile: async (parent:Verification, args:any, context:Context) => {
+        if (!parent.verifierSafeAddress) {
+          return null;
+        }
+        return <Promise<Organisation>><any>verificationProfileDataLoader.load(parent.verifierSafeAddress);
+      },
+      verifiedProfile: async (parent:Verification, args:any, context:Context) => {
+        if (!parent.verifiedSafeAddress) {
+          return null;
+        }
+        return <Promise<Profile>>verificationProfileDataLoader.load(parent.verifiedSafeAddress);
+      }
+    }
   },
   Query: queryResolvers,
   Mutation: mutationResolvers,

@@ -14,6 +14,7 @@ import {profileAllContactsDataLoader} from "../dataLoaders/profileAllContactsDat
 import {profileClaimedInvitationDataLoader} from "../dataLoaders/profileClaimedInvitationDataLoader";
 import {profileInvitationTransactionDataLoader} from "../dataLoaders/profileInvitationTransactionDataLoader";
 import {profileCirclesTokenAddressDataLoader} from "../dataLoaders/profileCirclesTokenAddressDataLoader";
+import {profileMembersDataLoader} from "../dataLoaders/profileMembersDataLoader";
 
 
 function isOwnProfile(profileId:number, context:Context) : boolean {
@@ -48,6 +49,12 @@ export const profilePropertyResolvers : ProfileResolvers = {
       return [];
     }
     return await profileMembershipsDataLoader.load(parent.circlesAddress);
+  },
+  members: async (parent: Profile, args:any, context: Context) => {
+    if (!parent.circlesAddress) {
+      return [];
+    }
+    return await profileMembersDataLoader.load(parent.circlesAddress);
   },
   offers: async (parent: Profile, args:any, context: Context) => {
     if (!parent.circlesAddress) {
