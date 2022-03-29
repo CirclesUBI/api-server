@@ -180,6 +180,7 @@ type SessionInfo {
 enum CapabilityType {
   Verify
   Invite
+  Translate
 }
 
 type Capability {
