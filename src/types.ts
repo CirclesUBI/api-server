@@ -69,7 +69,8 @@ export type Capability = {
 
 export enum CapabilityType {
   Invite = 'Invite',
-  Verify = 'Verify'
+  Verify = 'Verify',
+  Translate = 'Translate'
 }
 
 export type ChatMessage = IEventPayload & {

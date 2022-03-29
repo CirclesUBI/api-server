@@ -4,6 +4,7 @@ import {RpcGateway} from "../../circles/rpcGateway";
 import BN from "bn.js";
 import {Context} from "../../context";
 import {Environment} from "../../environment";
+import {convertCirclesToTimeCircles} from "../../utils/timeCircles";
 
 type TokenWithBalance = {
   token: string,
@@ -30,11 +31,15 @@ export const directPath = async (parent: any, args: QueryDirectPathArgs, context
 
   const path = await findDirectPath(from, to, args.amount);
 
-  try {
-    await validateTransfers(path);
-  } catch (e) {
-    console.log(e);
+  if (new BN(path.requestedAmount).gt(new BN(path.flow))) {
     path.transfers = [];
+  } else {
+    try {
+      await validateTransfers(path);
+    } catch (e) {
+      console.log(e);
+      path.transfers = [];
+    }
   }
 
   return path;
@@ -70,7 +75,7 @@ async function findDirectPath(from: string, to: string, amountInWei: string) : P
   // uint256 max = (userToToken[dest].balanceOf(dest).mul(limits[dest][tokenOwner])).div(oneHundred);
   const acceptedTokensWithMaxTransferableAmount = acceptedTokensWithBalance.map(o => {
     // The owner of a token always accepts all of their tokens
-    let max = o.tokenOwner == to || recipientIsOrganization
+    let max = (o.tokenOwner == to || recipientIsOrganization)
       ? o.balance
       : tokenOwnersOwnBalancesLookup[o.tokenOwner].mul(o.limitBn).div(oneHundred);
 
@@ -87,13 +92,17 @@ async function findDirectPath(from: string, to: string, amountInWei: string) : P
       }
     }
 
-    return <TokenWithBalanceAndMaxTransferableAmount>{
+    const r = <TokenWithBalanceAndMaxTransferableAmount>{
       ...o,
       maxTransferableAmount: max.lte(o.balance)
         ? max
         : o.balance
-    }
-  });
+    };
+
+    (<any>r).maxTransferableAmountStr = r.maxTransferableAmount.toString();
+    return r;
+  })
+  .filter(o => o.maxTransferableAmount.gt(zeroBN));
 
   // 5) Try to saturate the full transfer amount with the accepted token balances in the following order:
   //    1. Use all the receiver's own tokens first
@@ -101,6 +110,9 @@ async function findDirectPath(from: string, to: string, amountInWei: string) : P
   //    3. If 1. and 2. aren't sufficient then use the own tokens as well
   const transferAmountInWei = new BN(amountInWei);
   let remainingAmountInWei = new BN(amountInWei);
+
+  const transferAmountInEur = convertCirclesToTimeCircles(
+    parseFloat(RpcGateway.get().utils.fromWei(amountInWei, "ether"))) / 10;
 
   const receiversOwnTokens = acceptedTokensWithMaxTransferableAmount.find(o => o.tokenOwner == to);
   const sendersOwnTokens = acceptedTokensWithMaxTransferableAmount.find(o => o.tokenOwner == from);

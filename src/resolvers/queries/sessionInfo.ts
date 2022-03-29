@@ -14,6 +14,9 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
             capabilities.push({
                 type: CapabilityType.Verify
             });
+            capabilities.push({
+                type: CapabilityType.Translate
+            });
         }
 
         capabilities.push({
@@ -25,7 +28,6 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
             hasProfile: !!callerInfo?.profile,
             profileId: callerInfo?.profile?.id,
             profile: callerInfo?.profile ? ProfileLoader.withDisplayCurrency(callerInfo.profile) : null,
-            // lastAcknowledgedAt: callerInfo?.profile?.lastAcknowledged?.toJSON(),
             capabilities: capabilities
         }
     } catch(e) {

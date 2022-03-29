@@ -10,7 +10,7 @@ import {Environment} from "./environment";
 import {IndexerEvents} from "./indexer-api/indexerEvents";
 import {PaymentProcessor} from "./indexer-api/paymentProcessor";
 import {AppNotificationProcessor} from "./indexer-api/appNotificationProcessor";
-import {ninetyDaysLater} from "./utils/90days";
+import {requestUbiForInactiveUsers} from "./utils/90days";
 import express from "express";
 import {JobQueue} from "./jobs/jobQueue";
 import {gqlSubscriptionServer} from "./gqlSubscriptionServer";
@@ -196,7 +196,13 @@ export class Main {
 }
 
 new Main().run().then(() => console.log("Started")).then(async () => {
-  // await ninetyDaysLater()
+  setInterval(async() => {
+    try {
+      await requestUbiForInactiveUsers();
+    } catch (e) {
+      console.error(`An error occurred while requesting the ubi for inactive users: `, e);
+    }
+  }, 1000 * 60 * 60)
 });
 
 /*

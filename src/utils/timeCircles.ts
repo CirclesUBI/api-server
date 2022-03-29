@@ -1,7 +1,6 @@
 import Web3 from "web3";
 import dayjs from "dayjs";
 
-const now = dayjs().unix();
 const oneYearInSeconds = 31557600; // This is 365,25 Days in seconds.
 const oneDayInSeconds = 86400;
 const day0Unix = dayjs("2020-10-15T00:00:00.000Z").unix();
@@ -22,7 +21,7 @@ function getBaseCirclesPerDayValue(yearsSince: number) {
 }
 
 export function convertTimeCirclesToCircles(amount: number, date: string) {
-  const transactionDateUnix = date ? dayjs(date).unix() : now;
+  const transactionDateUnix = date ? dayjs(date).unix() : dayjs().unix();
   const daysSinceDay0Unix = (transactionDateUnix - day0Unix) / oneDayInSeconds;
   const dayInCurrentCycle = Math.ceil(daysSinceDay0Unix % 365.25);
   const yearsSince = (transactionDateUnix - day0Unix) / oneYearInSeconds;
@@ -34,8 +33,8 @@ export function convertTimeCirclesToCircles(amount: number, date: string) {
   ).toFixed(12));
 }
 
-export function convertCirclesToTimeCircles(amount: number, date: string) {
-  const transactionDateUnix = date ? dayjs(date).unix() : now;
+export function convertCirclesToTimeCircles(amount: number, date?: string) {
+  const transactionDateUnix = date ? dayjs(date).unix() : dayjs().unix();
   const daysSinceDay0Unix = (transactionDateUnix - day0Unix) / oneDayInSeconds;
   const dayInCurrentCycle = Math.ceil(daysSinceDay0Unix % 365.25);
   const yearsSince = (transactionDateUnix - day0Unix) / oneYearInSeconds;
