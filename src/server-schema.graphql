@@ -1153,10 +1153,17 @@ type LeaderboardEntry {
   inviteCount: Int!
 }
 
+type FibonacciGoals {
+  lastGoal: Int!
+  currentValue: Int!
+  nextGoal: Int!
+}
+
 type Stats {
   profilesCount: Int!
   verificationsCount: Int!
-  leaderboard: [LeaderboardEntry!]
+  leaderboard: [LeaderboardEntry!]!
+  goals: FibonacciGoals!
 }
 
 type TransitiveTransfer {

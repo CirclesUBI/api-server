@@ -20,6 +20,49 @@ async function profilesCount(prisma: PrismaClient) {
   });
 }
 
+async function goals() : Promise<{
+  lastGoal: number,
+  currentValue: number,
+  nextGoal: number
+}> {
+  const goalsResult = await Environment.readonlyApiDb.$queryRaw<any[]>`
+      with recursive seed (n, fib_n, fib_n_minus_1) as (
+          values (1::numeric, 1::numeric, 0::numeric)
+      ),
+      fib (n, fib_n, fib_n_minus_1) as (
+         select n, fib_n, fib_n_minus_1
+         from seed
+         union all
+         select n + 1, fib_n + fib_n_minus_1, fib_n
+         from fib f
+         where n < 50
+      ), profile_count as (
+         select count(*) as profile_count
+         from "Profile"
+         where "circlesAddress" is not null
+           and "firstName" is not null
+           and "firstName" != ''
+           and "type" = 'PERSON'
+      )
+      select fib.fib_n_minus_1 as last_goal
+           , (select profile_count from profile_count) as current_count
+           , fib.fib_n as next_goal
+      from fib
+      where fib_n_minus_1 < (select profile_count from profile_count)
+      order by fib_n desc
+      limit 1;`;
+
+  if (goalsResult && goalsResult.length > 0) {
+    return {
+      currentValue: goalsResult[0].current_count,
+      lastGoal: goalsResult[0].last_goal,
+      nextGoal: goalsResult[0].next_goal,
+    };
+  }
+
+  throw new Error(`Couldn't query the fibonacci goals.`);
+}
+
 async function invitationLeaderboard() : Promise<{
   createdByCirclesAddress: string
   inviteCount: number
@@ -68,11 +111,13 @@ export async function stats() {
   const results = await Promise.all([
     verificationsCount(Environment.readonlyApiDb),
     profilesCount(Environment.readonlyApiDb),
-    invitationLeaderboard()
+    invitationLeaderboard(),
+    goals()
   ]);
   return <Stats> {
     verificationsCount: results[0],
     profilesCount: results[1],
-    leaderboard: results[2]
+    leaderboard: results[2],
+    goals: results[3]
   };
 }
