@@ -49,7 +49,7 @@ async function invitationLeaderboard() : Promise<{
     ), stats_with_profiles as (
         select *
         from stats s
-        join profiles p on s.created_by_safe = p."circlesAddress"
+        join profiles p on s.created_by_safe = p."circlesAddress" and p.row_no = 1
     )
     select created_by_safe, redeedmed_invitation_count
     from stats_with_profiles
