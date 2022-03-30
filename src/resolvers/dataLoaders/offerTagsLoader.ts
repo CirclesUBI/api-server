@@ -1,5 +1,4 @@
 import DataLoader from "dataloader";
-import {ProfileLoader} from "../../querySources/profileLoader";
 import {Environment} from "../../environment";
 import {Tag} from "../../types";
 

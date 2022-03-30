@@ -1,6 +1,6 @@
 {
   "name": "@o-platform/api-server",
-  "version": "0.1.359",
+  "version": "0.1.373",
   "description": "",
   "main": "dist/index.js",
   "prepublish": "tsc",
@@ -15,6 +15,7 @@
   "author": "Daniel Janz & Samuel Andert (Basic Income Lab GmbH)",
   "license": "AGPL-3",
   "dependencies": {
+    "@graphql-tools/import": "^6.6.6",
     "@graphql-tools/schema": "^8.3.2",
     "@prisma/client": "^3.10.0",
     "apollo-server": "^3.6.3",
@@ -33,7 +34,6 @@
     "ethers-multisend": "^2.1.1",
     "express": "^4.17.3",
     "graphql": "^15.8.0",
-    "@graphql-tools/import": "^6.6.6",
     "graphql-subscriptions": "^2.0.0",
     "ix": "^4.5.2",
     "mustache": "^4.2.0",
@@ -47,7 +47,6 @@
     "xstate": "^4.30.3"
   },
   "devDependencies": {
-    "@types/pdfkit": "^0.12.3",
     "@graphql-codegen/cli": "^2.6.2",
     "@graphql-codegen/introspection": "^2.1.1",
     "@graphql-codegen/typescript": "^2.4.5",
@@ -58,6 +57,7 @@
     "@types/mustache": "^4.1.2",
     "@types/node": "^16.11.26",
     "@types/nodemailer": "^6.4.4",
+    "@types/pdfkit": "^0.12.3",
     "@types/pg": "^8.6.4",
     "@types/ws": "^8.5.2",
     "fs": "^0.0.1-security",

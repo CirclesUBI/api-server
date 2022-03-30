@@ -27,8 +27,8 @@ import { MutationResolvers } from "../../types";
 
 export const mutationResolvers: MutationResolvers = {
   purchase: purchaseResolver,
-  upsertOrganisation: upsertOrganisation(false),
-  upsertRegion: upsertOrganisation(true),
+  upsertOrganisation: <any>upsertOrganisation(false),
+  upsertRegion: <any>upsertOrganisation(true),
   logout: logout(),
   upsertProfile: upsertProfileResolver(),
   authenticateAt: authenticateAtResolver(),
@@ -50,7 +50,7 @@ export const mutationResolvers: MutationResolvers = {
   createTestInvitation: createTestInvitation(),
   addMember: addMemberResolver,
   removeMember: removeMemberResolver,
-  importOrganisationsOfAccount: importOrganisationsOfAccount,
+  importOrganisationsOfAccount: <any>importOrganisationsOfAccount,
   completePurchase: completePurchase,
   completeSale: completeSale,
   verifySafe: verifySafe,
