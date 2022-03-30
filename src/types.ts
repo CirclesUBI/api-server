@@ -432,6 +432,13 @@ export type InvoiceLine = {
   offer?: Maybe<Offer>;
 };
 
+export type LeaderboardEntry = {
+  __typename?: 'LeaderboardEntry';
+  createdByCirclesAddress: Scalars['String'];
+  createdByProfile?: Maybe<Profile>;
+  inviteCount: Scalars['Int'];
+};
+
 export type LogoutResponse = {
   __typename?: 'LogoutResponse';
   errorMessage?: Maybe<Scalars['String']>;
@@ -1231,6 +1238,7 @@ export enum SortOrder {
 
 export type Stats = {
   __typename?: 'Stats';
+  leaderboard?: Maybe<Array<LeaderboardEntry>>;
   profilesCount: Scalars['Int'];
   verificationsCount: Scalars['Int'];
 };
@@ -1497,6 +1505,7 @@ export type ResolversTypes = ResolversObject<{
   InvitationRedeemed: ResolverTypeWrapper<InvitationRedeemed>;
   Invoice: ResolverTypeWrapper<Invoice>;
   InvoiceLine: ResolverTypeWrapper<InvoiceLine>;
+  LeaderboardEntry: ResolverTypeWrapper<LeaderboardEntry>;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
   MemberAdded: ResolverTypeWrapper<MemberAdded>;
   Members: ResolverTypeWrapper<Omit<Members, 'members'> & { members: Array<ResolversTypes['ProfileOrOrganisation']> }>;
@@ -1630,6 +1639,7 @@ export type ResolversParentTypes = ResolversObject<{
   InvitationRedeemed: InvitationRedeemed;
   Invoice: Invoice;
   InvoiceLine: InvoiceLine;
+  LeaderboardEntry: LeaderboardEntry;
   LogoutResponse: LogoutResponse;
   MemberAdded: MemberAdded;
   Members: Omit<Members, 'members'> & { members: Array<ResolversParentTypes['ProfileOrOrganisation']> };
@@ -2049,6 +2059,13 @@ export type InvoiceLineResolvers<ContextType = any, ParentType extends Resolvers
   amount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   offer?: Resolver<Maybe<ResolversTypes['Offer']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type LeaderboardEntryResolvers<ContextType = any, ParentType extends ResolversParentTypes['LeaderboardEntry'] = ResolversParentTypes['LeaderboardEntry']> = ResolversObject<{
+  createdByCirclesAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdByProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  inviteCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2483,6 +2500,7 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
 }>;
 
 export type StatsResolvers<ContextType = any, ParentType extends ResolversParentTypes['Stats'] = ResolversParentTypes['Stats']> = ResolversObject<{
+  leaderboard?: Resolver<Maybe<Array<ResolversTypes['LeaderboardEntry']>>, ParentType, ContextType>;
   profilesCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   verificationsCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -2612,6 +2630,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   InvitationRedeemed?: InvitationRedeemedResolvers<ContextType>;
   Invoice?: InvoiceResolvers<ContextType>;
   InvoiceLine?: InvoiceLineResolvers<ContextType>;
+  LeaderboardEntry?: LeaderboardEntryResolvers<ContextType>;
   LogoutResponse?: LogoutResponseResolvers<ContextType>;
   MemberAdded?: MemberAddedResolvers<ContextType>;
   Members?: MembersResolvers<ContextType>;

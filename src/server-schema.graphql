@@ -1132,9 +1132,16 @@ type Query {
   findInvitationCreator(code: String!): Profile
 }
 
+type LeaderboardEntry {
+  createdByCirclesAddress: String!
+  createdByProfile: Profile
+  inviteCount: Int!
+}
+
 type Stats {
   profilesCount: Int!
   verificationsCount: Int!
+  leaderboard: [LeaderboardEntry!]
 }
 
 type TransitiveTransfer {

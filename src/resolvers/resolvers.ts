@@ -1,4 +1,4 @@
-import {Organisation, Profile, Resolvers, Verification} from "../types";
+import {LeaderboardEntry, Organisation, Profile, Resolvers, Verification} from "../types";
 import {queryResolvers} from "./queries/queryResolvers";
 import {mutationResolvers} from "./mutations/mutationResolvers";
 import {subscriptionResolvers} from "./subscriptions/subscriptionResolvers";
@@ -15,6 +15,7 @@ import {organisationPropertyResolver} from "./properties/organsiation";
 import {GraphQLScalarType, Kind} from "graphql";
 import {Context} from "../context";
 import {verificationProfileDataLoader} from "./dataLoaders/verificationProfileDataLoader";
+import {leaderboardEntryProfileDataLoader} from "./dataLoaders/leaderboardEntryProfileDataLoader";
 
 export const resolvers: Resolvers = {
   Date: new GraphQLScalarType({
@@ -34,6 +35,11 @@ export const resolvers: Resolvers = {
     }
   }),
   ...{
+    LeaderboardEntry: {
+      createdByProfile: async (parent:LeaderboardEntry, args:any, context:Context) => {
+        return leaderboardEntryProfileDataLoader.load(parent.createdByCirclesAddress);
+      }
+    },
     Profile: profilePropertyResolvers,
     Contact: contactPropertyResolver,
     Purchase: purchasePropertyResolvers,
