@@ -45,7 +45,8 @@ export const profileMembershipsDataLoader = new DataLoader<string, Membership[]>
       ...c,
       organisation: {
         ...c.organisation,
-        displayCurrency: ProfileLoader.getDisplayCurrency(c)
+        displayCurrency: ProfileLoader.getDisplayCurrency(c),
+        displayName: c.organisation.name
       }
     });
     return p;

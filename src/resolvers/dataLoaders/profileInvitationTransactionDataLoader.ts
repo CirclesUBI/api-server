@@ -26,13 +26,7 @@ export const profileInvitationTransactionDataLoader = new DataLoader<string, Pro
   });
 
   const txHashes = profilesWithRedeemedInvitations.flatMap(o => o.claimedInvitations).map(o => o.redeemTxHash);
-  const profilesLookup = profilesWithRedeemedInvitations.reduce((p,c) => {
-    if (!c.circlesSafeOwner)
-      return p;
-
-    p[c.circlesSafeOwner] = c;
-    return p;
-  }, <{[x:string]:any}>{});
+  const profilesLookup = profilesWithRedeemedInvitations.toLookup(c => c.circlesSafeOwner, c => c);
 
   const redeemInvitationTransactionsQuery = `
             select b.timestamp, t.*
@@ -44,11 +38,7 @@ export const profileInvitationTransactionDataLoader = new DataLoader<string, Pro
     redeemInvitationTransactionsQuery,
     [txHashes]);
 
-  const transactions = redeemResult.rows.reduce((p,c) => {
-    p[c.to] = c;
-    return p;
-  }, <{[x:string]:any}>{});
-
+  const transactions = redeemResult.rows.toLookup(c => c.to, c => c);
 
   return keys.map(o => {
     return {

@@ -31,12 +31,7 @@ export const events = async (
   context: Context
 ) => {
   const eventSources: EventSource[] = [];
-  const types =
-    args.types?.reduce((p:{[p:string]:any}, c:EventType) => {
-      if (!c) return p;
-      p[c] = true;
-      return p;
-    }, <{ [x: string]: any }>{}) ?? {};
+  const types = args.types?.toLookup(c => c) ?? {};
 
   if (args.pagination.limit > 250) {
     throw new Error(`You cannot query more than 250 events in one request.`);

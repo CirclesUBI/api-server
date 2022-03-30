@@ -27,10 +27,11 @@ import {recentProfiles} from "./recentProfiles";
 import {stats} from "./stats";
 import {init} from "./init";
 import {Environment} from "../../environment";
-import {QueryResolvers} from "../../types";
+import {QueryLastAcknowledgedAtArgs, QueryResolvers} from "../../types";
 import {parentPort} from "worker_threads";
 import {Context} from "../../context";
 import {ProfileLoader} from "../../querySources/profileLoader";
+import {canAccess} from "../../utils/canAccess";
 const packageJson = require("../../../package.json");
 
 export const queryResolvers : QueryResolvers = {
@@ -63,6 +64,20 @@ export const queryResolvers : QueryResolvers = {
   invoice: invoice,
   verifications: verifications,
   findInvitationCreator: findInvitationCreator,
+  lastAcknowledgedAt: async (parent:any, args:QueryLastAcknowledgedAtArgs, context:Context) => {
+    if (!(await canAccess(context, args.safeAddress))) {
+      throw new Error(`You cannot access the specified safe address.`);
+    }
+    const lastAcknowledgedDate = await Environment.readWriteApiDb.profile.findFirst({
+      where: {
+        circlesAddress: args.safeAddress
+      },
+      select: {
+        lastAcknowledged: true
+      }
+    });
+    return lastAcknowledgedDate?.lastAcknowledged;
+  },
   organisationsWithOffers: async (parent:any, args:any, context:Context) => {
     const orgasWithOffers = await Environment.readWriteApiDb.profile.findMany({
       where: {
@@ -81,6 +96,7 @@ export const queryResolvers : QueryResolvers = {
         ...ProfileLoader.withDisplayCurrency(o),
         __typename: "Organisation",
         name: o.firstName,
+        displayName: o.firstName,
         createdAt: o.createdAt.toJSON()
       }
     });

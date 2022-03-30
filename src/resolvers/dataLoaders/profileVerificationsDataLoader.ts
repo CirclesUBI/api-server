@@ -29,7 +29,7 @@ export const profileVerificationsDataLoader = new DataLoader<string, Verificatio
       verifiedSafeAddress: c.safeAddress,
       verifierSafeAddress: c.createdByOrganisation.circlesAddress ?? "",
       createdAt: c.createdAt.toJSON(),
-      revokedAt: c.revokedAt?.toJSON()
+      revokedAt: c.revokedAt?.toJSON(),
     });
     return p;
   }, <{[x:string]:Verification[]}>{});

@@ -154,20 +154,7 @@ export class PaymentProcessor implements IndexerEventProcessor {
             },
         });
 
-        return invoices.reduce((p, c) => {
-            if (!c.customerProfile?.circlesAddress) {
-                log(`WARN `,
-                    `[${messageNo}] [${sourceUrl}] [PaymentProcessor.findOpenInvoices]`,
-                    `The invoice with id ${c.id} has either no 'customerProfile' or the customer profile has no 'circlesAddress'.`);
-
-                return p;
-            }
-            if (!p[c.customerProfile.circlesAddress]) {
-                p[c.customerProfile.circlesAddress] = [];
-            }
-            p[c.customerProfile.circlesAddress].push(c);
-            return p;
-        }, <{ [safeAddress: string]: PdfDbInvoiceData[] }>{});
+        return invoices.groupBy(c => c.customerProfile?.circlesAddress);
     }
 
     private async findRelatedHubTransfers (

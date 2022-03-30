@@ -69,32 +69,46 @@ async function requestUBI(account:any, tokenAddress:string) {
   }
 }
 
-export async function ninetyDaysLater() {
+export async function requestUbiForInactiveUsers() {
   if (!process.env.INVITE_EOA_KEY)
     throw new Error(`No INVITE_EOA_KEY`);
 
   const executingEoa = RpcGateway.get().eth.accounts.privateKeyToAccount(process.env.INVITE_EOA_KEY);
-  const profiles = await Environment.readonlyApiDb.profile.findMany({
+  const allUserSafeAddresses = await Environment.readonlyApiDb.profile.findMany({
     where: {
       circlesAddress: {
         not: null
       }
+    },
+    select: {
+      circlesAddress: true
     }
   });
 
+  const noUbiIn30DaysSql = `
+    select m."to" as user
+         , m.token
+         , max(m.timestamp) as last_ubi
+    from crc_minting_2 m
+    where m."to" = ANY($1)
+    group by m."to", m.token
+    having max(m.timestamp) < now() - '30 days'::interval;
+  `;
+
   const tokens = await Environment.indexDb.query(
-    `
-    select * 
-    from crc_signup_2
-    where "user" = ANY($1::text[])`,
-    [profiles.map(o => o.circlesAddress)]
+      noUbiIn30DaysSql
+    , [allUserSafeAddresses.map(o => o.circlesAddress)]
   );
 
+  console.log(`Requesting the UBI of ${tokens.rowCount} inactive accounts (30 days no UBI request) ...`);
+
   for(let token of tokens.rows) {
-    console.log(`Checking liveliness of ${token.token} .. `)
     const checkResult = await checkUBI(token.token);
     if (checkResult) {
+      console.log(`Getting UBI for token ${token.token} .. `);
       await requestUBI(executingEoa, token.token);
+    } else {
+      console.warn(`Token ${token.token} is already 'dead'.`);
     }
   }
 }

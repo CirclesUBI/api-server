@@ -1,3 +1,5 @@
+scalar Date
+
 type Server {
   version: String!
 }
@@ -40,6 +42,7 @@ type Profile {
   claimedInvitation: ClaimedInvitation
   invitationTransaction: ProfileEvent
   memberships: [Membership!]
+  members: [Profile!]
   displayCurrency: DisplayCurrency
   verifications: [Verification!]
   offers: [Offer!]
@@ -79,6 +82,7 @@ type Organisation {
   createdAt: String!
   circlesAddress: String
   circlesSafeOwner: String
+  displayName: String
   name: String!
   description: String
   avatarUrl: String
@@ -169,7 +173,6 @@ type SessionInfo {
   isLoggedOn: Boolean!
   hasProfile: Boolean
   profileId: Int
-  lastAcknowledgedAt: String
   profile: Profile
   capabilities: [Capability!]!
 }
@@ -177,6 +180,8 @@ type SessionInfo {
 enum CapabilityType {
   Verify
   Invite
+  Translate
+  PreviewFeatures
 }
 
 type Capability {
@@ -338,6 +343,7 @@ type Invoice {
 
   invoiceNo: String!
   pickupCode: String
+  simplePickupCode: String
 
   buyerSignature: Boolean
   buyerSignedDate: String
@@ -921,7 +927,7 @@ type Mutation {
   removeMember(groupId: String!, memberAddress: String!): RemoveMemberResult
   rejectMembership(membershipId: Int!): RejectMembershipResult
 
-  acknowledge(until: String!): Boolean!
+  acknowledge(until: Date! safeAddress: String): Boolean!
 
   requestInvitationOffer(for: String!): Offer!
 
@@ -1078,6 +1084,7 @@ type Query {
   invitationTransaction: ProfileEvent
   hubSignupTransaction: ProfileEvent
   safeInfo(safeAddress: String): SafeInfo
+  lastAcknowledgedAt(safeAddress: String!): Date
 
   verifications(
     pagination: PaginationArgs
@@ -1126,9 +1133,16 @@ type Query {
   findInvitationCreator(code: String!): Profile
 }
 
+type LeaderboardEntry {
+  createdByCirclesAddress: String!
+  createdByProfile: Profile
+  inviteCount: Int!
+}
+
 type Stats {
   profilesCount: Int!
   verificationsCount: Int!
+  leaderboard: [LeaderboardEntry!]
 }
 
 type TransitiveTransfer {

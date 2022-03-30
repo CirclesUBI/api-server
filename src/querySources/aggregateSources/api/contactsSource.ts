@@ -397,11 +397,7 @@ export class ContactsSource implements AggregateSource {
     this._contactPoints = contactPoints;
   }
   async getAggregate(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>): Promise<ProfileAggregate[]> {
-    const types = this._contactPoints?.reduce((p, c) => {
-      if (!c) return p;
-      p[c] = true;
-      return p;
-    }, <{ [x: string]: any }>{}) ?? {};
+    const types = this._contactPoints?.toLookup(c => c);
 
     const contactSources: Promise<Contact[]>[] = [];
     if (types[ContactPoints.CrcTrust]) {

@@ -140,3 +140,5 @@ src/api-db/client/libquery_engine-darwin.dylib.node
 config
 
 src/api-db/client/runtime/proxy.d.ts
+/src/api-db/schema.prisma
+/src/api-db/client/*
