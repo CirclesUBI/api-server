@@ -16,6 +16,11 @@ enum ProfileType {
   REGION
 }
 
+enum ProductListingType {
+  TILES
+  LIST
+}
+
 type Profile {
   id: Int!
   type: ProfileType
@@ -33,6 +38,9 @@ type Profile {
   dream: String
   country: String
   avatarUrl: String
+  largeBannerUrl: String
+  smallBannerUrl: String
+  productListingType: ProductListingType
   avatarCid: String
   avatarMimeType: String
   newsletter: Boolean
@@ -86,6 +94,9 @@ type Organisation {
   name: String!
   description: String
   avatarUrl: String
+  largeBannerUrl: String
+  smallBannerUrl: String
+  productListingType: ProductListingType
   avatarMimeType: String
   cityGeonameid: Int
   displayCurrency: DisplayCurrency
@@ -853,6 +864,9 @@ input UpsertOrganisationInput {
   description: String
   circlesAddress: String
   avatarUrl: String
+  largeBannerUrl: String
+  smallBannerUrl: String
+  productListingType: ProductListingType
   avatarMimeType: String
   cityGeonameid: Int
   displayCurrency: DisplayCurrency

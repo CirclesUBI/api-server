@@ -742,9 +742,12 @@ export type Organisation = {
   displayCurrency?: Maybe<DisplayCurrency>;
   displayName?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
+  largeBannerUrl?: Maybe<Scalars['String']>;
   members?: Maybe<Array<ProfileOrOrganisation>>;
   name: Scalars['String'];
   offers?: Maybe<Array<Offer>>;
+  productListingType?: Maybe<ProductListingType>;
+  smallBannerUrl?: Maybe<Scalars['String']>;
   trustsYou?: Maybe<Scalars['Int']>;
 };
 
@@ -761,6 +764,11 @@ export type PaginationArgs = {
   limit: Scalars['Int'];
   order: SortOrder;
 };
+
+export enum ProductListingType {
+  List = 'LIST',
+  Tiles = 'TILES'
+}
 
 export type Profile = {
   __typename?: 'Profile';
@@ -785,14 +793,17 @@ export type Profile = {
   firstName: Scalars['String'];
   id: Scalars['Int'];
   invitationTransaction?: Maybe<ProfileEvent>;
+  largeBannerUrl?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
   members?: Maybe<Array<Profile>>;
   memberships?: Maybe<Array<Membership>>;
   newsletter?: Maybe<Scalars['Boolean']>;
   offers?: Maybe<Array<Offer>>;
   origin?: Maybe<ProfileOrigin>;
+  productListingType?: Maybe<ProductListingType>;
   purchases?: Maybe<Array<Purchase>>;
   sales?: Maybe<Array<Sale>>;
+  smallBannerUrl?: Maybe<Scalars['String']>;
   status?: Maybe<Scalars['String']>;
   successorOfCirclesAddress?: Maybe<Scalars['String']>;
   type?: Maybe<ProfileType>;
@@ -1313,7 +1324,10 @@ export type UpsertOrganisationInput = {
   description?: InputMaybe<Scalars['String']>;
   displayCurrency?: InputMaybe<DisplayCurrency>;
   id?: InputMaybe<Scalars['Int']>;
+  largeBannerUrl?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
+  productListingType?: InputMaybe<ProductListingType>;
+  smallBannerUrl?: InputMaybe<Scalars['String']>;
 };
 
 export type UpsertProfileInput = {
@@ -1524,6 +1538,7 @@ export type ResolversTypes = ResolversObject<{
   Organisation: ResolverTypeWrapper<Omit<Organisation, 'members'> & { members?: Maybe<Array<ResolversTypes['ProfileOrOrganisation']>> }>;
   OrganisationCreated: ResolverTypeWrapper<OrganisationCreated>;
   PaginationArgs: PaginationArgs;
+  ProductListingType: ProductListingType;
   Profile: ResolverTypeWrapper<Profile>;
   ProfileAggregate: ResolverTypeWrapper<Omit<ProfileAggregate, 'payload'> & { payload: ResolversTypes['AggregatePayload'] }>;
   ProfileAggregateFilter: ProfileAggregateFilter;
@@ -2225,9 +2240,12 @@ export type OrganisationResolvers<ContextType = any, ParentType extends Resolver
   displayCurrency?: Resolver<Maybe<ResolversTypes['DisplayCurrency']>, ParentType, ContextType>;
   displayName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  largeBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   members?: Resolver<Maybe<Array<ResolversTypes['ProfileOrOrganisation']>>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   offers?: Resolver<Maybe<Array<ResolversTypes['Offer']>>, ParentType, ContextType>;
+  productListingType?: Resolver<Maybe<ResolversTypes['ProductListingType']>, ParentType, ContextType>;
+  smallBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   trustsYou?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -2261,14 +2279,17 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
+  largeBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   members?: Resolver<Maybe<Array<ResolversTypes['Profile']>>, ParentType, ContextType>;
   memberships?: Resolver<Maybe<Array<ResolversTypes['Membership']>>, ParentType, ContextType>;
   newsletter?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   offers?: Resolver<Maybe<Array<ResolversTypes['Offer']>>, ParentType, ContextType>;
   origin?: Resolver<Maybe<ResolversTypes['ProfileOrigin']>, ParentType, ContextType>;
+  productListingType?: Resolver<Maybe<ResolversTypes['ProductListingType']>, ParentType, ContextType>;
   purchases?: Resolver<Maybe<Array<ResolversTypes['Purchase']>>, ParentType, ContextType>;
   sales?: Resolver<Maybe<Array<ResolversTypes['Sale']>>, ParentType, ContextType>;
+  smallBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   successorOfCirclesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   type?: Resolver<Maybe<ResolversTypes['ProfileType']>, ParentType, ContextType>;

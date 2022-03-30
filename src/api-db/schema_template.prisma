@@ -72,6 +72,11 @@ enum ProfileType {
       REGION
 }
 
+enum ProductListingType {
+    TILES
+    LIST
+}
+
 model InvitationFundsEOA {
     id Int @id @default(autoincrement())
     address String
@@ -144,6 +149,7 @@ model Profile {
     avatarUrl String?
     largeBannerUrl String?
     smallBannerUrl String?
+    productListingType ProductListingType?
     avatarCid String?
     avatarMimeType String?
     dream String?
