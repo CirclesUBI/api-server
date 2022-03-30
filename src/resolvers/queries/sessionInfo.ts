@@ -17,6 +17,9 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
             capabilities.push({
                 type: CapabilityType.Translate
             });
+            capabilities.push({
+                type: CapabilityType.PreviewFeatures
+            });
         }
 
         capabilities.push({

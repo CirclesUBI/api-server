@@ -181,6 +181,7 @@ enum CapabilityType {
   Verify
   Invite
   Translate
+  PreviewFeatures
 }
 
 type Capability {
