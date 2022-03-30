@@ -53,7 +53,8 @@ async function invitationLeaderboard() : Promise<{
     )
     select created_by_safe, redeedmed_invitation_count
     from stats_with_profiles
-    order by redeedmed_invitation_count desc;`;
+    order by redeedmed_invitation_count desc
+    limit 99;`;
 
   return (<any[]>leaderboard).map(o => {
     return {

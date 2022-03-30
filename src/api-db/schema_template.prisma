@@ -142,6 +142,8 @@ model Profile {
     firstName String
     lastName String?
     avatarUrl String?
+    largeBannerUrl String?
+    smallBannerUrl String?
     avatarCid String?
     avatarMimeType String?
     dream String?
