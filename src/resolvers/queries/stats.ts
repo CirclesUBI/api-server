@@ -89,8 +89,12 @@ async function getMyRank(safeAddress:string) : Promise<{redeemedInvitationsCount
       rank: rankResult[0].rank,
       redeemedInvitationsCount: rankResult[0].redeemed_invitation_count
     };
+  } else {
+    return {
+      rank: 0,
+      redeemedInvitationsCount: 0
+    };
   }
-  throw new Error(`Couldn't load the invite rank for ${safeAddress}`)
 }
 
 async function invitationLeaderboard() : Promise<{
