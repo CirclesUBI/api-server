@@ -1159,11 +1159,17 @@ type FibonacciGoals {
   nextGoal: Int!
 }
 
+type MyInviteRank {
+  rank: Int!
+  redeemedInvitationsCount: Int!
+}
+
 type Stats {
   profilesCount: Int!
   verificationsCount: Int!
   leaderboard: [LeaderboardEntry!]!
   goals: FibonacciGoals!
+  myRank: MyInviteRank!
 }
 
 type TransitiveTransfer {

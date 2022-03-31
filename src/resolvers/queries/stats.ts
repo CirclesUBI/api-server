@@ -1,5 +1,5 @@
 import { PrismaClient } from "../../api-db/client";
-import {Stats} from "../../types";
+import {Profile, Stats} from "../../types";
 import {Environment} from "../../environment";
 
 async function verificationsCount(prisma: PrismaClient) {
@@ -63,6 +63,36 @@ async function goals() : Promise<{
   throw new Error(`Couldn't query the fibonacci goals.`);
 }
 
+async function getMyRank(safeAddress:string) : Promise<{redeemedInvitationsCount: number, rank: number}> {
+  const rankResult = await Environment.readonlyApiDb.$queryRaw<any[]>`
+    with ranked as (
+        select cp."circlesAddress"        inviter
+             , count(rp."circlesAddress") redeemed_invitation_count
+             , RANK() OVER (
+                ORDER BY count(rp."circlesAddress") desc
+               )                           rank
+        from "Invitation" i
+                 join "Profile" cp on cp.id = i."createdByProfileId"
+                 join "Profile" rp on rp.id = i."redeemedByProfileId"
+        where cp."circlesAddress" is not null
+          and rp."circlesAddress" is not null
+        group by cp."circlesAddress"
+        order by count(rp."circlesAddress") desc
+    )
+    select *
+    from ranked
+    where inviter = ${safeAddress};
+  `;
+
+  if (rankResult && rankResult.length > 0) {
+    return {
+      rank: rankResult[0].rank,
+      redeemedInvitationsCount: rankResult[0].redeemed_invitation_count
+    };
+  }
+  throw new Error(`Couldn't load the invite rank for ${safeAddress}`)
+}
+
 async function invitationLeaderboard() : Promise<{
   createdByCirclesAddress: string
   inviteCount: number
@@ -107,17 +137,19 @@ async function invitationLeaderboard() : Promise<{
   });
 }
 
-export async function stats() {
+export async function stats(forSafeAddress:string) {
   const results = await Promise.all([
     verificationsCount(Environment.readonlyApiDb),
     profilesCount(Environment.readonlyApiDb),
     invitationLeaderboard(),
-    goals()
+    goals(),
+    getMyRank(forSafeAddress)
   ]);
   return <Stats> {
     verificationsCount: results[0],
     profilesCount: results[1],
     leaderboard: results[2],
-    goals: results[3]
+    goals: results[3],
+    myRank: results[4]
   };
 }

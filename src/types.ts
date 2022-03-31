@@ -694,6 +694,12 @@ export type MutationVerifySessionChallengeArgs = {
   signature: Scalars['String'];
 };
 
+export type MyInviteRank = {
+  __typename?: 'MyInviteRank';
+  rank: Scalars['Int'];
+  redeemedInvitationsCount: Scalars['Int'];
+};
+
 export type NewUser = IEventPayload & {
   __typename?: 'NewUser';
   profile: Profile;
@@ -1259,6 +1265,7 @@ export type Stats = {
   __typename?: 'Stats';
   goals: FibonacciGoals;
   leaderboard: Array<LeaderboardEntry>;
+  myRank: MyInviteRank;
   profilesCount: Scalars['Int'];
   verificationsCount: Scalars['Int'];
 };
@@ -1539,6 +1546,7 @@ export type ResolversTypes = ResolversObject<{
   MembershipRejected: ResolverTypeWrapper<MembershipRejected>;
   Memberships: ResolverTypeWrapper<Memberships>;
   Mutation: ResolverTypeWrapper<{}>;
+  MyInviteRank: ResolverTypeWrapper<MyInviteRank>;
   NewUser: ResolverTypeWrapper<NewUser>;
   NotificationEvent: ResolverTypeWrapper<NotificationEvent>;
   Offer: ResolverTypeWrapper<Offer>;
@@ -1675,6 +1683,7 @@ export type ResolversParentTypes = ResolversObject<{
   MembershipRejected: MembershipRejected;
   Memberships: Memberships;
   Mutation: {};
+  MyInviteRank: MyInviteRank;
   NewUser: NewUser;
   NotificationEvent: NotificationEvent;
   Offer: Offer;
@@ -2208,6 +2217,12 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   verifySessionChallenge?: Resolver<Maybe<ResolversTypes['ExchangeTokenResponse']>, ParentType, ContextType, RequireFields<MutationVerifySessionChallengeArgs, 'challenge' | 'signature'>>;
 }>;
 
+export type MyInviteRankResolvers<ContextType = any, ParentType extends ResolversParentTypes['MyInviteRank'] = ResolversParentTypes['MyInviteRank']> = ResolversObject<{
+  rank?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  redeemedInvitationsCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type NewUserResolvers<ContextType = any, ParentType extends ResolversParentTypes['NewUser'] = ResolversParentTypes['NewUser']> = ResolversObject<{
   profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
   transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2541,6 +2556,7 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
 export type StatsResolvers<ContextType = any, ParentType extends ResolversParentTypes['Stats'] = ResolversParentTypes['Stats']> = ResolversObject<{
   goals?: Resolver<ResolversTypes['FibonacciGoals'], ParentType, ContextType>;
   leaderboard?: Resolver<Array<ResolversTypes['LeaderboardEntry']>, ParentType, ContextType>;
+  myRank?: Resolver<ResolversTypes['MyInviteRank'], ParentType, ContextType>;
   profilesCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   verificationsCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -2681,6 +2697,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   MembershipRejected?: MembershipRejectedResolvers<ContextType>;
   Memberships?: MembershipsResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  MyInviteRank?: MyInviteRankResolvers<ContextType>;
   NewUser?: NewUserResolvers<ContextType>;
   NotificationEvent?: NotificationEventResolvers<ContextType>;
   Offer?: OfferResolvers<ContextType>;
