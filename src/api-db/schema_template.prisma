@@ -442,8 +442,8 @@ model Job {
     topic String
     payload String
 
-    profileId Int
-    profile Profile @relation(name: "Profile_InviteTrigger", fields: [profileId], references:[id])
+    profileId Int?
+    profile Profile? @relation(name: "Profile_InviteTrigger", fields: [profileId], references:[id])
 }
 
 model i18n {
