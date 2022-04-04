@@ -182,8 +182,7 @@ model Profile {
     receivableInvoices Invoice[]  @relation(name: "Invoice_SellerProfile")
     cancelledInvoices Invoice[] @relation(name: "Invoice_CancelledByProfile")
 
-    inviteTrigger Job? @relation(fields: [inviteTriggerId], references: [id])
-    inviteTriggerId Int?
+    inviteTrigger Job? @relation(name: "Profile_InviteTrigger")
 
 
     invoiceNoPrefix String?
@@ -443,7 +442,8 @@ model Job {
     topic String
     payload String
 
-    inviteTriggerProfile Profile?
+    profileId Int
+    profile Profile @relation(name: "Profile_InviteTrigger", fields: [profileId], references:[id])
 }
 
 model i18n {
