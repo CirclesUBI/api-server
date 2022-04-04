@@ -25,6 +25,7 @@ import {announcePayment} from "./announcePayment";
 import {Environment} from "../../environment";
 import {MutationAddNewLangArgs, MutationResolvers, MutationUpdateValueArgs} from "../../types";
 import { Context } from "../../context";
+import { isBILMember } from "../../utils/canAccess";
 
 export const mutationResolvers : MutationResolvers = {
   purchase: purchaseResolver,
@@ -54,30 +55,37 @@ export const mutationResolvers : MutationResolvers = {
   revokeSafeVerification: revokeSafeVerification,
   announcePayment: announcePayment(),
   addNewLang: async (parent: any, args: MutationAddNewLangArgs, context: Context) => {
-    const queryResult = await Environment.pgReadWriteApiDb.query(`
-    insert into i18n (lang, key, "createdBy", version, value)
-        select $1 as lang
-            , i18n.key
-            , i18n."createdBy"
-            , 1 as version
-            , i18n.value
-        from i18n
-        join (
-			select lang, key, max(version) as version
-            from i18n
-            where lang = $2
-            group by lang, key
-        ) max_versions on i18n.key = max_versions.key
-                    and i18n.lang = max_versions.lang
-                    and i18n.version = max_versions.version;
-    `,
-    [args.langToCreate, args.langToCopyFrom]);
-    return queryResult.rowCount
+    const callerInfo = await context.callerInfo;
+    const isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
+    if (!isBilMember) {
+      throw new Error (`You need to be a member of Basic Income Lab to add a new Language.`)
+    } else {
+      const queryResult = await Environment.pgReadWriteApiDb.query(`
+      insert into i18n (lang, key, "createdBy", version, value)
+          select $1 as lang
+              , i18n.key
+              , i18n."createdBy"
+              , 1 as version
+              , i18n.value
+          from i18n
+          join (
+        select lang, key, max(version) as version
+              from i18n
+              where lang = $2
+              group by lang, key
+          ) max_versions on i18n.key = max_versions.key
+                      and i18n.lang = max_versions.lang
+                      and i18n.version = max_versions.version;
+      `,
+      [args.langToCreate, args.langToCopyFrom]);
+      return queryResult.rowCount
+    }
   },
   updateValue: async (parent: any, args: MutationUpdateValueArgs, context: Context) => {
     let callerInfo = await context.callerInfo;
-    if (!callerInfo?.profile) {
-      throw new Error(`You need a profile to edit the content.`)
+    let isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
+    if (!isBilMember) {
+      throw new Error(`You need to be a member of Basic Income Lab to edit the content.`)
     } else {
       let createdBy = callerInfo?.profile?.circlesAddress
       const queryResult = await Environment.pgReadWriteApiDb.query(`

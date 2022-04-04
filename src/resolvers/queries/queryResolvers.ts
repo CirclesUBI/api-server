@@ -116,7 +116,7 @@ export const queryResolvers : QueryResolvers = {
         createdAt: o.createdAt.toJSON()
       }
     });
-  },
+  },  
   getAvailableLanguages: async (parent: any, args: any, context: Context) => {
     const queryResult = await Environment.pgReadWriteApiDb.query(`
     select lang
