@@ -51,7 +51,7 @@ export const verifySafe = async (
   verifiedSafe = await Environment.readWriteApiDb.verifiedSafe.create({
     data: {
       safeAddress: args.safeAddress.toLowerCase(),
-      createdByProfileId: callerInfo.profile.id,
+      createdByProfileId: bilOrga.id,
       createdByOrganisationId: bilOrga.id,
       createdAt: new Date(),
       inviteeRewardTransactionHash: null,
