@@ -84,7 +84,7 @@ export function upsertProfileResolver() {
               oldProfile.circlesAddress) {
                 // Create the initial invitations for the user
                 await verifySafe(null, {safeAddress: oldProfile.circlesAddress}, context);
-                const inviteTrigger = await Dropper.createInvitationPerpetualTrigger(oldProfile.circlesAddress);
+                const inviteTriggerHash = await Dropper.createInvitationPerpetualTrigger(oldProfile.circlesAddress);
                 await Environment.readWriteApiDb.profile.update({
                     where: {
                         id: oldProfile.id
@@ -92,7 +92,7 @@ export function upsertProfileResolver() {
                     data: {
                         inviteTrigger: {
                             connect: {
-                                id: inviteTrigger.id
+                                hash: inviteTriggerHash
                             }
                         }
                     }
