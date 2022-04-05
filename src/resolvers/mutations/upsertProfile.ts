@@ -11,6 +11,7 @@ import {Generate} from "../../utils/generate";
 import {SendVerifyEmailAddressEmail} from "../../jobs/descriptions/emailNotifications/sendVerifyEmailAddressEmail";
 import {claimInvitation} from "./claimInvitation";
 import {Dropper} from "../../utils/dropper";
+import {verifySafe} from "./verifySafe";
 
 const validateEmail = (email:string) => {
     return email.match(
@@ -83,6 +84,7 @@ export function upsertProfileResolver() {
               oldProfile.type == ProfileType.Person &&
               oldProfile.circlesAddress) {
                 // Create the initial invitations for the user
+                await verifySafe(null, {safeAddress: oldProfile.circlesAddress}, context);
                 perpetualInviteTrigger = await Dropper.createInvitationPerpetualTrigger(oldProfile.circlesAddress);
             }
 
