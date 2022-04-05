@@ -11,12 +11,13 @@ export const verifySafe = async (
   args: MutationVerifySafeArgs,
   context: Context
 ) => {
+  /*
   const callerInfo = await context.callerInfo;
   const isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
   if (!isBilMember || !callerInfo?.profile) {
     throw new Error(`Not allowed`);
   }
-
+  */
   let verifiedSafe: VerifiedSafe | null =
     await Environment.readWriteApiDb.verifiedSafe.findUnique({
       where: {
@@ -25,7 +26,10 @@ export const verifySafe = async (
     });
 
   if (verifiedSafe) {
-    throw new Error(`Safe ${args.safeAddress} is already verified.`);
+    return {
+      success: true,
+    };
+    // throw new Error(`Safe ${args.safeAddress} is already verified.`);
   }
 
   const bilOrga = await Environment.readonlyApiDb.profile.findFirst({
