@@ -49,6 +49,7 @@ type Profile {
   city: City
   claimedInvitation: ClaimedInvitation
   invitationTransaction: ProfileEvent
+  invitationLink: String
   memberships: [Membership!]
   members: [Profile!]
   displayCurrency: DisplayCurrency
