@@ -92,8 +92,7 @@ export function upsertProfileResolver() {
                     data: {
                         inviteTrigger: {
                             connect: {
-                                id: inviteTrigger.id,
-                                hash: inviteTrigger.hash
+                                id: inviteTrigger.id
                             }
                         }
                     }
