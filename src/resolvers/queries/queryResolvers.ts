@@ -88,6 +88,7 @@ export const queryResolvers : QueryResolvers = {
     const orgasWithOffers = await Environment.readWriteApiDb.profile.findMany({
       where: {
         type: "ORGANISATION",
+        shopEnabled: true,
         offers: {
           some: {
             id: {
