@@ -104,6 +104,7 @@ type Organisation {
   city: City
   offers: [Offer!]
   members: [ProfileOrOrganisation!]
+  shopEnabled: Boolean
   trustsYou: Int # The trust relative to the safeAddress
 }
 

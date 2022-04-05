@@ -163,6 +163,8 @@ model Profile {
     verifySafeChallenge String?
     newSafeAddress String?
 
+    shopEnabled Boolean?
+
     sessions Session[]  @relation(name: "Session_Profile")
 
     tags Tag[]  @relation(name: "Tag_CreatedBy")
