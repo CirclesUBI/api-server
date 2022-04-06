@@ -1280,6 +1280,7 @@ export type Subscription = {
 export type Tag = {
   __typename?: 'Tag';
   id: Scalars['Int'];
+  order?: Maybe<Scalars['Int']>;
   typeId: Scalars['String'];
   value?: Maybe<Scalars['String']>;
 };
@@ -2572,6 +2573,7 @@ export type SubscriptionResolvers<ContextType = any, ParentType extends Resolver
 
 export type TagResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  order?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   typeId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

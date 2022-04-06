@@ -44,7 +44,7 @@ export class ProfileLoader {
     }
   }
 
-  static withDisplayCurrency(profile: any): Profile  & {emailAddressVerified:boolean, askedForSafeAddress:boolean}{
+  static withDisplayCurrency(profile: any): Profile  & {emailAddressVerified:boolean, inviteTriggerId?:number, askedForSafeAddress:boolean}{
     return {
       ...profile,
       displayCurrency: ProfileLoader.getDisplayCurrency(profile),

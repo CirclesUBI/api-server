@@ -132,7 +132,7 @@ export const welcomeEmailTemplate: MailTemplate = {
                         </p>
                         <div class="sm-h-24" style="line-height: 24px;">&zwnj;</div>
                         <div style="text-align: center;">
-                          <a href="@{{loginUrl}}" class="hover-bg-primary-dark" style="display: inline-block; border-radius: 8px; background-color: #41c7f1; padding: 20px 24px; font-size: 14px; font-weight: 600; text-transform: uppercase; line-height: 1; color: #ffffff; text-decoration: none;">
+                          <a href="{{loginUrl}}" class="hover-bg-primary-dark" style="display: inline-block; border-radius: 8px; background-color: #41c7f1; padding: 20px 24px; font-size: 14px; font-weight: 600; text-transform: uppercase; line-height: 1; color: #ffffff; text-decoration: none;">
                             <!--[if mso
                               ]><i
                                 style="

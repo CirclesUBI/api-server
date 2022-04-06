@@ -79,36 +79,6 @@ export function upsertProfileResolver() {
                 throw new Error(`Cannot update profile ${args.data.id} because it doesn't exist.`)
             }
 
-            if (!oldProfile.inviteTrigger &&
-              oldProfile.type == ProfileType.Person &&
-              oldProfile.circlesAddress) {
-                // Create the initial invitations for the user
-                console.log(`Automatically verifying the new safe user ${oldProfile.circlesAddress} ..`);
-                await verifySafe(null, {safeAddress: oldProfile.circlesAddress}, context);
-
-                console.log(`Creating the input trigger for address ${oldProfile.circlesAddress} ..`);
-                const inviteTriggerHash = await Dropper.createInvitationPerpetualTrigger(oldProfile.circlesAddress);
-
-                console.log(`Trying to find the invite trigger job with hash ${inviteTriggerHash} ..`);
-                const inviteTriggerJob = await Environment.readWriteApiDb.job.findUnique({
-                    where: {
-                        hash: inviteTriggerHash
-                    }
-                });
-
-                if (inviteTriggerJob) {
-                    console.log(`Found invite job with hash ${inviteTriggerHash} and linking it to profile ${oldProfile.id}`);
-                    await Environment.readWriteApiDb.profile.update({
-                        where: {
-                            id: oldProfile.id
-                        },
-                        data: {
-                            inviteTriggerId: inviteTriggerJob.id
-                        }
-                    });
-                }
-            }
-
             profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({
                 where: {
                     id: args.data.id
@@ -126,6 +96,37 @@ export function upsertProfileResolver() {
                     displayCurrency: <DisplayCurrency>args.data.displayCurrency
                 }
             }));
+
+            if (!oldProfile.inviteTrigger &&
+              oldProfile.type == ProfileType.Person &&
+              !oldProfile.circlesAddress && profile.circlesAddress) {
+                // Create the initial invitations for the user
+                console.log(`Automatically verifying the new safe user ${profile.circlesAddress} ..`);
+                await verifySafe(null, {safeAddress: profile.circlesAddress}, context);
+
+                console.log(`Creating the input trigger for address ${profile.circlesAddress} ..`);
+                const inviteTriggerHash = await Dropper.createInvitationPerpetualTrigger(profile.circlesAddress);
+
+                console.log(`Trying to find the invite trigger job with hash ${inviteTriggerHash} ..`);
+                const inviteTriggerJob = await Environment.readWriteApiDb.job.findUnique({
+                    where: {
+                        hash: inviteTriggerHash
+                    }
+                });
+
+                if (inviteTriggerJob) {
+                    console.log(`Found invite job with hash ${inviteTriggerHash} and linking it to profile ${oldProfile.id}`);
+                    profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({
+                        where: {
+                            id: profile.id
+                        },
+                        data: {
+                            inviteTriggerId: inviteTriggerJob.id
+                        }
+                    }));
+                }
+            }
+
 
             if (oldProfile.emailAddress != profile.emailAddress) {
                 profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({

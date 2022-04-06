@@ -151,6 +151,7 @@ type Tag {
   id: Int!
   typeId: String!
   value: String
+  order: Int
 }
 
 input CreateTagInput {
@@ -943,7 +944,7 @@ type Mutation {
   removeMember(groupId: String!, memberAddress: String!): RemoveMemberResult
   rejectMembership(membershipId: Int!): RejectMembershipResult
 
-  acknowledge(until: Date! safeAddress: String): Boolean!
+  acknowledge(until: Date!, safeAddress: String): Boolean!
 
   requestInvitationOffer(for: String!): Offer!
 
