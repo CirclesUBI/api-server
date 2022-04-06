@@ -83,20 +83,30 @@ export function upsertProfileResolver() {
               oldProfile.type == ProfileType.Person &&
               oldProfile.circlesAddress) {
                 // Create the initial invitations for the user
+                console.log(`Automatically verifying the new safe user ${oldProfile.circlesAddress} ..`);
                 await verifySafe(null, {safeAddress: oldProfile.circlesAddress}, context);
+
+                console.log(`Creating the input trigger for address ${oldProfile.circlesAddress} ..`);
                 const inviteTriggerHash = await Dropper.createInvitationPerpetualTrigger(oldProfile.circlesAddress);
-                await Environment.readWriteApiDb.profile.update({
+
+                console.log(`Trying to find the invite trigger job with hash ${inviteTriggerHash} ..`);
+                const inviteTriggerJob = await Environment.readWriteApiDb.job.findUnique({
                     where: {
-                        id: oldProfile.id
-                    },
-                    data: {
-                        inviteTrigger: {
-                            connect: {
-                                hash: inviteTriggerHash
-                            }
-                        }
+                        hash: inviteTriggerHash
                     }
                 });
+
+                if (inviteTriggerJob) {
+                    console.log(`Found invite job with hash ${inviteTriggerHash} and linking it to profile ${oldProfile.id}`);
+                    await Environment.readWriteApiDb.profile.update({
+                        where: {
+                            id: oldProfile.id
+                        },
+                        data: {
+                            inviteTriggerId: inviteTriggerJob.id
+                        }
+                    });
+                }
             }
 
             profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({
