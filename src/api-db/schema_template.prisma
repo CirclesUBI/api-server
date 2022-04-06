@@ -428,6 +428,8 @@ model Tag {
     @@index([offerId, offerVersion])
 
     value String?
+
+    order Int?
 }
 
 model Job {

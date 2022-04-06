@@ -35,7 +35,7 @@ export const profilePropertyResolvers : ProfileResolvers = {
       return null;
     }
 
-    const inviteTrigger = await Environment.readonlyApiDb.job.findFirst({
+    const inviteTrigger = await Environment.readWriteApiDb.job.findFirst({
       where: {
         inviteTriggerOfProfile: {
           id: parent.id

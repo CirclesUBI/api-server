@@ -75,7 +75,9 @@ async function getMyRank(safeAddress:string) : Promise<{redeemedInvitationsCount
                  join "Profile" cp on cp.id = i."createdByProfileId"
                  join "Profile" rp on rp.id = i."redeemedByProfileId"
         where cp."circlesAddress" is not null
+          and cp.type = 'PERSON'
           and rp."circlesAddress" is not null
+          and rp.type = 'PERSON'
         group by cp."circlesAddress"
         order by count(rp."circlesAddress") desc
     )
@@ -109,7 +111,9 @@ async function invitationLeaderboard() : Promise<{
            join "Profile" cp on cp.id = i."createdByProfileId"
            join "Profile" rp on rp.id = i."redeemedByProfileId"
       where cp."circlesAddress" is not null
+        and cp.type = 'PERSON'
         and rp."circlesAddress" is not null
+        and rp.type = 'PERSON'
       group by cp."circlesAddress"
              , rp."circlesAddress"
     ), profiles as (

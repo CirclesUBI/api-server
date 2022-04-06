@@ -77,7 +77,7 @@ export class JobQueue {
         if (result.rowCount > 0) {
           results.push({
             id: result.rows[0].id,
-            hash: job._identity,
+            hash: job.getHash(),
             topic: job._topic,
             payload: job.getPayload(),
             createdAt: new Date()
