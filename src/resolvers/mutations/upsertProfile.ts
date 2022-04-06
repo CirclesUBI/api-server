@@ -5,12 +5,13 @@ import {ProfileLoader} from "../../querySources/profileLoader";
 import {Environment} from "../../environment";
 import {TestData} from "../../api-db/testData";
 import {RpcGateway} from "../../circles/rpcGateway";
-import {JobQueue} from "../../jobs/jobQueue";
+import {Job, JobQueue} from "../../jobs/jobQueue";
 import {VerifyEmailAddress} from "../../jobs/descriptions/emailNotifications/verifyEmailAddress";
 import {Generate} from "../../utils/generate";
 import {SendVerifyEmailAddressEmail} from "../../jobs/descriptions/emailNotifications/sendVerifyEmailAddressEmail";
 import {claimInvitation} from "./claimInvitation";
 import {Dropper} from "../../utils/dropper";
+import {verifySafe} from "./verifySafe";
 
 const validateEmail = (email:string) => {
     return email.match(
@@ -70,18 +71,34 @@ export function upsertProfileResolver() {
                     id: args.data.id
                 },
                 include: {
-                    invitations: true
+                    invitations: true,
+                    inviteTrigger: true
                 }
             });
             if (!oldProfile){
                 throw new Error(`Cannot update profile ${args.data.id} because it doesn't exist.`)
             }
-            if (oldProfile.invitations.length == 0 &&
+
+            if (!oldProfile.inviteTrigger &&
               oldProfile.type == ProfileType.Person &&
               oldProfile.circlesAddress) {
                 // Create the initial invitations for the user
-                await Dropper.createInvitations(oldProfile.circlesAddress, 9);
+                await verifySafe(null, {safeAddress: oldProfile.circlesAddress}, context);
+                const inviteTriggerHash = await Dropper.createInvitationPerpetualTrigger(oldProfile.circlesAddress);
+                await Environment.readWriteApiDb.profile.update({
+                    where: {
+                        id: oldProfile.id
+                    },
+                    data: {
+                        inviteTrigger: {
+                            connect: {
+                                hash: inviteTriggerHash
+                            }
+                        }
+                    }
+                });
             }
+
             profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({
                 where: {
                     id: args.data.id

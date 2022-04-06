@@ -16,6 +16,11 @@ enum ProfileType {
   REGION
 }
 
+enum ProductListingType {
+  TILES
+  LIST
+}
+
 type Profile {
   id: Int!
   type: ProfileType
@@ -33,6 +38,9 @@ type Profile {
   dream: String
   country: String
   avatarUrl: String
+  largeBannerUrl: String
+  smallBannerUrl: String
+  productListingType: ProductListingType
   avatarCid: String
   avatarMimeType: String
   newsletter: Boolean
@@ -41,6 +49,7 @@ type Profile {
   city: City
   claimedInvitation: ClaimedInvitation
   invitationTransaction: ProfileEvent
+  invitationLink: String
   memberships: [Membership!]
   members: [Profile!]
   displayCurrency: DisplayCurrency
@@ -86,12 +95,16 @@ type Organisation {
   name: String!
   description: String
   avatarUrl: String
+  largeBannerUrl: String
+  smallBannerUrl: String
+  productListingType: ProductListingType
   avatarMimeType: String
   cityGeonameid: Int
   displayCurrency: DisplayCurrency
   city: City
   offers: [Offer!]
   members: [ProfileOrOrganisation!]
+  shopEnabled: Boolean
   trustsYou: Int # The trust relative to the safeAddress
 }
 
@@ -853,6 +866,9 @@ input UpsertOrganisationInput {
   description: String
   circlesAddress: String
   avatarUrl: String
+  largeBannerUrl: String
+  smallBannerUrl: String
+  productListingType: ProductListingType
   avatarMimeType: String
   cityGeonameid: Int
   displayCurrency: DisplayCurrency
@@ -1139,10 +1155,23 @@ type LeaderboardEntry {
   inviteCount: Int!
 }
 
+type FibonacciGoals {
+  lastGoal: Int!
+  currentValue: Int!
+  nextGoal: Int!
+}
+
+type MyInviteRank {
+  rank: Int!
+  redeemedInvitationsCount: Int!
+}
+
 type Stats {
   profilesCount: Int!
   verificationsCount: Int!
-  leaderboard: [LeaderboardEntry!]
+  leaderboard: [LeaderboardEntry!]!
+  goals: FibonacciGoals!
+  myRank: MyInviteRank!
 }
 
 type TransitiveTransfer {

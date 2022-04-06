@@ -72,6 +72,11 @@ enum ProfileType {
       REGION
 }
 
+enum ProductListingType {
+    TILES
+    LIST
+}
+
 model InvitationFundsEOA {
     id Int @id @default(autoincrement())
     address String
@@ -142,6 +147,9 @@ model Profile {
     firstName String
     lastName String?
     avatarUrl String?
+    largeBannerUrl String?
+    smallBannerUrl String?
+    productListingType ProductListingType?
     avatarCid String?
     avatarMimeType String?
     dream String?
@@ -154,6 +162,8 @@ model Profile {
 
     verifySafeChallenge String?
     newSafeAddress String?
+
+    shopEnabled Boolean?
 
     sessions Session[]  @relation(name: "Session_Profile")
 
@@ -173,6 +183,9 @@ model Profile {
     payableInvoices Invoice[]  @relation(name: "Invoice_CustomerProfile")
     receivableInvoices Invoice[]  @relation(name: "Invoice_SellerProfile")
     cancelledInvoices Invoice[] @relation(name: "Invoice_CancelledByProfile")
+
+    inviteTrigger Job? @relation(name: "Profile_InviteTrigger", fields: [inviteTriggerId], references: [id])
+    inviteTriggerId Int?
 
     invoiceNoPrefix String?
     lastInvoiceNo Int? // Is used in organisations only and represents the current value of the invoice number series.
@@ -430,6 +443,8 @@ model Job {
     info String?
     topic String
     payload String
+
+    inviteTriggerOfProfile Profile? @relation("Profile_InviteTrigger")
 }
 
 model i18n {
