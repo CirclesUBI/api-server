@@ -30,6 +30,24 @@ export const profilePropertyResolvers : ProfileResolvers = {
     && parent.emailAddress
       ? parent.emailAddress
       : null,
+  invitationLink: async (parent: Profile, args:any, context:Context) => {
+    if (!isOwnProfile(parent.id, context)) {
+      return null;
+    }
+
+    const inviteTrigger = await Environment.readonlyApiDb.job.findFirst({
+      where: {
+        inviteTriggerOfProfile: {
+          id: parent.id
+        }
+      }
+    });
+
+    if (!inviteTrigger)
+      return null;
+
+    return `https://${Environment.externalDomain}/trigger?hash=${inviteTrigger.hash}`;
+  },
   askedForEmailAddress: async (parent: Profile, args:any, context:Context) =>
     isOwnProfile(parent.id, context)
     && parent.askedForEmailAddress

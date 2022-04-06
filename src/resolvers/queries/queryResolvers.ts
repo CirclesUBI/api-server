@@ -37,7 +37,13 @@ const packageJson = require("../../../package.json");
 export const queryResolvers : QueryResolvers = {
   sessionInfo: sessionInfo,
   init: init,
-  stats: stats,
+  stats: async (parent:any, args:any, context:Context) => {
+    const caller = await context.callerInfo;
+    if (!caller?.profile?.circlesAddress) {
+      throw new Error(`You must have a safe to execute this query.`);
+    }
+    return stats(caller.profile.circlesAddress);
+  },
   cities: cities,
   claimedInvitation: claimedInvitation,
   findSafesByOwner: findSafesByOwner,
@@ -82,6 +88,7 @@ export const queryResolvers : QueryResolvers = {
     const orgasWithOffers = await Environment.readWriteApiDb.profile.findMany({
       where: {
         type: "ORGANISATION",
+        shopEnabled: true,
         offers: {
           some: {
             id: {
