@@ -908,6 +908,7 @@ type AnnouncePaymentResult {
   invoiceId: Int!
   transactionHash: String!
   pickupCode: String!
+  simplePickupCode: String
 }
 
 type Mutation {
