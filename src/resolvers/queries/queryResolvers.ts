@@ -62,6 +62,13 @@ export const queryResolvers : QueryResolvers = {
   invoice: invoice,
   verifications: verifications,
   findInvitationCreator: findInvitationCreator,
+  getAllStrings: async (parent: any, args: any, context: Context) => {
+    const queryResult = await Environment.pgReadWriteApiDb.query(`
+    select * 
+    from i18n
+    `)
+    return queryResult.rows;
+  },
   getStringByMaxVersion: async (parent: any, args: QueryGetStringByMaxVersionArgs, context: Context) => {
     const queryResult = await Environment.pgReadWriteApiDb.query(`
     select * 
