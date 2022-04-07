@@ -56,7 +56,8 @@ export function announcePayment() {
         return {
             invoiceId: args.invoiceId,
             transactionHash: args.transactionHash,
-            pickupCode: pickupCode
+            pickupCode: pickupCode,
+            simplePickupCode: simplePickupCode ? simplePickupCode[0].lastSimplePickupCode.toString() : null
         };
     }
 }
