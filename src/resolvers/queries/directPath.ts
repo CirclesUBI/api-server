@@ -81,14 +81,16 @@ async function findDirectPath(from: string, to: string, amountInWei: string) : P
 
     // Subtract the current holdings of the receivers from the max transferable amount:
     // userToToken[tokenOwner].balanceOf(dest).mul(oneHundred.sub(limits[dest][tokenOwner])).div(oneHundred)
-    const destBalance = receiverTokenBalancesLookup[o.tokenOwner];
-    if (destBalance) {
-      if (max.lt(destBalance)) {
-        // if trustLimit has already been overridden by a direct transfer, nothing more can be sent
-        max = zeroBN;
-      } else {
-        const destBalanceScaled = destBalance.mul(oneHundred.sub(o.limitBn)).div(oneHundred);
-        max = max.sub(destBalanceScaled);
+    if (!recipientIsOrganization) {
+      const destBalance = receiverTokenBalancesLookup[o.tokenOwner];
+      if (destBalance) {
+        if (max.lt(destBalance)) {
+          // if trustLimit has already been overridden by a direct transfer, nothing more can be sent
+          max = zeroBN;
+        } else {
+          const destBalanceScaled = destBalance.mul(oneHundred.sub(o.limitBn)).div(oneHundred);
+          max = max.sub(destBalanceScaled);
+        }
       }
     }
 
