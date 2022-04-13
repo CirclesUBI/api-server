@@ -170,14 +170,6 @@ type ExchangeTokenResponse {
   errorMessage: String
 }
 
-type DepositChallengeResponse {
-  success: Boolean!
-  errorMessage: String
-}
-input DepositChallenge {
-  jwt: String!
-}
-
 type LogoutResponse {
   success: Boolean!
   errorMessage: String
@@ -200,20 +192,6 @@ enum CapabilityType {
 
 type Capability {
   type: CapabilityType
-}
-
-type DelegateAuthInit {
-  appId: String!
-  success: Boolean!
-  errorMessage: String
-  challengeType: String
-  delegateAuthCode: String
-  validTo: String
-}
-
-type ConsumeDepositedChallengeResponse {
-  success: Boolean!
-  challenge: String
 }
 
 type Version {
@@ -921,12 +899,6 @@ type Mutation {
   completePurchase(invoiceId: Int!, revoke: Boolean): Invoice!
   completeSale(invoiceId: Int!, revoke: Boolean): Invoice!
 
-  exchangeToken: ExchangeTokenResponse!
-  authenticateAt(appId: String!): DelegateAuthInit!
-  depositChallenge(jwt: String!): DepositChallengeResponse!
-  consumeDepositedChallenge(
-    delegateAuthCode: String!
-  ): ConsumeDepositedChallengeResponse!
   logout: LogoutResponse!
   upsertProfile(data: UpsertProfileInput!): Profile!
   requestUpdateSafe(data: RequestUpdateSafeInput!): RequestUpdateSafeResponse!

@@ -1,7 +1,5 @@
 import { upsertProfileResolver } from "./upsertProfile";
 import { logout } from "./logout";
-import { authenticateAtResolver } from "./authenticateAt";
-import { consumeDepositedChallengeResolver } from "./consumeDepositedChallenge";
 import { requestUpdateSafe } from "./requestUpdateSafe";
 import { updateSafe } from "./updateSafe";
 import { upsertTag } from "./upsertTag";
@@ -31,10 +29,6 @@ export const mutationResolvers: MutationResolvers = {
   upsertRegion: <any>upsertOrganisation(true),
   logout: logout(),
   upsertProfile: upsertProfileResolver(),
-  authenticateAt: authenticateAtResolver(),
-  consumeDepositedChallenge: consumeDepositedChallengeResolver(
-    Environment.readWriteApiDb
-  ),
   requestUpdateSafe: requestUpdateSafe(Environment.readWriteApiDb),
   updateSafe: updateSafe(Environment.readWriteApiDb),
   upsertTag: upsertTag(),

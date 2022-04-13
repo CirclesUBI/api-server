@@ -350,21 +350,6 @@ model ChatMessage {
     tags Tag[] @relation(name: "ChatMessage_Tags")
 }
 
-model DelegatedChallenges {
-    id Int @id @default(autoincrement())
-    createdAt DateTime
-    @@index([createdAt])
-    appId String
-    sessionId String
-    requestValidTo DateTime
-    delegateAuthCode String
-    @@unique([delegateAuthCode], name:"UX_DelegatedChallenges_delegateAuthCode")
-    challenge String?
-    challengeDepositedAt DateTime?
-    challengeValidTo DateTime?
-    challengedReadAt DateTime?
-}
-
 model Offer {
     id Int @default(autoincrement())
     version Int

@@ -125,12 +125,6 @@ export type CommonTrust = {
   type: Scalars['String'];
 };
 
-export type ConsumeDepositedChallengeResponse = {
-  __typename?: 'ConsumeDepositedChallengeResponse';
-  challenge?: Maybe<Scalars['String']>;
-  success: Scalars['Boolean'];
-};
-
 export type Contact = {
   __typename?: 'Contact';
   contactAddress: Scalars['String'];
@@ -263,26 +257,6 @@ export type CreatedInviteEoa = {
   address: Scalars['String'];
   fee: Scalars['String'];
   for: Scalars['String'];
-};
-
-export type DelegateAuthInit = {
-  __typename?: 'DelegateAuthInit';
-  appId: Scalars['String'];
-  challengeType?: Maybe<Scalars['String']>;
-  delegateAuthCode?: Maybe<Scalars['String']>;
-  errorMessage?: Maybe<Scalars['String']>;
-  success: Scalars['Boolean'];
-  validTo?: Maybe<Scalars['String']>;
-};
-
-export type DepositChallenge = {
-  jwt: Scalars['String'];
-};
-
-export type DepositChallengeResponse = {
-  __typename?: 'DepositChallengeResponse';
-  errorMessage?: Maybe<Scalars['String']>;
-  success: Scalars['Boolean'];
 };
 
 export enum Direction {
@@ -526,14 +500,10 @@ export type Mutation = {
   acknowledge: Scalars['Boolean'];
   addMember?: Maybe<AddMemberResult>;
   announcePayment: AnnouncePaymentResult;
-  authenticateAt: DelegateAuthInit;
   claimInvitation: ClaimInvitationResult;
   completePurchase: Invoice;
   completeSale: Invoice;
-  consumeDepositedChallenge: ConsumeDepositedChallengeResponse;
   createTestInvitation: CreateInvitationResult;
-  depositChallenge: DepositChallengeResponse;
-  exchangeToken: ExchangeTokenResponse;
   importOrganisationsOfAccount: Array<Organisation>;
   logout: LogoutResponse;
   purchase: Array<Invoice>;
@@ -579,11 +549,6 @@ export type MutationAnnouncePaymentArgs = {
 };
 
 
-export type MutationAuthenticateAtArgs = {
-  appId: Scalars['String'];
-};
-
-
 export type MutationClaimInvitationArgs = {
   code: Scalars['String'];
 };
@@ -598,16 +563,6 @@ export type MutationCompletePurchaseArgs = {
 export type MutationCompleteSaleArgs = {
   invoiceId: Scalars['Int'];
   revoke?: InputMaybe<Scalars['Boolean']>;
-};
-
-
-export type MutationConsumeDepositedChallengeArgs = {
-  delegateAuthCode: Scalars['String'];
-};
-
-
-export type MutationDepositChallengeArgs = {
-  jwt: Scalars['String'];
 };
 
 
@@ -1499,7 +1454,6 @@ export type ResolversTypes = ResolversObject<{
   ClaimInvitationResult: ResolverTypeWrapper<ClaimInvitationResult>;
   ClaimedInvitation: ResolverTypeWrapper<ClaimedInvitation>;
   CommonTrust: ResolverTypeWrapper<CommonTrust>;
-  ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
   Contact: ResolverTypeWrapper<Contact>;
   ContactAggregateFilter: ContactAggregateFilter;
   ContactDirection: ContactDirection;
@@ -1518,9 +1472,6 @@ export type ResolversTypes = ResolversObject<{
   CreatedInvitation: ResolverTypeWrapper<CreatedInvitation>;
   CreatedInviteEoa: ResolverTypeWrapper<CreatedInviteEoa>;
   Date: ResolverTypeWrapper<Scalars['Date']>;
-  DelegateAuthInit: ResolverTypeWrapper<DelegateAuthInit>;
-  DepositChallenge: DepositChallenge;
-  DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
   Direction: Direction;
   DisplayCurrency: DisplayCurrency;
   Erc20Balances: ResolverTypeWrapper<Erc20Balances>;
@@ -1640,7 +1591,6 @@ export type ResolversParentTypes = ResolversObject<{
   ClaimInvitationResult: ClaimInvitationResult;
   ClaimedInvitation: ClaimedInvitation;
   CommonTrust: CommonTrust;
-  ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
   Contact: Contact;
   ContactAggregateFilter: ContactAggregateFilter;
   ContactPoint: ContactPoint;
@@ -1658,9 +1608,6 @@ export type ResolversParentTypes = ResolversObject<{
   CreatedInvitation: CreatedInvitation;
   CreatedInviteEoa: CreatedInviteEoa;
   Date: Scalars['Date'];
-  DelegateAuthInit: DelegateAuthInit;
-  DepositChallenge: DepositChallenge;
-  DepositChallengeResponse: DepositChallengeResponse;
   Erc20Balances: Erc20Balances;
   Erc20Transfer: Erc20Transfer;
   EthTransfer: EthTransfer;
@@ -1841,12 +1788,6 @@ export type CommonTrustResolvers<ContextType = any, ParentType extends Resolvers
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type ConsumeDepositedChallengeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['ConsumeDepositedChallengeResponse'] = ResolversParentTypes['ConsumeDepositedChallengeResponse']> = ResolversObject<{
-  challenge?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export type ContactResolvers<ContextType = any, ParentType extends ResolversParentTypes['Contact'] = ResolversParentTypes['Contact']> = ResolversObject<{
   contactAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   contactAddress_Profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
@@ -1966,22 +1907,6 @@ export type CreatedInviteEoaResolvers<ContextType = any, ParentType extends Reso
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
   name: 'Date';
 }
-
-export type DelegateAuthInitResolvers<ContextType = any, ParentType extends ResolversParentTypes['DelegateAuthInit'] = ResolversParentTypes['DelegateAuthInit']> = ResolversObject<{
-  appId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  challengeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  delegateAuthCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  validTo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type DepositChallengeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DepositChallengeResponse'] = ResolversParentTypes['DepositChallengeResponse']> = ResolversObject<{
-  errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
 
 export type Erc20BalancesResolvers<ContextType = any, ParentType extends ResolversParentTypes['Erc20Balances'] = ResolversParentTypes['Erc20Balances']> = ResolversObject<{
   balances?: Resolver<Array<ResolversTypes['AssetBalance']>, ParentType, ContextType>;
@@ -2193,14 +2118,10 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   acknowledge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'until'>>;
   addMember?: Resolver<Maybe<ResolversTypes['AddMemberResult']>, ParentType, ContextType, RequireFields<MutationAddMemberArgs, 'groupId' | 'memberAddress'>>;
   announcePayment?: Resolver<ResolversTypes['AnnouncePaymentResult'], ParentType, ContextType, RequireFields<MutationAnnouncePaymentArgs, 'invoiceId' | 'transactionHash'>>;
-  authenticateAt?: Resolver<ResolversTypes['DelegateAuthInit'], ParentType, ContextType, RequireFields<MutationAuthenticateAtArgs, 'appId'>>;
   claimInvitation?: Resolver<ResolversTypes['ClaimInvitationResult'], ParentType, ContextType, RequireFields<MutationClaimInvitationArgs, 'code'>>;
   completePurchase?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<MutationCompletePurchaseArgs, 'invoiceId'>>;
   completeSale?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<MutationCompleteSaleArgs, 'invoiceId'>>;
-  consumeDepositedChallenge?: Resolver<ResolversTypes['ConsumeDepositedChallengeResponse'], ParentType, ContextType, RequireFields<MutationConsumeDepositedChallengeArgs, 'delegateAuthCode'>>;
   createTestInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType>;
-  depositChallenge?: Resolver<ResolversTypes['DepositChallengeResponse'], ParentType, ContextType, RequireFields<MutationDepositChallengeArgs, 'jwt'>>;
-  exchangeToken?: Resolver<ResolversTypes['ExchangeTokenResponse'], ParentType, ContextType>;
   importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   logout?: Resolver<ResolversTypes['LogoutResponse'], ParentType, ContextType>;
   purchase?: Resolver<Array<ResolversTypes['Invoice']>, ParentType, ContextType, RequireFields<MutationPurchaseArgs, 'lines'>>;
@@ -2664,7 +2585,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   ClaimInvitationResult?: ClaimInvitationResultResolvers<ContextType>;
   ClaimedInvitation?: ClaimedInvitationResolvers<ContextType>;
   CommonTrust?: CommonTrustResolvers<ContextType>;
-  ConsumeDepositedChallengeResponse?: ConsumeDepositedChallengeResponseResolvers<ContextType>;
   Contact?: ContactResolvers<ContextType>;
   ContactPoint?: ContactPointResolvers<ContextType>;
   Contacts?: ContactsResolvers<ContextType>;
@@ -2679,8 +2599,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   CreatedInvitation?: CreatedInvitationResolvers<ContextType>;
   CreatedInviteEoa?: CreatedInviteEoaResolvers<ContextType>;
   Date?: GraphQLScalarType;
-  DelegateAuthInit?: DelegateAuthInitResolvers<ContextType>;
-  DepositChallengeResponse?: DepositChallengeResponseResolvers<ContextType>;
   Erc20Balances?: Erc20BalancesResolvers<ContextType>;
   Erc20Transfer?: Erc20TransferResolvers<ContextType>;
   EthTransfer?: EthTransferResolvers<ContextType>;
