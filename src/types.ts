@@ -735,6 +735,18 @@ export type PaginationArgs = {
   order: SortOrder;
 };
 
+export type PostAddress = {
+  __typename?: 'PostAddress';
+  city?: Maybe<City>;
+  cityGeonameid: Scalars['Int'];
+  house: Scalars['String'];
+  id: Scalars['Int'];
+  name?: Maybe<Scalars['String']>;
+  state?: Maybe<Scalars['String']>;
+  street: Scalars['String'];
+  zip: Scalars['String'];
+};
+
 export enum ProductListingType {
   List = 'LIST',
   Tiles = 'TILES'
@@ -928,7 +940,6 @@ export type Query = {
   myProfile?: Maybe<Profile>;
   organisations: Array<Organisation>;
   organisationsByAddress: Array<Organisation>;
-  organisationsWithOffers: Array<Organisation>;
   profilesById: Array<Profile>;
   profilesBySafeAddress: Array<Profile>;
   recentProfiles: Array<Profile>;
@@ -936,6 +947,8 @@ export type Query = {
   safeInfo?: Maybe<SafeInfo>;
   search: Array<Profile>;
   sessionInfo: SessionInfo;
+  shop?: Maybe<Shop>;
+  shops: Array<Shop>;
   stats: Stats;
   tagById?: Maybe<Tag>;
   tags: Array<Tag>;
@@ -1035,6 +1048,11 @@ export type QuerySafeInfoArgs = {
 
 export type QuerySearchArgs = {
   query: SearchInput;
+};
+
+
+export type QueryShopArgs = {
+  id: Scalars['Int'];
 };
 
 
@@ -1213,6 +1231,58 @@ export type SessionInfo = {
   profile?: Maybe<Profile>;
   profileId?: Maybe<Scalars['Int']>;
 };
+
+export type Shop = {
+  __typename?: 'Shop';
+  categories?: Maybe<Array<ShopCategory>>;
+  createdAt: Scalars['Date'];
+  description: Scalars['String'];
+  id: Scalars['Int'];
+  largeBannerUrl: Scalars['String'];
+  name: Scalars['String'];
+  openingHours?: Maybe<Scalars['String']>;
+  owner: Organisation;
+  pickupAddress?: Maybe<PostAddress>;
+  private?: Maybe<Scalars['Boolean']>;
+  productListingStyle: ProductListingType;
+  shopListingStyle: ShopListingStyle;
+  smallBannerUrl: Scalars['String'];
+  sortOrder?: Maybe<Scalars['Int']>;
+};
+
+export type ShopCategory = {
+  __typename?: 'ShopCategory';
+  createdAt?: Maybe<Scalars['Date']>;
+  description?: Maybe<Scalars['String']>;
+  entries?: Maybe<Array<ShopCategoryEntry>>;
+  id: Scalars['Int'];
+  largeBannerUrl?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  private?: Maybe<Scalars['Boolean']>;
+  productListingStyle?: Maybe<ProductListingType>;
+  shop?: Maybe<Shop>;
+  shopId: Scalars['Int'];
+  smallBannerUrl?: Maybe<Scalars['String']>;
+  sortOrder?: Maybe<Scalars['Int']>;
+};
+
+export type ShopCategoryEntry = {
+  __typename?: 'ShopCategoryEntry';
+  createdAt: Scalars['Date'];
+  id: Scalars['Int'];
+  private?: Maybe<Scalars['Boolean']>;
+  product?: Maybe<Offer>;
+  productId: Scalars['Int'];
+  productVersion: Scalars['Int'];
+  shopCategory?: Maybe<ShopCategory>;
+  shopCategoryId: Scalars['Int'];
+  sortOrder?: Maybe<Scalars['Int']>;
+};
+
+export enum ShopListingStyle {
+  Featured = 'FEATURED',
+  Regular = 'REGULAR'
+}
 
 export enum SortOrder {
   Asc = 'ASC',
@@ -1510,6 +1580,7 @@ export type ResolversTypes = ResolversObject<{
   Organisation: ResolverTypeWrapper<Omit<Organisation, 'members'> & { members?: Maybe<Array<ResolversTypes['ProfileOrOrganisation']>> }>;
   OrganisationCreated: ResolverTypeWrapper<OrganisationCreated>;
   PaginationArgs: PaginationArgs;
+  PostAddress: ResolverTypeWrapper<PostAddress>;
   ProductListingType: ProductListingType;
   Profile: ResolverTypeWrapper<Profile>;
   ProfileAggregate: ResolverTypeWrapper<Omit<ProfileAggregate, 'payload'> & { payload: ResolversTypes['AggregatePayload'] }>;
@@ -1554,6 +1625,10 @@ export type ResolversTypes = ResolversObject<{
   SendMessageResult: ResolverTypeWrapper<SendMessageResult>;
   Server: ResolverTypeWrapper<Server>;
   SessionInfo: ResolverTypeWrapper<SessionInfo>;
+  Shop: ResolverTypeWrapper<Shop>;
+  ShopCategory: ResolverTypeWrapper<ShopCategory>;
+  ShopCategoryEntry: ResolverTypeWrapper<ShopCategoryEntry>;
+  ShopListingStyle: ShopListingStyle;
   SortOrder: SortOrder;
   Stats: ResolverTypeWrapper<Stats>;
   String: ResolverTypeWrapper<Scalars['String']>;
@@ -1643,6 +1718,7 @@ export type ResolversParentTypes = ResolversObject<{
   Organisation: Omit<Organisation, 'members'> & { members?: Maybe<Array<ResolversParentTypes['ProfileOrOrganisation']>> };
   OrganisationCreated: OrganisationCreated;
   PaginationArgs: PaginationArgs;
+  PostAddress: PostAddress;
   Profile: Profile;
   ProfileAggregate: Omit<ProfileAggregate, 'payload'> & { payload: ResolversParentTypes['AggregatePayload'] };
   ProfileAggregateFilter: ProfileAggregateFilter;
@@ -1684,6 +1760,9 @@ export type ResolversParentTypes = ResolversObject<{
   SendMessageResult: SendMessageResult;
   Server: Server;
   SessionInfo: SessionInfo;
+  Shop: Shop;
+  ShopCategory: ShopCategory;
+  ShopCategoryEntry: ShopCategoryEntry;
   Stats: Stats;
   String: Scalars['String'];
   Subscription: {};
@@ -2216,6 +2295,18 @@ export type OrganisationCreatedResolvers<ContextType = any, ParentType extends R
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type PostAddressResolvers<ContextType = any, ParentType extends ResolversParentTypes['PostAddress'] = ResolversParentTypes['PostAddress']> = ResolversObject<{
+  city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
+  cityGeonameid?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  house?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  state?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  street?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  zip?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type ProfileResolvers<ContextType = any, ParentType extends ResolversParentTypes['Profile'] = ResolversParentTypes['Profile']> = ResolversObject<{
   askedForEmailAddress?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   avatarCid?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2359,7 +2450,6 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   myProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, Partial<QueryOrganisationsArgs>>;
   organisationsByAddress?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsByAddressArgs, 'addresses'>>;
-  organisationsWithOffers?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   profilesById?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesByIdArgs, 'ids'>>;
   profilesBySafeAddress?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesBySafeAddressArgs, 'safeAddresses'>>;
   recentProfiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, Partial<QueryRecentProfilesArgs>>;
@@ -2367,6 +2457,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   safeInfo?: Resolver<Maybe<ResolversTypes['SafeInfo']>, ParentType, ContextType, Partial<QuerySafeInfoArgs>>;
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
   sessionInfo?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
+  shop?: Resolver<Maybe<ResolversTypes['Shop']>, ParentType, ContextType, RequireFields<QueryShopArgs, 'id'>>;
+  shops?: Resolver<Array<ResolversTypes['Shop']>, ParentType, ContextType>;
   stats?: Resolver<ResolversTypes['Stats'], ParentType, ContextType>;
   tagById?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagByIdArgs, 'id'>>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsArgs, 'query'>>;
@@ -2478,6 +2570,53 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
   isLoggedOn?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   profileId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ShopResolvers<ContextType = any, ParentType extends ResolversParentTypes['Shop'] = ResolversParentTypes['Shop']> = ResolversObject<{
+  categories?: Resolver<Maybe<Array<ResolversTypes['ShopCategory']>>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  largeBannerUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  openingHours?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Organisation'], ParentType, ContextType>;
+  pickupAddress?: Resolver<Maybe<ResolversTypes['PostAddress']>, ParentType, ContextType>;
+  private?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  productListingStyle?: Resolver<ResolversTypes['ProductListingType'], ParentType, ContextType>;
+  shopListingStyle?: Resolver<ResolversTypes['ShopListingStyle'], ParentType, ContextType>;
+  smallBannerUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  sortOrder?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ShopCategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['ShopCategory'] = ResolversParentTypes['ShopCategory']> = ResolversObject<{
+  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  entries?: Resolver<Maybe<Array<ResolversTypes['ShopCategoryEntry']>>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  largeBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  private?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  productListingStyle?: Resolver<Maybe<ResolversTypes['ProductListingType']>, ParentType, ContextType>;
+  shop?: Resolver<Maybe<ResolversTypes['Shop']>, ParentType, ContextType>;
+  shopId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  smallBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  sortOrder?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ShopCategoryEntryResolvers<ContextType = any, ParentType extends ResolversParentTypes['ShopCategoryEntry'] = ResolversParentTypes['ShopCategoryEntry']> = ResolversObject<{
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  private?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  product?: Resolver<Maybe<ResolversTypes['Offer']>, ParentType, ContextType>;
+  productId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  productVersion?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  shopCategory?: Resolver<Maybe<ResolversTypes['ShopCategory']>, ParentType, ContextType>;
+  shopCategoryId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  sortOrder?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2630,6 +2769,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Offers?: OffersResolvers<ContextType>;
   Organisation?: OrganisationResolvers<ContextType>;
   OrganisationCreated?: OrganisationCreatedResolvers<ContextType>;
+  PostAddress?: PostAddressResolvers<ContextType>;
   Profile?: ProfileResolvers<ContextType>;
   ProfileAggregate?: ProfileAggregateResolvers<ContextType>;
   ProfileBalances?: ProfileBalancesResolvers<ContextType>;
@@ -2656,6 +2796,9 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   SendMessageResult?: SendMessageResultResolvers<ContextType>;
   Server?: ServerResolvers<ContextType>;
   SessionInfo?: SessionInfoResolvers<ContextType>;
+  Shop?: ShopResolvers<ContextType>;
+  ShopCategory?: ShopCategoryResolvers<ContextType>;
+  ShopCategoryEntry?: ShopCategoryEntryResolvers<ContextType>;
   Stats?: StatsResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Tag?: TagResolvers<ContextType>;

@@ -1,4 +1,13 @@
-import {LeaderboardEntry, Organisation, Profile, Resolvers, Verification} from "../types";
+import {
+  LeaderboardEntry,
+  Organisation,
+  Profile,
+  Resolvers,
+  Shop,
+  ShopCategory,
+  ShopCategoryEntry,
+  Verification
+} from "../types";
 import {queryResolvers} from "./queries/queryResolvers";
 import {mutationResolvers} from "./mutations/mutationResolvers";
 import {subscriptionResolvers} from "./subscriptions/subscriptionResolvers";
@@ -16,6 +25,9 @@ import {GraphQLScalarType, Kind} from "graphql";
 import {Context} from "../context";
 import {verificationProfileDataLoader} from "./dataLoaders/verificationProfileDataLoader";
 import {leaderboardEntryProfileDataLoader} from "./dataLoaders/leaderboardEntryProfileDataLoader";
+import {shopCategoriesDataLoader} from "./dataLoaders/shopCategoriesDataLoader";
+import {shopCategoryEntriesDataLoader} from "./dataLoaders/shopCategoryEntriesDataLoader";
+import {shopCategoryEntryProductDataLoader} from "./dataLoaders/shopCategoryEntryProductDataLoader";
 
 export const resolvers: Resolvers = {
   Date: new GraphQLScalarType({
@@ -55,13 +67,28 @@ export const resolvers: Resolvers = {
         if (!parent.verifierSafeAddress) {
           return null;
         }
-        return <Promise<Organisation>><any>verificationProfileDataLoader.load(parent.verifierSafeAddress);
+        return <Promise<Organisation>><any>await verificationProfileDataLoader.load(parent.verifierSafeAddress);
       },
       verifiedProfile: async (parent:Verification, args:any, context:Context) => {
         if (!parent.verifiedSafeAddress) {
           return null;
         }
-        return <Promise<Profile>>verificationProfileDataLoader.load(parent.verifiedSafeAddress);
+        return <Promise<Profile>>await verificationProfileDataLoader.load(parent.verifiedSafeAddress);
+      }
+    },
+    Shop: {
+      categories: async (parent:Shop, args:any, context:Context) => {
+        return shopCategoriesDataLoader.load(parent.id);
+      }
+    },
+    ShopCategory: {
+      entries: async (parent:ShopCategory, args:any, context:Context) => {
+        return shopCategoryEntriesDataLoader.load(parent.id);
+      }
+    },
+    ShopCategoryEntry: {
+      product: async (parent:ShopCategoryEntry, args:any, context:Context) => {
+        return shopCategoryEntryProductDataLoader.load(parent.id);
       }
     }
   },

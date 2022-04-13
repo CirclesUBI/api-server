@@ -27,10 +27,8 @@ import {recentProfiles} from "./recentProfiles";
 import {stats} from "./stats";
 import {init} from "./init";
 import {Environment} from "../../environment";
-import {QueryLastAcknowledgedAtArgs, QueryResolvers} from "../../types";
-import {parentPort} from "worker_threads";
+import {Organisation, QueryLastAcknowledgedAtArgs, QueryResolvers, QueryShopArgs, Shop} from "../../types";
 import {Context} from "../../context";
-import {ProfileLoader} from "../../querySources/profileLoader";
 import {canAccess} from "../../utils/canAccess";
 const packageJson = require("../../../package.json");
 
@@ -84,28 +82,55 @@ export const queryResolvers : QueryResolvers = {
     });
     return lastAcknowledgedDate?.lastAcknowledged;
   },
-  organisationsWithOffers: async (parent:any, args:any, context:Context) => {
-    const orgasWithOffers = await Environment.readWriteApiDb.profile.findMany({
+  shops: async (parent:any, args:any, context:Context) => {
+    const shops = await Environment.readWriteApiDb.shop.findMany({
       where: {
-        type: "ORGANISATION",
-        shopEnabled: true,
-        offers: {
-          some: {
-            id: {
-              gt: 0
-            }
-          }
+        enabled: true,
+        owner: {
+          type: "ORGANISATION"
+        }
+      },
+      include: {
+        owner: true
+      },
+      orderBy: {
+        sortOrder: "asc"
+      }
+    });
+    return shops.map(o => {
+      return <Shop>{
+        ...o,
+        owner: <Organisation>{
+          ...o.owner,
+          createdAt: o.createdAt.toJSON(),
+          name: o.owner.firstName
         }
       }
     });
-    return orgasWithOffers.map(o => {
-      return {
-        ...ProfileLoader.withDisplayCurrency(o),
-        __typename: "Organisation",
-        name: o.firstName,
-        displayName: o.firstName,
-        createdAt: o.createdAt.toJSON()
+  },
+  shop: async (parent:any, args:QueryShopArgs, context:Context) => {
+    const shops = await Environment.readWriteApiDb.shop.findMany({
+      where: {
+        id: args.id,
+        enabled: true
+      },
+      include: {
+        owner: true
+      },
+      orderBy: {
+        sortOrder: "asc"
       }
     });
+    const shop = shops.map(o => {
+      return <Shop>{
+        ...o,
+        owner: <Organisation>{
+          ...o.owner,
+          createdAt: o.createdAt.toJSON(),
+          name: o.owner.firstName
+        }
+      }
+    });
+    return shop.length > 0 ? shop[0] : null;
   }
 }
