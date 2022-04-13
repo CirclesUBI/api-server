@@ -24,13 +24,27 @@ export function announcePayment() {
         }
 
         const pickupCode = Generate.randomHexString(6);
+        const simplePickupCode:{lastSimplePickupCode:number}[] = await Environment.readWriteApiDb.$queryRaw`
+            update "Profile"
+            set "lastSimplePickupCode" = case when coalesce("lastSimplePickupCode", 0) + 1 >= 100
+                                              then 1
+                                              else coalesce("lastSimplePickupCode", 0) + 1
+                                         end,
+                "currentSimplePickupCodeRound" = case when coalesce("lastSimplePickupCode", 0) + 1 >= 100
+                                                      then coalesce("currentSimplePickupCodeRound", 0) + 1
+                                                      else "currentSimplePickupCodeRound"
+                                                 end
+            where id = ${invoice.sellerProfileId}
+            returning "lastSimplePickupCode";`;
+
         await Environment.readWriteApiDb.invoice.update({
             where: {
                 id: args.invoiceId
             },
             data: {
                 pendingPaymentTransactionHash: args.transactionHash,
-                pickupCode: pickupCode
+                pickupCode: pickupCode,
+                simplePickupCode: simplePickupCode ? simplePickupCode[0].lastSimplePickupCode.toString() : null
             }
         });
 
@@ -42,7 +56,8 @@ export function announcePayment() {
         return {
             invoiceId: args.invoiceId,
             transactionHash: args.transactionHash,
-            pickupCode: pickupCode
+            pickupCode: pickupCode,
+            simplePickupCode: simplePickupCode ? simplePickupCode[0].lastSimplePickupCode.toString() : null
         };
     }
 }

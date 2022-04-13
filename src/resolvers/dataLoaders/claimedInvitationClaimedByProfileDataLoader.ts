@@ -13,16 +13,7 @@ export const claimedInvitationClaimedByProfileDataLoader = new DataLoader<number
       claimedBy: true
     }
   })
-  const claimedByProfiles = invitations.reduce((p,c) => {
-    if (!c.claimedByProfileId)
-      return p;
-
-    p[c.claimedByProfileId] = <Profile>{
-      ...c.claimedBy
-    };
-    return p;
-  },<{[x:number]:Profile}>{});
-
+  const claimedByProfiles = invitations.toLookup(c => c.claimedByProfileId, c => <Profile>c.claimedBy);
   return keys.map(o => claimedByProfiles[o]);
 }, {
   cache: false

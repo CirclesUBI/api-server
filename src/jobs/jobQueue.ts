@@ -77,7 +77,7 @@ export class JobQueue {
         if (result.rowCount > 0) {
           results.push({
             id: result.rows[0].id,
-            hash: job._identity,
+            hash: job.getHash(),
             topic: job._topic,
             payload: job.getPayload(),
             createdAt: new Date()
@@ -119,10 +119,8 @@ export class JobQueue {
         `Starting job worker for topics: '${topics.join(', ')}'`);
 
       let error: Error | null = null;
-      this._topics = topics.reduce((p, c) => {
-        p[c.toLowerCase()] = true;
-        return p;
-      }, <{ [x: string]: any }>{});
+
+      this._topics = topics.toLookup(c => c.toLowerCase());
 
       try {
         this._listenerConnection = await Environment.pgReadWriteApiDb.connect();

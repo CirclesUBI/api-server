@@ -1,3 +1,5 @@
+scalar Date
+
 type Server {
   version: String!
 }
@@ -12,6 +14,16 @@ enum ProfileType {
   PERSON
   ORGANISATION
   REGION
+}
+
+enum ProductListingType {
+  TILES
+  LIST
+}
+
+enum ShopListingStyle {
+  REGULAR
+  FEATURED
 }
 
 type Profile {
@@ -31,6 +43,9 @@ type Profile {
   dream: String
   country: String
   avatarUrl: String
+  largeBannerUrl: String
+  smallBannerUrl: String
+  productListingType: ProductListingType
   avatarCid: String
   avatarMimeType: String
   newsletter: Boolean
@@ -39,7 +54,9 @@ type Profile {
   city: City
   claimedInvitation: ClaimedInvitation
   invitationTransaction: ProfileEvent
+  invitationLink: String
   memberships: [Membership!]
+  members: [Profile!]
   displayCurrency: DisplayCurrency
   verifications: [Verification!]
   offers: [Offer!]
@@ -79,15 +96,20 @@ type Organisation {
   createdAt: String!
   circlesAddress: String
   circlesSafeOwner: String
+  displayName: String
   name: String!
   description: String
   avatarUrl: String
+  largeBannerUrl: String
+  smallBannerUrl: String
+  productListingType: ProductListingType
   avatarMimeType: String
   cityGeonameid: Int
   displayCurrency: DisplayCurrency
   city: City
   offers: [Offer!]
   members: [ProfileOrOrganisation!]
+  shopEnabled: Boolean
   trustsYou: Int # The trust relative to the safeAddress
 }
 
@@ -134,6 +156,7 @@ type Tag {
   id: Int!
   typeId: String!
   value: String
+  order: Int
 }
 
 input CreateTagInput {
@@ -152,14 +175,6 @@ type ExchangeTokenResponse {
   errorMessage: String
 }
 
-type DepositChallengeResponse {
-  success: Boolean!
-  errorMessage: String
-}
-input DepositChallenge {
-  jwt: String!
-}
-
 type LogoutResponse {
   success: Boolean!
   errorMessage: String
@@ -169,7 +184,6 @@ type SessionInfo {
   isLoggedOn: Boolean!
   hasProfile: Boolean
   profileId: Int
-  lastAcknowledgedAt: String
   profile: Profile
   capabilities: [Capability!]!
 }
@@ -177,24 +191,12 @@ type SessionInfo {
 enum CapabilityType {
   Verify
   Invite
+  Translate
+  PreviewFeatures
 }
 
 type Capability {
   type: CapabilityType
-}
-
-type DelegateAuthInit {
-  appId: String!
-  success: Boolean!
-  errorMessage: String
-  challengeType: String
-  delegateAuthCode: String
-  validTo: String
-}
-
-type ConsumeDepositedChallengeResponse {
-  success: Boolean!
-  challenge: String
 }
 
 type Version {
@@ -272,7 +274,6 @@ type Offer {
 
   pricePerUnit: String! # The price in euro
   timeCirclesPriceShare: Int! # How many percent of the price can be payed in time circles
-
   tags: [Tag!]
 }
 
@@ -333,10 +334,13 @@ type Invoice {
   buyerAddress: String!
   buyerProfile: Profile
 
+  createdAt: String
+
   lines: [InvoiceLine!]
 
   invoiceNo: String!
   pickupCode: String
+  simplePickupCode: String
 
   buyerSignature: Boolean
   buyerSignedDate: String
@@ -846,6 +850,9 @@ input UpsertOrganisationInput {
   description: String
   circlesAddress: String
   avatarUrl: String
+  largeBannerUrl: String
+  smallBannerUrl: String
+  productListingType: ProductListingType
   avatarMimeType: String
   cityGeonameid: Int
   displayCurrency: DisplayCurrency
@@ -884,77 +891,7 @@ type AnnouncePaymentResult {
   invoiceId: Int!
   transactionHash: String!
   pickupCode: String!
-}
-
-type Mutation {
-  announcePayment(
-    invoiceId: Int!
-    transactionHash: String!
-  ): AnnouncePaymentResult!
-
-  purchase(lines: [PurchaseLineInput!]!): [Invoice!]!
-  completePurchase(invoiceId: Int!, revoke: Boolean): Invoice!
-  completeSale(invoiceId: Int!, revoke: Boolean): Invoice!
-
-  exchangeToken: ExchangeTokenResponse!
-  authenticateAt(appId: String!): DelegateAuthInit!
-  depositChallenge(jwt: String!): DepositChallengeResponse!
-  consumeDepositedChallenge(
-    delegateAuthCode: String!
-  ): ConsumeDepositedChallengeResponse!
-  logout: LogoutResponse!
-  upsertProfile(data: UpsertProfileInput!): Profile!
-  requestUpdateSafe(data: RequestUpdateSafeInput!): RequestUpdateSafeResponse!
-  updateSafe(data: UpdateSafeInput!): UpdateSafeResponse!
-  upsertTag(data: UpsertTagInput!): Tag!
-
-  upsertOrganisation(
-    organisation: UpsertOrganisationInput!
-  ): CreateOrganisationResult!
-  upsertRegion(
-    organisation: UpsertOrganisationInput!
-  ): CreateOrganisationResult!
-
-  addMember(groupId: String!, memberAddress: String!): AddMemberResult
-  acceptMembership(membershipId: Int!): AcceptMembershipResult
-  removeMember(groupId: String!, memberAddress: String!): RemoveMemberResult
-  rejectMembership(membershipId: Int!): RejectMembershipResult
-
-  acknowledge(until: String!): Boolean!
-
-  requestInvitationOffer(for: String!): Offer!
-
-  # Creates as many new EOAs as there are strings in the array.
-  # createInvitations(for: [String!]!): CreateInvitationResult!
-  createTestInvitation: CreateInvitationResult!
-
-  claimInvitation(code: String!): ClaimInvitationResult!
-  redeemClaimedInvitation: RedeemClaimedInvitationResult!
-
-  tagTransaction(
-    transactionHash: String!
-    tag: CreateTagInput!
-  ): TagTransactionResult!
-  sendMessage(
-    fromSafeAddress: String
-    toSafeAddress: String!
-    content: String!
-  ): SendMessageResult!
-
-  requestSessionChallenge(address: String!): String!
-  verifySessionChallenge(
-    challenge: String!
-    signature: String!
-  ): ExchangeTokenResponse
-
-  importOrganisationsOfAccount: [Organisation!]!
-
-  verifySafe(safeAddress: String!): VerifySafeResult!
-
-  revokeSafeVerification(safeAddress: String!): VerifySafeResult!
-
-  updateValue(lang: String, key: String, createdBy: String, value: String): Int
-  addNewLang(langToCreate: String, langToCopyFrom: String): Int
+  simplePickupCode: String
 }
 
 type VerifySafeResult {
@@ -1007,7 +944,8 @@ input PurchasedEventFilter {
 }
 
 input SaleEventFilter {
-  invoiceId: Int!
+  invoiceId: Int
+  pickupCode: String
 }
 
 input ChatMessageEventFilter {
@@ -1076,6 +1014,245 @@ input VerifiedSafesFilter {
   addresses: [String!]
 }
 
+type LeaderboardEntry {
+  createdByCirclesAddress: String!
+  createdByProfile: Profile
+  inviteCount: Int!
+}
+
+type FibonacciGoals {
+  lastGoal: Int!
+  currentValue: Int!
+  nextGoal: Int!
+}
+
+type MyInviteRank {
+  rank: Int!
+  redeemedInvitationsCount: Int!
+}
+
+type Stats {
+  profilesCount: Int!
+  verificationsCount: Int!
+  leaderboard: [LeaderboardEntry!]!
+  goals: FibonacciGoals!
+  myRank: MyInviteRank!
+}
+
+type TransitiveTransfer {
+  from: String!
+  to: String!
+  token: String!
+  tokenOwner: String!
+  value: String!
+}
+
+type TransitivePath {
+  requestedAmount: String!
+  flow: String!
+  transfers: [TransitiveTransfer!]!
+}
+
+type PostAddress {
+  id: Int!
+  name: String
+
+  street: String!
+  house: String!
+  zip: String!
+  state: String
+
+  cityGeonameid: Int!
+  city: City
+}
+
+input ShopInput {
+  id: Int
+
+  enabled: Boolean!
+  private: Boolean
+
+  name: String!
+  description: String!
+  largeBannerUrl: String!
+  smallBannerUrl: String!
+
+  shopListingStyle: ShopListingStyle!
+  sortOrder: Int
+
+  productListingStyle: ProductListingType!
+
+  ownerId: Int!
+  openingHours: String
+}
+
+type Shop {
+  id: Int!
+  createdAt: Date!
+
+  private: Boolean
+
+  name: String!
+  description: String!
+  largeBannerUrl: String!
+  smallBannerUrl: String!
+
+  shopListingStyle: ShopListingStyle!
+  sortOrder: Int
+
+  productListingStyle: ProductListingType!
+
+  owner: Organisation!
+
+  openingHours: String
+  pickupAddress: PostAddress
+
+  categories: [ShopCategory!]
+}
+
+input ShopCategoryInput {
+  id: Int
+  shopId: Int!
+
+  private: Boolean
+
+  name: String!
+  description: String
+  largeBannerUrl: String
+  smallBannerUrl: String
+
+  sortOrder: Int
+  productListingStyle: ProductListingType
+}
+
+type ShopCategory {
+  id: Int!
+  createdAt: Date
+
+  shop: Shop
+  shopId: Int!
+
+  private: Boolean
+
+  name: String!
+  description: String
+  largeBannerUrl: String
+  smallBannerUrl: String
+
+  sortOrder: Int
+
+  productListingStyle: ProductListingType
+
+  entries: [ShopCategoryEntry!]
+}
+
+input ShopCategoryEntryInput {
+  id: Int
+
+  private: Boolean
+  name: String
+
+  shopCategoryId: Int!
+  productId: Int!
+  productVersion: Int!
+
+  sortOrder: Int
+}
+
+type ShopCategoryEntry {
+  id: Int!
+  createdAt: Date!
+
+  private: Boolean
+
+  product: Offer
+  productId: Int!
+  productVersion: Int!
+
+  sortOrder: Int
+
+  shopCategory: ShopCategory
+  shopCategoryId: Int!
+}
+
+type UpsertShopCategoriesResult {
+  inserted: Int!
+  updated: Int!
+}
+
+type UpsertShopCategoryEntriesResult {
+  inserted: Int!
+  updated: Int!
+}
+
+type Mutation {
+  announcePayment(
+    invoiceId: Int!
+    transactionHash: String!
+  ): AnnouncePaymentResult!
+
+  purchase(lines: [PurchaseLineInput!]!): [Invoice!]!
+  completePurchase(invoiceId: Int!, revoke: Boolean): Invoice!
+  completeSale(invoiceId: Int!, revoke: Boolean): Invoice!
+
+  logout: LogoutResponse!
+  upsertProfile(data: UpsertProfileInput!): Profile!
+  requestUpdateSafe(data: RequestUpdateSafeInput!): RequestUpdateSafeResponse!
+  updateSafe(data: UpdateSafeInput!): UpdateSafeResponse!
+  upsertTag(data: UpsertTagInput!): Tag!
+
+  upsertOrganisation(
+    organisation: UpsertOrganisationInput!
+  ): CreateOrganisationResult!
+  upsertRegion(
+    organisation: UpsertOrganisationInput!
+  ): CreateOrganisationResult!
+
+  upsertShop(shop:ShopInput!): Shop!
+  upsertShopCategories(shopCategories:[ShopCategoryInput!]!): UpsertShopCategoriesResult!
+  upsertShopCategoryEntries(shopCategoryEntries:[ShopCategoryEntryInput!]!): UpsertShopCategoryEntriesResult!
+
+  addMember(groupId: String!, memberAddress: String!): AddMemberResult
+  acceptMembership(membershipId: Int!): AcceptMembershipResult
+  removeMember(groupId: String!, memberAddress: String!): RemoveMemberResult
+  rejectMembership(membershipId: Int!): RejectMembershipResult
+
+  acknowledge(until: Date!, safeAddress: String): Boolean!
+
+  requestInvitationOffer(for: String!): Offer!
+
+  # Creates as many new EOAs as there are strings in the array.
+  # createInvitations(for: [String!]!): CreateInvitationResult!
+  createTestInvitation: CreateInvitationResult!
+
+  claimInvitation(code: String!): ClaimInvitationResult!
+  redeemClaimedInvitation: RedeemClaimedInvitationResult!
+
+  tagTransaction(
+    transactionHash: String!
+    tag: CreateTagInput!
+  ): TagTransactionResult!
+  sendMessage(
+    fromSafeAddress: String
+    toSafeAddress: String!
+    content: String!
+  ): SendMessageResult!
+
+  requestSessionChallenge(address: String!): String!
+  verifySessionChallenge(
+    challenge: String!
+    signature: String!
+  ): ExchangeTokenResponse
+
+  importOrganisationsOfAccount: [Organisation!]!
+
+  verifySafe(safeAddress: String!): VerifySafeResult!
+
+  revokeSafeVerification(safeAddress: String!): VerifySafeResult!
+  updateValue(lang: String, key: String, createdBy: String, value: String): Int
+  addNewLang(langToCreate: String, langToCopyFrom: String): Int
+}
+
 type Query {
   version: Version!
   sessionInfo: SessionInfo!
@@ -1087,6 +1264,7 @@ type Query {
   invitationTransaction: ProfileEvent
   hubSignupTransaction: ProfileEvent
   safeInfo(safeAddress: String): SafeInfo
+  lastAcknowledgedAt(safeAddress: String!): Date
 
   verifications(
     pagination: PaginationArgs
@@ -1106,6 +1284,9 @@ type Query {
     filter: ProfileAggregateFilter
   ): [ProfileAggregate!]!
 
+  shops:[Shop!]!
+  shop(id:Int!) : Shop
+
   organisations(pagination: PaginationArgs): [Organisation!]!
   organisationsWithOffers: [Organisation!]!
   regions(pagination: PaginationArgs): [Organisation!]!
@@ -1123,7 +1304,7 @@ type Query {
   findSafesByOwner(owner: String!): [SafeInfo!]!
 
   search(query: SearchInput!): [Profile!]!
-  stats : Stats!
+  stats: Stats!
 
   cities(query: QueryCitiesInput!): [City!]!
   tags(query: QueryTagsInput!): [Tag!]!
@@ -1135,28 +1316,9 @@ type Query {
   findInvitationCreator(code: String!): Profile
 
   getAllStrings: [i18n]
-  getStringByLanguage(lang: String): [i18n!] 
+  getStringByLanguage(lang: String): [i18n!]
   getStringByMaxVersion(lang: String, key: String): i18n
   getAvailableLanguages: [i18n]
-}
-
-type Stats {
-  profilesCount: Int!
-  verificationsCount: Int!
-}
-
-type TransitiveTransfer {
-  from: String!
-  to: String!
-  token: String!
-  tokenOwner: String!
-  value: String!
-}
-
-type TransitivePath {
-  requestedAmount: String!
-  flow: String!
-  transfers: [TransitiveTransfer!]!
 }
 
 type Subscription {

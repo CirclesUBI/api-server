@@ -1,6 +1,7 @@
 import {Request, Response} from "express";
 import {JobQueue} from "../../jobs/jobQueue";
 import {Environment} from "../../environment";
+import {log} from "../../utils/log";
 
 export const triggerGetHandler = async (req: Request, res: Response) => {
   try {
@@ -15,19 +16,21 @@ export const triggerGetHandler = async (req: Request, res: Response) => {
     const result = await JobQueue.trigger(<string>req.query.hash);
 
     if (result == "end") {
-      /*
-      res.statusCode = 404;
-      return res.json({
-        status: "notFound",
-        message: `Couldn't find the trigger with the supplied code.`
-      });
-      */
-      const redirectUrl = Environment.appUrl + "#/passport/verifyemail/failed";
+      const redirectUrl = Environment.appUrl + "#/passport/verifyEmail/verify/failed";
+      log(`     `,
+        `[${req.ip}; ${req.headers["user-agent"]}] [hash: ${req.query.hash}] [triggerGetHandler]`,
+        `The trigger was already executed. Redirecting the user to ${redirectUrl}.`);
+
       res.statusCode = 302;
       return res.redirect(redirectUrl);
     }
 
     res.statusCode = result?.data?.statusCode ?? 200;
+
+    log(`     `,
+      `[${req.ip}; ${req.headers["user-agent"]}] [hash: ${req.query.hash}] [triggerGetHandler]`,
+      `The trigger was successfully executed.`);
+
     if (result?.data?.headers) {
       Object.entries(result.data.headers).forEach((header) => {
         res.setHeader(header[0], <string>header[1]);
@@ -39,6 +42,10 @@ export const triggerGetHandler = async (req: Request, res: Response) => {
       message: `${result?.data?.message ?? ""}`
     });
   } catch (e) {
+    log(`ERR  `,
+      `[${req.ip}; ${req.headers["user-agent"]}] [hash: ${req.query.hash}] [triggerGetHandler]`,
+      `The trigger failed to execute:`, e);
+
     return res.json({
       status: "error",
       message: "Couldn't run the trigger.",

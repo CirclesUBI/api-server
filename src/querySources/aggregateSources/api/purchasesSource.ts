@@ -56,12 +56,7 @@ export class PurchasesSource implements AggregateSource {
       },
     });
 
-    const lastUpdatedAt = new Date(
-      purchasesResult.reduce(
-        (p, c) => Math.max(p, new Date(c.createdAt).getTime()),
-        0
-      )
-    );
+    const lastUpdatedAt = new Date(purchasesResult.reduce((p, c) => Math.max(p, new Date(c.createdAt).getTime()), 0));
 
     return [
       <ProfileAggregate>{
@@ -72,12 +67,7 @@ export class PurchasesSource implements AggregateSource {
           __typename: "Purchases",
           lastUpdatedAt: lastUpdatedAt.toJSON(),
           purchases: <any>purchasesResult.map((o) => {
-            const total = o.lines
-              .reduce(
-                (p, c) => p + c.amount * parseFloat(c.product.pricePerUnit),
-                0
-              )
-              .toString();
+            const total = o.lines.reduce((p, c) => p + c.amount * parseFloat(c.product.pricePerUnit), 0).toString();
             return <any>{
               ...o,
               total: total,

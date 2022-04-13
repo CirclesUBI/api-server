@@ -13,15 +13,8 @@ export const invoicePaymentTransactionDataLoader = new DataLoader<InvoicePayment
         and safe_address = ANY ($2)
         and direction = 'out';`;
 
-  const safe_addresses = Object.keys(keys.reduce((p,c) => {
-    p[c.buyerAddress] = true;
-    return p;
-  }, <{[x:string]:boolean}>{}));
-
-  const transaction_hashes = Object.keys(keys.reduce((p,c) => {
-    p[c.transactionHash] = true;
-    return p;
-  }, <{[x:string]:boolean}>{}));
+  const safe_addresses = Object.keys(keys.toLookup(c => c.buyerAddress));
+  const transaction_hashes = Object.keys(keys.toLookup(c => c.transactionHash));
 
   const eventRows = await Environment.indexDb.query(sql, [transaction_hashes, safe_addresses]);
 

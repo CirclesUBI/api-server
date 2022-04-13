@@ -46,12 +46,9 @@ export const recentProfiles = async (
     },
   });
 
-  const safeAddresses = result.reduce((p, c) => {
-    if (c.id) {
-      p.push(c.id);
-    }
-    return p;
-  }, <number[]>[]);
+  const safeAddresses = result
+    .filter(o => o.id)
+    .map(o => o.id);
 
   const profiles = await new ProfileLoader().queryCirclesLandById(
     Environment.readWriteApiDb,

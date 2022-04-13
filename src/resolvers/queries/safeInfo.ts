@@ -6,7 +6,7 @@ import {Environment} from "../../environment";
 export function safeInfo() {
     return async (parent:any, args:QuerySafeInfoArgs, context:Context) => {
         let safeAddress: Maybe<string>|undefined = args.safeAddress;
-        if (!args.safeAddress) {
+        if (!safeAddress) {
             const profile = await context.callerInfo;
             if (!profile?.profile) {
                 throw new Error(`You need a profile to use this feature.`);

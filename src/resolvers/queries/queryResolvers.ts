@@ -28,6 +28,7 @@ import {stats} from "./stats";
 import {init} from "./init";
 import {Environment} from "../../environment";
 import { QueryGetStringByMaxVersionArgs, QueryResolvers, QueryGetStringByLanguageArgs} from "../../types";
+import {Organisation, QueryLastAcknowledgedAtArgs, QueryShopArgs, Shop} from "../../types";
 import {Context} from "../../context";
 import {ProfileLoader} from "../../querySources/profileLoader";
 const packageJson = require("../../../package.json");
@@ -35,7 +36,13 @@ const packageJson = require("../../../package.json");
 export const queryResolvers : QueryResolvers = {
   sessionInfo: sessionInfo,
   init: init,
-  stats: stats,
+  stats: async (parent:any, args:any, context:Context) => {
+    const caller = await context.callerInfo;
+    if (!caller?.profile?.circlesAddress) {
+      throw new Error(`You must have a safe to execute this query.`);
+    }
+    return stats(caller.profile.circlesAddress);
+  },
   cities: cities,
   claimedInvitation: claimedInvitation,
   findSafesByOwner: findSafesByOwner,
@@ -62,6 +69,71 @@ export const queryResolvers : QueryResolvers = {
   invoice: invoice,
   verifications: verifications,
   findInvitationCreator: findInvitationCreator,
+  lastAcknowledgedAt: async (parent:any, args:QueryLastAcknowledgedAtArgs, context:Context) => {
+    if (!(await canAccess(context, args.safeAddress))) {
+      throw new Error(`You cannot access the specified safe address.`);
+    }
+    const lastAcknowledgedDate = await Environment.readWriteApiDb.profile.findFirst({
+      where: {
+        circlesAddress: args.safeAddress
+      },
+      select: {
+        lastAcknowledged: true
+      }
+    });
+    return lastAcknowledgedDate?.lastAcknowledged;
+  },
+  shops: async (parent:any, args:any, context:Context) => {
+    const shops = await Environment.readWriteApiDb.shop.findMany({
+      where: {
+        enabled: true,
+        owner: {
+          type: "ORGANISATION"
+        }
+      },
+      include: {
+        owner: true
+      },
+      orderBy: {
+        sortOrder: "asc"
+      }
+    });
+    return shops.map(o => {
+      return <Shop>{
+        ...o,
+        owner: <Organisation>{
+          ...o.owner,
+          createdAt: o.createdAt.toJSON(),
+          name: o.owner.firstName
+        }
+      }
+    });
+  },
+  shop: async (parent:any, args:QueryShopArgs, context:Context) => {
+    const shops = await Environment.readWriteApiDb.shop.findMany({
+      where: {
+        id: args.id,
+        enabled: true
+      },
+      include: {
+        owner: true
+      },
+      orderBy: {
+        sortOrder: "asc"
+      }
+    });
+    const shop = shops.map(o => {
+      return <Shop>{
+        ...o,
+        owner: <Organisation>{
+          ...o.owner,
+          createdAt: o.createdAt.toJSON(),
+          name: o.owner.firstName
+        }
+      }
+    });
+    return shop.length > 0 ? shop[0] : null;
+  },
   getAllStrings: async (parent: any, args: any, context: Context) => {
     const queryResult = await Environment.pgReadWriteApiDb.query(`
     select * 
@@ -81,7 +153,7 @@ export const queryResolvers : QueryResolvers = {
             where lang = $1 
                 and key = $2);
     `,
-    [args.lang, args.key]);
+      [args.lang, args.key]);
     if (queryResult.rows?.length > 0) {
       return queryResult.rows[0];
     } else {
@@ -99,31 +171,9 @@ export const queryResolvers : QueryResolvers = {
                 where lang = $1
             );
     `,
-    [args.lang]);
+      [args.lang]);
     return queryResult.rows;
   },
-  organisationsWithOffers: async (parent:any, args:any, context:Context) => {
-    const orgasWithOffers = await Environment.readWriteApiDb.profile.findMany({
-      where: {
-        type: "ORGANISATION",
-        offers: {
-          some: {
-            id: {
-              gt: 0
-            }
-          }
-        }
-      }
-    });
-    return orgasWithOffers.map(o => {
-      return {
-        ...ProfileLoader.withDisplayCurrency(o),
-        __typename: "Organisation",
-        name: o.firstName,
-        createdAt: o.createdAt.toJSON()
-      }
-    });
-  },  
   getAvailableLanguages: async (parent: any, args: any, context: Context) => {
     const queryResult = await Environment.pgReadWriteApiDb.query(`
     select lang

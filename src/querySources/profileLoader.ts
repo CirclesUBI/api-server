@@ -1,4 +1,4 @@
-import {PrismaClient, VerifiedSafe} from "../api-db/client";
+import {PrismaClient} from "../api-db/client";
 import {DisplayCurrency, Organisation, Profile, ProfileOrigin, ProfileType, Verification,} from "../types";
 import {RpcGateway} from "../circles/rpcGateway";
 import fetch from "cross-fetch";
@@ -19,20 +19,11 @@ export class ProfileLoader {
       },
       orderBy: {
         lastUpdateAt: "asc",
-      },
+      }
     });
 
-    const safeProfileMap = profiles.reduce((p, c) => {
-      if (!c.circlesAddress) return p;
-      p[c.circlesAddress] = ProfileLoader.withDisplayCurrency(c);
-      return p;
-    }, <SafeProfileMap>{});
-
-    const idProfileMap = profiles.reduce((p, c) => {
-      if (!c.id) return p;
-      p[c.id] = ProfileLoader.withDisplayCurrency(c);
-      return p;
-    }, <IdProfileMap>{});
+    const safeProfileMap = profiles.toLookup(c => c.circlesAddress, c => ProfileLoader.withDisplayCurrency(c));
+    const idProfileMap = profiles.toLookup(c => c.id, c => ProfileLoader.withDisplayCurrency(c));
 
     return { safeProfileMap, idProfileMap };
   }
@@ -53,7 +44,7 @@ export class ProfileLoader {
     }
   }
 
-  static withDisplayCurrency(profile: any): Profile  & {emailAddressVerified:boolean, askedForSafeAddress:boolean}{
+  static withDisplayCurrency(profile: any): Profile  & {emailAddressVerified:boolean, inviteTriggerId?:number, askedForSafeAddress:boolean}{
     return {
       ...profile,
       displayCurrency: ProfileLoader.getDisplayCurrency(profile),
@@ -73,17 +64,8 @@ export class ProfileLoader {
       take: 100,
     });
 
-    const safeProfileMap = profiles.reduce((p, c) => {
-      if (!c.circlesAddress) return p;
-      p[c.circlesAddress] = ProfileLoader.withDisplayCurrency(c);
-      return p;
-    }, <SafeProfileMap>{});
-
-    const idProfileMap = profiles.reduce((p, c) => {
-      if (!c.id) return p;
-      p[c.id] = ProfileLoader.withDisplayCurrency(c);
-      return p;
-    }, <IdProfileMap>{});
+    const safeProfileMap = profiles.toLookup(c => c.circlesAddress, c => ProfileLoader.withDisplayCurrency(c));
+    const idProfileMap = profiles.toLookup(c => c.id, c => ProfileLoader.withDisplayCurrency(c));
 
     return { safeProfileMap, idProfileMap };
   }
@@ -120,15 +102,17 @@ export class ProfileLoader {
     ]);
 
     const safeVerifications = promiseResults[0];
-    const safeVerificationsMap = safeVerifications.reduce((p, c) => {
-      p[c.safeAddress] = {
+    const safeVerificationsMap = safeVerifications.toLookup(
+      c => c.safeAddress,
+      c => {
+        return {
         ...c,
-        createdByOrganisation: ProfileLoader.withDisplayCurrency(
-          c.createdByOrganisation
-        ),
-      };
-      return p;
-    }, <{ [address: string]: VerifiedSafe & { createdByOrganisation: Profile } }>{});
+            createdByOrganisation: ProfileLoader.withDisplayCurrency(
+            c.createdByOrganisation
+          ),
+        }
+      }
+    )
 
     const profiles = promiseResults[1];
     const safeProfileMap = profiles.reduce((p, c) => {
@@ -196,11 +180,7 @@ export class ProfileLoader {
           emailAddressVerified: false
         };
       })
-      .reduce((p, c) => {
-        if (!c.circlesAddress) return p;
-        p[c.circlesAddress] = c;
-        return p;
-      }, <SafeProfileMap>{});
+      .toLookup(c => c.circlesAddress, c => c);
 
     return safeProfileMap;
   }

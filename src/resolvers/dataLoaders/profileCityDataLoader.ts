@@ -3,7 +3,7 @@ import {City} from "../../types";
 import {UtilityDbQueries} from "../../querySources/utilityDbQueries";
 
 export const profileCityDataLoader = new DataLoader<number, City>(async keys => {
-  const results = await UtilityDbQueries.placesById(keys.map(o => o));
+  const results = await UtilityDbQueries.placesById(keys.map(o => o), true);
   const resultsById = results.reduce((p,c) => {
     p[c.geonameid] = c;
     return p;

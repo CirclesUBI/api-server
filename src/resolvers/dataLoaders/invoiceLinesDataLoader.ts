@@ -1,5 +1,5 @@
 import DataLoader from "dataloader";
-import {Invoice, InvoiceLine} from "../../types";
+import {InvoiceLine} from "../../types";
 import {Environment} from "../../environment";
 
 export const invoiceLinesDataLoader = new DataLoader<number, InvoiceLine[]>(async (keys) => {

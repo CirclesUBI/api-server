@@ -72,7 +72,7 @@ export function redeemClaimedInvitation() {
         });
 
         if (verifiedInviter) {
-          await Dropper.createInvitations(verifiedInviter, 1);
+          await Dropper.createInvitations(verifiedInviter.safeAddress, 1);
           // throw new Error(`Couldn't find a 'verifiedSafe' with the address ${claimedInvitation.forSafeAddress}.`)
         }
       }

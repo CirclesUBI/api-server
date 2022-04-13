@@ -1,15 +1,17 @@
-import {DisplayCurrency, MutationUpsertProfileArgs, Profile} from "../../types";
+import {DisplayCurrency, MutationUpsertProfileArgs, Profile, ProfileType} from "../../types";
 import {Context} from "../../context";
 import {Session} from "../../session";
 import {ProfileLoader} from "../../querySources/profileLoader";
 import {Environment} from "../../environment";
 import {TestData} from "../../api-db/testData";
 import {RpcGateway} from "../../circles/rpcGateway";
-import {JobQueue} from "../../jobs/jobQueue";
+import {Job, JobQueue} from "../../jobs/jobQueue";
 import {VerifyEmailAddress} from "../../jobs/descriptions/emailNotifications/verifyEmailAddress";
 import {Generate} from "../../utils/generate";
 import {SendVerifyEmailAddressEmail} from "../../jobs/descriptions/emailNotifications/sendVerifyEmailAddressEmail";
 import {claimInvitation} from "./claimInvitation";
+import {Dropper} from "../../utils/dropper";
+import {verifySafe} from "./verifySafe";
 
 const validateEmail = (email:string) => {
     return email.match(
@@ -64,10 +66,19 @@ export function upsertProfileResolver() {
             if (args.data.id != session.profileId) {
                 throw new Error(`'${session.sessionToken}' (profile id: ${session.profileId ?? "<undefined>"}) can not upsert other profile '${args.data.id}'.`);
             }
-            const oldProfile = await Environment.readWriteApiDb.profile.findUnique({where:{id: args.data.id}});
+            const oldProfile = await Environment.readWriteApiDb.profile.findUnique({
+                where:{
+                    id: args.data.id
+                },
+                include: {
+                    invitations: true,
+                    inviteTrigger: true
+                }
+            });
             if (!oldProfile){
                 throw new Error(`Cannot update profile ${args.data.id} because it doesn't exist.`)
             }
+
             profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({
                 where: {
                     id: args.data.id
@@ -85,6 +96,37 @@ export function upsertProfileResolver() {
                     displayCurrency: <DisplayCurrency>args.data.displayCurrency
                 }
             }));
+
+            if (!oldProfile.inviteTrigger &&
+              oldProfile.type == ProfileType.Person &&
+              !oldProfile.circlesAddress && profile.circlesAddress) {
+                // Create the initial invitations for the user
+                console.log(`Automatically verifying the new safe user ${profile.circlesAddress} ..`);
+                await verifySafe(null, {safeAddress: profile.circlesAddress}, context);
+
+                console.log(`Creating the input trigger for address ${profile.circlesAddress} ..`);
+                const inviteTriggerHash = await Dropper.createInvitationPerpetualTrigger(profile.circlesAddress);
+
+                console.log(`Trying to find the invite trigger job with hash ${inviteTriggerHash} ..`);
+                const inviteTriggerJob = await Environment.readWriteApiDb.job.findUnique({
+                    where: {
+                        hash: inviteTriggerHash
+                    }
+                });
+
+                if (inviteTriggerJob) {
+                    console.log(`Found invite job with hash ${inviteTriggerHash} and linking it to profile ${oldProfile.id}`);
+                    profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({
+                        where: {
+                            id: profile.id
+                        },
+                        data: {
+                            inviteTriggerId: inviteTriggerJob.id
+                        }
+                    }));
+                }
+            }
+
 
             if (oldProfile.emailAddress != profile.emailAddress) {
                 profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({

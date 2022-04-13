@@ -14,6 +14,7 @@ import {profileAllContactsDataLoader} from "../dataLoaders/profileAllContactsDat
 import {profileClaimedInvitationDataLoader} from "../dataLoaders/profileClaimedInvitationDataLoader";
 import {profileInvitationTransactionDataLoader} from "../dataLoaders/profileInvitationTransactionDataLoader";
 import {profileCirclesTokenAddressDataLoader} from "../dataLoaders/profileCirclesTokenAddressDataLoader";
+import {profileMembersDataLoader} from "../dataLoaders/profileMembersDataLoader";
 
 
 function isOwnProfile(profileId:number, context:Context) : boolean {
@@ -29,6 +30,24 @@ export const profilePropertyResolvers : ProfileResolvers = {
     && parent.emailAddress
       ? parent.emailAddress
       : null,
+  invitationLink: async (parent: Profile, args:any, context:Context) => {
+    if (!isOwnProfile(parent.id, context)) {
+      return null;
+    }
+
+    const inviteTrigger = await Environment.readWriteApiDb.job.findFirst({
+      where: {
+        inviteTriggerOfProfile: {
+          id: parent.id
+        }
+      }
+    });
+
+    if (!inviteTrigger)
+      return null;
+
+    return `https://${Environment.externalDomain}/trigger?hash=${inviteTrigger.hash}`;
+  },
   askedForEmailAddress: async (parent: Profile, args:any, context:Context) =>
     isOwnProfile(parent.id, context)
     && parent.askedForEmailAddress
@@ -48,6 +67,12 @@ export const profilePropertyResolvers : ProfileResolvers = {
       return [];
     }
     return await profileMembershipsDataLoader.load(parent.circlesAddress);
+  },
+  members: async (parent: Profile, args:any, context: Context) => {
+    if (!parent.circlesAddress) {
+      return [];
+    }
+    return await profileMembersDataLoader.load(parent.circlesAddress);
   },
   offers: async (parent: Profile, args:any, context: Context) => {
     if (!parent.circlesAddress) {

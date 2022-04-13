@@ -1,6 +1,5 @@
 import {JobWorker, JobWorkerConfiguration} from "../jobWorker";
 import {Environment} from "../../../environment";
-import {SendVerifyEmailAddressEmail} from "../../descriptions/emailNotifications/sendVerifyEmailAddressEmail";
 import {Mailer} from "../../../mailer/mailer";
 import {welcomeEmailTemplate} from "./templates/welcomeEmailTemplate";
 import {SendWelcomeEmail} from "../../descriptions/emailNotifications/sendWelcomeEmail";

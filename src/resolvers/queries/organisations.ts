@@ -39,10 +39,10 @@ export function organisations(prisma: PrismaClient) {
       return [];
     }
 
-    const allCreationDates = organisationSignupsResult.rows.reduce((p, c) => {
-      p[c.organisation] = new Date(c.timestamp);
-      return p;
-    }, {});
+    const allCreationDates = organisationSignupsResult.rows.toLookup(
+      c => c.organisation,
+        c => new Date(c.timestamp)
+    );
 
     const profileLoader = new ProfileLoader();
     const profiles = await profileLoader.profilesBySafeAddress(

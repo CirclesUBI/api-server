@@ -25,15 +25,15 @@ export const organisationMembersDataLoader = new DataLoader<number, ProfileOrOrg
       membership: o
     }
   })
-    .reduce((p,c) => {
-      if (!p[c.membership.memberAtId]) {
-        p[c.membership.memberAtId] = [];
-      }
-      if (c.memberProfile) {
-        p[c.membership.memberAtId].push(c.memberProfile);
-      }
-      return p;
-    }, <{[organisationId: number]: ProfileOrOrganisation[]}>{});
+  .reduce((p,c) => {
+    if (!p[c.membership.memberAtId]) {
+      p[c.membership.memberAtId] = [];
+    }
+    if (c.memberProfile) {
+      p[c.membership.memberAtId].push(c.memberProfile);
+    }
+    return p;
+  }, <{[organisationId: number]: ProfileOrOrganisation[]}>{});
 
   return organisationIds.map(o => {
     const members = memberProfilesByOrganisation[o];
