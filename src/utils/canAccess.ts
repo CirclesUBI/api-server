@@ -20,6 +20,24 @@ export async function isBILMember(circlesAddress?:string|null) {
   return !!orga;
 }
 
+export async function isBALIMember(circlesAddress?:string|null) {
+  if (!circlesAddress)
+    return false;
+
+  const orga = await Environment.readonlyApiDb.profile.findFirst({
+    where: {
+      circlesAddress: "0x6043c135d79270a9eaa21a3f6d8009d8c49141b9",
+      members: {
+        some: {
+          memberAddress: circlesAddress
+        }
+      }
+    }
+  });
+
+  return !!orga;
+}
+
 export async function canAccess(context:Context, accessedSafeAddress:string) {
   const callerInfo = await context.callerInfo;
   if (callerInfo?.profile?.circlesAddress == accessedSafeAddress) {

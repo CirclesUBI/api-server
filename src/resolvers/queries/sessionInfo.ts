@@ -1,7 +1,7 @@
 import {Context} from "../../context";
 import {CapabilityType, SessionInfo} from "../../types";
 import {ProfileLoader} from "../../querySources/profileLoader";
-import {isBILMember} from "../../utils/canAccess";
+import {isBALIMember, isBILMember} from "../../utils/canAccess";
 import {Environment} from "../../environment";
 
 export const sessionInfo = async (parent:any, args:any, context:Context) : Promise<SessionInfo> => {
@@ -17,6 +17,13 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
             capabilities.push({
                 type: CapabilityType.Translate
             });
+            capabilities.push({
+                type: CapabilityType.PreviewFeatures
+            });
+        }
+
+        const isBaliMember = await isBALIMember(callerInfo?.profile?.circlesAddress);
+        if (isBaliMember) {
             capabilities.push({
                 type: CapabilityType.PreviewFeatures
             });
