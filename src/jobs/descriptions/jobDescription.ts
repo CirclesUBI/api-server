@@ -12,7 +12,8 @@ export type JobType =
   "echo" |
   "inviteCodeFromExternalTrigger" |
   "sendWelcomeEmail" |
-  "broadcastPurchased";
+  "broadcastPurchased" |
+  "requestUbiForInactiveAccounts";
 
 export type JobKind =
   "broadcast" |

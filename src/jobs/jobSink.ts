@@ -19,6 +19,8 @@ import {BroadcastPurchased} from "./descriptions/market/broadcastPurchased";
 import {BroadcastPurchasedWorker} from "./worker/market/broadcastPurchasedWorker";
 import {SendWelcomeEmailWorker} from "./worker/emailNotifications/sendWelcomeEmailWorker";
 import {SendWelcomeEmail} from "./descriptions/emailNotifications/sendWelcomeEmail";
+import {RequestUbiForInactiveAccountsWorker} from "./worker/maintenance/requestUbiForInactiveAccountsWorker";
+import {RequestUbiForInactiveAccounts} from "./descriptions/maintenance/requestUbiForInactiveAccounts";
 
 export const jobSink = async (job: Job) => {
   switch (job.topic) {
@@ -70,6 +72,11 @@ export const jobSink = async (job: Job) => {
         dropThreshold: 3
       })
         .run(job.id, VerifyEmailAddress.parse(job.payload));
+    case "requestUbiForInactiveAccounts".toLowerCase():
+      return new RequestUbiForInactiveAccountsWorker({
+        errorStrategy: "logAndDrop"
+      })
+        .run(job.id, RequestUbiForInactiveAccounts.parse(job.payload))
     default:
       return undefined;
   }
