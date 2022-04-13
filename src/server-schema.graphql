@@ -894,68 +894,6 @@ type AnnouncePaymentResult {
   simplePickupCode: String
 }
 
-type Mutation {
-  announcePayment(
-    invoiceId: Int!
-    transactionHash: String!
-  ): AnnouncePaymentResult!
-
-  purchase(lines: [PurchaseLineInput!]!): [Invoice!]!
-  completePurchase(invoiceId: Int!, revoke: Boolean): Invoice!
-  completeSale(invoiceId: Int!, revoke: Boolean): Invoice!
-
-  logout: LogoutResponse!
-  upsertProfile(data: UpsertProfileInput!): Profile!
-  requestUpdateSafe(data: RequestUpdateSafeInput!): RequestUpdateSafeResponse!
-  updateSafe(data: UpdateSafeInput!): UpdateSafeResponse!
-  upsertTag(data: UpsertTagInput!): Tag!
-
-  upsertOrganisation(
-    organisation: UpsertOrganisationInput!
-  ): CreateOrganisationResult!
-  upsertRegion(
-    organisation: UpsertOrganisationInput!
-  ): CreateOrganisationResult!
-
-  addMember(groupId: String!, memberAddress: String!): AddMemberResult
-  acceptMembership(membershipId: Int!): AcceptMembershipResult
-  removeMember(groupId: String!, memberAddress: String!): RemoveMemberResult
-  rejectMembership(membershipId: Int!): RejectMembershipResult
-
-  acknowledge(until: Date!, safeAddress: String): Boolean!
-
-  requestInvitationOffer(for: String!): Offer!
-
-  # Creates as many new EOAs as there are strings in the array.
-  # createInvitations(for: [String!]!): CreateInvitationResult!
-  createTestInvitation: CreateInvitationResult!
-
-  claimInvitation(code: String!): ClaimInvitationResult!
-  redeemClaimedInvitation: RedeemClaimedInvitationResult!
-
-  tagTransaction(
-    transactionHash: String!
-    tag: CreateTagInput!
-  ): TagTransactionResult!
-  sendMessage(
-    fromSafeAddress: String
-    toSafeAddress: String!
-    content: String!
-  ): SendMessageResult!
-
-  requestSessionChallenge(address: String!): String!
-  verifySessionChallenge(
-    challenge: String!
-    signature: String!
-  ): ExchangeTokenResponse
-
-  importOrganisationsOfAccount: [Organisation!]!
-
-  verifySafe(safeAddress: String!): VerifySafeResult!
-
-  revokeSafeVerification(safeAddress: String!): VerifySafeResult!
-}
-
 type VerifySafeResult {
   success: Boolean!
 }
@@ -1120,6 +1058,26 @@ type PostAddress {
   city: City
 }
 
+input ShopInput {
+  id: Int
+
+  enabled: Boolean!
+  private: Boolean
+
+  name: String!
+  description: String!
+  largeBannerUrl: String!
+  smallBannerUrl: String!
+
+  shopListingStyle: ShopListingStyle!
+  sortOrder: Int
+
+  productListingStyle: ProductListingType!
+
+  ownerId: Int!
+  openingHours: String
+}
+
 type Shop {
   id: Int!
   createdAt: Date!
@@ -1144,6 +1102,21 @@ type Shop {
   categories: [ShopCategory!]
 }
 
+input ShopCategoryInput {
+  id: Int
+  shopId: Int!
+
+  private: Boolean
+
+  name: String!
+  description: String
+  largeBannerUrl: String
+  smallBannerUrl: String
+
+  sortOrder: Int
+  productListingStyle: ProductListingType
+}
+
 type ShopCategory {
   id: Int!
   createdAt: Date
@@ -1165,6 +1138,19 @@ type ShopCategory {
   entries: [ShopCategoryEntry!]
 }
 
+input ShopCategoryEntryInput {
+  id: Int
+
+  private: Boolean
+  name: String
+
+  shopCategoryId: Int!
+  productId: Int!
+  productVersion: Int!
+
+  sortOrder: Int
+}
+
 type ShopCategoryEntry {
   id: Int!
   createdAt: Date!
@@ -1179,6 +1165,82 @@ type ShopCategoryEntry {
 
   shopCategory: ShopCategory
   shopCategoryId: Int!
+}
+
+type UpsertShopCategoriesResult {
+  inserted: Int!
+  updated: Int!
+}
+
+type UpsertShopCategoryEntriesResult {
+  inserted: Int!
+  updated: Int!
+}
+
+type Mutation {
+  announcePayment(
+    invoiceId: Int!
+    transactionHash: String!
+  ): AnnouncePaymentResult!
+
+  purchase(lines: [PurchaseLineInput!]!): [Invoice!]!
+  completePurchase(invoiceId: Int!, revoke: Boolean): Invoice!
+  completeSale(invoiceId: Int!, revoke: Boolean): Invoice!
+
+  logout: LogoutResponse!
+  upsertProfile(data: UpsertProfileInput!): Profile!
+  requestUpdateSafe(data: RequestUpdateSafeInput!): RequestUpdateSafeResponse!
+  updateSafe(data: UpdateSafeInput!): UpdateSafeResponse!
+  upsertTag(data: UpsertTagInput!): Tag!
+
+  upsertOrganisation(
+    organisation: UpsertOrganisationInput!
+  ): CreateOrganisationResult!
+  upsertRegion(
+    organisation: UpsertOrganisationInput!
+  ): CreateOrganisationResult!
+
+  upsertShop(shop:ShopInput!): Shop!
+  upsertShopCategories(shopCategories:[ShopCategoryInput!]!): UpsertShopCategoriesResult!
+  upsertShopCategoryEntries(shopCategoryEntries:[ShopCategoryEntryInput!]!): UpsertShopCategoryEntriesResult!
+
+  addMember(groupId: String!, memberAddress: String!): AddMemberResult
+  acceptMembership(membershipId: Int!): AcceptMembershipResult
+  removeMember(groupId: String!, memberAddress: String!): RemoveMemberResult
+  rejectMembership(membershipId: Int!): RejectMembershipResult
+
+  acknowledge(until: Date!, safeAddress: String): Boolean!
+
+  requestInvitationOffer(for: String!): Offer!
+
+  # Creates as many new EOAs as there are strings in the array.
+  # createInvitations(for: [String!]!): CreateInvitationResult!
+  createTestInvitation: CreateInvitationResult!
+
+  claimInvitation(code: String!): ClaimInvitationResult!
+  redeemClaimedInvitation: RedeemClaimedInvitationResult!
+
+  tagTransaction(
+    transactionHash: String!
+    tag: CreateTagInput!
+  ): TagTransactionResult!
+  sendMessage(
+    fromSafeAddress: String
+    toSafeAddress: String!
+    content: String!
+  ): SendMessageResult!
+
+  requestSessionChallenge(address: String!): String!
+  verifySessionChallenge(
+    challenge: String!
+    signature: String!
+  ): ExchangeTokenResponse
+
+  importOrganisationsOfAccount: [Organisation!]!
+
+  verifySafe(safeAddress: String!): VerifySafeResult!
+
+  revokeSafeVerification(safeAddress: String!): VerifySafeResult!
 }
 
 type Query {

@@ -520,6 +520,9 @@ export type Mutation = {
   upsertOrganisation: CreateOrganisationResult;
   upsertProfile: Profile;
   upsertRegion: CreateOrganisationResult;
+  upsertShop: Shop;
+  upsertShopCategories: UpsertShopCategoriesResult;
+  upsertShopCategoryEntries: UpsertShopCategoryEntriesResult;
   upsertTag: Tag;
   verifySafe: VerifySafeResult;
   verifySessionChallenge?: Maybe<ExchangeTokenResponse>;
@@ -632,6 +635,21 @@ export type MutationUpsertProfileArgs = {
 
 export type MutationUpsertRegionArgs = {
   organisation: UpsertOrganisationInput;
+};
+
+
+export type MutationUpsertShopArgs = {
+  shop: ShopInput;
+};
+
+
+export type MutationUpsertShopCategoriesArgs = {
+  shopCategories: Array<ShopCategoryInput>;
+};
+
+
+export type MutationUpsertShopCategoryEntriesArgs = {
+  shopCategoryEntries: Array<ShopCategoryEntryInput>;
 };
 
 
@@ -1279,6 +1297,43 @@ export type ShopCategoryEntry = {
   sortOrder?: Maybe<Scalars['Int']>;
 };
 
+export type ShopCategoryEntryInput = {
+  id?: InputMaybe<Scalars['Int']>;
+  name?: InputMaybe<Scalars['String']>;
+  private?: InputMaybe<Scalars['Boolean']>;
+  productId: Scalars['Int'];
+  productVersion: Scalars['Int'];
+  shopCategoryId: Scalars['Int'];
+  sortOrder?: InputMaybe<Scalars['Int']>;
+};
+
+export type ShopCategoryInput = {
+  description?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['Int']>;
+  largeBannerUrl?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
+  private?: InputMaybe<Scalars['Boolean']>;
+  productListingStyle?: InputMaybe<ProductListingType>;
+  shopId: Scalars['Int'];
+  smallBannerUrl?: InputMaybe<Scalars['String']>;
+  sortOrder?: InputMaybe<Scalars['Int']>;
+};
+
+export type ShopInput = {
+  description: Scalars['String'];
+  enabled: Scalars['Boolean'];
+  id?: InputMaybe<Scalars['Int']>;
+  largeBannerUrl: Scalars['String'];
+  name: Scalars['String'];
+  openingHours?: InputMaybe<Scalars['String']>;
+  ownerId: Scalars['Int'];
+  private?: InputMaybe<Scalars['Boolean']>;
+  productListingStyle: ProductListingType;
+  shopListingStyle: ShopListingStyle;
+  smallBannerUrl: Scalars['String'];
+  sortOrder?: InputMaybe<Scalars['Int']>;
+};
+
 export enum ShopListingStyle {
   Featured = 'FEATURED',
   Regular = 'REGULAR'
@@ -1394,6 +1449,18 @@ export type UpsertProfileInput = {
   newsletter?: InputMaybe<Scalars['Boolean']>;
   status: Scalars['String'];
   successorOfCirclesAddress?: InputMaybe<Scalars['String']>;
+};
+
+export type UpsertShopCategoriesResult = {
+  __typename?: 'UpsertShopCategoriesResult';
+  inserted: Scalars['Int'];
+  updated: Scalars['Int'];
+};
+
+export type UpsertShopCategoryEntriesResult = {
+  __typename?: 'UpsertShopCategoryEntriesResult';
+  inserted: Scalars['Int'];
+  updated: Scalars['Int'];
 };
 
 export type UpsertTagInput = {
@@ -1628,6 +1695,9 @@ export type ResolversTypes = ResolversObject<{
   Shop: ResolverTypeWrapper<Shop>;
   ShopCategory: ResolverTypeWrapper<ShopCategory>;
   ShopCategoryEntry: ResolverTypeWrapper<ShopCategoryEntry>;
+  ShopCategoryEntryInput: ShopCategoryEntryInput;
+  ShopCategoryInput: ShopCategoryInput;
+  ShopInput: ShopInput;
   ShopListingStyle: ShopListingStyle;
   SortOrder: SortOrder;
   Stats: ResolverTypeWrapper<Stats>;
@@ -1643,6 +1713,8 @@ export type ResolversTypes = ResolversObject<{
   UpdateSafeResponse: ResolverTypeWrapper<UpdateSafeResponse>;
   UpsertOrganisationInput: UpsertOrganisationInput;
   UpsertProfileInput: UpsertProfileInput;
+  UpsertShopCategoriesResult: ResolverTypeWrapper<UpsertShopCategoriesResult>;
+  UpsertShopCategoryEntriesResult: ResolverTypeWrapper<UpsertShopCategoryEntriesResult>;
   UpsertTagInput: UpsertTagInput;
   Verification: ResolverTypeWrapper<Verification>;
   VerifiedSafesFilter: VerifiedSafesFilter;
@@ -1763,6 +1835,9 @@ export type ResolversParentTypes = ResolversObject<{
   Shop: Shop;
   ShopCategory: ShopCategory;
   ShopCategoryEntry: ShopCategoryEntry;
+  ShopCategoryEntryInput: ShopCategoryEntryInput;
+  ShopCategoryInput: ShopCategoryInput;
+  ShopInput: ShopInput;
   Stats: Stats;
   String: Scalars['String'];
   Subscription: {};
@@ -1775,6 +1850,8 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateSafeResponse: UpdateSafeResponse;
   UpsertOrganisationInput: UpsertOrganisationInput;
   UpsertProfileInput: UpsertProfileInput;
+  UpsertShopCategoriesResult: UpsertShopCategoriesResult;
+  UpsertShopCategoryEntriesResult: UpsertShopCategoryEntriesResult;
   UpsertTagInput: UpsertTagInput;
   Verification: Verification;
   VerifiedSafesFilter: VerifiedSafesFilter;
@@ -2217,6 +2294,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   upsertOrganisation?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertOrganisationArgs, 'organisation'>>;
   upsertProfile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType, RequireFields<MutationUpsertProfileArgs, 'data'>>;
   upsertRegion?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertRegionArgs, 'organisation'>>;
+  upsertShop?: Resolver<ResolversTypes['Shop'], ParentType, ContextType, RequireFields<MutationUpsertShopArgs, 'shop'>>;
+  upsertShopCategories?: Resolver<ResolversTypes['UpsertShopCategoriesResult'], ParentType, ContextType, RequireFields<MutationUpsertShopCategoriesArgs, 'shopCategories'>>;
+  upsertShopCategoryEntries?: Resolver<ResolversTypes['UpsertShopCategoryEntriesResult'], ParentType, ContextType, RequireFields<MutationUpsertShopCategoryEntriesArgs, 'shopCategoryEntries'>>;
   upsertTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationUpsertTagArgs, 'data'>>;
   verifySafe?: Resolver<ResolversTypes['VerifySafeResult'], ParentType, ContextType, RequireFields<MutationVerifySafeArgs, 'safeAddress'>>;
   verifySessionChallenge?: Resolver<Maybe<ResolversTypes['ExchangeTokenResponse']>, ParentType, ContextType, RequireFields<MutationVerifySessionChallengeArgs, 'challenge' | 'signature'>>;
@@ -2680,6 +2760,18 @@ export type UpdateSafeResponseResolvers<ContextType = any, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type UpsertShopCategoriesResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpsertShopCategoriesResult'] = ResolversParentTypes['UpsertShopCategoriesResult']> = ResolversObject<{
+  inserted?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  updated?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type UpsertShopCategoryEntriesResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpsertShopCategoryEntriesResult'] = ResolversParentTypes['UpsertShopCategoryEntriesResult']> = ResolversObject<{
+  inserted?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  updated?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type VerificationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Verification'] = ResolversParentTypes['Verification']> = ResolversObject<{
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   revokedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2807,6 +2899,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   TransitiveTransfer?: TransitiveTransferResolvers<ContextType>;
   TrustRelation?: TrustRelationResolvers<ContextType>;
   UpdateSafeResponse?: UpdateSafeResponseResolvers<ContextType>;
+  UpsertShopCategoriesResult?: UpsertShopCategoriesResultResolvers<ContextType>;
+  UpsertShopCategoryEntriesResult?: UpsertShopCategoryEntriesResultResolvers<ContextType>;
   Verification?: VerificationResolvers<ContextType>;
   VerifySafeResult?: VerifySafeResultResolvers<ContextType>;
   Version?: VersionResolvers<ContextType>;
