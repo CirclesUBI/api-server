@@ -28,7 +28,7 @@ import {
   Shop,MutationAddNewLangArgs, MutationUpdateValueArgs
 } from "../../types";
 import {Context} from "../../context";
-import {canAccessProfileId} from "../../utils/canAccess";
+import {canAccessProfileId, isBILMember} from "../../utils/canAccess";
 import {Prisma} from "../../api-db/client";
 
 async function ensureCanAccessShop(shopId:number|null|undefined , newOwnerId: number, context: Context) {

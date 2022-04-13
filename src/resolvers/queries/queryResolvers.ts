@@ -30,7 +30,7 @@ import {Environment} from "../../environment";
 import { QueryGetStringByMaxVersionArgs, QueryResolvers, QueryGetStringByLanguageArgs} from "../../types";
 import {Organisation, QueryLastAcknowledgedAtArgs, QueryShopArgs, Shop} from "../../types";
 import {Context} from "../../context";
-import {ProfileLoader} from "../../querySources/profileLoader";
+import {canAccess} from "../../utils/canAccess";
 const packageJson = require("../../../package.json");
 
 export const queryResolvers : QueryResolvers = {
