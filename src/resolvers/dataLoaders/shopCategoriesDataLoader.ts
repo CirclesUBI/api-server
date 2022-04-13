@@ -23,7 +23,7 @@ export const shopCategoriesDataLoader = new DataLoader<number, ShopCategory[]>(a
     return p;
   }, <{[shopId:number]: ShopCategory[]}>{});
 
-  return Object.values(_categories);
+  return shopIds.map(o => _categories[o]);
 }, {
   cache: false
 });
