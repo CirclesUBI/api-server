@@ -123,6 +123,90 @@ model VerifiedSafe {
     inviteCount Int @default(0) // Number of created invitations
 }
 
+model PostAddress {
+    id Int @id @default(autoincrement())
+    name String?
+
+    street String
+    house String
+    zip String
+    state String?
+
+    cityGeonameid Int?
+
+    pickupAddressOfShop Shop? @relation("ShopPickupAddress")
+    shippingAddressOfProfile Profile? @relation("ProfileShippingAddresses", fields: [shippingAddressOfProfileId], references: [id])
+    shippingAddressOfProfileId Int?
+}
+
+enum ShopListingStyle {
+    REGULAR
+    FEATURED
+}
+
+model Shop {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+
+    enabled Boolean @default(false) // Hides the store when 'false'
+    private Boolean? // Shows the store only to trusted users when 'true'
+
+    name String
+    description String
+    largeBannerUrl String
+    smallBannerUrl String
+
+    shopListingStyle ShopListingStyle @default(REGULAR)
+    sortOrder Int?
+
+    productListingStyle ProductListingType @default(TILES)
+
+    owner Profile @relation("ProfileShops", fields: [ownerId], references: [id])
+    ownerId Int
+
+    pickupAddress PostAddress? @relation("ShopPickupAddress", fields: [pickupAddressId], references: [id])
+    pickupAddressId Int?
+
+    openingHours String?
+}
+
+model ShopCategory {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+
+    enabled Boolean @default(true) // Hides the category when 'false'
+    private Boolean? // Shows the category only to trusted users when 'true'
+
+    name String
+    description String?
+    largeBannerUrl String?
+    smallBannerUrl String?
+
+    sortOrder Int?
+
+    productListingStyle ProductListingType?
+
+    entries ShopCategoryEntry[] @relation("ShopCategoryEntries")
+}
+
+model ShopCategoryEntry {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+
+    enabled Boolean @default(true) // Hides the category when 'false'
+    private Boolean? // Shows the category only to trusted users when 'true'
+
+    product Offer @relation(name: "ShopCategoryEntryProduct", fields: [productId, productVersion], references: [id, version])
+    productId Int
+    productVersion Int
+    @@index([productId, productVersion])
+
+    sortOrder Int?
+
+    shopCategory ShopCategory @relation("ShopCategoryEntries", fields: [shopCategoryId], references: [id])
+    shopCategoryId Int
+}
+
 model Profile {
     id Int @id @default(autoincrement())
     lastUpdateAt DateTime @default(now())
@@ -167,6 +251,7 @@ model Profile {
 
     sessions Session[]  @relation(name: "Session_Profile")
 
+    shops Shop[] @relation("ProfileShops")
     tags Tag[]  @relation(name: "Tag_CreatedBy")
     offers Offer[]  @relation(name: "Offer_CreatedBy")
     purchases Purchase[] @relation(name: "Purchase_CreatedBy")
@@ -202,6 +287,8 @@ model Profile {
     safesVerifiedByOrganisation VerifiedSafe[]  @relation(name: "VerifiedSafe_CreatedByOrganisation")
 
     safesRevokedByPerson VerifiedSafe[]  @relation(name: "VerifiedSafe_RevokedByPerson")
+
+    shippingAddresses PostAddress[] @relation("ProfileShippingAddresses")
 }
 
 model ExternalProfiles {
@@ -290,6 +377,8 @@ model Offer {
     purchaseLines PurchaseLine[] @relation(name: "PurchaseLines_Product")
     invoiceLines InvoiceLine[] @relation(name: "InvoiceLines_Product")
     tags Tag[] @relation(name: "Offer_Tags")
+
+    shopCategoryEntries ShopCategoryEntry[] @relation("ShopCategoryEntryProduct")
 }
 
 model Purchase {

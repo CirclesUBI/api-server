@@ -92,12 +92,13 @@ export async function requestUbiForInactiveUsers() {
     from crc_minting_2 m
     where m."to" = ANY($1)
     group by m."to", m.token
-    having max(m.timestamp) < now() - '30 days'::interval;
-  `;
+    having max(m.timestamp) < now() - '30 days'::interval;`;
 
+  const safeAddressesToCheck = allUserSafeAddresses.map(o => o.circlesAddress);
+  console.log(`Checking the last UBI of ${safeAddressesToCheck.length} safes ...`);
   const tokens = await Environment.indexDb.query(
       noUbiIn30DaysSql
-    , [allUserSafeAddresses.map(o => o.circlesAddress)]
+    , [safeAddressesToCheck]
   );
 
   console.log(`Requesting the UBI of ${tokens.rowCount} inactive accounts (30 days no UBI request) ...`);
