@@ -164,15 +164,25 @@ model Shop {
     owner Profile @relation("ProfileShops", fields: [ownerId], references: [id])
     ownerId Int
 
+    openingHours String?
+
     pickupAddress PostAddress? @relation("ShopPickupAddress", fields: [pickupAddressId], references: [id])
     pickupAddressId Int?
 
-    openingHours String?
+    currentSimplePickupCodeRound Int?
+    lastSimplePickupCode Int? // A value in the range from 1 to 99. Every new purchase will
+                              // get the next number assigned. When 99 is reached the number
+                              // will wrap around and 'currentSimplePickupCodeRound' will be incremented by 1.
+
+    categories ShopCategory[] @relation("ShopShopCategories")
 }
 
 model ShopCategory {
     id Int @id @default(autoincrement())
     createdAt DateTime @default(now())
+
+    shop Shop @relation("ShopShopCategories", fields: [shopId], references: [id])
+    shopId Int
 
     enabled Boolean @default(true) // Hides the category when 'false'
     private Boolean? // Shows the category only to trusted users when 'true'
