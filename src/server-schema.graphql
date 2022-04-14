@@ -1099,6 +1099,7 @@ input ShopCategoryInput {
   shopId: Int!
 
   private: Boolean
+  enabled: Boolean
 
   name: String!
   description: String

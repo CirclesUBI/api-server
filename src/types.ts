@@ -1311,6 +1311,7 @@ export type ShopCategoryEntryInput = {
 
 export type ShopCategoryInput = {
   description?: InputMaybe<Scalars['String']>;
+  enabled?: InputMaybe<Scalars['Boolean']>;
   id?: InputMaybe<Scalars['Int']>;
   largeBannerUrl?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
