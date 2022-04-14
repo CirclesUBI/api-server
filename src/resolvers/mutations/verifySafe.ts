@@ -4,13 +4,13 @@ import { isBILMember } from "../../utils/canAccess";
 import { VerifiedSafe } from "../../api-db/client";
 import { RpcGateway } from "../../circles/rpcGateway";
 import { Environment } from "../../environment";
-import {Dropper} from "../../utils/dropper";
 
 export const verifySafe = async (
   parent: any,
   args: MutationVerifySafeArgs,
   context: Context
 ) => {
+  // TODO: Usually only BIL is allowed to verify new people (see commented out code below)
   /*
   const callerInfo = await context.callerInfo;
   const isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
@@ -65,8 +65,6 @@ export const verifySafe = async (
     await Environment.indexDb.query(
       `call publish_event('follow_trust', '{"to":"${bilOrga.circlesAddress.toLowerCase()}"}');`);
   }
-
-  // await Dropper.createInvitations(verifiedSafe, 9);
 
   return {
     success: true,

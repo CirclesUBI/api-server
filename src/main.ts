@@ -189,15 +189,19 @@ export class Main {
   }
 }
 
-new Main().run().then(() => console.log("Started")).then(async () => {
-  setInterval(async() => {
-      const now = new Date();
-      const jobDescription = new RequestUbiForInactiveAccounts({
-        year: now.getUTCFullYear(),
-        month: now.getUTCMonth() + 1,
-        date: now.getUTCDate(),
-        hour: now.getUTCHours()
-      });
-      await JobQueue.produce([jobDescription]);
-  }, 30000)
+new Main().run()
+  .then(() => console.log("Started"))
+  .then(async () => {
+    const requestUbiForInactiveAccountsInterval = 5*60*1000; // Todo: Move to Environment.*
+    console.log(`Starting RequestUbiForInactiveAccounts job factory. Yields every ${requestUbiForInactiveAccountsInterval} ms.`)
+    setInterval(async() => {
+        const now = new Date();
+        const jobDescription = new RequestUbiForInactiveAccounts({
+          year: now.getUTCFullYear(),
+          month: now.getUTCMonth() + 1,
+          date: now.getUTCDate(),
+          hour: now.getUTCHours()
+        });
+        await JobQueue.produce([jobDescription]);
+    }, requestUbiForInactiveAccountsInterval);
 });

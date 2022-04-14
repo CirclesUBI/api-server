@@ -5,12 +5,12 @@ import {ProfileLoader} from "../../querySources/profileLoader";
 import {Environment} from "../../environment";
 import {TestData} from "../../api-db/testData";
 import {RpcGateway} from "../../circles/rpcGateway";
-import {Job, JobQueue} from "../../jobs/jobQueue";
+import {JobQueue} from "../../jobs/jobQueue";
 import {VerifyEmailAddress} from "../../jobs/descriptions/emailNotifications/verifyEmailAddress";
 import {Generate} from "../../utils/generate";
 import {SendVerifyEmailAddressEmail} from "../../jobs/descriptions/emailNotifications/sendVerifyEmailAddressEmail";
 import {claimInvitation} from "./claimInvitation";
-import {Dropper} from "../../utils/dropper";
+import {createInvitationPerpetualTrigger} from "../../utils/invitationHelper";
 import {verifySafe} from "./verifySafe";
 
 const validateEmail = (email:string) => {
@@ -105,7 +105,7 @@ export function upsertProfileResolver() {
                 await verifySafe(null, {safeAddress: profile.circlesAddress}, context);
 
                 console.log(`Creating the input trigger for address ${profile.circlesAddress} ..`);
-                const inviteTriggerHash = await Dropper.createInvitationPerpetualTrigger(profile.circlesAddress);
+                const inviteTriggerHash = await createInvitationPerpetualTrigger(profile.circlesAddress);
 
                 console.log(`Trying to find the invite trigger job with hash ${inviteTriggerHash} ..`);
                 const inviteTriggerJob = await Environment.readWriteApiDb.job.findUnique({

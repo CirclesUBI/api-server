@@ -1,5 +1,4 @@
 import {Context} from "../context";
-import {Session, Profile} from "../api-db/client";
 import {Environment} from "../environment";
 
 export async function isBILMember(circlesAddress?:string|null) {

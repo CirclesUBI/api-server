@@ -44,7 +44,7 @@ async function ensureCanAccessShop(shopId: number | null | undefined, newOwnerId
     : undefined;
 
   if (existingShop) {
-    const canAccessCurrentShopOwner = await canAccessProfileId(context, existingShop.id);
+    const canAccessCurrentShopOwner = await canAccessProfileId(context, existingShop.ownerId);
     if (!canAccessCurrentShopOwner) {
       throw new Error(`You cannot access the current owner of this shop.`);
     }
