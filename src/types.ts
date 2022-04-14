@@ -1255,6 +1255,7 @@ export type Shop = {
   categories?: Maybe<Array<ShopCategory>>;
   createdAt: Scalars['Date'];
   description: Scalars['String'];
+  enabled?: Maybe<Scalars['Boolean']>;
   id: Scalars['Int'];
   largeBannerUrl: Scalars['String'];
   name: Scalars['String'];
@@ -1272,6 +1273,7 @@ export type ShopCategory = {
   __typename?: 'ShopCategory';
   createdAt?: Maybe<Scalars['Date']>;
   description?: Maybe<Scalars['String']>;
+  enabled?: Maybe<Scalars['Boolean']>;
   entries?: Maybe<Array<ShopCategoryEntry>>;
   id: Scalars['Int'];
   largeBannerUrl?: Maybe<Scalars['String']>;
@@ -2657,6 +2659,7 @@ export type ShopResolvers<ContextType = any, ParentType extends ResolversParentT
   categories?: Resolver<Maybe<Array<ResolversTypes['ShopCategory']>>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  enabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   largeBannerUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2674,6 +2677,7 @@ export type ShopResolvers<ContextType = any, ParentType extends ResolversParentT
 export type ShopCategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['ShopCategory'] = ResolversParentTypes['ShopCategory']> = ResolversObject<{
   createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  enabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   entries?: Resolver<Maybe<Array<ResolversTypes['ShopCategoryEntry']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   largeBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

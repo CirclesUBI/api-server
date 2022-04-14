@@ -697,15 +697,7 @@ type Contact {
   contactAddress_Profile: Profile
 }
 
-union AggregatePayload =
-    CrcBalances
-  | Erc20Balances
-  | Contacts
-  | Memberships
-  | Members
-  | Offers
-  | Sales
-  | Purchases
+union AggregatePayload = CrcBalances | Erc20Balances | Contacts | Memberships | Members | Offers | Sales | Purchases
 
 type ProfileAggregate {
   type: String!
@@ -1083,7 +1075,7 @@ type Shop {
   createdAt: Date!
 
   private: Boolean
-
+  enabled: Boolean
   name: String!
   description: String!
   largeBannerUrl: String!
@@ -1125,6 +1117,7 @@ type ShopCategory {
   shopId: Int!
 
   private: Boolean
+  enabled: Boolean
 
   name: String!
   description: String
@@ -1178,10 +1171,7 @@ type UpsertShopCategoryEntriesResult {
 }
 
 type Mutation {
-  announcePayment(
-    invoiceId: Int!
-    transactionHash: String!
-  ): AnnouncePaymentResult!
+  announcePayment(invoiceId: Int!, transactionHash: String!): AnnouncePaymentResult!
 
   purchase(lines: [PurchaseLineInput!]!): [Invoice!]!
   completePurchase(invoiceId: Int!, revoke: Boolean): Invoice!
@@ -1193,16 +1183,12 @@ type Mutation {
   updateSafe(data: UpdateSafeInput!): UpdateSafeResponse!
   upsertTag(data: UpsertTagInput!): Tag!
 
-  upsertOrganisation(
-    organisation: UpsertOrganisationInput!
-  ): CreateOrganisationResult!
-  upsertRegion(
-    organisation: UpsertOrganisationInput!
-  ): CreateOrganisationResult!
+  upsertOrganisation(organisation: UpsertOrganisationInput!): CreateOrganisationResult!
+  upsertRegion(organisation: UpsertOrganisationInput!): CreateOrganisationResult!
 
-  upsertShop(shop:ShopInput!): Shop!
-  upsertShopCategories(shopCategories:[ShopCategoryInput!]!): UpsertShopCategoriesResult!
-  upsertShopCategoryEntries(shopCategoryEntries:[ShopCategoryEntryInput!]!): UpsertShopCategoryEntriesResult!
+  upsertShop(shop: ShopInput!): Shop!
+  upsertShopCategories(shopCategories: [ShopCategoryInput!]!): UpsertShopCategoriesResult!
+  upsertShopCategoryEntries(shopCategoryEntries: [ShopCategoryEntryInput!]!): UpsertShopCategoryEntriesResult!
 
   addMember(groupId: String!, memberAddress: String!): AddMemberResult
   acceptMembership(membershipId: Int!): AcceptMembershipResult
@@ -1220,21 +1206,11 @@ type Mutation {
   claimInvitation(code: String!): ClaimInvitationResult!
   redeemClaimedInvitation: RedeemClaimedInvitationResult!
 
-  tagTransaction(
-    transactionHash: String!
-    tag: CreateTagInput!
-  ): TagTransactionResult!
-  sendMessage(
-    fromSafeAddress: String
-    toSafeAddress: String!
-    content: String!
-  ): SendMessageResult!
+  tagTransaction(transactionHash: String!, tag: CreateTagInput!): TagTransactionResult!
+  sendMessage(fromSafeAddress: String, toSafeAddress: String!, content: String!): SendMessageResult!
 
   requestSessionChallenge(address: String!): String!
-  verifySessionChallenge(
-    challenge: String!
-    signature: String!
-  ): ExchangeTokenResponse
+  verifySessionChallenge(challenge: String!, signature: String!): ExchangeTokenResponse
 
   importOrganisationsOfAccount: [Organisation!]!
 
@@ -1256,10 +1232,7 @@ type Query {
   safeInfo(safeAddress: String): SafeInfo
   lastAcknowledgedAt(safeAddress: String!): Date
 
-  verifications(
-    pagination: PaginationArgs
-    filter: VerifiedSafesFilter
-  ): [Verification!]!
+  verifications(pagination: PaginationArgs, filter: VerifiedSafesFilter): [Verification!]!
 
   events(
     types: [EventType!]!
@@ -1268,14 +1241,10 @@ type Query {
     filter: ProfileEventFilter
   ): [ProfileEvent!]!
 
-  aggregates(
-    types: [AggregateType!]!
-    safeAddress: String!
-    filter: ProfileAggregateFilter
-  ): [ProfileAggregate!]!
+  aggregates(types: [AggregateType!]!, safeAddress: String!, filter: ProfileAggregateFilter): [ProfileAggregate!]!
 
-  shops:[Shop!]!
-  shop(id:Int!) : Shop
+  shops: [Shop!]!
+  shop(id: Int!): Shop
 
   organisations(pagination: PaginationArgs): [Organisation!]!
   regions(pagination: PaginationArgs): [Organisation!]!
