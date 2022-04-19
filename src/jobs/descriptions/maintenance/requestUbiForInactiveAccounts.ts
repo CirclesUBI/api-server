@@ -1,9 +1,7 @@
 import {JobDescription} from "../jobDescription";
+import {Day} from "./rotateJwks";
 
-export type Hour = {
-  year: number
-  month: number
-  date: number
+export type Hour = Day & {
   hour: number
 }
 

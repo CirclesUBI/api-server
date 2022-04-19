@@ -20,7 +20,6 @@ export type SmtpConfig = {
 };
 
 export class Environment {
-
   static async validateAndSummarize() {
     const errors:string[] = [];
 
@@ -218,6 +217,14 @@ export class Environment {
 
   static get utilityDb(): Pool {
     return Environment._utilityDb;
+  }
+
+  static get keyRotationInterval(): number {
+    return  24 * 60 * 60 * 1000;
+  }
+
+  static get periodicTaskInterval() : number {
+    return  1000;
   }
 
   private static _indexDb: Pool = new Pool({

@@ -10,16 +10,18 @@ import {Environment} from "./environment";
 import {IndexerEvents} from "./indexer-api/indexerEvents";
 import {PaymentProcessor} from "./indexer-api/paymentProcessor";
 import {AppNotificationProcessor} from "./indexer-api/appNotificationProcessor";
-import express from "express";
+import {RequestUbiForInactiveAccounts} from "./jobs/descriptions/maintenance/requestUbiForInactiveAccounts";
+import {jwksGetHandler} from "./httpHandlers/get/jwks";
+import {RotateJwks} from "./jobs/descriptions/maintenance/rotateJwks";
 import {JobQueue} from "./jobs/jobQueue";
 import {gqlSubscriptionServer} from "./gqlSubscriptionServer";
 import {uploadPostHandler} from "./httpHandlers/post/upload";
 import {triggerGetHandler} from "./httpHandlers/get/trigger";
-import cors from "cors";
 import {jobSink} from "./jobs/jobSink";
 import {JobType} from "./jobs/descriptions/jobDescription";
+import express from "express";
+import cors from "cors";
 import * as graphqlImport from "@graphql-tools/import";
-import {RequestUbiForInactiveAccounts} from "./jobs/descriptions/maintenance/requestUbiForInactiveAccounts";
 
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
@@ -103,6 +105,7 @@ export class Main {
 
     app.post("/upload", cors(corsOptions), uploadPostHandler);
     app.get("/trigger", cors(corsOptions), triggerGetHandler);
+    app.get("/jwks", cors(corsOptions), jwksGetHandler);
 
     const httpServer = createServer(app);
     const schema = makeExecutableSchema({
@@ -170,7 +173,8 @@ export class Main {
       "echo",
       "broadcastPurchased",
       "sendWelcomeEmail",
-      "requestUbiForInactiveAccounts"
+      "requestUbiForInactiveAccounts",
+      "rotateJwks"
     ];
 
     jobQueue.consume(jobTopics, jobSink, false)
@@ -192,16 +196,26 @@ export class Main {
 new Main().run()
   .then(() => console.log("Started"))
   .then(async () => {
-    const requestUbiForInactiveAccountsInterval = 5*60*1000; // Todo: Move to Environment.*
-    console.log(`Starting RequestUbiForInactiveAccounts job factory. Yields every ${requestUbiForInactiveAccountsInterval} ms.`)
+    console.log(`Starting RequestUbiForInactiveAccounts job factory. Yields every ${Environment.periodicTaskInterval / 1000} seconds.`)
     setInterval(async() => {
         const now = new Date();
-        const jobDescription = new RequestUbiForInactiveAccounts({
+
+        const requestUbiForInactiveAccounts = new RequestUbiForInactiveAccounts({
           year: now.getUTCFullYear(),
           month: now.getUTCMonth() + 1,
           date: now.getUTCDate(),
           hour: now.getUTCHours()
         });
-        await JobQueue.produce([jobDescription]);
-    }, requestUbiForInactiveAccountsInterval);
+
+        const rotateKeys = new RotateJwks({
+          year: now.getUTCFullYear(),
+          month: now.getUTCMonth() + 1,
+          date: now.getUTCDate()
+        });
+
+        await JobQueue.produce([
+          requestUbiForInactiveAccounts,
+          rotateKeys
+        ]);
+    }, Environment.periodicTaskInterval);
 });

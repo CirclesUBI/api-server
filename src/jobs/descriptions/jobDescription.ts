@@ -13,7 +13,8 @@ export type JobType =
   "inviteCodeFromExternalTrigger" |
   "sendWelcomeEmail" |
   "broadcastPurchased" |
-  "requestUbiForInactiveAccounts";
+  "requestUbiForInactiveAccounts" |
+  "rotateJwks";
 
 export type JobKind =
   "broadcast" |

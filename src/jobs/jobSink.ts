@@ -21,6 +21,8 @@ import {SendWelcomeEmailWorker} from "./worker/emailNotifications/sendWelcomeEma
 import {SendWelcomeEmail} from "./descriptions/emailNotifications/sendWelcomeEmail";
 import {RequestUbiForInactiveAccountsWorker} from "./worker/maintenance/requestUbiForInactiveAccountsWorker";
 import {RequestUbiForInactiveAccounts} from "./descriptions/maintenance/requestUbiForInactiveAccounts";
+import {RotateJwksWorker} from "./worker/maintenance/rotateJwksWorker";
+import {RotateJwks} from "./descriptions/maintenance/rotateJwks";
 
 export const jobSink = async (job: Job) => {
   switch (job.topic) {
@@ -29,6 +31,12 @@ export const jobSink = async (job: Job) => {
         errorStrategy: "logAndDrop"
       })
         .run(job.id, Echo.parse(job.payload));
+    case "rotateJwks".toLowerCase():
+      return await new RotateJwksWorker({
+        errorStrategy: "logAndDropAfterThreshold",
+        dropThreshold: 3
+      })
+        .run(job.id, RotateJwks.parse(job.payload));
     case "sendWelcomeEmail".toLowerCase():
       return await new SendWelcomeEmailWorker({
         errorStrategy: "logAndDrop"
