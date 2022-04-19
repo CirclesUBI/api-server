@@ -224,7 +224,11 @@ export class Environment {
   }
 
   static get periodicTaskInterval() : number {
-    return  1000;
+    return  5 * 60 * 1000;
+  }
+
+  static get maxKeyAge() : number {
+    return  2 * this.keyRotationInterval;
   }
 
   private static _indexDb: Pool = new Pool({

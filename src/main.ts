@@ -29,7 +29,6 @@ const {
 
 const corsOrigins = Environment.corsOrigins.split(";").map((o) => o.trim());
 
-
 declare global {
   interface Array<T> {
     groupBy(groupSelector: (item: T) => string|number|null|undefined): { [group: string]: T[] };

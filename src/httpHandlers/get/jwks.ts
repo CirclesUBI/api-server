@@ -8,7 +8,7 @@ export const jwksGetHandler = async (req: Request, res: Response) => {
     const oneWeekWorthOfKeys = await Environment.readonlyApiDb.jwks.findMany({
       where: {
         createdAt: {
-          gt: new Date(Date.now() - (7 * 24 * 60 * 60 * 1000))
+          gt: new Date(Date.now() - Environment.maxKeyAge)
         }
       },
       // Select only the public part of the key
@@ -25,7 +25,7 @@ export const jwksGetHandler = async (req: Request, res: Response) => {
       }
     });
 
-    const ks = jose.JWK.asKeyStore({
+    const ks = await jose.JWK.asKeyStore({
       keys: oneWeekWorthOfKeys
     });
     res.send(ks.toJSON());

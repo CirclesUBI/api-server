@@ -1,9 +1,7 @@
 import {JobWorker, JobWorkerConfiguration} from "../jobWorker";
 import {RotateJwks} from "../../descriptions/maintenance/rotateJwks";
 import {Environment} from "../../../environment";
-
 const jose = require('node-jose');
-
 
 export class RotateJwksWorker extends JobWorker<RotateJwks> {
   name(): string {
@@ -15,8 +13,8 @@ export class RotateJwksWorker extends JobWorker<RotateJwks> {
   }
 
   async doWork(job: RotateJwks) {
-    const keyStore = jose.JWK.createKeyStore();
-    const newKey = await keyStore.generate('RSA', 2048, {alg: 'RS256', use: 'sig' });
+    const ks = jose.JWK.createKeyStore();
+    const keyStore = await ks.generate('RSA', 2048, {alg: 'RS256', use: 'sig' });
 
     const latestKey = await Environment.readonlyApiDb.jwks.findFirst({
       orderBy: {
@@ -28,9 +26,10 @@ export class RotateJwksWorker extends JobWorker<RotateJwks> {
       return;
     }
 
+    const keyStoreJson = keyStore.toJSON(true);
     await Environment.readWriteApiDb.jwks.create({
       data: {
-        ...newKey
+        ...keyStoreJson
       }
     });
 
