@@ -5,7 +5,7 @@ const jose = require('node-jose');
 
 export const jwksGetHandler = async (req: Request, res: Response) => {
   try {
-    const oneWeekWorthOfKeys = await Environment.readonlyApiDb.jwks.findMany({
+    const someDaysWorthOfKeys = await Environment.readonlyApiDb.jwks.findMany({
       where: {
         createdAt: {
           gt: new Date(Date.now() - Environment.maxKeyAge)
@@ -26,7 +26,7 @@ export const jwksGetHandler = async (req: Request, res: Response) => {
     });
 
     const ks = await jose.JWK.asKeyStore({
-      keys: oneWeekWorthOfKeys
+      keys: someDaysWorthOfKeys
     });
     res.send(ks.toJSON());
   } catch (e) {
