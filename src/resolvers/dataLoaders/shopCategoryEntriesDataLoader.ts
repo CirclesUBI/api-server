@@ -1,9 +1,9 @@
 import DataLoader from "dataloader";
-import {ShopCategory, ShopCategoryEntry} from "../../types";
+import {ShopCategoryEntry} from "../../types";
 import {Environment} from "../../environment";
 
 export const shopCategoryEntriesDataLoader = new DataLoader<number, ShopCategoryEntry[]>(async (categoryIds) => {
-  const categories = (await Environment.readonlyApiDb.shopCategoryEntry.findMany({
+  const categoryEntries = (await Environment.readonlyApiDb.shopCategoryEntry.findMany({
     where: {
       shopCategoryId: {
         in: categoryIds.map(o => o)
@@ -14,7 +14,7 @@ export const shopCategoryEntriesDataLoader = new DataLoader<number, ShopCategory
     }
   }));
 
-  const _categories = categories.reduce((p,c) => {
+  const _categoryEntries = categoryEntries.reduce((p,c) => {
     if (!p[c.shopCategoryId]) {
       p[c.shopCategoryId] = [<ShopCategoryEntry>c];
     } else {
@@ -23,7 +23,7 @@ export const shopCategoryEntriesDataLoader = new DataLoader<number, ShopCategory
     return p;
   }, <{[shopCategoryId:number]: ShopCategoryEntry[]}>{});
 
-  return categoryIds.map(o => _categories[o]);
+  return categoryIds.map(o => _categoryEntries[o]);
 }, {
   cache: false
 });
