@@ -140,6 +140,11 @@ export const queryResolvers: QueryResolvers = {
     return shop.length > 0 ? shop[0] : null;
   },
   clientAssertionJwt: async (parent: any, args: any, context: Context) => {
+    const callerInfo = await context.callerInfo;
+    if (!callerInfo?.profile?.circlesAddress) {
+      throw new Error(`You need a completed profile to use this feature.`);
+    }
+
     const privateKeyObj = await Environment.readonlyApiDb.jwks.findFirst({
       where: {},
       orderBy: {createdAt: "desc"}
