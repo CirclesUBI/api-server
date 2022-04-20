@@ -1273,6 +1273,8 @@ type Query {
   invoice(invoiceId: Int!): String
 
   findInvitationCreator(code: String!): Profile
+
+  clientAssertionJwt: String!
 }
 
 type Subscription {

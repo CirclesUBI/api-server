@@ -944,6 +944,7 @@ export type Query = {
   aggregates: Array<ProfileAggregate>;
   cities: Array<City>;
   claimedInvitation?: Maybe<ClaimedInvitation>;
+  clientAssertionJwt: Scalars['String'];
   commonTrust: Array<CommonTrust>;
   directPath: TransitivePath;
   events: Array<ProfileEvent>;
@@ -985,6 +986,11 @@ export type QueryAggregatesArgs = {
 
 export type QueryCitiesArgs = {
   query: QueryCitiesInput;
+};
+
+
+export type QueryClientAssertionJwtArgs = {
+  for: Scalars['String'];
 };
 
 
@@ -2519,6 +2525,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   aggregates?: Resolver<Array<ResolversTypes['ProfileAggregate']>, ParentType, ContextType, RequireFields<QueryAggregatesArgs, 'safeAddress' | 'types'>>;
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, 'query'>>;
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
+  clientAssertionJwt?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<QueryClientAssertionJwtArgs, 'for'>>;
   commonTrust?: Resolver<Array<ResolversTypes['CommonTrust']>, ParentType, ContextType, RequireFields<QueryCommonTrustArgs, 'safeAddress1' | 'safeAddress2'>>;
   directPath?: Resolver<ResolversTypes['TransitivePath'], ParentType, ContextType, RequireFields<QueryDirectPathArgs, 'amount' | 'from' | 'to'>>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'pagination' | 'safeAddress' | 'types'>>;

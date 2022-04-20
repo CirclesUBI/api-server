@@ -30,12 +30,18 @@ import {Environment} from "../../environment";
 import {Organisation, QueryLastAcknowledgedAtArgs, QueryResolvers, QueryShopArgs, Shop} from "../../types";
 import {Context} from "../../context";
 import {canAccess} from "../../utils/canAccess";
+import * as jose from "jose";
+import {Generate} from "../../utils/generate";
+
+const crypto = require('crypto').webcrypto;
+const nodeJose = require('node-jose');
+
 const packageJson = require("../../../package.json");
 
-export const queryResolvers : QueryResolvers = {
+export const queryResolvers: QueryResolvers = {
   sessionInfo: sessionInfo,
   init: init,
-  stats: async (parent:any, args:any, context:Context) => {
+  stats: async (parent: any, args: any, context: Context) => {
     const caller = await context.callerInfo;
     if (!caller?.profile?.circlesAddress) {
       throw new Error(`You must have a safe to execute this query.`);
@@ -68,7 +74,7 @@ export const queryResolvers : QueryResolvers = {
   invoice: invoice,
   verifications: verifications,
   findInvitationCreator: findInvitationCreator,
-  lastAcknowledgedAt: async (parent:any, args:QueryLastAcknowledgedAtArgs, context:Context) => {
+  lastAcknowledgedAt: async (parent: any, args: QueryLastAcknowledgedAtArgs, context: Context) => {
     if (!(await canAccess(context, args.safeAddress))) {
       throw new Error(`You cannot access the specified safe address.`);
     }
@@ -82,7 +88,7 @@ export const queryResolvers : QueryResolvers = {
     });
     return lastAcknowledgedDate?.lastAcknowledged;
   },
-  shops: async (parent:any, args:any, context:Context) => {
+  shops: async (parent: any, args: any, context: Context) => {
     const shops = await Environment.readWriteApiDb.shop.findMany({
       where: {
         enabled: true,
@@ -108,7 +114,7 @@ export const queryResolvers : QueryResolvers = {
       }
     });
   },
-  shop: async (parent:any, args:QueryShopArgs, context:Context) => {
+  shop: async (parent: any, args: QueryShopArgs, context: Context) => {
     const shops = await Environment.readWriteApiDb.shop.findMany({
       where: {
         id: args.id,
@@ -132,5 +138,38 @@ export const queryResolvers : QueryResolvers = {
       }
     });
     return shop.length > 0 ? shop[0] : null;
+  },
+  clientAssertionJwt: async (parent: any, args: any, context: Context) => {
+    const privateKeyObj = await Environment.readonlyApiDb.jwks.findFirst({
+      where: {},
+      orderBy: {createdAt: "desc"}
+    });
+    if (!privateKeyObj) {
+      throw new Error(`No signing key available.`);
+    }
+
+    const clientId = "circles-ubi-jwks";
+    const iat = Date.now();
+    const exp = iat + 5 * 60 * 1000;
+
+    const payload = JSON.stringify({
+      jti: Generate.randomHexString(),
+      iss: clientId,
+      sub: clientId,
+      aud: "https://auth.staging.oauth2.humanode.io/oauth2/auth",
+      iat: iat,
+      exp: exp
+    });
+
+    const opt = {
+      compact: true,
+      jwk: privateKeyObj
+    }
+    const token = await nodeJose.JWS
+      .createSign(opt, privateKeyObj)
+      .update(payload)
+      .final();
+
+    return token;
   }
 }
