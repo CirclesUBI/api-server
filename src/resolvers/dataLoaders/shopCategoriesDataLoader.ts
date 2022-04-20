@@ -14,7 +14,7 @@ export const shopCategoriesDataLoader = new DataLoader<number, ShopCategory[]>(a
     }
   }));
 
-  const _categories = categories.reduce((p,c) => {
+  const categoriesByShop = categories.reduce((p,c) => {
     if (!p[c.shopId]) {
       p[c.shopId] = [<ShopCategory>c];
     } else {
@@ -23,7 +23,7 @@ export const shopCategoriesDataLoader = new DataLoader<number, ShopCategory[]>(a
     return p;
   }, <{[shopId:number]: ShopCategory[]}>{});
 
-  return shopIds.map(o => _categories[o]);
+  return shopIds.map(o => categoriesByShop[o]);
 }, {
   cache: false
 });

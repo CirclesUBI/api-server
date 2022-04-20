@@ -29,13 +29,10 @@ import {init} from "./init";
 import {Environment} from "../../environment";
 import {Organisation, QueryLastAcknowledgedAtArgs, QueryResolvers, QueryShopArgs, Shop} from "../../types";
 import {Context} from "../../context";
-import {canAccess} from "../../utils/canAccess";
-import * as jose from "jose";
-import {Generate} from "../../utils/generate";
-
-const crypto = require('crypto').webcrypto;
-const nodeJose = require('node-jose');
-
+import {shop} from "./shop";
+import {clientAssertionJwt} from "./clientAssertionJwt";
+import {shops} from "./shops";
+import {lastAcknowledgedAt} from "./lastAcknowledgedAt";
 const packageJson = require("../../../package.json");
 
 export const queryResolvers: QueryResolvers = {
@@ -74,107 +71,8 @@ export const queryResolvers: QueryResolvers = {
   invoice: invoice,
   verifications: verifications,
   findInvitationCreator: findInvitationCreator,
-  lastAcknowledgedAt: async (parent: any, args: QueryLastAcknowledgedAtArgs, context: Context) => {
-    if (!(await canAccess(context, args.safeAddress))) {
-      throw new Error(`You cannot access the specified safe address.`);
-    }
-    const lastAcknowledgedDate = await Environment.readWriteApiDb.profile.findFirst({
-      where: {
-        circlesAddress: args.safeAddress
-      },
-      select: {
-        lastAcknowledged: true
-      }
-    });
-    return lastAcknowledgedDate?.lastAcknowledged;
-  },
-  shops: async (parent: any, args: any, context: Context) => {
-    const shops = await Environment.readWriteApiDb.shop.findMany({
-      where: {
-        enabled: true,
-        owner: {
-          type: "ORGANISATION"
-        }
-      },
-      include: {
-        owner: true
-      },
-      orderBy: {
-        sortOrder: "asc"
-      }
-    });
-    return shops.map(o => {
-      return <Shop>{
-        ...o,
-        owner: <Organisation>{
-          ...o.owner,
-          createdAt: o.createdAt.toJSON(),
-          name: o.owner.firstName
-        }
-      }
-    });
-  },
-  shop: async (parent: any, args: QueryShopArgs, context: Context) => {
-    const shops = await Environment.readWriteApiDb.shop.findMany({
-      where: {
-        id: args.id,
-        enabled: true
-      },
-      include: {
-        owner: true
-      },
-      orderBy: {
-        sortOrder: "asc"
-      }
-    });
-    const shop = shops.map(o => {
-      return <Shop>{
-        ...o,
-        owner: <Organisation>{
-          ...o.owner,
-          createdAt: o.createdAt.toJSON(),
-          name: o.owner.firstName
-        }
-      }
-    });
-    return shop.length > 0 ? shop[0] : null;
-  },
-  clientAssertionJwt: async (parent: any, args: any, context: Context) => {
-    const callerInfo = await context.callerInfo;
-    if (!callerInfo?.profile?.circlesAddress) {
-      throw new Error(`You need a completed profile to use this feature.`);
-    }
-
-    const privateKeyObj = await Environment.readonlyApiDb.jwks.findFirst({
-      where: {},
-      orderBy: {createdAt: "desc"}
-    });
-    if (!privateKeyObj) {
-      throw new Error(`No signing key available.`);
-    }
-
-    const clientId = "circles-ubi-jwks";
-    const iat = Date.now();
-    const exp = iat + 5 * 60 * 1000;
-
-    const payload = JSON.stringify({
-      jti: Generate.randomHexString(),
-      iss: clientId,
-      sub: clientId,
-      aud: "https://auth.staging.oauth2.humanode.io/oauth2/auth",
-      iat: iat,
-      exp: exp
-    });
-
-    const opt = {
-      compact: true,
-      jwk: privateKeyObj
-    }
-    const token = await nodeJose.JWS
-      .createSign(opt, privateKeyObj)
-      .update(payload)
-      .final();
-
-    return token;
-  }
+  lastAcknowledgedAt: lastAcknowledgedAt,
+  shops: shops,
+  shop: shop,
+  clientAssertionJwt: clientAssertionJwt
 }

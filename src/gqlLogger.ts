@@ -1,5 +1,6 @@
 import {Context} from "./context";
 import {Environment} from "./environment";
+import {NoSession} from "./errors/noSession";
 
 let _pendingRequests:{[contextId:string]: {
   begin: Date
@@ -109,35 +110,62 @@ export class GqlLogger {
     }
 
     return {
-      willSendResponse(args:any) {
-        const now = new Date();
-        let operationName = args.request.operationName;
-        if (!operationName) {
-          const queryId = getQueryId(args.request.query);
-          operationName = "query_" + queryId.queryId.toString();
-        }
-
-        if (args.context) {
-          let context: Context = args.context;
-          const ipAddr = context.ipAddress;
-
-          const pendingRequest = _pendingRequests[context.id];
-          const duration = pendingRequest
-            ? now.getTime() - pendingRequest?.begin?.getTime()
-            : -1;
-
-          console.log(` <-  [${now.toJSON()}] [${Environment.instanceId}] [${context.session?.id}] [${context.id}] [${ipAddr}] [${operationName ?? ""}]: took ${duration} ms.`);
-
-          if (pendingRequest) {
-            delete _pendingRequests[context.id]
-          }
-        } else {
-          console.log(` <-  [${now.toJSON()}] [${Environment.instanceId}] [no-session] [no-context] [${operationName ?? ""}]`);
-        }
+      willSendResponse(args: any) {
+        GqlLogger.log(" <-  ", true, args);
       },
       didEncounterErrors(requestContext: any) {
-        console.log(requestContext);
+        for (const e of requestContext.errors) {
+          if (e.originalError instanceof NoSession) {
+            GqlLogger.log("  I  ", false, {
+              request: {
+                operationName: requestContext.context.operationName
+              },
+              context: requestContext.context
+            }, e.originalError.message);
+          } else {
+            GqlLogger.log(" ERR ", false, {
+              request: {
+                operationName: requestContext.context.operationName
+              },
+              context: requestContext.context
+            }, JSON.stringify({
+              message: e.originalError.message,
+              stack: e.originalError.stack
+            }));
+          }
+        }
       }
+    }
+  }
+
+  private static log(prefix:string, deletePendingRequest:boolean, args: any, message?: string) {
+    const now = new Date();
+    let operationName = args.request.operationName;
+    if (!operationName && args.request.query) {
+      const queryId = getQueryId(args.request.query);
+      operationName = "query_" + queryId.queryId.toString();
+    }
+
+    if (args.context) {
+      let context: Context = args.context;
+      const ipAddr = context.ipAddress;
+
+      if (deletePendingRequest) {
+        const pendingRequest = _pendingRequests[context.id];
+        const duration = pendingRequest
+          ? now.getTime() - pendingRequest?.begin?.getTime()
+          : -1;
+
+        console.log(`${prefix}[${now.toJSON()}] [${Environment.instanceId}] [${context.session?.id}] [${context.id}] [${ipAddr}] [${operationName ?? ""}]: took ${duration} ms.`);
+
+        if (pendingRequest) {
+          delete _pendingRequests[context.id]
+        }
+      } else {
+        console.log(`${prefix}[${now.toJSON()}] [${Environment.instanceId}] [${context.session?.id}] [${context.id}] [${ipAddr}] [${operationName ?? ""}]: ${message}`);
+      }
+    } else {
+      console.log(`${prefix}[${now.toJSON()}] [${Environment.instanceId}] [no-session] [no-context] [${operationName ?? ""}]`);
     }
   }
 }
