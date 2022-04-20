@@ -259,6 +259,20 @@ type City implements ICity {
   feature_code: String!
 }
 
+input OfferInput {
+  id: Int
+
+  createdByProfileId: Int!
+
+  title: String!
+  pictureUrl: String!
+  pictureMimeType: String!
+  description: String
+
+  pricePerUnit: String! # The price in euro
+  timeCirclesPriceShare: Int! # How many percent of the price can be payed in time circles
+}
+
 type Offer {
   id: Int!
   version: Int!
@@ -1190,6 +1204,7 @@ type Mutation {
   upsertShop(shop: ShopInput!): Shop!
   upsertShopCategories(shopCategories: [ShopCategoryInput!]!): UpsertShopCategoriesResult!
   upsertShopCategoryEntries(shopCategoryEntries: [ShopCategoryEntryInput!]!): UpsertShopCategoryEntriesResult!
+  upsertOffer(offer: OfferInput!): Offer!
 
   addMember(groupId: String!, memberAddress: String!): AddMemberResult
   acceptMembership(membershipId: Int!): AcceptMembershipResult
