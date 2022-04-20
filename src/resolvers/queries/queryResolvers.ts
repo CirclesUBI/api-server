@@ -27,7 +27,7 @@ import {recentProfiles} from "./recentProfiles";
 import {stats} from "./stats";
 import {init} from "./init";
 import {Environment} from "../../environment";
-import { QueryGetStringByMaxVersionArgs, QueryResolvers, QueryGetStringByLanguageArgs} from "../../types";
+import { QueryGetStringByMaxVersionArgs, QueryResolvers, QueryGetStringByLanguageArgs, QueryGetAllStringsByLanguageArgs} from "../../types";
 import {Organisation, QueryLastAcknowledgedAtArgs, QueryShopArgs, Shop} from "../../types";
 import {Context} from "../../context";
 import {canAccess} from "../../utils/canAccess";
@@ -139,6 +139,15 @@ export const queryResolvers : QueryResolvers = {
     select * 
     from i18n
     `)
+    return queryResult.rows
+  },
+  getAllStringsByLanguage: async (parent: any, args: QueryGetAllStringsByLanguageArgs, context: Context) => {
+    const queryResult = await Environment.pgReadWriteApiDb.query(`
+    select * 
+    from i18n
+    where lang = $1
+    `,
+      [args.lang]);
     return queryResult.rows;
   },
   getStringByMaxVersion: async (parent: any, args: QueryGetStringByMaxVersionArgs, context: Context) => {

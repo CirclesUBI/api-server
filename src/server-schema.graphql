@@ -1316,6 +1316,7 @@ type Query {
   findInvitationCreator(code: String!): Profile
 
   getAllStrings: [i18n]
+  getAllStringsByLanguage(lang: String): [i18n]
   getStringByLanguage(lang: String): [i18n!]
   getStringByMaxVersion(lang: String, key: String): i18n
   getAvailableLanguages: [i18n]
