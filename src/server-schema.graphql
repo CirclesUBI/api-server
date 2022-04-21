@@ -1150,6 +1150,7 @@ input ShopCategoryEntryInput {
   id: Int
 
   private: Boolean
+  enabled: Boolean
   name: String
 
   shopCategoryId: Int!
@@ -1164,7 +1165,7 @@ type ShopCategoryEntry {
   createdAt: Date!
 
   private: Boolean
-
+  enabled: Boolean
   product: Offer
   productId: Int!
   productVersion: Int!

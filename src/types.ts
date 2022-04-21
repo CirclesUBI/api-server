@@ -1307,6 +1307,7 @@ export type ShopCategory = {
 export type ShopCategoryEntry = {
   __typename?: 'ShopCategoryEntry';
   createdAt: Scalars['Date'];
+  enabled?: Maybe<Scalars['Boolean']>;
   id: Scalars['Int'];
   private?: Maybe<Scalars['Boolean']>;
   product?: Maybe<Offer>;
@@ -1318,6 +1319,7 @@ export type ShopCategoryEntry = {
 };
 
 export type ShopCategoryEntryInput = {
+  enabled?: InputMaybe<Scalars['Boolean']>;
   id?: InputMaybe<Scalars['Int']>;
   name?: InputMaybe<Scalars['String']>;
   private?: InputMaybe<Scalars['Boolean']>;
@@ -2716,6 +2718,7 @@ export type ShopCategoryResolvers<ContextType = any, ParentType extends Resolver
 
 export type ShopCategoryEntryResolvers<ContextType = any, ParentType extends ResolversParentTypes['ShopCategoryEntry'] = ResolversParentTypes['ShopCategoryEntry']> = ResolversObject<{
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  enabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   private?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   product?: Resolver<Maybe<ResolversTypes['Offer']>, ParentType, ContextType>;
