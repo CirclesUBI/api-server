@@ -64,6 +64,7 @@ type Profile {
   sales: [Sale!]
   balances: ProfileBalances
   contacts: [Contact!]
+  shops:[Shop!]
 }
 
 type ProfileBalances {
@@ -111,6 +112,7 @@ type Organisation {
   members: [ProfileOrOrganisation!]
   shopEnabled: Boolean
   trustsYou: Int # The trust relative to the safeAddress
+  shops:[Shop!]
 }
 
 union ProfileOrOrganisation = Profile | Organisation

@@ -128,10 +128,7 @@ export class GqlLogger {
                 operationName: requestContext.context.operationName
               },
               context: requestContext.context
-            }, JSON.stringify({
-              message: e.originalError.message,
-              stack: e.originalError.stack
-            }));
+            }, JSON.stringify(e.originalError));
           }
         }
       }

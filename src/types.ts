@@ -752,6 +752,7 @@ export type Organisation = {
   offers?: Maybe<Array<Offer>>;
   productListingType?: Maybe<ProductListingType>;
   shopEnabled?: Maybe<Scalars['Boolean']>;
+  shops?: Maybe<Array<Shop>>;
   smallBannerUrl?: Maybe<Scalars['String']>;
   trustsYou?: Maybe<Scalars['Int']>;
 };
@@ -821,6 +822,7 @@ export type Profile = {
   productListingType?: Maybe<ProductListingType>;
   purchases?: Maybe<Array<Purchase>>;
   sales?: Maybe<Array<Sale>>;
+  shops?: Maybe<Array<Shop>>;
   smallBannerUrl?: Maybe<Scalars['String']>;
   status?: Maybe<Scalars['String']>;
   successorOfCirclesAddress?: Maybe<Scalars['String']>;
@@ -2389,6 +2391,7 @@ export type OrganisationResolvers<ContextType = any, ParentType extends Resolver
   offers?: Resolver<Maybe<Array<ResolversTypes['Offer']>>, ParentType, ContextType>;
   productListingType?: Resolver<Maybe<ResolversTypes['ProductListingType']>, ParentType, ContextType>;
   shopEnabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  shops?: Resolver<Maybe<Array<ResolversTypes['Shop']>>, ParentType, ContextType>;
   smallBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   trustsYou?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -2446,6 +2449,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   productListingType?: Resolver<Maybe<ResolversTypes['ProductListingType']>, ParentType, ContextType>;
   purchases?: Resolver<Maybe<Array<ResolversTypes['Purchase']>>, ParentType, ContextType>;
   sales?: Resolver<Maybe<Array<ResolversTypes['Sale']>>, ParentType, ContextType>;
+  shops?: Resolver<Maybe<Array<ResolversTypes['Shop']>>, ParentType, ContextType>;
   smallBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   successorOfCirclesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
