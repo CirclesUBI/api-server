@@ -1,4 +1,4 @@
-import {Organisation, OrganisationResolvers, Profile} from "../../types";
+import {Organisation, OrganisationResolvers} from "../../types";
 import {Context} from "../../context";
 import {organisationMembersDataLoader} from "../dataLoaders/organisationMembersDataLoader";
 import {organisationOffersDataLoader} from "../dataLoaders/organisationOffersDataLoader";
