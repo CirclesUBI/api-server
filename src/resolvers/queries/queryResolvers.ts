@@ -27,10 +27,11 @@ import {recentProfiles} from "./recentProfiles";
 import {stats} from "./stats";
 import {init} from "./init";
 import {Environment} from "../../environment";
-import { QueryGetStringByMaxVersionArgs, QueryResolvers, QueryGetStringByLanguageArgs, QueryGetAllStringsByLanguageArgs} from "../../types";
+import { QueryGetStringByMaxVersionArgs, QueryResolvers, QueryGetStringByLanguageArgs, QueryGetAllStringsByLanguageArgs, QueryGetAllStringsByMaxVersionAndLangArgs} from "../../types";
 import {Organisation, QueryLastAcknowledgedAtArgs, QueryShopArgs, Shop} from "../../types";
 import {Context} from "../../context";
 import {canAccess} from "../../utils/canAccess";
+import { patterns } from "pdfkit/js/page";
 const packageJson = require("../../../package.json");
 
 export const queryResolvers : QueryResolvers = {
@@ -189,6 +190,15 @@ export const queryResolvers : QueryResolvers = {
       from i18n
         group by lang;
     `);
+    return queryResult.rows;
+  },
+  getAllStringsByMaxVersionAndLang: async (parent: any, args: QueryGetAllStringsByMaxVersionAndLangArgs, context: Context) => {
+    const queryResult = await Environment.pgReadWriteApiDb.query(`
+    select * 
+      from "latestVersions"
+      where lang = $1;
+    `,
+      [args.lang]);
     return queryResult.rows;
   }
 }
