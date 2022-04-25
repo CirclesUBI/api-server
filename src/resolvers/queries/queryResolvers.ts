@@ -27,7 +27,7 @@ import {recentProfiles} from "./recentProfiles";
 import {stats} from "./stats";
 import {init} from "./init";
 import {Environment} from "../../environment";
-import {Organisation, QueryLastAcknowledgedAtArgs, QueryResolvers, QueryShopArgs, Shop} from "../../types";
+import {QueryResolvers} from "../../types";
 import {Context} from "../../context";
 import {shop} from "./shop";
 import {clientAssertionJwt} from "./clientAssertionJwt";

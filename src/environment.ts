@@ -335,6 +335,14 @@ export class Environment {
     return !process.env.IS_AUTOMATED_TEST ? 0 : 1;
   }
 
+  static get humanodeJwksUrl(): string {
+    return "https://auth.staging.oauth2.humanode.io/.well-known/jwks.json";
+  }
+
+  static get humanodeIss(): string {
+    return "https://auth.staging.oauth2.humanode.io/";
+  }
+
   /**
    * The safe address of the organisation which operates this instance.
    */

@@ -30,6 +30,9 @@ import {upsertShop} from "./upsertShop";
 import {upsertShopCategories} from "./upsertShopCategories";
 import {upsertShopCategoryEntries} from "./upsertShopCategoryEntries";
 import {Context} from "../../context";
+import {decodeJwt, jwtVerify} from "jose";
+import fetch from "cross-fetch";
+import {proofUniqueness} from "./proofUniqueness";
 
 export const mutationResolvers: MutationResolvers = {
   purchase: purchaseResolver,
@@ -60,15 +63,5 @@ export const mutationResolvers: MutationResolvers = {
   upsertShop: upsertShop,
   upsertShopCategories: upsertShopCategories,
   upsertShopCategoryEntries: upsertShopCategoryEntries,
-  proofUniqueness: async (parent, args, context) => {
-    const caller = await context.callerInfo;
-    if (!caller?.profile?.circlesAddress) {
-      throw new Error("You must have a complete profile to use this function.");
-    }
-
-    return <ProofUniquenessResult>{
-      isUnique: true,
-      existingSafe: ""
-    }
-  }
+  proofUniqueness: proofUniqueness
 };

@@ -1190,8 +1190,7 @@ type UpsertShopCategoryEntriesResult {
 }
 
 type ProofUniquenessResult {
-  isUnique: Boolean!
-  existingSafe: String!
+  existingSafe: String
 }
 
 type Mutation {
@@ -1242,9 +1241,7 @@ type Mutation {
   verifySafe(safeAddress: String!): VerifySafeResult!
 
   revokeSafeVerification(safeAddress: String!): VerifySafeResult!
-
-  # Takes a humanode JWT and returns a connected safe
-  proofUniqueness(token:String!): ProofUniquenessResult!
+  proofUniqueness(humanodeToken: String!): ProofUniquenessResult!
 }
 
 

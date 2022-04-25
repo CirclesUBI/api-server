@@ -572,7 +572,7 @@ export type MutationCompleteSaleArgs = {
 
 
 export type MutationProofUniquenessArgs = {
-  token: Scalars['String'];
+  humanodeToken: Scalars['String'];
 };
 
 
@@ -907,8 +907,7 @@ export type ProofPaymentResult = {
 
 export type ProofUniquenessResult = {
   __typename?: 'ProofUniquenessResult';
-  existingSafe: Scalars['String'];
-  isUnique: Scalars['Boolean'];
+  existingSafe?: Maybe<Scalars['String']>;
 };
 
 export type PublicEvent = {
@@ -2324,7 +2323,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createTestInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType>;
   importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   logout?: Resolver<ResolversTypes['LogoutResponse'], ParentType, ContextType>;
-  proofUniqueness?: Resolver<ResolversTypes['ProofUniquenessResult'], ParentType, ContextType, RequireFields<MutationProofUniquenessArgs, 'token'>>;
+  proofUniqueness?: Resolver<ResolversTypes['ProofUniquenessResult'], ParentType, ContextType, RequireFields<MutationProofUniquenessArgs, 'humanodeToken'>>;
   purchase?: Resolver<Array<ResolversTypes['Invoice']>, ParentType, ContextType, RequireFields<MutationPurchaseArgs, 'lines'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
   rejectMembership?: Resolver<Maybe<ResolversTypes['RejectMembershipResult']>, ParentType, ContextType, RequireFields<MutationRejectMembershipArgs, 'membershipId'>>;
@@ -2517,8 +2516,7 @@ export type ProofPaymentResultResolvers<ContextType = any, ParentType extends Re
 }>;
 
 export type ProofUniquenessResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProofUniquenessResult'] = ResolversParentTypes['ProofUniquenessResult']> = ResolversObject<{
-  existingSafe?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  isUnique?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  existingSafe?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

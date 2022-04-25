@@ -129,6 +129,7 @@ model HumanodeVerifications {
     createdAt DateTime @default(now())
     @@index([createdAt])
 
+    sub String @unique
     token String
 }
 
