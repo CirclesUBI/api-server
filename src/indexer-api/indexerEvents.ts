@@ -155,14 +155,23 @@ export class IndexerEvents {
                    value::text as value
             from erc20_transfer_2
             union all
-            select 'EthTransfer' as type, 
+            select 'EthTransfer' as type,
                    timestamp,
-                   hash, 
-                   "from" as address1, 
-                   "to" as address2, 
-                   null as address3, 
+                   hash,
+                   "from" as address1,
+                   "to" as address2,
+                   null as address3,
                    value::text as value
             from eth_transfer_2
+            union all
+            select 'CrcMinting' as type,
+                   timestamp,
+                   hash,
+                   "from" as address1,
+                   "to" as address2,
+                   null as address3,
+                   value::text as value
+            from crc_minting_2
             union all
             select 'GnosisSafeEthTransfer' as type, 
                    timestamp, 

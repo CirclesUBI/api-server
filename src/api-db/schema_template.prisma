@@ -123,6 +123,15 @@ model VerifiedSafe {
     inviteCount Int @default(0) // Number of created invitations
 }
 
+model HumanodeVerifications {
+    circlesAddress String @id
+
+    createdAt DateTime @default(now())
+    @@index([createdAt])
+
+    token String
+}
+
 model PostAddress {
     id Int @id @default(autoincrement())
     name String?

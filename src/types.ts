@@ -506,6 +506,7 @@ export type Mutation = {
   createTestInvitation: CreateInvitationResult;
   importOrganisationsOfAccount: Array<Organisation>;
   logout: LogoutResponse;
+  proofUniqueness: ProofUniquenessResult;
   purchase: Array<Invoice>;
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
   rejectMembership?: Maybe<RejectMembershipResult>;
@@ -567,6 +568,11 @@ export type MutationCompletePurchaseArgs = {
 export type MutationCompleteSaleArgs = {
   invoiceId: Scalars['Int'];
   revoke?: InputMaybe<Scalars['Boolean']>;
+};
+
+
+export type MutationProofUniquenessArgs = {
+  token: Scalars['String'];
 };
 
 
@@ -897,6 +903,12 @@ export enum ProfileType {
 export type ProofPaymentResult = {
   __typename?: 'ProofPaymentResult';
   acknowledged: Scalars['Boolean'];
+};
+
+export type ProofUniquenessResult = {
+  __typename?: 'ProofUniquenessResult';
+  existingSafe: Scalars['String'];
+  isUnique: Scalars['Boolean'];
 };
 
 export type PublicEvent = {
@@ -1688,6 +1700,7 @@ export type ResolversTypes = ResolversObject<{
   ProfileOrigin: ProfileOrigin;
   ProfileType: ProfileType;
   ProofPaymentResult: ResolverTypeWrapper<ProofPaymentResult>;
+  ProofUniquenessResult: ResolverTypeWrapper<ProofUniquenessResult>;
   PublicEvent: ResolverTypeWrapper<Omit<PublicEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
   Purchase: ResolverTypeWrapper<Purchase>;
   PurchaseLine: ResolverTypeWrapper<PurchaseLine>;
@@ -1829,6 +1842,7 @@ export type ResolversParentTypes = ResolversObject<{
   ProfileEventFilter: ProfileEventFilter;
   ProfileOrOrganisation: ResolversParentTypes['Organisation'] | ResolversParentTypes['Profile'];
   ProofPaymentResult: ProofPaymentResult;
+  ProofUniquenessResult: ProofUniquenessResult;
   PublicEvent: Omit<PublicEvent, 'payload'> & { payload?: Maybe<ResolversParentTypes['EventPayload']> };
   Purchase: Purchase;
   PurchaseLine: PurchaseLine;
@@ -2310,6 +2324,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createTestInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType>;
   importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   logout?: Resolver<ResolversTypes['LogoutResponse'], ParentType, ContextType>;
+  proofUniqueness?: Resolver<ResolversTypes['ProofUniquenessResult'], ParentType, ContextType, RequireFields<MutationProofUniquenessArgs, 'token'>>;
   purchase?: Resolver<Array<ResolversTypes['Invoice']>, ParentType, ContextType, RequireFields<MutationPurchaseArgs, 'lines'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
   rejectMembership?: Resolver<Maybe<ResolversTypes['RejectMembershipResult']>, ParentType, ContextType, RequireFields<MutationRejectMembershipArgs, 'membershipId'>>;
@@ -2498,6 +2513,12 @@ export type ProfileOrOrganisationResolvers<ContextType = any, ParentType extends
 
 export type ProofPaymentResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProofPaymentResult'] = ResolversParentTypes['ProofPaymentResult']> = ResolversObject<{
   acknowledged?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ProofUniquenessResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProofUniquenessResult'] = ResolversParentTypes['ProofUniquenessResult']> = ResolversObject<{
+  existingSafe?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  isUnique?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2907,6 +2928,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   ProfileEvent?: ProfileEventResolvers<ContextType>;
   ProfileOrOrganisation?: ProfileOrOrganisationResolvers<ContextType>;
   ProofPaymentResult?: ProofPaymentResultResolvers<ContextType>;
+  ProofUniquenessResult?: ProofUniquenessResultResolvers<ContextType>;
   PublicEvent?: PublicEventResolvers<ContextType>;
   Purchase?: PurchaseResolvers<ContextType>;
   PurchaseLine?: PurchaseLineResolvers<ContextType>;
