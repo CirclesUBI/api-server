@@ -418,6 +418,8 @@ model PurchaseLine {
 
     amount Int
 
+    metadata String?
+    
     product Offer @relation(name: "PurchaseLines_Product", fields: [productId, productVersion], references: [id, version])
     productId Int
     productVersion Int
@@ -446,7 +448,6 @@ model Invoice {
 
     lines InvoiceLine[] @relation(name: "Invoice_Lines")
     
-    metaData String?
 
     pendingPaymentTransactionHash String?
 
@@ -481,6 +482,7 @@ model InvoiceLine {
     @@index([invoiceId])
 
     amount Int
+
 
     product Offer @relation(name: "InvoiceLines_Product", fields: [productId, productVersion], references: [id, version])
     productId Int
