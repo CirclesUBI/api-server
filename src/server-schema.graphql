@@ -64,7 +64,7 @@ type Profile {
   sales: [Sale!]
   balances: ProfileBalances
   contacts: [Contact!]
-  shops:[Shop!]
+  shops: [Shop!]
 }
 
 type ProfileBalances {
@@ -112,7 +112,7 @@ type Organisation {
   members: [ProfileOrOrganisation!]
   shopEnabled: Boolean
   trustsYou: Int # The trust relative to the safeAddress
-  shops:[Shop!]
+  shops: [Shop!]
 }
 
 union ProfileOrOrganisation = Profile | Organisation
@@ -313,7 +313,7 @@ type Sale {
 
 type SalesLine {
   id: Int!
-
+  metadata: String
   amount: Int!
   offer: Offer!
 }
@@ -333,7 +333,7 @@ type Purchase {
 
 type PurchaseLine {
   id: Int!
-
+  metadata: String
   amount: Int!
   offer: Offer
 }
@@ -889,6 +889,7 @@ type RemoveMemberResult {
 input PurchaseLineInput {
   offerId: Int!
   amount: Int!
+  metadata: String
 }
 
 type ProofPaymentResult {
