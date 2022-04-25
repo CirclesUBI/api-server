@@ -412,6 +412,7 @@ model PurchaseLine {
     id Int @id @default(autoincrement())
 
     purchase Purchase @relation(name: "Purchase_Lines", fields: [purchaseId], references: [id])
+    
     purchaseId Int
     @@index([purchaseId])
 
@@ -444,6 +445,8 @@ model Invoice {
     @@index([purchaseId])
 
     lines InvoiceLine[] @relation(name: "Invoice_Lines")
+    
+    metaData String?
 
     pendingPaymentTransactionHash String?
 
