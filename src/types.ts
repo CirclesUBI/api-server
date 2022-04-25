@@ -967,8 +967,9 @@ export type Query = {
   findSafesByOwner: Array<SafeInfo>;
   getAllStrings?: Maybe<Array<Maybe<I18n>>>;
   getAllStringsByLanguage?: Maybe<Array<Maybe<I18n>>>;
-  getAllStringsByMaxVersionAndLang?: Maybe<Array<Maybe<I18n>>>;
+  getAllStringsByMaxVersion?: Maybe<Array<Maybe<I18n>>>;
   getAvailableLanguages?: Maybe<Array<Maybe<I18n>>>;
+  getOlderVersionsByKeyAndLang?: Maybe<Array<Maybe<I18n>>>;
   getStringByLanguage?: Maybe<Array<I18n>>;
   getStringByMaxVersion?: Maybe<I18n>;
   hubSignupTransaction?: Maybe<ProfileEvent>;
@@ -1047,7 +1048,8 @@ export type QueryGetAllStringsByLanguageArgs = {
 };
 
 
-export type QueryGetAllStringsByMaxVersionAndLangArgs = {
+export type QueryGetOlderVersionsByKeyAndLangArgs = {
+  key?: InputMaybe<Scalars['String']>;
   lang?: InputMaybe<Scalars['String']>;
 };
 
@@ -2580,8 +2582,9 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   findSafesByOwner?: Resolver<Array<ResolversTypes['SafeInfo']>, ParentType, ContextType, RequireFields<QueryFindSafesByOwnerArgs, 'owner'>>;
   getAllStrings?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType>;
   getAllStringsByLanguage?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetAllStringsByLanguageArgs>>;
-  getAllStringsByMaxVersionAndLang?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetAllStringsByMaxVersionAndLangArgs>>;
+  getAllStringsByMaxVersion?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType>;
   getAvailableLanguages?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType>;
+  getOlderVersionsByKeyAndLang?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetOlderVersionsByKeyAndLangArgs>>;
   getStringByLanguage?: Resolver<Maybe<Array<ResolversTypes['i18n']>>, ParentType, ContextType, Partial<QueryGetStringByLanguageArgs>>;
   getStringByMaxVersion?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<QueryGetStringByMaxVersionArgs>>;
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;

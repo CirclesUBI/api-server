@@ -27,7 +27,7 @@ import {recentProfiles} from "./recentProfiles";
 import {stats} from "./stats";
 import {init} from "./init";
 import {Environment} from "../../environment";
-import { QueryGetStringByMaxVersionArgs, QueryResolvers, QueryGetStringByLanguageArgs, QueryGetAllStringsByLanguageArgs, QueryGetAllStringsByMaxVersionAndLangArgs} from "../../types";
+import { QueryGetStringByMaxVersionArgs, QueryResolvers, QueryGetStringByLanguageArgs, QueryGetAllStringsByLanguageArgs, QueryGetOlderVersionsByKeyAndLangArgs} from "../../types";
 import {Organisation, QueryLastAcknowledgedAtArgs, QueryShopArgs, Shop} from "../../types";
 import {Context} from "../../context";
 import {canAccess} from "../../utils/canAccess";
@@ -192,13 +192,22 @@ export const queryResolvers : QueryResolvers = {
     `);
     return queryResult.rows;
   },
-  getAllStringsByMaxVersionAndLang: async (parent: any, args: QueryGetAllStringsByMaxVersionAndLangArgs, context: Context) => {
+  getAllStringsByMaxVersion: async (parent: any, args: any, context: Context) => {
     const queryResult = await Environment.pgReadWriteApiDb.query(`
     select * 
-      from "latestVersions"
-      where lang = $1;
+      from "latestValues";
+    `,);
+    return queryResult.rows;
+  },
+  getOlderVersionsByKeyAndLang: async (parent: any, args: QueryGetOlderVersionsByKeyAndLangArgs, context: Context) => {
+    const queryResult = await Environment.pgReadWriteApiDb.query(`
+    select * 
+      from i18n
+        where lang = $1
+        and key = $2
+      order by key;
     `,
-      [args.lang]);
+      [args.lang, args.key]);
     return queryResult.rows;
   }
 }

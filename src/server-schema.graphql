@@ -1320,7 +1320,8 @@ type Query {
   getStringByLanguage(lang: String): [i18n!]
   getStringByMaxVersion(lang: String, key: String): i18n
   getAvailableLanguages: [i18n]
-  getAllStringsByMaxVersionAndLang(lang: String): [i18n]
+  getAllStringsByMaxVersion: [i18n]
+  getOlderVersionsByKeyAndLang(key: String, lang: String): [i18n]
 }
 
 type Subscription {
