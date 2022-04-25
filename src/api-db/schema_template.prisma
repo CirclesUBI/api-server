@@ -184,6 +184,8 @@ model Shop {
                               // will wrap around and 'currentSimplePickupCodeRound' will be incremented by 1.
 
     categories ShopCategory[] @relation("ShopShopCategories")
+
+    purchaseMetaDataKeys String?
 }
 
 model ShopCategory {
@@ -428,7 +430,7 @@ model PurchaseLine {
     amount Int
 
     metadata String?
-    
+
     product Offer @relation(name: "PurchaseLines_Product", fields: [productId, productVersion], references: [id, version])
     productId Int
     productVersion Int
