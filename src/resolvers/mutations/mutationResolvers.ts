@@ -1,7 +1,5 @@
 import { upsertProfileResolver } from "./upsertProfile";
 import { logout } from "./logout";
-import { authenticateAtResolver } from "./authenticateAt";
-import { consumeDepositedChallengeResolver } from "./consumeDepositedChallenge";
 import { requestUpdateSafe } from "./requestUpdateSafe";
 import { updateSafe } from "./updateSafe";
 import { upsertTag } from "./upsertTag";
@@ -12,7 +10,6 @@ import { claimInvitation } from "./claimInvitation";
 import { redeemClaimedInvitation } from "./redeemClaimedInvitation";
 import { verifySessionChallengeResolver } from "./verifySessionChallengeResolver";
 import { upsertOrganisation } from "./upsertOrganisation";
-import { createTestInvitation } from "./createTestInvitation";
 import { addMemberResolver } from "./addMember";
 import { removeMemberResolver } from "./removeMember";
 import { purchaseResolver } from "./purchase";
@@ -24,6 +21,11 @@ import { revokeSafeVerification, verifySafe } from "./verifySafe";
 import { announcePayment } from "./announcePayment";
 import { Environment } from "../../environment";
 import { MutationResolvers } from "../../types";
+import {upsertOffer} from "./upsertOffer";
+import {upsertShop} from "./upsertShop";
+import {upsertShopCategories} from "./upsertShopCategories";
+import {upsertShopCategoryEntries} from "./upsertShopCategoryEntries";
+import {proofUniqueness} from "./proofUniqueness";
 
 export const mutationResolvers: MutationResolvers = {
   purchase: purchaseResolver,
@@ -31,10 +33,6 @@ export const mutationResolvers: MutationResolvers = {
   upsertRegion: <any>upsertOrganisation(true),
   logout: logout(),
   upsertProfile: upsertProfileResolver(),
-  authenticateAt: authenticateAtResolver(),
-  consumeDepositedChallenge: consumeDepositedChallengeResolver(
-    Environment.readWriteApiDb
-  ),
   requestUpdateSafe: requestUpdateSafe(Environment.readWriteApiDb),
   updateSafe: updateSafe(Environment.readWriteApiDb),
   upsertTag: upsertTag(),
@@ -44,10 +42,7 @@ export const mutationResolvers: MutationResolvers = {
   claimInvitation: claimInvitation(),
   redeemClaimedInvitation: redeemClaimedInvitation(),
   requestSessionChallenge: requestSessionChallenge,
-  verifySessionChallenge: verifySessionChallengeResolver(
-    Environment.readWriteApiDb
-  ),
-  createTestInvitation: createTestInvitation(),
+  verifySessionChallenge: verifySessionChallengeResolver(Environment.readWriteApiDb),
   addMember: addMemberResolver,
   removeMember: removeMemberResolver,
   importOrganisationsOfAccount: <any>importOrganisationsOfAccount,
@@ -56,4 +51,9 @@ export const mutationResolvers: MutationResolvers = {
   verifySafe: verifySafe,
   revokeSafeVerification: revokeSafeVerification,
   announcePayment: announcePayment(),
+  upsertOffer: upsertOffer,
+  upsertShop: upsertShop,
+  upsertShopCategories: upsertShopCategories,
+  upsertShopCategoryEntries: upsertShopCategoryEntries,
+  proofUniqueness: proofUniqueness
 };

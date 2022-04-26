@@ -1,5 +1,4 @@
 import {Context} from "../context";
-import {Session, Profile} from "../api-db/client";
 import {Environment} from "../environment";
 
 export async function isBILMember(circlesAddress?:string|null) {
@@ -71,4 +70,39 @@ export async function canAccess(context:Context, accessedSafeAddress:string) {
   }
 
   return false;
+}
+
+export async function canAccessProfileId(context:Context, profileId:number) {
+  const callerInfo = await context.callerInfo;
+  if (callerInfo?.profile?.id == profileId) {
+    return callerInfo;
+  }
+
+  const requestedProfile = await Environment.readWriteApiDb.profile.findMany({
+    where: {
+      id: profileId,
+      type: "ORGANISATION"
+    },
+    orderBy: {
+      id: "desc"
+    },
+    include: {
+      members: true /* {
+        where: {
+          isAdmin: true
+        }
+      }*/
+    }
+  });
+
+  const orgaProfile = requestedProfile.length > 0 ? requestedProfile[0] : undefined;
+  if (orgaProfile) {
+    if (orgaProfile.members.find(o => o.memberAddress == callerInfo?.profile?.circlesAddress)) {
+      return callerInfo;
+    }
+
+    // TODO: Check ownership too
+  }
+
+  return undefined;
 }

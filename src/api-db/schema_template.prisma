@@ -123,6 +123,131 @@ model VerifiedSafe {
     inviteCount Int @default(0) // Number of created invitations
 }
 
+model HumanodeVerifications {
+    circlesAddress String @id
+
+    createdAt DateTime @default(now())
+    @@index([createdAt])
+
+    sub String @unique
+    token String
+}
+
+model PostAddress {
+    id Int @id @default(autoincrement())
+    name String?
+
+    street String
+    house String
+    zip String
+    state String?
+
+    cityGeonameid Int?
+
+    pickupAddressOfShop Shop? @relation("ShopPickupAddress")
+    shippingAddressOfProfile Profile? @relation("ProfileShippingAddresses", fields: [shippingAddressOfProfileId], references: [id])
+    shippingAddressOfProfileId Int?
+}
+
+enum ShopListingStyle {
+    REGULAR
+    FEATURED
+}
+
+model Shop {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+
+    enabled Boolean @default(false) // Hides the store when 'false'
+    private Boolean? // Shows the store only to trusted users when 'true'
+
+    name String
+    description String
+    largeBannerUrl String
+    smallBannerUrl String
+
+    shopListingStyle ShopListingStyle @default(REGULAR)
+    sortOrder Int?
+
+    productListingStyle ProductListingType @default(TILES)
+
+    owner Profile @relation("ProfileShops", fields: [ownerId], references: [id])
+    ownerId Int
+
+    openingHours String?
+
+    pickupAddress PostAddress? @relation("ShopPickupAddress", fields: [pickupAddressId], references: [id])
+    pickupAddressId Int?
+
+    currentSimplePickupCodeRound Int?
+    lastSimplePickupCode Int? // A value in the range from 1 to 99. Every new purchase will
+                              // get the next number assigned. When 99 is reached the number
+                              // will wrap around and 'currentSimplePickupCodeRound' will be incremented by 1.
+
+    categories ShopCategory[] @relation("ShopShopCategories")
+
+    purchaseMetaDataKeys String?
+}
+
+model ShopCategory {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+
+    shop Shop @relation("ShopShopCategories", fields: [shopId], references: [id])
+    shopId Int
+
+    enabled Boolean @default(true) // Hides the category when 'false'
+    private Boolean? // Shows the category only to trusted users when 'true'
+
+    name String
+    description String?
+    largeBannerUrl String?
+    smallBannerUrl String?
+
+    sortOrder Int?
+
+    productListingStyle ProductListingType?
+
+    entries ShopCategoryEntry[] @relation("ShopCategoryEntries")
+}
+
+model Jwks {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    kid String
+    @@index([kid])
+
+    kty String
+    use String
+    alg String
+    e String
+    n String
+    d String
+    p String
+    q String
+    dp String
+    dq String
+    qi String
+}
+
+model ShopCategoryEntry {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+
+    enabled Boolean @default(true) // Hides the category when 'false'
+    private Boolean? // Shows the category only to trusted users when 'true'
+
+    product Offer @relation(name: "ShopCategoryEntryProduct", fields: [productId, productVersion], references: [id, version])
+    productId Int
+    productVersion Int
+    @@index([productId, productVersion])
+
+    sortOrder Int?
+
+    shopCategory ShopCategory @relation("ShopCategoryEntries", fields: [shopCategoryId], references: [id])
+    shopCategoryId Int
+}
+
 model Profile {
     id Int @id @default(autoincrement())
     lastUpdateAt DateTime @default(now())
@@ -167,6 +292,7 @@ model Profile {
 
     sessions Session[]  @relation(name: "Session_Profile")
 
+    shops Shop[] @relation("ProfileShops")
     tags Tag[]  @relation(name: "Tag_CreatedBy")
     offers Offer[]  @relation(name: "Offer_CreatedBy")
     purchases Purchase[] @relation(name: "Purchase_CreatedBy")
@@ -202,6 +328,8 @@ model Profile {
     safesVerifiedByOrganisation VerifiedSafe[]  @relation(name: "VerifiedSafe_CreatedByOrganisation")
 
     safesRevokedByPerson VerifiedSafe[]  @relation(name: "VerifiedSafe_RevokedByPerson")
+
+    shippingAddresses PostAddress[] @relation("ProfileShippingAddresses")
 }
 
 model ExternalProfiles {
@@ -253,21 +381,6 @@ model ChatMessage {
     tags Tag[] @relation(name: "ChatMessage_Tags")
 }
 
-model DelegatedChallenges {
-    id Int @id @default(autoincrement())
-    createdAt DateTime
-    @@index([createdAt])
-    appId String
-    sessionId String
-    requestValidTo DateTime
-    delegateAuthCode String
-    @@unique([delegateAuthCode], name:"UX_DelegatedChallenges_delegateAuthCode")
-    challenge String?
-    challengeDepositedAt DateTime?
-    challengeValidTo DateTime?
-    challengedReadAt DateTime?
-}
-
 model Offer {
     id Int @default(autoincrement())
     version Int
@@ -290,6 +403,8 @@ model Offer {
     purchaseLines PurchaseLine[] @relation(name: "PurchaseLines_Product")
     invoiceLines InvoiceLine[] @relation(name: "InvoiceLines_Product")
     tags Tag[] @relation(name: "Offer_Tags")
+
+    shopCategoryEntries ShopCategoryEntry[] @relation("ShopCategoryEntryProduct")
 }
 
 model Purchase {
@@ -309,10 +424,13 @@ model PurchaseLine {
     id Int @id @default(autoincrement())
 
     purchase Purchase @relation(name: "Purchase_Lines", fields: [purchaseId], references: [id])
+    
     purchaseId Int
     @@index([purchaseId])
 
     amount Int
+
+    metadata String?
 
     product Offer @relation(name: "PurchaseLines_Product", fields: [productId, productVersion], references: [id, version])
     productId Int
@@ -380,6 +498,8 @@ model InvoiceLine {
     productId Int
     productVersion Int
     @@index([productId,productVersion])
+
+    metadata String?
 }
 
 model TagType {

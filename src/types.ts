@@ -125,12 +125,6 @@ export type CommonTrust = {
   type: Scalars['String'];
 };
 
-export type ConsumeDepositedChallengeResponse = {
-  __typename?: 'ConsumeDepositedChallengeResponse';
-  challenge?: Maybe<Scalars['String']>;
-  success: Scalars['Boolean'];
-};
-
 export type Contact = {
   __typename?: 'Contact';
   contactAddress: Scalars['String'];
@@ -263,26 +257,6 @@ export type CreatedInviteEoa = {
   address: Scalars['String'];
   fee: Scalars['String'];
   for: Scalars['String'];
-};
-
-export type DelegateAuthInit = {
-  __typename?: 'DelegateAuthInit';
-  appId: Scalars['String'];
-  challengeType?: Maybe<Scalars['String']>;
-  delegateAuthCode?: Maybe<Scalars['String']>;
-  errorMessage?: Maybe<Scalars['String']>;
-  success: Scalars['Boolean'];
-  validTo?: Maybe<Scalars['String']>;
-};
-
-export type DepositChallenge = {
-  jwt: Scalars['String'];
-};
-
-export type DepositChallengeResponse = {
-  __typename?: 'DepositChallengeResponse';
-  errorMessage?: Maybe<Scalars['String']>;
-  success: Scalars['Boolean'];
 };
 
 export enum Direction {
@@ -438,6 +412,7 @@ export type InvoiceLine = {
   __typename?: 'InvoiceLine';
   amount: Scalars['Int'];
   id: Scalars['Int'];
+  metadata?: Maybe<Scalars['String']>;
   offer?: Maybe<Offer>;
 };
 
@@ -526,16 +501,13 @@ export type Mutation = {
   acknowledge: Scalars['Boolean'];
   addMember?: Maybe<AddMemberResult>;
   announcePayment: AnnouncePaymentResult;
-  authenticateAt: DelegateAuthInit;
   claimInvitation: ClaimInvitationResult;
   completePurchase: Invoice;
   completeSale: Invoice;
-  consumeDepositedChallenge: ConsumeDepositedChallengeResponse;
   createTestInvitation: CreateInvitationResult;
-  depositChallenge: DepositChallengeResponse;
-  exchangeToken: ExchangeTokenResponse;
   importOrganisationsOfAccount: Array<Organisation>;
   logout: LogoutResponse;
+  proofUniqueness: ProofUniquenessResult;
   purchase: Array<Invoice>;
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
   rejectMembership?: Maybe<RejectMembershipResult>;
@@ -547,9 +519,13 @@ export type Mutation = {
   sendMessage: SendMessageResult;
   tagTransaction: TagTransactionResult;
   updateSafe: UpdateSafeResponse;
+  upsertOffer: Offer;
   upsertOrganisation: CreateOrganisationResult;
   upsertProfile: Profile;
   upsertRegion: CreateOrganisationResult;
+  upsertShop: Shop;
+  upsertShopCategories: UpsertShopCategoriesResult;
+  upsertShopCategoryEntries: UpsertShopCategoryEntriesResult;
   upsertTag: Tag;
   verifySafe: VerifySafeResult;
   verifySessionChallenge?: Maybe<ExchangeTokenResponse>;
@@ -579,11 +555,6 @@ export type MutationAnnouncePaymentArgs = {
 };
 
 
-export type MutationAuthenticateAtArgs = {
-  appId: Scalars['String'];
-};
-
-
 export type MutationClaimInvitationArgs = {
   code: Scalars['String'];
 };
@@ -601,13 +572,8 @@ export type MutationCompleteSaleArgs = {
 };
 
 
-export type MutationConsumeDepositedChallengeArgs = {
-  delegateAuthCode: Scalars['String'];
-};
-
-
-export type MutationDepositChallengeArgs = {
-  jwt: Scalars['String'];
+export type MutationProofUniquenessArgs = {
+  humanodeToken: Scalars['String'];
 };
 
 
@@ -665,6 +631,11 @@ export type MutationUpdateSafeArgs = {
 };
 
 
+export type MutationUpsertOfferArgs = {
+  offer: OfferInput;
+};
+
+
 export type MutationUpsertOrganisationArgs = {
   organisation: UpsertOrganisationInput;
 };
@@ -677,6 +648,21 @@ export type MutationUpsertProfileArgs = {
 
 export type MutationUpsertRegionArgs = {
   organisation: UpsertOrganisationInput;
+};
+
+
+export type MutationUpsertShopArgs = {
+  shop: ShopInput;
+};
+
+
+export type MutationUpsertShopCategoriesArgs = {
+  shopCategories: Array<ShopCategoryInput>;
+};
+
+
+export type MutationUpsertShopCategoryEntriesArgs = {
+  shopCategoryEntries: Array<ShopCategoryEntryInput>;
 };
 
 
@@ -732,6 +718,17 @@ export type Offer = {
   version: Scalars['Int'];
 };
 
+export type OfferInput = {
+  createdByProfileId: Scalars['Int'];
+  description?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['Int']>;
+  pictureMimeType: Scalars['String'];
+  pictureUrl: Scalars['String'];
+  pricePerUnit: Scalars['String'];
+  timeCirclesPriceShare: Scalars['Int'];
+  title: Scalars['String'];
+};
+
 export type Offers = IAggregatePayload & {
   __typename?: 'Offers';
   lastUpdatedAt: Scalars['String'];
@@ -762,6 +759,7 @@ export type Organisation = {
   offers?: Maybe<Array<Offer>>;
   productListingType?: Maybe<ProductListingType>;
   shopEnabled?: Maybe<Scalars['Boolean']>;
+  shops?: Maybe<Array<Shop>>;
   smallBannerUrl?: Maybe<Scalars['String']>;
   trustsYou?: Maybe<Scalars['Int']>;
 };
@@ -778,6 +776,18 @@ export type PaginationArgs = {
   continueAtId?: InputMaybe<Scalars['Int']>;
   limit: Scalars['Int'];
   order: SortOrder;
+};
+
+export type PostAddress = {
+  __typename?: 'PostAddress';
+  city?: Maybe<City>;
+  cityGeonameid: Scalars['Int'];
+  house: Scalars['String'];
+  id: Scalars['Int'];
+  name?: Maybe<Scalars['String']>;
+  state?: Maybe<Scalars['String']>;
+  street: Scalars['String'];
+  zip: Scalars['String'];
 };
 
 export enum ProductListingType {
@@ -819,6 +829,7 @@ export type Profile = {
   productListingType?: Maybe<ProductListingType>;
   purchases?: Maybe<Array<Purchase>>;
   sales?: Maybe<Array<Sale>>;
+  shops?: Maybe<Array<Shop>>;
   smallBannerUrl?: Maybe<Scalars['String']>;
   status?: Maybe<Scalars['String']>;
   successorOfCirclesAddress?: Maybe<Scalars['String']>;
@@ -895,6 +906,11 @@ export type ProofPaymentResult = {
   acknowledged: Scalars['Boolean'];
 };
 
+export type ProofUniquenessResult = {
+  __typename?: 'ProofUniquenessResult';
+  existingSafe?: Maybe<Scalars['String']>;
+};
+
 export type PublicEvent = {
   __typename?: 'PublicEvent';
   block_number?: Maybe<Scalars['Int']>;
@@ -922,11 +938,13 @@ export type PurchaseLine = {
   __typename?: 'PurchaseLine';
   amount: Scalars['Int'];
   id: Scalars['Int'];
+  metadata?: Maybe<Scalars['String']>;
   offer?: Maybe<Offer>;
 };
 
 export type PurchaseLineInput = {
   amount: Scalars['Int'];
+  metadata?: InputMaybe<Scalars['String']>;
   offerId: Scalars['Int'];
 };
 
@@ -959,6 +977,7 @@ export type Query = {
   aggregates: Array<ProfileAggregate>;
   cities: Array<City>;
   claimedInvitation?: Maybe<ClaimedInvitation>;
+  clientAssertionJwt: Scalars['String'];
   commonTrust: Array<CommonTrust>;
   directPath: TransitivePath;
   events: Array<ProfileEvent>;
@@ -973,7 +992,6 @@ export type Query = {
   myProfile?: Maybe<Profile>;
   organisations: Array<Organisation>;
   organisationsByAddress: Array<Organisation>;
-  organisationsWithOffers: Array<Organisation>;
   profilesById: Array<Profile>;
   profilesBySafeAddress: Array<Profile>;
   recentProfiles: Array<Profile>;
@@ -981,6 +999,8 @@ export type Query = {
   safeInfo?: Maybe<SafeInfo>;
   search: Array<Profile>;
   sessionInfo: SessionInfo;
+  shop?: Maybe<Shop>;
+  shops: Array<Shop>;
   stats: Stats;
   tagById?: Maybe<Tag>;
   tags: Array<Tag>;
@@ -1080,6 +1100,11 @@ export type QuerySafeInfoArgs = {
 
 export type QuerySearchArgs = {
   query: SearchInput;
+};
+
+
+export type QueryShopArgs = {
+  id: Scalars['Int'];
 };
 
 
@@ -1231,6 +1256,7 @@ export type SalesLine = {
   __typename?: 'SalesLine';
   amount: Scalars['Int'];
   id: Scalars['Int'];
+  metadata?: Maybe<Scalars['String']>;
   offer: Offer;
 };
 
@@ -1258,6 +1284,101 @@ export type SessionInfo = {
   profile?: Maybe<Profile>;
   profileId?: Maybe<Scalars['Int']>;
 };
+
+export type Shop = {
+  __typename?: 'Shop';
+  categories?: Maybe<Array<ShopCategory>>;
+  createdAt: Scalars['Date'];
+  description: Scalars['String'];
+  enabled?: Maybe<Scalars['Boolean']>;
+  id: Scalars['Int'];
+  largeBannerUrl: Scalars['String'];
+  name: Scalars['String'];
+  openingHours?: Maybe<Scalars['String']>;
+  owner: Organisation;
+  pickupAddress?: Maybe<PostAddress>;
+  private?: Maybe<Scalars['Boolean']>;
+  productListingStyle: ProductListingType;
+  purchaseMetaDataKeys?: Maybe<Scalars['String']>;
+  shopListingStyle: ShopListingStyle;
+  smallBannerUrl: Scalars['String'];
+  sortOrder?: Maybe<Scalars['Int']>;
+};
+
+export type ShopCategory = {
+  __typename?: 'ShopCategory';
+  createdAt?: Maybe<Scalars['Date']>;
+  description?: Maybe<Scalars['String']>;
+  enabled?: Maybe<Scalars['Boolean']>;
+  entries?: Maybe<Array<ShopCategoryEntry>>;
+  id: Scalars['Int'];
+  largeBannerUrl?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  private?: Maybe<Scalars['Boolean']>;
+  productListingStyle?: Maybe<ProductListingType>;
+  shop?: Maybe<Shop>;
+  shopId: Scalars['Int'];
+  smallBannerUrl?: Maybe<Scalars['String']>;
+  sortOrder?: Maybe<Scalars['Int']>;
+};
+
+export type ShopCategoryEntry = {
+  __typename?: 'ShopCategoryEntry';
+  createdAt: Scalars['Date'];
+  enabled?: Maybe<Scalars['Boolean']>;
+  id: Scalars['Int'];
+  private?: Maybe<Scalars['Boolean']>;
+  product?: Maybe<Offer>;
+  productId: Scalars['Int'];
+  productVersion: Scalars['Int'];
+  shopCategory?: Maybe<ShopCategory>;
+  shopCategoryId: Scalars['Int'];
+  sortOrder?: Maybe<Scalars['Int']>;
+};
+
+export type ShopCategoryEntryInput = {
+  enabled?: InputMaybe<Scalars['Boolean']>;
+  id?: InputMaybe<Scalars['Int']>;
+  name?: InputMaybe<Scalars['String']>;
+  private?: InputMaybe<Scalars['Boolean']>;
+  productId: Scalars['Int'];
+  productVersion: Scalars['Int'];
+  shopCategoryId: Scalars['Int'];
+  sortOrder?: InputMaybe<Scalars['Int']>;
+};
+
+export type ShopCategoryInput = {
+  description?: InputMaybe<Scalars['String']>;
+  enabled?: InputMaybe<Scalars['Boolean']>;
+  id?: InputMaybe<Scalars['Int']>;
+  largeBannerUrl?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
+  private?: InputMaybe<Scalars['Boolean']>;
+  productListingStyle?: InputMaybe<ProductListingType>;
+  shopId: Scalars['Int'];
+  smallBannerUrl?: InputMaybe<Scalars['String']>;
+  sortOrder?: InputMaybe<Scalars['Int']>;
+};
+
+export type ShopInput = {
+  description: Scalars['String'];
+  enabled: Scalars['Boolean'];
+  id?: InputMaybe<Scalars['Int']>;
+  largeBannerUrl: Scalars['String'];
+  name: Scalars['String'];
+  openingHours?: InputMaybe<Scalars['String']>;
+  ownerId: Scalars['Int'];
+  private?: InputMaybe<Scalars['Boolean']>;
+  productListingStyle: ProductListingType;
+  shopListingStyle: ShopListingStyle;
+  smallBannerUrl: Scalars['String'];
+  sortOrder?: InputMaybe<Scalars['Int']>;
+};
+
+export enum ShopListingStyle {
+  Featured = 'FEATURED',
+  Regular = 'REGULAR'
+}
 
 export enum SortOrder {
   Asc = 'ASC',
@@ -1369,6 +1490,18 @@ export type UpsertProfileInput = {
   newsletter?: InputMaybe<Scalars['Boolean']>;
   status: Scalars['String'];
   successorOfCirclesAddress?: InputMaybe<Scalars['String']>;
+};
+
+export type UpsertShopCategoriesResult = {
+  __typename?: 'UpsertShopCategoriesResult';
+  inserted: Scalars['Int'];
+  updated: Scalars['Int'];
+};
+
+export type UpsertShopCategoryEntriesResult = {
+  __typename?: 'UpsertShopCategoryEntriesResult';
+  inserted: Scalars['Int'];
+  updated: Scalars['Int'];
 };
 
 export type UpsertTagInput = {
@@ -1499,7 +1632,6 @@ export type ResolversTypes = ResolversObject<{
   ClaimInvitationResult: ResolverTypeWrapper<ClaimInvitationResult>;
   ClaimedInvitation: ResolverTypeWrapper<ClaimedInvitation>;
   CommonTrust: ResolverTypeWrapper<CommonTrust>;
-  ConsumeDepositedChallengeResponse: ResolverTypeWrapper<ConsumeDepositedChallengeResponse>;
   Contact: ResolverTypeWrapper<Contact>;
   ContactAggregateFilter: ContactAggregateFilter;
   ContactDirection: ContactDirection;
@@ -1518,9 +1650,6 @@ export type ResolversTypes = ResolversObject<{
   CreatedInvitation: ResolverTypeWrapper<CreatedInvitation>;
   CreatedInviteEoa: ResolverTypeWrapper<CreatedInviteEoa>;
   Date: ResolverTypeWrapper<Scalars['Date']>;
-  DelegateAuthInit: ResolverTypeWrapper<DelegateAuthInit>;
-  DepositChallenge: DepositChallenge;
-  DepositChallengeResponse: ResolverTypeWrapper<DepositChallengeResponse>;
   Direction: Direction;
   DisplayCurrency: DisplayCurrency;
   Erc20Balances: ResolverTypeWrapper<Erc20Balances>;
@@ -1554,11 +1683,13 @@ export type ResolversTypes = ResolversObject<{
   NewUser: ResolverTypeWrapper<NewUser>;
   NotificationEvent: ResolverTypeWrapper<NotificationEvent>;
   Offer: ResolverTypeWrapper<Offer>;
+  OfferInput: OfferInput;
   Offers: ResolverTypeWrapper<Offers>;
   OffersAggregateFilter: OffersAggregateFilter;
   Organisation: ResolverTypeWrapper<Omit<Organisation, 'members'> & { members?: Maybe<Array<ResolversTypes['ProfileOrOrganisation']>> }>;
   OrganisationCreated: ResolverTypeWrapper<OrganisationCreated>;
   PaginationArgs: PaginationArgs;
+  PostAddress: ResolverTypeWrapper<PostAddress>;
   ProductListingType: ProductListingType;
   Profile: ResolverTypeWrapper<Profile>;
   ProfileAggregate: ResolverTypeWrapper<Omit<ProfileAggregate, 'payload'> & { payload: ResolversTypes['AggregatePayload'] }>;
@@ -1570,6 +1701,7 @@ export type ResolversTypes = ResolversObject<{
   ProfileOrigin: ProfileOrigin;
   ProfileType: ProfileType;
   ProofPaymentResult: ResolverTypeWrapper<ProofPaymentResult>;
+  ProofUniquenessResult: ResolverTypeWrapper<ProofUniquenessResult>;
   PublicEvent: ResolverTypeWrapper<Omit<PublicEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
   Purchase: ResolverTypeWrapper<Purchase>;
   PurchaseLine: ResolverTypeWrapper<PurchaseLine>;
@@ -1603,6 +1735,13 @@ export type ResolversTypes = ResolversObject<{
   SendMessageResult: ResolverTypeWrapper<SendMessageResult>;
   Server: ResolverTypeWrapper<Server>;
   SessionInfo: ResolverTypeWrapper<SessionInfo>;
+  Shop: ResolverTypeWrapper<Shop>;
+  ShopCategory: ResolverTypeWrapper<ShopCategory>;
+  ShopCategoryEntry: ResolverTypeWrapper<ShopCategoryEntry>;
+  ShopCategoryEntryInput: ShopCategoryEntryInput;
+  ShopCategoryInput: ShopCategoryInput;
+  ShopInput: ShopInput;
+  ShopListingStyle: ShopListingStyle;
   SortOrder: SortOrder;
   Stats: ResolverTypeWrapper<Stats>;
   String: ResolverTypeWrapper<Scalars['String']>;
@@ -1617,6 +1756,8 @@ export type ResolversTypes = ResolversObject<{
   UpdateSafeResponse: ResolverTypeWrapper<UpdateSafeResponse>;
   UpsertOrganisationInput: UpsertOrganisationInput;
   UpsertProfileInput: UpsertProfileInput;
+  UpsertShopCategoriesResult: ResolverTypeWrapper<UpsertShopCategoriesResult>;
+  UpsertShopCategoryEntriesResult: ResolverTypeWrapper<UpsertShopCategoryEntriesResult>;
   UpsertTagInput: UpsertTagInput;
   Verification: ResolverTypeWrapper<Verification>;
   VerifiedSafesFilter: VerifiedSafesFilter;
@@ -1640,7 +1781,6 @@ export type ResolversParentTypes = ResolversObject<{
   ClaimInvitationResult: ClaimInvitationResult;
   ClaimedInvitation: ClaimedInvitation;
   CommonTrust: CommonTrust;
-  ConsumeDepositedChallengeResponse: ConsumeDepositedChallengeResponse;
   Contact: Contact;
   ContactAggregateFilter: ContactAggregateFilter;
   ContactPoint: ContactPoint;
@@ -1658,9 +1798,6 @@ export type ResolversParentTypes = ResolversObject<{
   CreatedInvitation: CreatedInvitation;
   CreatedInviteEoa: CreatedInviteEoa;
   Date: Scalars['Date'];
-  DelegateAuthInit: DelegateAuthInit;
-  DepositChallenge: DepositChallenge;
-  DepositChallengeResponse: DepositChallengeResponse;
   Erc20Balances: Erc20Balances;
   Erc20Transfer: Erc20Transfer;
   EthTransfer: EthTransfer;
@@ -1691,11 +1828,13 @@ export type ResolversParentTypes = ResolversObject<{
   NewUser: NewUser;
   NotificationEvent: NotificationEvent;
   Offer: Offer;
+  OfferInput: OfferInput;
   Offers: Offers;
   OffersAggregateFilter: OffersAggregateFilter;
   Organisation: Omit<Organisation, 'members'> & { members?: Maybe<Array<ResolversParentTypes['ProfileOrOrganisation']>> };
   OrganisationCreated: OrganisationCreated;
   PaginationArgs: PaginationArgs;
+  PostAddress: PostAddress;
   Profile: Profile;
   ProfileAggregate: Omit<ProfileAggregate, 'payload'> & { payload: ResolversParentTypes['AggregatePayload'] };
   ProfileAggregateFilter: ProfileAggregateFilter;
@@ -1704,6 +1843,7 @@ export type ResolversParentTypes = ResolversObject<{
   ProfileEventFilter: ProfileEventFilter;
   ProfileOrOrganisation: ResolversParentTypes['Organisation'] | ResolversParentTypes['Profile'];
   ProofPaymentResult: ProofPaymentResult;
+  ProofUniquenessResult: ProofUniquenessResult;
   PublicEvent: Omit<PublicEvent, 'payload'> & { payload?: Maybe<ResolversParentTypes['EventPayload']> };
   Purchase: Purchase;
   PurchaseLine: PurchaseLine;
@@ -1737,6 +1877,12 @@ export type ResolversParentTypes = ResolversObject<{
   SendMessageResult: SendMessageResult;
   Server: Server;
   SessionInfo: SessionInfo;
+  Shop: Shop;
+  ShopCategory: ShopCategory;
+  ShopCategoryEntry: ShopCategoryEntry;
+  ShopCategoryEntryInput: ShopCategoryEntryInput;
+  ShopCategoryInput: ShopCategoryInput;
+  ShopInput: ShopInput;
   Stats: Stats;
   String: Scalars['String'];
   Subscription: {};
@@ -1749,6 +1895,8 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateSafeResponse: UpdateSafeResponse;
   UpsertOrganisationInput: UpsertOrganisationInput;
   UpsertProfileInput: UpsertProfileInput;
+  UpsertShopCategoriesResult: UpsertShopCategoriesResult;
+  UpsertShopCategoryEntriesResult: UpsertShopCategoryEntriesResult;
   UpsertTagInput: UpsertTagInput;
   Verification: Verification;
   VerifiedSafesFilter: VerifiedSafesFilter;
@@ -1838,12 +1986,6 @@ export type CommonTrustResolvers<ContextType = any, ParentType extends Resolvers
   safeAddress1?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   safeAddress2?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type ConsumeDepositedChallengeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['ConsumeDepositedChallengeResponse'] = ResolversParentTypes['ConsumeDepositedChallengeResponse']> = ResolversObject<{
-  challenge?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1967,22 +2109,6 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'Date';
 }
 
-export type DelegateAuthInitResolvers<ContextType = any, ParentType extends ResolversParentTypes['DelegateAuthInit'] = ResolversParentTypes['DelegateAuthInit']> = ResolversObject<{
-  appId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  challengeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  delegateAuthCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  validTo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
-export type DepositChallengeResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DepositChallengeResponse'] = ResolversParentTypes['DepositChallengeResponse']> = ResolversObject<{
-  errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export type Erc20BalancesResolvers<ContextType = any, ParentType extends ResolversParentTypes['Erc20Balances'] = ResolversParentTypes['Erc20Balances']> = ResolversObject<{
   balances?: Resolver<Array<ResolversTypes['AssetBalance']>, ParentType, ContextType>;
   lastUpdatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2105,6 +2231,7 @@ export type InvoiceResolvers<ContextType = any, ParentType extends ResolversPare
 export type InvoiceLineResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvoiceLine'] = ResolversParentTypes['InvoiceLine']> = ResolversObject<{
   amount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  metadata?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   offer?: Resolver<Maybe<ResolversTypes['Offer']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -2193,16 +2320,13 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   acknowledge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'until'>>;
   addMember?: Resolver<Maybe<ResolversTypes['AddMemberResult']>, ParentType, ContextType, RequireFields<MutationAddMemberArgs, 'groupId' | 'memberAddress'>>;
   announcePayment?: Resolver<ResolversTypes['AnnouncePaymentResult'], ParentType, ContextType, RequireFields<MutationAnnouncePaymentArgs, 'invoiceId' | 'transactionHash'>>;
-  authenticateAt?: Resolver<ResolversTypes['DelegateAuthInit'], ParentType, ContextType, RequireFields<MutationAuthenticateAtArgs, 'appId'>>;
   claimInvitation?: Resolver<ResolversTypes['ClaimInvitationResult'], ParentType, ContextType, RequireFields<MutationClaimInvitationArgs, 'code'>>;
   completePurchase?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<MutationCompletePurchaseArgs, 'invoiceId'>>;
   completeSale?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<MutationCompleteSaleArgs, 'invoiceId'>>;
-  consumeDepositedChallenge?: Resolver<ResolversTypes['ConsumeDepositedChallengeResponse'], ParentType, ContextType, RequireFields<MutationConsumeDepositedChallengeArgs, 'delegateAuthCode'>>;
   createTestInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType>;
-  depositChallenge?: Resolver<ResolversTypes['DepositChallengeResponse'], ParentType, ContextType, RequireFields<MutationDepositChallengeArgs, 'jwt'>>;
-  exchangeToken?: Resolver<ResolversTypes['ExchangeTokenResponse'], ParentType, ContextType>;
   importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   logout?: Resolver<ResolversTypes['LogoutResponse'], ParentType, ContextType>;
+  proofUniqueness?: Resolver<ResolversTypes['ProofUniquenessResult'], ParentType, ContextType, RequireFields<MutationProofUniquenessArgs, 'humanodeToken'>>;
   purchase?: Resolver<Array<ResolversTypes['Invoice']>, ParentType, ContextType, RequireFields<MutationPurchaseArgs, 'lines'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
   rejectMembership?: Resolver<Maybe<ResolversTypes['RejectMembershipResult']>, ParentType, ContextType, RequireFields<MutationRejectMembershipArgs, 'membershipId'>>;
@@ -2214,9 +2338,13 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   sendMessage?: Resolver<ResolversTypes['SendMessageResult'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'content' | 'toSafeAddress'>>;
   tagTransaction?: Resolver<ResolversTypes['TagTransactionResult'], ParentType, ContextType, RequireFields<MutationTagTransactionArgs, 'tag' | 'transactionHash'>>;
   updateSafe?: Resolver<ResolversTypes['UpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationUpdateSafeArgs, 'data'>>;
+  upsertOffer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType, RequireFields<MutationUpsertOfferArgs, 'offer'>>;
   upsertOrganisation?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertOrganisationArgs, 'organisation'>>;
   upsertProfile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType, RequireFields<MutationUpsertProfileArgs, 'data'>>;
   upsertRegion?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertRegionArgs, 'organisation'>>;
+  upsertShop?: Resolver<ResolversTypes['Shop'], ParentType, ContextType, RequireFields<MutationUpsertShopArgs, 'shop'>>;
+  upsertShopCategories?: Resolver<ResolversTypes['UpsertShopCategoriesResult'], ParentType, ContextType, RequireFields<MutationUpsertShopCategoriesArgs, 'shopCategories'>>;
+  upsertShopCategoryEntries?: Resolver<ResolversTypes['UpsertShopCategoryEntriesResult'], ParentType, ContextType, RequireFields<MutationUpsertShopCategoryEntriesArgs, 'shopCategoryEntries'>>;
   upsertTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationUpsertTagArgs, 'data'>>;
   verifySafe?: Resolver<ResolversTypes['VerifySafeResult'], ParentType, ContextType, RequireFields<MutationVerifySafeArgs, 'safeAddress'>>;
   verifySessionChallenge?: Resolver<Maybe<ResolversTypes['ExchangeTokenResponse']>, ParentType, ContextType, RequireFields<MutationVerifySessionChallengeArgs, 'challenge' | 'signature'>>;
@@ -2283,6 +2411,7 @@ export type OrganisationResolvers<ContextType = any, ParentType extends Resolver
   offers?: Resolver<Maybe<Array<ResolversTypes['Offer']>>, ParentType, ContextType>;
   productListingType?: Resolver<Maybe<ResolversTypes['ProductListingType']>, ParentType, ContextType>;
   shopEnabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  shops?: Resolver<Maybe<Array<ResolversTypes['Shop']>>, ParentType, ContextType>;
   smallBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   trustsYou?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -2292,6 +2421,18 @@ export type OrganisationCreatedResolvers<ContextType = any, ParentType extends R
   organisation?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   organisation_profile?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType>;
   transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PostAddressResolvers<ContextType = any, ParentType extends ResolversParentTypes['PostAddress'] = ResolversParentTypes['PostAddress']> = ResolversObject<{
+  city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
+  cityGeonameid?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  house?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  state?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  street?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  zip?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2328,6 +2469,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   productListingType?: Resolver<Maybe<ResolversTypes['ProductListingType']>, ParentType, ContextType>;
   purchases?: Resolver<Maybe<Array<ResolversTypes['Purchase']>>, ParentType, ContextType>;
   sales?: Resolver<Maybe<Array<ResolversTypes['Sale']>>, ParentType, ContextType>;
+  shops?: Resolver<Maybe<Array<ResolversTypes['Shop']>>, ParentType, ContextType>;
   smallBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   successorOfCirclesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2376,6 +2518,11 @@ export type ProofPaymentResultResolvers<ContextType = any, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ProofUniquenessResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProofUniquenessResult'] = ResolversParentTypes['ProofUniquenessResult']> = ResolversObject<{
+  existingSafe?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type PublicEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['PublicEvent'] = ResolversParentTypes['PublicEvent']> = ResolversObject<{
   block_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   contact_address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2402,6 +2549,7 @@ export type PurchaseResolvers<ContextType = any, ParentType extends ResolversPar
 export type PurchaseLineResolvers<ContextType = any, ParentType extends ResolversParentTypes['PurchaseLine'] = ResolversParentTypes['PurchaseLine']> = ResolversObject<{
   amount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  metadata?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   offer?: Resolver<Maybe<ResolversTypes['Offer']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -2424,6 +2572,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   aggregates?: Resolver<Array<ResolversTypes['ProfileAggregate']>, ParentType, ContextType, RequireFields<QueryAggregatesArgs, 'safeAddress' | 'types'>>;
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, 'query'>>;
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
+  clientAssertionJwt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   commonTrust?: Resolver<Array<ResolversTypes['CommonTrust']>, ParentType, ContextType, RequireFields<QueryCommonTrustArgs, 'safeAddress1' | 'safeAddress2'>>;
   directPath?: Resolver<ResolversTypes['TransitivePath'], ParentType, ContextType, RequireFields<QueryDirectPathArgs, 'amount' | 'from' | 'to'>>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'pagination' | 'safeAddress' | 'types'>>;
@@ -2438,7 +2587,6 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   myProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, Partial<QueryOrganisationsArgs>>;
   organisationsByAddress?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsByAddressArgs, 'addresses'>>;
-  organisationsWithOffers?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   profilesById?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesByIdArgs, 'ids'>>;
   profilesBySafeAddress?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesBySafeAddressArgs, 'safeAddresses'>>;
   recentProfiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, Partial<QueryRecentProfilesArgs>>;
@@ -2446,6 +2594,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   safeInfo?: Resolver<Maybe<ResolversTypes['SafeInfo']>, ParentType, ContextType, Partial<QuerySafeInfoArgs>>;
   search?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QuerySearchArgs, 'query'>>;
   sessionInfo?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
+  shop?: Resolver<Maybe<ResolversTypes['Shop']>, ParentType, ContextType, RequireFields<QueryShopArgs, 'id'>>;
+  shops?: Resolver<Array<ResolversTypes['Shop']>, ParentType, ContextType>;
   stats?: Resolver<ResolversTypes['Stats'], ParentType, ContextType>;
   tagById?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagByIdArgs, 'id'>>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsArgs, 'query'>>;
@@ -2535,6 +2685,7 @@ export type SalesResolvers<ContextType = any, ParentType extends ResolversParent
 export type SalesLineResolvers<ContextType = any, ParentType extends ResolversParentTypes['SalesLine'] = ResolversParentTypes['SalesLine']> = ResolversObject<{
   amount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  metadata?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   offer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -2557,6 +2708,57 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
   isLoggedOn?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   profileId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ShopResolvers<ContextType = any, ParentType extends ResolversParentTypes['Shop'] = ResolversParentTypes['Shop']> = ResolversObject<{
+  categories?: Resolver<Maybe<Array<ResolversTypes['ShopCategory']>>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  enabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  largeBannerUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  openingHours?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['Organisation'], ParentType, ContextType>;
+  pickupAddress?: Resolver<Maybe<ResolversTypes['PostAddress']>, ParentType, ContextType>;
+  private?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  productListingStyle?: Resolver<ResolversTypes['ProductListingType'], ParentType, ContextType>;
+  purchaseMetaDataKeys?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  shopListingStyle?: Resolver<ResolversTypes['ShopListingStyle'], ParentType, ContextType>;
+  smallBannerUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  sortOrder?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ShopCategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['ShopCategory'] = ResolversParentTypes['ShopCategory']> = ResolversObject<{
+  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  enabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  entries?: Resolver<Maybe<Array<ResolversTypes['ShopCategoryEntry']>>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  largeBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  private?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  productListingStyle?: Resolver<Maybe<ResolversTypes['ProductListingType']>, ParentType, ContextType>;
+  shop?: Resolver<Maybe<ResolversTypes['Shop']>, ParentType, ContextType>;
+  shopId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  smallBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  sortOrder?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ShopCategoryEntryResolvers<ContextType = any, ParentType extends ResolversParentTypes['ShopCategoryEntry'] = ResolversParentTypes['ShopCategoryEntry']> = ResolversObject<{
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  enabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  private?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  product?: Resolver<Maybe<ResolversTypes['Offer']>, ParentType, ContextType>;
+  productId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  productVersion?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  shopCategory?: Resolver<Maybe<ResolversTypes['ShopCategory']>, ParentType, ContextType>;
+  shopCategoryId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  sortOrder?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2620,6 +2822,18 @@ export type UpdateSafeResponseResolvers<ContextType = any, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type UpsertShopCategoriesResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpsertShopCategoriesResult'] = ResolversParentTypes['UpsertShopCategoriesResult']> = ResolversObject<{
+  inserted?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  updated?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type UpsertShopCategoryEntriesResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpsertShopCategoryEntriesResult'] = ResolversParentTypes['UpsertShopCategoryEntriesResult']> = ResolversObject<{
+  inserted?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  updated?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type VerificationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Verification'] = ResolversParentTypes['Verification']> = ResolversObject<{
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   revokedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2664,7 +2878,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   ClaimInvitationResult?: ClaimInvitationResultResolvers<ContextType>;
   ClaimedInvitation?: ClaimedInvitationResolvers<ContextType>;
   CommonTrust?: CommonTrustResolvers<ContextType>;
-  ConsumeDepositedChallengeResponse?: ConsumeDepositedChallengeResponseResolvers<ContextType>;
   Contact?: ContactResolvers<ContextType>;
   ContactPoint?: ContactPointResolvers<ContextType>;
   Contacts?: ContactsResolvers<ContextType>;
@@ -2679,8 +2892,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   CreatedInvitation?: CreatedInvitationResolvers<ContextType>;
   CreatedInviteEoa?: CreatedInviteEoaResolvers<ContextType>;
   Date?: GraphQLScalarType;
-  DelegateAuthInit?: DelegateAuthInitResolvers<ContextType>;
-  DepositChallengeResponse?: DepositChallengeResponseResolvers<ContextType>;
   Erc20Balances?: Erc20BalancesResolvers<ContextType>;
   Erc20Transfer?: Erc20TransferResolvers<ContextType>;
   EthTransfer?: EthTransferResolvers<ContextType>;
@@ -2712,12 +2923,14 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Offers?: OffersResolvers<ContextType>;
   Organisation?: OrganisationResolvers<ContextType>;
   OrganisationCreated?: OrganisationCreatedResolvers<ContextType>;
+  PostAddress?: PostAddressResolvers<ContextType>;
   Profile?: ProfileResolvers<ContextType>;
   ProfileAggregate?: ProfileAggregateResolvers<ContextType>;
   ProfileBalances?: ProfileBalancesResolvers<ContextType>;
   ProfileEvent?: ProfileEventResolvers<ContextType>;
   ProfileOrOrganisation?: ProfileOrOrganisationResolvers<ContextType>;
   ProofPaymentResult?: ProofPaymentResultResolvers<ContextType>;
+  ProofUniquenessResult?: ProofUniquenessResultResolvers<ContextType>;
   PublicEvent?: PublicEventResolvers<ContextType>;
   Purchase?: PurchaseResolvers<ContextType>;
   PurchaseLine?: PurchaseLineResolvers<ContextType>;
@@ -2738,6 +2951,9 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   SendMessageResult?: SendMessageResultResolvers<ContextType>;
   Server?: ServerResolvers<ContextType>;
   SessionInfo?: SessionInfoResolvers<ContextType>;
+  Shop?: ShopResolvers<ContextType>;
+  ShopCategory?: ShopCategoryResolvers<ContextType>;
+  ShopCategoryEntry?: ShopCategoryEntryResolvers<ContextType>;
   Stats?: StatsResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Tag?: TagResolvers<ContextType>;
@@ -2746,6 +2962,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   TransitiveTransfer?: TransitiveTransferResolvers<ContextType>;
   TrustRelation?: TrustRelationResolvers<ContextType>;
   UpdateSafeResponse?: UpdateSafeResponseResolvers<ContextType>;
+  UpsertShopCategoriesResult?: UpsertShopCategoriesResultResolvers<ContextType>;
+  UpsertShopCategoryEntriesResult?: UpsertShopCategoryEntriesResultResolvers<ContextType>;
   Verification?: VerificationResolvers<ContextType>;
   VerifySafeResult?: VerifySafeResultResolvers<ContextType>;
   Version?: VersionResolvers<ContextType>;

@@ -20,7 +20,6 @@ export type SmtpConfig = {
 };
 
 export class Environment {
-
   static async validateAndSummarize() {
     const errors:string[] = [];
 
@@ -103,30 +102,6 @@ export class Environment {
         `The INVITATION_FUNDS_SAFE_KEY environment variable is not set.`
       );
     }
-
-    /*
-    if (!process.env.REWARD_TOKEN_ADDRESS) {
-      errors.push(`The REWARD_TOKEN_ADDRESS environment variable is not set.`);
-    }
-
-    if (!process.env.VERIFICATION_REWARD_FUNDS_SAFE_ADDRESS) {
-      errors.push(
-        `The VERIFICATION_REWARD_FUNDS_SAFE_ADDRESS environment variable is not set.`
-      );
-    }
-    console.log("* Testing verificationRewardFundsSafe ..");
-
-    nonce = await this.verificationRewardFundsSafe.getNonce();
-    console.log(
-      `  ${this.verificationRewardFundsSafe.address} nonce is: ${nonce}`
-    );
-
-    if (!process.env.VERIFICATION_REWARD_FUNDS_KEY) {
-      errors.push(
-        `The VERIFICATION_REWARD_FUNDS_KEY environment variable is not set.`
-      );
-    }
-     */
 
     if (
       !process.env.DIGITALOCEAN_SPACES_ENDPOINT ||
@@ -218,6 +193,18 @@ export class Environment {
 
   static get utilityDb(): Pool {
     return Environment._utilityDb;
+  }
+
+  static get keyRotationInterval(): number {
+    return  24 * 60 * 60 * 1000;
+  }
+
+  static get periodicTaskInterval() : number {
+    return  5 * 60 * 1000;
+  }
+
+  static get maxKeyAge() : number {
+    return  2 * this.keyRotationInterval;
   }
 
   private static _indexDb: Pool = new Pool({
@@ -322,6 +309,14 @@ export class Environment {
   }
   static get fixedGasPrice(): number {
     return !process.env.IS_AUTOMATED_TEST ? 0 : 1;
+  }
+
+  static get humanodeJwksUrl(): string {
+    return "https://auth.staging.oauth2.humanode.io/.well-known/jwks.json";
+  }
+
+  static get humanodeIss(): string {
+    return "https://auth.staging.oauth2.humanode.io/";
   }
 
   /**
