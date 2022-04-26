@@ -27,17 +27,18 @@ import {recentProfiles} from "./recentProfiles";
 import {stats} from "./stats";
 import {init} from "./init";
 import {Environment} from "../../environment";
-import {QueryLastAcknowledgedAtArgs, QueryResolvers} from "../../types";
-import {parentPort} from "worker_threads";
+import {QueryResolvers} from "../../types";
 import {Context} from "../../context";
-import {ProfileLoader} from "../../querySources/profileLoader";
-import {canAccess} from "../../utils/canAccess";
+import {shop} from "./shop";
+import {clientAssertionJwt} from "./clientAssertionJwt";
+import {shops} from "./shops";
+import {lastAcknowledgedAt} from "./lastAcknowledgedAt";
 const packageJson = require("../../../package.json");
 
-export const queryResolvers : QueryResolvers = {
+export const queryResolvers: QueryResolvers = {
   sessionInfo: sessionInfo,
   init: init,
-  stats: async (parent:any, args:any, context:Context) => {
+  stats: async (parent: any, args: any, context: Context) => {
     const caller = await context.callerInfo;
     if (!caller?.profile?.circlesAddress) {
       throw new Error(`You must have a safe to execute this query.`);
@@ -70,42 +71,8 @@ export const queryResolvers : QueryResolvers = {
   invoice: invoice,
   verifications: verifications,
   findInvitationCreator: findInvitationCreator,
-  lastAcknowledgedAt: async (parent:any, args:QueryLastAcknowledgedAtArgs, context:Context) => {
-    if (!(await canAccess(context, args.safeAddress))) {
-      throw new Error(`You cannot access the specified safe address.`);
-    }
-    const lastAcknowledgedDate = await Environment.readWriteApiDb.profile.findFirst({
-      where: {
-        circlesAddress: args.safeAddress
-      },
-      select: {
-        lastAcknowledged: true
-      }
-    });
-    return lastAcknowledgedDate?.lastAcknowledged;
-  },
-  organisationsWithOffers: async (parent:any, args:any, context:Context) => {
-    const orgasWithOffers = await Environment.readWriteApiDb.profile.findMany({
-      where: {
-        type: "ORGANISATION",
-        shopEnabled: true,
-        offers: {
-          some: {
-            id: {
-              gt: 0
-            }
-          }
-        }
-      }
-    });
-    return orgasWithOffers.map(o => {
-      return {
-        ...ProfileLoader.withDisplayCurrency(o),
-        __typename: "Organisation",
-        name: o.firstName,
-        displayName: o.firstName,
-        createdAt: o.createdAt.toJSON()
-      }
-    });
-  }
+  lastAcknowledgedAt: lastAcknowledgedAt,
+  shops: shops,
+  shop: shop,
+  clientAssertionJwt: clientAssertionJwt
 }

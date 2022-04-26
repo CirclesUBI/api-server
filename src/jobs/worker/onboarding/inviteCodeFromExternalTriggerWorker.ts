@@ -1,6 +1,6 @@
 import {InviteCodeFromExternalTrigger} from "../../descriptions/onboarding/inviteCodeFromExternalTrigger";
 import {JobWorker, JobWorkerConfiguration} from "../jobWorker";
-import {Dropper} from "../../../utils/dropper";
+import {createInvitations} from "../../../utils/invitationHelper";
 import {Environment} from "../../../environment";
 
 export class InviteCodeFromExternalTriggerWorker extends JobWorker<InviteCodeFromExternalTrigger> {
@@ -20,7 +20,7 @@ export class InviteCodeFromExternalTriggerWorker extends JobWorker<InviteCodeFro
       throw new Error(`The inviter safe address (${job.inviterSafeAddress}) doesn't belong to a verified safe.`);
     }
 
-    const createdInvitations = await Dropper.createInvitations(verifiedSafe.safeAddress, 1);
+    const createdInvitations = await createInvitations(verifiedSafe.safeAddress, 1);
     const createdInvitation = createdInvitations[0];
 
     return {

@@ -36,6 +36,17 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                         events: notification
                     });
                     break;
+                case EventType.CrcMinting:
+                    notification = <NotificationEvent>{
+                        type: event.type,
+                        from: event.address1,
+                        to: event.address2,
+                        transaction_hash: event.hash
+                    };
+                    await ApiPubSub.instance.pubSub.publish(`events_${event.address2}`, {
+                        events: notification
+                    });
+                    break;
                 case EventType.GnosisSafeEthTransfer:
                     notification = <NotificationEvent>{
                         type: event.type,

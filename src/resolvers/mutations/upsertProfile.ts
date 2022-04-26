@@ -5,12 +5,12 @@ import {ProfileLoader} from "../../querySources/profileLoader";
 import {Environment} from "../../environment";
 import {TestData} from "../../api-db/testData";
 import {RpcGateway} from "../../circles/rpcGateway";
-import {Job, JobQueue} from "../../jobs/jobQueue";
+import {JobQueue} from "../../jobs/jobQueue";
 import {VerifyEmailAddress} from "../../jobs/descriptions/emailNotifications/verifyEmailAddress";
 import {Generate} from "../../utils/generate";
 import {SendVerifyEmailAddressEmail} from "../../jobs/descriptions/emailNotifications/sendVerifyEmailAddressEmail";
 import {claimInvitation} from "./claimInvitation";
-import {Dropper} from "../../utils/dropper";
+import {createInvitationPerpetualTrigger} from "../../utils/invitationHelper";
 import {verifySafe} from "./verifySafe";
 
 const validateEmail = (email:string) => {
@@ -52,16 +52,13 @@ export function upsertProfileResolver() {
         if (args.data.circlesAddress && !RpcGateway.get().utils.isAddress(args.data.circlesAddress)) {
             throw new Error(`Invalid 'circlesAddress': ${args.data.circlesAddress}`);
         }
-        if (args.data.circlesAddress) {
-            if (!await context.isOwnerOfSafe(args.data.circlesAddress)) {
-                throw new Error(`You EOA isn't an owner of safe ${args.data.circlesAddress}`)
-            }
+        if (args.data.circlesAddress && !await context.isOwnerOfSafe(args.data.circlesAddress)) {
+            throw new Error(`You EOA isn't an owner of safe ${args.data.circlesAddress}`);
         }
-        if (args.data.successorOfCirclesAddress) {
-            if (!await context.isOwnerOfSafe(args.data.successorOfCirclesAddress)) {
-                throw new Error(`You EOA isn't an owner of your imported safe ${args.data.successorOfCirclesAddress}`)
-            }
+        if (args.data.successorOfCirclesAddress && !await context.isOwnerOfSafe(args.data.successorOfCirclesAddress)) {
+            throw new Error(`You EOA isn't an owner of your imported safe ${args.data.successorOfCirclesAddress}`);
         }
+
         if (args.data.id) {
             if (args.data.id != session.profileId) {
                 throw new Error(`'${session.sessionToken}' (profile id: ${session.profileId ?? "<undefined>"}) can not upsert other profile '${args.data.id}'.`);
@@ -105,7 +102,7 @@ export function upsertProfileResolver() {
                 await verifySafe(null, {safeAddress: profile.circlesAddress}, context);
 
                 console.log(`Creating the input trigger for address ${profile.circlesAddress} ..`);
-                const inviteTriggerHash = await Dropper.createInvitationPerpetualTrigger(profile.circlesAddress);
+                const inviteTriggerHash = await createInvitationPerpetualTrigger(profile.circlesAddress);
 
                 console.log(`Trying to find the invite trigger job with hash ${inviteTriggerHash} ..`);
                 const inviteTriggerJob = await Environment.readWriteApiDb.job.findUnique({
@@ -126,7 +123,6 @@ export function upsertProfileResolver() {
                     }));
                 }
             }
-
 
             if (oldProfile.emailAddress != profile.emailAddress) {
                 profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({
