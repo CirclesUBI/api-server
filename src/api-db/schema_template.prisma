@@ -459,7 +459,6 @@ model Invoice {
     @@index([purchaseId])
 
     lines InvoiceLine[] @relation(name: "Invoice_Lines")
-    
 
     pendingPaymentTransactionHash String?
 
@@ -495,11 +494,12 @@ model InvoiceLine {
 
     amount Int
 
-
     product Offer @relation(name: "InvoiceLines_Product", fields: [productId, productVersion], references: [id, version])
     productId Int
     productVersion Int
     @@index([productId,productVersion])
+
+    metadata String?
 }
 
 model TagType {

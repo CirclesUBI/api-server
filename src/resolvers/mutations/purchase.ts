@@ -270,6 +270,7 @@ async function createInvoices(
                 amount: l.amount,
                 productId: l.productId,
                 productVersion: l.productVersion,
+                metadata: l.metadata
               };
             }),
           },
