@@ -1102,6 +1102,7 @@ type Shop {
   sortOrder: Int
 
   productListingStyle: ProductListingType!
+  purchaseMetaDataKeys: String
 
   owner: Organisation!
 
@@ -1243,7 +1244,6 @@ type Mutation {
   revokeSafeVerification(safeAddress: String!): VerifySafeResult!
   proofUniqueness(humanodeToken: String!): ProofUniquenessResult!
 }
-
 
 type Query {
   version: Version!

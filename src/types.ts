@@ -1298,6 +1298,7 @@ export type Shop = {
   pickupAddress?: Maybe<PostAddress>;
   private?: Maybe<Scalars['Boolean']>;
   productListingStyle: ProductListingType;
+  purchaseMetaDataKeys?: Maybe<Scalars['String']>;
   shopListingStyle: ShopListingStyle;
   smallBannerUrl: Scalars['String'];
   sortOrder?: Maybe<Scalars['Int']>;
@@ -2721,6 +2722,7 @@ export type ShopResolvers<ContextType = any, ParentType extends ResolversParentT
   pickupAddress?: Resolver<Maybe<ResolversTypes['PostAddress']>, ParentType, ContextType>;
   private?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   productListingStyle?: Resolver<ResolversTypes['ProductListingType'], ParentType, ContextType>;
+  purchaseMetaDataKeys?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   shopListingStyle?: Resolver<ResolversTypes['ShopListingStyle'], ParentType, ContextType>;
   smallBannerUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   sortOrder?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
