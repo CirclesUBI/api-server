@@ -10,7 +10,6 @@ import { claimInvitation } from "./claimInvitation";
 import { redeemClaimedInvitation } from "./redeemClaimedInvitation";
 import { verifySessionChallengeResolver } from "./verifySessionChallengeResolver";
 import { upsertOrganisation } from "./upsertOrganisation";
-import { createTestInvitation } from "./createTestInvitation";
 import { addMemberResolver } from "./addMember";
 import { removeMemberResolver } from "./removeMember";
 import { purchaseResolver } from "./purchase";
@@ -21,17 +20,11 @@ import { completeSale } from "./completeSale";
 import { revokeSafeVerification, verifySafe } from "./verifySafe";
 import { announcePayment } from "./announcePayment";
 import { Environment } from "../../environment";
-import {
-  MutationProofUniquenessArgs,
-  MutationResolvers, ProofUniquenessResult
-} from "../../types";
+import { MutationResolvers } from "../../types";
 import {upsertOffer} from "./upsertOffer";
 import {upsertShop} from "./upsertShop";
 import {upsertShopCategories} from "./upsertShopCategories";
 import {upsertShopCategoryEntries} from "./upsertShopCategoryEntries";
-import {Context} from "../../context";
-import {decodeJwt, jwtVerify} from "jose";
-import fetch from "cross-fetch";
 import {proofUniqueness} from "./proofUniqueness";
 
 export const mutationResolvers: MutationResolvers = {
@@ -50,7 +43,6 @@ export const mutationResolvers: MutationResolvers = {
   redeemClaimedInvitation: redeemClaimedInvitation(),
   requestSessionChallenge: requestSessionChallenge,
   verifySessionChallenge: verifySessionChallengeResolver(Environment.readWriteApiDb),
-  createTestInvitation: createTestInvitation(),
   addMember: addMemberResolver,
   removeMember: removeMemberResolver,
   importOrganisationsOfAccount: <any>importOrganisationsOfAccount,

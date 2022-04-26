@@ -103,30 +103,6 @@ export class Environment {
       );
     }
 
-    /*
-    if (!process.env.REWARD_TOKEN_ADDRESS) {
-      errors.push(`The REWARD_TOKEN_ADDRESS environment variable is not set.`);
-    }
-
-    if (!process.env.VERIFICATION_REWARD_FUNDS_SAFE_ADDRESS) {
-      errors.push(
-        `The VERIFICATION_REWARD_FUNDS_SAFE_ADDRESS environment variable is not set.`
-      );
-    }
-    console.log("* Testing verificationRewardFundsSafe ..");
-
-    nonce = await this.verificationRewardFundsSafe.getNonce();
-    console.log(
-      `  ${this.verificationRewardFundsSafe.address} nonce is: ${nonce}`
-    );
-
-    if (!process.env.VERIFICATION_REWARD_FUNDS_KEY) {
-      errors.push(
-        `The VERIFICATION_REWARD_FUNDS_KEY environment variable is not set.`
-      );
-    }
-     */
-
     if (
       !process.env.DIGITALOCEAN_SPACES_ENDPOINT ||
       !process.env.DIGITALOCEAN_SPACES_KEY ||
