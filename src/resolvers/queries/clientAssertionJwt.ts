@@ -17,7 +17,7 @@ export const clientAssertionJwt = async (parent: any, args: any, context: Contex
         throw new Error(`No signing key available.`);
     }
 
-    const clientId = "circles-ubi-jwks";
+    const clientId = Environment.externalDomain == "localhost" ? "circles-ubi-jwks" : "circles-ubi-staging";
     const iat = Date.now();
     const exp = iat + 5 * 60 * 1000;
 
