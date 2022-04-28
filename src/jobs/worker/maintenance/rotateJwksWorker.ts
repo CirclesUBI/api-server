@@ -14,7 +14,7 @@ export class RotateJwksWorker extends JobWorker<RotateJwks> {
 
   async doWork(job: RotateJwks) {
     const ks = jose.JWK.createKeyStore();
-    const keyStore = await ks.generate('RSA', 2048, {alg: 'RSA', use: 'sig' });
+    const keyStore = await ks.generate('RSA', 2048, {alg: 'RS256', use: 'sig' });
 
     const latestKey = await Environment.readonlyApiDb.jwks.findFirst({
       orderBy: {
