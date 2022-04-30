@@ -12,6 +12,7 @@ import {SendVerifyEmailAddressEmail} from "../../jobs/descriptions/emailNotifica
 import {claimInvitation} from "./claimInvitation";
 import {createInvitationPerpetualTrigger} from "../../utils/invitationHelper";
 import {verifySafe} from "./verifySafe";
+import {AutoTrust} from "../../jobs/descriptions/maintenance/autoTrust";
 
 const validateEmail = (email:string) => {
     return email.match(
@@ -100,6 +101,15 @@ export function upsertProfileResolver() {
                 // Create the initial invitations for the user
                 console.log(`Automatically verifying the new safe user ${profile.circlesAddress} ..`);
                 await verifySafe(null, {safeAddress: profile.circlesAddress}, context);
+
+                const invitation = await Environment.readWriteApiDb.invitation.findFirst({
+                    where: { redeemedByProfileId: profile.id },
+                    include: { createdBy: true }
+                });
+                if (invitation?.createdBy?.circlesAddress) {
+                    console.log(`Creating an 'autoTrust' job for new safe ${profile.circlesAddress} and inviter ${invitation.createdBy.circlesAddress}`);
+                    await JobQueue.produce([new AutoTrust(invitation.createdBy.circlesAddress, profile.circlesAddress)]);
+                }
 
                 console.log(`Creating the input trigger for address ${profile.circlesAddress} ..`);
                 const inviteTriggerHash = await createInvitationPerpetualTrigger(profile.circlesAddress);

@@ -26,8 +26,8 @@ export const clientAssertionJwt = async (parent: any, args: any, context: Contex
         iss: clientId,
         sub: clientId,
         aud: ["https://auth.staging.oauth2.humanode.io/oauth2/auth", "https://auth.staging.oauth2.humanode.io/oauth2/token"],
-        iat: iat / 1000,
-        exp: exp / 1000
+        iat: parseInt((iat / 1000).toFixed(0)),
+        exp: parseInt((exp / 1000).toFixed(0))
     });
 
     const opt = {

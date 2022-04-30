@@ -578,3 +578,9 @@ model i18n {
     value String
     @@unique([lang, key, version])
 }
+
+model AutoTrustAgent {
+    id Int @id @default(autoincrement())
+    safeAddress String
+    privateKey String
+}
