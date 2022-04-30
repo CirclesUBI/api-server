@@ -22,6 +22,8 @@ import {SendWelcomeEmail} from "./descriptions/emailNotifications/sendWelcomeEma
 import {RequestUbiForInactiveAccountsWorker} from "./worker/maintenance/requestUbiForInactiveAccountsWorker";
 import {RequestUbiForInactiveAccounts} from "./descriptions/maintenance/requestUbiForInactiveAccounts";
 import {RotateJwksWorker} from "./worker/maintenance/rotateJwksWorker";
+import {AutoTrustWorker} from "./worker/maintenance/autoTrustWorker";
+import {AutoTrust} from "./descriptions/maintenance/autoTrust";
 import {RotateJwks} from "./descriptions/maintenance/rotateJwks";
 
 export const jobSink = async (job: Job) => {
@@ -36,7 +38,13 @@ export const jobSink = async (job: Job) => {
         errorStrategy: "logAndDropAfterThreshold",
         dropThreshold: 3
       })
-        .run(job.id, RotateJwks.parse(job.payload));
+        .run(job.id, RotateJwks.parse(job.payload))
+    case "autoTrust".toLowerCase():
+      return await new AutoTrustWorker({
+        errorStrategy: "logAndDropAfterThreshold",
+        dropThreshold: 3
+      })
+        .run(job.id, AutoTrust.parse(job.payload));
     case "sendWelcomeEmail".toLowerCase():
       return await new SendWelcomeEmailWorker({
         errorStrategy: "logAndDrop"
