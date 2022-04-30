@@ -57,13 +57,17 @@ async function findDirectPath(from: string, to: string, amountInWei: string) : P
 
   // 2) Get the balance of each owner's own token holdings
   const allTokenOwners = Object.keys(acceptedTokensWithBalance.toLookup(o => o.tokenOwner));
-  const tokenOwnerOwnTokenBalances = await getTokenOwnerOwnTokenBalances(allTokenOwners);
+  const tokenOwnerOwnTokenBalances = await getTokenOwnerOwnTokenBalances(
+    !allTokenOwners.find(o => o == to)
+      ? allTokenOwners.concat([to])
+      : allTokenOwners);
   const tokenOwnersOwnBalancesLookup = tokenOwnerOwnTokenBalances.toLookup(o => o.tokenOwner, o => o.balance);
 
   // 3) Get the receiver's current balance of every transferable token
   const receiverTokenBalances = await getReceiverTokenBalances(to, allTokenOwners);
   const receiverTokenBalancesLookup = receiverTokenBalances.toLookup(o => o.tokenOwner, o => o.balance);
 
+  const tokenOwnersOwnTokenBalance = tokenOwnerOwnTokenBalances.find(o => o.tokenOwner == to);
 
   // 4) Calculate the max. transferable amount of each token:
   //    * Get the destination's balance of their own token
@@ -77,7 +81,7 @@ async function findDirectPath(from: string, to: string, amountInWei: string) : P
     // The owner of a token always accepts all of their tokens
     let max = (o.tokenOwner == to || recipientIsOrganization)
       ? o.balance
-      : tokenOwnersOwnBalancesLookup[o.tokenOwner].mul(o.limitBn).div(oneHundred);
+      : tokenOwnersOwnBalancesLookup[to].mul(o.limitBn).div(oneHundred);
 
     // Subtract the current holdings of the receivers from the max transferable amount:
     // userToToken[tokenOwner].balanceOf(dest).mul(oneHundred.sub(limits[dest][tokenOwner])).div(oneHundred)
@@ -300,7 +304,7 @@ async function getAcceptedTokensWithBalanceAndLimit(from: string, to: string) : 
       order by balance::numeric desc;`;
 
   const result = await Environment.indexDb.query(acceptedTokensWithBalanceAndLimitSql, [from, to]);
-  return result.rows.map(o => {
+  const balances = result.rows.map(o => {
     return <TokenWithBalanceAndLimit>{
       token: o.token,
       tokenOwner: o.token_owner,
@@ -310,6 +314,8 @@ async function getAcceptedTokensWithBalanceAndLimit(from: string, to: string) : 
       limitBn: new BN(o.limit.toString())
     }
   });
+
+  return balances;
 }
 
 async function getTokenOwnerOwnTokenBalances(tokenOwners:string[]) : Promise<TokenWithBalance[]> {
