@@ -173,7 +173,8 @@ export class Main {
       "broadcastPurchased",
       "sendWelcomeEmail",
       "requestUbiForInactiveAccounts",
-      "rotateJwks"
+      "rotateJwks",
+      "autoTrust"
     ];
 
     jobQueue.consume(jobTopics, jobSink, false)

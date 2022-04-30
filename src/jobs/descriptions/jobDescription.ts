@@ -1,5 +1,4 @@
 import crypto from "crypto";
-import {identity} from "ix/util/identity";
 
 export type JobType =
   "broadcastChatMessage" |
@@ -14,7 +13,8 @@ export type JobType =
   "sendWelcomeEmail" |
   "broadcastPurchased" |
   "requestUbiForInactiveAccounts" |
-  "rotateJwks";
+  "rotateJwks" |
+  "autoTrust";
 
 export type JobKind =
   "broadcast" |
