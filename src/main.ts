@@ -22,6 +22,7 @@ import {JobType} from "./jobs/descriptions/jobDescription";
 import express from "express";
 import cors from "cors";
 import * as graphqlImport from "@graphql-tools/import";
+import {healthGetHandler} from "./httpHandlers/get/health";
 
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
@@ -105,6 +106,9 @@ export class Main {
     app.post("/upload", cors(corsOptions), uploadPostHandler);
     app.get("/trigger", cors(corsOptions), triggerGetHandler);
     app.get("/jwks", cors(corsOptions), jwksGetHandler);
+    app.get("/health", cors({
+      origin: '*'
+    }), healthGetHandler);
 
     const httpServer = createServer(app);
     const schema = makeExecutableSchema({
