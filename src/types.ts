@@ -1296,6 +1296,7 @@ export type Shop = {
   name: Scalars['String'];
   openingHours?: Maybe<Scalars['String']>;
   owner: Organisation;
+  ownerId?: Maybe<Scalars['Int']>;
   pickupAddress?: Maybe<PostAddress>;
   private?: Maybe<Scalars['Boolean']>;
   productListingStyle: ProductListingType;
@@ -2721,6 +2722,7 @@ export type ShopResolvers<ContextType = any, ParentType extends ResolversParentT
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   openingHours?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['Organisation'], ParentType, ContextType>;
+  ownerId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   pickupAddress?: Resolver<Maybe<ResolversTypes['PostAddress']>, ParentType, ContextType>;
   private?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   productListingStyle?: Resolver<ResolversTypes['ProductListingType'], ParentType, ContextType>;

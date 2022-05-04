@@ -1106,6 +1106,8 @@ type Shop {
   productListingStyle: ProductListingType!
   purchaseMetaDataKeys: String
 
+  ownerId: Int
+
   owner: Organisation!
 
   openingHours: String
