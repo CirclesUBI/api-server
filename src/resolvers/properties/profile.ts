@@ -1,4 +1,4 @@
-import {AssetBalance, Profile, ProfileOrigin, ProfileResolvers} from "../../types";
+import {AssetBalance, PostAddress, Profile, ProfileOrigin, ProfileResolvers} from "../../types";
 import {Context} from "../../context";
 import {Environment} from "../../environment";
 import {getDateWithOffset} from "../../utils/getDateWithOffset";
@@ -16,6 +16,7 @@ import {profileInvitationTransactionDataLoader} from "../dataLoaders/profileInvi
 import {profileCirclesTokenAddressDataLoader} from "../dataLoaders/profileCirclesTokenAddressDataLoader";
 import {profileMembersDataLoader} from "../dataLoaders/profileMembersDataLoader";
 import {profileShopsDataLoader} from "../dataLoaders/profileShopsDataLoader";
+import {UtilityDbQueries} from "../../querySources/utilityDbQueries";
 
 
 function isOwnProfile(profileId:number, context:Context) : boolean {
@@ -197,5 +198,34 @@ export const profilePropertyResolvers : ProfileResolvers = {
     return parent.firstName.trim() == ""
       ? parent.circlesAddress ?? ""
       : `${parent.firstName}${parent.lastName ? " " + parent.lastName : ""}`;
+  },
+  shippingAddresses: async (parent:Profile, args:any, context: Context) => {
+    if (!parent.circlesAddress) {
+      return null;
+    }
+    if (!isOwnProfile(parent.id, context)){
+      return null;
+    }
+
+    const shippingAddresses = await Environment.readWriteApiDb.postAddress.findMany({
+      where: {
+        shippingAddressOfProfileId: parent.id
+      }
+    });
+
+    return await Promise.all(shippingAddresses.filter(o => o.cityGeonameid).map(async o => {
+      const place = await UtilityDbQueries.placesById([o.cityGeonameid ?? 0]);
+      return <PostAddress>{
+        id: o.id,
+        name: o.name,
+        city: place[0].name,
+        cityGeonameid: o.cityGeonameid,
+        country: place[0].country,
+        zip: o.zip,
+        house: o.house,
+        state: o.state,
+        street: o.street
+      }
+    }));
   }
 }

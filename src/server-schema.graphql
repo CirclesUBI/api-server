@@ -65,6 +65,7 @@ type Profile {
   balances: ProfileBalances
   contacts: [Contact!]
   shops: [Shop!]
+  shippingAddresses: [PostAddress!]
 }
 
 type ProfileBalances {
@@ -1065,8 +1066,9 @@ type PostAddress {
   zip: String!
   state: String
 
-  cityGeonameid: Int!
-  city: City
+  cityGeonameid: Int
+  city: String!
+  country: String!
 }
 
 input ShopInput {

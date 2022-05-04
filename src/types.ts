@@ -780,8 +780,9 @@ export type PaginationArgs = {
 
 export type PostAddress = {
   __typename?: 'PostAddress';
-  city?: Maybe<City>;
-  cityGeonameid: Scalars['Int'];
+  city: Scalars['String'];
+  cityGeonameid?: Maybe<Scalars['Int']>;
+  country: Scalars['String'];
   house: Scalars['String'];
   id: Scalars['Int'];
   name?: Maybe<Scalars['String']>;
@@ -829,6 +830,7 @@ export type Profile = {
   productListingType?: Maybe<ProductListingType>;
   purchases?: Maybe<Array<Purchase>>;
   sales?: Maybe<Array<Sale>>;
+  shippingAddresses?: Maybe<Array<PostAddress>>;
   shops?: Maybe<Array<Shop>>;
   smallBannerUrl?: Maybe<Scalars['String']>;
   status?: Maybe<Scalars['String']>;
@@ -2426,8 +2428,9 @@ export type OrganisationCreatedResolvers<ContextType = any, ParentType extends R
 }>;
 
 export type PostAddressResolvers<ContextType = any, ParentType extends ResolversParentTypes['PostAddress'] = ResolversParentTypes['PostAddress']> = ResolversObject<{
-  city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
-  cityGeonameid?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  city?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  cityGeonameid?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  country?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   house?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2470,6 +2473,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   productListingType?: Resolver<Maybe<ResolversTypes['ProductListingType']>, ParentType, ContextType>;
   purchases?: Resolver<Maybe<Array<ResolversTypes['Purchase']>>, ParentType, ContextType>;
   sales?: Resolver<Maybe<Array<ResolversTypes['Sale']>>, ParentType, ContextType>;
+  shippingAddresses?: Resolver<Maybe<Array<ResolversTypes['PostAddress']>>, ParentType, ContextType>;
   shops?: Resolver<Maybe<Array<ResolversTypes['Shop']>>, ParentType, ContextType>;
   smallBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
