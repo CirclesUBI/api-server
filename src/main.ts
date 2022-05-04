@@ -10,9 +10,7 @@ import {Environment} from "./environment";
 import {IndexerEvents} from "./indexer-api/indexerEvents";
 import {PaymentProcessor} from "./indexer-api/paymentProcessor";
 import {AppNotificationProcessor} from "./indexer-api/appNotificationProcessor";
-import {RequestUbiForInactiveAccounts} from "./jobs/descriptions/maintenance/requestUbiForInactiveAccounts";
 import {jwksGetHandler} from "./httpHandlers/get/jwks";
-import {RotateJwks} from "./jobs/descriptions/maintenance/rotateJwks";
 import {JobQueue} from "./jobs/jobQueue";
 import {gqlSubscriptionServer} from "./gqlSubscriptionServer";
 import {uploadPostHandler} from "./httpHandlers/post/upload";
@@ -23,6 +21,8 @@ import express from "express";
 import cors from "cors";
 import * as graphqlImport from "@graphql-tools/import";
 import {healthGetHandler} from "./httpHandlers/get/health";
+import {RotateJwks} from "./jobs/descriptions/maintenance/rotateJwks";
+import {RequestUbiForInactiveAccounts} from "./jobs/descriptions/maintenance/requestUbiForInactiveAccounts";
 
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
@@ -200,7 +200,7 @@ export class Main {
 new Main().run()
   .then(() => console.log("Started"))
   .then(async () => {
-    console.log(`Starting RequestUbiForInactiveAccounts job factory. Yields every ${Environment.periodicTaskInterval / 1000} seconds.`)
+    console.log(`Starting periodic task job factory. Yields every ${Environment.periodicTaskInterval / 1000} seconds.`)
     setInterval(async() => {
         const now = new Date();
 
