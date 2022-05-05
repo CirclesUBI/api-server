@@ -1275,7 +1275,7 @@ type Query {
 
   aggregates(types: [AggregateType!]!, safeAddress: String!, filter: ProfileAggregateFilter): [ProfileAggregate!]!
 
-  shops: [Shop!]!
+  shops(ownerId: Int): [Shop!]!
   shop(id: Int!): Shop
 
   organisations(pagination: PaginationArgs): [Organisation!]!

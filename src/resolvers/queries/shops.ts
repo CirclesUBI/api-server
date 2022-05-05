@@ -1,14 +1,15 @@
 import {Context} from "../../context";
-import {Organisation, Shop} from "../../types";
+import {Organisation, QueryShopsArgs, Shop} from "../../types";
 import {Environment} from "../../environment";
+import {canAccessShop} from "../../utils/ensureCanAccessShop";
 
-export const shops = async (parent: any, args: any, context: Context) => {
+export const shops = async (parent: any, args: QueryShopsArgs, context: Context) => {
     const shops = await Environment.readWriteApiDb.shop.findMany({
         where: {
-            enabled: true,
             owner: {
                 type: "ORGANISATION"
-            }
+            },
+            ...(args.ownerId ? {ownerId: args.ownerId} : {})
         },
         include: {
             owner: true
@@ -17,7 +18,21 @@ export const shops = async (parent: any, args: any, context: Context) => {
             sortOrder: "asc"
         }
     });
-    return shops.map(o => {
+
+    const enabledShops = shops.filter(o => o.enabled);
+    let disabledShops = shops.filter(o => !o.enabled && args.ownerId);
+
+    // Check accessibility for each disabled shop (only owners and collaborators should see it).
+    disabledShops = (await Promise.all(disabledShops.map(async o => {
+          return {
+              canAccess: await canAccessShop(o.id, <number>args.ownerId, context),
+              shop: o
+          }
+      })))
+      .filter(o => o.canAccess)
+      .map(o => o.shop);
+
+    return [...enabledShops, ...disabledShops].map(o => {
         return <Shop>{
             ...o,
             owner: <Organisation>{
