@@ -505,6 +505,7 @@ export type Mutation = {
   completePurchase: Invoice;
   completeSale: Invoice;
   createTestInvitation: CreateInvitationResult;
+  deleteShippingAddress?: Maybe<PostAddress>;
   importOrganisationsOfAccount: Array<Organisation>;
   logout: LogoutResponse;
   proofUniqueness: ProofUniquenessResult;
@@ -512,7 +513,6 @@ export type Mutation = {
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
   rejectMembership?: Maybe<RejectMembershipResult>;
   removeMember?: Maybe<RemoveMemberResult>;
-  requestInvitationOffer: Offer;
   requestSessionChallenge: Scalars['String'];
   requestUpdateSafe: RequestUpdateSafeResponse;
   revokeSafeVerification: VerifySafeResult;
@@ -523,6 +523,7 @@ export type Mutation = {
   upsertOrganisation: CreateOrganisationResult;
   upsertProfile: Profile;
   upsertRegion: CreateOrganisationResult;
+  upsertShippingAddress?: Maybe<PostAddress>;
   upsertShop: Shop;
   upsertShopCategories: UpsertShopCategoriesResult;
   upsertShopCategoryEntries: UpsertShopCategoryEntriesResult;
@@ -572,6 +573,11 @@ export type MutationCompleteSaleArgs = {
 };
 
 
+export type MutationDeleteShippingAddressArgs = {
+  id: Scalars['Int'];
+};
+
+
 export type MutationProofUniquenessArgs = {
   humanodeToken: Scalars['String'];
 };
@@ -590,11 +596,6 @@ export type MutationRejectMembershipArgs = {
 export type MutationRemoveMemberArgs = {
   groupId: Scalars['String'];
   memberAddress: Scalars['String'];
-};
-
-
-export type MutationRequestInvitationOfferArgs = {
-  for: Scalars['String'];
 };
 
 
@@ -648,6 +649,11 @@ export type MutationUpsertProfileArgs = {
 
 export type MutationUpsertRegionArgs = {
   organisation: UpsertOrganisationInput;
+};
+
+
+export type MutationUpsertShippingAddressArgs = {
+  data: PostAddressInput;
 };
 
 
@@ -787,6 +793,15 @@ export type PostAddress = {
   id: Scalars['Int'];
   name?: Maybe<Scalars['String']>;
   state?: Maybe<Scalars['String']>;
+  street: Scalars['String'];
+  zip: Scalars['String'];
+};
+
+export type PostAddressInput = {
+  cityGeonameid: Scalars['Int'];
+  house: Scalars['String'];
+  id?: InputMaybe<Scalars['Int']>;
+  name?: InputMaybe<Scalars['String']>;
   street: Scalars['String'];
   zip: Scalars['String'];
 };
@@ -1698,6 +1713,7 @@ export type ResolversTypes = ResolversObject<{
   OrganisationCreated: ResolverTypeWrapper<OrganisationCreated>;
   PaginationArgs: PaginationArgs;
   PostAddress: ResolverTypeWrapper<PostAddress>;
+  PostAddressInput: PostAddressInput;
   ProductListingType: ProductListingType;
   Profile: ResolverTypeWrapper<Profile>;
   ProfileAggregate: ResolverTypeWrapper<Omit<ProfileAggregate, 'payload'> & { payload: ResolversTypes['AggregatePayload'] }>;
@@ -1843,6 +1859,7 @@ export type ResolversParentTypes = ResolversObject<{
   OrganisationCreated: OrganisationCreated;
   PaginationArgs: PaginationArgs;
   PostAddress: PostAddress;
+  PostAddressInput: PostAddressInput;
   Profile: Profile;
   ProfileAggregate: Omit<ProfileAggregate, 'payload'> & { payload: ResolversParentTypes['AggregatePayload'] };
   ProfileAggregateFilter: ProfileAggregateFilter;
@@ -2332,6 +2349,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   completePurchase?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<MutationCompletePurchaseArgs, 'invoiceId'>>;
   completeSale?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<MutationCompleteSaleArgs, 'invoiceId'>>;
   createTestInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType>;
+  deleteShippingAddress?: Resolver<Maybe<ResolversTypes['PostAddress']>, ParentType, ContextType, RequireFields<MutationDeleteShippingAddressArgs, 'id'>>;
   importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   logout?: Resolver<ResolversTypes['LogoutResponse'], ParentType, ContextType>;
   proofUniqueness?: Resolver<ResolversTypes['ProofUniquenessResult'], ParentType, ContextType, RequireFields<MutationProofUniquenessArgs, 'humanodeToken'>>;
@@ -2339,7 +2357,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
   rejectMembership?: Resolver<Maybe<ResolversTypes['RejectMembershipResult']>, ParentType, ContextType, RequireFields<MutationRejectMembershipArgs, 'membershipId'>>;
   removeMember?: Resolver<Maybe<ResolversTypes['RemoveMemberResult']>, ParentType, ContextType, RequireFields<MutationRemoveMemberArgs, 'groupId' | 'memberAddress'>>;
-  requestInvitationOffer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType, RequireFields<MutationRequestInvitationOfferArgs, 'for'>>;
   requestSessionChallenge?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationRequestSessionChallengeArgs, 'address'>>;
   requestUpdateSafe?: Resolver<ResolversTypes['RequestUpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationRequestUpdateSafeArgs, 'data'>>;
   revokeSafeVerification?: Resolver<ResolversTypes['VerifySafeResult'], ParentType, ContextType, RequireFields<MutationRevokeSafeVerificationArgs, 'safeAddress'>>;
@@ -2350,6 +2367,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   upsertOrganisation?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertOrganisationArgs, 'organisation'>>;
   upsertProfile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType, RequireFields<MutationUpsertProfileArgs, 'data'>>;
   upsertRegion?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertRegionArgs, 'organisation'>>;
+  upsertShippingAddress?: Resolver<Maybe<ResolversTypes['PostAddress']>, ParentType, ContextType, RequireFields<MutationUpsertShippingAddressArgs, 'data'>>;
   upsertShop?: Resolver<ResolversTypes['Shop'], ParentType, ContextType, RequireFields<MutationUpsertShopArgs, 'shop'>>;
   upsertShopCategories?: Resolver<ResolversTypes['UpsertShopCategoriesResult'], ParentType, ContextType, RequireFields<MutationUpsertShopCategoriesArgs, 'shopCategories'>>;
   upsertShopCategoryEntries?: Resolver<ResolversTypes['UpsertShopCategoryEntriesResult'], ParentType, ContextType, RequireFields<MutationUpsertShopCategoryEntriesArgs, 'shopCategoryEntries'>>;

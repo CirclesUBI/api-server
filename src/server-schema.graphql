@@ -1200,6 +1200,17 @@ type ProofUniquenessResult {
   existingSafe: String
 }
 
+
+input PostAddressInput {
+  id: Int
+  name: String
+
+  street: String!
+  house: String!
+  zip: String!
+  cityGeonameid: Int!
+}
+
 type Mutation {
   announcePayment(invoiceId: Int!, transactionHash: String!): AnnouncePaymentResult!
 
@@ -1212,6 +1223,9 @@ type Mutation {
   requestUpdateSafe(data: RequestUpdateSafeInput!): RequestUpdateSafeResponse!
   updateSafe(data: UpdateSafeInput!): UpdateSafeResponse!
   upsertTag(data: UpsertTagInput!): Tag!
+
+  upsertShippingAddress(data: PostAddressInput!): PostAddress
+  deleteShippingAddress(id: Int!) : PostAddress
 
   upsertOrganisation(organisation: UpsertOrganisationInput!): CreateOrganisationResult!
   upsertRegion(organisation: UpsertOrganisationInput!): CreateOrganisationResult!
@@ -1227,8 +1241,6 @@ type Mutation {
   rejectMembership(membershipId: Int!): RejectMembershipResult
 
   acknowledge(until: Date!, safeAddress: String): Boolean!
-
-  requestInvitationOffer(for: String!): Offer!
 
   # Creates as many new EOAs as there are strings in the array.
   # createInvitations(for: [String!]!): CreateInvitationResult!
