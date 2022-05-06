@@ -1,6 +1,6 @@
 {
   "name": "@o-platform/api-server",
-  "version": "0.1.416",
+  "version": "0.1.417",
   "description": "",
   "main": "dist/index.js",
   "prepublish": "tsc",
@@ -23,6 +23,7 @@
     "apollo-server-express": "^3.6.3",
     "apollo-server-plugin-http-headers": "^0.1.4",
     "aws-sdk": "^2.1084.0",
+    "graphql-validation-complexity": "^0.4.2",
     "bn.js": "^5.2.0",
     "cors": "^2.8.5",
     "dataloader": "^2.0.0",
