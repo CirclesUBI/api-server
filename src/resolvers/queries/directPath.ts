@@ -264,12 +264,12 @@ async function getAcceptedTokensWithBalanceAndLimit(from: string, to: string) : 
   const acceptedTokensWithBalanceAndLimitSql = `
       with my_tokens as (
           select token
-          from crc_balances_by_safe_and_token_2
+          from cache_crc_balances_by_safe_and_token
           where safe_address = $1
       ),
       accepted_tokens as (
           select user_token as token
-          from crc_current_trust_2
+          from cache_crc_current_trust
           where can_send_to = $2
             and "limit" > 0
       ),
@@ -283,7 +283,7 @@ async function getAcceptedTokensWithBalanceAndLimit(from: string, to: string) : 
       relevant_balances as (
           select b.token, b.token_owner, b.balance
           from intersection i
-          join crc_balances_by_safe_and_token_2 b on i.token = b.token
+          join cache_crc_balances_by_safe_and_token b on i.token = b.token
           where safe_address = $1
             and balance > 0
       ),
@@ -292,7 +292,7 @@ async function getAcceptedTokensWithBalanceAndLimit(from: string, to: string) : 
                , b.token_owner
                , b.balance
                , t."limit"
-          from crc_current_trust_2 t
+          from cache_crc_current_trust t
           join relevant_balances b on b.token_owner = t."user" 
                                   and t.can_send_to = $2
       )
@@ -321,7 +321,7 @@ async function getAcceptedTokensWithBalanceAndLimit(from: string, to: string) : 
 async function getTokenOwnerOwnTokenBalances(tokenOwners:string[]) : Promise<TokenWithBalance[]> {
   const sql = `
       select token_owner, token, balance
-      from crc_balances_by_safe_and_token_2
+      from cache_crc_balances_by_safe_and_token
       where token_owner = ANY($1)
         and safe_address = ANY($1)
         and token_owner = safe_address;`;
@@ -340,7 +340,7 @@ async function getTokenOwnerOwnTokenBalances(tokenOwners:string[]) : Promise<Tok
 async function getReceiverTokenBalances(to: string, tokenOwners:string[]) : Promise<TokenWithBalance[]> {
   const sql = `
     select token_owner, token, balance
-    from crc_balances_by_safe_and_token_2
+    from cache_crc_balances_by_safe_and_token
     where token_owner = ANY($2)
       and safe_address = $1;`;
 

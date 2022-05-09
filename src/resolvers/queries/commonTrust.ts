@@ -9,22 +9,22 @@ export function commonTrust(prisma:PrismaClient) {
     const commonTrustsQuery = `
         with common_trusts as (
             select "user"
-            from crc_current_trust_2
+            from cache_crc_current_trust
             where can_send_to = $1
               and "limit" > 0
             intersect
             select "user"
-            from crc_current_trust_2
+            from cache_crc_current_trust
             where can_send_to = $2
               and "limit" > 0
             intersect
             select "can_send_to"
-            from crc_current_trust_2
+            from cache_crc_current_trust
             where "user" = $1
               and "limit" > 0
             intersect
             select "can_send_to"
-            from crc_current_trust_2
+            from cache_crc_current_trust
             where "user" = $2
               and "limit" > 0
         )

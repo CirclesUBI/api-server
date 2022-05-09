@@ -113,7 +113,7 @@ export const profilePropertyResolvers : ProfileResolvers = {
 
     const crcBalancesPromise = Environment.indexDb.query(`
         select last_change_at, token, token_owner, balance
-        from crc_balances_by_safe_and_token_2
+        from cache_crc_balances_by_safe_and_token
         where safe_address = $1
         order by balance desc;`,
       [parent.circlesAddress.toLowerCase()]);

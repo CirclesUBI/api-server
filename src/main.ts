@@ -23,7 +23,6 @@ import * as graphqlImport from "@graphql-tools/import";
 import {healthGetHandler} from "./httpHandlers/get/health";
 import {RotateJwks} from "./jobs/descriptions/maintenance/rotateJwks";
 import {RequestUbiForInactiveAccounts} from "./jobs/descriptions/maintenance/requestUbiForInactiveAccounts";
-const graphqlValidationComplexity = require('graphql-validation-complexity');
 
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
@@ -122,13 +121,6 @@ export class Main {
     const server = new ApolloServer({
       schema,
       context: Context.create,
-      validationRules: [graphqlValidationComplexity.createComplexityLimitRule(25000,{
-        onCost: (cost:any) => {
-          console.log('query cost:', cost);
-        },
-        formatErrorMessage: (cost:any) =>
-          `query with cost ${cost} exceeds complexity limit`,
-      })],
       plugins: [
         {
           async serverWillStart() {
@@ -142,6 +134,21 @@ export class Main {
         ApolloServerPluginLandingPageGraphQLPlayground(),
         new GqlLogger(),
       ],
+      validationRules: [
+        /*
+        createComplexityRule({
+          estimators: [
+            // Configure your estimators
+            simpleEstimator({ defaultComplexity: 1 }),
+          ],
+          maximumComplexity: 1000,
+          variables: {},
+          onComplete: (complexity: number) => {
+            console.log('Query Complexity:', complexity);
+          },
+        })
+         */
+      ]
     });
 
     subscriptionServer = await gqlSubscriptionServer(schema, httpServer, server.graphqlPath);

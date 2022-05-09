@@ -1930,6 +1930,18 @@ export type ResolversParentTypes = ResolversObject<{
   WelcomeMessage: WelcomeMessage;
 }>;
 
+export type CostDirectiveArgs = {
+  value?: Maybe<Scalars['Int']>;
+};
+
+export type CostDirectiveResolver<Result, Parent, ContextType = any, Args = CostDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type CostFactorDirectiveArgs = {
+  value?: Maybe<Scalars['Int']>;
+};
+
+export type CostFactorDirectiveResolver<Result, Parent, ContextType = any, Args = CostFactorDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
 export type AcceptMembershipResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['AcceptMembershipResult'] = ResolversParentTypes['AcceptMembershipResult']> = ResolversObject<{
   error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -2999,3 +3011,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   WelcomeMessage?: WelcomeMessageResolvers<ContextType>;
 }>;
 
+export type DirectiveResolvers<ContextType = any> = ResolversObject<{
+  cost?: CostDirectiveResolver<any, any, ContextType>;
+  costFactor?: CostFactorDirectiveResolver<any, any, ContextType>;
+}>;
