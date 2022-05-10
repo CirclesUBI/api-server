@@ -28,6 +28,7 @@ import {leaderboardEntryProfileDataLoader} from "./dataLoaders/leaderboardEntryP
 import {shopCategoriesDataLoader} from "./dataLoaders/shopCategoriesDataLoader";
 import {shopCategoryEntriesDataLoader} from "./dataLoaders/shopCategoryEntriesDataLoader";
 import {shopCategoryEntryProductDataLoader} from "./dataLoaders/shopCategoryEntryProductDataLoader";
+import {shopPropertyResolver} from "./properties/shop";
 
 export const resolvers: Resolvers = {
   Date: new GraphQLScalarType({
@@ -76,11 +77,7 @@ export const resolvers: Resolvers = {
         return <Promise<Profile>>await verificationProfileDataLoader.load(parent.verifiedSafeAddress);
       }
     },
-    Shop: {
-      categories: async (parent:Shop, args:any, context:Context) => {
-        return shopCategoriesDataLoader.load(parent.id);
-      }
-    },
+    Shop: shopPropertyResolver,
     ShopCategory: {
       entries: async (parent:ShopCategory, args:any, context:Context) => {
         return shopCategoryEntriesDataLoader.load(parent.id);
