@@ -161,6 +161,9 @@ enum ShopListingStyle {
 model DeliveryMethod {
     id Int @id @default(autoincrement())
     name String
+
+    shopDeliveryMethods ShopDeliveryMethod[] @relation("ShopDeliveryMethod_DeliveryMethod")
+    purchases Purchase[] @relation(name: "Purchase_DeliveryMethod")
 }
 
 model ShopDeliveryMethod {
@@ -205,7 +208,7 @@ model Shop {
 
     categories ShopCategory[] @relation("ShopShopCategories")
 
-    deliveryMethods DeliveryMethod[] @relation("ShopDeliveryMethod_Shop")
+    deliveryMethods ShopDeliveryMethod[] @relation("ShopDeliveryMethod_Shop")
 
     purchaseMetaDataKeys String?
 }
@@ -440,7 +443,7 @@ model Purchase {
     lines PurchaseLine[] @relation(name: "Purchase_Lines")
     invoices Invoice[] @relation(name: "Purchase_Invoices")
 
-    deliveryMethod DeliveryMethod @relation(name: "Purchase_DeliveryMethod")
+    deliveryMethod DeliveryMethod @relation(name: "Purchase_DeliveryMethod", fields: [deliveryMethodId], references: [id])
     deliveryMethodId Int
 }
 
