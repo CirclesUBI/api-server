@@ -23,6 +23,7 @@ import * as graphqlImport from "@graphql-tools/import";
 import {healthGetHandler} from "./httpHandlers/get/health";
 import {RotateJwks} from "./jobs/descriptions/maintenance/rotateJwks";
 import {RequestUbiForInactiveAccounts} from "./jobs/descriptions/maintenance/requestUbiForInactiveAccounts";
+import {MintPurchaseNfts} from "./jobs/descriptions/mintPurchaseNfts";
 
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
@@ -193,7 +194,8 @@ export class Main {
       "sendWelcomeEmail",
       "requestUbiForInactiveAccounts",
       "rotateJwks",
-      "autoTrust"
+      "autoTrust",
+      "mintPurchaseNfts"
     ];
 
     jobQueue.consume(jobTopics, jobSink, false)
@@ -215,6 +217,9 @@ export class Main {
 new Main().run()
   .then(() => console.log("Started"))
   .then(async () => {
+
+
+
     console.log(`Starting periodic task job factory. Yields every ${Environment.periodicTaskInterval / 1000} seconds.`)
     setInterval(async() => {
         const now = new Date();

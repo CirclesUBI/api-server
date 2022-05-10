@@ -16,8 +16,8 @@ export class AutoTrustWorker extends JobWorker<AutoTrust> {
   }
 
   async doWork(job: AutoTrust) {
-    const autoTrustAgent = await Environment.readonlyApiDb.autoTrustAgent.findFirst({
-      where: { safeAddress: job.inviterAddress }
+    const autoTrustAgent = await Environment.readonlyApiDb.agent.findFirst({
+      where: { ownerSafeAddress: job.inviterAddress }
     });
 
     if (!autoTrustAgent) {

@@ -3,7 +3,6 @@ import {
   Organisation,
   Profile,
   Resolvers,
-  Shop,
   ShopCategory,
   ShopCategoryEntry,
   Verification
@@ -25,7 +24,6 @@ import {GraphQLScalarType, Kind} from "graphql";
 import {Context} from "../context";
 import {verificationProfileDataLoader} from "./dataLoaders/verificationProfileDataLoader";
 import {leaderboardEntryProfileDataLoader} from "./dataLoaders/leaderboardEntryProfileDataLoader";
-import {shopCategoriesDataLoader} from "./dataLoaders/shopCategoriesDataLoader";
 import {shopCategoryEntriesDataLoader} from "./dataLoaders/shopCategoryEntriesDataLoader";
 import {shopCategoryEntryProductDataLoader} from "./dataLoaders/shopCategoryEntryProductDataLoader";
 import {shopPropertyResolver} from "./properties/shop";

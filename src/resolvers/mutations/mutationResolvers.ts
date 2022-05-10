@@ -12,7 +12,6 @@ import { verifySessionChallengeResolver } from "./verifySessionChallengeResolver
 import { upsertOrganisation } from "./upsertOrganisation";
 import { addMemberResolver } from "./addMember";
 import { removeMemberResolver } from "./removeMember";
-import { purchaseResolver } from "./purchase";
 import { requestSessionChallenge } from "./requestSessionChallenge";
 import { importOrganisationsOfAccount } from "./importOrganisationsOfAccount";
 import { completePurchase } from "./completePurchase";
@@ -27,6 +26,7 @@ import { upsertShopCategories } from "./upsertShopCategories";
 import { upsertShopCategoryEntries } from "./upsertShopCategoryEntries";
 import { proofUniqueness } from "./proofUniqueness";
 import { upsertShippingAddress } from "./upsertShippingAddress";
+import {purchaseResolver} from "./purchase";
 
 export const mutationResolvers: MutationResolvers = {
   purchase: purchaseResolver,

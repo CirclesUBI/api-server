@@ -1,6 +1,6 @@
 {
   "name": "@o-platform/api-server",
-  "version": "0.1.420",
+  "version": "0.1.421",
   "description": "",
   "main": "dist/index.js",
   "prepublish": "tsc",
@@ -18,6 +18,7 @@
     "@graphql-tools/import": "^6.6.6",
     "@graphql-tools/schema": "^8.3.2",
     "@prisma/client": "^3.13.0",
+    "ethers-multisend": "^2.1.1",
     "apollo-server": "^3.6.3",
     "apollo-server-core": "^3.6.3",
     "apollo-server-express": "^3.6.3",
@@ -31,7 +32,6 @@
     "ethereumjs-common": "^1.5.2",
     "ethereumjs-tx": "^2.1.2",
     "ethereumjs-util": "^7.1.4",
-    "ethers-multisend": "^2.1.1",
     "express": "^4.17.3",
     "graphql": "^15.8.0",
     "graphql-query-complexity": "^0.11.0",

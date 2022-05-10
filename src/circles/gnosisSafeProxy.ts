@@ -169,9 +169,10 @@ export class GnosisSafeProxy extends Web3Contract {
     };
 
     const signatures = await this.getSignatureForTx(executableTransaction, privateKey);
-    const baseGas = new BN(this.web3.utils.toWei("1000000", "wei"));
+    const baseGas = new BN(this.web3.utils.toWei("5000000", "wei"));
     const gasEstimate = await this.estimateGasForTx(executableTransaction, signatures, baseGas);
 
+    console.log("gasEstimate:", gasEstimate.toString());
     const execTransactionData = this.contract.methods
       .execTransaction(
         safeTransaction.to,
@@ -204,28 +205,8 @@ export class GnosisSafeProxy extends Web3Contract {
   private async estimateGasForTx(executableTransaction: SafeTransaction, signatures: { r: string; s: string; signature: any; v: number }, baseGas: BN) {
     const gasPrice = await RpcGateway.getGasPrice();
     console.log("Gas price:", gasPrice.toString());
-
-    const gasEstimationResult = await this.contract.methods
-      .execTransaction(
-        executableTransaction.to,
-        executableTransaction.value,
-        executableTransaction.data,
-        executableTransaction.operation,
-        executableTransaction.safeTxGas,
-        executableTransaction.baseGas,
-        new BN("0"),
-        executableTransaction.gasToken,
-        executableTransaction.refundReceiver,
-        signatures.signature
-      )
-      .estimateGas();
-    // console.log("EstimateGas:", gasPrice.toString())
-
-    const gasEstimate = new BN(gasEstimationResult)
-      .add(baseGas)
-
-    console.log("gasEstimate:", gasEstimate.toNumber());
-    return gasEstimate;
+    console.log("gasEstimate:", baseGas.toNumber());
+    return baseGas;
   }
 
   private async getSignatureForTx(executableTransaction: SafeTransaction, privateKey: string) {
