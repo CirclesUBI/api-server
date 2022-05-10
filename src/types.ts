@@ -952,6 +952,7 @@ export type Purchase = {
   createdAt: Scalars['String'];
   createdByAddress: Scalars['String'];
   createdByProfile?: Maybe<Profile>;
+  deliveryMethod: DeliveryMethod;
   id: Scalars['Int'];
   invoices?: Maybe<Array<Invoice>>;
   lines?: Maybe<Array<PurchaseLine>>;
@@ -2595,6 +2596,7 @@ export type PurchaseResolvers<ContextType = any, ParentType extends ResolversPar
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdByAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdByProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  deliveryMethod?: Resolver<ResolversTypes['DeliveryMethod'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   invoices?: Resolver<Maybe<Array<ResolversTypes['Invoice']>>, ParentType, ContextType>;
   lines?: Resolver<Maybe<Array<ResolversTypes['PurchaseLine']>>, ParentType, ContextType>;

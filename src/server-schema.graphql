@@ -328,6 +328,8 @@ type Purchase {
   createdByAddress: String!
   createdAt: String!
 
+  deliveryMethod: DeliveryMethod!
+
   total: String!
   lines: [PurchaseLine!]
 

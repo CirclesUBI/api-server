@@ -1,5 +1,5 @@
 import {Context} from "../../context";
-import {Organisation, QueryShopsArgs, Shop} from "../../types";
+import {DeliveryMethod, Organisation, QueryShopsArgs, Shop} from "../../types";
 import {Environment} from "../../environment";
 import {canAccessShop} from "../../utils/ensureCanAccessShop";
 
@@ -12,7 +12,12 @@ export const shops = async (parent: any, args: QueryShopsArgs, context: Context)
             ...(args.ownerId ? {ownerId: args.ownerId} : {})
         },
         include: {
-            owner: true
+            owner: true,
+            deliveryMethods: {
+                include: {
+                    deliveryMethod: true
+                }
+            }
         },
         orderBy: {
             sortOrder: "asc"
@@ -39,7 +44,13 @@ export const shops = async (parent: any, args: QueryShopsArgs, context: Context)
                 ...o.owner,
                 createdAt: o.createdAt.toJSON(),
                 name: o.owner.firstName
-            }
+            },
+            deliveryMethods: o.deliveryMethods.map(p => {
+                return <DeliveryMethod>{
+                    id: p.deliveryMethod.id,
+                    name: p.deliveryMethod.name
+                };
+            })
         }
     });
 }
