@@ -141,9 +141,12 @@ model PostAddress {
     street String
     house String
     zip String
+    city String?
     state String?
+    country String?
 
     cityGeonameid Int?
+
 
     pickupAddressOfShop Shop? @relation("ShopPickupAddress")
     shippingAddressOfProfile Profile? @relation("ProfileShippingAddresses", fields: [shippingAddressOfProfileId], references: [id])
