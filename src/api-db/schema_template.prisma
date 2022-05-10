@@ -163,7 +163,7 @@ model DeliveryMethod {
     name String
 
     shopDeliveryMethods ShopDeliveryMethod[] @relation("ShopDeliveryMethod_DeliveryMethod")
-    purchases Purchase[] @relation(name: "Purchase_DeliveryMethod")
+    // purchases Purchase[] @relation(name: "Purchase_DeliveryMethod")
 }
 
 model ShopDeliveryMethod {
@@ -443,8 +443,8 @@ model Purchase {
     lines PurchaseLine[] @relation(name: "Purchase_Lines")
     invoices Invoice[] @relation(name: "Purchase_Invoices")
 
-    deliveryMethod DeliveryMethod @relation(name: "Purchase_DeliveryMethod", fields: [deliveryMethodId], references: [id])
-    deliveryMethodId Int
+    //deliveryMethod DeliveryMethod @relation(name: "Purchase_DeliveryMethod", fields: [deliveryMethodId], references: [id])
+    //deliveryMethodId Int
 }
 
 model PurchaseLine {
