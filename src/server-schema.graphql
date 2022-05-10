@@ -1118,6 +1118,7 @@ type Shop {
   pickupAddress: PostAddress
 
   categories: [ShopCategory!]
+  deliveryMethods: [DeliveryMethod!]
 }
 
 input ShopCategoryInput {
@@ -1202,6 +1203,10 @@ type ProofUniquenessResult {
   existingSafe: String
 }
 
+type DeliveryMethod {
+  id: Int!
+  name: String!
+}
 
 input PostAddressInput {
   id: Int
@@ -1216,7 +1221,7 @@ input PostAddressInput {
 type Mutation {
   announcePayment(invoiceId: Int!, transactionHash: String!): AnnouncePaymentResult!
 
-  purchase(lines: [PurchaseLineInput!]!): [Invoice!]!
+  purchase(lines: [PurchaseLineInput!]! deliveryMethodId: Int!): [Invoice!]!
   completePurchase(invoiceId: Int!, revoke: Boolean): Invoice!
   completeSale(invoiceId: Int!, revoke: Boolean): Invoice!
 

@@ -259,6 +259,12 @@ export type CreatedInviteEoa = {
   for: Scalars['String'];
 };
 
+export type DeliveryMethod = {
+  __typename?: 'DeliveryMethod';
+  id: Scalars['Int'];
+  name: Scalars['String'];
+};
+
 export enum Direction {
   In = 'in',
   Out = 'out'
@@ -584,6 +590,7 @@ export type MutationProofUniquenessArgs = {
 
 
 export type MutationPurchaseArgs = {
+  deliveryMethodId: Scalars['Int'];
   lines: Array<PurchaseLineInput>;
 };
 
@@ -1311,6 +1318,7 @@ export type Shop = {
   __typename?: 'Shop';
   categories?: Maybe<Array<ShopCategory>>;
   createdAt: Scalars['Date'];
+  deliveryMethods?: Maybe<Array<DeliveryMethod>>;
   description: Scalars['String'];
   enabled?: Maybe<Scalars['Boolean']>;
   id: Scalars['Int'];
@@ -1673,6 +1681,7 @@ export type ResolversTypes = ResolversObject<{
   CreatedInvitation: ResolverTypeWrapper<CreatedInvitation>;
   CreatedInviteEoa: ResolverTypeWrapper<CreatedInviteEoa>;
   Date: ResolverTypeWrapper<Scalars['Date']>;
+  DeliveryMethod: ResolverTypeWrapper<DeliveryMethod>;
   Direction: Direction;
   DisplayCurrency: DisplayCurrency;
   Erc20Balances: ResolverTypeWrapper<Erc20Balances>;
@@ -1822,6 +1831,7 @@ export type ResolversParentTypes = ResolversObject<{
   CreatedInvitation: CreatedInvitation;
   CreatedInviteEoa: CreatedInviteEoa;
   Date: Scalars['Date'];
+  DeliveryMethod: DeliveryMethod;
   Erc20Balances: Erc20Balances;
   Erc20Transfer: Erc20Transfer;
   EthTransfer: EthTransfer;
@@ -2146,6 +2156,12 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'Date';
 }
 
+export type DeliveryMethodResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeliveryMethod'] = ResolversParentTypes['DeliveryMethod']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type Erc20BalancesResolvers<ContextType = any, ParentType extends ResolversParentTypes['Erc20Balances'] = ResolversParentTypes['Erc20Balances']> = ResolversObject<{
   balances?: Resolver<Array<ResolversTypes['AssetBalance']>, ParentType, ContextType>;
   lastUpdatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2365,7 +2381,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   logout?: Resolver<ResolversTypes['LogoutResponse'], ParentType, ContextType>;
   proofUniqueness?: Resolver<ResolversTypes['ProofUniquenessResult'], ParentType, ContextType, RequireFields<MutationProofUniquenessArgs, 'humanodeToken'>>;
-  purchase?: Resolver<Array<ResolversTypes['Invoice']>, ParentType, ContextType, RequireFields<MutationPurchaseArgs, 'lines'>>;
+  purchase?: Resolver<Array<ResolversTypes['Invoice']>, ParentType, ContextType, RequireFields<MutationPurchaseArgs, 'deliveryMethodId' | 'lines'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
   rejectMembership?: Resolver<Maybe<ResolversTypes['RejectMembershipResult']>, ParentType, ContextType, RequireFields<MutationRejectMembershipArgs, 'membershipId'>>;
   removeMember?: Resolver<Maybe<ResolversTypes['RemoveMemberResult']>, ParentType, ContextType, RequireFields<MutationRemoveMemberArgs, 'groupId' | 'memberAddress'>>;
@@ -2754,6 +2770,7 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
 export type ShopResolvers<ContextType = any, ParentType extends ResolversParentTypes['Shop'] = ResolversParentTypes['Shop']> = ResolversObject<{
   categories?: Resolver<Maybe<Array<ResolversTypes['ShopCategory']>>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  deliveryMethods?: Resolver<Maybe<Array<ResolversTypes['DeliveryMethod']>>, ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   enabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -2933,6 +2950,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   CreatedInvitation?: CreatedInvitationResolvers<ContextType>;
   CreatedInviteEoa?: CreatedInviteEoaResolvers<ContextType>;
   Date?: GraphQLScalarType;
+  DeliveryMethod?: DeliveryMethodResolvers<ContextType>;
   Erc20Balances?: Erc20BalancesResolvers<ContextType>;
   Erc20Transfer?: Erc20TransferResolvers<ContextType>;
   EthTransfer?: EthTransferResolvers<ContextType>;
