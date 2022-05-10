@@ -451,7 +451,7 @@ model PurchaseLine {
     id Int @id @default(autoincrement())
 
     purchase Purchase @relation(name: "Purchase_Lines", fields: [purchaseId], references: [id])
-    
+
     purchaseId Int
     @@index([purchaseId])
 
@@ -606,8 +606,16 @@ model i18n {
     @@unique([lang, key, version])
 }
 
-model AutoTrustAgent {
+model Agent {
     id Int @id @default(autoincrement())
-    safeAddress String
+
+    topic String @default("autoTrust")
+
+    ownerSafeAddress String
+    agentSafeAddress String?
     privateKey String
+
+    contractAddress String?
+    contractAbi String?
+    contractMethod String?
 }
