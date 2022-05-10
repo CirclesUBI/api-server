@@ -158,6 +158,21 @@ enum ShopListingStyle {
     FEATURED
 }
 
+model DeliveryMethod {
+    id Int @id @default(autoincrement())
+    name String
+}
+
+model ShopDeliveryMethod {
+    id Int @id @default(autoincrement())
+
+    shopId Int
+    shop Shop @relation("ShopDeliveryMethod_Shop", fields: [shopId], references: [id])
+
+    deliveryMethodId Int
+    deliveryMethod DeliveryMethod @relation("ShopDeliveryMethod_DeliveryMethod", fields: [deliveryMethodId], references: [id])
+}
+
 model Shop {
     id Int @id @default(autoincrement())
     createdAt DateTime @default(now())
@@ -189,6 +204,8 @@ model Shop {
                               // will wrap around and 'currentSimplePickupCodeRound' will be incremented by 1.
 
     categories ShopCategory[] @relation("ShopShopCategories")
+
+    deliveryMethods DeliveryMethod[] @relation("ShopDeliveryMethod_Shop")
 
     purchaseMetaDataKeys String?
 }
@@ -422,6 +439,9 @@ model Purchase {
 
     lines PurchaseLine[] @relation(name: "Purchase_Lines")
     invoices Invoice[] @relation(name: "Purchase_Invoices")
+
+    deliveryMethod DeliveryMethod @relation(name: "Purchase_DeliveryMethod")
+    deliveryMethodId Int
 }
 
 model PurchaseLine {
