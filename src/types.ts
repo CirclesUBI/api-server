@@ -1032,6 +1032,7 @@ export type Query = {
   sessionInfo: SessionInfo;
   shop?: Maybe<Shop>;
   shops: Array<Shop>;
+  shopsById: Array<Shop>;
   stats: Stats;
   tagById?: Maybe<Tag>;
   tags: Array<Tag>;
@@ -1146,6 +1147,11 @@ export type QueryShopArgs = {
 
 export type QueryShopsArgs = {
   ownerId?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryShopsByIdArgs = {
+  ids: Array<Scalars['Int']>;
 };
 
 
@@ -2668,6 +2674,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   sessionInfo?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
   shop?: Resolver<Maybe<ResolversTypes['Shop']>, ParentType, ContextType, RequireFields<QueryShopArgs, 'id'>>;
   shops?: Resolver<Array<ResolversTypes['Shop']>, ParentType, ContextType, Partial<QueryShopsArgs>>;
+  shopsById?: Resolver<Array<ResolversTypes['Shop']>, ParentType, ContextType, RequireFields<QueryShopsByIdArgs, 'ids'>>;
   stats?: Resolver<ResolversTypes['Stats'], ParentType, ContextType>;
   tagById?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagByIdArgs, 'id'>>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsArgs, 'query'>>;

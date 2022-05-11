@@ -31,7 +31,7 @@ import {QueryOffersByIdAndVersionArgs, QueryResolvers} from "../../types";
 import {Context} from "../../context";
 import {shop} from "./shop";
 import {clientAssertionJwt} from "./clientAssertionJwt";
-import {shops} from "./shops";
+import {shops, shopsById} from "./shops";
 import {lastAcknowledgedAt} from "./lastAcknowledgedAt";
 const packageJson = require("../../../package.json");
 
@@ -73,6 +73,7 @@ export const queryResolvers: QueryResolvers = {
   findInvitationCreator: findInvitationCreator,
   lastAcknowledgedAt: lastAcknowledgedAt,
   shops: shops,
+  shopsById: shopsById,
   shop: shop,
   clientAssertionJwt: clientAssertionJwt,
   offersByIdAndVersion: async (parent:any, args:QueryOffersByIdAndVersionArgs, context:Context) => {

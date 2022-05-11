@@ -1,5 +1,5 @@
 import {Context} from "../../context";
-import {DeliveryMethod, Organisation, QueryShopsArgs, Shop} from "../../types";
+import {DeliveryMethod, Organisation, QueryShopsArgs, QueryShopsByIdArgs, Shop} from "../../types";
 import {Environment} from "../../environment";
 import {canAccessShop} from "../../utils/ensureCanAccessShop";
 
@@ -38,6 +38,50 @@ export const shops = async (parent: any, args: QueryShopsArgs, context: Context)
       .map(o => o.shop);
 
     return [...enabledShops, ...disabledShops].map(o => {
+        return <Shop>{
+            ...o,
+            owner: <Organisation>{
+                ...o.owner,
+                createdAt: o.createdAt.toJSON(),
+                name: o.owner.firstName
+            },
+            deliveryMethods: o.deliveryMethods.map(p => {
+                return <DeliveryMethod>{
+                    id: p.deliveryMethod.id,
+                    name: p.deliveryMethod.name
+                };
+            })
+        }
+    });
+}
+
+
+
+export const shopsById = async (parent: any, args: QueryShopsByIdArgs, context: Context) => {
+    const shops = await Environment.readWriteApiDb.shop.findMany({
+        where: {
+            owner: {
+                type: "ORGANISATION"
+            },
+            id: {
+                in: args.ids
+            },
+            enabled: true
+        },
+        include: {
+            owner: true,
+            deliveryMethods: {
+                include: {
+                    deliveryMethod: true
+                }
+            }
+        },
+        orderBy: {
+            sortOrder: "asc"
+        }
+    });
+
+    return shops.map(o => {
         return <Shop>{
             ...o,
             owner: <Organisation>{
