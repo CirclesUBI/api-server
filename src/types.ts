@@ -731,6 +731,11 @@ export type Offer = {
   version: Scalars['Int'];
 };
 
+export type OfferByIdAndVersionInput = {
+  offerId: Scalars['Int'];
+  offerVersion: Scalars['Int'];
+};
+
 export type OfferInput = {
   createdByProfileId: Scalars['Int'];
   description?: InputMaybe<Scalars['String']>;
@@ -1015,6 +1020,7 @@ export type Query = {
   lastAcknowledgedAt?: Maybe<Scalars['Date']>;
   myInvitations: Array<CreatedInvitation>;
   myProfile?: Maybe<Profile>;
+  offersByIdAndVersion: Array<Offer>;
   organisations: Array<Organisation>;
   organisationsByAddress: Array<Organisation>;
   profilesById: Array<Profile>;
@@ -1085,6 +1091,11 @@ export type QueryInvoiceArgs = {
 
 export type QueryLastAcknowledgedAtArgs = {
   safeAddress: Scalars['String'];
+};
+
+
+export type QueryOffersByIdAndVersionArgs = {
+  query: Array<OfferByIdAndVersionInput>;
 };
 
 
@@ -1716,6 +1727,7 @@ export type ResolversTypes = ResolversObject<{
   NewUser: ResolverTypeWrapper<NewUser>;
   NotificationEvent: ResolverTypeWrapper<NotificationEvent>;
   Offer: ResolverTypeWrapper<Offer>;
+  OfferByIdAndVersionInput: OfferByIdAndVersionInput;
   OfferInput: OfferInput;
   Offers: ResolverTypeWrapper<Offers>;
   OffersAggregateFilter: OffersAggregateFilter;
@@ -1863,6 +1875,7 @@ export type ResolversParentTypes = ResolversObject<{
   NewUser: NewUser;
   NotificationEvent: NotificationEvent;
   Offer: Offer;
+  OfferByIdAndVersionInput: OfferByIdAndVersionInput;
   OfferInput: OfferInput;
   Offers: Offers;
   OffersAggregateFilter: OffersAggregateFilter;
@@ -2643,6 +2656,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   lastAcknowledgedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType, RequireFields<QueryLastAcknowledgedAtArgs, 'safeAddress'>>;
   myInvitations?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
   myProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  offersByIdAndVersion?: Resolver<Array<ResolversTypes['Offer']>, ParentType, ContextType, RequireFields<QueryOffersByIdAndVersionArgs, 'query'>>;
   organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, Partial<QueryOrganisationsArgs>>;
   organisationsByAddress?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsByAddressArgs, 'addresses'>>;
   profilesById?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesByIdArgs, 'ids'>>;

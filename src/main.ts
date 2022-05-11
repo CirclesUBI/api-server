@@ -217,9 +217,6 @@ export class Main {
 new Main().run()
   .then(() => console.log("Started"))
   .then(async () => {
-
-
-
     console.log(`Starting periodic task job factory. Yields every ${Environment.periodicTaskInterval / 1000} seconds.`)
     setInterval(async() => {
         const now = new Date();

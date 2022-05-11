@@ -1220,6 +1220,11 @@ input PostAddressInput {
   cityGeonameid: Int!
 }
 
+input OfferByIdAndVersionInput {
+  offerId: Int!
+  offerVersion: Int!
+}
+
 type Mutation {
   announcePayment(invoiceId: Int!, transactionHash: String!): AnnouncePaymentResult!
 
@@ -1321,6 +1326,8 @@ type Query {
   cities(query: QueryCitiesInput!): [City!]!
   tags(query: QueryTagsInput!): [Tag!]!
   tagById(id: Int!): Tag
+
+  offersByIdAndVersion(query:[OfferByIdAndVersionInput!]!) : [Offer!]!
 
   directPath(from: String!, to: String!, amount: String!): TransitivePath!
   invoice(invoiceId: Int!): String

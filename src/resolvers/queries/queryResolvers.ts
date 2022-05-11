@@ -27,7 +27,7 @@ import {recentProfiles} from "./recentProfiles";
 import {stats} from "./stats";
 import {init} from "./init";
 import {Environment} from "../../environment";
-import {QueryResolvers} from "../../types";
+import {QueryOffersByIdAndVersionArgs, QueryResolvers} from "../../types";
 import {Context} from "../../context";
 import {shop} from "./shop";
 import {clientAssertionJwt} from "./clientAssertionJwt";
@@ -74,5 +74,33 @@ export const queryResolvers: QueryResolvers = {
   lastAcknowledgedAt: lastAcknowledgedAt,
   shops: shops,
   shop: shop,
-  clientAssertionJwt: clientAssertionJwt
+  clientAssertionJwt: clientAssertionJwt,
+  offersByIdAndVersion: async (parent:any, args:QueryOffersByIdAndVersionArgs, context:Context) => {
+    const result = await Environment.readonlyApiDb.offer.findMany({
+      where: {
+        id: {
+          in: args.query.map(o => o.offerId)
+        },
+        version: {
+          in: args.query.map(o => o.offerVersion)
+        }
+      }
+    });
+
+    const offerVersionsById = result.groupBy(o => o.id);
+    const offers = Object.values(offerVersionsById).map(offers => {
+      const sortedOffers = offers.sort((a,b) => a.version > b.version ? 1 : a.version < b.version ? -1 : 0);
+      return sortedOffers[0];
+    });
+
+    return offers.map(o => {
+      return {
+        ...o,
+        createdByAddress: "",
+        createdAt: o.createdAt.toJSON(),
+        pictureMimeType: o.pictureMimeType ?? "",
+        pictureUrl: o.pictureUrl ?? ""
+      }
+    });
+  }
 }
