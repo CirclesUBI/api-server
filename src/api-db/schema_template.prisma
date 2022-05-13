@@ -212,7 +212,6 @@ model Shop {
 
     purchaseMetaDataKeys String?
 
-    allergens String?
     privacyPolicyLink String?
     tosLink String?
     healthInfosLink String?
