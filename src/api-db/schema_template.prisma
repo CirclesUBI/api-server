@@ -425,6 +425,7 @@ model Offer {
     pictureUrl String?
     pictureMimeType String?
     description String?
+    allergens String?
 
     pricePerUnit String // The price in euro
     timeCirclesPriceShare Int // How many percent of the price can be payed in time circles
