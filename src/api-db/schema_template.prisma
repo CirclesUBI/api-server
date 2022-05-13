@@ -211,6 +211,11 @@ model Shop {
     deliveryMethods ShopDeliveryMethod[] @relation("ShopDeliveryMethod_Shop")
 
     purchaseMetaDataKeys String?
+
+    allergens String?
+    privacyPolicyLink String?
+    tosLink String?
+    healthInfosLink String?
 }
 
 model ShopCategory {
