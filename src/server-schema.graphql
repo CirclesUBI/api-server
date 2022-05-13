@@ -273,6 +273,7 @@ input OfferInput {
   pictureUrl: String!
   pictureMimeType: String!
   description: String
+  allergens: String
 
   pricePerUnit: String! # The price in euro
   timeCirclesPriceShare: Int! # How many percent of the price can be payed in time circles
@@ -290,6 +291,7 @@ type Offer {
   pictureUrl: String!
   pictureMimeType: String!
   description: String
+  allergens: String
 
   pricePerUnit: String! # The price in euro
   timeCirclesPriceShare: Int! # How many percent of the price can be payed in time circles
@@ -1093,6 +1095,10 @@ input ShopInput {
 
   ownerId: Int!
   openingHours: String
+
+  privacyPolicyLink: String
+  tosLink: String
+  healthInfosLink: String
 }
 
 type Shop {
@@ -1121,6 +1127,10 @@ type Shop {
 
   categories: [ShopCategory!]
   deliveryMethods: [DeliveryMethod!]
+
+  privacyPolicyLink: String
+  tosLink: String
+  healthInfosLink: String
 }
 
 input ShopCategoryInput {
@@ -1228,7 +1238,7 @@ input OfferByIdAndVersionInput {
 type Mutation {
   announcePayment(invoiceId: Int!, transactionHash: String!): AnnouncePaymentResult!
 
-  purchase(lines: [PurchaseLineInput!]! deliveryMethodId: Int!): [Invoice!]!
+  purchase(lines: [PurchaseLineInput!]!, deliveryMethodId: Int!): [Invoice!]!
   completePurchase(invoiceId: Int!, revoke: Boolean): Invoice!
   completeSale(invoiceId: Int!, revoke: Boolean): Invoice!
 
@@ -1239,7 +1249,7 @@ type Mutation {
   upsertTag(data: UpsertTagInput!): Tag!
 
   upsertShippingAddress(data: PostAddressInput!): PostAddress
-  deleteShippingAddress(id: Int!) : PostAddress
+  deleteShippingAddress(id: Int!): PostAddress
 
   upsertOrganisation(organisation: UpsertOrganisationInput!): CreateOrganisationResult!
   upsertRegion(organisation: UpsertOrganisationInput!): CreateOrganisationResult!
@@ -1299,7 +1309,6 @@ type Query {
     filter: ProfileEventFilter
   ): [ProfileEvent!]!
 
-
   aggregates(types: [AggregateType!]!, safeAddress: String!, filter: ProfileAggregateFilter): [ProfileAggregate!]!
 
   shops(ownerId: Int): [Shop!]!
@@ -1328,7 +1337,7 @@ type Query {
   tags(query: QueryTagsInput!): [Tag!]!
   tagById(id: Int!): Tag
 
-  offersByIdAndVersion(query:[OfferByIdAndVersionInput!]!) : [Offer!]!
+  offersByIdAndVersion(query: [OfferByIdAndVersionInput!]!): [Offer!]!
 
   directPath(from: String!, to: String!, amount: String!): TransitivePath!
   invoice(invoiceId: Int!): String

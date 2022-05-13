@@ -717,6 +717,7 @@ export type NotificationEvent = {
 
 export type Offer = {
   __typename?: 'Offer';
+  allergens?: Maybe<Scalars['String']>;
   createdAt: Scalars['String'];
   createdByAddress: Scalars['String'];
   createdByProfile?: Maybe<Profile>;
@@ -737,6 +738,7 @@ export type OfferByIdAndVersionInput = {
 };
 
 export type OfferInput = {
+  allergens?: InputMaybe<Scalars['String']>;
   createdByProfileId: Scalars['Int'];
   description?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Int']>;
@@ -1339,6 +1341,7 @@ export type Shop = {
   deliveryMethods?: Maybe<Array<DeliveryMethod>>;
   description: Scalars['String'];
   enabled?: Maybe<Scalars['Boolean']>;
+  healthInfosLink?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   largeBannerUrl: Scalars['String'];
   name: Scalars['String'];
@@ -1346,12 +1349,14 @@ export type Shop = {
   owner: Organisation;
   ownerId?: Maybe<Scalars['Int']>;
   pickupAddress?: Maybe<PostAddress>;
+  privacyPolicyLink?: Maybe<Scalars['String']>;
   private?: Maybe<Scalars['Boolean']>;
   productListingStyle: ProductListingType;
   purchaseMetaDataKeys?: Maybe<Scalars['String']>;
   shopListingStyle: ShopListingStyle;
   smallBannerUrl: Scalars['String'];
   sortOrder?: Maybe<Scalars['Int']>;
+  tosLink?: Maybe<Scalars['String']>;
 };
 
 export type ShopCategory = {
@@ -1412,16 +1417,19 @@ export type ShopCategoryInput = {
 export type ShopInput = {
   description: Scalars['String'];
   enabled: Scalars['Boolean'];
+  healthInfosLink?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Int']>;
   largeBannerUrl: Scalars['String'];
   name: Scalars['String'];
   openingHours?: InputMaybe<Scalars['String']>;
   ownerId: Scalars['Int'];
+  privacyPolicyLink?: InputMaybe<Scalars['String']>;
   private?: InputMaybe<Scalars['Boolean']>;
   productListingStyle: ProductListingType;
   shopListingStyle: ShopListingStyle;
   smallBannerUrl: Scalars['String'];
   sortOrder?: InputMaybe<Scalars['Int']>;
+  tosLink?: InputMaybe<Scalars['String']>;
 };
 
 export enum ShopListingStyle {
@@ -2446,6 +2454,7 @@ export type NotificationEventResolvers<ContextType = any, ParentType extends Res
 }>;
 
 export type OfferResolvers<ContextType = any, ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']> = ResolversObject<{
+  allergens?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdByAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdByProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
@@ -2796,6 +2805,7 @@ export type ShopResolvers<ContextType = any, ParentType extends ResolversParentT
   deliveryMethods?: Resolver<Maybe<Array<ResolversTypes['DeliveryMethod']>>, ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   enabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  healthInfosLink?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   largeBannerUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2803,12 +2813,14 @@ export type ShopResolvers<ContextType = any, ParentType extends ResolversParentT
   owner?: Resolver<ResolversTypes['Organisation'], ParentType, ContextType>;
   ownerId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   pickupAddress?: Resolver<Maybe<ResolversTypes['PostAddress']>, ParentType, ContextType>;
+  privacyPolicyLink?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   private?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   productListingStyle?: Resolver<ResolversTypes['ProductListingType'], ParentType, ContextType>;
   purchaseMetaDataKeys?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   shopListingStyle?: Resolver<ResolversTypes['ShopListingStyle'], ParentType, ContextType>;
   smallBannerUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   sortOrder?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  tosLink?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
