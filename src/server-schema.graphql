@@ -658,6 +658,7 @@ enum AggregateType {
   Offers
   Purchases
   Sales
+  Erc721Tokens
 }
 
 # All crc holdings of the user
@@ -671,6 +672,21 @@ type CrcBalances implements IAggregatePayload {
 type Erc20Balances implements IAggregatePayload {
   lastUpdatedAt: String!
   balances: [AssetBalance!]! @cost(value: 1)
+}
+
+type Erc721Token {
+  token_symbol: String
+  token_name: String
+  token_address: String!
+  token_owner_address: String!
+  token_owner_profile: Profile
+  token_no: String!
+  token_url: String!
+}
+
+type Erc721Tokens implements IAggregatePayload {
+  lastUpdatedAt: String!
+  balances: [Erc721Token!]! @cost(value: 1)
 }
 
 type Contacts implements IAggregatePayload {
@@ -722,7 +738,7 @@ type Contact {
   contactAddress_Profile: Profile @cost(value: 1)
 }
 
-union AggregatePayload = CrcBalances | Erc20Balances | Contacts | Memberships | Members | Offers | Sales | Purchases
+union AggregatePayload = CrcBalances | Erc20Balances | Contacts | Memberships | Members | Offers | Sales | Purchases | Erc721Tokens
 
 type ProfileAggregate {
   type: String!

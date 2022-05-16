@@ -5,7 +5,6 @@ import {Agent} from "../../api-db/client";
 import {TransactionInput} from "ethers-multisend";
 import {TransactionType} from "ethers-multisend/build/cjs/types";
 import {multisend} from "../../utils/multisend";
-import {RpcGateway} from "../../circles/rpcGateway";
 
 export class MintPurchaseNftsWorker extends JobWorker<MintPurchaseNfts> {
   name(): string {

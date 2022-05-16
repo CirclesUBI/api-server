@@ -79,19 +79,5 @@ describe("multisend", () => {
       gasToken: ZERO_ADDRESS,
       refundReceiver: ZERO_ADDRESS
     });
-
-    const receipt = await RpcGateway.get().eth.sendSignedTransaction(result);
-    return receipt;
-/*
-    const signedTx = await acc.signTransaction({
-      data: multiTx.data,
-      gas: 500000,
-      to: multiTx.to,
-      value: new BN(multiTx.value),
-    });
-
-    const receipt = await RpcGateway.get().eth.sendSignedTransaction(signedTx.rawTransaction ?? "");
-    return receipt;
- */
   });
 });

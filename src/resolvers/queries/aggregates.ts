@@ -12,6 +12,7 @@ import {MembersSource} from "../../querySources/aggregateSources/api/membersSour
 import {OffersSource} from "../../querySources/aggregateSources/api/offersSource";
 import {CombinedAggregateSource} from "../../querySources/aggregateSources/combinedAggregateSource";
 import {AggregateAugmenter} from "../../querySources/aggregateSources/aggregateAugmenter";
+import {Erc721BalancesSource} from "../../querySources/aggregateSources/blockchain/erc721BalancesSource";
 
 export const aggregates = async (parent:any, args:QueryAggregatesArgs, context: Context) => {
     const aggregateSources: AggregateSource[] = [];
@@ -61,6 +62,9 @@ export const aggregates = async (parent:any, args:QueryAggregatesArgs, context: 
     }
     if (types[AggregateType.Offers]) {
       aggregateSources.push(new OffersSource());
+    }
+    if (types[AggregateType.Erc721Tokens]) {
+      aggregateSources.push(new Erc721BalancesSource());
     }
 
     const source = new CombinedAggregateSource(aggregateSources);

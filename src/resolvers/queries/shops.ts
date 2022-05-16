@@ -55,8 +55,6 @@ export const shops = async (parent: any, args: QueryShopsArgs, context: Context)
     });
 }
 
-
-
 export const shopsById = async (parent: any, args: QueryShopsByIdArgs, context: Context) => {
     const shops = await Environment.readWriteApiDb.shop.findMany({
         where: {
