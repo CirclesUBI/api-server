@@ -33,6 +33,8 @@ import {shop} from "./shop";
 import {clientAssertionJwt} from "./clientAssertionJwt";
 import {shops, shopsById} from "./shops";
 import {lastAcknowledgedAt} from "./lastAcknowledgedAt";
+import {Offer} from "../../api-db/client";
+
 const packageJson = require("../../../package.json");
 
 export const queryResolvers: QueryResolvers = {
@@ -76,23 +78,40 @@ export const queryResolvers: QueryResolvers = {
   shopsById: shopsById,
   shop: shop,
   clientAssertionJwt: clientAssertionJwt,
-  offersByIdAndVersion: async (parent:any, args:QueryOffersByIdAndVersionArgs, context:Context) => {
-    const result = await Environment.readonlyApiDb.offer.findMany({
-      where: {
-        id: {
-          in: args.query.map(o => o.offerId)
+  offersByIdAndVersion: async (parent: any, args: QueryOffersByIdAndVersionArgs, context: Context) => {
+    const offerVersions = args.query.filter(o => !!o.offerVersion).map(o => <number>o.offerVersion);
+    const offerIds = args.query.map(o => o.offerId);
+
+    let result: Offer[];
+    if (offerVersions.length > 0) {
+      result = await Environment.readonlyApiDb.offer.findMany({
+        where: {
+          id: {
+            in: offerIds
+          },
+          version: {
+            in: offerVersions
+          }
         },
-        version: {
-          in: args.query.map(o => o.offerVersion)
+        orderBy: {
+          version: "desc"
         }
-      }
-    });
+      });
+    } else {
+      result = await Environment.readonlyApiDb.offer.findMany({
+        where: {
+          id: {
+            in: offerIds
+          }
+        },
+        orderBy: {
+          version: "desc"
+        }
+      });
+    }
 
     const offerVersionsById = result.groupBy(o => o.id);
-    const offers = Object.values(offerVersionsById).map(offers => {
-      const sortedOffers = offers.sort((a,b) => a.version > b.version ? 1 : a.version < b.version ? -1 : 0);
-      return sortedOffers[0];
-    });
+    const offers = Object.values(offerVersionsById).map(offers => offers[0]);
 
     return offers.map(o => {
       return {

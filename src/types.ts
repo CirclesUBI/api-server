@@ -752,7 +752,7 @@ export type Offer = {
 
 export type OfferByIdAndVersionInput = {
   offerId: Scalars['Int'];
-  offerVersion: Scalars['Int'];
+  offerVersion?: InputMaybe<Scalars['Int']>;
 };
 
 export type OfferInput = {
