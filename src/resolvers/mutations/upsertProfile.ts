@@ -97,9 +97,10 @@ export function upsertProfileResolver() {
                 }
             }));
 
-            if (!oldProfile.inviteTrigger &&
-              oldProfile.type == ProfileType.Person &&
-              !oldProfile.circlesAddress && profile.circlesAddress) {
+            if (!oldProfile.inviteTrigger
+              && oldProfile.type == ProfileType.Person
+              && !oldProfile.circlesAddress
+              && profile.circlesAddress) {
                 // Create the initial invitations for the user
                 console.log(`Automatically verifying the new safe user ${profile.circlesAddress} ..`);
                 await verifySafe(null, {safeAddress: profile.circlesAddress}, context);

@@ -16,11 +16,12 @@ export class Erc721BalancesSource implements AggregateSource {
     const token_address = "0x2F42a5e50B519aA7074647969DaaDC49E6aD5eE4";
     const web3 = RpcGateway.get();
     const erc721 = new web3.eth.Contract(erc721_abi, token_address);
-    const urls: { url: string, symbol: string, name: string, owner: string }[] = [];
+    const urls: { no:number, url: string, symbol: string, name: string, owner: string }[] = [];
 
     for(let i = 0; i < 500; i++){
       try {
         const token = {
+          no: i,
           url: await erc721.methods.tokenURI(i.toString()).call(),
           symbol: await erc721.methods.symbol().call(),
           name: await erc721.methods.name().call(),
@@ -48,7 +49,7 @@ export class Erc721BalancesSource implements AggregateSource {
         balances: urls.map((o, i) => {
           return {
             token_address,
-            token_no: i.toString(),
+            token_no: urls[i].no.toString(),
             token_owner_address: urls[i].owner,
             token_owner_profile: ownerProfilesLookup[urls[i].owner.toLowerCase()],
             token_symbol: urls[i].symbol,
