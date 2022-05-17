@@ -47,7 +47,8 @@ export class MintPurchaseNftsWorker extends JobWorker<MintPurchaseNfts> {
         },
         contractAbi:{not:null},
         contractAddress:{not:null},
-        contractMethod:{not:null}
+        contractMethod:{not:null},
+        enabled: true
       }
     });
 

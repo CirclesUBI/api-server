@@ -191,6 +191,8 @@ type SessionInfo {
   profileId: Int
   profile: Profile
   capabilities: [Capability!]!
+
+  useShortSignup: Boolean
 }
 
 enum CapabilityType {

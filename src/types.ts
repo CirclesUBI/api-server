@@ -1350,6 +1350,7 @@ export type SessionInfo = {
   isLoggedOn: Scalars['Boolean'];
   profile?: Maybe<Profile>;
   profileId?: Maybe<Scalars['Int']>;
+  useShortSignup?: Maybe<Scalars['Boolean']>;
 };
 
 export type Shop = {
@@ -2835,6 +2836,7 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
   isLoggedOn?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   profileId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  useShortSignup?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

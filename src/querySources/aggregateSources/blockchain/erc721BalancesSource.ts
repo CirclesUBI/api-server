@@ -18,7 +18,7 @@ export class Erc721BalancesSource implements AggregateSource {
     const erc721 = new web3.eth.Contract(erc721_abi, token_address);
     const urls: { url: string, symbol: string, name: string, owner: string }[] = [];
 
-    for(let i = 0; i < 50; i++){
+    for(let i = 0; i < 500; i++){
       try {
         const token = {
           url: await erc721.methods.tokenURI(i.toString()).call(),

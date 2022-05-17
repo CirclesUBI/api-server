@@ -21,7 +21,8 @@ export class MintCheckInNftsWorker extends JobWorker<MintCheckInNfts> {
         ownerSafeAddress: job.hostAddress,
         contractAbi:{not:null},
         contractAddress:{not:null},
-        contractMethod:{not:null}
+        contractMethod:{not:null},
+        enabled: true
       }
     });
 
