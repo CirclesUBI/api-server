@@ -69,7 +69,7 @@ export class MintPurchaseNftsWorker extends JobWorker<MintPurchaseNfts> {
         if (!buyer.circlesAddress) {
           throw new Error(`The creator of purchase ${purchase.id} has no circlesAddress.`)
         }
-        const tx = await this.encodeContractCall(agent, buyer.circlesAddress, "https://circles.land");
+        const tx = await this.encodeContractCall(agent, buyer.circlesAddress, "https://staging.circles.land/images/events/stroke.png");
         tx.id = (i++).toString();
         return {
           agent: agent,
