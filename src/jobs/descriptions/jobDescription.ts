@@ -1,5 +1,4 @@
 import crypto from "crypto";
-import {identity} from "ix/util/identity";
 
 export type JobType =
   "broadcastChatMessage" |
@@ -12,7 +11,12 @@ export type JobType =
   "echo" |
   "inviteCodeFromExternalTrigger" |
   "sendWelcomeEmail" |
-  "broadcastPurchased";
+  "broadcastPurchased" |
+  "requestUbiForInactiveAccounts" |
+  "rotateJwks" |
+  "autoTrust" |
+  "mintPurchaseNfts"|
+  "mintCheckInNfts";
 
 export type JobKind =
   "broadcast" |

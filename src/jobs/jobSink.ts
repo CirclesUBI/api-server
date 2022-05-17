@@ -19,14 +19,46 @@ import {BroadcastPurchased} from "./descriptions/market/broadcastPurchased";
 import {BroadcastPurchasedWorker} from "./worker/market/broadcastPurchasedWorker";
 import {SendWelcomeEmailWorker} from "./worker/emailNotifications/sendWelcomeEmailWorker";
 import {SendWelcomeEmail} from "./descriptions/emailNotifications/sendWelcomeEmail";
+import {RequestUbiForInactiveAccountsWorker} from "./worker/maintenance/requestUbiForInactiveAccountsWorker";
+import {RequestUbiForInactiveAccounts} from "./descriptions/maintenance/requestUbiForInactiveAccounts";
+import {RotateJwksWorker} from "./worker/maintenance/rotateJwksWorker";
+import {AutoTrustWorker} from "./worker/maintenance/autoTrustWorker";
+import {AutoTrust} from "./descriptions/maintenance/autoTrust";
+import {RotateJwks} from "./descriptions/maintenance/rotateJwks";
+import {MintPurchaseNftsWorker} from "./worker/mintPurchaseNftsWorker";
+import {MintPurchaseNfts} from "./descriptions/mintPurchaseNfts";
+import {MintCheckInNftsWorker} from "./worker/mintCheckInNftsWorker";
+import {MintCheckInNfts} from "./descriptions/mintCheckInNfts";
 
 export const jobSink = async (job: Job) => {
   switch (job.topic) {
+    case "mintPurchaseNfts".toLowerCase():
+      return await new MintPurchaseNftsWorker({
+        errorStrategy: "logAndDrop"
+      })
+        .run(job.id, MintPurchaseNfts.parse(job.payload));
+    case "mintCheckInNfts".toLowerCase():
+      return await new MintCheckInNftsWorker({
+        errorStrategy: "logAndDrop"
+      })
+      .run(job.id, MintCheckInNfts.parse(job.payload));
     case "echo".toLowerCase():
       return await new EchoWorker({
         errorStrategy: "logAndDrop"
       })
         .run(job.id, Echo.parse(job.payload));
+    case "rotateJwks".toLowerCase():
+      return await new RotateJwksWorker({
+        errorStrategy: "logAndDropAfterThreshold",
+        dropThreshold: 3
+      })
+        .run(job.id, RotateJwks.parse(job.payload))
+    case "autoTrust".toLowerCase():
+      return await new AutoTrustWorker({
+        errorStrategy: "logAndDropAfterThreshold",
+        dropThreshold: 3
+      })
+        .run(job.id, AutoTrust.parse(job.payload));
     case "sendWelcomeEmail".toLowerCase():
       return await new SendWelcomeEmailWorker({
         errorStrategy: "logAndDrop"
@@ -70,6 +102,11 @@ export const jobSink = async (job: Job) => {
         dropThreshold: 3
       })
         .run(job.id, VerifyEmailAddress.parse(job.payload));
+    case "requestUbiForInactiveAccounts".toLowerCase():
+      return new RequestUbiForInactiveAccountsWorker({
+        errorStrategy: "logAndDrop"
+      })
+        .run(job.id, RequestUbiForInactiveAccounts.parse(job.payload))
     default:
       return undefined;
   }

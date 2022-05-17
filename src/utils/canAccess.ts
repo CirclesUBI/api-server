@@ -1,5 +1,4 @@
 import {Context} from "../context";
-import {Session, Profile} from "../api-db/client";
 import {Environment} from "../environment";
 
 export async function isBILMember(circlesAddress?:string|null) {
@@ -26,7 +25,7 @@ export async function isBALIMember(circlesAddress?:string|null) {
 
   const orga = await Environment.readonlyApiDb.profile.findFirst({
     where: {
-      circlesAddress: "0x6043c135d79270a9eaa21a3f6d8009d8c49141b9",
+      circlesAddress: "0xdf5b1ea0aa4117770779fd46a7aa237c4dc0bdbd",
       members: {
         some: {
           memberAddress: circlesAddress

@@ -51,7 +51,11 @@ export class PurchasesEventSource implements EventSource {
         ...createdAt,
       },
       include: {
-        purchase: true,
+        purchase: {
+          include: {
+            deliveryMethod: true
+          }
+        },
         sellerProfile: true,
         lines: {
           include: {

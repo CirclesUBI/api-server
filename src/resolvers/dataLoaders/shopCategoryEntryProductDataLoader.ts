@@ -3,7 +3,7 @@ import {Offer} from "../../types";
 import {Environment} from "../../environment";
 
 export const shopCategoryEntryProductDataLoader = new DataLoader<number, Offer>(async (entryIds) => {
-  const offers = (await Environment.readonlyApiDb.shopCategoryEntry.findMany({
+  const shopCategoryEntriesWithProducts = (await Environment.readonlyApiDb.shopCategoryEntry.findMany({
     where: {
       id: {
         in: entryIds.map(o => o)
@@ -25,11 +25,12 @@ export const shopCategoryEntryProductDataLoader = new DataLoader<number, Offer>(
     }
   }));
 
-  return offers.map(c => <Offer>{
-    ...c.product,
-    createdByAddress: c.product.createdBy.circlesAddress,
-    createdAt: c.product.createdAt.toJSON(),
-    pictureUrl: c.product.pictureUrl ?? ""
+  const g = shopCategoryEntriesWithProducts.toLookup(o => o.id, o => o);
+  return entryIds.map(id => <Offer>{
+    ...g[id].product,
+    createdByAddress: g[id].product.createdBy.circlesAddress,
+    createdAt: g[id].product.createdAt.toJSON(),
+    pictureUrl: g[id].product.pictureUrl ?? ""
   });
 }, {
   cache: false

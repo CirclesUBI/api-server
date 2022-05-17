@@ -5,6 +5,7 @@ export type IndexerEvent = {
         | "CrcHubTransfer"
         | "Erc20Transfer"
         | "EthTransfer"
+        | "CrcMinting"
         | "GnosisSafeEthTransfer",
     timestamp: Date,
     hash: string,

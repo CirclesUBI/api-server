@@ -3,7 +3,7 @@ import {RpcGateway} from "../../circles/rpcGateway";
 import { BN } from "ethereumjs-util";
 import {RedeemClaimedInvitationResult} from "../../types";
 import {Environment} from "../../environment";
-import {Dropper} from "../../utils/dropper";
+import {createInvitations} from "../../utils/invitationHelper";
 
 export function redeemClaimedInvitation() {
   return async (parent: any, args: any, context: Context) => {
@@ -64,7 +64,6 @@ export function redeemClaimedInvitation() {
       });
 
       if (claimedInvitation.forSafeAddress) {
-        //throw new Error("The claimed invitation doesn't have an assigned 'forSafeAddress'.");
         const verifiedInviter = await Environment.readWriteApiDb.verifiedSafe.findFirst({
           where: {
             safeAddress: claimedInvitation.forSafeAddress
@@ -72,8 +71,7 @@ export function redeemClaimedInvitation() {
         });
 
         if (verifiedInviter) {
-          await Dropper.createInvitations(verifiedInviter.safeAddress, 1);
-          // throw new Error(`Couldn't find a 'verifiedSafe' with the address ${claimedInvitation.forSafeAddress}.`)
+          await createInvitations(verifiedInviter.safeAddress, 1);
         }
       }
 
