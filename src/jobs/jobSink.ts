@@ -27,6 +27,8 @@ import {AutoTrust} from "./descriptions/maintenance/autoTrust";
 import {RotateJwks} from "./descriptions/maintenance/rotateJwks";
 import {MintPurchaseNftsWorker} from "./worker/mintPurchaseNftsWorker";
 import {MintPurchaseNfts} from "./descriptions/mintPurchaseNfts";
+import {MintCheckInNftsWorker} from "./worker/mintCheckInNftsWorker";
+import {MintCheckInNfts} from "./descriptions/mintCheckInNfts";
 
 export const jobSink = async (job: Job) => {
   switch (job.topic) {
@@ -35,6 +37,11 @@ export const jobSink = async (job: Job) => {
         errorStrategy: "logAndDrop"
       })
         .run(job.id, MintPurchaseNfts.parse(job.payload));
+    case "mintCheckInNfts".toLowerCase():
+      return await new MintCheckInNftsWorker({
+        errorStrategy: "logAndDrop"
+      })
+      .run(job.id, MintCheckInNfts.parse(job.payload));
     case "echo".toLowerCase():
       return await new EchoWorker({
         errorStrategy: "logAndDrop"

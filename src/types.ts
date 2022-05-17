@@ -59,7 +59,6 @@ export type AssetBalance = {
   __typename?: 'AssetBalance';
   token_address: Scalars['String'];
   token_balance: Scalars['String'];
-  token_name?: Maybe<Scalars['String']>;
   token_owner_address: Scalars['String'];
   token_owner_profile?: Maybe<Profile>;
   token_symbol?: Maybe<Scalars['String']>;
@@ -298,6 +297,7 @@ export type Erc20Transfer = IEventPayload & {
 export type Erc721Token = {
   __typename?: 'Erc721Token';
   token_address: Scalars['String'];
+  token_name?: Maybe<Scalars['String']>;
   token_no: Scalars['String'];
   token_owner_address: Scalars['String'];
   token_owner_profile?: Maybe<Profile>;
@@ -2029,7 +2029,6 @@ export type AnnouncePaymentResultResolvers<ContextType = any, ParentType extends
 export type AssetBalanceResolvers<ContextType = any, ParentType extends ResolversParentTypes['AssetBalance'] = ResolversParentTypes['AssetBalance']> = ResolversObject<{
   token_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   token_balance?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  token_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   token_owner_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   token_owner_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   token_symbol?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2232,6 +2231,7 @@ export type Erc20TransferResolvers<ContextType = any, ParentType extends Resolve
 
 export type Erc721TokenResolvers<ContextType = any, ParentType extends ResolversParentTypes['Erc721Token'] = ResolversParentTypes['Erc721Token']> = ResolversObject<{
   token_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  token_name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   token_no?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   token_owner_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   token_owner_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;

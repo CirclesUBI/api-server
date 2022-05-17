@@ -69,7 +69,7 @@ export class MintPurchaseNftsWorker extends JobWorker<MintPurchaseNfts> {
         if (!buyer.circlesAddress) {
           throw new Error(`The creator of purchase ${purchase.id} has no circlesAddress.`)
         }
-        const tx = await this.encodeContractCall(agent, buyer.circlesAddress, "https://staging.circles.land/images/events/stroke.png");
+        const tx = await MintPurchaseNftsWorker.encodeContractCall(agent, buyer.circlesAddress, "https://staging.circles.land/images/events/stroke.png");
         tx.id = (i++).toString();
         return {
           agent: agent,
@@ -92,11 +92,11 @@ export class MintPurchaseNftsWorker extends JobWorker<MintPurchaseNfts> {
     }));
 
     return {
-      info: ``
+      info: `TxHashes: ${receipts.map(o => o.transactionHash).join(", ")}`
     };
   }
 
-  private async encodeContractCall(agent:Agent, to:string, uri:string) : Promise<TransactionInput> {
+  public static async encodeContractCall(agent:Agent, to:string, uri:string) : Promise<TransactionInput> {
     if (!agent.contractAbi
       || !agent.contractAddress
       || !agent.contractMethod) {

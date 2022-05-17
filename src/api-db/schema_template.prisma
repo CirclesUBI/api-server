@@ -623,4 +623,6 @@ model Agent {
     contractAddress String?
     contractAbi String?
     contractMethod String?
+
+    enabled Boolean @default(false)
 }
