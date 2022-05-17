@@ -20,12 +20,15 @@ export class Erc721BalancesSource implements AggregateSource {
 
     for(let i = 0; i < 50; i++){
       try {
-        urls.push({
+        const token = {
           url: await erc721.methods.tokenURI(i.toString()).call(),
           symbol: await erc721.methods.symbol().call(),
           name: await erc721.methods.name().call(),
           owner: await erc721.methods.ownerOf(i.toString()).call()
-        });
+        };
+        if (token.owner.toLowerCase() == forSafeAddress.toLowerCase()) {
+          urls.push(token);
+        }
       } catch (e) {
         console.log("Breaking iteration because: " + (<any>e).message);
         break;
