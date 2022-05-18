@@ -10,9 +10,7 @@ import {Environment} from "./environment";
 import {IndexerEvents} from "./indexer-api/indexerEvents";
 import {PaymentProcessor} from "./indexer-api/paymentProcessor";
 import {AppNotificationProcessor} from "./indexer-api/appNotificationProcessor";
-import {RequestUbiForInactiveAccounts} from "./jobs/descriptions/maintenance/requestUbiForInactiveAccounts";
 import {jwksGetHandler} from "./httpHandlers/get/jwks";
-import {RotateJwks} from "./jobs/descriptions/maintenance/rotateJwks";
 import {JobQueue} from "./jobs/jobQueue";
 import {gqlSubscriptionServer} from "./gqlSubscriptionServer";
 import {uploadPostHandler} from "./httpHandlers/post/upload";
@@ -23,6 +21,10 @@ import express from "express";
 import cors from "cors";
 import * as graphqlImport from "@graphql-tools/import";
 import {healthGetHandler} from "./httpHandlers/get/health";
+import {RotateJwks} from "./jobs/descriptions/maintenance/rotateJwks";
+import {RequestUbiForInactiveAccounts} from "./jobs/descriptions/maintenance/requestUbiForInactiveAccounts";
+import {MintPurchaseNfts} from "./jobs/descriptions/mintPurchaseNfts";
+import {MintCheckInNfts} from "./jobs/descriptions/mintCheckInNfts";
 
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
@@ -134,6 +136,21 @@ export class Main {
         ApolloServerPluginLandingPageGraphQLPlayground(),
         new GqlLogger(),
       ],
+      validationRules: [
+        /*
+        createComplexityRule({
+          estimators: [
+            // Configure your estimators
+            simpleEstimator({ defaultComplexity: 1 }),
+          ],
+          maximumComplexity: 1000,
+          variables: {},
+          onComplete: (complexity: number) => {
+            console.log('Query Complexity:', complexity);
+          },
+        })
+         */
+      ]
     });
 
     subscriptionServer = await gqlSubscriptionServer(schema, httpServer, server.graphqlPath);
@@ -178,7 +195,9 @@ export class Main {
       "sendWelcomeEmail",
       "requestUbiForInactiveAccounts",
       "rotateJwks",
-      "autoTrust"
+      "autoTrust",
+      "mintPurchaseNfts",
+      "mintCheckInNfts"
     ];
 
     jobQueue.consume(jobTopics, jobSink, false)
@@ -200,7 +219,7 @@ export class Main {
 new Main().run()
   .then(() => console.log("Started"))
   .then(async () => {
-    console.log(`Starting RequestUbiForInactiveAccounts job factory. Yields every ${Environment.periodicTaskInterval / 1000} seconds.`)
+    console.log(`Starting periodic task job factory. Yields every ${Environment.periodicTaskInterval / 1000} seconds.`);
     setInterval(async() => {
         const now = new Date();
 

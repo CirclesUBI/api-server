@@ -14,7 +14,9 @@ export type JobType =
   "broadcastPurchased" |
   "requestUbiForInactiveAccounts" |
   "rotateJwks" |
-  "autoTrust";
+  "autoTrust" |
+  "mintPurchaseNfts"|
+  "mintCheckInNfts";
 
 export type JobKind =
   "broadcast" |

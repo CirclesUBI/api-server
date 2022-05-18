@@ -1,7 +1,7 @@
 import {
   AggregateType,
   Contacts,
-  CrcBalances, Erc20Balances,
+  CrcBalances, Erc20Balances, Erc721Tokens,
   IAggregatePayload,
   Members,
   Memberships, Offers, ProfileAggregate, Purchases, Sales
@@ -22,7 +22,8 @@ export class AggregateAugmenter
     new OffersAugmentation(),
     new PurchasesAugmentation(),
     new SalesAugmentation(),
-    new Erc20BalancesAugmentation()
+    new Erc20BalancesAugmentation(),
+    new Erc721TokensAugmentation()
   ];
 
   add(profileAggregate: ProfileAggregate) {
@@ -88,6 +89,24 @@ export class Erc20BalancesAugmentation implements AggregateAugmentation<Erc20Bal
   }
 
   extractAddresses(payload: Erc20Balances): string[] {
+    return [];
+  }
+}
+
+export class Erc721TokensAugmentation implements AggregateAugmentation<Erc721Tokens> {
+  matches(profileAggregate: ProfileAggregate) {
+    return profileAggregate.type == AggregateType.Erc721Tokens;
+  }
+
+  augmentPayload(payload: Erc721Tokens, profiles: ProfilesBySafeAddressLookup, tokens?: TokenInfoByAddress): void {
+
+  }
+
+  extractTokenAddresses(payload: Erc721Tokens): string[] {
+    return payload.balances.map(o => o.token_address);
+  }
+
+  extractAddresses(payload: Erc721Tokens): string[] {
     return [];
   }
 }

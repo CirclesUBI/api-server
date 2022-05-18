@@ -12,7 +12,6 @@ import { verifySessionChallengeResolver } from "./verifySessionChallengeResolver
 import { upsertOrganisation } from "./upsertOrganisation";
 import { addMemberResolver } from "./addMember";
 import { removeMemberResolver } from "./removeMember";
-import { purchaseResolver } from "./purchase";
 import { requestSessionChallenge } from "./requestSessionChallenge";
 import { importOrganisationsOfAccount } from "./importOrganisationsOfAccount";
 import { completePurchase } from "./completePurchase";
@@ -21,11 +20,13 @@ import { revokeSafeVerification, verifySafe } from "./verifySafe";
 import { announcePayment } from "./announcePayment";
 import { Environment } from "../../environment";
 import { MutationResolvers } from "../../types";
-import {upsertOffer} from "./upsertOffer";
-import {upsertShop} from "./upsertShop";
-import {upsertShopCategories} from "./upsertShopCategories";
-import {upsertShopCategoryEntries} from "./upsertShopCategoryEntries";
-import {proofUniqueness} from "./proofUniqueness";
+import { upsertOffer } from "./upsertOffer";
+import { upsertShop } from "./upsertShop";
+import { upsertShopCategories } from "./upsertShopCategories";
+import { upsertShopCategoryEntries } from "./upsertShopCategoryEntries";
+import { proofUniqueness } from "./proofUniqueness";
+import { upsertShippingAddress } from "./upsertShippingAddress";
+import {purchaseResolver} from "./purchase";
 
 export const mutationResolvers: MutationResolvers = {
   purchase: purchaseResolver,
@@ -55,5 +56,6 @@ export const mutationResolvers: MutationResolvers = {
   upsertShop: upsertShop,
   upsertShopCategories: upsertShopCategories,
   upsertShopCategoryEntries: upsertShopCategoryEntries,
-  proofUniqueness: proofUniqueness
+  proofUniqueness: proofUniqueness,
+  upsertShippingAddress: upsertShippingAddress
 };
