@@ -6,6 +6,7 @@ import {GnosisSafeProxy} from "./gnosisSafeProxy";
 import {SafeOps} from "./safeOps";
 import {Web3Contract} from "./web3Contract";
 import {CIRCLES_HUB_ABI} from "./abi/circlesHubAbi";
+import {TransactionInput} from "ethers-multisend";
 
 export class CirclesHub extends Web3Contract {
   constructor(web3: Web3, hubAddress: string) {
@@ -138,6 +139,36 @@ export class CirclesHub extends Web3Contract {
     return a;
   }
 
+  async transferTroughEthers(
+    privateKey: string,
+    safeProxy: GnosisSafeProxy,
+    tokenOwners: string[],
+    sources: string[],
+    destinations: string[],
+    values: BN[]
+  ): Promise<TransactionInput> {
+
+    const transfer = {
+      tokenOwners: tokenOwners,
+      sources: sources,
+      destinations: destinations,
+      values: values,
+    };
+
+    const txData = this.encodeTransferThrough(transfer);
+
+    const tx = safeProxy.toEthersTx(privateKey, {
+      to: this.address,
+      data: txData,
+      value: new BN("0"),
+      refundReceiver: ZERO_ADDRESS,
+      gasToken: ZERO_ADDRESS,
+      operation: SafeOps.CALL,
+    });
+
+    return tx;
+  }
+
   async transferTrough(
     privateKey: string,
     safeProxy: GnosisSafeProxy,
@@ -153,24 +184,7 @@ export class CirclesHub extends Web3Contract {
       values: values,
     };
 
-    // TODO: Check the send limit for each edge with the hub contract
-    /*
-    const sendLimit = await this.contract.methods
-      .checkSendLimit(_safeProxy.address, _safeProxy.address, to)
-      .call();
-
-    if (new BN(sendLimit).lt(amount))
-      throw new Error("You cannot transfer " + amount.toString() + "units to " + to + " because the recipient doesn't trust your tokens.");
-    */
-
-    const txData = await this.contract.methods
-      .transferThrough(
-        transfer.tokenOwners,
-        transfer.sources,
-        transfer.destinations,
-        transfer.values
-      )
-      .encodeABI();
+    const txData = await this.encodeTransferThrough(transfer);
 
     return await safeProxy.execTransaction(privateKey, {
       to: this.address,
@@ -180,5 +194,17 @@ export class CirclesHub extends Web3Contract {
       gasToken: ZERO_ADDRESS,
       operation: SafeOps.CALL,
     });
+  }
+
+  public encodeTransferThrough(transfer: { sources: string[]; destinations: string[]; values: BN[]; tokenOwners: string[] }) {
+    const txData = this.contract.methods
+      .transferThrough(
+        transfer.tokenOwners,
+        transfer.sources,
+        transfer.destinations,
+        transfer.values
+      )
+      .encodeABI();
+    return txData;
   }
 }

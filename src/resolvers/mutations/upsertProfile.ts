@@ -13,6 +13,8 @@ import {claimInvitation} from "./claimInvitation";
 import {createInvitationPerpetualTrigger} from "../../utils/invitationHelper";
 import {verifySafe} from "./verifySafe";
 import {AutoTrust} from "../../jobs/descriptions/maintenance/autoTrust";
+import {MintCheckInNftsWorker} from "../../jobs/worker/mintCheckInNftsWorker";
+import {MintCheckInNfts} from "../../jobs/descriptions/mintCheckInNfts";
 
 const validateEmail = (email:string) => {
     return email.match(
@@ -95,9 +97,10 @@ export function upsertProfileResolver() {
                 }
             }));
 
-            if (!oldProfile.inviteTrigger &&
-              oldProfile.type == ProfileType.Person &&
-              !oldProfile.circlesAddress && profile.circlesAddress) {
+            if (!oldProfile.inviteTrigger
+              && oldProfile.type == ProfileType.Person
+              && !oldProfile.circlesAddress
+              && profile.circlesAddress) {
                 // Create the initial invitations for the user
                 console.log(`Automatically verifying the new safe user ${profile.circlesAddress} ..`);
                 await verifySafe(null, {safeAddress: profile.circlesAddress}, context);
@@ -106,9 +109,15 @@ export function upsertProfileResolver() {
                     where: { redeemedByProfileId: profile.id },
                     include: { createdBy: true }
                 });
+
                 if (invitation?.createdBy?.circlesAddress) {
-                    console.log(`Creating an 'autoTrust' job for new safe ${profile.circlesAddress} and inviter ${invitation.createdBy.circlesAddress}`);
-                    await JobQueue.produce([new AutoTrust(invitation.createdBy.circlesAddress, profile.circlesAddress)]);
+                    setTimeout(async () => {
+                        console.log(`Creating an 'autoTrust' job for new safe ${profile.circlesAddress} and inviter ${invitation.createdBy.circlesAddress}`);
+                        await JobQueue.produce([new AutoTrust(<string>invitation.createdBy.circlesAddress, <string>profile.circlesAddress)]);
+                    }, 5000);
+
+                    console.log(`Creating a 'mintCheckInNft' job for new safe (guest) ${profile.circlesAddress} and inviter (host) ${invitation.createdBy.circlesAddress}`);
+                    await JobQueue.produce([new MintCheckInNfts(invitation.createdBy.circlesAddress, profile.circlesAddress)]);
                 }
 
                 console.log(`Creating the input trigger for address ${profile.circlesAddress} ..`);

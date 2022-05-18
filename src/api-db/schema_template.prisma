@@ -5,6 +5,7 @@ datasource db {
 
 generator client {
     provider = "prisma-client-js"
+    // binaryTargets = ["debian-openssl-3.0.x"]
     output   = "./client"
 }
 
@@ -140,9 +141,12 @@ model PostAddress {
     street String
     house String
     zip String
+    city String?
     state String?
+    country String?
 
     cityGeonameid Int?
+
 
     pickupAddressOfShop Shop? @relation("ShopPickupAddress")
     shippingAddressOfProfile Profile? @relation("ProfileShippingAddresses", fields: [shippingAddressOfProfileId], references: [id])
@@ -152,6 +156,24 @@ model PostAddress {
 enum ShopListingStyle {
     REGULAR
     FEATURED
+}
+
+model DeliveryMethod {
+    id Int @id @default(autoincrement())
+    name String
+
+    shopDeliveryMethods ShopDeliveryMethod[] @relation("ShopDeliveryMethod_DeliveryMethod")
+    purchases Purchase[] @relation(name: "Purchase_DeliveryMethod")
+}
+
+model ShopDeliveryMethod {
+    id Int @id @default(autoincrement())
+
+    shopId Int
+    shop Shop @relation("ShopDeliveryMethod_Shop", fields: [shopId], references: [id])
+
+    deliveryMethodId Int
+    deliveryMethod DeliveryMethod @relation("ShopDeliveryMethod_DeliveryMethod", fields: [deliveryMethodId], references: [id])
 }
 
 model Shop {
@@ -186,7 +208,13 @@ model Shop {
 
     categories ShopCategory[] @relation("ShopShopCategories")
 
+    deliveryMethods ShopDeliveryMethod[] @relation("ShopDeliveryMethod_Shop")
+
     purchaseMetaDataKeys String?
+
+    privacyPolicyLink String?
+    tosLink String?
+    healthInfosLink String?
 }
 
 model ShopCategory {
@@ -396,6 +424,7 @@ model Offer {
     pictureUrl String?
     pictureMimeType String?
     description String?
+    allergens String?
 
     pricePerUnit String // The price in euro
     timeCirclesPriceShare Int // How many percent of the price can be payed in time circles
@@ -418,13 +447,16 @@ model Purchase {
 
     lines PurchaseLine[] @relation(name: "Purchase_Lines")
     invoices Invoice[] @relation(name: "Purchase_Invoices")
+
+    deliveryMethod DeliveryMethod @relation(name: "Purchase_DeliveryMethod", fields: [deliveryMethodId], references: [id])
+    deliveryMethodId Int
 }
 
 model PurchaseLine {
     id Int @id @default(autoincrement())
 
     purchase Purchase @relation(name: "Purchase_Lines", fields: [purchaseId], references: [id])
-    
+
     purchaseId Int
     @@index([purchaseId])
 
@@ -579,8 +611,18 @@ model i18n {
     @@unique([lang, key, version])
 }
 
-model AutoTrustAgent {
+model Agent {
     id Int @id @default(autoincrement())
-    safeAddress String
+
+    topic String @default("autoTrust")
+
+    ownerSafeAddress String
+    agentSafeAddress String?
     privateKey String
+
+    contractAddress String?
+    contractAbi String?
+    contractMethod String?
+
+    enabled Boolean @default(false)
 }

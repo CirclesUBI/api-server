@@ -27,12 +27,14 @@ import {recentProfiles} from "./recentProfiles";
 import {stats} from "./stats";
 import {init} from "./init";
 import {Environment} from "../../environment";
-import {QueryResolvers} from "../../types";
+import {QueryOffersByIdAndVersionArgs, QueryResolvers} from "../../types";
 import {Context} from "../../context";
 import {shop} from "./shop";
 import {clientAssertionJwt} from "./clientAssertionJwt";
-import {shops} from "./shops";
+import {shops, shopsById} from "./shops";
 import {lastAcknowledgedAt} from "./lastAcknowledgedAt";
+import {Offer} from "../../api-db/client";
+
 const packageJson = require("../../../package.json");
 
 export const queryResolvers: QueryResolvers = {
@@ -73,6 +75,52 @@ export const queryResolvers: QueryResolvers = {
   findInvitationCreator: findInvitationCreator,
   lastAcknowledgedAt: lastAcknowledgedAt,
   shops: shops,
+  shopsById: shopsById,
   shop: shop,
-  clientAssertionJwt: clientAssertionJwt
+  clientAssertionJwt: clientAssertionJwt,
+  offersByIdAndVersion: async (parent: any, args: QueryOffersByIdAndVersionArgs, context: Context) => {
+    const offerVersions = args.query.filter(o => !!o.offerVersion).map(o => <number>o.offerVersion);
+    const offerIds = args.query.map(o => o.offerId);
+
+    let result: Offer[];
+    if (offerVersions.length > 0) {
+      result = await Environment.readonlyApiDb.offer.findMany({
+        where: {
+          id: {
+            in: offerIds
+          },
+          version: {
+            in: offerVersions
+          }
+        },
+        orderBy: {
+          version: "desc"
+        }
+      });
+    } else {
+      result = await Environment.readonlyApiDb.offer.findMany({
+        where: {
+          id: {
+            in: offerIds
+          }
+        },
+        orderBy: {
+          version: "desc"
+        }
+      });
+    }
+
+    const offerVersionsById = result.groupBy(o => o.id);
+    const offers = Object.values(offerVersionsById).map(offers => offers[0]);
+
+    return offers.map(o => {
+      return {
+        ...o,
+        createdByAddress: "",
+        createdAt: o.createdAt.toJSON(),
+        pictureMimeType: o.pictureMimeType ?? "",
+        pictureUrl: o.pictureUrl ?? ""
+      }
+    });
+  }
 }

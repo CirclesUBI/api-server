@@ -11,6 +11,7 @@ export const profilePurchasesDataLoader = new DataLoader<number, Purchase[]>(asy
       }
     },
     include: {
+      deliveryMethod: true,
       createdBy: {
         select: {
           circlesAddress: true

@@ -24,13 +24,31 @@ export const init = async (parent:any, args:any, context:Context) : Promise<Sess
 
         await claimInviteCodeFromCookie(context);
 
+        let useShortSignup: boolean|undefined = undefined;
+
+        if (!callerInfo?.profile?.firstName && callerInfo?.profile?.id) {
+            // Profile not completed
+            const invitation = await Environment.readWriteApiDb.invitation.findFirst({
+                where: {
+                    redeemedByProfileId: callerInfo.profile.id
+                },
+                include: {
+                    createdBy: true
+                }
+            });
+
+            // TODO: Don't hardcode orga-addresses
+            useShortSignup = !!invitation && invitation.createdBy.circlesAddress == "0xf9342ea6f2585d8c2c1e5e78b247ba17c32af46a";
+        }
+
         return {
             isLoggedOn: true,
             hasProfile: !!callerInfo?.profile,
             profileId: callerInfo?.profile?.id,
             profile: callerInfo?.profile ? ProfileLoader.withDisplayCurrency(callerInfo.profile) : null,
             // lastAcknowledgedAt: callerInfo?.profile?.lastAcknowledged?.toJSON(),
-            capabilities: capabilities
+            capabilities: capabilities,
+            useShortSignup: useShortSignup
         }
     } catch(e) {
         context.log(JSON.stringify(e));

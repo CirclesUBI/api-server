@@ -165,6 +165,7 @@ async function createPurchase(
     data: {
       createdByProfileId: caller.id,
       createdAt: new Date(),
+      deliveryMethodId: args.deliveryMethodId,
       lines: {
         createMany: {
           data: args.lines.map((o) => {
