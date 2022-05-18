@@ -39,7 +39,7 @@ export class MintCheckInNftsWorker extends JobWorker<MintCheckInNfts> {
     }
 
     const contractCalls = await Promise.all(agents.map(async (agent, i) => {
-      const tx = await MintPurchaseNftsWorker.encodeContractCall(agent, job.guestAddress, "https://staging.circles.land/images/events/stroke.png");
+      const tx = await MintPurchaseNftsWorker.encodeContractCall(agent, job.guestAddress, "ipfs://Qmbgs466qLpp7PUEjn2SWDcKubq9ofMgNF4zH2KZyvGHYC");
       tx.id = (i++).toString();
       return {
         agent: agent,
