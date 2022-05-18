@@ -35,10 +35,10 @@ export class IndexerEvents {
             const start = Date.now();
 
             const logExit = () => {
-                log(" <-* ",
+                /*log(" <-* ",
                     `[${this._messageNo}] [${this._indexerUrl}] [IndexerEvents.onMessage]`,
                     `took ${Date.now() - start} ms.`
-                );
+                );*/
             }
 
             this.onMessage(e.toString())
@@ -69,10 +69,10 @@ export class IndexerEvents {
         try {
             const transactionHashes: string[] = JSON.parse(message);
 
-            log(" *-> ",
+            /*log(" *-> ",
                 `[${this._messageNo}] [${this._indexerUrl}] [IndexerEvents.onMessage]`,
                 `Received ${transactionHashes.length} tx-hashes.`
-            );
+            );*/
 
             const {
                 affectedAddresses,
