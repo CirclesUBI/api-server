@@ -10,34 +10,30 @@ import {erc721_abi} from "../../../circles/abi/erc721Abi";
 import {ProfileLoader} from "../../profileLoader";
 import {Environment} from "../../../environment";
 
+const tokenCache: {
+  [tokenAddress:string]: {
+    [no: number]: {
+      address: string,
+      no: number,
+      url: any,
+      symbol: any,
+      name: any,
+      owner: any
+    }
+  }
+} = {};
+
 export class Erc721BalancesSource implements AggregateSource {
   async getAggregate(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>): Promise<ProfileAggregate[]> {
 
-    const token_address = "0x2F42a5e50B519aA7074647969DaaDC49E6aD5eE4";
-    const web3 = RpcGateway.get();
-    const erc721 = new web3.eth.Contract(erc721_abi, token_address);
-    const urls: { no:number, url: string, symbol: string, name: string, owner: string }[] = [];
+    const tokenResults = await Promise.all([
+      this.getHoldingsOfSafe("0x2F42a5e50B519aA7074647969DaaDC49E6aD5eE4", forSafeAddress),
+      this.getHoldingsOfSafe("0x8e88677876D2fCF4D16a4f1a1f96d150b34665FF", forSafeAddress)
+    ]);
 
-    for(let i = 0; i < 500; i++){
-      try {
-        const token = {
-          no: i,
-          url: await erc721.methods.tokenURI(i.toString()).call(),
-          symbol: await erc721.methods.symbol().call(),
-          name: await erc721.methods.name().call(),
-          owner: await erc721.methods.ownerOf(i.toString()).call()
-        };
-        if (token.owner.toLowerCase() == forSafeAddress.toLowerCase()) {
-          urls.push(token);
-        }
-      } catch (e) {
-        console.log("Breaking iteration because: " + (<any>e).message);
-        break;
-      }
-    }
-
+    const tokens = tokenResults[0].concat(tokenResults[1]);
     const lastChangeAtTs = new Date();
-    const ownerProfilesPromise = new ProfileLoader().profilesBySafeAddress(Environment.readonlyApiDb, urls.map(o => o.owner.toLowerCase()));
+    const ownerProfilesPromise = new ProfileLoader().profilesBySafeAddress(Environment.readonlyApiDb, tokens.map(o => o.owner.toLowerCase()));
     const ownerProfilesLookup = await ownerProfilesPromise;
 
     return [<ProfileAggregate>{
@@ -46,18 +42,56 @@ export class Erc721BalancesSource implements AggregateSource {
       payload: <Erc721Tokens> {
         __typename: "Erc721Tokens",
         lastUpdatedAt: lastChangeAtTs.toJSON(),
-        balances: urls.map((o, i) => {
+        balances: tokens.map((o, i) => {
           return {
-            token_address,
-            token_no: urls[i].no.toString(),
-            token_owner_address: urls[i].owner,
-            token_owner_profile: ownerProfilesLookup[urls[i].owner.toLowerCase()],
-            token_symbol: urls[i].symbol,
-            token_name: urls[i].name,
-            token_url: urls[i].url
+            token_address: o.address,
+            token_no: o.no.toString(),
+            token_owner_address: o.owner,
+            token_owner_profile: ownerProfilesLookup[o.owner.toLowerCase()],
+            token_symbol: o.symbol,
+            token_name: o.name,
+            token_url: o.url
           };
         })
       }
     }];
+  }
+
+  private async getHoldingsOfSafe(token_address: string, forSafeAddress: string) {
+    const web3 = RpcGateway.get();
+    const erc721 = new web3.eth.Contract(erc721_abi, token_address);
+
+    let cacheEntries = tokenCache[token_address];
+    if (!cacheEntries) {
+      tokenCache[token_address] = {};
+      cacheEntries = tokenCache[token_address];
+    }
+
+    const lastNo = Object.keys(cacheEntries)
+      .map(o => parseInt(o))
+      .reduce((p, c) => c > p ? c : p, 0);
+
+    for (let i = lastNo; i < lastNo + 1000; i++) {
+      try {
+        const token = {
+          no: i,
+          address: token_address,
+          url: await erc721.methods.tokenURI(i.toString()).call(),
+          symbol: await erc721.methods.symbol().call(),
+          name: await erc721.methods.name().call(),
+          owner: await erc721.methods.ownerOf(i.toString()).call()
+        };
+
+        if (!cacheEntries[token.no]) {
+          cacheEntries[token.no] = token;
+        }
+      } catch (e) {
+        console.log(`Erc721BalanceSource: Breaking out of iteration over token ${token_address} because: ` + (<any>e).message);
+        break;
+      }
+    }
+
+    const tokens = Object.values(cacheEntries).filter(o => o.owner.toLowerCase() == forSafeAddress.toLowerCase());
+    return tokens;
   }
 }
