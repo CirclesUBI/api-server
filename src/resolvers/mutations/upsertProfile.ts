@@ -114,7 +114,7 @@ export function upsertProfileResolver() {
                     setTimeout(async () => {
                         console.log(`Creating an 'autoTrust' job for new safe ${profile.circlesAddress} and inviter ${invitation.createdBy.circlesAddress}`);
                         await JobQueue.produce([new AutoTrust(<string>invitation.createdBy.circlesAddress, <string>profile.circlesAddress)]);
-                    }, 5000);
+                    }, 15000);
 
                     console.log(`Creating a 'mintCheckInNft' job for new safe (guest) ${profile.circlesAddress} and inviter (host) ${invitation.createdBy.circlesAddress}`);
                     await JobQueue.produce([new MintCheckInNfts(invitation.createdBy.circlesAddress, profile.circlesAddress)]);
