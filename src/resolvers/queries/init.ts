@@ -1,6 +1,5 @@
 import {Context} from "../../context";
 import {CapabilityType, SessionInfo} from "../../types";
-import {Profile} from "../../api-db/client";
 import {ProfileLoader} from "../../querySources/profileLoader";
 import {isBILMember} from "../../utils/canAccess";
 import {Environment} from "../../environment";
@@ -26,11 +25,11 @@ export const init = async (parent:any, args:any, context:Context) : Promise<Sess
 
         let useShortSignup: boolean|undefined = undefined;
 
-        if (!callerInfo?.profile?.firstName && callerInfo?.profile?.id) {
-            // Profile not completed
+        //if (!callerInfo?.profile?.firstName && callerInfo?.profile?.id) {
+        // Profile not completed
             const invitation = await Environment.readWriteApiDb.invitation.findFirst({
                 where: {
-                    redeemedByProfileId: callerInfo.profile.id
+                    redeemedByProfileId: callerInfo?.profile?.id
                 },
                 include: {
                     createdBy: true
@@ -39,7 +38,7 @@ export const init = async (parent:any, args:any, context:Context) : Promise<Sess
 
             // TODO: Don't hardcode orga-addresses
             useShortSignup = !!invitation && invitation.createdBy.circlesAddress == "0xf9342ea6f2585d8c2c1e5e78b247ba17c32af46a";
-        }
+        //}
 
         return {
             isLoggedOn: true,
