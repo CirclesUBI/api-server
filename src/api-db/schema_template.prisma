@@ -136,8 +136,8 @@ model HumanodeVerifications {
 
 model PostAddress {
     id Int @id @default(autoincrement())
-    name String?
 
+    name String?
     street String
     house String
     zip String
@@ -145,8 +145,8 @@ model PostAddress {
     state String?
     country String?
 
+    hereLocationId String?
     cityGeonameid Int?
-
 
     pickupAddressOfShop Shop? @relation("ShopPickupAddress")
     shippingAddressOfProfile Profile? @relation("ProfileShippingAddresses", fields: [shippingAddressOfProfileId], references: [id])
