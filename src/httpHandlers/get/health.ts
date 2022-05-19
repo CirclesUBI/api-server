@@ -4,7 +4,7 @@ import {Environment} from "../../environment";
 
 export const healthGetHandler = async (req: Request, res: Response) => {
   try {
-    await Environment.validateAndSummarize();
+    await Environment.validateAndSummarize(false);
     res.statusCode = 200;
 
     return res.json({
