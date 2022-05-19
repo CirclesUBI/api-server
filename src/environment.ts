@@ -20,7 +20,8 @@ export type SmtpConfig = {
 };
 
 export class Environment {
-  static async validateAndSummarize() {
+
+  static async validateAndSummarize(logInfo:boolean = true) {
     const errors:string[] = [];
 
     if (!this.corsOrigins) {
@@ -62,15 +63,17 @@ export class Environment {
       );
     }
 
-    console.log(
-      `* Testing connection to the json rpc gateway (${this.rpcGatewayUrl}) ...`
-    );
+    if (logInfo) {
+      console.log(
+        `* Testing connection to the json rpc gateway (${this.rpcGatewayUrl}) ...`
+      );
+    }
     const rpcGateway = await fetch(
       this.rpcGatewayUrl
         .replace("ws://", "http://")
         .replace("wss://", "https://")
     );
-    if (rpcGateway.status < 500) {
+    if (rpcGateway.status < 500 && logInfo) {
       console.log("  Success. Body: " + (await rpcGateway.text()));
     } else {
       errors.push(
@@ -80,23 +83,29 @@ export class Environment {
       );
     }
 
-    console.log("* Testing operatorOrganisationAddress ..");
+    if (logInfo) {
+      console.log("* Testing operatorOrganisationAddress ..");
+    }
     let nonce = await new GnosisSafeProxy(
       RpcGateway.get(),
       RpcGateway.get().utils.toChecksumAddress(this.operatorOrganisationAddress)
     ).getNonce();
-    console.log(`  ${this.operatorOrganisationAddress} nonce is: ${nonce}`);
-
+    if (logInfo) {
+      console.log(`  ${this.operatorOrganisationAddress} nonce is: ${nonce}`);
+    }
     if (!process.env.INVITATION_FUNDS_SAFE_ADDRESS) {
       errors.push(
         `The INVITATION_FUNDS_SAFE_ADDRESS environment variable is not set.`
       );
     }
 
-    console.log("* Testing invitationFundsSafe ..");
+    if (logInfo) {
+      console.log("* Testing invitationFundsSafe ..");
+    }
     nonce = await this.invitationFundsSafe.getNonce();
-    console.log(`  ${this.invitationFundsSafe.address} nonce is: ${nonce}`);
-
+    if (logInfo) {
+      console.log(`  ${this.invitationFundsSafe.address} nonce is: ${nonce}`);
+    }
     if (!process.env.INVITATION_FUNDS_SAFE_KEY) {
       errors.push(
         `The INVITATION_FUNDS_SAFE_KEY environment variable is not set.`
@@ -113,29 +122,44 @@ export class Environment {
       );
     }
 
-    console.log(`* Testing connection to the utility-db ...`);
+    if (logInfo) {
+      console.log(`* Testing connection to the utility-db ...`);
+    }
     await this.utilityDb.query("select 1");
-    console.log(`  Success`);
 
-    console.log(`* Testing connection to the indexer-db ...`);
+    if (logInfo) {
+      console.log(`  Success`);
+      console.log(`* Testing connection to the indexer-db ...`);
+    }
     await this.indexDb.query("select 1");
-    console.log(`  Success`);
 
-    console.log(`* Testing connection to the pgReadWriteApiDb ...`);
+    if (logInfo) {
+      console.log(`  Success`);
+      console.log(`* Testing connection to the pgReadWriteApiDb ...`);
+    }
     await this.pgReadWriteApiDb.query("select 1");
-    console.log(`  Success`);
 
-    console.log(`* Testing connection to the readonly api-db ...`);
+    if (logInfo) {
+      console.log(`  Success`);
+      console.log(`* Testing connection to the readonly api-db ...`);
+    }
     await this.readonlyApiDb.$queryRaw`select 1`;
-    console.log(`  Success`);
 
-    console.log(`* Testing connection to the read/write api-db ...`);
+    if (logInfo) {
+      console.log(`  Success`);
+      console.log(`* Testing connection to the read/write api-db ...`);
+    }
+
     await this.readWriteApiDb.$queryRaw`select 1`;
-    console.log(`  Success`);
 
-    console.log(
-      `* Testing connection to the indexer ws endpoint (${this.blockchainIndexerUrl}) ...`
-    );
+    if (logInfo) {
+      console.log(`  Success`);
+
+      console.log(
+        `* Testing connection to the indexer ws endpoint (${this.blockchainIndexerUrl}) ...`
+      );
+    }
+
     let u = this.blockchainIndexerUrl
       .replace("ws://", "http://")
       .replace("wss://", "https://");
@@ -148,7 +172,7 @@ export class Environment {
         accept: "text/html,application/xhtml+xml,application/xml;",
       },
     });
-    if (indexerWsEndpoint.status < 500) {
+    if (indexerWsEndpoint.status < 500 && logInfo) {
       console.log("  Success. Body: " + (await indexerWsEndpoint.text()));
     } else {
       const body = await indexerWsEndpoint.text();
