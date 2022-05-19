@@ -195,6 +195,30 @@ export class Environment {
     return Environment._utilityDb;
   }
 
+  static get gorilloNft(): {
+    address: string,
+    symbol: string,
+    name: string
+  } {
+    return  {
+      address: "0x2F42a5e50B519aA7074647969DaaDC49E6aD5eE4",
+      symbol: "ABC",
+      name: "gorillo"
+    };
+  }
+
+  static get acidPunksNft(): {
+    address: string,
+    symbol: string,
+    name: string
+  } {
+    return  {
+      address: "0x8e88677876D2fCF4D16a4f1a1f96d150b34665FF",
+      symbol: "APK",
+      name: "AcidPunKs"
+    };
+  }
+
   static get keyRotationInterval(): number {
     return  24 * 60 * 60 * 1000;
   }
