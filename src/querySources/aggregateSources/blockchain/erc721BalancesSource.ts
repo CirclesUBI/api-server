@@ -27,8 +27,8 @@ export class Erc721BalancesSource implements AggregateSource {
   async getAggregate(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>): Promise<ProfileAggregate[]> {
 
     const tokenResults = await Promise.all([
-      this.getHoldingsOfSafe("0x2F42a5e50B519aA7074647969DaaDC49E6aD5eE4", forSafeAddress),
-      this.getHoldingsOfSafe("0x8e88677876D2fCF4D16a4f1a1f96d150b34665FF", forSafeAddress)
+      this.getHoldingsOfSafe(Environment.gorilloNft.address, forSafeAddress),
+      this.getHoldingsOfSafe(Environment.acidPunksNft.address, forSafeAddress)
     ]);
 
     const tokens = tokenResults[0].concat(tokenResults[1]);
