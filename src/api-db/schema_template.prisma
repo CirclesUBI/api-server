@@ -614,7 +614,7 @@ model i18n {
 model Agent {
     id Int @id @default(autoincrement())
 
-    topic String @default("autoTrust")
+    topic String
 
     ownerSafeAddress String
     agentSafeAddress String?
