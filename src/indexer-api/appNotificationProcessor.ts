@@ -63,10 +63,6 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                     });
                     break;
                 case EventType.CrcTrust:
-                    if (parseInt(event.value) > 0) {
-                        await JobQueue.produce([new MintCheckInNfts(event.address2, event.address1)]);
-                    }
-
                     job = new SendCrcTrustChangedEmail(event.hash, event.address1, event.address2, parseInt(event.value));
                     notification = <NotificationEvent>{
                         type: event.type,
@@ -74,6 +70,10 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                         to: event.address1,
                         transaction_hash: event.hash
                     };
+
+                    if (parseInt(event.value) > 0) {
+                        await JobQueue.produce([new MintCheckInNfts(event.address2, event.address1)]);
+                    }
 
                     await ApiPubSub.instance.pubSub.publish(`events_${event.address1}`, {
                         events: notification
