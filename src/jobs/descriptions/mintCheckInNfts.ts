@@ -18,6 +18,6 @@ export class MintCheckInNfts extends JobDescription {
 
   static parse(payload: string) {
     const obj = JSON.parse(payload);
-    return new MintCheckInNfts(obj.shopOwnerAddress, obj.guestAddress);
+    return new MintCheckInNfts(obj.hostAddress, obj.guestAddress);
   }
 }
