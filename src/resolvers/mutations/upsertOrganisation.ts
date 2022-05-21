@@ -51,9 +51,6 @@ export function upsertOrganisation(isRegion:boolean) {
           }
         }));
       } else {
-        if (!await context.isOwnerOfSafe(args.organisation.circlesAddress ?? undefined)) {
-          throw new Error(`You're not an owner of safe ${args.organisation.circlesAddress}.`)
-        }
         organisationProfile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.create({
           data: {
             firstName: args.organisation.name,
