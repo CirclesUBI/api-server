@@ -51,7 +51,9 @@ export function upsertOrganisation(isRegion:boolean) {
           }
         }));
       } else {
-        // TODO: Check if the user is the owner of the safe
+        if (!await context.isOwnerOfSafe(args.organisation.circlesAddress ?? undefined)) {
+          throw new Error(`You're not an owner of safe ${args.organisation.circlesAddress}.`)
+        }
         organisationProfile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.create({
           data: {
             firstName: args.organisation.name,
