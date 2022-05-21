@@ -32,7 +32,10 @@ export function upsertOrganisation(isRegion:boolean) {
         }
       }
 
-      if (args.organisation.id && await isOrgAdmin(callerInfo.profile.circlesAddress, args.organisation.id)) {
+      if (args.organisation.id) {
+        if (!await isOrgAdmin(callerInfo.profile.circlesAddress, args.organisation.id)) {
+          throw new Error(`You must be the admin of the organisation.`)
+        }
         organisationProfile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({
           where: {
             id: args.organisation.id
@@ -48,7 +51,9 @@ export function upsertOrganisation(isRegion:boolean) {
           }
         }));
       } else {
-        // TODO: Check if the user is the owner of the safe
+        if (!await context.isOwnerOfSafe(args.organisation.circlesAddress ?? undefined)) {
+          throw new Error(`You're not an owner of safe ${args.organisation.circlesAddress}.`)
+        }
         organisationProfile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.create({
           data: {
             firstName: args.organisation.name,
