@@ -516,7 +516,7 @@ model Invoice {
     @@index([cancelledByProfileId])
 
     deliveryMethod DeliveryMethod @relation(name: "Invoice_DeliveryMethod", fields: [deliveryMethodId], references: [id])
-    deliveryMethodId Int
+    deliveryMethodId Int @default(1)
 
     cancelReason String?
 }
