@@ -356,6 +356,8 @@ type Invoice {
   sellerAddress: String!
   sellerProfile: Profile
 
+  deliveryMethod: DeliveryMethod!
+
   buyerAddress: String!
   buyerProfile: Profile
 
@@ -740,7 +742,16 @@ type Contact {
   contactAddress_Profile: Profile @cost(value: 1)
 }
 
-union AggregatePayload = CrcBalances | Erc20Balances | Contacts | Memberships | Members | Offers | Sales | Purchases | Erc721Tokens
+union AggregatePayload =
+    CrcBalances
+  | Erc20Balances
+  | Contacts
+  | Memberships
+  | Members
+  | Offers
+  | Sales
+  | Purchases
+  | Erc721Tokens
 
 type ProfileAggregate {
   type: String!

@@ -3,11 +3,7 @@ import { MutationCompletePurchaseArgs, Invoice } from "../../types";
 import { Context } from "../../context";
 import { Environment } from "../../environment";
 
-export const completePurchase = async (
-  parent: any,
-  args: MutationCompletePurchaseArgs,
-  context: Context
-) => {
+export const completePurchase = async (parent: any, args: MutationCompletePurchaseArgs, context: Context) => {
   const callerInfo = await context.callerInfo;
   if (!callerInfo?.profile) {
     throw new Error(`You must have a profile to use this function.`);
@@ -20,6 +16,7 @@ export const completePurchase = async (
       },
     },
     include: {
+      deliveryMethod: true,
       sellerProfile: true,
       customerProfile: true,
       cancelledBy: true,
@@ -74,9 +71,7 @@ export const completePurchase = async (
           pictureMimeType: l.product.pictureMimeType ?? "",
           createdAt: l.product.createdAt.toJSON(),
           createdByAddress: l.product.createdBy.circlesAddress ?? "",
-          createdByProfile: ProfileLoader.withDisplayCurrency(
-            l.product.createdBy
-          ),
+          createdByProfile: ProfileLoader.withDisplayCurrency(l.product.createdBy),
         },
       };
     }),
