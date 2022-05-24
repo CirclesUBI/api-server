@@ -25,7 +25,14 @@ export async function getCapabilities(callerInfo:any) {
           Environment.acidPunksNft.address,
           callerInfo?.profile?.circlesAddress, true);
 
-        if (acidPunks.length > 0) {
+        const tickets = await Environment.readonlyApiDb.invoice.findFirst({
+            where: {
+                customerProfileId: callerInfo.profile.id,
+                deliveryMethodId: 3
+            }
+        });
+
+        if (acidPunks.length > 0 || tickets) {
             capabilities.push({
                 type: CapabilityType.Tickets
             });
