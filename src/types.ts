@@ -1364,6 +1364,7 @@ export type Shop = {
   healthInfosLink?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   largeBannerUrl: Scalars['String'];
+  legalText?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   openingHours?: Maybe<Scalars['String']>;
   owner: Organisation;
@@ -1440,6 +1441,7 @@ export type ShopInput = {
   healthInfosLink?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Int']>;
   largeBannerUrl: Scalars['String'];
+  legalText?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   openingHours?: InputMaybe<Scalars['String']>;
   ownerId: Scalars['Int'];
@@ -2851,6 +2853,7 @@ export type ShopResolvers<ContextType = any, ParentType extends ResolversParentT
   healthInfosLink?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   largeBannerUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  legalText?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   openingHours?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['Organisation'], ParentType, ContextType>;
