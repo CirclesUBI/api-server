@@ -72,6 +72,7 @@ export type Capability = {
 export enum CapabilityType {
   Invite = 'Invite',
   PreviewFeatures = 'PreviewFeatures',
+  Tickets = 'Tickets',
   Translate = 'Translate',
   Verify = 'Verify'
 }
@@ -417,6 +418,7 @@ export type Invoice = {
   cancelledAt?: Maybe<Scalars['String']>;
   cancelledBy?: Maybe<Profile>;
   createdAt?: Maybe<Scalars['String']>;
+  deliveryMethod: DeliveryMethod;
   id: Scalars['Int'];
   invoiceNo: Scalars['String'];
   lines?: Maybe<Array<InvoiceLine>>;
@@ -821,9 +823,11 @@ export type PostAddress = {
   city: Scalars['String'];
   cityGeonameid?: Maybe<Scalars['Int']>;
   country: Scalars['String'];
+  hereLocationId?: Maybe<Scalars['String']>;
   house: Scalars['String'];
   id: Scalars['Int'];
   name?: Maybe<Scalars['String']>;
+  osmId?: Maybe<Scalars['String']>;
   state?: Maybe<Scalars['String']>;
   street: Scalars['String'];
   zip: Scalars['String'];
@@ -1162,6 +1166,7 @@ export type QuerySearchArgs = {
 
 export type QueryShopArgs = {
   id: Scalars['Int'];
+  ownerId?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -1363,6 +1368,7 @@ export type Shop = {
   healthInfosLink?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   largeBannerUrl: Scalars['String'];
+  legalText?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   openingHours?: Maybe<Scalars['String']>;
   owner: Organisation;
@@ -1439,6 +1445,7 @@ export type ShopInput = {
   healthInfosLink?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Int']>;
   largeBannerUrl: Scalars['String'];
+  legalText?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   openingHours?: InputMaybe<Scalars['String']>;
   ownerId: Scalars['Int'];
@@ -2333,6 +2340,7 @@ export type InvoiceResolvers<ContextType = any, ParentType extends ResolversPare
   cancelledAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cancelledBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  deliveryMethod?: Resolver<ResolversTypes['DeliveryMethod'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   invoiceNo?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lines?: Resolver<Maybe<Array<ResolversTypes['InvoiceLine']>>, ParentType, ContextType>;
@@ -2551,9 +2559,11 @@ export type PostAddressResolvers<ContextType = any, ParentType extends Resolvers
   city?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   cityGeonameid?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   country?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  hereLocationId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   house?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  osmId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   state?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   street?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   zip?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2849,6 +2859,7 @@ export type ShopResolvers<ContextType = any, ParentType extends ResolversParentT
   healthInfosLink?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   largeBannerUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  legalText?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   openingHours?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['Organisation'], ParentType, ContextType>;

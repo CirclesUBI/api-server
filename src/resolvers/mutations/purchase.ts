@@ -1,5 +1,6 @@
 import { Invoice, MutationPurchaseArgs, Profile } from "../../types";
 import {
+  DeliveryMethod,
   Invoice as DbInvoice,
   InvoiceLine,
   Offer as DbOffer,
@@ -91,6 +92,7 @@ export async function purchaseResolver(parent: any, args: MutationPurchaseArgs, 
     return <Invoice>{
       id: o.id,
       invoiceNo: o.invoiceNo,
+      deliveryMethod: o.deliveryMethod,
       purchaseId: o.purchaseId,
       buyerAddress: o.customerProfile.circlesAddress,
       sellerAddress: o.sellerProfile.circlesAddress,
@@ -228,6 +230,7 @@ async function createInvoices(
   purchase: CreatedDbPurchase
 ): Promise<
   (DbInvoice & {
+    deliveryMethod: DeliveryMethod;
     customerProfile: Profile;
     sellerProfile: Profile;
     lines: (InvoiceLine & { product: DbOffer & { createdBy: Profile } })[];
@@ -263,6 +266,7 @@ async function createInvoices(
           sellerProfileId: seller.id,
           customerProfileId: caller.id,
           purchaseId: purchase.id,
+          deliveryMethodId: purchase.deliveryMethodId,
           createdAt: new Date(),
           invoiceNo: invoiceNo,
           lines: {
@@ -271,12 +275,13 @@ async function createInvoices(
                 amount: l.amount,
                 productId: l.productId,
                 productVersion: l.productVersion,
-                metadata: l.metadata
+                metadata: l.metadata,
               };
             }),
           },
         },
         include: {
+          deliveryMethod: true,
           sellerProfile: true,
           customerProfile: true,
           lines: {

@@ -200,6 +200,7 @@ enum CapabilityType {
   Invite
   Translate
   PreviewFeatures
+  Tickets
 }
 
 type Capability {
@@ -355,6 +356,8 @@ type Invoice {
 
   sellerAddress: String!
   sellerProfile: Profile
+
+  deliveryMethod: DeliveryMethod!
 
   buyerAddress: String!
   buyerProfile: Profile
@@ -740,7 +743,16 @@ type Contact {
   contactAddress_Profile: Profile @cost(value: 1)
 }
 
-union AggregatePayload = CrcBalances | Erc20Balances | Contacts | Memberships | Members | Offers | Sales | Purchases | Erc721Tokens
+union AggregatePayload =
+    CrcBalances
+  | Erc20Balances
+  | Contacts
+  | Memberships
+  | Members
+  | Offers
+  | Sales
+  | Purchases
+  | Erc721Tokens
 
 type ProfileAggregate {
   type: String!
@@ -1083,16 +1095,18 @@ type TransitivePath {
 
 type PostAddress {
   id: Int!
-  name: String
 
+  name: String
   street: String!
   house: String!
   zip: String!
-  state: String
-
-  cityGeonameid: Int
   city: String!
+  state: String
   country: String!
+
+  osmId: String
+  hereLocationId: String
+  cityGeonameid: Int
 }
 
 input ShopInput {
@@ -1103,6 +1117,7 @@ input ShopInput {
 
   name: String!
   description: String!
+  legalText: String
   largeBannerUrl: String!
   smallBannerUrl: String!
 
@@ -1127,6 +1142,7 @@ type Shop {
   enabled: Boolean
   name: String!
   description: String!
+  legalText: String
   largeBannerUrl: String!
   smallBannerUrl: String!
 
@@ -1331,7 +1347,7 @@ type Query {
 
   shops(ownerId: Int): [Shop!]!
   shopsById(ids: [Int!]!): [Shop!]!
-  shop(id: Int!): Shop
+  shop(id: Int! ownerId: Int): Shop
 
   organisations(pagination: PaginationArgs): [Organisation!]!
   regions(pagination: PaginationArgs): [Organisation!]!

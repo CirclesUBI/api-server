@@ -61,6 +61,7 @@ export class SalesEventSource implements EventSource {
         ...filterByPickupCode,
       },
       include: {
+        deliveryMethod: true,
         customerProfile: true,
         lines: {
           include: {
@@ -77,10 +78,7 @@ export class SalesEventSource implements EventSource {
         },
       },
       orderBy: {
-        createdAt:
-          pagination.order == "ASC"
-            ? Prisma.SortOrder.asc
-            : Prisma.SortOrder.desc,
+        createdAt: pagination.order == "ASC" ? Prisma.SortOrder.asc : Prisma.SortOrder.desc,
       },
       take: pagination.limit ?? 50,
     });
