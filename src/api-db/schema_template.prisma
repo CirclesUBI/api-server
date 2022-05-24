@@ -186,6 +186,7 @@ model Shop {
 
     name String
     description String
+    legalText String
     largeBannerUrl String
     smallBannerUrl String
 
