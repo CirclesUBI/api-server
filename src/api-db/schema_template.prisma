@@ -186,7 +186,7 @@ model Shop {
 
     name String
     description String
-    legalText String
+    legalText String @default("")
     largeBannerUrl String
     smallBannerUrl String
 
