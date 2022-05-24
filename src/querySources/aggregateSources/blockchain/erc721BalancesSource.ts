@@ -27,8 +27,8 @@ export class Erc721BalancesSource implements AggregateSource {
   async getAggregate(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>): Promise<ProfileAggregate[]> {
 
     const tokenResults = await Promise.all([
-      this.getHoldingsOfSafe(Environment.gorilloNft.address, forSafeAddress),
-      this.getHoldingsOfSafe(Environment.acidPunksNft.address, forSafeAddress)
+      Erc721BalancesSource.getHoldingsOfSafe(Environment.gorilloNft.address, forSafeAddress),
+      Erc721BalancesSource.getHoldingsOfSafe(Environment.acidPunksNft.address, forSafeAddress)
     ]);
 
     const tokens = tokenResults[0].concat(tokenResults[1]);
@@ -57,7 +57,7 @@ export class Erc721BalancesSource implements AggregateSource {
     }];
   }
 
-  private async getHoldingsOfSafe(token_address: string, forSafeAddress: string) {
+  public static async getHoldingsOfSafe(token_address: string, forSafeAddress: string, cacheOnly: boolean = false) {
     const web3 = RpcGateway.get();
     const erc721 = new web3.eth.Contract(erc721_abi, token_address);
 
@@ -67,19 +67,29 @@ export class Erc721BalancesSource implements AggregateSource {
       cacheEntries = tokenCache[token_address];
     }
 
+    if (cacheOnly) {
+      return Object.values(cacheEntries).filter(o => o.owner.toLowerCase() == forSafeAddress.toLowerCase());
+    }
+
     const lastNo = Object.keys(cacheEntries)
       .map(o => parseInt(o))
       .reduce((p, c) => c > p ? c : p, 0);
 
     for (let i = lastNo; i < lastNo + 1000; i++) {
       try {
+        const tokenData = await Promise.all([
+          await erc721.methods.tokenURI(i.toString()).call(),
+          await erc721.methods.symbol().call(),
+          await erc721.methods.name().call(),
+          await erc721.methods.ownerOf(i.toString()).call()
+        ]);
         const token = {
           no: i,
           address: token_address,
-          url: await erc721.methods.tokenURI(i.toString()).call(),
-          symbol: await erc721.methods.symbol().call(),
-          name: await erc721.methods.name().call(),
-          owner: await erc721.methods.ownerOf(i.toString()).call()
+          url: tokenData[0],
+          symbol: tokenData[1],
+          name: tokenData[2],
+          owner: tokenData[3]
         };
 
         if (!cacheEntries[token.no]) {

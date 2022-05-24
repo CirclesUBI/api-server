@@ -1,25 +1,14 @@
 import {Context} from "../../context";
-import {CapabilityType, SessionInfo} from "../../types";
+import {SessionInfo} from "../../types";
 import {ProfileLoader} from "../../querySources/profileLoader";
-import {isBILMember} from "../../utils/canAccess";
 import {Environment} from "../../environment";
 import {claimInviteCodeFromCookie} from "../mutations/upsertProfile";
+import {getCapabilities} from "./sessionInfo";
 
 export const init = async (parent:any, args:any, context:Context) : Promise<SessionInfo> => {
     try {
         const callerInfo = await context.callerInfo;
-        const capabilities = [];
-
-        const isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
-        if (isBilMember) {
-            capabilities.push({
-                type: CapabilityType.Verify
-            });
-        }
-
-        capabilities.push({
-            type: CapabilityType.Invite
-        });
+        const capabilities = await getCapabilities(callerInfo);
 
         await claimInviteCodeFromCookie(context);
 

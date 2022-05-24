@@ -200,6 +200,7 @@ enum CapabilityType {
   Invite
   Translate
   PreviewFeatures
+  Tickets
 }
 
 type Capability {
