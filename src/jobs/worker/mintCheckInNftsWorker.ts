@@ -15,6 +15,10 @@ export class MintCheckInNftsWorker extends JobWorker<MintCheckInNfts> {
   }
 
   async doWork(job: MintCheckInNfts) {
+    if (!job.hostAddress || !job.guestAddress || !job._topic) {
+      throw new Error(`Invalid job description`);
+    }
+
     const agents = await Environment.readonlyApiDb.agent.findMany({
       where: {
         topic: job._topic,

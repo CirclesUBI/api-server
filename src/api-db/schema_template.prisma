@@ -145,6 +145,7 @@ model PostAddress {
     state String?
     country String?
 
+    osmId String?
     hereLocationId String?
     cityGeonameid Int?
 
@@ -164,6 +165,7 @@ model DeliveryMethod {
 
     shopDeliveryMethods ShopDeliveryMethod[] @relation("ShopDeliveryMethod_DeliveryMethod")
     purchases Purchase[] @relation(name: "Purchase_DeliveryMethod")
+    invoices Invoice[] @relation(name: "Invoice_DeliveryMethod")
 }
 
 model ShopDeliveryMethod {
@@ -185,6 +187,7 @@ model Shop {
 
     name String
     description String
+    legalText String? @default("")
     largeBannerUrl String
     smallBannerUrl String
 
@@ -513,6 +516,9 @@ model Invoice {
     cancelledBy Profile? @relation(name: "Invoice_CancelledByProfile", fields: [cancelledByProfileId], references: [id])
     cancelledByProfileId Int?
     @@index([cancelledByProfileId])
+
+    deliveryMethod DeliveryMethod @relation(name: "Invoice_DeliveryMethod", fields: [deliveryMethodId], references: [id])
+    deliveryMethodId Int
 
     cancelReason String?
 }

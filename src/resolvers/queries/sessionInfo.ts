@@ -3,35 +3,53 @@ import {CapabilityType, SessionInfo} from "../../types";
 import {ProfileLoader} from "../../querySources/profileLoader";
 import {isBALIMember, isBILMember} from "../../utils/canAccess";
 import {Environment} from "../../environment";
+import {Erc721BalancesSource} from "../../querySources/aggregateSources/blockchain/erc721BalancesSource";
+
+export async function getCapabilities(callerInfo:any) {
+    const capabilities = [];
+    const isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
+    if (isBilMember) {
+        capabilities.push({
+            type: CapabilityType.Verify
+        });
+        capabilities.push({
+            type: CapabilityType.Translate
+        });
+        capabilities.push({
+            type: CapabilityType.PreviewFeatures
+        });
+    }
+
+    if (callerInfo?.profile?.circlesAddress) {
+        const acidPunks = await Erc721BalancesSource.getHoldingsOfSafe(
+          Environment.acidPunksNft.address,
+          callerInfo?.profile?.circlesAddress, true);
+
+        if (acidPunks.length > 0) {
+            capabilities.push({
+                type: CapabilityType.Tickets
+            });
+        }
+    }
+
+    const isBaliMember = await isBALIMember(callerInfo?.profile?.circlesAddress);
+    if (isBaliMember) {
+        capabilities.push({
+            type: CapabilityType.PreviewFeatures
+        });
+    }
+
+    capabilities.push({
+        type: CapabilityType.Invite
+    });
+
+    return capabilities;
+}
 
 export const sessionInfo = async (parent:any, args:any, context:Context) : Promise<SessionInfo> => {
     try {
         const callerInfo = await context.callerInfo;
-        const capabilities = [];
-
-        const isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
-        if (isBilMember) {
-            capabilities.push({
-                type: CapabilityType.Verify
-            });
-            capabilities.push({
-                type: CapabilityType.Translate
-            });
-            capabilities.push({
-                type: CapabilityType.PreviewFeatures
-            });
-        }
-
-        const isBaliMember = await isBALIMember(callerInfo?.profile?.circlesAddress);
-        if (isBaliMember) {
-            capabilities.push({
-                type: CapabilityType.PreviewFeatures
-            });
-        }
-
-        capabilities.push({
-            type: CapabilityType.Invite
-        });
+        const capabilities = await getCapabilities(callerInfo);
 
         let useShortSignup: boolean|undefined = undefined;
 
