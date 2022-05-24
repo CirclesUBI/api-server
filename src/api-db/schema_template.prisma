@@ -145,6 +145,7 @@ model PostAddress {
     state String?
     country String?
 
+    osmId String?
     hereLocationId String?
     cityGeonameid Int?
 

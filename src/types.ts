@@ -822,9 +822,11 @@ export type PostAddress = {
   city: Scalars['String'];
   cityGeonameid?: Maybe<Scalars['Int']>;
   country: Scalars['String'];
+  hereLocationId?: Maybe<Scalars['String']>;
   house: Scalars['String'];
   id: Scalars['Int'];
   name?: Maybe<Scalars['String']>;
+  osmId?: Maybe<Scalars['String']>;
   state?: Maybe<Scalars['String']>;
   street: Scalars['String'];
   zip: Scalars['String'];
@@ -1163,6 +1165,7 @@ export type QuerySearchArgs = {
 
 export type QueryShopArgs = {
   id: Scalars['Int'];
+  ownerId?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -2555,9 +2558,11 @@ export type PostAddressResolvers<ContextType = any, ParentType extends Resolvers
   city?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   cityGeonameid?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   country?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  hereLocationId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   house?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  osmId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   state?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   street?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   zip?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

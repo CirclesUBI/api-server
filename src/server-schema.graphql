@@ -1094,16 +1094,18 @@ type TransitivePath {
 
 type PostAddress {
   id: Int!
-  name: String
 
+  name: String
   street: String!
   house: String!
   zip: String!
-  state: String
-
-  cityGeonameid: Int
   city: String!
+  state: String
   country: String!
+
+  osmId: String
+  hereLocationId: String
+  cityGeonameid: Int
 }
 
 input ShopInput {
@@ -1344,7 +1346,7 @@ type Query {
 
   shops(ownerId: Int): [Shop!]!
   shopsById(ids: [Int!]!): [Shop!]!
-  shop(id: Int!): Shop
+  shop(id: Int! ownerId: Int): Shop
 
   organisations(pagination: PaginationArgs): [Organisation!]!
   regions(pagination: PaginationArgs): [Organisation!]!

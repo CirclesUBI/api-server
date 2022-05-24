@@ -128,7 +128,7 @@ export class GqlLogger {
                 operationName: requestContext.context.operationName
               },
               context: requestContext.context
-            }, JSON.stringify(e.originalError));
+            }, JSON.stringify(e));
           }
         }
       }
