@@ -16,7 +16,7 @@ export class AutoTrustWorker extends JobWorker<AutoTrust> {
   }
 
   async doWork(job: AutoTrust) {
-    const autoTrustAgent = await Environment.readonlyApiDb.agent.findFirst({
+    const autoTrustAgents = await Environment.readonlyApiDb.agent.findMany({
       where: {
         ownerSafeAddress: job.inviterAddress,
         topic: job._topic,
@@ -24,22 +24,26 @@ export class AutoTrustWorker extends JobWorker<AutoTrust> {
       }
     });
 
-    if (!autoTrustAgent) {
+    if (!autoTrustAgents || autoTrustAgents.length == 0) {
       return {
         info: `No auto trust config for safe ${job.inviterAddress}`
       };
     }
 
-    console.log(`Auto trusting ${job.newUserAddress} for safe ${job.inviterAddress} ..`);
+    const txHashes = [];
+    for (const autoTrustAgent of autoTrustAgents) {
+      console.log(`Auto trusting ${job.newUserAddress} for safe ${autoTrustAgent.agentSafeAddress ?? autoTrustAgent.ownerSafeAddress} ..`);
 
-    const circlesHub = new CirclesHub(RpcGateway.get(), Environment.circlesHubAddress);
-    const safeProxy = new GnosisSafeProxy(RpcGateway.get(), job.inviterAddress);
-    const receipt = await circlesHub.setTrust(autoTrustAgent.privateKey, safeProxy, job.newUserAddress, new BN("100"))
+      const circlesHub = new CirclesHub(RpcGateway.get(), Environment.circlesHubAddress);
+      const safeProxy = new GnosisSafeProxy(RpcGateway.get(), autoTrustAgent.agentSafeAddress ?? autoTrustAgent.ownerSafeAddress);
+      const receipt = await circlesHub.setTrust(autoTrustAgent.privateKey, safeProxy, job.newUserAddress, new BN("100"))
+      txHashes.push(receipt.transactionHash);
 
-    console.log(`Auto trusting ${job.newUserAddress} for safe ${job.inviterAddress} done.`);
+      console.log(`Auto trusting ${job.newUserAddress} for safe ${job.inviterAddress} done.`);
+    }
 
     return {
-      info: `TxHash: ${receipt.transactionHash}`
+      info: `TxHashes: ${txHashes.join(", ")}`
     };
   }
 }
