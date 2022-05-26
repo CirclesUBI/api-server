@@ -356,6 +356,10 @@ export class Environment {
     return <string>process.env.EXTERNAL_DOMAIN;
   }
 
+  public static get humanodeClientId(): string {
+    return <string>process.env.HUMANODE_CLIENT_ID;
+  }
+
   static get isAutomatedTest(): boolean {
     return !!process.env.IS_AUTOMATED_TEST;
   }
