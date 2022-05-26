@@ -1,13 +1,24 @@
 import {Context} from "../../context";
 import {CapabilityType, SessionInfo} from "../../types";
 import {ProfileLoader} from "../../querySources/profileLoader";
-import {isBALIMember, isBILMember} from "../../utils/canAccess";
+import {hasTickets, isBALIMember, isBILMember, isHumanodeVerified} from "../../utils/canAccess";
 import {Environment} from "../../environment";
-import {Erc721BalancesSource} from "../../querySources/aggregateSources/blockchain/erc721BalancesSource";
 
 export async function getCapabilities(callerInfo:any) {
     const capabilities = [];
-    const isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
+
+    const checkPromises = await Promise.all([
+        await isBILMember(callerInfo?.profile?.circlesAddress),
+        await isBALIMember(callerInfo?.profile?.circlesAddress),
+        await isHumanodeVerified(callerInfo?.profile?.circlesAddress),
+        await hasTickets(callerInfo?.profile?.circlesAddress, callerInfo?.profile?.id)
+    ]);
+
+    const isBilMember = checkPromises[0];
+    const isBaliMember = checkPromises[1];
+    const humanodeVerified = checkPromises[2];
+    const tickets = checkPromises[3];
+
     if (isBilMember) {
         capabilities.push({
             type: CapabilityType.Verify
@@ -20,29 +31,21 @@ export async function getCapabilities(callerInfo:any) {
         });
     }
 
-    if (callerInfo?.profile?.circlesAddress) {
-        const acidPunks = await Erc721BalancesSource.getHoldingsOfSafe(
-          Environment.acidPunksNft.address,
-          callerInfo?.profile?.circlesAddress, true);
-
-        const tickets = await Environment.readonlyApiDb.invoice.findFirst({
-            where: {
-                customerProfileId: callerInfo.profile.id,
-                deliveryMethodId: 3
-            }
-        });
-
-        if (acidPunks.length > 0 || tickets) {
-            capabilities.push({
-                type: CapabilityType.Tickets
-            });
-        }
-    }
-
-    const isBaliMember = await isBALIMember(callerInfo?.profile?.circlesAddress);
-    if (isBaliMember) {
+    if (!isBilMember && isBaliMember) {
         capabilities.push({
             type: CapabilityType.PreviewFeatures
+        });
+    }
+
+    if (humanodeVerified) {
+        capabilities.push({
+            type: CapabilityType.VerifiedByHumanode
+        });
+    }
+
+    if (tickets) {
+        capabilities.push({
+            type: CapabilityType.Tickets
         });
     }
 
@@ -60,20 +63,16 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
 
         let useShortSignup: boolean|undefined = undefined;
 
-        //if (!callerInfo?.profile?.firstName && callerInfo?.profile?.id) {
-            // Profile not completed
-            const invitation = await Environment.readWriteApiDb.invitation.findFirst({
-                where: {
-                    redeemedByProfileId: callerInfo?.profile?.id
-                },
-                include: {
-                    createdBy: true
-                }
-            });
+        const invitation = await Environment.readWriteApiDb.invitation.findFirst({
+            where: {
+                redeemedByProfileId: callerInfo?.profile?.id
+            },
+            include: {
+                createdBy: true
+            }
+        });
 
-            // TODO: Don't hardcode orga-addresses
-            useShortSignup = !!invitation && invitation.createdBy.circlesAddress == "0xf9342ea6f2585d8c2c1e5e78b247ba17c32af46a";
-        //}
+        useShortSignup = !!invitation && invitation.createdBy.circlesAddress == Environment.gorilloOrgaSafeAddress;
 
         return {
             isLoggedOn: true,

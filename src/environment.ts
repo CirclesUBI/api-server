@@ -360,6 +360,14 @@ export class Environment {
     return <string>process.env.HUMANODE_CLIENT_ID;
   }
 
+  public static get humanodeOrgaSafeAddress(): string {
+    return "0xfbdca35969325d28ec49fa05db8d0f8e969fe805";
+  }
+
+  public static get gorilloOrgaSafeAddress(): string {
+    return "0xf9342ea6f2585d8c2c1e5e78b247ba17c32af46a";
+  }
+
   static get isAutomatedTest(): boolean {
     return !!process.env.IS_AUTOMATED_TEST;
   }

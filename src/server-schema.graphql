@@ -201,6 +201,7 @@ enum CapabilityType {
   Translate
   PreviewFeatures
   Tickets
+  VerifiedByHumanode
 }
 
 type Capability {

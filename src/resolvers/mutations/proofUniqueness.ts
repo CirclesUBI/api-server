@@ -3,6 +3,8 @@ import {Context} from "../../context";
 import {importJWK, jwtVerify} from "jose";
 import {Environment} from "../../environment";
 import fetch from "cross-fetch";
+import {JobQueue} from "../../jobs/jobQueue";
+import {AutoTrust} from "../../jobs/descriptions/maintenance/autoTrust";
 
 export const proofUniqueness = async (parent:any, args: MutationProofUniquenessArgs, context:Context) => {
   const caller = await context.callerInfo;
@@ -58,6 +60,8 @@ export const proofUniqueness = async (parent:any, args: MutationProofUniquenessA
   });
 
   // context.log(`Created a new verification: ${JSON.stringify({sub: sub, circlesAddress: caller.profile.circlesAddress})}`)
+  console.log(`Creating an 'autoTrust' job for new humanode-verified safe ${caller.profile.circlesAddress}.`);
+  await JobQueue.produce([new AutoTrust(Environment.humanodeOrgaSafeAddress, caller.profile.circlesAddress)]);
 
   return <ProofUniquenessResult>{
   };
