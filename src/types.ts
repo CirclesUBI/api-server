@@ -74,6 +74,7 @@ export enum CapabilityType {
   PreviewFeatures = 'PreviewFeatures',
   Tickets = 'Tickets',
   Translate = 'Translate',
+  VerifiedByHumanode = 'VerifiedByHumanode',
   Verify = 'Verify'
 }
 
