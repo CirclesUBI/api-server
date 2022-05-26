@@ -74,8 +74,8 @@ export enum CapabilityType {
   PreviewFeatures = 'PreviewFeatures',
   Tickets = 'Tickets',
   Translate = 'Translate',
-  Verify = 'Verify',
-  VerifiedByHumanode = 'VerifiedByHumanode'
+  VerifiedByHumanode = 'VerifiedByHumanode',
+  Verify = 'Verify'
 }
 
 export type ChatMessage = IEventPayload & {
