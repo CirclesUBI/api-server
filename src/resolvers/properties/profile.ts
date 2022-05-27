@@ -17,6 +17,7 @@ import {profileCirclesTokenAddressDataLoader} from "../dataLoaders/profileCircle
 import {profileMembersDataLoader} from "../dataLoaders/profileMembersDataLoader";
 import {profileShopsDataLoader} from "../dataLoaders/profileShopsDataLoader";
 import {UtilityDbQueries} from "../../querySources/utilityDbQueries";
+import {provenUniquenessDataLoader} from "../dataLoaders/provenUniquenessDataLoader";
 
 
 function isOwnProfile(profileId:number, context:Context) : boolean {
@@ -198,6 +199,12 @@ export const profilePropertyResolvers : ProfileResolvers = {
     return parent.firstName.trim() == ""
       ? parent.circlesAddress ?? ""
       : `${parent.firstName}${parent.lastName ? " " + parent.lastName : ""}`;
+  },
+  provenUniqueness: async (parent:Profile, args:any, context: Context) => {
+    if (!parent.circlesAddress) {
+      return null;
+    }
+    return await provenUniquenessDataLoader.load(parent.circlesAddress);
   },
   shippingAddresses: async (parent:Profile, args:any, context: Context) => {
     if (!parent.circlesAddress) {
