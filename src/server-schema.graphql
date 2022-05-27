@@ -68,6 +68,7 @@ type Profile {
   contacts: [Contact!] @cost(value: 1)
   shops: [Shop!]
   shippingAddresses: [PostAddress!]
+  provenUniqueness: Boolean
 }
 
 type ProfileBalances {

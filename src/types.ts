@@ -880,6 +880,7 @@ export type Profile = {
   offers?: Maybe<Array<Offer>>;
   origin?: Maybe<ProfileOrigin>;
   productListingType?: Maybe<ProductListingType>;
+  provenUniqueness?: Maybe<Scalars['Boolean']>;
   purchases?: Maybe<Array<Purchase>>;
   sales?: Maybe<Array<Sale>>;
   shippingAddresses?: Maybe<Array<PostAddress>>;
@@ -2602,6 +2603,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   offers?: Resolver<Maybe<Array<ResolversTypes['Offer']>>, ParentType, ContextType>;
   origin?: Resolver<Maybe<ResolversTypes['ProfileOrigin']>, ParentType, ContextType>;
   productListingType?: Resolver<Maybe<ResolversTypes['ProductListingType']>, ParentType, ContextType>;
+  provenUniqueness?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   purchases?: Resolver<Maybe<Array<ResolversTypes['Purchase']>>, ParentType, ContextType>;
   sales?: Resolver<Maybe<Array<ResolversTypes['Sale']>>, ParentType, ContextType>;
   shippingAddresses?: Resolver<Maybe<Array<ResolversTypes['PostAddress']>>, ParentType, ContextType>;
