@@ -134,6 +134,25 @@ model HumanodeVerifications {
     token String
 }
 
+
+model Event {
+    id Int @id @default(autoincrement())
+
+    beginAnnouncementAt DateTime?
+    begin DateTime
+    end DateTime
+
+    locationId Int?
+    location PostAddress? @relation("EventLocation", fields:[locationId], references: [id])
+    revealLocationAt DateTime?
+
+    shopId Int
+    shop Shop @relation("EventShop", fields: [shopId], references: [id])
+    revealShopAt DateTime?
+
+    offers Offer[] @relation("OfferEvent")
+}
+
 model PostAddress {
     id Int @id @default(autoincrement())
 
@@ -152,6 +171,8 @@ model PostAddress {
     pickupAddressOfShop Shop? @relation("ShopPickupAddress")
     shippingAddressOfProfile Profile? @relation("ProfileShippingAddresses", fields: [shippingAddressOfProfileId], references: [id])
     shippingAddressOfProfileId Int?
+
+    events Event[] @relation("EventLocation")
 }
 
 enum ShopListingStyle {
@@ -218,6 +239,8 @@ model Shop {
     privacyPolicyLink String?
     tosLink String?
     healthInfosLink String?
+
+    event Event? @relation("EventShop")
 }
 
 model ShopCategory {
@@ -431,6 +454,9 @@ model Offer {
 
     pricePerUnit String // The price in euro
     timeCirclesPriceShare Int // How many percent of the price can be payed in time circles
+
+    eventId Int?
+    event Event? @relation(name: "OfferEvent", fields:[eventId], references: [id])
 
     purchaseLines PurchaseLine[] @relation(name: "PurchaseLines_Product")
     invoiceLines InvoiceLine[] @relation(name: "InvoiceLines_Product")
