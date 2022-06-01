@@ -173,6 +173,7 @@ model PostAddress {
     shippingAddressOfProfileId Int?
 
     events Event[] @relation("EventLocation")
+    invoices Invoice[] @relation("Invoice_DeliveryAddress")
 }
 
 enum ShopListingStyle {
@@ -545,6 +546,9 @@ model Invoice {
 
     deliveryMethod DeliveryMethod @relation(name: "Invoice_DeliveryMethod", fields: [deliveryMethodId], references: [id])
     deliveryMethodId Int
+
+    deliveryAddressId Int?
+    deliveryAddress PostAddress? @relation(name: "Invoice_DeliveryAddress", fields: [deliveryAddressId], references:[id])
 
     cancelReason String?
 }

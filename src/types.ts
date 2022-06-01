@@ -611,6 +611,7 @@ export type MutationProofUniquenessArgs = {
 
 
 export type MutationPurchaseArgs = {
+  deliveryAddressId?: InputMaybe<Scalars['Int']>;
   deliveryMethodId: Scalars['Int'];
   lines: Array<PurchaseLineInput>;
 };
