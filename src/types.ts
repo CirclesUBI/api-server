@@ -419,6 +419,7 @@ export type Invoice = {
   cancelledAt?: Maybe<Scalars['String']>;
   cancelledBy?: Maybe<Profile>;
   createdAt?: Maybe<Scalars['String']>;
+  deliveryAddress?: Maybe<PostAddress>;
   deliveryMethod: DeliveryMethod;
   id: Scalars['Int'];
   invoiceNo: Scalars['String'];
@@ -984,6 +985,7 @@ export type Purchase = {
   createdAt: Scalars['String'];
   createdByAddress: Scalars['String'];
   createdByProfile?: Maybe<Profile>;
+  deliveryAddress?: Maybe<PostAddress>;
   deliveryMethod: DeliveryMethod;
   id: Scalars['Int'];
   invoices?: Maybe<Array<Invoice>>;
@@ -2343,6 +2345,7 @@ export type InvoiceResolvers<ContextType = any, ParentType extends ResolversPare
   cancelledAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cancelledBy?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  deliveryAddress?: Resolver<Maybe<ResolversTypes['PostAddress']>, ParentType, ContextType>;
   deliveryMethod?: Resolver<ResolversTypes['DeliveryMethod'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   invoiceNo?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2678,6 +2681,7 @@ export type PurchaseResolvers<ContextType = any, ParentType extends ResolversPar
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdByAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdByProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  deliveryAddress?: Resolver<Maybe<ResolversTypes['PostAddress']>, ParentType, ContextType>;
   deliveryMethod?: Resolver<ResolversTypes['DeliveryMethod'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   invoices?: Resolver<Maybe<Array<ResolversTypes['Invoice']>>, ParentType, ContextType>;

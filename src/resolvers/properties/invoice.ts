@@ -2,6 +2,7 @@ import {Invoice, InvoiceResolvers} from "../../types";
 import {Context} from "../../context";
 import {invoiceLinesDataLoader} from "../dataLoaders/invoiceLinesDataLoader";
 import {invoicePaymentTransactionDataLoader} from "../dataLoaders/invoicePaymentTransactionDataLoader";
+import {invoiceDeliveryAddressDataLoader} from "../dataLoaders/invoiceDeliveryAddressDataLoader";
 
 export const invoicePropertyResolver : InvoiceResolvers = {
   lines: async (parent: Invoice, args: any, context: Context) => {
@@ -15,5 +16,8 @@ export const invoicePropertyResolver : InvoiceResolvers = {
       buyerAddress: parent.buyerAddress,
       transactionHash: parent.paymentTransactionHash
     });
+  },
+  deliveryAddress: async (parent: Invoice, args: any, context: Context) => {
+    return invoiceDeliveryAddressDataLoader.load(parent.id);
   }
 }

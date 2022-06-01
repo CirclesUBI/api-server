@@ -41,6 +41,7 @@ export class PurchasesSource implements AggregateSource {
       },
       include: {
         createdBy: true,
+        deliveryAddress: true,
         lines: {
           include: {
             product: {
@@ -79,6 +80,7 @@ export class PurchasesSource implements AggregateSource {
                   offer: p.product,
                 };
               }),
+              deliveryAddress: o.deliveryAddress,
               createdAt: o.createdAt.toJSON(),
               createdByAddress: o.createdBy.circlesAddress,
             };
