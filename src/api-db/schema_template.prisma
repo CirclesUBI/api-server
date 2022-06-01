@@ -174,6 +174,7 @@ model PostAddress {
 
     events Event[] @relation("EventLocation")
     invoices Invoice[] @relation("Invoice_DeliveryAddress")
+    purchases Purchase[] @relation("Purchase_DeliveryAddress")
 }
 
 enum ShopListingStyle {
@@ -480,6 +481,9 @@ model Purchase {
 
     deliveryMethod DeliveryMethod @relation(name: "Purchase_DeliveryMethod", fields: [deliveryMethodId], references: [id])
     deliveryMethodId Int
+
+    deliveryAddress PostAddress? @relation(name: "Purchase_DeliveryAddress", fields: [deliveryAddressId], references:[id])
+    deliveryAddressId Int?
 }
 
 model PurchaseLine {

@@ -15,5 +15,5 @@ export const invoicePropertyResolver : InvoiceResolvers = {
       buyerAddress: parent.buyerAddress,
       transactionHash: parent.paymentTransactionHash
     });
-  },
+  }
 }

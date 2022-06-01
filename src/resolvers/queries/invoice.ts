@@ -33,6 +33,7 @@ export const invoice = async (
     },
     include: {
       sellerProfile: true,
+      deliveryAddress: true
     },
   });
 
