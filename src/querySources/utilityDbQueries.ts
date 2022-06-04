@@ -3,6 +3,9 @@ import {Environment} from "../environment";
 
 export class UtilityDbQueries {
     static async placesById(ids:number[], noLimit: boolean = false) : Promise<City[]> {
+        if (ids.length == 0){
+            return [];
+        }
         if (ids.length > 50 && !noLimit) {
             throw new Error(`You can query max. 50 cities at once.`)
         }

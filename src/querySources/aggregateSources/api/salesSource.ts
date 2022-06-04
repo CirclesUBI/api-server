@@ -47,6 +47,7 @@ export class SalesSource implements AggregateSource {
       include: {
         invoices: {
           include: {
+            deliveryAddress: true,
             sellerProfile: {
               select: {
                 circlesAddress: true,

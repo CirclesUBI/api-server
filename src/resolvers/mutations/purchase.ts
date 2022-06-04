@@ -168,6 +168,7 @@ async function createPurchase(
       createdByProfileId: caller.id,
       createdAt: new Date(),
       deliveryMethodId: args.deliveryMethodId,
+      deliveryAddressId: args.deliveryAddressId,
       lines: {
         createMany: {
           data: args.lines.map((o) => {
@@ -267,6 +268,7 @@ async function createInvoices(
           customerProfileId: caller.id,
           purchaseId: purchase.id,
           deliveryMethodId: purchase.deliveryMethodId,
+          deliveryAddressId: purchase.deliveryAddressId,
           createdAt: new Date(),
           invoiceNo: invoiceNo,
           lines: {
