@@ -336,6 +336,7 @@ type Purchase {
   createdAt: String!
 
   deliveryMethod: DeliveryMethod!
+  deliveryAddress: PostAddress
 
   total: String!
   lines: [PurchaseLine!]
@@ -384,6 +385,8 @@ type Invoice {
   cancelledAt: String
   cancelReason: String
   cancelledBy: Profile
+
+  deliveryAddress: PostAddress
 }
 
 type InvoiceLine {
@@ -1274,7 +1277,7 @@ input OfferByIdAndVersionInput {
 type Mutation {
   announcePayment(invoiceId: Int!, transactionHash: String!): AnnouncePaymentResult!
 
-  purchase(lines: [PurchaseLineInput!]!, deliveryMethodId: Int!): [Invoice!]!
+  purchase(lines: [PurchaseLineInput!]!, deliveryMethodId: Int!, deliveryAddressId: Int): [Invoice!]!
   completePurchase(invoiceId: Int!, revoke: Boolean): Invoice!
   completeSale(invoiceId: Int!, revoke: Boolean): Invoice!
 
