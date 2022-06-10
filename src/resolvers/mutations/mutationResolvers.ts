@@ -27,6 +27,7 @@ import { upsertShopCategoryEntries } from "./upsertShopCategoryEntries";
 import { proofUniqueness } from "./proofUniqueness";
 import { upsertShippingAddress } from "./upsertShippingAddress";
 import {purchaseResolver} from "./purchase";
+import {Context} from "../../context";
 
 export const mutationResolvers: MutationResolvers = {
   purchase: purchaseResolver,
@@ -57,5 +58,19 @@ export const mutationResolvers: MutationResolvers = {
   upsertShopCategories: upsertShopCategories,
   upsertShopCategoryEntries: upsertShopCategoryEntries,
   proofUniqueness: proofUniqueness,
-  upsertShippingAddress: upsertShippingAddress
+  upsertShippingAddress: upsertShippingAddress,
+  confirmLegalAge: async (parent:any, args, context:Context) => {
+    const ci = await context.callerInfo;
+    if (!ci?.profile)
+      return false;
+
+    await Environment.readWriteApiDb.profile.update({
+      where: {id: ci.profile.id},
+      data: {
+        confirmedLegalAge: new Date()
+      }
+    });
+
+    return true;
+  }
 };

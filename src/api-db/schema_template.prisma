@@ -340,6 +340,7 @@ model Profile {
     newsletter Boolean?
     displayTimeCircles Boolean? @default(true)
     cityGeonameid Int?
+    confirmedLegalAge DateTime?
 
     lastAcknowledged DateTime?
 
