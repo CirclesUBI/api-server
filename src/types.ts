@@ -1365,6 +1365,7 @@ export type SessionInfo = {
 
 export type Shop = {
   __typename?: 'Shop';
+  adultOnly?: Maybe<Scalars['Boolean']>;
   categories?: Maybe<Array<ShopCategory>>;
   createdAt: Scalars['Date'];
   deliveryMethods?: Maybe<Array<DeliveryMethod>>;
@@ -1445,6 +1446,7 @@ export type ShopCategoryInput = {
 };
 
 export type ShopInput = {
+  adultOnly?: InputMaybe<Scalars['Boolean']>;
   description: Scalars['String'];
   enabled: Scalars['Boolean'];
   healthInfosLink?: InputMaybe<Scalars['String']>;
@@ -2859,6 +2861,7 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
 }>;
 
 export type ShopResolvers<ContextType = any, ParentType extends ResolversParentTypes['Shop'] = ResolversParentTypes['Shop']> = ResolversObject<{
+  adultOnly?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   categories?: Resolver<Maybe<Array<ResolversTypes['ShopCategory']>>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   deliveryMethods?: Resolver<Maybe<Array<ResolversTypes['DeliveryMethod']>>, ParentType, ContextType>;

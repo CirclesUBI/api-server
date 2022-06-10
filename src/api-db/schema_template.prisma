@@ -243,6 +243,8 @@ model Shop {
     healthInfosLink String?
 
     event Event? @relation("EventShop")
+
+    adultOnly Boolean?
 }
 
 model ShopCategory {
