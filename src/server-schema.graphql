@@ -932,6 +932,7 @@ type RemoveMemberResult {
 
 input PurchaseLineInput {
   offerId: Int!
+  shopId: Int!
   amount: Int!
   metadata: String
 }

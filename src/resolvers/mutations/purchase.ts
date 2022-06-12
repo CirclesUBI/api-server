@@ -80,7 +80,11 @@ export async function purchaseResolver(parent: any, args: MutationPurchaseArgs, 
   }
 
   const purchasedOffers = await lookupOffers(args);
-  const purchase = await createPurchase(ProfileLoader.withDisplayCurrency(callerInfo.profile), args, purchasedOffers);
+  const purchase = await createPurchase(
+    ProfileLoader.withDisplayCurrency(callerInfo.profile),
+    args,
+    purchasedOffers);
+
   const invoices = await createInvoices(
     ProfileLoader.withDisplayCurrency(callerInfo.profile),
     args,
@@ -178,6 +182,7 @@ async function createPurchase(
               amount: o.amount,
               productVersion: offer.version,
               productId: offer.id,
+              shopId: o.shopId
             };
           }),
         },
@@ -278,6 +283,7 @@ async function createInvoices(
                 productId: l.productId,
                 productVersion: l.productVersion,
                 metadata: l.metadata,
+                shopId: l.shopId
               };
             }),
           },

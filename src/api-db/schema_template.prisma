@@ -235,6 +235,8 @@ model Shop {
     categories ShopCategory[] @relation("ShopShopCategories")
 
     deliveryMethods ShopDeliveryMethod[] @relation("ShopDeliveryMethod_Shop")
+    purchaseLines PurchaseLine[] @relation(name: "PurchaseLine_Shop")
+    invoiceLines InvoiceLine[] @relation(name: "InvoiceLine_Shop")
 
     purchaseMetaDataKeys String?
 
@@ -497,6 +499,9 @@ model PurchaseLine {
     purchaseId Int
     @@index([purchaseId])
 
+    shopId Int?
+    shop Shop? @relation(name: "PurchaseLine_Shop", fields: [shopId], references: [id])
+
     amount Int
 
     metadata String?
@@ -573,6 +578,9 @@ model InvoiceLine {
     productId Int
     productVersion Int
     @@index([productId,productVersion])
+
+    shopId Int?
+    shop Shop? @relation(name: "InvoiceLine_Shop", fields: [shopId], references: [id])
 
     metadata String?
 }

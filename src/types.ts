@@ -1006,6 +1006,7 @@ export type PurchaseLineInput = {
   amount: Scalars['Int'];
   metadata?: InputMaybe<Scalars['String']>;
   offerId: Scalars['Int'];
+  shopId: Scalars['Int'];
 };
 
 export type Purchased = IEventPayload & {
