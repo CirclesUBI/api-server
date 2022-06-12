@@ -442,6 +442,7 @@ export type InvoiceLine = {
   id: Scalars['Int'];
   metadata?: Maybe<Scalars['String']>;
   offer?: Maybe<Offer>;
+  shop?: Maybe<Shop>;
 };
 
 export type LeaderboardEntry = {
@@ -1000,6 +1001,7 @@ export type PurchaseLine = {
   id: Scalars['Int'];
   metadata?: Maybe<Scalars['String']>;
   offer?: Maybe<Offer>;
+  shop?: Maybe<Shop>;
 };
 
 export type PurchaseLineInput = {
@@ -1337,6 +1339,7 @@ export type SalesLine = {
   id: Scalars['Int'];
   metadata?: Maybe<Scalars['String']>;
   offer: Offer;
+  shop?: Maybe<Shop>;
 };
 
 export type SearchInput = {
@@ -2372,6 +2375,7 @@ export type InvoiceLineResolvers<ContextType = any, ParentType extends Resolvers
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   metadata?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   offer?: Resolver<Maybe<ResolversTypes['Offer']>, ParentType, ContextType>;
+  shop?: Resolver<Maybe<ResolversTypes['Shop']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2700,6 +2704,7 @@ export type PurchaseLineResolvers<ContextType = any, ParentType extends Resolver
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   metadata?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   offer?: Resolver<Maybe<ResolversTypes['Offer']>, ParentType, ContextType>;
+  shop?: Resolver<Maybe<ResolversTypes['Shop']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2838,6 +2843,7 @@ export type SalesLineResolvers<ContextType = any, ParentType extends ResolversPa
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   metadata?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   offer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType>;
+  shop?: Resolver<Maybe<ResolversTypes['Shop']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

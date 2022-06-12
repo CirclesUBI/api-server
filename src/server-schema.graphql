@@ -326,6 +326,7 @@ type SalesLine {
   metadata: String
   amount: Int!
   offer: Offer!
+  shop: Shop
 }
 
 type Purchase {
@@ -349,6 +350,7 @@ type PurchaseLine {
   metadata: String
   amount: Int!
   offer: Offer
+  shop: Shop
 }
 
 type Invoice {
@@ -394,6 +396,7 @@ type InvoiceLine {
 
   amount: Int!
   offer: Offer
+  shop: Shop
 
   metadata: String
 }
