@@ -40,6 +40,7 @@ type Profile {
   displayName: String
   firstName: String!
   lastName: String
+  confirmedLegalAge: Int
   emailAddress: String
   askedForEmailAddress: Boolean!
   dream: String
@@ -291,6 +292,7 @@ type Offer {
   createdByProfile: Profile
   createdByAddress: String!
   createdAt: String!
+  minAge: Int
 
   title: String!
   pictureUrl: String!
@@ -1142,7 +1144,7 @@ input ShopInput {
   tosLink: String
   healthInfosLink: String
 
-  adultOnly:Boolean
+  adultOnly: Boolean
 }
 
 type Shop {
@@ -1289,7 +1291,7 @@ type Mutation {
   completePurchase(invoiceId: Int!, revoke: Boolean): Invoice!
   completeSale(invoiceId: Int!, revoke: Boolean): Invoice!
 
-  confirmLegalAge : Boolean!
+  confirmLegalAge(age: Int!): Boolean!
 
   logout: LogoutResponse!
   upsertProfile(data: UpsertProfileInput!): Profile!
@@ -1362,7 +1364,7 @@ type Query {
 
   shops(ownerId: Int): [Shop!]!
   shopsById(ids: [Int!]!): [Shop!]!
-  shop(id: Int! ownerId: Int): Shop
+  shop(id: Int!, ownerId: Int): Shop
 
   organisations(pagination: PaginationArgs): [Organisation!]!
   regions(pagination: PaginationArgs): [Organisation!]!
