@@ -611,6 +611,11 @@ export type MutationCompleteSaleArgs = {
 };
 
 
+export type MutationConfirmLegalAgeArgs = {
+  age: Scalars['Int'];
+};
+
+
 export type MutationDeleteShippingAddressArgs = {
   id: Scalars['Int'];
 };
@@ -764,6 +769,7 @@ export type Offer = {
   createdByProfile?: Maybe<Profile>;
   description?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
+  minAge?: Maybe<Scalars['Int']>;
   pictureMimeType: Scalars['String'];
   pictureUrl: Scalars['String'];
   pricePerUnit: Scalars['String'];
@@ -881,6 +887,7 @@ export type Profile = {
   city?: Maybe<City>;
   cityGeonameid?: Maybe<Scalars['Int']>;
   claimedInvitation?: Maybe<ClaimedInvitation>;
+  confirmedLegalAge?: Maybe<Scalars['Int']>;
   contacts?: Maybe<Array<Contact>>;
   country?: Maybe<Scalars['String']>;
   displayCurrency?: Maybe<DisplayCurrency>;
@@ -2529,7 +2536,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   claimInvitation?: Resolver<ResolversTypes['ClaimInvitationResult'], ParentType, ContextType, RequireFields<MutationClaimInvitationArgs, 'code'>>;
   completePurchase?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<MutationCompletePurchaseArgs, 'invoiceId'>>;
   completeSale?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<MutationCompleteSaleArgs, 'invoiceId'>>;
-  confirmLegalAge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  confirmLegalAge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationConfirmLegalAgeArgs, 'age'>>;
   createTestInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType>;
   deleteShippingAddress?: Resolver<Maybe<ResolversTypes['PostAddress']>, ParentType, ContextType, RequireFields<MutationDeleteShippingAddressArgs, 'id'>>;
   importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
@@ -2587,6 +2594,7 @@ export type OfferResolvers<ContextType = any, ParentType extends ResolversParent
   createdByProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  minAge?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   pictureMimeType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   pictureUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   pricePerUnit?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2661,6 +2669,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   city?: Resolver<Maybe<ResolversTypes['City']>, ParentType, ContextType>;
   cityGeonameid?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
+  confirmedLegalAge?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   contacts?: Resolver<Maybe<Array<ResolversTypes['Contact']>>, ParentType, ContextType>;
   country?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   displayCurrency?: Resolver<Maybe<ResolversTypes['DisplayCurrency']>, ParentType, ContextType>;
