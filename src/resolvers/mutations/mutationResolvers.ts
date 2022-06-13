@@ -19,7 +19,7 @@ import { completeSale } from "./completeSale";
 import { revokeSafeVerification, verifySafe } from "./verifySafe";
 import { announcePayment } from "./announcePayment";
 import { Environment } from "../../environment";
-import {MutationAddNewLangArgs, MutationResolvers, MutationUpdateValueArgs} from "../../types";
+import { MutationAddNewLangArgs, MutationResolvers, MutationUpdateValueArgs } from "../../types";
 import { upsertOffer } from "./upsertOffer";
 import { upsertShop } from "./upsertShop";
 import { upsertShopCategories } from "./upsertShopCategories";
@@ -27,8 +27,8 @@ import { upsertShopCategoryEntries } from "./upsertShopCategoryEntries";
 import { proofUniqueness } from "./proofUniqueness";
 import { upsertShippingAddress } from "./upsertShippingAddress";
 import {purchaseResolver} from "./purchase";
-import {Context} from "../../context";
-import {isBILMember} from "../../utils/canAccess";
+import { isBILMember } from "../../utils/canAccess";
+import { Context } from "../../context";
 
 export const mutationResolvers: MutationResolvers = {
   purchase: purchaseResolver,
@@ -54,26 +54,9 @@ export const mutationResolvers: MutationResolvers = {
   verifySafe: verifySafe,
   revokeSafeVerification: revokeSafeVerification,
   announcePayment: announcePayment(),
-  upsertOffer: upsertOffer,
-  upsertShop: upsertShop,
-  upsertShopCategories: upsertShopCategories,
-  upsertShopCategoryEntries: upsertShopCategoryEntries,
-  proofUniqueness: proofUniqueness,
-  upsertShippingAddress: upsertShippingAddress,
-  confirmLegalAge: async (parent:any, args, context:Context) => {
-    const ci = await context.callerInfo;
-    if (!ci?.profile)
-      return false;
 
-    await Environment.readWriteApiDb.profile.update({
-      where: {id: ci.profile.id},
-      data: {
-        confirmedLegalAge: new Date()
-      }
-    });
 
-    return true;
-  },
+
   addNewLang: async (parent: any, args: MutationAddNewLangArgs, context: Context) => {
     const callerInfo = await context.callerInfo;
     const isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
@@ -122,11 +105,18 @@ export const mutationResolvers: MutationResolvers = {
           (select max(version) + 1 
           from i18n 
           where key=$2 and lang=$1),
-          $4);
+          $4) returning lang, key, "createdBy", version, value;
       `,
         [args.lang, args.key, createdBy, args.value]);
-      return queryResult.rowCount
-    }
-  }
-}
+      return queryResult.rows[0]
+    };
+  },
 
+
+  upsertOffer: upsertOffer,
+  upsertShop: upsertShop,
+  upsertShopCategories: upsertShopCategories,
+  upsertShopCategoryEntries: upsertShopCategoryEntries,
+  proofUniqueness: proofUniqueness,
+  upsertShippingAddress: upsertShippingAddress
+};
