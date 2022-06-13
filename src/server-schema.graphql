@@ -1,4 +1,6 @@
 scalar Date
+directive @cost(value: Int) on FIELD_DEFINITION
+directive @costFactor(value: Int) on FIELD_DEFINITION
 
 type Server {
   version: String!
@@ -63,7 +65,10 @@ type Profile {
   purchases: [Purchase!]
   sales: [Sale!]
   balances: ProfileBalances
-  contacts: [Contact!]
+  contacts: [Contact!] @cost(value: 1)
+  shops: [Shop!]
+  shippingAddresses: [PostAddress!]
+  provenUniqueness: Boolean
 }
 
 type ProfileBalances {
@@ -111,6 +116,7 @@ type Organisation {
   members: [ProfileOrOrganisation!]
   shopEnabled: Boolean
   trustsYou: Int # The trust relative to the safeAddress
+  shops: [Shop!]
 }
 
 union ProfileOrOrganisation = Profile | Organisation
@@ -186,6 +192,8 @@ type SessionInfo {
   profileId: Int
   profile: Profile
   capabilities: [Capability!]!
+
+  useShortSignup: Boolean
 }
 
 enum CapabilityType {
@@ -193,6 +201,8 @@ enum CapabilityType {
   Invite
   Translate
   PreviewFeatures
+  Tickets
+  VerifiedByHumanode
 }
 
 type Capability {
@@ -259,6 +269,21 @@ type City implements ICity {
   feature_code: String!
 }
 
+input OfferInput {
+  id: Int
+
+  createdByProfileId: Int!
+
+  title: String!
+  pictureUrl: String!
+  pictureMimeType: String!
+  description: String
+  allergens: String
+
+  pricePerUnit: String! # The price in euro
+  timeCirclesPriceShare: Int! # How many percent of the price can be payed in time circles
+}
+
 type Offer {
   id: Int!
   version: Int!
@@ -271,6 +296,7 @@ type Offer {
   pictureUrl: String!
   pictureMimeType: String!
   description: String
+  allergens: String
 
   pricePerUnit: String! # The price in euro
   timeCirclesPriceShare: Int! # How many percent of the price can be payed in time circles
@@ -297,9 +323,10 @@ type Sale {
 
 type SalesLine {
   id: Int!
-
+  metadata: String
   amount: Int!
   offer: Offer!
+  shop: Shop
 }
 
 type Purchase {
@@ -309,6 +336,9 @@ type Purchase {
   createdByAddress: String!
   createdAt: String!
 
+  deliveryMethod: DeliveryMethod!
+  deliveryAddress: PostAddress
+
   total: String!
   lines: [PurchaseLine!]
 
@@ -317,9 +347,10 @@ type Purchase {
 
 type PurchaseLine {
   id: Int!
-
+  metadata: String
   amount: Int!
   offer: Offer
+  shop: Shop
 }
 
 type Invoice {
@@ -330,6 +361,8 @@ type Invoice {
 
   sellerAddress: String!
   sellerProfile: Profile
+
+  deliveryMethod: DeliveryMethod!
 
   buyerAddress: String!
   buyerProfile: Profile
@@ -354,6 +387,8 @@ type Invoice {
   cancelledAt: String
   cancelReason: String
   cancelledBy: Profile
+
+  deliveryAddress: PostAddress
 }
 
 type InvoiceLine {
@@ -361,6 +396,9 @@ type InvoiceLine {
 
   amount: Int!
   offer: Offer
+  shop: Shop
+
+  metadata: String
 }
 
 input QueryTagsInput {
@@ -380,7 +418,7 @@ interface IAggregatePayload {
 type CrcSignup implements IEventPayload {
   transaction_hash: String!
   user: String!
-  user_profile: Profile
+  user_profile: Profile @cost(value: 1)
   token: String!
 }
 
@@ -388,18 +426,18 @@ type CrcSignup implements IEventPayload {
 type CrcTrust implements IEventPayload {
   transaction_hash: String!
   address: String!
-  address_profile: Profile
+  address_profile: Profile @cost(value: 1)
   can_send_to: String!
-  can_send_to_profile: Profile
+  can_send_to_profile: Profile @cost(value: 1)
   limit: Int!
 }
 
 type Erc20Transfer implements IEventPayload {
   transaction_hash: String!
   from: String!
-  from_profile: Profile
+  from_profile: Profile @cost(value: 1)
   to: String!
-  to_profile: Profile
+  to_profile: Profile @cost(value: 1)
   token: String!
   value: String!
 }
@@ -408,9 +446,9 @@ type Erc20Transfer implements IEventPayload {
 type CrcTokenTransfer implements IEventPayload {
   transaction_hash: String!
   from: String!
-  from_profile: Profile
+  from_profile: Profile @cost(value: 1)
   to: String!
-  to_profile: Profile
+  to_profile: Profile @cost(value: 1)
   token: String!
   value: String!
 }
@@ -419,9 +457,9 @@ type CrcTokenTransfer implements IEventPayload {
 type CrcHubTransfer implements IEventPayload {
   transaction_hash: String!
   from: String!
-  from_profile: Profile
+  from_profile: Profile @cost(value: 1)
   to: String!
-  to_profile: Profile
+  to_profile: Profile @cost(value: 1)
   flow: String!
   transfers: [CrcTokenTransfer!]!
   tags: [Tag!]!
@@ -431,9 +469,9 @@ type CrcHubTransfer implements IEventPayload {
 type CrcMinting implements IEventPayload {
   transaction_hash: String!
   from: String!
-  from_profile: Profile
+  from_profile: Profile @cost(value: 1)
   to: String!
-  to_profile: Profile
+  to_profile: Profile @cost(value: 1)
   value: String!
   token: String!
 }
@@ -442,9 +480,9 @@ type CrcMinting implements IEventPayload {
 type EthTransfer implements IEventPayload {
   transaction_hash: String!
   from: String!
-  from_profile: Profile
+  from_profile: Profile @cost(value: 1)
   to: String!
-  to_profile: Profile
+  to_profile: Profile @cost(value: 1)
   value: String!
   tags: [Tag!]!
 }
@@ -454,9 +492,9 @@ type GnosisSafeEthTransfer implements IEventPayload {
   transaction_hash: String!
   initiator: String!
   from: String!
-  from_profile: Profile
+  from_profile: Profile @cost(value: 1)
   to: String!
-  to_profile: Profile
+  to_profile: Profile @cost(value: 1)
   value: String!
   tags: [Tag!]!
 }
@@ -466,9 +504,9 @@ type ChatMessage implements IEventPayload {
   id: Int!
   transaction_hash: String
   from: String!
-  from_profile: Profile
+  from_profile: Profile @cost(value: 1)
   to: String!
-  to_profile: Profile
+  to_profile: Profile @cost(value: 1)
   text: String!
 }
 
@@ -476,10 +514,10 @@ type ChatMessage implements IEventPayload {
 type MembershipOffer implements IEventPayload {
   transaction_hash: String
   createdBy: String!
-  createdBy_profile: Profile
+  createdBy_profile: Profile @cost(value: 1)
   isAdmin: Boolean!
   organisation: String!
-  organisation_profile: Organisation
+  organisation_profile: Organisation @cost(value: 1)
 }
 
 # !isAdmin: You|${createdBy} added ${member} as a member to ${organisation}
@@ -487,12 +525,12 @@ type MembershipOffer implements IEventPayload {
 type MemberAdded implements IEventPayload {
   transaction_hash: String
   createdBy: String!
-  createdBy_profile: Profile
+  createdBy_profile: Profile @cost(value: 1)
   member: String!
-  member_profile: Profile
+  member_profile: Profile @cost(value: 1)
   isAdmin: Boolean!
   organisation: String!
-  organisation_profile: Organisation
+  organisation_profile: Organisation @cost(value: 1)
 }
 
 # ${member} accepted your|${createdBy}'s invitation to ${organisation}
@@ -505,20 +543,20 @@ type NewUser implements IEventPayload {
 type MembershipAccepted implements IEventPayload {
   transaction_hash: String
   createdBy: String!
-  createdBy_profile: Profile
+  createdBy_profile: Profile @cost(value: 1)
   member: String!
-  member_profile: Profile
+  member_profile: Profile @cost(value: 1)
   organisation: String!
-  organisation_profile: Organisation
+  organisation_profile: Organisation @cost(value: 1)
 }
 
 # ${member} rejected your invitation to ${organisation}
 type MembershipRejected implements IEventPayload {
   transaction_hash: String
   member: String!
-  member_profile: Profile
+  member_profile: Profile @cost(value: 1)
   organisation: String!
-  organisation_profile: Organisation
+  organisation_profile: Organisation @cost(value: 1)
 }
 
 # You created a new invitation with the name ${name}
@@ -534,7 +572,7 @@ type InvitationRedeemed implements IEventPayload {
   name: String!
   code: String!
   redeemedBy: String
-  redeemedBy_profile: Profile
+  redeemedBy_profile: Profile @cost(value: 1)
 }
 
 # Welcome!
@@ -543,21 +581,21 @@ type InvitationRedeemed implements IEventPayload {
 type WelcomeMessage implements IEventPayload {
   transaction_hash: String
   invitedBy: String!
-  invitedBy_profile: Profile
+  invitedBy_profile: Profile @cost(value: 1)
 }
 
 # You created the ${name} organisation
 type OrganisationCreated implements IEventPayload {
   transaction_hash: String
   organisation: String!
-  organisation_profile: Organisation
+  organisation_profile: Organisation @cost(value: 1)
 }
 
 # ${buyer} purchased ${amount} ${offer}(s)
 type SaleEvent implements IEventPayload {
   transaction_hash: String
   buyer: String!
-  buyer_profile: Profile
+  buyer_profile: Profile @cost(value: 1)
   invoice: Invoice
 }
 
@@ -565,7 +603,7 @@ type SaleEvent implements IEventPayload {
 type Purchased implements IEventPayload {
   transaction_hash: String
   seller: String!
-  seller_profile: Profile
+  seller_profile: Profile @cost(value: 1)
   purchase: Purchase!
 }
 
@@ -573,7 +611,7 @@ type Purchased implements IEventPayload {
 type SafeVerified implements IEventPayload {
   transaction_hash: String
   organisation: String!
-  organisation_profile: Organisation
+  organisation_profile: Organisation @cost(value: 1)
   safe_address: String!
 }
 
@@ -633,49 +671,65 @@ enum AggregateType {
   Offers
   Purchases
   Sales
+  Erc721Tokens
 }
 
 # All crc holdings of the user
 type CrcBalances implements IAggregatePayload {
   lastUpdatedAt: String!
   total: String
-  balances: [AssetBalance!]!
+  balances: [AssetBalance!]! @cost(value: 1)
 }
 
 # All crc holdings of the user
 type Erc20Balances implements IAggregatePayload {
   lastUpdatedAt: String!
-  balances: [AssetBalance!]!
+  balances: [AssetBalance!]! @cost(value: 1)
+}
+
+type Erc721Token {
+  token_symbol: String
+  token_name: String
+  token_address: String!
+  token_owner_address: String!
+  token_owner_profile: Profile
+  token_no: String!
+  token_url: String!
+}
+
+type Erc721Tokens implements IAggregatePayload {
+  lastUpdatedAt: String!
+  balances: [Erc721Token!]! @cost(value: 1)
 }
 
 type Contacts implements IAggregatePayload {
   lastUpdatedAt: String!
-  contacts: [Contact!]!
+  contacts: [Contact!]! @cost(value: 1)
 }
 
 type Memberships implements IAggregatePayload {
   lastUpdatedAt: String!
-  organisations: [Organisation!]!
+  organisations: [Organisation!]! @cost(value: 1)
 }
 
 type Members implements IAggregatePayload {
   lastUpdatedAt: String!
-  members: [ProfileOrOrganisation!]!
+  members: [ProfileOrOrganisation!]! @cost(value: 1)
 }
 
 type Offers implements IAggregatePayload {
   lastUpdatedAt: String!
-  offers: [Offer!]!
+  offers: [Offer!]! @cost(value: 1)
 }
 
 type Purchases implements IAggregatePayload {
   lastUpdatedAt: String!
-  purchases: [Purchase!]!
+  purchases: [Purchase!]! @cost(value: 1)
 }
 
 type Sales implements IAggregatePayload {
   lastUpdatedAt: String!
-  sales: [Sale!]!
+  sales: [Sale!]! @cost(value: 1)
 }
 
 enum ContactDirection {
@@ -694,7 +748,7 @@ type Contact {
   metadata: [ContactPoint!]!
   lastContactAt: String!
   contactAddress: String!
-  contactAddress_Profile: Profile
+  contactAddress_Profile: Profile @cost(value: 1)
 }
 
 union AggregatePayload =
@@ -706,12 +760,13 @@ union AggregatePayload =
   | Offers
   | Sales
   | Purchases
+  | Erc721Tokens
 
 type ProfileAggregate {
   type: String!
   safe_address: String!
-  safe_address_profile: Profile
-  payload: AggregatePayload!
+  safe_address_profile: Profile @cost(value: 1)
+  payload: AggregatePayload! @cost(value: 1)
 }
 
 type ProfileEvent {
@@ -721,9 +776,9 @@ type ProfileEvent {
   transaction_hash: String
   type: String!
   safe_address: String!
-  safe_address_profile: Profile
+  safe_address_profile: Profile @cost(value: 1)
   contact_address: String
-  contact_address_profile: Profile
+  contact_address_profile: Profile @cost(value: 1)
   direction: String!
   value: String
   payload: EventPayload
@@ -737,7 +792,7 @@ type PublicEvent {
   transaction_hash: String
   type: String!
   contact_address: String
-  contact_address_profile: Profile
+  contact_address_profile: Profile @cost(value: 1)
   payload: EventPayload
 }
 
@@ -880,7 +935,9 @@ type RemoveMemberResult {
 
 input PurchaseLineInput {
   offerId: Int!
+  shopId: Int!
   amount: Int!
+  metadata: String
 }
 
 type ProofPaymentResult {
@@ -1055,15 +1112,18 @@ type TransitivePath {
 
 type PostAddress {
   id: Int!
-  name: String
 
+  name: String
   street: String!
   house: String!
   zip: String!
+  city: String!
   state: String
+  country: String!
 
-  cityGeonameid: Int!
-  city: City
+  osmId: String
+  hereLocationId: String
+  cityGeonameid: Int
 }
 
 input ShopInput {
@@ -1074,6 +1134,7 @@ input ShopInput {
 
   name: String!
   description: String!
+  legalText: String
   largeBannerUrl: String!
   smallBannerUrl: String!
 
@@ -1084,6 +1145,12 @@ input ShopInput {
 
   ownerId: Int!
   openingHours: String
+
+  privacyPolicyLink: String
+  tosLink: String
+  healthInfosLink: String
+
+  adultOnly:Boolean
 }
 
 type Shop {
@@ -1091,9 +1158,10 @@ type Shop {
   createdAt: Date!
 
   private: Boolean
-
+  enabled: Boolean
   name: String!
   description: String!
+  legalText: String
   largeBannerUrl: String!
   smallBannerUrl: String!
 
@@ -1101,6 +1169,9 @@ type Shop {
   sortOrder: Int
 
   productListingStyle: ProductListingType!
+  purchaseMetaDataKeys: String
+
+  ownerId: Int
 
   owner: Organisation!
 
@@ -1108,6 +1179,13 @@ type Shop {
   pickupAddress: PostAddress
 
   categories: [ShopCategory!]
+  deliveryMethods: [DeliveryMethod!]
+
+  privacyPolicyLink: String
+  tosLink: String
+  healthInfosLink: String
+
+  adultOnly: Boolean
 }
 
 input ShopCategoryInput {
@@ -1115,6 +1193,7 @@ input ShopCategoryInput {
   shopId: Int!
 
   private: Boolean
+  enabled: Boolean
 
   name: String!
   description: String
@@ -1133,6 +1212,7 @@ type ShopCategory {
   shopId: Int!
 
   private: Boolean
+  enabled: Boolean
 
   name: String!
   description: String
@@ -1150,6 +1230,7 @@ input ShopCategoryEntryInput {
   id: Int
 
   private: Boolean
+  enabled: Boolean
   name: String
 
   shopCategoryId: Int!
@@ -1164,7 +1245,7 @@ type ShopCategoryEntry {
   createdAt: Date!
 
   private: Boolean
-
+  enabled: Boolean
   product: Offer
   productId: Int!
   productVersion: Int!
@@ -1185,15 +1266,38 @@ type UpsertShopCategoryEntriesResult {
   updated: Int!
 }
 
-type Mutation {
-  announcePayment(
-    invoiceId: Int!
-    transactionHash: String!
-  ): AnnouncePaymentResult!
+type ProofUniquenessResult {
+  existingSafe: String
+}
 
-  purchase(lines: [PurchaseLineInput!]!): [Invoice!]!
+type DeliveryMethod {
+  id: Int!
+  name: String!
+}
+
+input PostAddressInput {
+  id: Int
+  name: String
+
+  street: String!
+  house: String!
+  zip: String!
+  cityGeonameid: Int!
+}
+
+input OfferByIdAndVersionInput {
+  offerId: Int!
+  offerVersion: Int
+}
+
+type Mutation {
+  announcePayment(invoiceId: Int!, transactionHash: String!): AnnouncePaymentResult!
+
+  purchase(lines: [PurchaseLineInput!]!, deliveryMethodId: Int!, deliveryAddressId: Int): [Invoice!]!
   completePurchase(invoiceId: Int!, revoke: Boolean): Invoice!
   completeSale(invoiceId: Int!, revoke: Boolean): Invoice!
+
+  confirmLegalAge : Boolean!
 
   logout: LogoutResponse!
   upsertProfile(data: UpsertProfileInput!): Profile!
@@ -1201,16 +1305,16 @@ type Mutation {
   updateSafe(data: UpdateSafeInput!): UpdateSafeResponse!
   upsertTag(data: UpsertTagInput!): Tag!
 
-  upsertOrganisation(
-    organisation: UpsertOrganisationInput!
-  ): CreateOrganisationResult!
-  upsertRegion(
-    organisation: UpsertOrganisationInput!
-  ): CreateOrganisationResult!
+  upsertShippingAddress(data: PostAddressInput!): PostAddress
+  deleteShippingAddress(id: Int!): PostAddress
 
-  upsertShop(shop:ShopInput!): Shop!
-  upsertShopCategories(shopCategories:[ShopCategoryInput!]!): UpsertShopCategoriesResult!
-  upsertShopCategoryEntries(shopCategoryEntries:[ShopCategoryEntryInput!]!): UpsertShopCategoryEntriesResult!
+  upsertOrganisation(organisation: UpsertOrganisationInput!): CreateOrganisationResult!
+  upsertRegion(organisation: UpsertOrganisationInput!): CreateOrganisationResult!
+
+  upsertShop(shop: ShopInput!): Shop!
+  upsertShopCategories(shopCategories: [ShopCategoryInput!]!): UpsertShopCategoriesResult!
+  upsertShopCategoryEntries(shopCategoryEntries: [ShopCategoryEntryInput!]!): UpsertShopCategoryEntriesResult!
+  upsertOffer(offer: OfferInput!): Offer!
 
   addMember(groupId: String!, memberAddress: String!): AddMemberResult
   acceptMembership(membershipId: Int!): AcceptMembershipResult
@@ -1219,8 +1323,6 @@ type Mutation {
 
   acknowledge(until: Date!, safeAddress: String): Boolean!
 
-  requestInvitationOffer(for: String!): Offer!
-
   # Creates as many new EOAs as there are strings in the array.
   # createInvitations(for: [String!]!): CreateInvitationResult!
   createTestInvitation: CreateInvitationResult!
@@ -1228,27 +1330,18 @@ type Mutation {
   claimInvitation(code: String!): ClaimInvitationResult!
   redeemClaimedInvitation: RedeemClaimedInvitationResult!
 
-  tagTransaction(
-    transactionHash: String!
-    tag: CreateTagInput!
-  ): TagTransactionResult!
-  sendMessage(
-    fromSafeAddress: String
-    toSafeAddress: String!
-    content: String!
-  ): SendMessageResult!
+  tagTransaction(transactionHash: String!, tag: CreateTagInput!): TagTransactionResult!
+  sendMessage(fromSafeAddress: String, toSafeAddress: String!, content: String!): SendMessageResult!
 
   requestSessionChallenge(address: String!): String!
-  verifySessionChallenge(
-    challenge: String!
-    signature: String!
-  ): ExchangeTokenResponse
+  verifySessionChallenge(challenge: String!, signature: String!): ExchangeTokenResponse
 
   importOrganisationsOfAccount: [Organisation!]!
 
   verifySafe(safeAddress: String!): VerifySafeResult!
 
   revokeSafeVerification(safeAddress: String!): VerifySafeResult!
+  proofUniqueness(humanodeToken: String!): ProofUniquenessResult!
   updateValue(lang: String, key: String, createdBy: String, value: String): Int
   addNewLang(langToCreate: String, langToCopyFrom: String): Int
 }
@@ -1266,10 +1359,7 @@ type Query {
   safeInfo(safeAddress: String): SafeInfo
   lastAcknowledgedAt(safeAddress: String!): Date
 
-  verifications(
-    pagination: PaginationArgs
-    filter: VerifiedSafesFilter
-  ): [Verification!]!
+  verifications(pagination: PaginationArgs, filter: VerifiedSafesFilter): [Verification!]!
 
   events(
     types: [EventType!]!
@@ -1278,17 +1368,13 @@ type Query {
     filter: ProfileEventFilter
   ): [ProfileEvent!]!
 
-  aggregates(
-    types: [AggregateType!]!
-    safeAddress: String!
-    filter: ProfileAggregateFilter
-  ): [ProfileAggregate!]!
+  aggregates(types: [AggregateType!]!, safeAddress: String!, filter: ProfileAggregateFilter): [ProfileAggregate!]!
 
-  shops:[Shop!]!
-  shop(id:Int!) : Shop
+  shops(ownerId: Int): [Shop!]!
+  shopsById(ids: [Int!]!): [Shop!]!
+  shop(id: Int! ownerId: Int): Shop
 
   organisations(pagination: PaginationArgs): [Organisation!]!
-  organisationsWithOffers: [Organisation!]!
   regions(pagination: PaginationArgs): [Organisation!]!
   organisationsByAddress(addresses: [String!]!): [Organisation!]!
 
@@ -1310,10 +1396,14 @@ type Query {
   tags(query: QueryTagsInput!): [Tag!]!
   tagById(id: Int!): Tag
 
+  offersByIdAndVersion(query: [OfferByIdAndVersionInput!]!): [Offer!]!
+
   directPath(from: String!, to: String!, amount: String!): TransitivePath!
   invoice(invoiceId: Int!): String
 
   findInvitationCreator(code: String!): Profile
+
+  clientAssertionJwt: String!
 
   getAllStrings: [i18n]
   getAllStringsByLanguage(lang: String): [i18n]

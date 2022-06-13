@@ -5,6 +5,7 @@ import {SendCrcTrustChangedEmail} from "../jobs/descriptions/emailNotifications/
 import {SendCrcReceivedEmail} from "../jobs/descriptions/emailNotifications/sendCrcReceivedEmail";
 import {EventType, NotificationEvent} from "../types";
 import {Environment} from "../environment";
+import {MintCheckInNfts} from "../jobs/descriptions/mintCheckInNfts";
 
 export class AppNotificationProcessor implements IndexerEventProcessor {
     constructor() {
@@ -36,6 +37,17 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                         events: notification
                     });
                     break;
+                case EventType.CrcMinting:
+                    notification = <NotificationEvent>{
+                        type: event.type,
+                        from: event.address1,
+                        to: event.address2,
+                        transaction_hash: event.hash
+                    };
+                    await ApiPubSub.instance.pubSub.publish(`events_${event.address2}`, {
+                        events: notification
+                    });
+                    break;
                 case EventType.GnosisSafeEthTransfer:
                     notification = <NotificationEvent>{
                         type: event.type,
@@ -58,6 +70,10 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                         to: event.address1,
                         transaction_hash: event.hash
                     };
+
+                    if (parseInt(event.value) > 0) {
+                        await JobQueue.produce([new MintCheckInNfts(event.address2, event.address1)]);
+                    }
 
                     await ApiPubSub.instance.pubSub.publish(`events_${event.address1}`, {
                         events: notification

@@ -35,10 +35,10 @@ export class IndexerEvents {
             const start = Date.now();
 
             const logExit = () => {
-                log(" <-* ",
+                /*log(" <-* ",
                     `[${this._messageNo}] [${this._indexerUrl}] [IndexerEvents.onMessage]`,
                     `took ${Date.now() - start} ms.`
-                );
+                );*/
             }
 
             this.onMessage(e.toString())
@@ -69,10 +69,10 @@ export class IndexerEvents {
         try {
             const transactionHashes: string[] = JSON.parse(message);
 
-            log(" *-> ",
+            /*log(" *-> ",
                 `[${this._messageNo}] [${this._indexerUrl}] [IndexerEvents.onMessage]`,
                 `Received ${transactionHashes.length} tx-hashes.`
-            );
+            );*/
 
             const {
                 affectedAddresses,
@@ -155,14 +155,23 @@ export class IndexerEvents {
                    value::text as value
             from erc20_transfer_2
             union all
-            select 'EthTransfer' as type, 
+            select 'EthTransfer' as type,
                    timestamp,
-                   hash, 
-                   "from" as address1, 
-                   "to" as address2, 
-                   null as address3, 
+                   hash,
+                   "from" as address1,
+                   "to" as address2,
+                   null as address3,
                    value::text as value
             from eth_transfer_2
+            union all
+            select 'CrcMinting' as type,
+                   timestamp,
+                   hash,
+                   "from" as address1,
+                   "to" as address2,
+                   null as address3,
+                   value::text as value
+            from crc_minting_2
             union all
             select 'GnosisSafeEthTransfer' as type, 
                    timestamp, 

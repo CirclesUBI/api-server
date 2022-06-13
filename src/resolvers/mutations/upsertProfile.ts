@@ -5,13 +5,16 @@ import {ProfileLoader} from "../../querySources/profileLoader";
 import {Environment} from "../../environment";
 import {TestData} from "../../api-db/testData";
 import {RpcGateway} from "../../circles/rpcGateway";
-import {Job, JobQueue} from "../../jobs/jobQueue";
+import {JobQueue} from "../../jobs/jobQueue";
 import {VerifyEmailAddress} from "../../jobs/descriptions/emailNotifications/verifyEmailAddress";
 import {Generate} from "../../utils/generate";
 import {SendVerifyEmailAddressEmail} from "../../jobs/descriptions/emailNotifications/sendVerifyEmailAddressEmail";
 import {claimInvitation} from "./claimInvitation";
-import {Dropper} from "../../utils/dropper";
+import {createInvitationPerpetualTrigger} from "../../utils/invitationHelper";
 import {verifySafe} from "./verifySafe";
+import {AutoTrust} from "../../jobs/descriptions/maintenance/autoTrust";
+import {MintCheckInNftsWorker} from "../../jobs/worker/mintCheckInNftsWorker";
+import {MintCheckInNfts} from "../../jobs/descriptions/mintCheckInNfts";
 
 const validateEmail = (email:string) => {
     return email.match(
@@ -52,16 +55,13 @@ export function upsertProfileResolver() {
         if (args.data.circlesAddress && !RpcGateway.get().utils.isAddress(args.data.circlesAddress)) {
             throw new Error(`Invalid 'circlesAddress': ${args.data.circlesAddress}`);
         }
-        if (args.data.circlesAddress) {
-            if (!await context.isOwnerOfSafe(args.data.circlesAddress)) {
-                throw new Error(`You EOA isn't an owner of safe ${args.data.circlesAddress}`)
-            }
+        if (args.data.circlesAddress && !await context.isOwnerOfSafe(args.data.circlesAddress)) {
+            throw new Error(`You EOA isn't an owner of safe ${args.data.circlesAddress}`);
         }
-        if (args.data.successorOfCirclesAddress) {
-            if (!await context.isOwnerOfSafe(args.data.successorOfCirclesAddress)) {
-                throw new Error(`You EOA isn't an owner of your imported safe ${args.data.successorOfCirclesAddress}`)
-            }
+        if (args.data.successorOfCirclesAddress && !await context.isOwnerOfSafe(args.data.successorOfCirclesAddress)) {
+            throw new Error(`You EOA isn't an owner of your imported safe ${args.data.successorOfCirclesAddress}`);
         }
+
         if (args.data.id) {
             if (args.data.id != session.profileId) {
                 throw new Error(`'${session.sessionToken}' (profile id: ${session.profileId ?? "<undefined>"}) can not upsert other profile '${args.data.id}'.`);
@@ -97,15 +97,31 @@ export function upsertProfileResolver() {
                 }
             }));
 
-            if (!oldProfile.inviteTrigger &&
-              oldProfile.type == ProfileType.Person &&
-              !oldProfile.circlesAddress && profile.circlesAddress) {
+            if (!oldProfile.inviteTrigger
+              && oldProfile.type == ProfileType.Person
+              && !oldProfile.circlesAddress
+              && profile.circlesAddress) {
                 // Create the initial invitations for the user
                 console.log(`Automatically verifying the new safe user ${profile.circlesAddress} ..`);
                 await verifySafe(null, {safeAddress: profile.circlesAddress}, context);
 
+                const invitation = await Environment.readWriteApiDb.invitation.findFirst({
+                    where: { redeemedByProfileId: profile.id },
+                    include: { createdBy: true }
+                });
+
+                if (invitation?.createdBy?.circlesAddress) {
+                    setTimeout(async () => {
+                        console.log(`Creating an 'autoTrust' job for new safe ${profile.circlesAddress} and inviter ${invitation.createdBy.circlesAddress}`);
+                        await JobQueue.produce([new AutoTrust(<string>invitation.createdBy.circlesAddress, <string>profile.circlesAddress)]);
+                    }, 15000);
+
+                    console.log(`Creating a 'mintCheckInNft' job for new safe (guest) ${profile.circlesAddress} and inviter (host) ${invitation.createdBy.circlesAddress}`);
+                    await JobQueue.produce([new MintCheckInNfts(invitation.createdBy.circlesAddress, profile.circlesAddress)]);
+                }
+
                 console.log(`Creating the input trigger for address ${profile.circlesAddress} ..`);
-                const inviteTriggerHash = await Dropper.createInvitationPerpetualTrigger(profile.circlesAddress);
+                const inviteTriggerHash = await createInvitationPerpetualTrigger(profile.circlesAddress);
 
                 console.log(`Trying to find the invite trigger job with hash ${inviteTriggerHash} ..`);
                 const inviteTriggerJob = await Environment.readWriteApiDb.job.findUnique({
@@ -126,7 +142,6 @@ export function upsertProfileResolver() {
                     }));
                 }
             }
-
 
             if (oldProfile.emailAddress != profile.emailAddress) {
                 profile = ProfileLoader.withDisplayCurrency(await Environment.readWriteApiDb.profile.update({

@@ -1,44 +1,86 @@
 import {Context} from "../../context";
 import {CapabilityType, SessionInfo} from "../../types";
 import {ProfileLoader} from "../../querySources/profileLoader";
-import {isBALIMember, isBILMember} from "../../utils/canAccess";
+import {hasTickets, isBALIMember, isBILMember, isHumanodeVerified} from "../../utils/canAccess";
 import {Environment} from "../../environment";
+
+export async function getCapabilities(callerInfo:any) {
+    const capabilities = [];
+
+    const checkPromises = await Promise.all([
+        await isBILMember(callerInfo?.profile?.circlesAddress),
+        await isBALIMember(callerInfo?.profile?.circlesAddress),
+        await isHumanodeVerified(callerInfo?.profile?.circlesAddress),
+        await hasTickets(callerInfo?.profile?.circlesAddress, callerInfo?.profile?.id)
+    ]);
+
+    const isBilMember = checkPromises[0];
+    const isBaliMember = checkPromises[1];
+    const humanodeVerified = checkPromises[2];
+    const tickets = checkPromises[3];
+
+    if (isBilMember) {
+        capabilities.push({
+            type: CapabilityType.Verify
+        });
+        capabilities.push({
+            type: CapabilityType.Translate
+        });
+        capabilities.push({
+            type: CapabilityType.PreviewFeatures
+        });
+    }
+
+    if (!isBilMember && isBaliMember) {
+        capabilities.push({
+            type: CapabilityType.PreviewFeatures
+        });
+    }
+
+    if (humanodeVerified) {
+        capabilities.push({
+            type: CapabilityType.VerifiedByHumanode
+        });
+    }
+
+    if (tickets) {
+        capabilities.push({
+            type: CapabilityType.Tickets
+        });
+    }
+
+    capabilities.push({
+        type: CapabilityType.Invite
+    });
+
+    return capabilities;
+}
 
 export const sessionInfo = async (parent:any, args:any, context:Context) : Promise<SessionInfo> => {
     try {
         const callerInfo = await context.callerInfo;
-        const capabilities = [];
+        const capabilities = await getCapabilities(callerInfo);
 
-        const isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
-        if (isBilMember) {
-            capabilities.push({
-                type: CapabilityType.Verify
-            });
-            capabilities.push({
-                type: CapabilityType.Translate
-            });
-            capabilities.push({
-                type: CapabilityType.PreviewFeatures
-            });
-        }
+        let useShortSignup: boolean|undefined = undefined;
 
-        const isBaliMember = await isBALIMember(callerInfo?.profile?.circlesAddress);
-        if (isBaliMember) {
-            capabilities.push({
-                type: CapabilityType.PreviewFeatures
-            });
-        }
-
-        capabilities.push({
-            type: CapabilityType.Invite
+        const invitation = await Environment.readWriteApiDb.invitation.findFirst({
+            where: {
+                redeemedByProfileId: callerInfo?.profile?.id
+            },
+            include: {
+                createdBy: true
+            }
         });
+
+        useShortSignup = !!invitation && invitation.createdBy.circlesAddress == Environment.gorilloOrgaSafeAddress;
 
         return {
             isLoggedOn: true,
             hasProfile: !!callerInfo?.profile,
             profileId: callerInfo?.profile?.id,
             profile: callerInfo?.profile ? ProfileLoader.withDisplayCurrency(callerInfo.profile) : null,
-            capabilities: capabilities
+            capabilities: capabilities,
+            useShortSignup: useShortSignup
         }
     } catch(e) {
         context.log(JSON.stringify(e));

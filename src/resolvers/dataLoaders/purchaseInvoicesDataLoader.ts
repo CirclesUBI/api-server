@@ -13,6 +13,7 @@ export const purchaseInvoicesDataLoader = new DataLoader<number, Invoice[]>(
         },
       },
       include: {
+        deliveryMethod: true,
         customerProfile: true,
         sellerProfile: true,
       },
@@ -28,7 +29,7 @@ export const purchaseInvoicesDataLoader = new DataLoader<number, Invoice[]>(
           sellerAddress: i.sellerProfile.circlesAddress,
         };
       })
-      .groupBy(c => c.purchaseId);
+      .groupBy((c) => c.purchaseId);
 
     return keys.map((o) => formattedInvoices[o]).filter((o) => !!o);
   },

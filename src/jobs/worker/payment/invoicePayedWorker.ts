@@ -10,6 +10,7 @@ import {Environment} from "../../../environment";
 import {log, logErr} from "../../../utils/log";
 import {JobQueue} from "../../jobQueue";
 import {BroadcastPurchased} from "../../descriptions/market/broadcastPurchased";
+import {MintPurchaseNfts} from "../../descriptions/mintPurchaseNfts";
 
 type Transfer = {
   hash: string,
@@ -44,6 +45,8 @@ export class InvoicePayedWorker extends JobWorker<InvoicePayed> {
           paidInvoice.customerProfile.circlesAddress,
           paidInvoice.sellerProfile.circlesAddress,
           paidInvoice.purchaseId));
+
+      await JobQueue.produce([new MintPurchaseNfts(paidInvoice.purchaseId)]);
     }
 
     return undefined;
@@ -116,5 +119,4 @@ export class InvoicePayedWorker extends JobWorker<InvoicePayed> {
       logErr(`ERR  `, `[] [invoiceId: ${invoice.id}] [InvoicePayedWorker.persistInvoice]`, errMessage);
     }
   }
-
 }

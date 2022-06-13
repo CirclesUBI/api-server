@@ -4,11 +4,7 @@ import { MutationCompleteSaleArgs, Invoice } from "../../types";
 import { Context } from "../../context";
 import { Environment } from "../../environment";
 
-export const completeSale = async (
-  parent: any,
-  args: MutationCompleteSaleArgs,
-  context: Context
-) => {
+export const completeSale = async (parent: any, args: MutationCompleteSaleArgs, context: Context) => {
   if (!context.session?.profileId) {
     throw new Error(`You must have a profile to use this function.`);
   }
@@ -17,6 +13,7 @@ export const completeSale = async (
       id: args.invoiceId,
     },
     include: {
+      deliveryMethod: true,
       sellerProfile: true,
       customerProfile: true,
       cancelledBy: true,
@@ -36,14 +33,9 @@ export const completeSale = async (
     throw new Error(`Couldn't find a invoice with id ${args.invoiceId}.`);
   }
   if (!invoice.sellerProfile.circlesAddress) {
-    throw new Error(
-      `The seller profile of invoice ${invoice.id} has no safe address.`
-    );
+    throw new Error(`The seller profile of invoice ${invoice.id} has no safe address.`);
   }
-  let canActAsOrganisation = await canAccess(
-    context,
-    invoice.sellerProfile.circlesAddress
-  );
+  let canActAsOrganisation = await canAccess(context, invoice.sellerProfile.circlesAddress);
   if (!canActAsOrganisation) {
     throw new Error(`Couldn't find a invoice with id ${args.invoiceId}.`);
   }
@@ -84,9 +76,7 @@ export const completeSale = async (
           pictureMimeType: l.product.pictureMimeType ?? "",
           createdAt: l.product.createdAt.toJSON(),
           createdByAddress: l.product.createdBy.circlesAddress ?? "",
-          createdByProfile: ProfileLoader.withDisplayCurrency(
-            l.product.createdBy
-          ),
+          createdByProfile: ProfileLoader.withDisplayCurrency(l.product.createdBy),
         },
       };
     }),

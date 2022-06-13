@@ -30,14 +30,18 @@ import {Environment} from "../../environment";
 import { QueryGetStringByMaxVersionArgs, QueryResolvers, QueryGetStringByLanguageArgs, QueryGetAllStringsByLanguageArgs, QueryGetOlderVersionsByKeyAndLangArgs} from "../../types";
 import {Organisation, QueryLastAcknowledgedAtArgs, QueryShopArgs, Shop} from "../../types";
 import {Context} from "../../context";
-import {canAccess} from "../../utils/canAccess";
-import { patterns } from "pdfkit/js/page";
+import {shop} from "./shop";
+import {clientAssertionJwt} from "./clientAssertionJwt";
+import {shops, shopsById} from "./shops";
+import {lastAcknowledgedAt} from "./lastAcknowledgedAt";
+import {Offer} from "../../api-db/client";
+
 const packageJson = require("../../../package.json");
 
-export const queryResolvers : QueryResolvers = {
+export const queryResolvers: QueryResolvers = {
   sessionInfo: sessionInfo,
   init: init,
-  stats: async (parent:any, args:any, context:Context) => {
+  stats: async (parent: any, args: any, context: Context) => {
     const caller = await context.callerInfo;
     if (!caller?.profile?.circlesAddress) {
       throw new Error(`You must have a safe to execute this query.`);
@@ -70,67 +74,53 @@ export const queryResolvers : QueryResolvers = {
   invoice: invoice,
   verifications: verifications,
   findInvitationCreator: findInvitationCreator,
-  lastAcknowledgedAt: async (parent:any, args:QueryLastAcknowledgedAtArgs, context:Context) => {
-    if (!(await canAccess(context, args.safeAddress))) {
-      throw new Error(`You cannot access the specified safe address.`);
+  lastAcknowledgedAt: lastAcknowledgedAt,
+  shops: shops,
+  shopsById: shopsById,
+  shop: shop,
+  clientAssertionJwt: clientAssertionJwt,
+  offersByIdAndVersion: async (parent: any, args: QueryOffersByIdAndVersionArgs, context: Context) => {
+    const offerVersions = args.query.filter(o => !!o.offerVersion).map(o => <number>o.offerVersion);
+    const offerIds = args.query.map(o => o.offerId);
+
+    let result: Offer[];
+    if (offerVersions.length > 0) {
+      result = await Environment.readonlyApiDb.offer.findMany({
+        where: {
+          id: {
+            in: offerIds
+          },
+          version: {
+            in: offerVersions
+          }
+        },
+        orderBy: {
+          version: "desc"
+        }
+      });
+    } else {
+      result = await Environment.readonlyApiDb.offer.findMany({
+        where: {
+          id: {
+            in: offerIds
+          }
+        },
+        orderBy: {
+          version: "desc"
+        }
+      });
     }
-    const lastAcknowledgedDate = await Environment.readWriteApiDb.profile.findFirst({
-      where: {
-        circlesAddress: args.safeAddress
-      },
-      select: {
-        lastAcknowledged: true
-      }
-    });
-    return lastAcknowledgedDate?.lastAcknowledged;
-  },
-  shops: async (parent:any, args:any, context:Context) => {
-    const shops = await Environment.readWriteApiDb.shop.findMany({
-      where: {
-        enabled: true,
-        owner: {
-          type: "ORGANISATION"
-        }
-      },
-      include: {
-        owner: true
-      },
-      orderBy: {
-        sortOrder: "asc"
-      }
-    });
-    return shops.map(o => {
-      return <Shop>{
+
+    const offerVersionsById = result.groupBy(o => o.id);
+    const offers = Object.values(offerVersionsById).map(offers => offers[0]);
+
+    return offers.map(o => {
+      return {
         ...o,
-        owner: <Organisation>{
-          ...o.owner,
-          createdAt: o.createdAt.toJSON(),
-          name: o.owner.firstName
-        }
-      }
-    });
-  },
-  shop: async (parent:any, args:QueryShopArgs, context:Context) => {
-    const shops = await Environment.readWriteApiDb.shop.findMany({
-      where: {
-        id: args.id,
-        enabled: true
-      },
-      include: {
-        owner: true
-      },
-      orderBy: {
-        sortOrder: "asc"
-      }
-    });
-    const shop = shops.map(o => {
-      return <Shop>{
-        ...o,
-        owner: <Organisation>{
-          ...o.owner,
-          createdAt: o.createdAt.toJSON(),
-          name: o.owner.firstName
-        }
+        createdByAddress: "",
+        createdAt: o.createdAt.toJSON(),
+        pictureMimeType: o.pictureMimeType ?? "",
+        pictureUrl: o.pictureUrl ?? ""
       }
     });
     return shop.length > 0 ? shop[0] : null;

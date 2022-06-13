@@ -1,4 +1,4 @@
-import {AssetBalance, Profile, ProfileOrigin, ProfileResolvers} from "../../types";
+import {AssetBalance, PostAddress, Profile, ProfileOrigin, ProfileResolvers} from "../../types";
 import {Context} from "../../context";
 import {Environment} from "../../environment";
 import {getDateWithOffset} from "../../utils/getDateWithOffset";
@@ -15,6 +15,9 @@ import {profileClaimedInvitationDataLoader} from "../dataLoaders/profileClaimedI
 import {profileInvitationTransactionDataLoader} from "../dataLoaders/profileInvitationTransactionDataLoader";
 import {profileCirclesTokenAddressDataLoader} from "../dataLoaders/profileCirclesTokenAddressDataLoader";
 import {profileMembersDataLoader} from "../dataLoaders/profileMembersDataLoader";
+import {profileShopsDataLoader} from "../dataLoaders/profileShopsDataLoader";
+import {UtilityDbQueries} from "../../querySources/utilityDbQueries";
+import {provenUniquenessDataLoader} from "../dataLoaders/provenUniquenessDataLoader";
 
 
 function isOwnProfile(profileId:number, context:Context) : boolean {
@@ -68,6 +71,12 @@ export const profilePropertyResolvers : ProfileResolvers = {
     }
     return await profileMembershipsDataLoader.load(parent.circlesAddress);
   },
+  shops: async (parent: Profile, args:any, context: Context) => {
+    if (!parent.circlesAddress) {
+      return [];
+    }
+    return await profileShopsDataLoader.load(parent.id);
+  },
   members: async (parent: Profile, args:any, context: Context) => {
     if (!parent.circlesAddress) {
       return [];
@@ -105,7 +114,7 @@ export const profilePropertyResolvers : ProfileResolvers = {
 
     const crcBalancesPromise = Environment.indexDb.query(`
         select last_change_at, token, token_owner, balance
-        from crc_balances_by_safe_and_token_2
+        from cache_crc_balances_by_safe_and_token
         where safe_address = $1
         order by balance desc;`,
       [parent.circlesAddress.toLowerCase()]);
@@ -190,5 +199,40 @@ export const profilePropertyResolvers : ProfileResolvers = {
     return parent.firstName.trim() == ""
       ? parent.circlesAddress ?? ""
       : `${parent.firstName}${parent.lastName ? " " + parent.lastName : ""}`;
+  },
+  provenUniqueness: async (parent:Profile, args:any, context: Context) => {
+    if (!parent.circlesAddress) {
+      return null;
+    }
+    return await provenUniquenessDataLoader.load(parent.circlesAddress);
+  },
+  shippingAddresses: async (parent:Profile, args:any, context: Context) => {
+    if (!parent.circlesAddress) {
+      return null;
+    }
+    if (!isOwnProfile(parent.id, context)){
+      return null;
+    }
+
+    const shippingAddresses = await Environment.readWriteApiDb.postAddress.findMany({
+      where: {
+        shippingAddressOfProfileId: parent.id
+      }
+    });
+
+    return await Promise.all(shippingAddresses.filter(o => o.cityGeonameid).map(async o => {
+      const place = await UtilityDbQueries.placesById([o.cityGeonameid ?? 0]);
+      return <PostAddress>{
+        id: o.id,
+        name: o.name,
+        city: place[0].name,
+        cityGeonameid: o.cityGeonameid,
+        country: place[0].country,
+        zip: o.zip,
+        house: o.house,
+        state: o.state,
+        street: o.street
+      }
+    }));
   }
 }

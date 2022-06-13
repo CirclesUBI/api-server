@@ -21,7 +21,7 @@ export type SmtpConfig = {
 
 export class Environment {
 
-  static async validateAndSummarize() {
+  static async validateAndSummarize(logInfo:boolean = true) {
     const errors:string[] = [];
 
     if (!this.corsOrigins) {
@@ -63,16 +63,20 @@ export class Environment {
       );
     }
 
-    console.log(
-      `* Testing connection to the json rpc gateway (${this.rpcGatewayUrl}) ...`
-    );
+    if (logInfo) {
+      console.log(
+        `* Testing connection to the json rpc gateway (${this.rpcGatewayUrl}) ...`
+      );
+    }
     const rpcGateway = await fetch(
       this.rpcGatewayUrl
         .replace("ws://", "http://")
         .replace("wss://", "https://")
     );
     if (rpcGateway.status < 500) {
-      console.log("  Success. Body: " + (await rpcGateway.text()));
+      if (logInfo) {
+        console.log("  Success. Body: " + (await rpcGateway.text()));
+      }
     } else {
       errors.push(
         `The json rpc gateway responded with a non 200 code: ${
@@ -81,52 +85,34 @@ export class Environment {
       );
     }
 
-    console.log("* Testing operatorOrganisationAddress ..");
+    if (logInfo) {
+      console.log("* Testing operatorOrganisationAddress ..");
+    }
     let nonce = await new GnosisSafeProxy(
       RpcGateway.get(),
       RpcGateway.get().utils.toChecksumAddress(this.operatorOrganisationAddress)
     ).getNonce();
-    console.log(`  ${this.operatorOrganisationAddress} nonce is: ${nonce}`);
-
+    if (logInfo) {
+      console.log(`  ${this.operatorOrganisationAddress} nonce is: ${nonce}`);
+    }
     if (!process.env.INVITATION_FUNDS_SAFE_ADDRESS) {
       errors.push(
         `The INVITATION_FUNDS_SAFE_ADDRESS environment variable is not set.`
       );
     }
 
-    console.log("* Testing invitationFundsSafe ..");
+    if (logInfo) {
+      console.log("* Testing invitationFundsSafe ..");
+    }
     nonce = await this.invitationFundsSafe.getNonce();
-    console.log(`  ${this.invitationFundsSafe.address} nonce is: ${nonce}`);
-
+    if (logInfo) {
+      console.log(`  ${this.invitationFundsSafe.address} nonce is: ${nonce}`);
+    }
     if (!process.env.INVITATION_FUNDS_SAFE_KEY) {
       errors.push(
         `The INVITATION_FUNDS_SAFE_KEY environment variable is not set.`
       );
     }
-
-    /*
-    if (!process.env.REWARD_TOKEN_ADDRESS) {
-      errors.push(`The REWARD_TOKEN_ADDRESS environment variable is not set.`);
-    }
-
-    if (!process.env.VERIFICATION_REWARD_FUNDS_SAFE_ADDRESS) {
-      errors.push(
-        `The VERIFICATION_REWARD_FUNDS_SAFE_ADDRESS environment variable is not set.`
-      );
-    }
-    console.log("* Testing verificationRewardFundsSafe ..");
-
-    nonce = await this.verificationRewardFundsSafe.getNonce();
-    console.log(
-      `  ${this.verificationRewardFundsSafe.address} nonce is: ${nonce}`
-    );
-
-    if (!process.env.VERIFICATION_REWARD_FUNDS_KEY) {
-      errors.push(
-        `The VERIFICATION_REWARD_FUNDS_KEY environment variable is not set.`
-      );
-    }
-     */
 
     if (
       !process.env.DIGITALOCEAN_SPACES_ENDPOINT ||
@@ -138,29 +124,44 @@ export class Environment {
       );
     }
 
-    console.log(`* Testing connection to the utility-db ...`);
+    if (logInfo) {
+      console.log(`* Testing connection to the utility-db ...`);
+    }
     await this.utilityDb.query("select 1");
-    console.log(`  Success`);
 
-    console.log(`* Testing connection to the indexer-db ...`);
+    if (logInfo) {
+      console.log(`  Success`);
+      console.log(`* Testing connection to the indexer-db ...`);
+    }
     await this.indexDb.query("select 1");
-    console.log(`  Success`);
 
-    console.log(`* Testing connection to the pgReadWriteApiDb ...`);
+    if (logInfo) {
+      console.log(`  Success`);
+      console.log(`* Testing connection to the pgReadWriteApiDb ...`);
+    }
     await this.pgReadWriteApiDb.query("select 1");
-    console.log(`  Success`);
 
-    console.log(`* Testing connection to the readonly api-db ...`);
+    if (logInfo) {
+      console.log(`  Success`);
+      console.log(`* Testing connection to the readonly api-db ...`);
+    }
     await this.readonlyApiDb.$queryRaw`select 1`;
-    console.log(`  Success`);
 
-    console.log(`* Testing connection to the read/write api-db ...`);
+    if (logInfo) {
+      console.log(`  Success`);
+      console.log(`* Testing connection to the read/write api-db ...`);
+    }
+
     await this.readWriteApiDb.$queryRaw`select 1`;
-    console.log(`  Success`);
 
-    console.log(
-      `* Testing connection to the indexer ws endpoint (${this.blockchainIndexerUrl}) ...`
-    );
+    if (logInfo) {
+      console.log(`  Success`);
+
+      console.log(
+        `* Testing connection to the indexer ws endpoint (${this.blockchainIndexerUrl}) ...`
+      );
+    }
+
     let u = this.blockchainIndexerUrl
       .replace("ws://", "http://")
       .replace("wss://", "https://");
@@ -174,7 +175,9 @@ export class Environment {
       },
     });
     if (indexerWsEndpoint.status < 500) {
-      console.log("  Success. Body: " + (await indexerWsEndpoint.text()));
+      if (logInfo) {
+        console.log("  Success. Body: " + (await indexerWsEndpoint.text()));
+      }
     } else {
       const body = await indexerWsEndpoint.text();
       errors.push(
@@ -218,6 +221,42 @@ export class Environment {
 
   static get utilityDb(): Pool {
     return Environment._utilityDb;
+  }
+
+  static get gorilloNft(): {
+    address: string,
+    symbol: string,
+    name: string
+  } {
+    return  {
+      address: "0x2F42a5e50B519aA7074647969DaaDC49E6aD5eE4",
+      symbol: "ABC",
+      name: "gorillo"
+    };
+  }
+
+  static get acidPunksNft(): {
+    address: string,
+    symbol: string,
+    name: string
+  } {
+    return  {
+      address: "0x8e88677876D2fCF4D16a4f1a1f96d150b34665FF",
+      symbol: "APK",
+      name: "AcidPunKs"
+    };
+  }
+
+  static get keyRotationInterval(): number {
+    return  24 * 60 * 60 * 1000;
+  }
+
+  static get periodicTaskInterval() : number {
+    return  5 * 60 * 1000;
+  }
+
+  static get maxKeyAge() : number {
+    return  2 * this.keyRotationInterval;
   }
 
   private static _indexDb: Pool = new Pool({
@@ -317,11 +356,31 @@ export class Environment {
     return <string>process.env.EXTERNAL_DOMAIN;
   }
 
+  public static get humanodeClientId(): string {
+    return <string>process.env.HUMANODE_CLIENT_ID;
+  }
+
+  public static get humanodeOrgaSafeAddress(): string {
+    return "0xfbdca35969325d28ec49fa05db8d0f8e969fe805";
+  }
+
+  public static get gorilloOrgaSafeAddress(): string {
+    return "0xf9342ea6f2585d8c2c1e5e78b247ba17c32af46a";
+  }
+
   static get isAutomatedTest(): boolean {
     return !!process.env.IS_AUTOMATED_TEST;
   }
   static get fixedGasPrice(): number {
     return !process.env.IS_AUTOMATED_TEST ? 0 : 1;
+  }
+
+  static get humanodeJwksUrl(): string {
+    return "https://auth.staging.oauth2.humanode.io/.well-known/jwks.json";
+  }
+
+  static get humanodeIss(): string {
+    return "https://auth.staging.oauth2.humanode.io/";
   }
 
   /**

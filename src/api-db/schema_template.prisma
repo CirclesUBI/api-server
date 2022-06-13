@@ -5,6 +5,7 @@ datasource db {
 
 generator client {
     provider = "prisma-client-js"
+    // binaryTargets = ["debian-openssl-3.0.x"]
     output   = "./client"
 }
 
@@ -123,25 +124,81 @@ model VerifiedSafe {
     inviteCount Int @default(0) // Number of created invitations
 }
 
+model HumanodeVerifications {
+    circlesAddress String @id
+
+    createdAt DateTime @default(now())
+    @@index([createdAt])
+
+    sub String @unique
+    token String
+}
+
+
+model Event {
+    id Int @id @default(autoincrement())
+
+    beginAnnouncementAt DateTime?
+    begin DateTime
+    end DateTime
+
+    locationId Int?
+    location PostAddress? @relation("EventLocation", fields:[locationId], references: [id])
+    revealLocationAt DateTime?
+
+    shopId Int
+    shop Shop @relation("EventShop", fields: [shopId], references: [id])
+    revealShopAt DateTime?
+
+    offers Offer[] @relation("OfferEvent")
+}
+
 model PostAddress {
     id Int @id @default(autoincrement())
-    name String?
 
+    name String?
     street String
     house String
     zip String
+    city String?
     state String?
+    country String?
 
+    osmId String?
+    hereLocationId String?
     cityGeonameid Int?
 
     pickupAddressOfShop Shop? @relation("ShopPickupAddress")
     shippingAddressOfProfile Profile? @relation("ProfileShippingAddresses", fields: [shippingAddressOfProfileId], references: [id])
     shippingAddressOfProfileId Int?
+
+    events Event[] @relation("EventLocation")
+    invoices Invoice[] @relation("Invoice_DeliveryAddress")
+    purchases Purchase[] @relation("Purchase_DeliveryAddress")
 }
 
 enum ShopListingStyle {
     REGULAR
     FEATURED
+}
+
+model DeliveryMethod {
+    id Int @id @default(autoincrement())
+    name String
+
+    shopDeliveryMethods ShopDeliveryMethod[] @relation("ShopDeliveryMethod_DeliveryMethod")
+    purchases Purchase[] @relation(name: "Purchase_DeliveryMethod")
+    invoices Invoice[] @relation(name: "Invoice_DeliveryMethod")
+}
+
+model ShopDeliveryMethod {
+    id Int @id @default(autoincrement())
+
+    shopId Int
+    shop Shop @relation("ShopDeliveryMethod_Shop", fields: [shopId], references: [id])
+
+    deliveryMethodId Int
+    deliveryMethod DeliveryMethod @relation("ShopDeliveryMethod_DeliveryMethod", fields: [deliveryMethodId], references: [id])
 }
 
 model Shop {
@@ -153,6 +210,7 @@ model Shop {
 
     name String
     description String
+    legalText String? @default("")
     largeBannerUrl String
     smallBannerUrl String
 
@@ -175,6 +233,20 @@ model Shop {
                               // will wrap around and 'currentSimplePickupCodeRound' will be incremented by 1.
 
     categories ShopCategory[] @relation("ShopShopCategories")
+
+    deliveryMethods ShopDeliveryMethod[] @relation("ShopDeliveryMethod_Shop")
+    purchaseLines PurchaseLine[] @relation(name: "PurchaseLine_Shop")
+    invoiceLines InvoiceLine[] @relation(name: "InvoiceLine_Shop")
+
+    purchaseMetaDataKeys String?
+
+    privacyPolicyLink String?
+    tosLink String?
+    healthInfosLink String?
+
+    event Event? @relation("EventShop")
+
+    adultOnly Boolean?
 }
 
 model ShopCategory {
@@ -197,6 +269,25 @@ model ShopCategory {
     productListingStyle ProductListingType?
 
     entries ShopCategoryEntry[] @relation("ShopCategoryEntries")
+}
+
+model Jwks {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    kid String
+    @@index([kid])
+
+    kty String
+    use String
+    alg String
+    e String
+    n String
+    d String
+    p String
+    q String
+    dp String
+    dq String
+    qi String
 }
 
 model ShopCategoryEntry {
@@ -251,6 +342,7 @@ model Profile {
     newsletter Boolean?
     displayTimeCircles Boolean? @default(true)
     cityGeonameid Int?
+    confirmedLegalAge DateTime?
 
     lastAcknowledged DateTime?
 
@@ -365,9 +457,13 @@ model Offer {
     pictureUrl String?
     pictureMimeType String?
     description String?
+    allergens String?
 
     pricePerUnit String // The price in euro
     timeCirclesPriceShare Int // How many percent of the price can be payed in time circles
+
+    eventId Int?
+    event Event? @relation(name: "OfferEvent", fields:[eventId], references: [id])
 
     purchaseLines PurchaseLine[] @relation(name: "PurchaseLines_Product")
     invoiceLines InvoiceLine[] @relation(name: "InvoiceLines_Product")
@@ -387,16 +483,28 @@ model Purchase {
 
     lines PurchaseLine[] @relation(name: "Purchase_Lines")
     invoices Invoice[] @relation(name: "Purchase_Invoices")
+
+    deliveryMethod DeliveryMethod @relation(name: "Purchase_DeliveryMethod", fields: [deliveryMethodId], references: [id])
+    deliveryMethodId Int
+
+    deliveryAddress PostAddress? @relation(name: "Purchase_DeliveryAddress", fields: [deliveryAddressId], references:[id])
+    deliveryAddressId Int?
 }
 
 model PurchaseLine {
     id Int @id @default(autoincrement())
 
     purchase Purchase @relation(name: "Purchase_Lines", fields: [purchaseId], references: [id])
+
     purchaseId Int
     @@index([purchaseId])
 
+    shopId Int?
+    shop Shop? @relation(name: "PurchaseLine_Shop", fields: [shopId], references: [id])
+
     amount Int
+
+    metadata String?
 
     product Offer @relation(name: "PurchaseLines_Product", fields: [productId, productVersion], references: [id, version])
     productId Int
@@ -448,6 +556,12 @@ model Invoice {
     cancelledByProfileId Int?
     @@index([cancelledByProfileId])
 
+    deliveryMethod DeliveryMethod @relation(name: "Invoice_DeliveryMethod", fields: [deliveryMethodId], references: [id])
+    deliveryMethodId Int
+
+    deliveryAddressId Int?
+    deliveryAddress PostAddress? @relation(name: "Invoice_DeliveryAddress", fields: [deliveryAddressId], references:[id])
+
     cancelReason String?
 }
 
@@ -464,6 +578,11 @@ model InvoiceLine {
     productId Int
     productVersion Int
     @@index([productId,productVersion])
+
+    shopId Int?
+    shop Shop? @relation(name: "InvoiceLine_Shop", fields: [shopId], references: [id])
+
+    metadata String?
 }
 
 model TagType {
@@ -541,4 +660,20 @@ model i18n {
     version Int
     value String
     @@unique([lang, key, version])
+}
+
+model Agent {
+    id Int @id @default(autoincrement())
+
+    topic String
+
+    ownerSafeAddress String
+    agentSafeAddress String?
+    privateKey String
+
+    contractAddress String?
+    contractAbi String?
+    contractMethod String?
+
+    enabled Boolean @default(false)
 }

@@ -54,13 +54,16 @@ export class SalesEventSource implements EventSource {
           circlesAddress: forSafeAddress,
         },
         customerProfile: {
-          circlesAddress: filter?.with,
+          circlesAddress: filter?.with ?? {
+            not: null
+          }
         },
         ...filterById,
         ...createdAt,
         ...filterByPickupCode,
       },
       include: {
+        deliveryMethod: true,
         customerProfile: true,
         lines: {
           include: {
@@ -77,10 +80,7 @@ export class SalesEventSource implements EventSource {
         },
       },
       orderBy: {
-        createdAt:
-          pagination.order == "ASC"
-            ? Prisma.SortOrder.asc
-            : Prisma.SortOrder.desc,
+        createdAt: pagination.order == "ASC" ? Prisma.SortOrder.asc : Prisma.SortOrder.desc,
       },
       take: pagination.limit ?? 50,
     });

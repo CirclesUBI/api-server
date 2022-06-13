@@ -10,23 +10,28 @@ import {Environment} from "./environment";
 import {IndexerEvents} from "./indexer-api/indexerEvents";
 import {PaymentProcessor} from "./indexer-api/paymentProcessor";
 import {AppNotificationProcessor} from "./indexer-api/appNotificationProcessor";
-import {requestUbiForInactiveUsers} from "./utils/90days";
-import express from "express";
+import {jwksGetHandler} from "./httpHandlers/get/jwks";
 import {JobQueue} from "./jobs/jobQueue";
 import {gqlSubscriptionServer} from "./gqlSubscriptionServer";
 import {uploadPostHandler} from "./httpHandlers/post/upload";
 import {triggerGetHandler} from "./httpHandlers/get/trigger";
-import cors from "cors";
 import {jobSink} from "./jobs/jobSink";
 import {JobType} from "./jobs/descriptions/jobDescription";
+import express from "express";
+import cors from "cors";
 import * as graphqlImport from "@graphql-tools/import";
+import {healthGetHandler} from "./httpHandlers/get/health";
+import {RotateJwks} from "./jobs/descriptions/maintenance/rotateJwks";
+import {RequestUbiForInactiveAccounts} from "./jobs/descriptions/maintenance/requestUbiForInactiveAccounts";
+import {aggregates} from "./resolvers/queries/aggregates";
+import {AggregateType} from "./types";
+import {Erc721BalancesSource} from "./querySources/aggregateSources/blockchain/erc721BalancesSource";
 
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
 } = require("apollo-server-core");
 
 const corsOrigins = Environment.corsOrigins.split(";").map((o) => o.trim());
-
 
 declare global {
   interface Array<T> {
@@ -103,6 +108,10 @@ export class Main {
 
     app.post("/upload", cors(corsOptions), uploadPostHandler);
     app.get("/trigger", cors(corsOptions), triggerGetHandler);
+    app.get("/jwks", cors(corsOptions), jwksGetHandler);
+    app.get("/health", cors({
+      origin: '*'
+    }), healthGetHandler);
 
     const httpServer = createServer(app);
     const schema = makeExecutableSchema({
@@ -128,6 +137,21 @@ export class Main {
         ApolloServerPluginLandingPageGraphQLPlayground(),
         new GqlLogger(),
       ],
+      validationRules: [
+        /*
+        createComplexityRule({
+          estimators: [
+            // Configure your estimators
+            simpleEstimator({ defaultComplexity: 1 }),
+          ],
+          maximumComplexity: 1000,
+          variables: {},
+          onComplete: (complexity: number) => {
+            console.log('Query Complexity:', complexity);
+          },
+        })
+         */
+      ]
     });
 
     subscriptionServer = await gqlSubscriptionServer(schema, httpServer, server.graphqlPath);
@@ -169,7 +193,12 @@ export class Main {
       "inviteCodeFromExternalTrigger",
       "echo",
       "broadcastPurchased",
-      "sendWelcomeEmail"
+      "sendWelcomeEmail",
+      "requestUbiForInactiveAccounts",
+      "rotateJwks",
+      "autoTrust",
+      "mintPurchaseNfts",
+      "mintCheckInNfts"
     ];
 
     jobQueue.consume(jobTopics, jobSink, false)
@@ -181,13 +210,6 @@ export class Main {
 
     // TODO: Add follow trust job handling
 
-    // await JobQueue.produce([new InviteCodeFromExternalTrigger("event_1", "http://localhost:5000", "0xde374ece6fa50e781e81aac78e811b33d16912c7")]);
-    /*
-        this.listenForDbEvents("follow_trust").catch((e) => {
-          console.error(`The notifyConnection for 'follow_trust' events died:`, e);
-        });
-    */
-
     const PORT = 8989;
     httpServer.listen(PORT, () =>
       console.log(`Server is now running on http://localhost:${PORT}/graphql`)
@@ -195,132 +217,35 @@ export class Main {
   }
 }
 
-new Main().run().then(() => console.log("Started")).then(async () => {
-  setInterval(async() => {
-    try {
-      await requestUbiForInactiveUsers();
-    } catch (e) {
-      console.error(`An error occurred while requesting the ubi for inactive users: `, e);
-    }
-  }, 1000 * 60 * 60)
+new Main().run()
+  .then(() => console.log("Started"))
+  .then(async () => {
+    console.log(`Warming up caches ..`);
+    console.log(`* Erc721 ${Environment.gorilloNft.address} (${Environment.gorilloNft.name})`);
+    console.log(`* Erc721 ${Environment.acidPunksNft.address} (${Environment.acidPunksNft.name})`);
+    const tokens = await new Erc721BalancesSource().getAggregate(Environment.operatorOrganisationAddress);
+    console.log("Erc721 caches loaded.");
+
+    console.log(`Starting periodic task job factory. Yields every ${Environment.periodicTaskInterval / 1000} seconds.`);
+    setInterval(async() => {
+        const now = new Date();
+
+        const requestUbiForInactiveAccounts = new RequestUbiForInactiveAccounts({
+          year: now.getUTCFullYear(),
+          month: now.getUTCMonth() + 1,
+          date: now.getUTCDate(),
+          hour: now.getUTCHours()
+        });
+
+        const rotateKeys = new RotateJwks({
+          year: now.getUTCFullYear(),
+          month: now.getUTCMonth() + 1,
+          date: now.getUTCDate()
+        });
+
+        await JobQueue.produce([
+          requestUbiForInactiveAccounts,
+          rotateKeys
+        ]);
+    }, Environment.periodicTaskInterval);
 });
-
-/*
-import BN from "bn.js";
-import fetch from "cross-fetch";
-var xpath = require('xpath')
-var dom = require('xmldom').DOMParser
-
-function test() {
-// The minimum ABI to get ERC20 Token balance
-const minABI = [
-  // balanceOf
-  {
-    "constant":true,
-    "inputs":[{"name":"_owner","type":"address"}],
-    "name":"balanceOf",
-    "outputs":[{"name":"balance","type":"uint256"}],
-    "type":"function"
-  },
-  // decimals
-  {
-    "constant":true,
-    "inputs":[],
-    "name":"decimals",
-    "outputs":[{"name":"","type":"uint8"}],
-    "type":"function"
-  }
-];
-
-async function getBalance(tokenAddress:string, accountAddress:string) {
-  const contract = new (RpcGateway.get().eth.Contract)(<any>minABI, tokenAddress);
-  return  await contract.methods.balanceOf(accountAddress).call();
-}
-
-const bla = [
-  {
-    "token": "0x73ffa325faae2a3dfe267733a8e706121d164946",
-    "tokenOwner": "0x009626daded5e90aecee30ad3ebf2b3e510fe256",
-    "value": "2199363516775023934576",
-    "from": "0xde374ece6fa50e781e81aac78e811b33d16912c7",
-    "to": "0xc5a786eafefcf703c114558c443e4f17969d9573"
-  },
-  {
-    "token": "0x4261ae3bdf4ffc77cc05f946e8d71fcc52d0159e",
-    "tokenOwner": "0x475a1b36d540c05c1c7b7ca4598347c695ac1ec6",
-    "value": "292781019127139598445",
-    "from": "0xde374ece6fa50e781e81aac78e811b33d16912c7",
-    "to": "0xc5a786eafefcf703c114558c443e4f17969d9573"
-  },
-  {
-    "token": "0xf8263847879fb40360690f4fc686c0ce19455d8c",
-    "tokenOwner": "0xec39d9c81acf2b7c4d847651757363ec1959d77d",
-    "value": "31900270972726955813",
-    "from": "0xde374ece6fa50e781e81aac78e811b33d16912c7",
-    "to": "0xc5a786eafefcf703c114558c443e4f17969d9573"
-  },
-  {
-    "token": "0x6b35c6da733836be97ced8627c3747824450926b",
-    "tokenOwner": "0xde374ece6fa50e781e81aac78e811b33d16912c7",
-    "value": "1327028843931182619366",
-    "from": "0xde374ece6fa50e781e81aac78e811b33d16912c7",
-    "to": "0xc5a786eafefcf703c114558c443e4f17969d9573"
-  }
-];
-
-const balances = await Promise.all(bla.map(async o => {
-  const balance = await getBalance(o.token, o.from);
-  return balance;
-}));
-
-
-let startBlock = 19589380;
-let stopBlock = 12529457;
-let currentBlock = startBlock;
-let nextPage = `/xdai/mainnet/blocks?block_number=${currentBlock}&block_type=Reorg&items_count=0`;
-
-const blocks:number[] = [];
-
-while (currentBlock > stopBlock && nextPage) {
-  try {
-    const result = await fetch(`https://blockscout.com` + nextPage + "&type=JSON")
-
-    const data = <any>await result.json();
-    const items:string[] = data.items;
-
-    const regex = new RegExp(".*#(\d*)?.*");
-    items.forEach(item => {
-      const matches = regex[Symbol.matchAll](item);
-      for (let match of matches) {
-        const blockNo = parseInt(match[0].trim().substring(1));
-        console.log(blockNo);
-        currentBlock = blockNo;
-        blocks.push(blockNo);
-      }
-    });
-
-    nextPage = data.next_page_path;
-  } catch (e) {
-    console.error(e);
-  }
-  await new Promise((r) => setTimeout(r, 1000));
-}
-
-
-const uniqueBlocks = Object.keys(blocks.toLookup(o => o));
-console.log(uniqueBlocks);
-
-const diff = blubb.my.map((o,i) => {
-  const a:any = {
-    my: o,
-    orig: blubb.original[i],
-  };
-  a.diff = a.my.sub(a.orig).toString();
-  a.myStr = a.my.toString();
-  a.origStr = a.orig.toString();
-  return a;
-});
-
-console.log(diff);
-}
-*/

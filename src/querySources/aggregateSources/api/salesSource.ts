@@ -47,6 +47,7 @@ export class SalesSource implements AggregateSource {
       include: {
         invoices: {
           include: {
+            deliveryAddress: true,
             sellerProfile: {
               select: {
                 circlesAddress: true,
@@ -93,11 +94,10 @@ export class SalesSource implements AggregateSource {
               buyerAddress: o.invoices[0].customerProfile.circlesAddress,
               total: total,
               lines: o.lines.map((p) => {
-                (<any>p.product).createdByAddress =
-                  p.product.createdBy.circlesAddress;
+                (<any>p.product).createdByAddress = p.product.createdBy.circlesAddress;
                 return {
                   ...p,
-                  offer: p.product,
+                  offer: p.product
                 };
               }),
               invoices: o.invoices.map((i) => {

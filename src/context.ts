@@ -6,6 +6,7 @@ import {Profile} from "./api-db/client";
 import {Environment} from "./environment";
 import {GnosisSafeProxy} from "./circles/gnosisSafeProxy";
 import {RpcGateway} from "./circles/rpcGateway";
+import {NoSession} from "./errors/noSession";
 
 export class Context {
   readonly id: string;
@@ -95,13 +96,13 @@ export class Context {
 
   async verifySession(): Promise<PrismaSession> {
     if (!this.session) {
-      throw new Error("No session on context.");
+      throw new NoSession("No session on context.");
     }
 
     const validSession = await Session.findSessionBysessionToken(Environment.readWriteApiDb, this.session.sessionToken)
     if (!validSession) {
       const errorMsg = `No session could be found for the supplied sessionToken.')`;
-      throw new Error(errorMsg);
+      throw new NoSession(errorMsg);
     }
 
     this.session = validSession;
