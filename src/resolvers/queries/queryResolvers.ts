@@ -27,7 +27,14 @@ import {recentProfiles} from "./recentProfiles";
 import {stats} from "./stats";
 import {init} from "./init";
 import {Environment} from "../../environment";
-import { QueryGetStringByMaxVersionArgs, QueryResolvers, QueryGetStringByLanguageArgs, QueryGetAllStringsByLanguageArgs, QueryGetOlderVersionsByKeyAndLangArgs} from "../../types";
+import {
+  QueryGetStringByMaxVersionArgs,
+  QueryResolvers,
+  QueryGetStringByLanguageArgs,
+  QueryGetAllStringsByLanguageArgs,
+  QueryGetOlderVersionsByKeyAndLangArgs,
+  QueryOffersByIdAndVersionArgs
+} from "../../types";
 import {Organisation, QueryLastAcknowledgedAtArgs, QueryShopArgs, Shop} from "../../types";
 import {Context} from "../../context";
 import {shop} from "./shop";
@@ -123,7 +130,6 @@ export const queryResolvers: QueryResolvers = {
         pictureUrl: o.pictureUrl ?? ""
       }
     });
-    return shop.length > 0 ? shop[0] : null;
   },
   getAllStrings: async (parent: any, args: any, context: Context) => {
     const queryResult = await Environment.pgReadWriteApiDb.query(`

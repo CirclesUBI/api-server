@@ -19,7 +19,7 @@ import { completeSale } from "./completeSale";
 import { revokeSafeVerification, verifySafe } from "./verifySafe";
 import { announcePayment } from "./announcePayment";
 import { Environment } from "../../environment";
-import { MutationResolvers } from "../../types";
+import {MutationAddNewLangArgs, MutationResolvers, MutationUpdateValueArgs} from "../../types";
 import { upsertOffer } from "./upsertOffer";
 import { upsertShop } from "./upsertShop";
 import { upsertShopCategories } from "./upsertShopCategories";
@@ -28,6 +28,7 @@ import { proofUniqueness } from "./proofUniqueness";
 import { upsertShippingAddress } from "./upsertShippingAddress";
 import {purchaseResolver} from "./purchase";
 import {Context} from "../../context";
+import {isBILMember} from "../../utils/canAccess";
 
 export const mutationResolvers: MutationResolvers = {
   purchase: purchaseResolver,
