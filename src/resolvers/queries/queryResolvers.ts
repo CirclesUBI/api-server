@@ -33,6 +33,7 @@ import {
   QueryGetStringByLanguageArgs,
   QueryGetAllStringsByLanguageArgs,
   QueryGetOlderVersionsByKeyAndLangArgs,
+  QueryGetAllStringsByMaxVersionAndLangArgs,
 } from "../../types";
 import { Organisation, QueryLastAcknowledgedAtArgs, QueryShopArgs, Shop } from "../../types";
 
@@ -202,6 +203,22 @@ export const queryResolvers: QueryResolvers = {
     `);
     return queryResult.rows;
   },
+  getAllStringsByMaxVersionAndLang: async (
+    parent: any,
+    args: QueryGetAllStringsByMaxVersionAndLangArgs,
+    context: Context
+  ) => {
+    const queryResult = await Environment.pgReadWriteApiDb.query(
+      `
+    select *
+      from "latestValues"
+        where lang = $1;
+    `,
+      [args.lang]
+    );
+    return queryResult.rows;
+  },
+
   getOlderVersionsByKeyAndLang: async (parent: any, args: QueryGetOlderVersionsByKeyAndLangArgs, context: Context) => {
     const queryResult = await Environment.pgReadWriteApiDb.query(
       `

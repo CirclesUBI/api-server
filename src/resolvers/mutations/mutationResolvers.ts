@@ -27,8 +27,8 @@ import { upsertShopCategoryEntries } from "./upsertShopCategoryEntries";
 import { proofUniqueness } from "./proofUniqueness";
 import { upsertShippingAddress } from "./upsertShippingAddress";
 import {purchaseResolver} from "./purchase";
-import { Context } from "apollo-server-core";
 import { isBILMember } from "../../utils/canAccess";
+import { Context } from "../../context";
 
 export const mutationResolvers: MutationResolvers = {
   purchase: purchaseResolver,
@@ -105,10 +105,10 @@ export const mutationResolvers: MutationResolvers = {
           (select max(version) + 1 
           from i18n 
           where key=$2 and lang=$1),
-          $4);
+          $4) returning lang, key, "createdBy", version, value;
       `,
         [args.lang, args.key, createdBy, args.value]);
-      return queryResult.rowCount
+      return queryResult.rows[0]
     };
   },
 

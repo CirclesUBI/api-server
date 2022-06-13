@@ -544,7 +544,7 @@ export type Mutation = {
   sendMessage: SendMessageResult;
   tagTransaction: TagTransactionResult;
   updateSafe: UpdateSafeResponse;
-  updateValue?: Maybe<Scalars['Int']>;
+  updateValue: I18n;
   upsertOffer: Offer;
   upsertOrganisation: CreateOrganisationResult;
   upsertProfile: Profile;
@@ -1052,6 +1052,7 @@ export type Query = {
   getAllStrings?: Maybe<Array<Maybe<I18n>>>;
   getAllStringsByLanguage?: Maybe<Array<Maybe<I18n>>>;
   getAllStringsByMaxVersion?: Maybe<Array<Maybe<I18n>>>;
+  getAllStringsByMaxVersionAndLang?: Maybe<Array<Maybe<I18n>>>;
   getAvailableLanguages?: Maybe<Array<Maybe<I18n>>>;
   getOlderVersionsByKeyAndLang?: Maybe<Array<Maybe<I18n>>>;
   getStringByLanguage?: Maybe<Array<I18n>>;
@@ -1130,6 +1131,11 @@ export type QueryFindSafesByOwnerArgs = {
 
 
 export type QueryGetAllStringsByLanguageArgs = {
+  lang?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryGetAllStringsByMaxVersionAndLangArgs = {
   lang?: InputMaybe<Scalars['String']>;
 };
 
@@ -2516,7 +2522,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   sendMessage?: Resolver<ResolversTypes['SendMessageResult'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'content' | 'toSafeAddress'>>;
   tagTransaction?: Resolver<ResolversTypes['TagTransactionResult'], ParentType, ContextType, RequireFields<MutationTagTransactionArgs, 'tag' | 'transactionHash'>>;
   updateSafe?: Resolver<ResolversTypes['UpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationUpdateSafeArgs, 'data'>>;
-  updateValue?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<MutationUpdateValueArgs>>;
+  updateValue?: Resolver<ResolversTypes['i18n'], ParentType, ContextType, Partial<MutationUpdateValueArgs>>;
   upsertOffer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType, RequireFields<MutationUpsertOfferArgs, 'offer'>>;
   upsertOrganisation?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertOrganisationArgs, 'organisation'>>;
   upsertProfile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType, RequireFields<MutationUpsertProfileArgs, 'data'>>;
@@ -2765,6 +2771,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getAllStrings?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType>;
   getAllStringsByLanguage?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetAllStringsByLanguageArgs>>;
   getAllStringsByMaxVersion?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType>;
+  getAllStringsByMaxVersionAndLang?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetAllStringsByMaxVersionAndLangArgs>>;
   getAvailableLanguages?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType>;
   getOlderVersionsByKeyAndLang?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetOlderVersionsByKeyAndLangArgs>>;
   getStringByLanguage?: Resolver<Maybe<Array<ResolversTypes['i18n']>>, ParentType, ContextType, Partial<QueryGetStringByLanguageArgs>>;
