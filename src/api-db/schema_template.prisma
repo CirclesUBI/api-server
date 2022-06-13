@@ -342,7 +342,7 @@ model Profile {
     newsletter Boolean?
     displayTimeCircles Boolean? @default(true)
     cityGeonameid Int?
-    confirmedLegalAge DateTime?
+    confirmedLegalAge Int?
 
     lastAcknowledged DateTime?
 
@@ -470,6 +470,8 @@ model Offer {
     tags Tag[] @relation(name: "Offer_Tags")
 
     shopCategoryEntries ShopCategoryEntry[] @relation("ShopCategoryEntryProduct")
+
+    minAge Int?
 }
 
 model Purchase {
