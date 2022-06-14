@@ -40,6 +40,7 @@ type Profile {
   displayName: String
   firstName: String!
   lastName: String
+  confirmedLegalAge: Int
   emailAddress: String
   askedForEmailAddress: Boolean!
   dream: String
@@ -291,6 +292,7 @@ type Offer {
   createdByProfile: Profile
   createdByAddress: String!
   createdAt: String!
+  minAge: Int
 
   title: String!
   pictureUrl: String!
@@ -326,6 +328,7 @@ type SalesLine {
   metadata: String
   amount: Int!
   offer: Offer!
+  shop: Shop
 }
 
 type Purchase {
@@ -349,6 +352,7 @@ type PurchaseLine {
   metadata: String
   amount: Int!
   offer: Offer
+  shop: Shop
 }
 
 type Invoice {
@@ -394,6 +398,7 @@ type InvoiceLine {
 
   amount: Int!
   offer: Offer
+  shop: Shop
 
   metadata: String
 }
@@ -932,6 +937,7 @@ type RemoveMemberResult {
 
 input PurchaseLineInput {
   offerId: Int!
+  shopId: Int!
   amount: Int!
   metadata: String
 }
@@ -1137,6 +1143,8 @@ input ShopInput {
   privacyPolicyLink: String
   tosLink: String
   healthInfosLink: String
+
+  adultOnly: Boolean
 }
 
 type Shop {
@@ -1170,6 +1178,8 @@ type Shop {
   privacyPolicyLink: String
   tosLink: String
   healthInfosLink: String
+
+  adultOnly: Boolean
 }
 
 input ShopCategoryInput {
@@ -1281,6 +1291,8 @@ type Mutation {
   completePurchase(invoiceId: Int!, revoke: Boolean): Invoice!
   completeSale(invoiceId: Int!, revoke: Boolean): Invoice!
 
+  confirmLegalAge(age: Int!): Boolean!
+
   logout: LogoutResponse!
   upsertProfile(data: UpsertProfileInput!): Profile!
   requestUpdateSafe(data: RequestUpdateSafeInput!): RequestUpdateSafeResponse!
@@ -1352,7 +1364,7 @@ type Query {
 
   shops(ownerId: Int): [Shop!]!
   shopsById(ids: [Int!]!): [Shop!]!
-  shop(id: Int! ownerId: Int): Shop
+  shop(id: Int!, ownerId: Int): Shop
 
   organisations(pagination: PaginationArgs): [Organisation!]!
   regions(pagination: PaginationArgs): [Organisation!]!

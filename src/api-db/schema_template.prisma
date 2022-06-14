@@ -235,6 +235,8 @@ model Shop {
     categories ShopCategory[] @relation("ShopShopCategories")
 
     deliveryMethods ShopDeliveryMethod[] @relation("ShopDeliveryMethod_Shop")
+    purchaseLines PurchaseLine[] @relation(name: "PurchaseLine_Shop")
+    invoiceLines InvoiceLine[] @relation(name: "InvoiceLine_Shop")
 
     purchaseMetaDataKeys String?
 
@@ -243,6 +245,8 @@ model Shop {
     healthInfosLink String?
 
     event Event? @relation("EventShop")
+
+    adultOnly Boolean?
 }
 
 model ShopCategory {
@@ -338,6 +342,7 @@ model Profile {
     newsletter Boolean?
     displayTimeCircles Boolean? @default(true)
     cityGeonameid Int?
+    confirmedLegalAge Int?
 
     lastAcknowledged DateTime?
 
@@ -465,6 +470,8 @@ model Offer {
     tags Tag[] @relation(name: "Offer_Tags")
 
     shopCategoryEntries ShopCategoryEntry[] @relation("ShopCategoryEntryProduct")
+
+    minAge Int?
 }
 
 model Purchase {
@@ -493,6 +500,9 @@ model PurchaseLine {
 
     purchaseId Int
     @@index([purchaseId])
+
+    shopId Int?
+    shop Shop? @relation(name: "PurchaseLine_Shop", fields: [shopId], references: [id])
 
     amount Int
 
@@ -570,6 +580,9 @@ model InvoiceLine {
     productId Int
     productVersion Int
     @@index([productId,productVersion])
+
+    shopId Int?
+    shop Shop? @relation(name: "InvoiceLine_Shop", fields: [shopId], references: [id])
 
     metadata String?
 }
