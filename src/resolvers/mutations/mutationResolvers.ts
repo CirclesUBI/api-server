@@ -19,14 +19,15 @@ import { completeSale } from "./completeSale";
 import { revokeSafeVerification, verifySafe } from "./verifySafe";
 import { announcePayment } from "./announcePayment";
 import { Environment } from "../../environment";
-import { MutationResolvers } from "../../types";
+import { MutationResolvers, MutationConfirmLegalAgeArgs } from "../../types";
 import { upsertOffer } from "./upsertOffer";
 import { upsertShop } from "./upsertShop";
 import { upsertShopCategories } from "./upsertShopCategories";
 import { upsertShopCategoryEntries } from "./upsertShopCategoryEntries";
 import { proofUniqueness } from "./proofUniqueness";
 import { upsertShippingAddress } from "./upsertShippingAddress";
-import {purchaseResolver} from "./purchase";
+import { purchaseResolver } from "./purchase";
+import { Context } from "../../context";
 
 export const mutationResolvers: MutationResolvers = {
   purchase: purchaseResolver,
@@ -57,5 +58,20 @@ export const mutationResolvers: MutationResolvers = {
   upsertShopCategories: upsertShopCategories,
   upsertShopCategoryEntries: upsertShopCategoryEntries,
   proofUniqueness: proofUniqueness,
-  upsertShippingAddress: upsertShippingAddress
+  upsertShippingAddress: upsertShippingAddress,
+  confirmLegalAge: async (parent: any, args: MutationConfirmLegalAgeArgs, context: Context) => {
+    const ci = await context.callerInfo;
+    if (!ci?.profile) return false;
+
+    if (!ci.profile.confirmedLegalAge || ci.profile.confirmedLegalAge < args.age) {
+      await Environment.readWriteApiDb.profile.update({
+        where: { id: ci.profile.id },
+        data: {
+          confirmedLegalAge: args.age,
+        },
+      });
+    }
+
+    return true;
+  },
 };

@@ -47,6 +47,7 @@ export class ProfileLoader {
   static withDisplayCurrency(profile: any): Profile  & {emailAddressVerified:boolean, inviteTriggerId?:number, askedForSafeAddress:boolean}{
     return {
       ...profile,
+      name: profile?.firstName,
       displayCurrency: ProfileLoader.getDisplayCurrency(profile),
     };
   }
@@ -138,11 +139,11 @@ export class ProfileLoader {
               safeVerification.createdByOrganisation.circlesAddress,
             createdAt: safeVerification.createdAt.toJSON(),
             verifiedSafeAddress: c.circlesAddress,
-            verifiedProfile: ProfileLoader.withDisplayCurrency(c),
+            verifiedProfile: c ? ProfileLoader.withDisplayCurrency(c) : null,
             revokedAt: safeVerification.revokedAt
               ? safeVerification.revokedAt.toJSON()
               : null,
-            revokedProfile: ProfileLoader.withDisplayCurrency(c),
+            revokedProfile: c ? ProfileLoader.withDisplayCurrency(c) : null,
           });
         }
       }
