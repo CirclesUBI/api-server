@@ -23,6 +23,7 @@ export class Context {
 
   session?: PrismaSession | null;
   operationName?: string;
+  sessionInfo: any;
 
   constructor(id: string, isSubscription: boolean, jwt?: string, originHeaderValue?: string, session?: PrismaSession | null, ipAddress?: string, req?: Request, res?: Response, sessionId?: string) {
     this.isSubscription = isSubscription;

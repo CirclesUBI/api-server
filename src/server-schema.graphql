@@ -973,6 +973,14 @@ type Verification {
   verificationRewardTransaction: ProfileEvent
 }
 
+type i18n {
+  lang: String
+  key: String
+  createdBy: String
+  version: Int
+  value: String
+}
+
 enum SortOrder {
   ASC
   DESC
@@ -1106,7 +1114,6 @@ type TransitivePath {
 
 type PostAddress {
   id: Int!
-
   name: String
   street: String!
   house: String!
@@ -1336,6 +1343,8 @@ type Mutation {
 
   revokeSafeVerification(safeAddress: String!): VerifySafeResult!
   proofUniqueness(humanodeToken: String!): ProofUniquenessResult!
+  updateValue(lang: String, key: String, createdBy: String, value: String): i18n
+  addNewLang(langToCreate: String, langToCopyFrom: String): Int
 }
 
 type Query {
@@ -1396,6 +1405,15 @@ type Query {
   findInvitationCreator(code: String!): Profile
 
   clientAssertionJwt: String!
+
+  getAllStrings: [i18n]
+  getAllStringsByLanguage(lang: String): [i18n]
+  getStringByLanguage(lang: String): [i18n!]
+  getStringByMaxVersion(lang: String, key: String): i18n
+  getAvailableLanguages: [i18n]
+  getAllStringsByMaxVersion: [i18n]
+  getAllStringsByMaxVersionAndLang(lang: String): [i18n]
+  getOlderVersionsByKeyAndLang(key: String, lang: String): [i18n]
 }
 
 type Subscription {

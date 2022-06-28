@@ -529,6 +529,7 @@ export type Mutation = {
   acceptMembership?: Maybe<AcceptMembershipResult>;
   acknowledge: Scalars['Boolean'];
   addMember?: Maybe<AddMemberResult>;
+  addNewLang?: Maybe<Scalars['Int']>;
   announcePayment: AnnouncePaymentResult;
   claimInvitation: ClaimInvitationResult;
   completePurchase: Invoice;
@@ -549,6 +550,7 @@ export type Mutation = {
   sendMessage: SendMessageResult;
   tagTransaction: TagTransactionResult;
   updateSafe: UpdateSafeResponse;
+  updateValue?: Maybe<I18n>;
   upsertOffer: Offer;
   upsertOrganisation: CreateOrganisationResult;
   upsertProfile: Profile;
@@ -577,6 +579,12 @@ export type MutationAcknowledgeArgs = {
 export type MutationAddMemberArgs = {
   groupId: Scalars['String'];
   memberAddress: Scalars['String'];
+};
+
+
+export type MutationAddNewLangArgs = {
+  langToCopyFrom?: InputMaybe<Scalars['String']>;
+  langToCreate?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -666,6 +674,14 @@ export type MutationTagTransactionArgs = {
 
 export type MutationUpdateSafeArgs = {
   data: UpdateSafeInput;
+};
+
+
+export type MutationUpdateValueArgs = {
+  createdBy?: InputMaybe<Scalars['String']>;
+  key?: InputMaybe<Scalars['String']>;
+  lang?: InputMaybe<Scalars['String']>;
+  value?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -1053,6 +1069,14 @@ export type Query = {
   events: Array<ProfileEvent>;
   findInvitationCreator?: Maybe<Profile>;
   findSafesByOwner: Array<SafeInfo>;
+  getAllStrings?: Maybe<Array<Maybe<I18n>>>;
+  getAllStringsByLanguage?: Maybe<Array<Maybe<I18n>>>;
+  getAllStringsByMaxVersion?: Maybe<Array<Maybe<I18n>>>;
+  getAllStringsByMaxVersionAndLang?: Maybe<Array<Maybe<I18n>>>;
+  getAvailableLanguages?: Maybe<Array<Maybe<I18n>>>;
+  getOlderVersionsByKeyAndLang?: Maybe<Array<Maybe<I18n>>>;
+  getStringByLanguage?: Maybe<Array<I18n>>;
+  getStringByMaxVersion?: Maybe<I18n>;
   hubSignupTransaction?: Maybe<ProfileEvent>;
   init: SessionInfo;
   invitationTransaction?: Maybe<ProfileEvent>;
@@ -1122,6 +1146,33 @@ export type QueryFindInvitationCreatorArgs = {
 
 export type QueryFindSafesByOwnerArgs = {
   owner: Scalars['String'];
+};
+
+
+export type QueryGetAllStringsByLanguageArgs = {
+  lang?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryGetAllStringsByMaxVersionAndLangArgs = {
+  lang?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryGetOlderVersionsByKeyAndLangArgs = {
+  key?: InputMaybe<Scalars['String']>;
+  lang?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryGetStringByLanguageArgs = {
+  lang?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryGetStringByMaxVersionArgs = {
+  key?: InputMaybe<Scalars['String']>;
+  lang?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -1648,6 +1699,15 @@ export type WelcomeMessage = IEventPayload & {
   transaction_hash?: Maybe<Scalars['String']>;
 };
 
+export type I18n = {
+  __typename?: 'i18n';
+  createdBy?: Maybe<Scalars['String']>;
+  key?: Maybe<Scalars['String']>;
+  lang?: Maybe<Scalars['String']>;
+  value?: Maybe<Scalars['String']>;
+  version?: Maybe<Scalars['Int']>;
+};
+
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
 
@@ -1871,6 +1931,7 @@ export type ResolversTypes = ResolversObject<{
   VerifySafeResult: ResolverTypeWrapper<VerifySafeResult>;
   Version: ResolverTypeWrapper<Version>;
   WelcomeMessage: ResolverTypeWrapper<WelcomeMessage>;
+  i18n: ResolverTypeWrapper<I18n>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -2015,6 +2076,7 @@ export type ResolversParentTypes = ResolversObject<{
   VerifySafeResult: VerifySafeResult;
   Version: Version;
   WelcomeMessage: WelcomeMessage;
+  i18n: I18n;
 }>;
 
 export type CostDirectiveArgs = {
@@ -2469,6 +2531,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   acceptMembership?: Resolver<Maybe<ResolversTypes['AcceptMembershipResult']>, ParentType, ContextType, RequireFields<MutationAcceptMembershipArgs, 'membershipId'>>;
   acknowledge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAcknowledgeArgs, 'until'>>;
   addMember?: Resolver<Maybe<ResolversTypes['AddMemberResult']>, ParentType, ContextType, RequireFields<MutationAddMemberArgs, 'groupId' | 'memberAddress'>>;
+  addNewLang?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<MutationAddNewLangArgs>>;
   announcePayment?: Resolver<ResolversTypes['AnnouncePaymentResult'], ParentType, ContextType, RequireFields<MutationAnnouncePaymentArgs, 'invoiceId' | 'transactionHash'>>;
   claimInvitation?: Resolver<ResolversTypes['ClaimInvitationResult'], ParentType, ContextType, RequireFields<MutationClaimInvitationArgs, 'code'>>;
   completePurchase?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<MutationCompletePurchaseArgs, 'invoiceId'>>;
@@ -2489,6 +2552,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   sendMessage?: Resolver<ResolversTypes['SendMessageResult'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'content' | 'toSafeAddress'>>;
   tagTransaction?: Resolver<ResolversTypes['TagTransactionResult'], ParentType, ContextType, RequireFields<MutationTagTransactionArgs, 'tag' | 'transactionHash'>>;
   updateSafe?: Resolver<ResolversTypes['UpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationUpdateSafeArgs, 'data'>>;
+  updateValue?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<MutationUpdateValueArgs>>;
   upsertOffer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType, RequireFields<MutationUpsertOfferArgs, 'offer'>>;
   upsertOrganisation?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertOrganisationArgs, 'organisation'>>;
   upsertProfile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType, RequireFields<MutationUpsertProfileArgs, 'data'>>;
@@ -2741,6 +2805,14 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'pagination' | 'safeAddress' | 'types'>>;
   findInvitationCreator?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryFindInvitationCreatorArgs, 'code'>>;
   findSafesByOwner?: Resolver<Array<ResolversTypes['SafeInfo']>, ParentType, ContextType, RequireFields<QueryFindSafesByOwnerArgs, 'owner'>>;
+  getAllStrings?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType>;
+  getAllStringsByLanguage?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetAllStringsByLanguageArgs>>;
+  getAllStringsByMaxVersion?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType>;
+  getAllStringsByMaxVersionAndLang?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetAllStringsByMaxVersionAndLangArgs>>;
+  getAvailableLanguages?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType>;
+  getOlderVersionsByKeyAndLang?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetOlderVersionsByKeyAndLangArgs>>;
+  getStringByLanguage?: Resolver<Maybe<Array<ResolversTypes['i18n']>>, ParentType, ContextType, Partial<QueryGetStringByLanguageArgs>>;
+  getStringByMaxVersion?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<QueryGetStringByMaxVersionArgs>>;
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   init?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
@@ -3040,6 +3112,15 @@ export type WelcomeMessageResolvers<ContextType = any, ParentType extends Resolv
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type I18nResolvers<ContextType = any, ParentType extends ResolversParentTypes['i18n'] = ResolversParentTypes['i18n']> = ResolversObject<{
+  createdBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  key?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lang?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  version?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type Resolvers<ContextType = any> = ResolversObject<{
   AcceptMembershipResult?: AcceptMembershipResultResolvers<ContextType>;
   AddMemberResult?: AddMemberResultResolvers<ContextType>;
@@ -3145,6 +3226,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   VerifySafeResult?: VerifySafeResultResolvers<ContextType>;
   Version?: VersionResolvers<ContextType>;
   WelcomeMessage?: WelcomeMessageResolvers<ContextType>;
+  i18n?: I18nResolvers<ContextType>;
 }>;
 
 export type DirectiveResolvers<ContextType = any> = ResolversObject<{
