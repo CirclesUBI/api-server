@@ -374,7 +374,7 @@ model Profile {
     inviteTrigger Job? @relation(name: "Profile_InviteTrigger", fields: [inviteTriggerId], references: [id])
     inviteTriggerId Int?
 
-    invoiceNoPrefix String?
+    invoiceNoPrefix String? @default("I-")
     lastInvoiceNo Int? // Is used in organisations only and represents the current value of the invoice number series.
     refundNoPrefix String?
     lastRefundNo Int? // Is used in organisations only and represents the current value of the refund number series.
