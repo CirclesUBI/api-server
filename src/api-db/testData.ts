@@ -49,6 +49,6 @@ export class TestData {
                         1,
                         null,
                         null,
-                        ${circlesAddress}`;
+                        ${circlesAddress})`;
   }
 }
