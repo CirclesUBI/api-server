@@ -1394,6 +1394,8 @@ type Query {
   search(query: SearchInput!): [Profile!]!
   stats: Stats!
 
+  deliveryMethods: [DeliveryMethod]
+
   cities(query: QueryCitiesInput!): [City!]!
   tags(query: QueryTagsInput!): [Tag!]!
   tagById(id: Int!): Tag
