@@ -34,8 +34,7 @@ export class TestData {
       return;
     }
 
-    await Environment.readWriteApiDb.$queryRaw`
-                insert into "Membership" ( "createdAt"
+    await Environment.readWriteApiDb.$queryRaw`insert into "Membership" ( "createdAt"
                                          , "memberAtId"
                                          , "isAdmin"
                                          , "acceptedAt"
@@ -50,6 +49,6 @@ export class TestData {
                         1,
                         null,
                         null,
-                        '${circlesAddress}')`;
+                        ${circlesAddress}`;
   }
 }
