@@ -1,3 +1,4 @@
+import { deliveryMethods } from "./deliveryMethods";
 import { myProfile, profilesBySafeAddress } from "./profiles";
 import { sessionInfo } from "./sessionInfo";
 import { search } from "./search";
@@ -58,6 +59,7 @@ export const queryResolvers: QueryResolvers = {
     return stats(caller.profile.circlesAddress);
   },
   cities: cities,
+  deliveryMethods: deliveryMethods(),
   claimedInvitation: claimedInvitation,
   findSafesByOwner: findSafesByOwner,
   invitationTransaction: invitationTransaction(),
