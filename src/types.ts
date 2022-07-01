@@ -789,6 +789,7 @@ export type OfferInput = {
   createdByProfileId: Scalars['Int'];
   description?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Int']>;
+  minAge?: InputMaybe<Scalars['Int']>;
   pictureMimeType: Scalars['String'];
   pictureUrl: Scalars['String'];
   pricePerUnit: Scalars['String'];
