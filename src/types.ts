@@ -535,6 +535,7 @@ export type Mutation = {
   completePurchase: Invoice;
   completeSale: Invoice;
   confirmLegalAge: Scalars['Boolean'];
+  createNewStringAndKey?: Maybe<I18n>;
   createTestInvitation: CreateInvitationResult;
   deleteShippingAddress?: Maybe<PostAddress>;
   importOrganisationsOfAccount: Array<Organisation>;
@@ -613,6 +614,15 @@ export type MutationCompleteSaleArgs = {
 
 export type MutationConfirmLegalAgeArgs = {
   age: Scalars['Int'];
+};
+
+
+export type MutationCreateNewStringAndKeyArgs = {
+  createdBy?: InputMaybe<Scalars['String']>;
+  key?: InputMaybe<Scalars['String']>;
+  lang?: InputMaybe<Scalars['String']>;
+  value?: InputMaybe<Scalars['String']>;
+  version?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -2537,6 +2547,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   completePurchase?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<MutationCompletePurchaseArgs, 'invoiceId'>>;
   completeSale?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<MutationCompleteSaleArgs, 'invoiceId'>>;
   confirmLegalAge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationConfirmLegalAgeArgs, 'age'>>;
+  createNewStringAndKey?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<MutationCreateNewStringAndKeyArgs>>;
   createTestInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType>;
   deleteShippingAddress?: Resolver<Maybe<ResolversTypes['PostAddress']>, ParentType, ContextType, RequireFields<MutationDeleteShippingAddressArgs, 'id'>>;
   importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;

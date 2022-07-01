@@ -212,7 +212,6 @@ export const queryResolvers: QueryResolvers = {
     );
     return queryResult.rows;
   },
-
   getOlderVersionsByKeyAndLang: async (parent: any, args: QueryGetOlderVersionsByKeyAndLangArgs, context: Context) => {
     const queryResult = await Environment.pgReadWriteApiDb.query(
       `

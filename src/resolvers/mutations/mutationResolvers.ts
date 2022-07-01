@@ -19,8 +19,7 @@ import { completeSale } from "./completeSale";
 import { revokeSafeVerification, verifySafe } from "./verifySafe";
 import { announcePayment } from "./announcePayment";
 import { Environment } from "../../environment";
-import { MutationAddNewLangArgs, MutationResolvers, MutationUpdateValueArgs } from "../../types";
-import { MutationConfirmLegalAgeArgs } from "../../types";
+import { MutationAddNewLangArgs, MutationConfirmLegalAgeArgs, MutationCreateNewStringAndKeyArgs, MutationResolvers, MutationUpdateValueArgs } from "../../types";
 import { upsertOffer } from "./upsertOffer";
 import { upsertShop } from "./upsertShop";
 import { upsertShopCategories } from "./upsertShopCategories";
@@ -28,8 +27,9 @@ import { upsertShopCategoryEntries } from "./upsertShopCategoryEntries";
 import { proofUniqueness } from "./proofUniqueness";
 import { upsertShippingAddress } from "./upsertShippingAddress";
 import {purchaseResolver} from "./purchase";
-import { isBILMember } from "../../utils/canAccess";
+import { isBALIMember, isBILMember } from "../../utils/canAccess";
 import { Context } from "../../context";
+import { append_hydration } from "svelte/internal";
 
 export const mutationResolvers: MutationResolvers = {
   purchase: purchaseResolver,
@@ -112,8 +112,31 @@ export const mutationResolvers: MutationResolvers = {
       return queryResult.rows[0]
     };
   },
-
-
+  createNewStringAndKey: async (parent: any, args: MutationCreateNewStringAndKeyArgs, context: Context) => {
+    let callerInfo = await context.callerInfo;
+    let isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
+    if (!isBilMember) {
+      throw new Error(`Your need to be a member of Basic Income Lab to edit the content.`)
+    } else {
+      let createdBy = callerInfo?.profile?.circlesAddress;
+      const queryResult = await Environment.pgReadWriteApiDb.query(`
+      insert into i18n (
+          lang,
+          key,
+          "createdBy",
+          version,
+          value
+        ) values (
+          $1,
+          $2,
+          $3,
+          1,
+          $4) returning lang, key, "createdBy", version, value;
+      `,
+        [args.lang, args.key, createdBy, args.value]);
+      return queryResult.rows[0]
+    };
+  },
   upsertOffer: upsertOffer,
   upsertShop: upsertShop,
   upsertShopCategories: upsertShopCategories,
@@ -134,5 +157,5 @@ export const mutationResolvers: MutationResolvers = {
     }
 
     return true;
-  },
+  }
 };
