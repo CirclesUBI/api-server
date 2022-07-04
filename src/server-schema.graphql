@@ -1153,6 +1153,8 @@ input ShopInput {
   healthInfosLink: String
 
   adultOnly: Boolean
+
+  deliveryMethodIds: [Int]
 }
 
 type Shop {
