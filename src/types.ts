@@ -1522,6 +1522,7 @@ export type ShopCategoryInput = {
 
 export type ShopInput = {
   adultOnly?: InputMaybe<Scalars['Boolean']>;
+  deliveryMethodIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   description: Scalars['String'];
   enabled: Scalars['Boolean'];
   healthInfosLink?: InputMaybe<Scalars['String']>;

@@ -1,10 +1,16 @@
-import {MutationUpsertShopArgs, Shop} from "../../types";
-import {Context} from "../../context";
-import {Environment} from "../../environment";
-import {ensureCanAccessShop} from "../../utils/ensureCanAccessShop";
+import { MutationUpsertShopArgs, Shop } from "../../types";
+import { Context } from "../../context";
+import { Environment } from "../../environment";
+import { ensureCanAccessShop } from "../../utils/ensureCanAccessShop";
 
 export const upsertShop = async (parent: any, args: MutationUpsertShopArgs, context: Context) => {
   await ensureCanAccessShop(args.shop.id, args.shop.ownerId, context);
+
+  const deliveryMethodIds = args.shop.deliveryMethodIds;
+  delete args.shop.deliveryMethodIds;
+
+  //TODO: - remove ShopDeliveryMethods from table if theyre not in 'deliveryMethodIds'
+  //      - add ShopDeliveryMethods from deliveryMethodIds to table if they're not already in.
 
   const result = await Environment.readWriteApiDb.shop.upsert({
     create: {
@@ -33,4 +39,4 @@ export const upsertShop = async (parent: any, args: MutationUpsertShopArgs, cont
       createdAt: result.owner.createdAt.toJSON(),
     },
   };
-}
+};
