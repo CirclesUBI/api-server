@@ -184,7 +184,7 @@ export class CirclesHub extends Web3Contract {
       values: values,
     };
 
-    const txData = await this.encodeTransferThrough(transfer);
+    const txData = this.encodeTransferThrough(transfer);
 
     return await safeProxy.execTransaction(privateKey, {
       to: this.address,
