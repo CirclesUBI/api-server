@@ -19,7 +19,11 @@ import { completeSale } from "./completeSale";
 import { revokeSafeVerification, verifySafe } from "./verifySafe";
 import { announcePayment } from "./announcePayment";
 import { Environment } from "../../environment";
-import { MutationResolvers, MutationConfirmLegalAgeArgs, MutationAddNewLangArgs, MutationUpdateValueArgs } from "../../types";
+import {
+  MutationPayWithPathArgs,
+  MutationResolvers,
+  TransitivePath, TransitiveTransfer
+} from "../../types";
 import { upsertOffer } from "./upsertOffer";
 import { upsertShop } from "./upsertShop";
 import { upsertShopCategories } from "./upsertShopCategories";
@@ -27,8 +31,12 @@ import { upsertShopCategoryEntries } from "./upsertShopCategoryEntries";
 import { proofUniqueness } from "./proofUniqueness";
 import { upsertShippingAddress } from "./upsertShippingAddress";
 import {purchaseResolver} from "./purchase";
-import { isBILMember } from "../../utils/canAccess";
 import { Context } from "../../context";
+import BN from "bn.js";
+import {confirmLegalAge} from "./confirmLegalAge";
+import {addNewLang} from "./addNewLang";
+import {updatei18nValue} from "./updatei18nValue";
+import {BalanceQueries} from "../../querySources/balanceQueries";
 
 export const mutationResolvers: MutationResolvers = {
   purchase: purchaseResolver,
@@ -54,84 +62,67 @@ export const mutationResolvers: MutationResolvers = {
   verifySafe: verifySafe,
   revokeSafeVerification: revokeSafeVerification,
   announcePayment: announcePayment(),
-
-
-
-  addNewLang: async (parent: any, args: MutationAddNewLangArgs, context: Context) => {
-    const callerInfo = await context.callerInfo;
-    const isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
-    if (!isBilMember) {
-      throw new Error (`You need to be a member of Basic Income Lab to add a new Language.`)
-    } else {
-      const queryResult = await Environment.pgReadWriteApiDb.query(`
-      insert into i18n (lang, key, "createdBy", version, value)
-          select $1 as lang
-              , i18n.key
-              , i18n."createdBy"
-              , 1 as version
-              , i18n.value
-          from i18n
-          join (
-        select lang, key, max(version) as version
-              from i18n
-              where lang = $2
-              group by lang, key
-          ) max_versions on i18n.key = max_versions.key
-                      and i18n.lang = max_versions.lang
-                      and i18n.version = max_versions.version;
-      `,
-        [args.langToCreate, args.langToCopyFrom]);
-      return queryResult.rowCount
-    }
-  },
-  updateValue: async (parent: any, args: MutationUpdateValueArgs, context: Context) => {
-    let callerInfo = await context.callerInfo;
-    let isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
-    if (!isBilMember) {
-      throw new Error(`You need to be a member of Basic Income Lab to edit the content.`)
-    } else {
-      let createdBy = callerInfo?.profile?.circlesAddress
-      const queryResult = await Environment.pgReadWriteApiDb.query(`
-      insert into i18n (
-          lang,
-          key, 
-          "createdBy", 
-          version, 
-          value
-      ) values (
-          $1,
-          $2, 
-          $3, 
-          (select max(version) + 1 
-          from i18n 
-          where key=$2 and lang=$1),
-          $4) returning lang, key, "createdBy", version, value;
-      `,
-        [args.lang, args.key, createdBy, args.value]);
-      return queryResult.rows[0]
-    };
-  },
-
-
+  addNewLang: addNewLang,
+  updateValue: updatei18nValue,
   upsertOffer: upsertOffer,
   upsertShop: upsertShop,
   upsertShopCategories: upsertShopCategories,
   upsertShopCategoryEntries: upsertShopCategoryEntries,
   proofUniqueness: proofUniqueness,
   upsertShippingAddress: upsertShippingAddress,
-  confirmLegalAge: async (parent: any, args: MutationConfirmLegalAgeArgs, context: Context) => {
-    const ci = await context.callerInfo;
-    if (!ci?.profile) return false;
+  confirmLegalAge: confirmLegalAge,
 
-    if (!ci.profile.confirmedLegalAge || ci.profile.confirmedLegalAge < args.age) {
-      await Environment.readWriteApiDb.profile.update({
-        where: { id: ci.profile.id },
-        data: {
-          confirmedLegalAge: args.age,
-        },
+  payWithPath: async (parent: any, args: MutationPayWithPathArgs, context: Context) => {
+    const ci = await context.callerInfo;
+    if (!ci?.profile){
+     throw new Error("You need to be logged in to use this method.")
+    }
+
+    const trustedTokenBalances = await BalanceQueries.getHumanodeVerifiedTokens(args.from);
+
+    let remainingAmount = new BN(args.amount);
+    const transfers:TransitivePath[] = [];
+
+    while (remainingAmount.gt(new BN("0"))) {
+      const trustedToken = trustedTokenBalances.shift();
+      if (!trustedToken) {
+        throw new Error("Not enough tokens to pay with.");
+      }
+
+      remainingAmount = remainingAmount.sub(trustedToken.balance);
+
+      transfers.push(<TransitivePath>{
+
       });
     }
 
-    return true;
-  },
+    const myTokenAddress = ci.profile.circlesAddress;
+    const trustedTokenBalanceSum = trustedTokenBalances
+      .reduce((acc, cur) => acc.add(cur.balance), new BN(0));
+
+    if (trustedTokenBalanceSum.lt(new BN(args.amount))) {
+      // Not enough tokens
+      return <TransitivePath>{
+        success: false,
+        flow: trustedTokenBalanceSum.toString(),
+        requestedAmount: args.amount,
+        transfers: []
+      };
+    }
+
+    return <TransitivePath>{
+      flow: args.amount,
+      requestedAmount: args.amount,
+      transfers: trustedTokenBalances.map(o => {
+        return <TransitiveTransfer>{
+          isHubTransfer: false,
+          from: o.safeAddress,
+          to: args.to,
+          value: "1",
+          token: o.token,
+          tokenOwner: o.tokenOwner
+        }
+      })
+    }
+  }
 };
