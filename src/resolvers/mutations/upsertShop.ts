@@ -24,7 +24,7 @@ export const upsertShop = async (parent: any, args: MutationUpsertShopArgs, cont
       id: <number>args.shop.id,
     },
     where: {
-      id: args.shop.id ?? -1,
+      id: args.shop.id ?? undefined,
     },
     include: {
       owner: true,
