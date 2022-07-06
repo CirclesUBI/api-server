@@ -1100,6 +1100,7 @@ type Stats {
 }
 
 type TransitiveTransfer {
+  isHubTransfer: Boolean
   from: String!
   to: String!
   token: String!
@@ -1110,6 +1111,7 @@ type TransitiveTransfer {
 type TransitivePath {
   requestedAmount: String!
   flow: String!
+  success: Boolean!
   transfers: [TransitiveTransfer!]!
 }
 
@@ -1154,7 +1156,7 @@ input ShopInput {
 
   adultOnly: Boolean
 
-  deliveryMethodIds: [Int]
+  deliveryMethodIds: [Int!]
 }
 
 type Shop {
@@ -1295,6 +1297,8 @@ input OfferByIdAndVersionInput {
 }
 
 type Mutation {
+  payWithPath(from: String!, to: String!, amount: String!): TransitivePath!
+
   announcePayment(invoiceId: Int!, transactionHash: String!): AnnouncePaymentResult!
 
   purchase(lines: [PurchaseLineInput!]!, deliveryMethodId: Int!, deliveryAddressId: Int): [Invoice!]!
@@ -1405,6 +1409,7 @@ type Query {
   offersByIdAndVersion(query: [OfferByIdAndVersionInput!]!): [Offer!]!
 
   directPath(from: String!, to: String!, amount: String!): TransitivePath!
+  paymentPath(from: String!, to: String!, amount: String!): TransitivePath!
   invoice(invoiceId: Int!): String
 
   findInvitationCreator(code: String!): Profile

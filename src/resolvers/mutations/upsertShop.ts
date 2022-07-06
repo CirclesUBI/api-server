@@ -6,10 +6,10 @@ import { ensureCanAccessShop } from "../../utils/ensureCanAccessShop";
 export const upsertShop = async (parent: any, args: MutationUpsertShopArgs, context: Context) => {
   await ensureCanAccessShop(args.shop.id, args.shop.ownerId, context);
 
-  const deliveryMethodIds = args.shop.deliveryMethodIds;
+  const deliveryMethodIds = <number[]>args.shop.deliveryMethodIds ?? [];
   delete args.shop.deliveryMethodIds;
 
-  //TODO: - remove ShopDeliveryMethods from table if theyre not in 'deliveryMethodIds'
+  //TODO: - remove ShopDeliveryMethods from table if they're not in 'deliveryMethodIds'
   //      - add ShopDeliveryMethods from deliveryMethodIds to table if they're not already in.
 
   const result = await Environment.readWriteApiDb.shop.upsert({
@@ -30,6 +30,20 @@ export const upsertShop = async (parent: any, args: MutationUpsertShopArgs, cont
       owner: true,
     },
   });
+
+  await Environment.readWriteApiDb.shopDeliveryMethod.deleteMany({
+    where: {
+      shopId: result.id,
+    }
+  });
+
+  await Environment.readWriteApiDb.shopDeliveryMethod.createMany({
+    data: deliveryMethodIds.map(id => ({
+      shopId: result.id,
+      deliveryMethodId: id
+    }))
+  })
+
 
   return <Shop>{
     ...result,

@@ -539,6 +539,7 @@ export type Mutation = {
   deleteShippingAddress?: Maybe<PostAddress>;
   importOrganisationsOfAccount: Array<Organisation>;
   logout: LogoutResponse;
+  payWithPath: TransitivePath;
   proofUniqueness: ProofUniquenessResult;
   purchase: Array<Invoice>;
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
@@ -618,6 +619,13 @@ export type MutationConfirmLegalAgeArgs = {
 
 export type MutationDeleteShippingAddressArgs = {
   id: Scalars['Int'];
+};
+
+
+export type MutationPayWithPathArgs = {
+  amount: Scalars['String'];
+  from: Scalars['String'];
+  to: Scalars['String'];
 };
 
 
@@ -1089,6 +1097,7 @@ export type Query = {
   offersByIdAndVersion: Array<Offer>;
   organisations: Array<Organisation>;
   organisationsByAddress: Array<Organisation>;
+  paymentPath: TransitivePath;
   profilesById: Array<Profile>;
   profilesBySafeAddress: Array<Profile>;
   recentProfiles: Array<Profile>;
@@ -1200,6 +1209,13 @@ export type QueryOrganisationsArgs = {
 
 export type QueryOrganisationsByAddressArgs = {
   addresses: Array<Scalars['String']>;
+};
+
+
+export type QueryPaymentPathArgs = {
+  amount: Scalars['String'];
+  from: Scalars['String'];
+  to: Scalars['String'];
 };
 
 
@@ -1512,7 +1528,7 @@ export type ShopCategoryInput = {
 
 export type ShopInput = {
   adultOnly?: InputMaybe<Scalars['Boolean']>;
-  deliveryMethodIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  deliveryMethodIds?: InputMaybe<Array<Scalars['Int']>>;
   description: Scalars['String'];
   enabled: Scalars['Boolean'];
   healthInfosLink?: InputMaybe<Scalars['String']>;
@@ -1574,12 +1590,14 @@ export type TransitivePath = {
   __typename?: 'TransitivePath';
   flow: Scalars['String'];
   requestedAmount: Scalars['String'];
+  success: Scalars['Boolean'];
   transfers: Array<TransitiveTransfer>;
 };
 
 export type TransitiveTransfer = {
   __typename?: 'TransitiveTransfer';
   from: Scalars['String'];
+  isHubTransfer?: Maybe<Scalars['Boolean']>;
   to: Scalars['String'];
   token: Scalars['String'];
   tokenOwner: Scalars['String'];
@@ -2544,6 +2562,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteShippingAddress?: Resolver<Maybe<ResolversTypes['PostAddress']>, ParentType, ContextType, RequireFields<MutationDeleteShippingAddressArgs, 'id'>>;
   importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   logout?: Resolver<ResolversTypes['LogoutResponse'], ParentType, ContextType>;
+  payWithPath?: Resolver<ResolversTypes['TransitivePath'], ParentType, ContextType, RequireFields<MutationPayWithPathArgs, 'amount' | 'from' | 'to'>>;
   proofUniqueness?: Resolver<ResolversTypes['ProofUniquenessResult'], ParentType, ContextType, RequireFields<MutationProofUniquenessArgs, 'humanodeToken'>>;
   purchase?: Resolver<Array<ResolversTypes['Invoice']>, ParentType, ContextType, RequireFields<MutationPurchaseArgs, 'deliveryMethodId' | 'lines'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
@@ -2827,6 +2846,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   offersByIdAndVersion?: Resolver<Array<ResolversTypes['Offer']>, ParentType, ContextType, RequireFields<QueryOffersByIdAndVersionArgs, 'query'>>;
   organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, Partial<QueryOrganisationsArgs>>;
   organisationsByAddress?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsByAddressArgs, 'addresses'>>;
+  paymentPath?: Resolver<ResolversTypes['TransitivePath'], ParentType, ContextType, RequireFields<QueryPaymentPathArgs, 'amount' | 'from' | 'to'>>;
   profilesById?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesByIdArgs, 'ids'>>;
   profilesBySafeAddress?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryProfilesBySafeAddressArgs, 'safeAddresses'>>;
   recentProfiles?: Resolver<Array<ResolversTypes['Profile']>, ParentType, ContextType, Partial<QueryRecentProfilesArgs>>;
@@ -3043,12 +3063,14 @@ export type TagTransactionResultResolvers<ContextType = any, ParentType extends 
 export type TransitivePathResolvers<ContextType = any, ParentType extends ResolversParentTypes['TransitivePath'] = ResolversParentTypes['TransitivePath']> = ResolversObject<{
   flow?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   requestedAmount?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   transfers?: Resolver<Array<ResolversTypes['TransitiveTransfer']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type TransitiveTransferResolvers<ContextType = any, ParentType extends ResolversParentTypes['TransitiveTransfer'] = ResolversParentTypes['TransitiveTransfer']> = ResolversObject<{
   from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  isHubTransfer?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   tokenOwner?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
