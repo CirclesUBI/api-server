@@ -168,11 +168,15 @@ export const queryResolvers: QueryResolvers = {
       const trustee_name = getDisplayName(o.trustee_address);
       const trustee_image = getAvatarUrl(o.trustee_address);
 
-      return `${o.truster_address},${truster_name},${truster_image},${o.trustee_address},${trustee_name},${trustee_image},${o.limit}`;
-    }).join('\n');
+      return {
+        truster_name,
+        truster_image,
+        trustee_name,
+        trustee_image,
+        ...o,
+      };
+    });
 
-    const header = `truster_address,truster_name,truster_image_url,trustee_address,trustee_name,truster_image_url,amount,block_number,limit\n`;
-    const all = header + result;
-    return all;
+    return JSON.stringify(result);
   }
 }
