@@ -1045,6 +1045,7 @@ export type PurchasesAggregateFilter = {
 export type Query = {
   __typename?: 'Query';
   aggregates: Array<ProfileAggregate>;
+  allProfiles: Scalars['String'];
   cities: Array<City>;
   claimedInvitation?: Maybe<ClaimedInvitation>;
   clientAssertionJwt: Scalars['String'];
@@ -2733,6 +2734,7 @@ export type PurchasesResolvers<ContextType = any, ParentType extends ResolversPa
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   aggregates?: Resolver<Array<ResolversTypes['ProfileAggregate']>, ParentType, ContextType, RequireFields<QueryAggregatesArgs, 'safeAddress' | 'types'>>;
+  allProfiles?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, 'query'>>;
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
   clientAssertionJwt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

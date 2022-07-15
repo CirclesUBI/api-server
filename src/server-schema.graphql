@@ -1396,6 +1396,7 @@ type Query {
   findInvitationCreator(code: String!): Profile
 
   clientAssertionJwt: String!
+  allProfiles:String!
 }
 
 type Subscription {
