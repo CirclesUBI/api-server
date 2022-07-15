@@ -1425,6 +1425,8 @@ type Query {
   getAllStringsByMaxVersion: [i18n]
   getAllStringsByMaxVersionAndLang(lang: String): [i18n]
   getOlderVersionsByKeyAndLang(key: String, lang: String): [i18n]
+
+  allProfiles:String!
 }
 
 type Subscription {
