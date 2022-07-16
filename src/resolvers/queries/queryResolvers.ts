@@ -137,8 +137,7 @@ export const queryResolvers: QueryResolvers = {
                                       "user"        as trustee_address,
                                       "limit"       as trust_limit,
                                       last_change
-                               from crc_current_trust_2
-                               where "user" = ANY ($1);`;
+                               from crc_current_trust_2;`;
 
 
     function getDisplayName(address: string): string {
@@ -159,7 +158,7 @@ export const queryResolvers: QueryResolvers = {
           : "";
     }
 
-    const trustRelationRows = await Environment.indexDb.query(trustRelationsSql, [profileAddresses]);
+    const trustRelationRows = await Environment.indexDb.query(trustRelationsSql);
     const result = trustRelationRows.rows.map(o => {
 
       const truster_name = getDisplayName(o.truster_address);
