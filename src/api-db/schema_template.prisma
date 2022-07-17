@@ -652,14 +652,26 @@ model Job {
     inviteTriggerOfProfile Profile? @relation("Profile_InviteTrigger")
 }
 
+model i18nReleases {
+    releaseVersion Int
+    lang String
+    @@unique([releaseVersion, lang])
+
+    entries i18n[] @relation("i18nReleases_i18n")
+}
+
 model i18n {
     createdAt DateTime @default(now())
     createdBy String
     lang String
     key String
     version Int
+    releaseVersion Int?
     value String
     @@unique([lang, key, version])
+
+
+  release i18nReleases? @relation(name: "i18nReleases_i18n", fields: [releaseVersion, lang], references: [releaseVersion, lang])
 }
 
 model Agent {
