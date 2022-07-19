@@ -356,6 +356,22 @@ export type ExchangeTokenResponse = {
   success: Scalars['Boolean'];
 };
 
+export type ExportProfile = {
+  __typename?: 'ExportProfile';
+  avatarUrl?: Maybe<Scalars['String']>;
+  circlesAddress: Scalars['String'];
+  displayName: Scalars['String'];
+  lastChange: Scalars['Date'];
+};
+
+export type ExportTrustRelation = {
+  __typename?: 'ExportTrustRelation';
+  lastChange: Scalars['Date'];
+  trustLimit: Scalars['Int'];
+  trusteeAddress: Scalars['String'];
+  trusterAddress: Scalars['String'];
+};
+
 export type FibonacciGoals = {
   __typename?: 'FibonacciGoals';
   currentValue: Scalars['Int'];
@@ -1070,6 +1086,8 @@ export type PurchasesAggregateFilter = {
 export type Query = {
   __typename?: 'Query';
   aggregates: Array<ProfileAggregate>;
+  allProfiles: Array<Maybe<ExportProfile>>;
+  allTrusts: Array<ExportTrustRelation>;
   cities: Array<City>;
   claimedInvitation?: Maybe<ClaimedInvitation>;
   clientAssertionJwt: Scalars['String'];
@@ -1121,6 +1139,16 @@ export type QueryAggregatesArgs = {
   filter?: InputMaybe<ProfileAggregateFilter>;
   safeAddress: Scalars['String'];
   types: Array<AggregateType>;
+};
+
+
+export type QueryAllProfilesArgs = {
+  sinceLastChange?: InputMaybe<Scalars['Date']>;
+};
+
+
+export type QueryAllTrustsArgs = {
+  sinceLastChange?: InputMaybe<Scalars['Date']>;
 };
 
 
@@ -1844,6 +1872,8 @@ export type ResolversTypes = ResolversObject<{
   EventPayload: ResolversTypes['ChatMessage'] | ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['CrcSignup'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcTrust'] | ResolversTypes['Erc20Transfer'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'] | ResolversTypes['InvitationCreated'] | ResolversTypes['InvitationRedeemed'] | ResolversTypes['MemberAdded'] | ResolversTypes['MembershipAccepted'] | ResolversTypes['MembershipOffer'] | ResolversTypes['MembershipRejected'] | ResolversTypes['NewUser'] | ResolversTypes['OrganisationCreated'] | ResolversTypes['Purchased'] | ResolversTypes['SafeVerified'] | ResolversTypes['SaleEvent'] | ResolversTypes['WelcomeMessage'];
   EventType: EventType;
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
+  ExportProfile: ResolverTypeWrapper<ExportProfile>;
+  ExportTrustRelation: ResolverTypeWrapper<ExportTrustRelation>;
   FibonacciGoals: ResolverTypeWrapper<FibonacciGoals>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   GnosisSafeEthTransfer: ResolverTypeWrapper<GnosisSafeEthTransfer>;
@@ -1995,6 +2025,8 @@ export type ResolversParentTypes = ResolversObject<{
   EthTransfer: EthTransfer;
   EventPayload: ResolversParentTypes['ChatMessage'] | ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['Erc20Transfer'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'] | ResolversParentTypes['InvitationCreated'] | ResolversParentTypes['InvitationRedeemed'] | ResolversParentTypes['MemberAdded'] | ResolversParentTypes['MembershipAccepted'] | ResolversParentTypes['MembershipOffer'] | ResolversParentTypes['MembershipRejected'] | ResolversParentTypes['NewUser'] | ResolversParentTypes['OrganisationCreated'] | ResolversParentTypes['Purchased'] | ResolversParentTypes['SafeVerified'] | ResolversParentTypes['SaleEvent'] | ResolversParentTypes['WelcomeMessage'];
   ExchangeTokenResponse: ExchangeTokenResponse;
+  ExportProfile: ExportProfile;
+  ExportTrustRelation: ExportTrustRelation;
   FibonacciGoals: FibonacciGoals;
   Float: Scalars['Float'];
   GnosisSafeEthTransfer: GnosisSafeEthTransfer;
@@ -2374,6 +2406,22 @@ export type EventPayloadResolvers<ContextType = any, ParentType extends Resolver
 export type ExchangeTokenResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['ExchangeTokenResponse'] = ResolversParentTypes['ExchangeTokenResponse']> = ResolversObject<{
   errorMessage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ExportProfileResolvers<ContextType = any, ParentType extends ResolversParentTypes['ExportProfile'] = ResolversParentTypes['ExportProfile']> = ResolversObject<{
+  avatarUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  circlesAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  lastChange?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ExportTrustRelationResolvers<ContextType = any, ParentType extends ResolversParentTypes['ExportTrustRelation'] = ResolversParentTypes['ExportTrustRelation']> = ResolversObject<{
+  lastChange?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  trustLimit?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  trusteeAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  trusterAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2819,6 +2867,8 @@ export type PurchasesResolvers<ContextType = any, ParentType extends ResolversPa
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   aggregates?: Resolver<Array<ResolversTypes['ProfileAggregate']>, ParentType, ContextType, RequireFields<QueryAggregatesArgs, 'safeAddress' | 'types'>>;
+  allProfiles?: Resolver<Array<Maybe<ResolversTypes['ExportProfile']>>, ParentType, ContextType, Partial<QueryAllProfilesArgs>>;
+  allTrusts?: Resolver<Array<ResolversTypes['ExportTrustRelation']>, ParentType, ContextType, Partial<QueryAllTrustsArgs>>;
   cities?: Resolver<Array<ResolversTypes['City']>, ParentType, ContextType, RequireFields<QueryCitiesArgs, 'query'>>;
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
   clientAssertionJwt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -3181,6 +3231,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   EthTransfer?: EthTransferResolvers<ContextType>;
   EventPayload?: EventPayloadResolvers<ContextType>;
   ExchangeTokenResponse?: ExchangeTokenResponseResolvers<ContextType>;
+  ExportProfile?: ExportProfileResolvers<ContextType>;
+  ExportTrustRelation?: ExportTrustRelationResolvers<ContextType>;
   FibonacciGoals?: FibonacciGoalsResolvers<ContextType>;
   GnosisSafeEthTransfer?: GnosisSafeEthTransferResolvers<ContextType>;
   IAggregatePayload?: IAggregatePayloadResolvers<ContextType>;
