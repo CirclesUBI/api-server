@@ -27,7 +27,7 @@ import {recentProfiles} from "./recentProfiles";
 import {stats} from "./stats";
 import {init} from "./init";
 import {Environment} from "../../environment";
-import {QueryOffersByIdAndVersionArgs, QueryResolvers} from "../../types";
+import {ExportProfile, ExportTrustRelation, QueryOffersByIdAndVersionArgs, QueryResolvers} from "../../types";
 import {Context} from "../../context";
 import {shop} from "./shop";
 import {clientAssertionJwt} from "./clientAssertionJwt";
@@ -123,59 +123,60 @@ export const queryResolvers: QueryResolvers = {
       }
     });
   },
-  allProfiles: async (parent:any, args:any, context:Context) => {
-    const profilesSql = `
-      select "circlesAddress", "firstName", "lastName", "avatarUrl"
+  allProfiles: async (parent, args, context) => {
+    let profilesSql = `
+      select "circlesAddress", "circlesTokenAddress", "firstName", "lastName", "avatarUrl", "lastUpdateAt"
       from "Profile"
-      where "circlesAddress" is not null;`;
+      where "circlesAddress" is not null`;
 
-    const profilesRows = await Environment.pgReadWriteApiDb.query(profilesSql);
-    const profileAddresses = profilesRows.rows.map(o => o.circlesAddress);
-    const profileLookup = profilesRows.rows.toLookup(o => o.circlesAddress, o => o);
+    if (args.sinceLastChange) {
+      profilesSql += `
+        and "lastUpdateAt" >= $1;`;
+    }
 
-    const trustRelationsSql = `select "can_send_to" as truster_address,
-                                      "user"        as trustee_address,
-                                      "limit"       as trust_limit,
-                                      last_change
-                               from crc_current_trust_2;`;
-
-
-    function getDisplayName(address: string): string {
-      let profileData = profileLookup[address];
-      if (!profileData)
-        return "";
-
-      let displayName = profileData.firstName;
-      if (profileData.lastName) {
-        displayName += ` ${profileData.lastName}`;
+    function getDisplayName(row: any): string {
+      let displayName = row.firstName;
+      if (row.lastName && row.lastName.trim() != "") {
+        displayName += ` ${row.lastName}`;
       }
       return displayName;
     }
 
-    function getAvatarUrl(address: string): string {
-      return (profileLookup[address])
-          ? profileLookup[address].avatarUrl ?? ""
-          : "";
+    const profilesRows = await Environment.pgReadWriteApiDb.query(
+        profilesSql,
+        args.sinceLastChange ? [args.sinceLastChange] : []);
+
+    return profilesRows.rows.map(o => {
+      return <ExportProfile>{
+        avatarUrl: o.avatarUrl,
+        displayName: getDisplayName(o),
+        circlesAddress: o.circlesAddress,
+        lastChange: o.lastUpdateAt
+      }
+    });
+  },
+  allTrusts: async (parent, args, context) => {
+    let trustRelationsSql = `select "can_send_to" as "trusterAddress",
+                                      "user"        as "trusteeAddress",
+                                      "limit"       as "trustLimit",
+                                      last_change   as "lastChange"
+                               from crc_current_trust_2`;
+
+    if (args.sinceLastChange) {
+      trustRelationsSql += `
+        where last_change >= $1`;
     }
 
-    const trustRelationRows = await Environment.indexDb.query(trustRelationsSql);
-    const result = trustRelationRows.rows.map(o => {
+    const trustRelationRows = await Environment.indexDb.query(trustRelationsSql,
+        args.sinceLastChange ? [args.sinceLastChange] : []);
 
-      const truster_name = getDisplayName(o.truster_address);
-      const truster_image = getAvatarUrl(o.truster_address);
-
-      const trustee_name = getDisplayName(o.trustee_address);
-      const trustee_image = getAvatarUrl(o.trustee_address);
-
-      return {
-        truster_name,
-        truster_image,
-        trustee_name,
-        trustee_image,
-        ...o,
-      };
+    return trustRelationRows.rows.map(o => {
+      return <ExportTrustRelation>{
+        trusterAddress: o.trusterAddress,
+        trusteeAddress: o.trusteeAddress,
+        trustLimit: o.trustLimit,
+        lastChange: o.lastChange
+      }
     });
-
-    return JSON.stringify(result);
   }
 }

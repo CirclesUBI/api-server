@@ -1284,6 +1284,20 @@ input OfferByIdAndVersionInput {
   offerVersion: Int
 }
 
+type ExportProfile {
+  lastChange: Date!
+  circlesAddress: String!
+  displayName: String!
+  avatarUrl: String
+}
+
+type ExportTrustRelation {
+  lastChange: Date!
+  trusterAddress:String!
+  trusteeAddress:String!
+  trustLimit:Int!
+}
+
 type Mutation {
   announcePayment(invoiceId: Int!, transactionHash: String!): AnnouncePaymentResult!
 
@@ -1396,7 +1410,9 @@ type Query {
   findInvitationCreator(code: String!): Profile
 
   clientAssertionJwt: String!
-  allProfiles:String!
+
+  allProfiles(sinceLastChange:Date):[ExportProfile]!
+  allTrusts(sinceLastChange:Date):[ExportTrustRelation!]!
 }
 
 type Subscription {
