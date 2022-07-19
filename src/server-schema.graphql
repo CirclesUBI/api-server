@@ -1355,6 +1355,20 @@ type Mutation {
   createNewStringAndKey(lang: String, key: String, createdBy: String, value: String, version: Int): i18n
 }
 
+type ExportProfile {
+  lastChange: Date!
+  circlesAddress: String!
+  displayName: String!
+  avatarUrl: String
+}
+
+type ExportTrustRelation {
+  lastChange: Date!
+  trusterAddress:String!
+  trusteeAddress:String!
+  trustLimit:Int!
+}
+
 type Query {
   version: Version!
   sessionInfo: SessionInfo!
@@ -1426,7 +1440,8 @@ type Query {
   getAllStringsByMaxVersionAndLang(lang: String): [i18n]
   getOlderVersionsByKeyAndLang(key: String, lang: String): [i18n]
 
-  allProfiles:String!
+  allProfiles(sinceLastChange:Date):[ExportProfile]!
+  allTrusts(sinceLastChange:Date):[ExportTrustRelation!]!
 }
 
 type Subscription {
