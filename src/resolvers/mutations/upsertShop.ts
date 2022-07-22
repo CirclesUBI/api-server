@@ -24,7 +24,7 @@ export const upsertShop = async (parent: any, args: MutationUpsertShopArgs, cont
       id: <number>args.shop.id,
     },
     where: {
-      id: args.shop.id ?? undefined,
+      id: args.shop.id ?? -1,
     },
     include: {
       owner: true,
@@ -34,16 +34,15 @@ export const upsertShop = async (parent: any, args: MutationUpsertShopArgs, cont
   await Environment.readWriteApiDb.shopDeliveryMethod.deleteMany({
     where: {
       shopId: result.id,
-    }
+    },
   });
 
   await Environment.readWriteApiDb.shopDeliveryMethod.createMany({
-    data: deliveryMethodIds.map(id => ({
+    data: deliveryMethodIds.map((id) => ({
       shopId: result.id,
-      deliveryMethodId: id
-    }))
-  })
-
+      deliveryMethodId: id,
+    })),
+  });
 
   return <Shop>{
     ...result,
