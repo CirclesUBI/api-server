@@ -76,6 +76,7 @@ type Profile {
   shops: [Shop!]
   shippingAddresses: [PostAddress!]
   provenUniqueness: Boolean
+  age: Int
   gender: Gender
 }
 

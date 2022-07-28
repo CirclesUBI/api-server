@@ -917,6 +917,7 @@ export enum ProductListingType {
 
 export type Profile = {
   __typename?: 'Profile';
+  age?: Maybe<Scalars['Int']>;
   askedForEmailAddress: Scalars['Boolean'];
   avatarCid?: Maybe<Scalars['String']>;
   avatarMimeType?: Maybe<Scalars['String']>;
@@ -2749,6 +2750,7 @@ export type PostAddressResolvers<ContextType = any, ParentType extends Resolvers
 }>;
 
 export type ProfileResolvers<ContextType = any, ParentType extends ResolversParentTypes['Profile'] = ResolversParentTypes['Profile']> = ResolversObject<{
+  age?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   askedForEmailAddress?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   avatarCid?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarMimeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
