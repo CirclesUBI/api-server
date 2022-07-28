@@ -31,7 +31,6 @@ import { proofUniqueness } from "./proofUniqueness";
 import { upsertShippingAddress } from "./upsertShippingAddress";
 import {purchaseResolver} from "./purchase";
 import { isBALIMember, isBILMember } from "../../utils/canAccess";
-import { append_hydration } from "svelte/internal";
 import { Context } from "../../context";
 import BN from "bn.js";
 import {confirmLegalAge} from "./confirmLegalAge";
