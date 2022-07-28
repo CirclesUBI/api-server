@@ -28,6 +28,12 @@ enum ShopListingStyle {
   FEATURED
 }
 
+enum Gender {
+  MALE,
+  FEMALE,
+  DIVERS
+}
+
 type Profile {
   id: Int!
   type: ProfileType
@@ -70,6 +76,7 @@ type Profile {
   shops: [Shop!]
   shippingAddresses: [PostAddress!]
   provenUniqueness: Boolean
+  gender: Gender
 }
 
 type ProfileBalances {
@@ -157,6 +164,8 @@ input UpsertProfileInput {
   displayTimeCircles: Boolean
   cityGeonameid: Int
   displayCurrency: DisplayCurrency
+  age: Int
+  gender: Gender
 }
 
 type Tag {

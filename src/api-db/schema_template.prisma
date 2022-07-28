@@ -78,6 +78,12 @@ enum ProductListingType {
     LIST
 }
 
+enum Gender {
+    MALE
+    FEMALE
+    DIVERS
+}
+
 model InvitationFundsEOA {
     id Int @id @default(autoincrement())
     address String
@@ -342,7 +348,9 @@ model Profile {
     newsletter Boolean?
     displayTimeCircles Boolean? @default(true)
     cityGeonameid Int?
-    confirmedLegalAge Int?
+    confirmedLegalAge Int? // 'confirmedLegalAge' and just 'age' differ in that the 'confirmedLegalAge' must be confirmed by the user on the purchase of items which have a minimum age (e.g. alc.)
+    age Int?
+    gender Gender?
 
     lastAcknowledged DateTime?
 
