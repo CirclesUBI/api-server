@@ -666,7 +666,6 @@ model i18nReleases {
     releaseVersion Int
     lang String
     @@unique([releaseVersion, lang])
-
     entries i18n[] @relation("i18nReleases_i18n")
 }
 
@@ -680,8 +679,7 @@ model i18n {
     value String
     @@unique([lang, key, version])
 
-
-  release i18nReleases? @relation(name: "i18nReleases_i18n", fields: [releaseVersion, lang], references: [releaseVersion, lang])
+    release i18nReleases? @relation(name: "i18nReleases_i18n", fields: [releaseVersion, lang], references: [releaseVersion, lang])
 }
 
 model Agent {

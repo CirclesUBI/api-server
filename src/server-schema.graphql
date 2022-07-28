@@ -1361,6 +1361,21 @@ type Mutation {
   proofUniqueness(humanodeToken: String!): ProofUniquenessResult!
   updateValue(lang: String, key: String, createdBy: String, value: String): i18n
   addNewLang(langToCreate: String, langToCopyFrom: String): Int
+  createNewStringAndKey(lang: String, key: String, createdBy: String, value: String, version: Int): i18n
+}
+
+type ExportProfile {
+  lastChange: Date!
+  circlesAddress: String!
+  displayName: String!
+  avatarUrl: String
+}
+
+type ExportTrustRelation {
+  lastChange: Date!
+  trusterAddress:String!
+  trusteeAddress:String!
+  trustLimit:Int!
 }
 
 type ExportProfile {

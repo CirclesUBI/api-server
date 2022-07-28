@@ -19,9 +19,8 @@ import { completeSale } from "./completeSale";
 import { revokeSafeVerification, verifySafe } from "./verifySafe";
 import { announcePayment } from "./announcePayment";
 import { Environment } from "../../environment";
+import { MutationAddNewLangArgs, MutationConfirmLegalAgeArgs, MutationCreateNewStringAndKeyArgs, MutationPayWithPathArgs, MutationResolvers, MutationUpdateValueArgs } from "../../types";
 import {
-  MutationPayWithPathArgs,
-  MutationResolvers,
   TransitivePath, TransitiveTransfer
 } from "../../types";
 import { upsertOffer } from "./upsertOffer";
@@ -31,6 +30,8 @@ import { upsertShopCategoryEntries } from "./upsertShopCategoryEntries";
 import { proofUniqueness } from "./proofUniqueness";
 import { upsertShippingAddress } from "./upsertShippingAddress";
 import {purchaseResolver} from "./purchase";
+import { isBALIMember, isBILMember } from "../../utils/canAccess";
+import { append_hydration } from "svelte/internal";
 import { Context } from "../../context";
 import BN from "bn.js";
 import {confirmLegalAge} from "./confirmLegalAge";
@@ -64,6 +65,32 @@ export const mutationResolvers: MutationResolvers = {
   announcePayment: announcePayment(),
   addNewLang: addNewLang,
   updateValue: updatei18nValue,
+
+  createNewStringAndKey: async (parent: any, args: MutationCreateNewStringAndKeyArgs, context: Context) => {
+    let callerInfo = await context.callerInfo;
+    let isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
+    if (!isBilMember) {
+      throw new Error(`Your need to be a member of Basic Income Lab to edit the content.`)
+    } else {
+      let createdBy = callerInfo?.profile?.circlesAddress;
+      const queryResult = await Environment.pgReadWriteApiDb.query(`
+      insert into i18n (
+          lang,
+          key,
+          "createdBy",
+          version,
+          value
+        ) values (
+          $1,
+          $2,
+          $3,
+          1,
+          $4) returning lang, key, "createdBy", version, value;
+      `,
+        [args.lang, args.key, createdBy, args.value]);
+      return queryResult.rows[0]
+    };
+  },
   upsertOffer: upsertOffer,
   upsertShop: upsertShop,
   upsertShopCategories: upsertShopCategories,
