@@ -379,6 +379,12 @@ export type FibonacciGoals = {
   nextGoal: Scalars['Int'];
 };
 
+export enum Gender {
+  Divers = 'DIVERS',
+  Female = 'FEMALE',
+  Male = 'MALE'
+}
+
 export type GnosisSafeEthTransfer = IEventPayload & {
   __typename?: 'GnosisSafeEthTransfer';
   from: Scalars['String'];
@@ -921,6 +927,7 @@ export type Profile = {
   dream?: Maybe<Scalars['String']>;
   emailAddress?: Maybe<Scalars['String']>;
   firstName: Scalars['String'];
+  gender?: Maybe<Gender>;
   id: Scalars['Int'];
   invitationLink?: Maybe<Scalars['String']>;
   invitationTransaction?: Maybe<ProfileEvent>;
@@ -1673,6 +1680,7 @@ export type UpsertOrganisationInput = {
 };
 
 export type UpsertProfileInput = {
+  age?: InputMaybe<Scalars['Int']>;
   askedForEmailAddress?: InputMaybe<Scalars['Boolean']>;
   avatarCid?: InputMaybe<Scalars['String']>;
   avatarMimeType?: InputMaybe<Scalars['String']>;
@@ -1687,6 +1695,7 @@ export type UpsertProfileInput = {
   dream?: InputMaybe<Scalars['String']>;
   emailAddress?: InputMaybe<Scalars['String']>;
   firstName: Scalars['String'];
+  gender?: InputMaybe<Gender>;
   id?: InputMaybe<Scalars['Int']>;
   lastName?: InputMaybe<Scalars['String']>;
   newsletter?: InputMaybe<Scalars['Boolean']>;
@@ -1876,6 +1885,7 @@ export type ResolversTypes = ResolversObject<{
   ExportTrustRelation: ResolverTypeWrapper<ExportTrustRelation>;
   FibonacciGoals: ResolverTypeWrapper<FibonacciGoals>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
+  Gender: Gender;
   GnosisSafeEthTransfer: ResolverTypeWrapper<GnosisSafeEthTransfer>;
   IAggregatePayload: ResolversTypes['Contacts'] | ResolversTypes['CrcBalances'] | ResolversTypes['Erc20Balances'] | ResolversTypes['Erc721Tokens'] | ResolversTypes['Members'] | ResolversTypes['Memberships'] | ResolversTypes['Offers'] | ResolversTypes['Purchases'] | ResolversTypes['Sales'];
   ICity: ResolversTypes['City'];
@@ -2748,6 +2758,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   dream?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   emailAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  gender?: Resolver<Maybe<ResolversTypes['Gender']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   invitationLink?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
