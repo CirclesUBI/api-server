@@ -142,3 +142,5 @@ config
 src/api-db/client/runtime/proxy.d.ts
 /src/api-db/schema.prisma
 /src/api-db/client/*
+package-lock.json
+.gitignore

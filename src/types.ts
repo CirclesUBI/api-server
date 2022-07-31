@@ -1122,6 +1122,7 @@ export type Query = {
   getOlderVersionsByKeyAndLang?: Maybe<Array<Maybe<I18n>>>;
   getStringByLanguage?: Maybe<Array<I18n>>;
   getStringByMaxVersion?: Maybe<I18n>;
+  getStringsByMaxVersionKeyAndValue?: Maybe<Array<Maybe<I18n>>>;
   hubSignupTransaction?: Maybe<ProfileEvent>;
   init: SessionInfo;
   invitationTransaction?: Maybe<ProfileEvent>;
@@ -1229,6 +1230,12 @@ export type QueryGetStringByLanguageArgs = {
 export type QueryGetStringByMaxVersionArgs = {
   key?: InputMaybe<Scalars['String']>;
   lang?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryGetStringsByMaxVersionKeyAndValueArgs = {
+  key?: InputMaybe<Scalars['String']>;
+  value?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -2908,6 +2915,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getOlderVersionsByKeyAndLang?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetOlderVersionsByKeyAndLangArgs>>;
   getStringByLanguage?: Resolver<Maybe<Array<ResolversTypes['i18n']>>, ParentType, ContextType, Partial<QueryGetStringByLanguageArgs>>;
   getStringByMaxVersion?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<QueryGetStringByMaxVersionArgs>>;
+  getStringsByMaxVersionKeyAndValue?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetStringsByMaxVersionKeyAndValueArgs>>;
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   init?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;

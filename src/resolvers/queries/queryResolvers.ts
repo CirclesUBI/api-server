@@ -30,6 +30,7 @@ import { init } from "./init";
 import { Environment } from "../../environment";
 import {
   ExportProfile, ExportTrustRelation,
+  QueryGetStringsByMaxVersionKeyAndValueArgs,
   QueryResolvers
 } from "../../types";
 import { Context } from "../../context";
@@ -102,6 +103,20 @@ export const queryResolvers: QueryResolvers = {
   getAllStringsByMaxVersion: getAllStringsByMaxVersion,
   getAllStringsByMaxVersionAndLang: getAllStringsByMaxVersionAndLang,
   getOlderVersionsByKeyAndLang: getOlderVersionsByKeyAndLang,
+
+
+  getStringsByMaxVersionKeyAndValue: async (parent, args: QueryGetStringsByMaxVersionKeyAndValueArgs, context) => {
+    const queryResult = await Environment.pgReadWriteApiDb.query(`
+    select * 
+      from "latestValues"
+        where key ^@ $1
+        and value ilike $2
+    `,
+      [args.key, args.value]);
+    return queryResult.rows
+  },
+
+  
   allProfiles: async (parent, args, context) => {
     let profilesSql = `
       select "circlesAddress", "circlesTokenAddress", "firstName", "lastName", "avatarUrl", "lastUpdateAt"
