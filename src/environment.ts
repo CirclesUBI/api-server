@@ -51,9 +51,6 @@ export class Environment {
     if (!this.appId) {
       errors.push(`The APP_ID environment variable is not set.`);
     }
-    if (!this.acceptedIssuer) {
-      errors.push(`The ACCEPTED_ISSUER environment variable is not set.`);
-    }
     if (!this.externalDomain) {
       errors.push(`The EXTERNAL_DOMAIN environment variable is not set.`);
     }
@@ -344,10 +341,6 @@ export class Environment {
     return <string>process.env.APP_ID;
   }
 
-  static get acceptedIssuer(): string {
-    return <string>process.env.ACCEPTED_ISSUER;
-  }
-
   static get isLocalDebugEnvironment(): boolean {
     return !!process.env.DEBUG;
   }
@@ -423,16 +416,6 @@ export class Environment {
         <string>process.env.VERIFICATION_REWARD_FUNDS_SAFE_ADDRESS
       )
     );
-  }
-
-  static get verificationRewardFundsSafeOwner(): Account {
-    return RpcGateway.get().eth.accounts.privateKeyToAccount(
-      <string>process.env.VERIFICATION_REWARD_FUNDS_KEY?.toLowerCase()
-    );
-  }
-
-  static get rewardTokenAddress(): string {
-    return <string>process.env.REWARD_TOKEN_ADDRESS?.toLowerCase();
   }
 
   static get filesBucket(): AWS.S3 {
