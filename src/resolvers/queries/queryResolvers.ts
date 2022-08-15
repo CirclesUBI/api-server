@@ -47,6 +47,7 @@ import {getAvailableLanguages} from "./getAvailableLanguages";
 import {getAllStringsByMaxVersion} from "./getAllStringsByMaxVersion";
 import {getAllStringsByMaxVersionAndLang} from "./getAllStringsByMaxVersionAndLang";
 import {getOlderVersionsByKeyAndLang} from "./getOlderVersionsByKeyAndLang";
+import {RpcGateway} from "../../circles/rpcGateway";
 
 const packageJson = require("../../../package.json");
 
@@ -157,5 +158,17 @@ export const queryResolvers: QueryResolvers = {
         lastChange: o.lastChange
       }
     });
+  },
+  getRandomAccount: async () => {
+    const acc = RpcGateway.get().eth.accounts.create();
+    return {
+      privateKey: acc.privateKey,
+      address: acc.address
+    }
+  },
+  signMessage: async (parent, {message, key}, context) => {
+    const acc = RpcGateway.get().eth.accounts.privateKeyToAccount(key);
+    const signature = acc.sign(message);
+    return signature.signature;
   }
 }

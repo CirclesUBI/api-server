@@ -1393,6 +1393,11 @@ type ExportTrustRelation {
   trustLimit:Int!
 }
 
+type RandomAccount {
+  privateKey:String
+  address:String
+}
+
 type Query {
   version: Version!
   sessionInfo: SessionInfo!
@@ -1466,6 +1471,9 @@ type Query {
 
   allProfiles(sinceLastChange:Date):[ExportProfile]!
   allTrusts(sinceLastChange:Date):[ExportTrustRelation!]!
+
+  getRandomAccount : RandomAccount
+  signMessage(message: String! key:String!) : String!
 }
 
 type Subscription {

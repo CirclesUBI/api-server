@@ -1121,6 +1121,7 @@ export type Query = {
   getAllStringsByMaxVersionAndLang?: Maybe<Array<Maybe<I18n>>>;
   getAvailableLanguages?: Maybe<Array<Maybe<I18n>>>;
   getOlderVersionsByKeyAndLang?: Maybe<Array<Maybe<I18n>>>;
+  getRandomAccount?: Maybe<RandomAccount>;
   getStringByLanguage?: Maybe<Array<I18n>>;
   getStringByMaxVersion?: Maybe<I18n>;
   hubSignupTransaction?: Maybe<ProfileEvent>;
@@ -1144,6 +1145,7 @@ export type Query = {
   shop?: Maybe<Shop>;
   shops: Array<Shop>;
   shopsById: Array<Shop>;
+  signMessage: Scalars['String'];
   stats: Stats;
   tagById?: Maybe<Tag>;
   tags: Array<Tag>;
@@ -1311,6 +1313,12 @@ export type QueryShopsByIdArgs = {
 };
 
 
+export type QuerySignMessageArgs = {
+  key: Scalars['String'];
+  message: Scalars['String'];
+};
+
+
 export type QueryTagByIdArgs = {
   id: Scalars['Int'];
 };
@@ -1360,6 +1368,12 @@ export type QueryTagsInput = {
 
 export type QueryUniqueProfileInput = {
   id: Scalars['Int'];
+};
+
+export type RandomAccount = {
+  __typename?: 'RandomAccount';
+  address?: Maybe<Scalars['String']>;
+  privateKey?: Maybe<Scalars['String']>;
 };
 
 export type RedeemClaimedInvitationResult = {
@@ -1956,6 +1970,7 @@ export type ResolversTypes = ResolversObject<{
   QueryProfileInput: QueryProfileInput;
   QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
+  RandomAccount: ResolverTypeWrapper<RandomAccount>;
   RedeemClaimedInvitationResult: ResolverTypeWrapper<RedeemClaimedInvitationResult>;
   RejectMembershipResult: ResolverTypeWrapper<RejectMembershipResult>;
   RemoveMemberResult: ResolverTypeWrapper<RemoveMemberResult>;
@@ -2106,6 +2121,7 @@ export type ResolversParentTypes = ResolversObject<{
   QueryProfileInput: QueryProfileInput;
   QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
+  RandomAccount: RandomAccount;
   RedeemClaimedInvitationResult: RedeemClaimedInvitationResult;
   RejectMembershipResult: RejectMembershipResult;
   RemoveMemberResult: RemoveMemberResult;
@@ -2908,6 +2924,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getAllStringsByMaxVersionAndLang?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetAllStringsByMaxVersionAndLangArgs>>;
   getAvailableLanguages?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType>;
   getOlderVersionsByKeyAndLang?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetOlderVersionsByKeyAndLangArgs>>;
+  getRandomAccount?: Resolver<Maybe<ResolversTypes['RandomAccount']>, ParentType, ContextType>;
   getStringByLanguage?: Resolver<Maybe<Array<ResolversTypes['i18n']>>, ParentType, ContextType, Partial<QueryGetStringByLanguageArgs>>;
   getStringByMaxVersion?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<QueryGetStringByMaxVersionArgs>>;
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
@@ -2931,12 +2948,19 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   shop?: Resolver<Maybe<ResolversTypes['Shop']>, ParentType, ContextType, RequireFields<QueryShopArgs, 'id'>>;
   shops?: Resolver<Array<ResolversTypes['Shop']>, ParentType, ContextType, Partial<QueryShopsArgs>>;
   shopsById?: Resolver<Array<ResolversTypes['Shop']>, ParentType, ContextType, RequireFields<QueryShopsByIdArgs, 'ids'>>;
+  signMessage?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<QuerySignMessageArgs, 'key' | 'message'>>;
   stats?: Resolver<ResolversTypes['Stats'], ParentType, ContextType>;
   tagById?: Resolver<Maybe<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagByIdArgs, 'id'>>;
   tags?: Resolver<Array<ResolversTypes['Tag']>, ParentType, ContextType, RequireFields<QueryTagsArgs, 'query'>>;
   trustRelations?: Resolver<Array<ResolversTypes['TrustRelation']>, ParentType, ContextType, RequireFields<QueryTrustRelationsArgs, 'safeAddress'>>;
   verifications?: Resolver<Array<ResolversTypes['Verification']>, ParentType, ContextType, Partial<QueryVerificationsArgs>>;
   version?: Resolver<ResolversTypes['Version'], ParentType, ContextType>;
+}>;
+
+export type RandomAccountResolvers<ContextType = any, ParentType extends ResolversParentTypes['RandomAccount'] = ResolversParentTypes['RandomAccount']> = ResolversObject<{
+  address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  privateKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type RedeemClaimedInvitationResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['RedeemClaimedInvitationResult'] = ResolversParentTypes['RedeemClaimedInvitationResult']> = ResolversObject<{
@@ -3297,6 +3321,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Purchased?: PurchasedResolvers<ContextType>;
   Purchases?: PurchasesResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  RandomAccount?: RandomAccountResolvers<ContextType>;
   RedeemClaimedInvitationResult?: RedeemClaimedInvitationResultResolvers<ContextType>;
   RejectMembershipResult?: RejectMembershipResultResolvers<ContextType>;
   RemoveMemberResult?: RemoveMemberResultResolvers<ContextType>;

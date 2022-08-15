@@ -268,7 +268,11 @@ export class Environment {
 
   private static _pgReadWriteApiDb: Pool = new Pool({
     connectionString: process.env.CONNECTION_STRING_RW,
-    ssl: !process.env.DEBUG,
+    //ssl: !process.env.DEBUG,
+    ssl: {
+      cert: process.env.API_DB_SSL_CERT,
+      ca: process.env.API_DB_SSL_CA
+    }
   }).on("error", (err) => {
     console.error("An idle client has experienced an error", err.stack);
   });
@@ -406,15 +410,6 @@ export class Environment {
   static get invitationFundsSafeOwner(): Account {
     return RpcGateway.get().eth.accounts.privateKeyToAccount(
       <string>process.env.INVITATION_FUNDS_SAFE_KEY?.toLowerCase()
-    );
-  }
-
-  static get verificationRewardFundsSafe(): GnosisSafeProxy {
-    return new GnosisSafeProxy(
-      RpcGateway.get(),
-      RpcGateway.get().utils.toChecksumAddress(
-        <string>process.env.VERIFICATION_REWARD_FUNDS_SAFE_ADDRESS
-      )
     );
   }
 
