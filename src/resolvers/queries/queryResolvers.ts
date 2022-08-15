@@ -48,6 +48,7 @@ import {getAllStringsByMaxVersion} from "./getAllStringsByMaxVersion";
 import {getAllStringsByMaxVersionAndLang} from "./getAllStringsByMaxVersionAndLang";
 import {getOlderVersionsByKeyAndLang} from "./getOlderVersionsByKeyAndLang";
 import {RpcGateway} from "../../circles/rpcGateway";
+import {getEnvironmentData} from "worker_threads";
 
 const packageJson = require("../../../package.json");
 
@@ -160,6 +161,9 @@ export const queryResolvers: QueryResolvers = {
     });
   },
   getRandomAccount: async () => {
+    if (!Environment.isLocalDebugEnvironment)
+      throw new Error("Only available in local debug environments.");
+
     const acc = RpcGateway.get().eth.accounts.create();
     return {
       privateKey: acc.privateKey,
@@ -167,6 +171,9 @@ export const queryResolvers: QueryResolvers = {
     }
   },
   signMessage: async (parent, {message, key}, context) => {
+    if (!Environment.isLocalDebugEnvironment)
+      throw new Error("Only available in local debug environments.");
+
     const acc = RpcGateway.get().eth.accounts.privateKeyToAccount(key);
     const signature = acc.sign(message);
     return signature.signature;
