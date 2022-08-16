@@ -269,10 +269,10 @@ export class Environment {
   private static _pgReadWriteApiDb: Pool = new Pool({
     connectionString: process.env.CONNECTION_STRING_RW,
     //ssl: !process.env.DEBUG,
-    ssl: {
+    ssl: process.env.API_DB_SSL_CERT ? {
       cert: process.env.API_DB_SSL_CERT,
       ca: process.env.API_DB_SSL_CA
-    }
+    } : undefined
   }).on("error", (err) => {
     console.error("An idle client has experienced an error", err.stack);
   });
