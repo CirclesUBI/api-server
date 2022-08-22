@@ -1252,6 +1252,7 @@ input ShopCategoryEntryInput {
   shopCategoryId: Int!
   productId: Int!
   productVersion: Int!
+  currentInventory: Int
 
   sortOrder: Int
 }
@@ -1265,6 +1266,8 @@ type ShopCategoryEntry {
   product: Offer
   productId: Int!
   productVersion: Int!
+
+  currentInventory: Int
 
   sortOrder: Int
 
