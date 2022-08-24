@@ -29,8 +29,8 @@ enum ShopListingStyle {
 }
 
 enum Gender {
-  MALE,
-  FEMALE,
+  MALE
+  FEMALE
   DIVERS
 }
 
@@ -291,7 +291,7 @@ input OfferInput {
   description: String
   allergens: String
   minAge: Int
-
+  currentInventory: Int
   pricePerUnit: String! # The price in euro
   timeCirclesPriceShare: Int! # How many percent of the price can be payed in time circles
 }
@@ -304,7 +304,7 @@ type Offer {
   createdByAddress: String!
   createdAt: String!
   minAge: Int
-
+  currentInventory: Int
   title: String!
   pictureUrl: String!
   pictureMimeType: String!
@@ -1252,7 +1252,6 @@ input ShopCategoryEntryInput {
   shopCategoryId: Int!
   productId: Int!
   productVersion: Int!
-  currentInventory: Int
 
   sortOrder: Int
 }
@@ -1266,8 +1265,6 @@ type ShopCategoryEntry {
   product: Offer
   productId: Int!
   productVersion: Int!
-
-  currentInventory: Int
 
   sortOrder: Int
 
@@ -1377,9 +1374,9 @@ type ExportProfile {
 
 type ExportTrustRelation {
   lastChange: Date!
-  trusterAddress:String!
-  trusteeAddress:String!
-  trustLimit:Int!
+  trusterAddress: String!
+  trusteeAddress: String!
+  trustLimit: Int!
 }
 
 type ExportProfile {
@@ -1391,14 +1388,14 @@ type ExportProfile {
 
 type ExportTrustRelation {
   lastChange: Date!
-  trusterAddress:String!
-  trusteeAddress:String!
-  trustLimit:Int!
+  trusterAddress: String!
+  trusteeAddress: String!
+  trustLimit: Int!
 }
 
 type RandomAccount {
-  privateKey:String
-  address:String
+  privateKey: String
+  address: String
 }
 
 type Query {
@@ -1472,11 +1469,11 @@ type Query {
   getAllStringsByMaxVersionAndLang(lang: String): [i18n]
   getOlderVersionsByKeyAndLang(key: String, lang: String): [i18n]
 
-  allProfiles(sinceLastChange:Date):[ExportProfile]!
-  allTrusts(sinceLastChange:Date):[ExportTrustRelation!]!
+  allProfiles(sinceLastChange: Date): [ExportProfile]!
+  allTrusts(sinceLastChange: Date): [ExportTrustRelation!]!
 
-  getRandomAccount : RandomAccount
-  signMessage(message: String! key:String!) : String!
+  getRandomAccount: RandomAccount
+  signMessage(message: String!, key: String!): String!
 }
 
 type Subscription {
