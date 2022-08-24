@@ -309,7 +309,6 @@ model ShopCategoryEntry {
     @@index([productId, productVersion])
 
     sortOrder Int?
-    currentInventory Int?
 
     shopCategory ShopCategory @relation("ShopCategoryEntries", fields: [shopCategoryId], references: [id])
     shopCategoryId Int
@@ -481,6 +480,8 @@ model Offer {
     shopCategoryEntries ShopCategoryEntry[] @relation("ShopCategoryEntryProduct")
 
     minAge Int?
+
+    currentInventory Int?
 }
 
 model Purchase {
