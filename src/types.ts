@@ -807,6 +807,7 @@ export type Offer = {
   createdAt: Scalars['String'];
   createdByAddress: Scalars['String'];
   createdByProfile?: Maybe<Profile>;
+  currentInventory?: Maybe<Scalars['Int']>;
   description?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   minAge?: Maybe<Scalars['Int']>;
@@ -827,6 +828,7 @@ export type OfferByIdAndVersionInput = {
 export type OfferInput = {
   allergens?: InputMaybe<Scalars['String']>;
   createdByProfileId: Scalars['Int'];
+  currentInventory?: InputMaybe<Scalars['Int']>;
   description?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Int']>;
   minAge?: InputMaybe<Scalars['Int']>;
@@ -1551,7 +1553,6 @@ export type ShopCategory = {
 export type ShopCategoryEntry = {
   __typename?: 'ShopCategoryEntry';
   createdAt: Scalars['Date'];
-  currentInventory?: Maybe<Scalars['Int']>;
   enabled?: Maybe<Scalars['Boolean']>;
   id: Scalars['Int'];
   private?: Maybe<Scalars['Boolean']>;
@@ -1564,7 +1565,6 @@ export type ShopCategoryEntry = {
 };
 
 export type ShopCategoryEntryInput = {
-  currentInventory?: InputMaybe<Scalars['Int']>;
   enabled?: InputMaybe<Scalars['Boolean']>;
   id?: InputMaybe<Scalars['Int']>;
   name?: InputMaybe<Scalars['String']>;
@@ -2702,6 +2702,7 @@ export type OfferResolvers<ContextType = any, ParentType extends ResolversParent
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdByAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdByProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  currentInventory?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   minAge?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -3120,7 +3121,6 @@ export type ShopCategoryResolvers<ContextType = any, ParentType extends Resolver
 
 export type ShopCategoryEntryResolvers<ContextType = any, ParentType extends ResolversParentTypes['ShopCategoryEntry'] = ResolversParentTypes['ShopCategoryEntry']> = ResolversObject<{
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  currentInventory?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   enabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   private?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
