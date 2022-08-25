@@ -1133,6 +1133,7 @@ export type Query = {
   lastAcknowledgedAt?: Maybe<Scalars['Date']>;
   myInvitations: Array<CreatedInvitation>;
   myProfile?: Maybe<Profile>;
+  offerById: Offer;
   offersByIdAndVersion: Array<Offer>;
   organisations: Array<Organisation>;
   organisationsByAddress: Array<Organisation>;
@@ -1244,6 +1245,11 @@ export type QueryInvoiceArgs = {
 
 export type QueryLastAcknowledgedAtArgs = {
   safeAddress: Scalars['String'];
+};
+
+
+export type QueryOfferByIdArgs = {
+  id: Scalars['Int'];
 };
 
 
@@ -2937,6 +2943,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   lastAcknowledgedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType, RequireFields<QueryLastAcknowledgedAtArgs, 'safeAddress'>>;
   myInvitations?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
   myProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  offerById?: Resolver<ResolversTypes['Offer'], ParentType, ContextType, RequireFields<QueryOfferByIdArgs, 'id'>>;
   offersByIdAndVersion?: Resolver<Array<ResolversTypes['Offer']>, ParentType, ContextType, RequireFields<QueryOffersByIdAndVersionArgs, 'query'>>;
   organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, Partial<QueryOrganisationsArgs>>;
   organisationsByAddress?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationsByAddressArgs, 'addresses'>>;

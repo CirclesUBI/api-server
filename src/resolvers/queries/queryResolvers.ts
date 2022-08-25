@@ -28,27 +28,24 @@ import { recentProfiles } from "./recentProfiles";
 import { stats } from "./stats";
 import { init } from "./init";
 import { Environment } from "../../environment";
-import {
-  ExportProfile, ExportTrustRelation,
-  QueryResolvers
-} from "../../types";
+import { ExportProfile, ExportTrustRelation, QueryResolvers } from "../../types";
 import { Context } from "../../context";
 import { shop } from "./shop";
 import { clientAssertionJwt } from "./clientAssertionJwt";
 import { shops, shopsById } from "./shops";
 import { lastAcknowledgedAt } from "./lastAcknowledgedAt";
-import {paymentPath} from "./paymentPath";
-import {offersByIdAndVersion} from "./offersByIdAndVersion";
-import {getAllStrings} from "./getAllStrings";
-import {getAllStringsByLanguage} from "./getAllStringsByLanguage";
-import {getStringByMaxVersion} from "./getStringByMaxVersion";
-import {getStringByLanguage} from "./getStringByLanguage";
-import {getAvailableLanguages} from "./getAvailableLanguages";
-import {getAllStringsByMaxVersion} from "./getAllStringsByMaxVersion";
-import {getAllStringsByMaxVersionAndLang} from "./getAllStringsByMaxVersionAndLang";
-import {getOlderVersionsByKeyAndLang} from "./getOlderVersionsByKeyAndLang";
-import {RpcGateway} from "../../circles/rpcGateway";
-import {getEnvironmentData} from "worker_threads";
+import { paymentPath } from "./paymentPath";
+import { offersByIdAndVersion } from "./offersByIdAndVersion";
+import { getAllStrings } from "./getAllStrings";
+import { getAllStringsByLanguage } from "./getAllStringsByLanguage";
+import { getStringByMaxVersion } from "./getStringByMaxVersion";
+import { getStringByLanguage } from "./getStringByLanguage";
+import { getAvailableLanguages } from "./getAvailableLanguages";
+import { getAllStringsByMaxVersion } from "./getAllStringsByMaxVersion";
+import { getAllStringsByMaxVersionAndLang } from "./getAllStringsByMaxVersionAndLang";
+import { getOlderVersionsByKeyAndLang } from "./getOlderVersionsByKeyAndLang";
+import { RpcGateway } from "../../circles/rpcGateway";
+import { getEnvironmentData } from "worker_threads";
 
 const packageJson = require("../../../package.json");
 
@@ -124,16 +121,17 @@ export const queryResolvers: QueryResolvers = {
     }
 
     const profilesRows = await Environment.pgReadWriteApiDb.query(
-        profilesSql,
-        args.sinceLastChange ? [args.sinceLastChange] : []);
+      profilesSql,
+      args.sinceLastChange ? [args.sinceLastChange] : []
+    );
 
-    return profilesRows.rows.map(o => {
+    return profilesRows.rows.map((o) => {
       return <ExportProfile>{
         avatarUrl: o.avatarUrl,
         displayName: getDisplayName(o),
         circlesAddress: o.circlesAddress,
-        lastChange: o.lastUpdateAt
-      }
+        lastChange: o.lastUpdateAt,
+      };
     });
   },
   allTrusts: async (parent, args, context) => {
@@ -148,34 +146,34 @@ export const queryResolvers: QueryResolvers = {
         where last_change >= $1`;
     }
 
-    const trustRelationRows = await Environment.indexDb.query(trustRelationsSql,
-        args.sinceLastChange ? [args.sinceLastChange] : []);
+    const trustRelationRows = await Environment.indexDb.query(
+      trustRelationsSql,
+      args.sinceLastChange ? [args.sinceLastChange] : []
+    );
 
-    return trustRelationRows.rows.map(o => {
+    return trustRelationRows.rows.map((o) => {
       return <ExportTrustRelation>{
         trusterAddress: o.trusterAddress,
         trusteeAddress: o.trusteeAddress,
         trustLimit: o.trustLimit,
-        lastChange: o.lastChange
-      }
+        lastChange: o.lastChange,
+      };
     });
   },
   getRandomAccount: async () => {
-    if (!Environment.isLocalDebugEnvironment)
-      throw new Error("Only available in local debug environments.");
+    if (!Environment.isLocalDebugEnvironment) throw new Error("Only available in local debug environments.");
 
     const acc = RpcGateway.get().eth.accounts.create();
     return {
       privateKey: acc.privateKey,
-      address: acc.address
-    }
+      address: acc.address,
+    };
   },
-  signMessage: async (parent, {message, key}, context) => {
-    if (!Environment.isLocalDebugEnvironment)
-      throw new Error("Only available in local debug environments.");
+  signMessage: async (parent, { message, key }, context) => {
+    if (!Environment.isLocalDebugEnvironment) throw new Error("Only available in local debug environments.");
 
     const acc = RpcGateway.get().eth.accounts.privateKeyToAccount(key);
     const signature = acc.sign(message);
     return signature.signature;
-  }
-}
+  },
+};

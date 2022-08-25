@@ -1450,6 +1450,7 @@ type Query {
   tags(query: QueryTagsInput!): [Tag!]!
   tagById(id: Int!): Tag
 
+  offerById(id: Int!): Offer!
   offersByIdAndVersion(query: [OfferByIdAndVersionInput!]!): [Offer!]!
 
   directPath(from: String!, to: String!, amount: String!): TransitivePath!
