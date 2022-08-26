@@ -19,7 +19,6 @@ import {profileShopsDataLoader} from "../dataLoaders/profileShopsDataLoader";
 import {UtilityDbQueries} from "../../querySources/utilityDbQueries";
 import {provenUniquenessDataLoader} from "../dataLoaders/provenUniquenessDataLoader";
 
-
 function isOwnProfile(profileId:number, context:Context) : boolean {
   return !!context.session?.profileId && context.session.profileId == profileId;
 }
@@ -28,11 +27,18 @@ export const profilePropertyResolvers : ProfileResolvers = {
   origin: (parent: Profile) => {
     return !parent.origin ? ProfileOrigin.Unknown : parent.origin;
   },
+  gender: (parent: Profile, args:any, context:Context) => {
+    return isOwnProfile(parent.id, context) ? (parent.gender ?? null) : null;
+  },
+  age: (parent: Profile, args:any, context:Context) => {
+    return isOwnProfile(parent.id, context) ? (parent.age ?? null) : null;
+  },
   emailAddress: async (parent: Profile, args:any, context:Context) =>
     isOwnProfile(parent.id, context)
     && parent.emailAddress
       ? parent.emailAddress
       : null,
+
   invitationLink: async (parent: Profile, args:any, context:Context) => {
     if (!isOwnProfile(parent.id, context)) {
       return null;

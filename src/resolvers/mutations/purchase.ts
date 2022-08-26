@@ -80,10 +80,7 @@ export async function purchaseResolver(parent: any, args: MutationPurchaseArgs, 
   }
 
   const purchasedOffers = await lookupOffers(args);
-  const purchase = await createPurchase(
-    ProfileLoader.withDisplayCurrency(callerInfo.profile),
-    args,
-    purchasedOffers);
+  const purchase = await createPurchase(ProfileLoader.withDisplayCurrency(callerInfo.profile), args, purchasedOffers);
 
   const invoices = await createInvoices(
     ProfileLoader.withDisplayCurrency(callerInfo.profile),
@@ -182,7 +179,7 @@ async function createPurchase(
               amount: o.amount,
               productVersion: offer.version,
               productId: offer.id,
-              shopId: o.shopId
+              shopId: o.shopId,
             };
           }),
         },
@@ -201,6 +198,18 @@ async function createPurchase(
       createdBy: true,
     },
   });
+
+  if (purchase) {
+    const linesPromises = args.lines.map(async (line) => {
+      const offer = offersLookup[line.offerId];
+      await Environment.readWriteApiDb.$queryRaw`
+        update "Offer" set "currentInventory" = "currentInventory" - 1 
+        where "id" = ${offer.offer.id} 
+        and "version" = ${offer.offer.version};`;
+    });
+
+    await Promise.all(linesPromises);
+  }
 
   return {
     ...purchase,
@@ -283,7 +292,7 @@ async function createInvoices(
                 productId: l.productId,
                 productVersion: l.productVersion,
                 metadata: l.metadata,
-                shopId: l.shopId
+                shopId: l.shopId,
               };
             }),
           },

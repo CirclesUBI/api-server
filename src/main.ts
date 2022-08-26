@@ -23,8 +23,6 @@ import * as graphqlImport from "@graphql-tools/import";
 import {healthGetHandler} from "./httpHandlers/get/health";
 import {RotateJwks} from "./jobs/descriptions/maintenance/rotateJwks";
 import {RequestUbiForInactiveAccounts} from "./jobs/descriptions/maintenance/requestUbiForInactiveAccounts";
-import {aggregates} from "./resolvers/queries/aggregates";
-import {AggregateType} from "./types";
 import {Erc721BalancesSource} from "./querySources/aggregateSources/blockchain/erc721BalancesSource";
 
 const {

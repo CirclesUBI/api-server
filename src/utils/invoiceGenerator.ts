@@ -6,7 +6,7 @@ import { Environment } from "../environment";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone"; // dependent on utc plugin
 import dayjs from "dayjs";
-import {getDateWithOffset} from "./getDateWithOffset";
+import { getDateWithOffset } from "./getDateWithOffset";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -54,7 +54,7 @@ export type PdfDbInvoiceData = Invoice & {
   sellerProfile: Profile;
   lines: (InvoiceLine & { product: Offer })[];
 };
-export type PdfInvoicePaymentTransaction = { hash: string; timestamp: Date|null };
+export type PdfInvoicePaymentTransaction = { hash: string; timestamp: Date | null };
 
 export function pdfInvoiceDataFromDbInvoice(
   data: PdfDbInvoiceData,
@@ -107,16 +107,18 @@ export function pdfInvoiceDataFromDbInvoice(
     invoice_date: dayjs(data.createdAt).tz("Europe/Berlin").format("YYYY-MM-DD HH:mm:ss"),
     invoice_nr: data.invoiceNo,
     transactionHash: paymentTransaction?.hash ?? "",
-    transferTime: paymentTransaction?.timestamp ? (paymentTransaction
-      ? dayjs(getDateWithOffset(paymentTransaction.timestamp)).tz("Europe/Berlin").format("YYYY-MM-DD HH:mm:ss")
-      : "") : "",
+    transferTime: paymentTransaction?.timestamp
+      ? paymentTransaction
+        ? dayjs(getDateWithOffset(paymentTransaction.timestamp)).tz("Europe/Berlin").format("YYYY-MM-DD HH:mm:ss")
+        : ""
+      : "",
     items: items,
     subtotal: total,
     salesTax: [
       // TODO: replace the Currently 19% hardcoded with dynamic
       {
         name: "19",
-        value: ((19 / 100) * total).toFixed(2),
+        value: ((total / 1.19) * (19 / 100)).toFixed(2),
       },
     ],
     timeCirclesTotal: 0,
@@ -177,60 +179,41 @@ export class InvoicePdfGenerator {
       ACL: "private",
     };
 
-    return new Promise<PromiseResult<AWS.S3.PutObjectOutput, AWS.AWSError>>(
-      (resolve, reject) => {
-        let pdfBytes: any[] = [];
-        pdfDocument.on("readable", (_) => {
-          try {
-            while (true) {
-              let buffer = pdfDocument.read();
-              if (!buffer) {
-                break;
-              }
-              pdfBytes.push(buffer);
+    return new Promise<PromiseResult<AWS.S3.PutObjectOutput, AWS.AWSError>>((resolve, reject) => {
+      let pdfBytes: any[] = [];
+      pdfDocument.on("readable", (_) => {
+        try {
+          while (true) {
+            let buffer = pdfDocument.read();
+            if (!buffer) {
+              break;
             }
-          } catch (e) {
-            reject(e);
+            pdfBytes.push(buffer);
           }
-        });
-        pdfDocument.on("end", async (_) => {
-          try {
-            params.Body = Buffer.concat(pdfBytes);
-            const result = await Environment.filesBucket
-              .putObject(params)
-              .promise();
-            resolve(result);
-          } catch (e) {
-            reject(e);
-          }
-        });
-      }
-    );
+        } catch (e) {
+          reject(e);
+        }
+      });
+      pdfDocument.on("end", async (_) => {
+        try {
+          params.Body = Buffer.concat(pdfBytes);
+          const result = await Environment.filesBucket.putObject(params).promise();
+          resolve(result);
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
   }
 
-  private newPageCheck(
-    doc: typeof PDFDocument,
-    invoice: any,
-    itemsHeader = false
-  ) {
+  private newPageCheck(doc: typeof PDFDocument, invoice: any, itemsHeader = false) {
     if (this.top > 730) {
       this.generateFooter(doc, invoice);
       doc.addPage();
       this.top = this.margin;
       if (itemsHeader) {
-        doc
-          .rect(0, this.top, doc.page.width, 28)
-          .fill("#F8F8FA")
-          .font("Helvetica-Bold")
-          .fillColor("#333333");
-        this.generateTableRow(
-          doc,
-          this.top + 10,
-          "ITEM",
-          "QTY",
-          "COST",
-          "PRICE"
-        );
+        doc.rect(0, this.top, doc.page.width, 28).fill("#F8F8FA").font("Helvetica-Bold").fillColor("#333333");
+        this.generateTableRow(doc, this.top + 10, "ITEM", "QTY", "COST", "PRICE");
         this.top += 50;
       }
     }
@@ -300,11 +283,7 @@ export class InvoicePdfGenerator {
       .fillColor("#000000")
       .text(invoice.buyer.name, this.marginx, (this.top += this.lineMargin))
       .text(invoice.buyer.address, this.marginx, (this.top += this.lineMargin))
-      .text(
-        `${invoice.buyer.postal_code} ${invoice.buyer.city}`,
-        this.marginx,
-        (this.top += this.lineMargin)
-      )
+      .text(`${invoice.buyer.postal_code} ${invoice.buyer.city}`, this.marginx, (this.top += this.lineMargin))
       .text(invoice.buyer.country, this.marginx, (this.top += this.lineMargin))
 
       .font("Helvetica-Bold")
@@ -313,11 +292,7 @@ export class InvoicePdfGenerator {
       .font("Helvetica")
       .fillColor("#000000")
       .fontSize(8)
-      .text(
-        invoice.buyer.safe_address,
-        this.marginx,
-        (this.top += this.lineMargin)
-      )
+      .text(invoice.buyer.safe_address, this.marginx, (this.top += this.lineMargin))
 
       // Seller
       .fontSize(10)
@@ -328,11 +303,7 @@ export class InvoicePdfGenerator {
       .fillColor("#000000")
       .text(invoice.seller.name, 300, (sectionTop += this.lineMargin))
       .text(invoice.seller.address, 300, (sectionTop += this.lineMargin))
-      .text(
-        `${invoice.seller.postal_code} ${invoice.buyer.city}`,
-        300,
-        (sectionTop += this.lineMargin)
-      )
+      .text(`${invoice.seller.postal_code} ${invoice.buyer.city}`, 300, (sectionTop += this.lineMargin))
       .text(invoice.seller.country, 300, (sectionTop += this.lineMargin))
 
       .font("Helvetica-Bold")
@@ -377,15 +348,10 @@ export class InvoicePdfGenerator {
           .font("Helvetica")
           .fillColor("#333333")
 
-          .text(
-            `VAT ${taxRow.name}% (included)`,
-            300,
-            index == 0 ? this.top : (this.top += 20),
-            {
-              width: 100,
-              align: "left",
-            }
-          )
+          .text(`VAT ${taxRow.name}% (included)`, 300, index == 0 ? this.top : (this.top += 20), {
+            width: 100,
+            align: "left",
+          })
           .text(taxRow.value, 0, this.top, {
             align: "right",
           });
@@ -467,11 +433,7 @@ export class InvoicePdfGenerator {
       .text("Transaction Hash", this.marginx, (this.top += 20))
       .font("Helvetica")
       .fillColor("#000000")
-      .text(
-        invoice.transactionHash,
-        this.marginx,
-        (this.top += this.lineMargin)
-      );
+      .text(invoice.transactionHash, this.marginx, (this.top += this.lineMargin));
   }
 
   private generateInvoiceTable(
@@ -523,12 +485,7 @@ export class InvoicePdfGenerator {
     doc
       .font("Helvetica")
       .fontSize(8)
-      .text(
-        "Basic Income Lab GmbH | Reifenstuelstr. 6 | 80469 München",
-        50,
-        790,
-        { align: "center", width: 500 }
-      )
+      .text("Basic Income Lab GmbH | Reifenstuelstr. 6 | 80469 München", 50, 790, { align: "center", width: 500 })
 
       .text("Tel.: 089-38466851 | lab@circles.name.", 50, 800, {
         align: "center",
@@ -541,12 +498,10 @@ export class InvoicePdfGenerator {
         810,
         { align: "center", width: 500 }
       )
-      .text(
-        "HRB 269232 | Registergericht: München | Geschäftsführung: Samuel Andert ",
-        50,
-        820,
-        { align: "center", width: 500 }
-      );
+      .text("HRB 269232 | Registergericht: München | Geschäftsführung: Samuel Andert ", 50, 820, {
+        align: "center",
+        width: 500,
+      });
   }
 
   private generateTableRow(
@@ -569,12 +524,7 @@ export class InvoicePdfGenerator {
   }
 
   private generateHr(doc: typeof PDFDocument, y: number) {
-    doc
-      .strokeColor("#aaaaaa")
-      .lineWidth(1)
-      .moveTo(50, y)
-      .lineTo(550, y)
-      .stroke();
+    doc.strokeColor("#aaaaaa").lineWidth(1).moveTo(50, y).lineTo(550, y).stroke();
   }
 
   private formatCurrency(amount: number) {

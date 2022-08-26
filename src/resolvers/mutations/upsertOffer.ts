@@ -1,7 +1,7 @@
-import {Environment} from "../../environment";
-import {canAccessProfileId} from "../../utils/canAccess";
-import {MutationUpsertOfferArgs, Offer} from "../../types";
-import {Context} from "../../context";
+import { Environment } from "../../environment";
+import { canAccessProfileId } from "../../utils/canAccess";
+import { MutationUpsertOfferArgs, Offer } from "../../types";
+import { Context } from "../../context";
 
 export const upsertOffer = async (parent: any, args: MutationUpsertOfferArgs, context: Context) => {
   const caller = await canAccessProfileId(context, args.offer.createdByProfileId);
@@ -11,14 +11,14 @@ export const upsertOffer = async (parent: any, args: MutationUpsertOfferArgs, co
 
   const existingOffer = args.offer.id
     ? await Environment.readWriteApiDb.offer.findFirst({
-      where: {
-        id: args.offer.id,
-        createdByProfileId: args.offer.createdByProfileId,
-      },
-      orderBy: {
-        version: "desc",
-      },
-    })
+        where: {
+          id: args.offer.id,
+          createdByProfileId: args.offer.createdByProfileId,
+        },
+        orderBy: {
+          version: "desc",
+        },
+      })
     : undefined;
 
   if (args.offer.id && !existingOffer) {
@@ -27,35 +27,37 @@ export const upsertOffer = async (parent: any, args: MutationUpsertOfferArgs, co
 
   const newOffer = await (!existingOffer
     ? Environment.readWriteApiDb.offer.create({
-      data: {
-        version: 1,
-        createdByProfileId: args.offer.createdByProfileId,
-        createdAt: new Date(),
-        title: args.offer.title,
-        pictureUrl: args.offer.pictureUrl,
-        pictureMimeType: args.offer.pictureMimeType,
-        description: args.offer.description,
-        pricePerUnit: args.offer.pricePerUnit,
-        timeCirclesPriceShare: args.offer.timeCirclesPriceShare,
-      },
-    })
+        data: {
+          version: 1,
+          createdByProfileId: args.offer.createdByProfileId,
+          createdAt: new Date(),
+          title: args.offer.title,
+          pictureUrl: args.offer.pictureUrl,
+          pictureMimeType: args.offer.pictureMimeType,
+          description: args.offer.description,
+          pricePerUnit: args.offer.pricePerUnit,
+          timeCirclesPriceShare: args.offer.timeCirclesPriceShare,
+          currentInventory: args.offer.currentInventory,
+        },
+      })
     : Environment.readWriteApiDb.offer.create({
-      data: {
-        id: existingOffer.id,
-        version: existingOffer.version + 1,
-        createdByProfileId: args.offer.createdByProfileId,
-        createdAt: new Date(),
-        title: args.offer.title,
-        pictureUrl: args.offer.pictureUrl,
-        pictureMimeType: args.offer.pictureMimeType,
-        description: args.offer.description,
-        pricePerUnit: args.offer.pricePerUnit,
-        timeCirclesPriceShare: args.offer.timeCirclesPriceShare,
-      },
-    }));
+        data: {
+          id: existingOffer.id,
+          version: existingOffer.version + 1,
+          createdByProfileId: args.offer.createdByProfileId,
+          createdAt: new Date(),
+          title: args.offer.title,
+          pictureUrl: args.offer.pictureUrl,
+          pictureMimeType: args.offer.pictureMimeType,
+          description: args.offer.description,
+          pricePerUnit: args.offer.pricePerUnit,
+          timeCirclesPriceShare: args.offer.timeCirclesPriceShare,
+          currentInventory: args.offer.currentInventory,
+        },
+      }));
   return <Offer>{
     ...newOffer,
     createdAt: newOffer.createdAt.toJSON(),
     createdByAddress: caller.profile?.circlesAddress,
   };
-}
+};
