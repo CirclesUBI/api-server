@@ -15,6 +15,7 @@ import {verifySafe} from "./verifySafe";
 import {AutoTrust} from "../../jobs/descriptions/maintenance/autoTrust";
 import {MintCheckInNftsWorker} from "../../jobs/worker/mintCheckInNftsWorker";
 import {MintCheckInNfts} from "../../jobs/descriptions/mintCheckInNfts";
+import {Gender} from "../../api-db/client";
 
 const validateEmail = (email:string) => {
     return email.match(
@@ -93,7 +94,9 @@ export function upsertProfileResolver() {
                     emailAddress: args.data.emailAddress,
                     askedForEmailAddress: args.data.askedForEmailAddress ?? !isNullOrWhitespace(args.data.emailAddress),
                     circlesSafeOwner: session.ethAddress?.toLowerCase(),
-                    displayCurrency: <DisplayCurrency>args.data.displayCurrency
+                    displayCurrency: <DisplayCurrency>args.data.displayCurrency,
+                    gender: args.data.gender ? <Gender>args.data.gender : null,
+                    age: args.data.age
                 }
             }));
 
@@ -167,7 +170,9 @@ export function upsertProfileResolver() {
                     lastAcknowledged: new Date(),
                     lastInvoiceNo: 0,
                     lastRefundNo: 0,
-                    displayCurrency: <DisplayCurrency>args.data.displayCurrency
+                    displayCurrency: <DisplayCurrency>args.data.displayCurrency,
+                    gender: args.data.gender ? <Gender>args.data.gender : null,
+                    age: args.data.age
                 }
             }));
 

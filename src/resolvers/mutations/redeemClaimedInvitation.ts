@@ -32,19 +32,17 @@ export function redeemClaimedInvitation() {
       const web3 = RpcGateway.get();
 
       const invitationFundsRecipient = claimedInvitation.claimedBy.circlesSafeOwner;
-      const invitationFundsAmountInEth = "0.5";
-      const invitationFundsAmountInWei = new BN(web3.utils.toWei(invitationFundsAmountInEth, "ether"));
       const invitationFundsBalance = await web3.eth.getBalance(Environment.invitationFundsSafe.address);
 
       context.log(`Redeeming invitation ${claimedInvitation.code}: Invitations funds balance: ${invitationFundsBalance.toString()}`);
-      context.log(`Redeeming invitation ${claimedInvitation.code}: Sending invitation funds of ${invitationFundsAmountInEth} xdai to '${invitationFundsRecipient}' ..`);
+      context.log(`Redeeming invitation ${claimedInvitation.code}: Sending invitation funds of ${Environment.invitationFundsAmount} wei to '${invitationFundsRecipient}' ..`);
 
       let invitationFundsRecipientBalance = await web3.eth.getBalance(invitationFundsRecipient);
       context.log(`Redeeming invitation ${claimedInvitation.code}: ${invitationFundsRecipient}'s balance is: ${invitationFundsRecipientBalance}`);
 
       const fundEoaReceipt = await Environment.invitationFundsSafe.transferEth(
         Environment.invitationFundsSafeOwner.privateKey,
-        invitationFundsAmountInWei,
+        Environment.invitationFundsAmount,
         invitationFundsRecipient);
 
       context.log(`Redeeming invitation ${claimedInvitation.code}: Transaction hash: ${fundEoaReceipt.transactionHash}`);

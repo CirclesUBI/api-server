@@ -109,7 +109,8 @@ export class Session
 
         const session = await prisma.session.findFirst({
             where: {
-                challengeHash: ch
+                challengeHash: ch,
+                validFrom: null
             }
         });
         if (!session?.challengeHash) {

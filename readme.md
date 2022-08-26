@@ -87,8 +87,6 @@ CONNECTION_STRING_RW=postgresql://postgres:postgres@api-db:5432/api
 CONNECTION_STRING_RO=postgresql://postgres:postgres@api-db:5432/api
 # To be deprecated: only used for JWTs to authorize picture uploads at the moment.
 APP_ID=ultralocal.circles.land
-# To be deprecated: was used for e-mail based authentication.
-ACCEPTED_ISSUER=dev.auth.circles.name
 # A semicolon separated list of allowed CORS origins.
 CORS_ORIGNS=http://localhost:5000
 # Influences how the session cookie is generated:

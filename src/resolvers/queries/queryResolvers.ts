@@ -1,39 +1,51 @@
-import {myProfile, profilesBySafeAddress} from "./profiles";
-import {sessionInfo} from "./sessionInfo";
-import {search} from "./search";
-import {cities} from "./citites";
-import {version} from "./version";
-import {tags} from "./tags";
-import {tagById} from "./tagById";
-import {claimedInvitation} from "./claimedInvitation";
-import {trustRelations} from "./trustRelations";
-import {commonTrust} from "./commonTrust";
-import {organisations} from "./organisations";
-import {safeInfo} from "./safeInfo";
-import {hubSignupTransactionResolver} from "./hubSignupTransactionResolver";
-import {invitationTransaction} from "./invitationTransaction";
-import {myInvitations} from "./myInvitations";
-import {organisationsByAddress} from "./organisationsByAddress";
-import {regionsResolver} from "./regions";
-import {findSafesByOwner} from "./findSafesByOwner";
-import {profilesById} from "./profilesById";
-import {aggregates} from "./aggregates";
-import {events} from "./events";
-import {directPath} from "./directPath";
-import {invoice} from "./invoice";
-import {verifications} from "./verifications";
-import {findInvitationCreator} from "./findInvitationCreator";
-import {recentProfiles} from "./recentProfiles";
-import {stats} from "./stats";
-import {init} from "./init";
-import {Environment} from "../../environment";
-import {ExportProfile, ExportTrustRelation, QueryOffersByIdAndVersionArgs, QueryResolvers} from "../../types";
-import {Context} from "../../context";
-import {shop} from "./shop";
-import {clientAssertionJwt} from "./clientAssertionJwt";
-import {shops, shopsById} from "./shops";
-import {lastAcknowledgedAt} from "./lastAcknowledgedAt";
-import {Offer} from "../../api-db/client";
+import { deliveryMethods } from "./deliveryMethods";
+import { myProfile, profilesBySafeAddress } from "./profiles";
+import { sessionInfo } from "./sessionInfo";
+import { search } from "./search";
+import { cities } from "./citites";
+import { version } from "./version";
+import { tags } from "./tags";
+import { tagById } from "./tagById";
+import { claimedInvitation } from "./claimedInvitation";
+import { trustRelations } from "./trustRelations";
+import { commonTrust } from "./commonTrust";
+import { organisations } from "./organisations";
+import { safeInfo } from "./safeInfo";
+import { hubSignupTransactionResolver } from "./hubSignupTransactionResolver";
+import { invitationTransaction } from "./invitationTransaction";
+import { myInvitations } from "./myInvitations";
+import { organisationsByAddress } from "./organisationsByAddress";
+import { regionsResolver } from "./regions";
+import { findSafesByOwner } from "./findSafesByOwner";
+import { profilesById } from "./profilesById";
+import { aggregates } from "./aggregates";
+import { events } from "./events";
+import { directPath } from "./directPath";
+import { invoice } from "./invoice";
+import { verifications } from "./verifications";
+import { findInvitationCreator } from "./findInvitationCreator";
+import { recentProfiles } from "./recentProfiles";
+import { stats } from "./stats";
+import { init } from "./init";
+import { Environment } from "../../environment";
+import { ExportProfile, ExportTrustRelation, QueryResolvers } from "../../types";
+import { Context } from "../../context";
+import { shop } from "./shop";
+import { clientAssertionJwt } from "./clientAssertionJwt";
+import { shops, shopsById } from "./shops";
+import { lastAcknowledgedAt } from "./lastAcknowledgedAt";
+import { paymentPath } from "./paymentPath";
+import { offersByIdAndVersion } from "./offersByIdAndVersion";
+import { getAllStrings } from "./getAllStrings";
+import { getAllStringsByLanguage } from "./getAllStringsByLanguage";
+import { getStringByMaxVersion } from "./getStringByMaxVersion";
+import { getStringByLanguage } from "./getStringByLanguage";
+import { getAvailableLanguages } from "./getAvailableLanguages";
+import { getAllStringsByMaxVersion } from "./getAllStringsByMaxVersion";
+import { getAllStringsByMaxVersionAndLang } from "./getAllStringsByMaxVersionAndLang";
+import { getOlderVersionsByKeyAndLang } from "./getOlderVersionsByKeyAndLang";
+import { RpcGateway } from "../../circles/rpcGateway";
+import { getEnvironmentData } from "worker_threads";
 
 const packageJson = require("../../../package.json");
 
@@ -48,6 +60,7 @@ export const queryResolvers: QueryResolvers = {
     return stats(caller.profile.circlesAddress);
   },
   cities: cities,
+  deliveryMethods: deliveryMethods(),
   claimedInvitation: claimedInvitation,
   findSafesByOwner: findSafesByOwner,
   invitationTransaction: invitationTransaction(),
@@ -70,6 +83,7 @@ export const queryResolvers: QueryResolvers = {
   aggregates: aggregates,
   events: events,
   directPath: directPath,
+  paymentPath: paymentPath,
   invoice: invoice,
   verifications: verifications,
   findInvitationCreator: findInvitationCreator,
@@ -78,51 +92,15 @@ export const queryResolvers: QueryResolvers = {
   shopsById: shopsById,
   shop: shop,
   clientAssertionJwt: clientAssertionJwt,
-  offersByIdAndVersion: async (parent: any, args: QueryOffersByIdAndVersionArgs, context: Context) => {
-    const offerVersions = args.query.filter(o => !!o.offerVersion).map(o => <number>o.offerVersion);
-    const offerIds = args.query.map(o => o.offerId);
-
-    let result: Offer[];
-    if (offerVersions.length > 0) {
-      result = await Environment.readonlyApiDb.offer.findMany({
-        where: {
-          id: {
-            in: offerIds
-          },
-          version: {
-            in: offerVersions
-          }
-        },
-        orderBy: {
-          version: "desc"
-        }
-      });
-    } else {
-      result = await Environment.readonlyApiDb.offer.findMany({
-        where: {
-          id: {
-            in: offerIds
-          }
-        },
-        orderBy: {
-          version: "desc"
-        }
-      });
-    }
-
-    const offerVersionsById = result.groupBy(o => o.id);
-    const offers = Object.values(offerVersionsById).map(offers => offers[0]);
-
-    return offers.map(o => {
-      return {
-        ...o,
-        createdByAddress: "",
-        createdAt: o.createdAt.toJSON(),
-        pictureMimeType: o.pictureMimeType ?? "",
-        pictureUrl: o.pictureUrl ?? ""
-      }
-    });
-  },
+  offersByIdAndVersion: offersByIdAndVersion,
+  getAllStrings: getAllStrings,
+  getAllStringsByLanguage: getAllStringsByLanguage,
+  getStringByMaxVersion: getStringByMaxVersion,
+  getStringByLanguage: getStringByLanguage,
+  getAvailableLanguages: getAvailableLanguages,
+  getAllStringsByMaxVersion: getAllStringsByMaxVersion,
+  getAllStringsByMaxVersionAndLang: getAllStringsByMaxVersionAndLang,
+  getOlderVersionsByKeyAndLang: getOlderVersionsByKeyAndLang,
   allProfiles: async (parent, args, context) => {
     let profilesSql = `
       select "circlesAddress", "circlesTokenAddress", "firstName", "lastName", "avatarUrl", "lastUpdateAt"
@@ -143,16 +121,17 @@ export const queryResolvers: QueryResolvers = {
     }
 
     const profilesRows = await Environment.pgReadWriteApiDb.query(
-        profilesSql,
-        args.sinceLastChange ? [args.sinceLastChange] : []);
+      profilesSql,
+      args.sinceLastChange ? [args.sinceLastChange] : []
+    );
 
-    return profilesRows.rows.map(o => {
+    return profilesRows.rows.map((o) => {
       return <ExportProfile>{
         avatarUrl: o.avatarUrl,
         displayName: getDisplayName(o),
         circlesAddress: o.circlesAddress,
-        lastChange: o.lastUpdateAt
-      }
+        lastChange: o.lastUpdateAt,
+      };
     });
   },
   allTrusts: async (parent, args, context) => {
@@ -167,16 +146,34 @@ export const queryResolvers: QueryResolvers = {
         where last_change >= $1`;
     }
 
-    const trustRelationRows = await Environment.indexDb.query(trustRelationsSql,
-        args.sinceLastChange ? [args.sinceLastChange] : []);
+    const trustRelationRows = await Environment.indexDb.query(
+      trustRelationsSql,
+      args.sinceLastChange ? [args.sinceLastChange] : []
+    );
 
-    return trustRelationRows.rows.map(o => {
+    return trustRelationRows.rows.map((o) => {
       return <ExportTrustRelation>{
         trusterAddress: o.trusterAddress,
         trusteeAddress: o.trusteeAddress,
         trustLimit: o.trustLimit,
-        lastChange: o.lastChange
-      }
+        lastChange: o.lastChange,
+      };
     });
-  }
-}
+  },
+  getRandomAccount: async () => {
+    if (!Environment.isLocalDebugEnvironment) throw new Error("Only available in local debug environments.");
+
+    const acc = RpcGateway.get().eth.accounts.create();
+    return {
+      privateKey: acc.privateKey,
+      address: acc.address,
+    };
+  },
+  signMessage: async (parent, { message, key }, context) => {
+    if (!Environment.isLocalDebugEnvironment) throw new Error("Only available in local debug environments.");
+
+    const acc = RpcGateway.get().eth.accounts.privateKeyToAccount(key);
+    const signature = acc.sign(message);
+    return signature.signature;
+  },
+};
