@@ -1,8 +1,8 @@
 import { Environment } from "../../environment";
-import {Context} from "../../context";
-import {QueryGetAllStringsByMaxVersionAndLangArgs} from "../../types";
+import { Context } from "../../context";
+import { QueryGetAllStringsByMaxVersionAndLangArgs } from "../../types";
 
-export const getAllStringsByMaxVersionAndLang =async (
+export const getAllStringsByMaxVersionAndLang = async (
   parent: any,
   args: QueryGetAllStringsByMaxVersionAndLangArgs,
   context: Context
@@ -16,4 +16,4 @@ export const getAllStringsByMaxVersionAndLang =async (
     [args.lang]
   );
   return queryResult.rows;
-}
+};
