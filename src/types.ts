@@ -1109,6 +1109,7 @@ export type Query = {
   claimedInvitation?: Maybe<ClaimedInvitation>;
   clientAssertionJwt: Scalars['String'];
   commonTrust: Array<CommonTrust>;
+  countStrings: Scalars['Int'];
   deliveryMethods?: Maybe<Array<Maybe<DeliveryMethod>>>;
   directPath: TransitivePath;
   events: Array<ProfileEvent>;
@@ -1119,10 +1120,13 @@ export type Query = {
   getAllStringsByMaxVersion?: Maybe<Array<Maybe<I18n>>>;
   getAllStringsByMaxVersionAndLang?: Maybe<Array<Maybe<I18n>>>;
   getAvailableLanguages?: Maybe<Array<Maybe<I18n>>>;
+  getFirst20StringsByMaxVersionKey?: Maybe<Array<Maybe<I18n>>>;
   getOlderVersionsByKeyAndLang?: Maybe<Array<Maybe<I18n>>>;
+  getPaginatedStrings?: Maybe<Array<Maybe<I18n>>>;
   getStringByLanguage?: Maybe<Array<I18n>>;
   getStringByMaxVersion?: Maybe<I18n>;
   getStringsByMaxVersionKeyAndValue?: Maybe<Array<Maybe<I18n>>>;
+  getStringsFromLatestValuesByValue?: Maybe<Array<Maybe<I18n>>>;
   hubSignupTransaction?: Maybe<ProfileEvent>;
   init: SessionInfo;
   invitationTransaction?: Maybe<ProfileEvent>;
@@ -1181,6 +1185,11 @@ export type QueryCommonTrustArgs = {
 };
 
 
+export type QueryCountStringsArgs = {
+  key?: InputMaybe<Scalars['String']>;
+};
+
+
 export type QueryDirectPathArgs = {
   amount: Scalars['String'];
   from: Scalars['String'];
@@ -1216,9 +1225,22 @@ export type QueryGetAllStringsByMaxVersionAndLangArgs = {
 };
 
 
+export type QueryGetFirst20StringsByMaxVersionKeyArgs = {
+  key?: InputMaybe<Scalars['String']>;
+};
+
+
 export type QueryGetOlderVersionsByKeyAndLangArgs = {
   key?: InputMaybe<Scalars['String']>;
   lang?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryGetPaginatedStringsArgs = {
+  key?: InputMaybe<Scalars['String']>;
+  lang?: InputMaybe<Scalars['String']>;
+  pagination_key?: InputMaybe<Scalars['String']>;
+  value?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -1235,6 +1257,11 @@ export type QueryGetStringByMaxVersionArgs = {
 
 export type QueryGetStringsByMaxVersionKeyAndValueArgs = {
   key?: InputMaybe<Scalars['String']>;
+  value?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryGetStringsFromLatestValuesByValueArgs = {
   value?: InputMaybe<Scalars['String']>;
 };
 
@@ -1779,6 +1806,7 @@ export type I18n = {
   createdBy?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
   lang?: Maybe<Scalars['String']>;
+  pagination_key?: Maybe<Scalars['String']>;
   value?: Maybe<Scalars['String']>;
   version?: Maybe<Scalars['Int']>;
 };
@@ -2902,6 +2930,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
   clientAssertionJwt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   commonTrust?: Resolver<Array<ResolversTypes['CommonTrust']>, ParentType, ContextType, RequireFields<QueryCommonTrustArgs, 'safeAddress1' | 'safeAddress2'>>;
+  countStrings?: Resolver<ResolversTypes['Int'], ParentType, ContextType, Partial<QueryCountStringsArgs>>;
   deliveryMethods?: Resolver<Maybe<Array<Maybe<ResolversTypes['DeliveryMethod']>>>, ParentType, ContextType>;
   directPath?: Resolver<ResolversTypes['TransitivePath'], ParentType, ContextType, RequireFields<QueryDirectPathArgs, 'amount' | 'from' | 'to'>>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'pagination' | 'safeAddress' | 'types'>>;
@@ -2912,10 +2941,13 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getAllStringsByMaxVersion?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType>;
   getAllStringsByMaxVersionAndLang?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetAllStringsByMaxVersionAndLangArgs>>;
   getAvailableLanguages?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType>;
+  getFirst20StringsByMaxVersionKey?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetFirst20StringsByMaxVersionKeyArgs>>;
   getOlderVersionsByKeyAndLang?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetOlderVersionsByKeyAndLangArgs>>;
+  getPaginatedStrings?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetPaginatedStringsArgs>>;
   getStringByLanguage?: Resolver<Maybe<Array<ResolversTypes['i18n']>>, ParentType, ContextType, Partial<QueryGetStringByLanguageArgs>>;
   getStringByMaxVersion?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<QueryGetStringByMaxVersionArgs>>;
   getStringsByMaxVersionKeyAndValue?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetStringsByMaxVersionKeyAndValueArgs>>;
+  getStringsFromLatestValuesByValue?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetStringsFromLatestValuesByValueArgs>>;
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   init?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
@@ -3222,6 +3254,7 @@ export type I18nResolvers<ContextType = any, ParentType extends ResolversParentT
   createdBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   key?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lang?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  pagination_key?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   version?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

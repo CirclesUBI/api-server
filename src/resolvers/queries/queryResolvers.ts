@@ -30,7 +30,11 @@ import { init } from "./init";
 import { Environment } from "../../environment";
 import {
   ExportProfile, ExportTrustRelation,
+  QueryCountStringsArgs,
+  QueryGetFirst20StringsByMaxVersionKeyArgs,
+  QueryGetPaginatedStringsArgs,
   QueryGetStringsByMaxVersionKeyAndValueArgs,
+  QueryGetStringsFromLatestValuesByValueArgs,
   QueryResolvers
 } from "../../types";
 import { Context } from "../../context";
@@ -105,18 +109,61 @@ export const queryResolvers: QueryResolvers = {
   getOlderVersionsByKeyAndLang: getOlderVersionsByKeyAndLang,
 
 
+  getStringsFromLatestValuesByValue: async (parent, args: QueryGetStringsFromLatestValuesByValueArgs, context) => {
+    const queryResult = await Environment.pgReadWriteApiDb.query(`
+    select *
+      from "latestValues"
+        where value like $1;
+    `,
+      [args.value]);
+    return queryResult.rows
+  },
+
   getStringsByMaxVersionKeyAndValue: async (parent, args: QueryGetStringsByMaxVersionKeyAndValueArgs, context) => {
     const queryResult = await Environment.pgReadWriteApiDb.query(`
     select * 
       from "latestValues"
         where key ^@ $1
-        and value ilike $2
+        and value ilike $2;
     `,
       [args.key, args.value]);
     return queryResult.rows
   },
 
-  
+  getFirst20StringsByMaxVersionKey: async (parent, args: QueryGetFirst20StringsByMaxVersionKeyArgs, context) => {
+    const queryResult = await Environment.pgReadWriteApiDb.query(`
+    select * 
+      from "latestValues"
+        where key ^@ $1
+        order by key
+        limit 20;
+    `,
+      [args.key]);
+    return queryResult.rows
+  },
+
+  getPaginatedStrings: async (parent, args: QueryGetPaginatedStringsArgs, context) => {
+    const queryResult = await Environment.pgReadWriteApiDb.query(`
+    select key || lang as pagination_key, lang, key, version, value 
+    from "latestValues" 
+    where (key || lang) > $1 and key ^@ $2 and lang ^@ $3 and value ^@ $4
+    order by key || lang limit 20; 
+    `,
+      [args.pagination_key, args.key, args.lang, args.value]);
+    return queryResult.rows
+  },
+
+  countStrings: async (parent, args: QueryCountStringsArgs, context) => {
+    const queryResult = await Environment.pgReadWriteApiDb.query(`
+    select *
+      from "latestValues"
+        where key ^@ $1;
+    `,
+      [args.key]);
+    return queryResult.rowCount
+  },
+
+
   allProfiles: async (parent, args, context) => {
     let profilesSql = `
       select "circlesAddress", "circlesTokenAddress", "firstName", "lastName", "avatarUrl", "lastUpdateAt"
