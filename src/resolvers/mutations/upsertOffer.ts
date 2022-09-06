@@ -38,6 +38,7 @@ export const upsertOffer = async (parent: any, args: MutationUpsertOfferArgs, co
           pricePerUnit: args.offer.pricePerUnit,
           timeCirclesPriceShare: args.offer.timeCirclesPriceShare,
           currentInventory: args.offer.currentInventory,
+          minAge: args.offer.minAge,
         },
       })
     : Environment.readWriteApiDb.offer.create({
@@ -53,6 +54,7 @@ export const upsertOffer = async (parent: any, args: MutationUpsertOfferArgs, co
           pricePerUnit: args.offer.pricePerUnit,
           timeCirclesPriceShare: args.offer.timeCirclesPriceShare,
           currentInventory: args.offer.currentInventory,
+          minAge: args.offer.minAge,
         },
       }));
   return <Offer>{
