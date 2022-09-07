@@ -19,6 +19,8 @@ jobs:
 
   build-docker-image:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ fromJson(steps.readPackageJson.outputs.packageJson).version }}
     steps:
       - uses: actions/checkout@v2
       - id: readPackageJson
@@ -38,3 +40,21 @@ jobs:
           docker login https://ghcr.io -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD
           docker build . --tag ghcr.io/circlesland/api-server:latest --tag ghcr.io/circlesland/api-server:${{fromJson(steps.readPackageJson.outputs.packageJson).version}} --tag api-server --tag main
           docker push ghcr.io/circlesland/api-server:${{fromJson(steps.readPackageJson.outputs.packageJson).version}}
+
+  update-helm-chart:
+    runs-on: ubuntu-latest
+    needs: build-docker-image
+    steps:
+    - uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.PAT_TOKEN }}
+        script: |
+          await github.rest.actions.createWorkflowDispatch({
+            owner: 'circlesland',
+            repo: 'circles-helm-api-server',
+            workflow_id: 'main.yml',
+            ref: 'main',
+            inputs: {
+              version: '${{ needs.build-docker-image.outputs.version }}'
+            }
+          })
