@@ -52,6 +52,6 @@ jobs:
             workflow_id: 'main.yml',
             ref: 'main',
             inputs: {
-              version: '${{fromJson(steps.readPackageJson.outputs.packageJson).version}}'
+              version: '${{ steps.readPackageJson.outputs.packageJson.version }}'
             }
           })
