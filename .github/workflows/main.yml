@@ -50,5 +50,8 @@ jobs:
             owner: 'circlesland',
             repo: 'circles-helm-api-server',
             workflow_id: 'main.yml',
-            ref: 'main'
+            ref: 'main',
+            inputs: {
+              version: '${{fromJson(steps.readPackageJson.outputs.packageJson).version}}'
+            }
           })
