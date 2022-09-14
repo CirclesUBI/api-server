@@ -572,6 +572,7 @@ export type Mutation = {
   requestUpdateSafe: RequestUpdateSafeResponse;
   revokeSafeVerification: VerifySafeResult;
   sendMessage: SendMessageResult;
+  setStringUpdateState?: Maybe<I18n>;
   tagTransaction: TagTransactionResult;
   updateSafe: UpdateSafeResponse;
   updateValue?: Maybe<I18n>;
@@ -703,6 +704,11 @@ export type MutationSendMessageArgs = {
   content: Scalars['String'];
   fromSafeAddress?: InputMaybe<Scalars['String']>;
   toSafeAddress: Scalars['String'];
+};
+
+
+export type MutationSetStringUpdateStateArgs = {
+  key?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -1829,6 +1835,7 @@ export type I18n = {
   createdBy?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
   lang?: Maybe<Scalars['String']>;
+  needsUpdate?: Maybe<Scalars['Boolean']>;
   pagination_key?: Maybe<Scalars['String']>;
   value?: Maybe<Scalars['String']>;
   version?: Maybe<Scalars['Int']>;
@@ -2701,6 +2708,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   requestUpdateSafe?: Resolver<ResolversTypes['RequestUpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationRequestUpdateSafeArgs, 'data'>>;
   revokeSafeVerification?: Resolver<ResolversTypes['VerifySafeResult'], ParentType, ContextType, RequireFields<MutationRevokeSafeVerificationArgs, 'safeAddress'>>;
   sendMessage?: Resolver<ResolversTypes['SendMessageResult'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'content' | 'toSafeAddress'>>;
+  setStringUpdateState?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<MutationSetStringUpdateStateArgs>>;
   tagTransaction?: Resolver<ResolversTypes['TagTransactionResult'], ParentType, ContextType, RequireFields<MutationTagTransactionArgs, 'tag' | 'transactionHash'>>;
   updateSafe?: Resolver<ResolversTypes['UpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationUpdateSafeArgs, 'data'>>;
   updateValue?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<MutationUpdateValueArgs>>;
@@ -3290,6 +3298,7 @@ export type I18nResolvers<ContextType = any, ParentType extends ResolversParentT
   createdBy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   key?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lang?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  needsUpdate?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   pagination_key?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   version?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;

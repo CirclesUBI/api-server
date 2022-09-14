@@ -19,7 +19,7 @@ import { completeSale } from "./completeSale";
 import { revokeSafeVerification, verifySafe } from "./verifySafe";
 import { announcePayment } from "./announcePayment";
 import { Environment } from "../../environment";
-import { MutationAddNewLangArgs, MutationConfirmLegalAgeArgs, MutationCreateNewStringAndKeyArgs, MutationPayWithPathArgs, MutationResolvers, MutationUpdateValueArgs } from "../../types";
+import { MutationAddNewLangArgs, MutationConfirmLegalAgeArgs, MutationCreateNewStringAndKeyArgs, MutationPayWithPathArgs, MutationResolvers, MutationSetStringUpdateStateArgs, MutationUpdateValueArgs } from "../../types";
 import {
   TransitivePath, TransitiveTransfer
 } from "../../types";
@@ -37,6 +37,7 @@ import {confirmLegalAge} from "./confirmLegalAge";
 import {addNewLang} from "./addNewLang";
 import {updatei18nValue} from "./updatei18nValue";
 import {BalanceQueries} from "../../querySources/balanceQueries";
+import { EncryptJWT } from "jose";
 
 export const mutationResolvers: MutationResolvers = {
   purchase: purchaseResolver,
@@ -84,12 +85,34 @@ export const mutationResolvers: MutationResolvers = {
           $2,
           $3,
           1,
-          $4) returning lang, key, "createdBy", version, value;
+          $4) returning lang, key, "createdBy", version, value, "needsUpdate";
       `,
         [args.lang, args.key, createdBy, args.value]);
       return queryResult.rows[0]
     };
   },
+
+  setStringUpdateState: async (parent: any, args: MutationSetStringUpdateStateArgs, context: Context) => {
+    let callerInfo = await context.callerInfo;
+    let isBilMember = await isBALIMember(callerInfo?.profile?.circlesAddress);
+    if (!isBilMember) {
+      throw new Error(`Your need to be a member of Basic Income Lab to edit the content.`)
+    } else {
+      let queryResult = await Environment.pgReadWriteApiDb.query(`
+      update i18n 
+			set "needsUpdate" = true
+			where lang != 'en'
+			and key = $1
+			and version = (select max(version) 
+							from i18n 
+								where key = §1 
+						   		and lang != 'en');
+      `,
+        [args.key]);
+      return  queryResult.rows[0]
+    }
+  }, 
+  
   upsertOffer: upsertOffer,
   upsertShop: upsertShop,
   upsertShopCategories: upsertShopCategories,
