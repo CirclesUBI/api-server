@@ -12,19 +12,21 @@ export const updatei18nValue = async (parent: any, args: MutationUpdateValueArgs
     let createdBy = callerInfo?.profile?.circlesAddress
     const queryResult = await Environment.pgReadWriteApiDb.query(`
       insert into i18n (
+          "needsUpdate",
           lang,
           key, 
           "createdBy", 
           version, 
           value
       ) values (
+          false,
           $1,
           $2, 
           $3, 
           (select max(version) + 1 
           from i18n 
           where key=$2 and lang=$1),
-          $4) returning lang, key, "createdBy", version, value;
+          $4) returning lang, key, "createdBy", version, value, "needsUpdate";
       `,
       [args.lang, args.key, createdBy, args.value]);
     return queryResult.rows[0]

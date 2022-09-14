@@ -1477,6 +1477,7 @@ type Query {
   getPaginatedStrings(pagination_key: String, key: String, lang: String, value: String): [i18n]
   countStrings(key: String): Int!
   getStringsFromLatestValuesByValue(value: String): [i18n]
+  getStringsToBeUpdated(lang: String, key: String): Int
 
   allProfiles(sinceLastChange: Date): [ExportProfile]!
   allTrusts(sinceLastChange: Date): [ExportTrustRelation!]!
