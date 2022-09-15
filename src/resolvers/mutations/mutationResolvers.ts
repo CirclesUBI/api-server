@@ -86,12 +86,14 @@ export const mutationResolvers: MutationResolvers = {
           key,
           "createdBy",
           version,
+          "needsUpdate",
           value
         ) values (
           $1,
           $2,
           $3,
           1,
+          false,
           $4) returning lang, key, "createdBy", version, value, "needsUpdate";
       `,
         [args.lang, args.key, createdBy, args.value]
