@@ -1132,12 +1132,13 @@ export type Query = {
   getFirst20StringsByMaxVersionKey?: Maybe<Array<Maybe<I18n>>>;
   getOlderVersionsByKeyAndLang?: Maybe<Array<Maybe<I18n>>>;
   getPaginatedStrings?: Maybe<Array<Maybe<I18n>>>;
+  getPaginatedStringsToUpdate?: Maybe<Array<Maybe<I18n>>>;
   getRandomAccount?: Maybe<RandomAccount>;
   getStringByLanguage?: Maybe<Array<I18n>>;
   getStringByMaxVersion?: Maybe<I18n>;
   getStringsByMaxVersionKeyAndValue?: Maybe<Array<Maybe<I18n>>>;
   getStringsFromLatestValuesByValue?: Maybe<Array<Maybe<I18n>>>;
-  getStringsToBeUpdated?: Maybe<Scalars['Int']>;
+  getStringsToBeUpdatedAmount?: Maybe<Scalars['Int']>;
   hubSignupTransaction?: Maybe<ProfileEvent>;
   init: SessionInfo;
   invitationTransaction?: Maybe<ProfileEvent>;
@@ -1257,6 +1258,15 @@ export type QueryGetPaginatedStringsArgs = {
 };
 
 
+export type QueryGetPaginatedStringsToUpdateArgs = {
+  key?: InputMaybe<Scalars['String']>;
+  lang?: InputMaybe<Scalars['String']>;
+  needsUpdate?: InputMaybe<Scalars['Boolean']>;
+  pagination_key?: InputMaybe<Scalars['String']>;
+  value?: InputMaybe<Scalars['String']>;
+};
+
+
 export type QueryGetStringByLanguageArgs = {
   lang?: InputMaybe<Scalars['String']>;
 };
@@ -1279,7 +1289,7 @@ export type QueryGetStringsFromLatestValuesByValueArgs = {
 };
 
 
-export type QueryGetStringsToBeUpdatedArgs = {
+export type QueryGetStringsToBeUpdatedAmountArgs = {
   key?: InputMaybe<Scalars['String']>;
   lang?: InputMaybe<Scalars['String']>;
 };
@@ -2986,12 +2996,13 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getFirst20StringsByMaxVersionKey?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetFirst20StringsByMaxVersionKeyArgs>>;
   getOlderVersionsByKeyAndLang?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetOlderVersionsByKeyAndLangArgs>>;
   getPaginatedStrings?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetPaginatedStringsArgs>>;
+  getPaginatedStringsToUpdate?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetPaginatedStringsToUpdateArgs>>;
   getRandomAccount?: Resolver<Maybe<ResolversTypes['RandomAccount']>, ParentType, ContextType>;
   getStringByLanguage?: Resolver<Maybe<Array<ResolversTypes['i18n']>>, ParentType, ContextType, Partial<QueryGetStringByLanguageArgs>>;
   getStringByMaxVersion?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<QueryGetStringByMaxVersionArgs>>;
   getStringsByMaxVersionKeyAndValue?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetStringsByMaxVersionKeyAndValueArgs>>;
   getStringsFromLatestValuesByValue?: Resolver<Maybe<Array<Maybe<ResolversTypes['i18n']>>>, ParentType, ContextType, Partial<QueryGetStringsFromLatestValuesByValueArgs>>;
-  getStringsToBeUpdated?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<QueryGetStringsToBeUpdatedArgs>>;
+  getStringsToBeUpdatedAmount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, Partial<QueryGetStringsToBeUpdatedAmountArgs>>;
   hubSignupTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   init?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;

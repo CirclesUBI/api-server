@@ -33,9 +33,10 @@ import {
   QueryCountStringsArgs,
   QueryGetFirst20StringsByMaxVersionKeyArgs,
   QueryGetPaginatedStringsArgs,
+  QueryGetPaginatedStringsToUpdateArgs,
   QueryGetStringsByMaxVersionKeyAndValueArgs,
   QueryGetStringsFromLatestValuesByValueArgs,
-  QueryGetStringsToBeUpdatedArgs,
+  QueryGetStringsToBeUpdatedAmountArgs,
   QueryResolvers
 } from "../../types";
 import { Context } from "../../context";
@@ -111,7 +112,7 @@ export const queryResolvers: QueryResolvers = {
   getAllStringsByMaxVersionAndLang: getAllStringsByMaxVersionAndLang,
   getOlderVersionsByKeyAndLang: getOlderVersionsByKeyAndLang,
 
-  getStringsToBeUpdated: async (parent, args: QueryGetStringsToBeUpdatedArgs, context) => {
+  getStringsToBeUpdatedAmount: async (parent, args: QueryGetStringsToBeUpdatedAmountArgs, context) => {
     const queryResult = await Environment.pgReadWriteApiDb.query(`
     select count(*) 
       from "latestValues"
@@ -162,6 +163,17 @@ export const queryResolvers: QueryResolvers = {
     select key || lang as pagination_key, lang, key, version, value 
     from "latestValues" 
     where (key || lang) > $1 and key ^@ $2 and lang ^@ $3 and value ^@ $4
+    order by key || lang limit 20; 
+    `,
+      [args.pagination_key, args.key, args.lang, args.value]);
+    return queryResult.rows
+  },
+
+  getPaginatedStringsToUpdate: async (parent, args: QueryGetPaginatedStringsToUpdateArgs, context) => {
+    const queryResult = await Environment.pgReadWriteApiDb.query(`
+    select key || lang as pagination_key, lang, key, version, value, "needsUpdate"
+    from "latestValues" 
+    where (key || lang) > $1 and key ^@ $2 and lang ^@ $3 and value ^@ $4 and "needsUpdate" = true
     order by key || lang limit 20; 
     `,
       [args.pagination_key, args.key, args.lang, args.value]);
