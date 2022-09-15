@@ -679,6 +679,7 @@ model i18n {
     version Int
     releaseVersion Int?
     value String
+    needsUpdate Boolean
     @@unique([lang, key, version])
 
     release i18nReleases? @relation(name: "i18nReleases_i18n", fields: [releaseVersion, lang], references: [releaseVersion, lang])
