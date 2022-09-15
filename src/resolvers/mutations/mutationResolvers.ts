@@ -20,13 +20,8 @@ import { revokeSafeVerification, verifySafe } from "./verifySafe";
 import { announcePayment } from "./announcePayment";
 import { Environment } from "../../environment";
 import {
-  MutationAddNewLangArgs,
-  MutationConfirmLegalAgeArgs,
-  MutationCreateNewStringAndKeyArgs,
   MutationPayWithPathArgs,
   MutationResolvers,
-  MutationSetStringUpdateStateArgs,
-  MutationUpdateValueArgs,
 } from "../../types";
 import { TransitivePath, TransitiveTransfer } from "../../types";
 import { upsertOffer } from "./upsertOffer";
@@ -44,6 +39,8 @@ import { addNewLang } from "./addNewLang";
 import { updatei18nValue } from "./updatei18nValue";
 import { BalanceQueries } from "../../querySources/balanceQueries";
 import { EncryptJWT } from "jose";
+import { createNewStringAndKey } from "./createNewStringAndKey";
+import { setStringUpdateState } from "./setStringUpdateState";
 
 export const mutationResolvers: MutationResolvers = {
   purchase: purchaseResolver,
@@ -71,56 +68,8 @@ export const mutationResolvers: MutationResolvers = {
   announcePayment: announcePayment(),
   addNewLang: addNewLang,
   updateValue: updatei18nValue,
-
-  createNewStringAndKey: async (parent: any, args: MutationCreateNewStringAndKeyArgs, context: Context) => {
-    let callerInfo = await context.callerInfo;
-    let isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
-    if (!isBilMember) {
-      throw new Error(`Your need to be a member of Basic Income Lab to edit the content.`);
-    } else {
-      let createdBy = callerInfo?.profile?.circlesAddress;
-      const queryResult = await Environment.pgReadWriteApiDb.query(
-        `
-      insert into i18n (
-          lang,
-          key,
-          "createdBy",
-          version,
-          "needsUpdate",
-          value
-        ) values (
-          $1,
-          $2,
-          $3,
-          1,
-          false,
-          $4) returning lang, key, "createdBy", version, value, "needsUpdate";
-      `,
-        [args.lang, args.key, createdBy, args.value]
-      );
-      return queryResult.rows[0];
-    }
-  },
-
-  setStringUpdateState: async (parent: any, args: MutationSetStringUpdateStateArgs, context: Context) => {
-    let callerInfo = await context.callerInfo;
-    let isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
-    if (!isBilMember) {
-      throw new Error(`Your need to be a member of Basic Income Lab to edit the content.`);
-    } else {
-      let queryResult = await Environment.pgReadWriteApiDb.query(
-        `
-      update i18n 
-			  set "needsUpdate" = true
-			    where lang != 'en'
-			    and key = $1;
-      `,
-        [args.key]
-      );
-      return queryResult.rows[0];
-    }
-  },
-
+  createNewStringAndKey: createNewStringAndKey,
+  setStringUpdateState: setStringUpdateState,
   upsertOffer: upsertOffer,
   upsertShop: upsertShop,
   upsertShopCategories: upsertShopCategories,
