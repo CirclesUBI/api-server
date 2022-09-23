@@ -1135,7 +1135,7 @@ type PostAddress {
   city: String!
   state: String
   country: String!
-
+  notificationEmail: String
   osmId: String
   hereLocationId: String
   cityGeonameid: Int
@@ -1295,7 +1295,7 @@ type DeliveryMethod {
 input PostAddressInput {
   id: Int
   name: String
-
+  notificationEmail: String
   street: String!
   house: String!
   zip: String!
