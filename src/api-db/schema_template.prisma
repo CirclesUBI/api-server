@@ -170,6 +170,8 @@ model PostAddress {
     state String?
     country String?
 
+    notificationEmail String?
+
     osmId String?
     hereLocationId String?
     cityGeonameid Int?
