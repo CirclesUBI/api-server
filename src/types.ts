@@ -903,6 +903,7 @@ export type PostAddress = {
   house: Scalars['String'];
   id: Scalars['Int'];
   name?: Maybe<Scalars['String']>;
+  notificationEmail?: Maybe<Scalars['String']>;
   osmId?: Maybe<Scalars['String']>;
   state?: Maybe<Scalars['String']>;
   street: Scalars['String'];
@@ -914,6 +915,7 @@ export type PostAddressInput = {
   house: Scalars['String'];
   id?: InputMaybe<Scalars['Int']>;
   name?: InputMaybe<Scalars['String']>;
+  notificationEmail?: InputMaybe<Scalars['String']>;
   street: Scalars['String'];
   zip: Scalars['String'];
 };
@@ -2789,6 +2791,7 @@ export type PostAddressResolvers<ContextType = any, ParentType extends Resolvers
   house?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  notificationEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   osmId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   state?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   street?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
