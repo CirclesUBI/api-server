@@ -1,5 +1,5 @@
 import DataLoader from "dataloader";
-import {Membership, Offer, Verification} from "../../types";
+import {Membership, Verification} from "../../types";
 import {ProfileLoader} from "../../querySources/profileLoader";
 import {Environment} from "../../environment";
 
