@@ -1,4 +1,3 @@
-import { deliveryMethods } from "./deliveryMethods";
 import { myProfile, profilesBySafeAddress } from "./profiles";
 import { sessionInfo } from "./sessionInfo";
 import { search } from "./search";
@@ -21,7 +20,6 @@ import { profilesById } from "./profilesById";
 import { aggregates } from "./aggregates";
 import { events } from "./events";
 import { directPath } from "./directPath";
-import { invoice } from "./invoice";
 import { verifications } from "./verifications";
 import { findInvitationCreator } from "./findInvitationCreator";
 import { recentProfiles } from "./recentProfiles";
@@ -33,12 +31,9 @@ import {
   QueryResolvers
 } from "../../types";
 import { Context } from "../../context";
-import { shop } from "./shop";
 import { clientAssertionJwt } from "./clientAssertionJwt";
-import { shops, shopsById } from "./shops";
 import { lastAcknowledgedAt } from "./lastAcknowledgedAt";
 import { paymentPath } from "./paymentPath";
-import { offersByIdAndVersion } from "./offersByIdAndVersion";
 import { getStringByMaxVersion } from "./getStringByMaxVersion";
 import { getAvailableLanguages } from "./getAvailableLanguages";
 import { getAllStringsByMaxVersion } from "./getAllStringsByMaxVersion";
@@ -63,7 +58,6 @@ export const queryResolvers: QueryResolvers = {
     return stats(caller.profile.circlesAddress);
   },
   cities: cities,
-  deliveryMethods: deliveryMethods(),
   claimedInvitation: claimedInvitation,
   findSafesByOwner: findSafesByOwner,
   invitationTransaction: invitationTransaction(),
@@ -87,15 +81,10 @@ export const queryResolvers: QueryResolvers = {
   events: events,
   directPath: directPath,
   paymentPath: paymentPath,
-  invoice: invoice,
   verifications: verifications,
   findInvitationCreator: findInvitationCreator,
   lastAcknowledgedAt: lastAcknowledgedAt,
-  shops: shops,
-  shopsById: shopsById,
-  shop: shop,
   clientAssertionJwt: clientAssertionJwt,
-  offersByIdAndVersion: offersByIdAndVersion,
   getStringByMaxVersion: getStringByMaxVersion,
   getAvailableLanguages: getAvailableLanguages,
   getAllStringsByMaxVersion: getAllStringsByMaxVersion,

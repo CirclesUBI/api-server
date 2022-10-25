@@ -18,11 +18,9 @@ import { RejectedMembershipOfferEventSource } from "../../querySources/eventSour
 import { WelcomeMessageEventSource } from "../../querySources/eventSources/api/welcomeMessageEventSource";
 import { CreatedInvitationsEventSource } from "../../querySources/eventSources/api/createdInvitationsEventSource";
 import { RedeemedInvitationsEventSource } from "../../querySources/eventSources/api/redeemedInvitationsEventSource";
-import { SalesEventSource } from "../../querySources/eventSources/api/salesEventSource";
 import { CombinedEventSource } from "../../querySources/eventSources/combinedEventSource";
 import { EventAugmenter } from "../../querySources/eventSources/eventAugmenter";
 import { SafeVerifiedEventSource } from "../../querySources/eventSources/api/safeVerifiedEventSource";
-import { PurchasesEventSource } from "../../querySources/eventSources/api/purchasesEventSource";
 import {NewUserEventSource} from "../../querySources/eventSources/api/newUserEventSource";
 
 export const events = async (
@@ -121,12 +119,6 @@ export const events = async (
     }
     if (canAccessPrivateDetails && types[EventType.InvitationRedeemed]) {
       eventSources.push(new RedeemedInvitationsEventSource());
-    }
-    if (canAccessPrivateDetails && types[EventType.SaleEvent]) {
-      eventSources.push(new SalesEventSource());
-    }
-    if (canAccessPrivateDetails && types[EventType.Purchased]) {
-      eventSources.push(new PurchasesEventSource());
     }
   }
 

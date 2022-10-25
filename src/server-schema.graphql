@@ -18,16 +18,6 @@ enum ProfileType {
   REGION
 }
 
-enum ProductListingType {
-  TILES
-  LIST
-}
-
-enum ShopListingStyle {
-  REGULAR
-  FEATURED
-}
-
 enum Gender {
   MALE
   FEMALE
@@ -54,7 +44,6 @@ type Profile {
   avatarUrl: String
   largeBannerUrl: String
   smallBannerUrl: String
-  productListingType: ProductListingType
   avatarCid: String
   avatarMimeType: String
   newsletter: Boolean
@@ -68,13 +57,8 @@ type Profile {
   members: [Profile!]
   displayCurrency: DisplayCurrency
   verifications: [Verification!]
-  offers: [Offer!]
-  purchases: [Purchase!]
-  sales: [Sale!]
   balances: ProfileBalances
   contacts: [Contact!] @cost(value: 1)
-  shops: [Shop!]
-  shippingAddresses: [PostAddress!]
   provenUniqueness: Boolean
   age: Int
   gender: Gender
@@ -116,16 +100,12 @@ type Organisation {
   avatarUrl: String
   largeBannerUrl: String
   smallBannerUrl: String
-  productListingType: ProductListingType
   avatarMimeType: String
   cityGeonameid: Int
   displayCurrency: DisplayCurrency
   city: City
-  offers: [Offer!]
   members: [ProfileOrOrganisation!]
-  shopEnabled: Boolean
   trustsYou: Int # The trust relative to the safeAddress
-  shops: [Shop!]
 }
 
 union ProfileOrOrganisation = Profile | Organisation
@@ -278,140 +258,6 @@ type City implements ICity {
   latitude: Float!
   longitude: Float!
   feature_code: String!
-}
-
-input OfferInput {
-  id: Int
-
-  createdByProfileId: Int!
-
-  title: String!
-  pictureUrl: String!
-  pictureMimeType: String!
-  description: String
-  allergens: String
-  minAge: Int
-  currentInventory: Int
-  pricePerUnit: String! # The price in euro
-  timeCirclesPriceShare: Int! # How many percent of the price can be payed in time circles
-}
-
-type Offer {
-  id: Int!
-  version: Int!
-
-  createdByProfile: Profile
-  createdByAddress: String!
-  createdAt: String!
-  minAge: Int
-  currentInventory: Int
-  title: String!
-  pictureUrl: String!
-  pictureMimeType: String!
-  description: String
-  allergens: String
-
-  pricePerUnit: String! # The price in euro
-  timeCirclesPriceShare: Int! # How many percent of the price can be payed in time circles
-  tags: [Tag!]
-}
-
-type Sale {
-  id: Int!
-
-  sellerAddress: String!
-  sellerProfile: Profile
-
-  buyerAddress: String!
-  buyerProfile: Profile
-  createdAt: String!
-
-  total: String!
-  lines: [SalesLine!]
-
-  paymentTransaction: ProfileEvent
-
-  invoices: [Invoice!]
-}
-
-type SalesLine {
-  id: Int!
-  metadata: String
-  amount: Int!
-  offer: Offer!
-  shop: Shop
-}
-
-type Purchase {
-  id: Int!
-
-  createdByProfile: Profile
-  createdByAddress: String!
-  createdAt: String!
-
-  deliveryMethod: DeliveryMethod!
-  deliveryAddress: PostAddress
-
-  total: String!
-  lines: [PurchaseLine!]
-
-  invoices: [Invoice!]
-}
-
-type PurchaseLine {
-  id: Int!
-  metadata: String
-  amount: Int!
-  offer: Offer
-  shop: Shop
-}
-
-type Invoice {
-  id: Int!
-
-  purchaseId: Int!
-  purchase: Purchase
-
-  sellerAddress: String!
-  sellerProfile: Profile
-
-  deliveryMethod: DeliveryMethod!
-
-  buyerAddress: String!
-  buyerProfile: Profile
-
-  createdAt: String
-
-  lines: [InvoiceLine!]
-
-  invoiceNo: String!
-  pickupCode: String
-  simplePickupCode: String
-
-  buyerSignature: Boolean
-  buyerSignedDate: String
-
-  sellerSignature: Boolean
-  sellerSignedDate: String
-
-  paymentTransactionHash: String
-  paymentTransaction: ProfileEvent
-
-  cancelledAt: String
-  cancelReason: String
-  cancelledBy: Profile
-
-  deliveryAddress: PostAddress
-}
-
-type InvoiceLine {
-  id: Int!
-
-  amount: Int!
-  offer: Offer
-  shop: Shop
-
-  metadata: String
 }
 
 input QueryTagsInput {
@@ -604,22 +450,6 @@ type OrganisationCreated implements IEventPayload {
   organisation_profile: Organisation @cost(value: 1)
 }
 
-# ${buyer} purchased ${amount} ${offer}(s)
-type SaleEvent implements IEventPayload {
-  transaction_hash: String
-  buyer: String!
-  buyer_profile: Profile @cost(value: 1)
-  invoice: Invoice
-}
-
-# ${seller} sold ${amount} ${offer}(s)
-type Purchased implements IEventPayload {
-  transaction_hash: String
-  seller: String!
-  seller_profile: Profile @cost(value: 1)
-  purchase: Purchase!
-}
-
 # ${organisation} verified your safe ${safe_address}
 type SafeVerified implements IEventPayload {
   transaction_hash: String
@@ -646,8 +476,6 @@ union EventPayload =
   | InvitationRedeemed
   | OrganisationCreated
   | MemberAdded
-  | SaleEvent
-  | Purchased
   | SafeVerified
   | NewUser
 
@@ -669,8 +497,6 @@ enum EventType {
   InvitationRedeemed
   OrganisationCreated
   MemberAdded
-  SaleEvent
-  Purchased
   SafeVerified
   NewUser
 }
@@ -681,8 +507,6 @@ enum AggregateType {
   Contacts
   Memberships
   Members
-  Offers
-  Purchases
   Sales
   Erc721Tokens
 }
@@ -730,21 +554,6 @@ type Members implements IAggregatePayload {
   members: [ProfileOrOrganisation!]! @cost(value: 1)
 }
 
-type Offers implements IAggregatePayload {
-  lastUpdatedAt: String!
-  offers: [Offer!]! @cost(value: 1)
-}
-
-type Purchases implements IAggregatePayload {
-  lastUpdatedAt: String!
-  purchases: [Purchase!]! @cost(value: 1)
-}
-
-type Sales implements IAggregatePayload {
-  lastUpdatedAt: String!
-  sales: [Sale!]! @cost(value: 1)
-}
-
 enum ContactDirection {
   In
   Out
@@ -770,9 +579,6 @@ union AggregatePayload =
   | Contacts
   | Memberships
   | Members
-  | Offers
-  | Sales
-  | Purchases
   | Erc721Tokens
 
 type ProfileAggregate {
@@ -920,7 +726,6 @@ input UpsertOrganisationInput {
   avatarUrl: String
   largeBannerUrl: String
   smallBannerUrl: String
-  productListingType: ProductListingType
   avatarMimeType: String
   cityGeonameid: Int
   displayCurrency: DisplayCurrency
@@ -944,24 +749,6 @@ type RejectMembershipResult {
 type RemoveMemberResult {
   success: Boolean!
   error: String
-}
-
-input PurchaseLineInput {
-  offerId: Int!
-  shopId: Int!
-  amount: Int!
-  metadata: String
-}
-
-type ProofPaymentResult {
-  acknowledged: Boolean!
-}
-
-type AnnouncePaymentResult {
-  invoiceId: Int!
-  transactionHash: String!
-  pickupCode: String!
-  simplePickupCode: String
 }
 
 type VerifySafeResult {
@@ -1011,14 +798,6 @@ enum Direction {
   out
 }
 
-input PurchasedEventFilter {
-  id: Int!
-}
-
-input SaleEventFilter {
-  invoiceId: Int
-  pickupCode: String
-}
 
 input ChatMessageEventFilter {
   id: Int!
@@ -1030,8 +809,6 @@ input ProfileEventFilter {
   to: String
   with: String
   transactionHash: String
-  purchased: PurchasedEventFilter
-  sale: SaleEventFilter
   chatMessage: ChatMessageEventFilter
 }
 
@@ -1041,26 +818,10 @@ input ContactAggregateFilter {
 input CrcBalanceAggregateFilter {
   tokenAddresses: [String!]!
 }
-input OffersAggregateFilter {
-  createdByAddresses: [String!]
-  offerIds: [Int!]
-}
-input PurchasesAggregateFilter {
-  createdByAddresses: [String!]
-  purchaseIds: [Int!]
-  pickupCode: String
-}
-input SalesAggregateFilter {
-  createdByAddresses: [String!]
-  salesIds: [Int!]
-  pickupCode: String
-}
+
 input ProfileAggregateFilter {
   contacts: ContactAggregateFilter
   crcBalance: CrcBalanceAggregateFilter
-  offers: OffersAggregateFilter
-  purchases: PurchasesAggregateFilter
-  sales: SalesAggregateFilter
 }
 
 enum AccountType {
@@ -1127,197 +888,11 @@ type TransitivePath {
   transfers: [TransitiveTransfer!]!
 }
 
-type PostAddress {
-  id: Int!
-  name: String
-  street: String!
-  house: String!
-  zip: String!
-  city: String!
-  state: String
-  country: String!
-  notificationEmail: String
-  osmId: String
-  hereLocationId: String
-  cityGeonameid: Int
-}
-
-input ShopInput {
-  id: Int
-
-  enabled: Boolean!
-  private: Boolean
-
-  name: String!
-  description: String!
-  legalText: String
-  largeBannerUrl: String!
-  smallBannerUrl: String!
-
-  shopListingStyle: ShopListingStyle!
-  sortOrder: Int
-
-  productListingStyle: ProductListingType!
-
-  ownerId: Int!
-  openingHours: String
-
-  privacyPolicyLink: String
-  tosLink: String
-  healthInfosLink: String
-
-  adultOnly: Boolean
-
-  deliveryMethodIds: [Int!]
-}
-
-type Shop {
-  id: Int!
-  createdAt: Date!
-
-  private: Boolean
-  enabled: Boolean
-  name: String!
-  description: String!
-  legalText: String
-  largeBannerUrl: String!
-  smallBannerUrl: String!
-
-  shopListingStyle: ShopListingStyle!
-  sortOrder: Int
-
-  productListingStyle: ProductListingType!
-  purchaseMetaDataKeys: String
-
-  ownerId: Int
-
-  owner: Organisation!
-
-  openingHours: String
-  pickupAddress: PostAddress
-
-  categories: [ShopCategory!]
-  deliveryMethods: [DeliveryMethod!]
-
-  privacyPolicyLink: String
-  tosLink: String
-  healthInfosLink: String
-
-  adultOnly: Boolean
-}
-
-input ShopCategoryInput {
-  id: Int
-  shopId: Int!
-
-  private: Boolean
-  enabled: Boolean
-
-  name: String!
-  description: String
-  largeBannerUrl: String
-  smallBannerUrl: String
-
-  sortOrder: Int
-  productListingStyle: ProductListingType
-}
-
-type ShopCategory {
-  id: Int!
-  createdAt: Date
-
-  shop: Shop
-  shopId: Int!
-
-  private: Boolean
-  enabled: Boolean
-
-  name: String!
-  description: String
-  largeBannerUrl: String
-  smallBannerUrl: String
-
-  sortOrder: Int
-
-  productListingStyle: ProductListingType
-
-  entries: [ShopCategoryEntry!]
-}
-
-input ShopCategoryEntryInput {
-  id: Int
-
-  private: Boolean
-  enabled: Boolean
-  name: String
-
-  shopCategoryId: Int!
-  productId: Int!
-  productVersion: Int!
-
-  sortOrder: Int
-}
-
-type ShopCategoryEntry {
-  id: Int!
-  createdAt: Date!
-
-  private: Boolean
-  enabled: Boolean
-  product: Offer
-  productId: Int!
-  productVersion: Int!
-
-  sortOrder: Int
-
-  shopCategory: ShopCategory
-  shopCategoryId: Int!
-}
-
-type UpsertShopCategoriesResult {
-  inserted: Int!
-  updated: Int!
-}
-
-type UpsertShopCategoryEntriesResult {
-  inserted: Int!
-  updated: Int!
-}
-
 type ProofUniquenessResult {
   existingSafe: String
 }
 
-type DeliveryMethod {
-  id: Int!
-  name: String!
-}
-
-input PostAddressInput {
-  id: Int
-  name: String
-  notificationEmail: String
-  street: String!
-  house: String!
-  zip: String!
-  cityGeonameid: Int!
-}
-
-input OfferByIdAndVersionInput {
-  offerId: Int!
-  offerVersion: Int
-}
-
 type Mutation {
-  payWithPath(from: String!, to: String!, amount: String!): TransitivePath!
-
-  announcePayment(invoiceId: Int!, transactionHash: String!): AnnouncePaymentResult!
-
-  purchase(lines: [PurchaseLineInput!]!, deliveryMethodId: Int!, deliveryAddressId: Int): [Invoice!]!
-  completePurchase(invoiceId: Int!, revoke: Boolean): Invoice!
-  completeSale(invoiceId: Int!, revoke: Boolean): Invoice!
-
-  confirmLegalAge(age: Int!): Boolean!
 
   logout: LogoutResponse!
   upsertProfile(data: UpsertProfileInput!): Profile!
@@ -1325,16 +900,8 @@ type Mutation {
   updateSafe(data: UpdateSafeInput!): UpdateSafeResponse!
   upsertTag(data: UpsertTagInput!): Tag!
 
-  upsertShippingAddress(data: PostAddressInput!): PostAddress
-  deleteShippingAddress(id: Int!): PostAddress
-
   upsertOrganisation(organisation: UpsertOrganisationInput!): CreateOrganisationResult!
   upsertRegion(organisation: UpsertOrganisationInput!): CreateOrganisationResult!
-
-  upsertShop(shop: ShopInput!): Shop!
-  upsertShopCategories(shopCategories: [ShopCategoryInput!]!): UpsertShopCategoriesResult!
-  upsertShopCategoryEntries(shopCategoryEntries: [ShopCategoryEntryInput!]!): UpsertShopCategoryEntriesResult!
-  upsertOffer(offer: OfferInput!): Offer!
 
   addMember(groupId: String!, memberAddress: String!): AddMemberResult
   acceptMembership(membershipId: Int!): AcceptMembershipResult
@@ -1425,10 +992,6 @@ type Query {
 
   aggregates(types: [AggregateType!]!, safeAddress: String!, filter: ProfileAggregateFilter): [ProfileAggregate!]!
 
-  shops(ownerId: Int): [Shop!]!
-  shopsById(ids: [Int!]!): [Shop!]!
-  shop(id: Int!, ownerId: Int): Shop
-
   organisations(pagination: PaginationArgs): [Organisation!]!
   regions(pagination: PaginationArgs): [Organisation!]!
   organisationsByAddress(addresses: [String!]!): [Organisation!]!
@@ -1447,18 +1010,9 @@ type Query {
   search(query: SearchInput!): [Profile!]!
   stats: Stats!
 
-  deliveryMethods: [DeliveryMethod]
-
   cities(query: QueryCitiesInput!): [City!]!
   tags(query: QueryTagsInput!): [Tag!]!
   tagById(id: Int!): Tag
-
-  offerById(id: Int!): Offer!
-  offersByIdAndVersion(query: [OfferByIdAndVersionInput!]!): [Offer!]!
-
-  directPath(from: String!, to: String!, amount: String!): TransitivePath!
-  paymentPath(from: String!, to: String!, amount: String!): TransitivePath!
-  invoice(invoiceId: Int!): String
 
   findInvitationCreator(code: String!): Profile
 
@@ -1478,6 +1032,8 @@ type Query {
 
   getRandomAccount: RandomAccount
   signMessage(message: String!, key: String!): String!
+
+  directPath(from: String!, to: String!, amount: String!): TransitivePath!
 }
 
 type Subscription {

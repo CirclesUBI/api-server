@@ -5,11 +5,8 @@ import {CrcBalanceSource} from "../../querySources/aggregateSources/blockchain-i
 import {Erc20BalancesSource} from "../../querySources/aggregateSources/blockchain-indexer/erc20BalancesSource";
 import {ContactPoints, ContactsSource} from "../../querySources/aggregateSources/api/contactsSource";
 import {canAccess} from "../../utils/canAccess";
-import {PurchasesSource} from "../../querySources/aggregateSources/api/purchasesSource";
-import {SalesSource} from "../../querySources/aggregateSources/api/salesSource";
 import {MembershipsSource} from "../../querySources/aggregateSources/api/membershipsSource";
 import {MembersSource} from "../../querySources/aggregateSources/api/membersSource";
-import {OffersSource} from "../../querySources/aggregateSources/api/offersSource";
 import {CombinedAggregateSource} from "../../querySources/aggregateSources/combinedAggregateSource";
 import {AggregateAugmenter} from "../../querySources/aggregateSources/aggregateAugmenter";
 import {Erc721BalancesSource} from "../../querySources/aggregateSources/blockchain/erc721BalancesSource";
@@ -44,14 +41,6 @@ export const aggregates = async (parent:any, args:QueryAggregatesArgs, context: 
 
     if (context.session) {
       let canAccessPrivateDetails = await canAccess(context, args.safeAddress);
-      if (canAccessPrivateDetails) {
-        if (types[AggregateType.Purchases]) {
-          aggregateSources.push(new PurchasesSource());
-        }
-        if (types[AggregateType.Sales]) {
-          aggregateSources.push(new SalesSource());
-        }
-      }
     }
 
     if (types[AggregateType.Memberships]) {
@@ -59,9 +48,6 @@ export const aggregates = async (parent:any, args:QueryAggregatesArgs, context: 
     }
     if (types[AggregateType.Members]) {
       aggregateSources.push(new MembersSource());
-    }
-    if (types[AggregateType.Offers]) {
-      aggregateSources.push(new OffersSource());
     }
     if (types[AggregateType.Erc721Tokens]) {
       aggregateSources.push(new Erc721BalancesSource());
