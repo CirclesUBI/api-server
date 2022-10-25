@@ -1034,6 +1034,7 @@ type Query {
   signMessage(message: String!, key: String!): String!
 
   directPath(from: String!, to: String!, amount: String!): TransitivePath!
+  paymentPath(from: String!, to: String!, amount: String!): TransitivePath!
 }
 
 type Subscription {
