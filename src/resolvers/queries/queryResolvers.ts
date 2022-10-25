@@ -30,11 +30,6 @@ import { init } from "./init";
 import { Environment } from "../../environment";
 import {
   ExportProfile, ExportTrustRelation,
-  QueryCountStringsArgs,
-  QueryGetFirst20StringsByMaxVersionKeyArgs,
-  QueryGetPaginatedStringsArgs,
-  QueryGetStringsByMaxVersionKeyAndValueArgs,
-  QueryGetStringsFromLatestValuesByValueArgs,
   QueryResolvers
 } from "../../types";
 import { Context } from "../../context";
@@ -44,16 +39,16 @@ import { shops, shopsById } from "./shops";
 import { lastAcknowledgedAt } from "./lastAcknowledgedAt";
 import { paymentPath } from "./paymentPath";
 import { offersByIdAndVersion } from "./offersByIdAndVersion";
-import { getAllStrings } from "./getAllStrings";
-import { getAllStringsByLanguage } from "./getAllStringsByLanguage";
 import { getStringByMaxVersion } from "./getStringByMaxVersion";
-import { getStringByLanguage } from "./getStringByLanguage";
 import { getAvailableLanguages } from "./getAvailableLanguages";
 import { getAllStringsByMaxVersion } from "./getAllStringsByMaxVersion";
 import { getAllStringsByMaxVersionAndLang } from "./getAllStringsByMaxVersionAndLang";
 import { getOlderVersionsByKeyAndLang } from "./getOlderVersionsByKeyAndLang";
 import { RpcGateway } from "../../circles/rpcGateway";
 import { getEnvironmentData } from "worker_threads";
+import { getStringsToBeUpdatedAmount } from "./getStringsToBeUpdatedAmount";
+import { getPaginatedStrings } from "./getstPaginatedStrings";
+import { getPaginatedStringsToUpdate } from "./getPaginatedStringsToUpdate";
 
 const packageJson = require("../../../package.json");
 
@@ -101,69 +96,14 @@ export const queryResolvers: QueryResolvers = {
   shop: shop,
   clientAssertionJwt: clientAssertionJwt,
   offersByIdAndVersion: offersByIdAndVersion,
-  getAllStrings: getAllStrings,
-  getAllStringsByLanguage: getAllStringsByLanguage,
   getStringByMaxVersion: getStringByMaxVersion,
-  getStringByLanguage: getStringByLanguage,
   getAvailableLanguages: getAvailableLanguages,
   getAllStringsByMaxVersion: getAllStringsByMaxVersion,
   getAllStringsByMaxVersionAndLang: getAllStringsByMaxVersionAndLang,
   getOlderVersionsByKeyAndLang: getOlderVersionsByKeyAndLang,
-
-
-  getStringsFromLatestValuesByValue: async (parent, args: QueryGetStringsFromLatestValuesByValueArgs, context) => {
-    const queryResult = await Environment.pgReadWriteApiDb.query(`
-    select *
-      from "latestValues"
-        where value like $1;
-    `,
-      [args.value]);
-    return queryResult.rows
-  },
-
-  getStringsByMaxVersionKeyAndValue: async (parent, args: QueryGetStringsByMaxVersionKeyAndValueArgs, context) => {
-    const queryResult = await Environment.pgReadWriteApiDb.query(`
-    select * 
-      from "latestValues"
-        where key ^@ $1
-        and value ilike $2;
-    `,
-      [args.key, args.value]);
-    return queryResult.rows
-  },
-
-  getFirst20StringsByMaxVersionKey: async (parent, args: QueryGetFirst20StringsByMaxVersionKeyArgs, context) => {
-    const queryResult = await Environment.pgReadWriteApiDb.query(`
-    select * 
-      from "latestValues"
-        where key ^@ $1
-        order by key
-        limit 20;
-    `,
-      [args.key]);
-    return queryResult.rows
-  },
-
-  getPaginatedStrings: async (parent, args: QueryGetPaginatedStringsArgs, context) => {
-    const queryResult = await Environment.pgReadWriteApiDb.query(`
-    select key || lang as pagination_key, lang, key, version, value 
-    from "latestValues" 
-    where (key || lang) > $1 and key ^@ $2 and lang ^@ $3 and value ^@ $4
-    order by key || lang limit 20; 
-    `,
-      [args.pagination_key, args.key, args.lang, args.value]);
-    return queryResult.rows
-  },
-
-  countStrings: async (parent, args: QueryCountStringsArgs, context) => {
-    const queryResult = await Environment.pgReadWriteApiDb.query(`
-    select *
-      from "latestValues"
-        where key ^@ $1;
-    `,
-      [args.key]);
-    return queryResult.rowCount
-  },
+  getStringsToBeUpdatedAmount: getStringsToBeUpdatedAmount,
+  getPaginatedStrings: getPaginatedStrings,
+  getPaginatedStringsToUpdate:getPaginatedStringsToUpdate,
 
 
   allProfiles: async (parent, args, context) => {
