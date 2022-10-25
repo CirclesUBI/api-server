@@ -448,11 +448,13 @@ export class ContactsSource implements AggregateSource {
     if (Object.keys(distinctAddresses).length == 0 && filter?.contacts?.addresses) {
       const profiles = await new ProfileLoader().profilesBySafeAddress(Environment.readonlyApiDb, filter.contacts.addresses);
       Object.entries(profiles).forEach(o => {
+        const metadata = distinctAddresses[o[0]]?.metadata;
         const contact = <Contact> {
-          contactAddress: o[1]?.circlesAddress,
+          contactAddress: o[0],
           lastContactAt: new Date().toJSON(),
           contactAddress_Profile: o[1],
-          metadata: [{
+          metadata: [
+            ...(metadata ?? []), {
             name: "Search",
             directions: [ContactDirection.Out],
             timestamps: [new Date().toJSON()],
