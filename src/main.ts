@@ -23,7 +23,6 @@ import * as graphqlImport from "@graphql-tools/import";
 import {healthGetHandler} from "./httpHandlers/get/health";
 import {RotateJwks} from "./jobs/descriptions/maintenance/rotateJwks";
 import {RequestUbiForInactiveAccounts} from "./jobs/descriptions/maintenance/requestUbiForInactiveAccounts";
-import {Erc721BalancesSource} from "./querySources/aggregateSources/blockchain/erc721BalancesSource";
 
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
@@ -219,10 +218,6 @@ new Main().run()
   .then(() => console.log("Started"))
   .then(async () => {
     console.log(`Warming up caches ..`);
-    console.log(`* Erc721 ${Environment.gorilloNft.address} (${Environment.gorilloNft.name})`);
-    console.log(`* Erc721 ${Environment.acidPunksNft.address} (${Environment.acidPunksNft.name})`);
-    const tokens = await new Erc721BalancesSource().getAggregate(Environment.operatorOrganisationAddress);
-    console.log("Erc721 caches loaded.");
 
     console.log(`Starting periodic task job factory. Yields every ${Environment.periodicTaskInterval / 1000} seconds.`);
     setInterval(async() => {
