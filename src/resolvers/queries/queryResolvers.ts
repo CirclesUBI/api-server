@@ -1,7 +1,6 @@
 import { myProfile, profilesBySafeAddress } from "./profiles";
 import { sessionInfo } from "./sessionInfo";
 import { search } from "./search";
-import { cities } from "./citites";
 import { version } from "./version";
 import { tags } from "./tags";
 import { tagById } from "./tagById";
@@ -57,7 +56,6 @@ export const queryResolvers: QueryResolvers = {
     }
     return stats(caller.profile.circlesAddress);
   },
-  cities: cities,
   claimedInvitation: claimedInvitation,
   findSafesByOwner: findSafesByOwner,
   invitationTransaction: invitationTransaction(),

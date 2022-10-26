@@ -47,7 +47,6 @@ export function upsertOrganisation(isRegion:boolean) {
             circlesAddress: args.organisation.circlesAddress,
             avatarUrl: args.organisation.avatarUrl,
             avatarMimeType: args.organisation.avatarMimeType,
-            cityGeonameid: args.organisation.cityGeonameid
           }
         }));
       } else {
@@ -59,7 +58,6 @@ export function upsertOrganisation(isRegion:boolean) {
             avatarUrl: args.organisation.avatarUrl,
             avatarMimeType: args.organisation.avatarMimeType,
             type: isRegion ? "REGION" : "ORGANISATION",
-            cityGeonameid: args.organisation.cityGeonameid,
             lastInvoiceNo: 0,
             lastRefundNo: 0
           }

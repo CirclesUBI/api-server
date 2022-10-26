@@ -48,8 +48,6 @@ type Profile {
   avatarMimeType: String
   newsletter: Boolean
   displayTimeCircles: Boolean
-  cityGeonameid: Int
-  city: City
   claimedInvitation: ClaimedInvitation
   invitationTransaction: ProfileEvent
   invitationLink: String
@@ -101,9 +99,7 @@ type Organisation {
   largeBannerUrl: String
   smallBannerUrl: String
   avatarMimeType: String
-  cityGeonameid: Int
   displayCurrency: DisplayCurrency
-  city: City
   members: [ProfileOrOrganisation!]
   trustsYou: Int # The trust relative to the safeAddress
 }
@@ -143,7 +139,6 @@ input UpsertProfileInput {
   avatarMimeType: String
   newsletter: Boolean
   displayTimeCircles: Boolean
-  cityGeonameid: Int
   displayCurrency: DisplayCurrency
   age: Int
   gender: Gender
@@ -226,39 +221,6 @@ type UpdateSafeResponse {
   newSafeAddress: String
 }
 
-input QueryCitiesByNameInput {
-  name_like: String!
-  languageCode: String
-}
-
-input QueryCitiesByGeonameIdInput {
-  geonameid: [Int!]!
-}
-
-input QueryCitiesInput {
-  byName: QueryCitiesByNameInput
-  byId: QueryCitiesByGeonameIdInput
-}
-
-interface ICity {
-  geonameid: Int!
-  name: String!
-  country: String!
-  population: Int!
-  latitude: Float!
-  longitude: Float!
-  feature_code: String!
-}
-
-type City implements ICity {
-  geonameid: Int!
-  name: String!
-  country: String!
-  population: Int!
-  latitude: Float!
-  longitude: Float!
-  feature_code: String!
-}
 
 input QueryTagsInput {
   typeId_in: [String!]!
@@ -710,7 +672,6 @@ input UpsertOrganisationInput {
   largeBannerUrl: String
   smallBannerUrl: String
   avatarMimeType: String
-  cityGeonameid: Int
   displayCurrency: DisplayCurrency
 }
 
@@ -993,7 +954,6 @@ type Query {
   search(query: SearchInput!): [Profile!]!
   stats: Stats!
 
-  cities(query: QueryCitiesInput!): [City!]!
   tags(query: QueryTagsInput!): [Tag!]!
   tagById(id: Int!): Tag
 

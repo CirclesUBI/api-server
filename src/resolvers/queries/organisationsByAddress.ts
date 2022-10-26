@@ -30,7 +30,6 @@ export function organisationsByAddress() {
                 id: p.id,
                 createdAt: allCreationDates[p.circlesAddress ?? ""]?.toJSON(),
                 name: p.firstName,
-                cityGeonameid: p.cityGeonameid,
                 circlesAddress: p.circlesAddress,
                 avatarUrl: p.avatarUrl,
                 description: p.dream,
