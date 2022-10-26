@@ -3,7 +3,6 @@ import { Context } from "../../context";
 import { Environment } from "../../environment";
 import { getDateWithOffset } from "../../utils/getDateWithOffset";
 import BN from "bn.js";
-import { profileCityDataLoader } from "../dataLoaders/profileCityDataLoader";
 import { profileMembershipsDataLoader } from "../dataLoaders/profileMembershipsDataLoader";
 import { profileVerificationsDataLoader } from "../dataLoaders/profileVerificationsDataLoader";
 import { profilePublicContactsDataLoader } from "../dataLoaders/profilePublicContactsDataLoader";
@@ -12,7 +11,6 @@ import { profileClaimedInvitationDataLoader } from "../dataLoaders/profileClaime
 import { profileInvitationTransactionDataLoader } from "../dataLoaders/profileInvitationTransactionDataLoader";
 import { profileCirclesTokenAddressDataLoader } from "../dataLoaders/profileCirclesTokenAddressDataLoader";
 import { profileMembersDataLoader } from "../dataLoaders/profileMembersDataLoader";
-import { UtilityDbQueries } from "../../querySources/utilityDbQueries";
 import { provenUniquenessDataLoader } from "../dataLoaders/provenUniquenessDataLoader";
 
 function isOwnProfile(profileId: number, context: Context): boolean {
@@ -53,10 +51,6 @@ export const profilePropertyResolvers: ProfileResolvers = {
     isOwnProfile(parent.id, context) && parent.askedForEmailAddress ? parent.askedForEmailAddress : false,
   newsletter: async (parent: Profile, args: any, context: Context) =>
     isOwnProfile(parent.id, context) && parent.newsletter !== undefined ? parent.newsletter : null,
-  city: async (parent: Profile) => {
-    if (!parent.cityGeonameid) return null;
-    return await profileCityDataLoader.load(parent.cityGeonameid);
-  },
   memberships: async (parent: Profile, args: any, context: Context) => {
     if (!parent.circlesAddress) {
       return [];
