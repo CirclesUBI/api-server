@@ -320,17 +320,6 @@ type GnosisSafeEthTransfer implements IEventPayload {
   tags: [Tag!]!
 }
 
-# ${from} wrote: ${text}
-type ChatMessage implements IEventPayload {
-  id: Int!
-  transaction_hash: String
-  from: String!
-  from_profile: Profile @cost(value: 1)
-  to: String!
-  to_profile: Profile @cost(value: 1)
-  text: String!
-}
-
 # ${createdBy} invited you to join ${organisation}. Do you want to accept the invitation?
 type MembershipOffer implements IEventPayload {
   transaction_hash: String
@@ -429,7 +418,6 @@ union EventPayload =
   | EthTransfer
   | Erc20Transfer
   | GnosisSafeEthTransfer
-  | ChatMessage
   | MembershipOffer
   | MembershipAccepted
   | MembershipRejected
@@ -450,7 +438,6 @@ enum EventType {
   CrcMinting
   EthTransfer
   GnosisSafeEthTransfer
-  ChatMessage
   MembershipOffer
   MembershipAccepted
   MembershipRejected
@@ -743,17 +730,12 @@ enum Direction {
 }
 
 
-input ChatMessageEventFilter {
-  id: Int!
-}
-
 input ProfileEventFilter {
   direction: Direction
   from: String
   to: String
   with: String
   transactionHash: String
-  chatMessage: ChatMessageEventFilter
 }
 
 input ContactAggregateFilter {

@@ -11,7 +11,6 @@ import {
   SortOrder,
 } from "../../types";
 import { canAccess } from "../../utils/canAccess";
-import { ChatMessageEventSource } from "../../querySources/eventSources/api/chatMessageEventSource";
 import { MembershipOfferEventSource } from "../../querySources/eventSources/api/membershipOfferEventSource";
 import { AcceptedMembershipOfferEventSource } from "../../querySources/eventSources/api/acceptedMembershipOfferEventSource";
 import { RejectedMembershipOfferEventSource } from "../../querySources/eventSources/api/rejectedMembershipOfferEventSource";
@@ -98,9 +97,6 @@ export const events = async (
 
     if (canAccessPrivateDetails && types[EventType.SafeVerified]) {
       eventSources.push(new SafeVerifiedEventSource());
-    }
-    if (canAccessPrivateDetails && types[EventType.ChatMessage]) {
-      eventSources.push(new ChatMessageEventSource());
     }
     if (canAccessPrivateDetails && types[EventType.MembershipOffer]) {
       eventSources.push(new MembershipOfferEventSource());
