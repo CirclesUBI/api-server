@@ -3,7 +3,6 @@ import { logout } from "./logout";
 import { requestUpdateSafe } from "./requestUpdateSafe";
 import { updateSafe } from "./updateSafe";
 import { upsertTag } from "./upsertTag";
-import { sendMessage } from "./sendMessage";
 import { tagTransaction } from "./tagTransaction";
 import { acknowledge } from "./acknowledge";
 import { claimInvitation } from "./claimInvitation";
@@ -40,7 +39,6 @@ export const mutationResolvers: MutationResolvers = {
   updateSafe: updateSafe(Environment.readWriteApiDb),
   upsertTag: upsertTag(),
   tagTransaction: tagTransaction(),
-  sendMessage: sendMessage(Environment.readWriteApiDb),
   acknowledge: acknowledge(),
   claimInvitation: claimInvitation(),
   redeemClaimedInvitation: redeemClaimedInvitation(),

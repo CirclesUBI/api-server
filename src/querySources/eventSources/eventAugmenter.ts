@@ -1,5 +1,4 @@
 import {
-  ChatMessage,
   CrcHubTransfer,
   CrcMinting,
   Erc20Transfer,
@@ -31,7 +30,6 @@ export class EventAugmenter
     new CrcMintingAugmentation(),
     new EthTransferAugmentation(),
     new GnosisSafeEthTransferAugmentation(),
-    new ChatMessageAugmentation(),
     new MembershipOfferAugmentation(),
     new MembershipAcceptedAugmentation(),
     new MembershipRejectedAugmentation(),
@@ -306,19 +304,6 @@ export class MembershipRejectedAugmentation implements ProfileEventAugmentation<
         createdAt: new Date().toJSON() // TODO: Find the correct creation date
       };
     }
-  }
-}
-
-export class ChatMessageAugmentation implements ProfileEventAugmentation<ChatMessage> {
-  matches(profileEvent: ProfileEvent): boolean {
-    return profileEvent.payload?.__typename === EventType.ChatMessage;
-  }
-  extractAddresses(payload: ChatMessage): string[] {
-    return [payload.from, payload.to];
-  }
-  augment(payload: ChatMessage, profiles: ProfilesBySafeAddressLookup): void {
-    payload.from_profile = profiles[payload.from];
-    payload.to_profile = profiles[payload.to];
   }
 }
 
