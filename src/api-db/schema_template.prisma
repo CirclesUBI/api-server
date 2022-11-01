@@ -401,6 +401,8 @@ model Profile {
     safesRevokedByPerson VerifiedSafe[]  @relation(name: "VerifiedSafe_RevokedByPerson")
 
     shippingAddresses PostAddress[] @relation("ProfileShippingAddresses")
+
+    location String?
 }
 
 model ExternalProfiles {
