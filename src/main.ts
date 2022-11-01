@@ -8,7 +8,6 @@ import {RpcGateway} from "./circles/rpcGateway";
 import {GqlLogger} from "./gqlLogger";
 import {Environment} from "./environment";
 import {IndexerEvents} from "./indexer-api/indexerEvents";
-import {PaymentProcessor} from "./indexer-api/paymentProcessor";
 import {AppNotificationProcessor} from "./indexer-api/appNotificationProcessor";
 import {jwksGetHandler} from "./httpHandlers/get/jwks";
 import {JobQueue} from "./jobs/jobQueue";
@@ -171,7 +170,6 @@ export class Main {
       Environment.blockchainIndexerUrl,
       2500,
       [
-        new PaymentProcessor(),
         new AppNotificationProcessor()
       ]
     );
@@ -180,22 +178,16 @@ export class Main {
 
     const jobQueue = new JobQueue("jobQueue");
     const jobTopics: JobType[] = [
-      "broadcastChatMessage",
       "sendCrcReceivedEmail",
       "sendCrcTrustChangedEmail",
-      "sendOrderConfirmationEmail",
-      "invoicePayed",
       "verifyEmailAddress",
       "sendVerifyEmailAddressEmail",
       "inviteCodeFromExternalTrigger",
       "echo",
-      "broadcastPurchased",
       "sendWelcomeEmail",
       "requestUbiForInactiveAccounts",
       "rotateJwks",
-      "autoTrust",
-      "mintPurchaseNfts",
-      "mintCheckInNfts"
+      "autoTrust"
     ];
 
     jobQueue.consume(jobTopics, jobSink, false)
