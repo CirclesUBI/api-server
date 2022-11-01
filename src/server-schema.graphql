@@ -142,7 +142,8 @@ input UpsertProfileInput {
   displayTimeCircles: Boolean
   displayCurrency: DisplayCurrency
   age: Int
-  gender: Gender
+  gender: Gender,
+  location: String
 }
 
 type Tag {
