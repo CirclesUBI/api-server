@@ -954,6 +954,7 @@ export type Profile = {
   invitationTransaction?: Maybe<ProfileEvent>;
   largeBannerUrl?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
+  location?: Maybe<Scalars['String']>;
   members?: Maybe<Array<Profile>>;
   memberships?: Maybe<Array<Membership>>;
   newsletter?: Maybe<Scalars['Boolean']>;
@@ -2827,6 +2828,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   largeBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   members?: Resolver<Maybe<Array<ResolversTypes['Profile']>>, ParentType, ContextType>;
   memberships?: Resolver<Maybe<Array<ResolversTypes['Membership']>>, ParentType, ContextType>;
   newsletter?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
