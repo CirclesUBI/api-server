@@ -1199,6 +1199,7 @@ export type UpsertProfileInput = {
   gender?: InputMaybe<Gender>;
   id?: InputMaybe<Scalars['Int']>;
   lastName?: InputMaybe<Scalars['String']>;
+  location?: InputMaybe<Scalars['String']>;
   newsletter?: InputMaybe<Scalars['Boolean']>;
   status: Scalars['String'];
   successorOfCirclesAddress?: InputMaybe<Scalars['String']>;

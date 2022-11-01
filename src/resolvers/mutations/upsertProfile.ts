@@ -167,7 +167,8 @@ export function upsertProfileResolver() {
                     lastRefundNo: 0,
                     displayCurrency: <DisplayCurrency>args.data.displayCurrency,
                     gender: args.data.gender ? <Gender>args.data.gender : null,
-                    age: args.data.age
+                    age: args.data.age,
+                    location: args.data.location
                 }
             }));
 
