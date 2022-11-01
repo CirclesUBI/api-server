@@ -43,6 +43,7 @@ import { getEnvironmentData } from "worker_threads";
 import { getStringsToBeUpdatedAmount } from "./getStringsToBeUpdatedAmount";
 import { getPaginatedStrings } from "./getstPaginatedStrings";
 import { getPaginatedStringsToUpdate } from "./getPaginatedStringsToUpdate";
+import { content } from "pdfkit/js/page";
 
 const packageJson = require("../../../package.json");
 
@@ -91,6 +92,14 @@ export const queryResolvers: QueryResolvers = {
   getStringsToBeUpdatedAmount: getStringsToBeUpdatedAmount,
   getPaginatedStrings: getPaginatedStrings,
   getPaginatedStringsToUpdate:getPaginatedStringsToUpdate,
+
+
+  allBusinesses: async(parent: any, args: any, context: Context) => {
+    let queryResult = await Environment.readonlyApiDb.businesses.findMany()
+
+    return queryResult;
+  },
+
 
 
   allProfiles: async (parent, args, context) => {

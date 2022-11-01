@@ -53,6 +53,14 @@ export type AssetBalance = {
   token_symbol?: Maybe<Scalars['String']>;
 };
 
+export type Businesses = {
+  __typename?: 'Businesses';
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['Int'];
+  name?: Maybe<Scalars['String']>;
+  picture?: Maybe<Scalars['String']>;
+};
+
 export type Capability = {
   __typename?: 'Capability';
   type?: Maybe<CapabilityType>;
@@ -768,6 +776,7 @@ export type PublicEvent = {
 export type Query = {
   __typename?: 'Query';
   aggregates: Array<ProfileAggregate>;
+  allBusinesses: Array<Businesses>;
   allProfiles: Array<Maybe<ExportProfile>>;
   allTrusts: Array<ExportTrustRelation>;
   claimedInvitation?: Maybe<ClaimedInvitation>;
@@ -1324,6 +1333,7 @@ export type ResolversTypes = ResolversObject<{
   AggregateType: AggregateType;
   AssetBalance: ResolverTypeWrapper<AssetBalance>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  Businesses: ResolverTypeWrapper<Businesses>;
   Capability: ResolverTypeWrapper<Capability>;
   CapabilityType: CapabilityType;
   ClaimInvitationResult: ResolverTypeWrapper<ClaimInvitationResult>;
@@ -1439,6 +1449,7 @@ export type ResolversParentTypes = ResolversObject<{
   AggregatePayload: ResolversParentTypes['Contacts'] | ResolversParentTypes['CrcBalances'] | ResolversParentTypes['Erc20Balances'] | ResolversParentTypes['Members'] | ResolversParentTypes['Memberships'];
   AssetBalance: AssetBalance;
   Boolean: Scalars['Boolean'];
+  Businesses: Businesses;
   Capability: Capability;
   ClaimInvitationResult: ClaimInvitationResult;
   ClaimedInvitation: ClaimedInvitation;
@@ -1571,6 +1582,14 @@ export type AssetBalanceResolvers<ContextType = any, ParentType extends Resolver
   token_owner_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   token_owner_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   token_symbol?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type BusinessesResolvers<ContextType = any, ParentType extends ResolversParentTypes['Businesses'] = ResolversParentTypes['Businesses']> = ResolversObject<{
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  picture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2070,6 +2089,7 @@ export type PublicEventResolvers<ContextType = any, ParentType extends Resolvers
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   aggregates?: Resolver<Array<ResolversTypes['ProfileAggregate']>, ParentType, ContextType, RequireFields<QueryAggregatesArgs, 'safeAddress' | 'types'>>;
+  allBusinesses?: Resolver<Array<ResolversTypes['Businesses']>, ParentType, ContextType>;
   allProfiles?: Resolver<Array<Maybe<ResolversTypes['ExportProfile']>>, ParentType, ContextType, Partial<QueryAllProfilesArgs>>;
   allTrusts?: Resolver<Array<ResolversTypes['ExportTrustRelation']>, ParentType, ContextType, Partial<QueryAllTrustsArgs>>;
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
@@ -2301,6 +2321,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   AddMemberResult?: AddMemberResultResolvers<ContextType>;
   AggregatePayload?: AggregatePayloadResolvers<ContextType>;
   AssetBalance?: AssetBalanceResolvers<ContextType>;
+  Businesses?: BusinessesResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
   ClaimInvitationResult?: ClaimInvitationResultResolvers<ContextType>;
   ClaimedInvitation?: ClaimedInvitationResolvers<ContextType>;

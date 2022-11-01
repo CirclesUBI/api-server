@@ -712,6 +712,13 @@ type i18n {
   needsUpdate: Boolean
 }
 
+type Businesses {
+  id: Int!
+  name: String
+  description: String
+  picture: String
+} 
+
 enum SortOrder {
   ASC
   DESC
@@ -960,6 +967,8 @@ type Query {
 
   directPath(from: String!, to: String!, amount: String!): TransitivePath!
   paymentPath(from: String!, to: String!, amount: String!): TransitivePath!
+
+  allBusinesses: [Businesses!]!
 }
 
 type Subscription {
