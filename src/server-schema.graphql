@@ -79,6 +79,12 @@ type Profile {
   age: Int
   gender: Gender
   location: String
+
+  category: BusinessCategory
+}
+
+type BusinessCategory {
+  name: String
 }
 
 type ProfileBalances {
@@ -1471,7 +1477,13 @@ type Query {
   getAllStringsByMaxVersionAndLang(lang: String): [i18n]
   getOlderVersionsByKeyAndLang(key: String, lang: String): [i18n]
   getPaginatedStrings(pagination_key: String, key: String, lang: String, value: String): [i18n]
-  getPaginatedStringsToUpdate(pagination_key: String, key: String, lang: String, value: String, needsUpdate: Boolean): [i18n]
+  getPaginatedStringsToUpdate(
+    pagination_key: String
+    key: String
+    lang: String
+    value: String
+    needsUpdate: Boolean
+  ): [i18n]
   getStringsToBeUpdatedAmount(lang: String, key: String): Int
 
   allProfiles(sinceLastChange: Date): [ExportProfile]!

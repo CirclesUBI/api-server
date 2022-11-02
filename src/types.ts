@@ -64,6 +64,11 @@ export type AssetBalance = {
   token_symbol?: Maybe<Scalars['String']>;
 };
 
+export type BusinessCategory = {
+  __typename?: 'BusinessCategory';
+  name?: Maybe<Scalars['String']>;
+};
+
 export type Capability = {
   __typename?: 'Capability';
   type?: Maybe<CapabilityType>;
@@ -933,6 +938,7 @@ export type Profile = {
   avatarMimeType?: Maybe<Scalars['String']>;
   avatarUrl?: Maybe<Scalars['String']>;
   balances?: Maybe<ProfileBalances>;
+  category?: Maybe<BusinessCategory>;
   circlesAddress?: Maybe<Scalars['String']>;
   circlesSafeOwner?: Maybe<Scalars['String']>;
   circlesTokenAddress?: Maybe<Scalars['String']>;
@@ -1901,6 +1907,7 @@ export type ResolversTypes = ResolversObject<{
   AnnouncePaymentResult: ResolverTypeWrapper<AnnouncePaymentResult>;
   AssetBalance: ResolverTypeWrapper<AssetBalance>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  BusinessCategory: ResolverTypeWrapper<BusinessCategory>;
   Capability: ResolverTypeWrapper<Capability>;
   CapabilityType: CapabilityType;
   ChatMessage: ResolverTypeWrapper<ChatMessage>;
@@ -2061,6 +2068,7 @@ export type ResolversParentTypes = ResolversObject<{
   AnnouncePaymentResult: AnnouncePaymentResult;
   AssetBalance: AssetBalance;
   Boolean: Scalars['Boolean'];
+  BusinessCategory: BusinessCategory;
   Capability: Capability;
   ChatMessage: ChatMessage;
   ChatMessageEventFilter: ChatMessageEventFilter;
@@ -2243,6 +2251,11 @@ export type AssetBalanceResolvers<ContextType = any, ParentType extends Resolver
   token_owner_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   token_owner_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   token_symbol?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type BusinessCategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['BusinessCategory'] = ResolversParentTypes['BusinessCategory']> = ResolversObject<{
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2807,6 +2820,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   avatarMimeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   balances?: Resolver<Maybe<ResolversTypes['ProfileBalances']>, ParentType, ContextType>;
+  category?: Resolver<Maybe<ResolversTypes['BusinessCategory']>, ParentType, ContextType>;
   circlesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesSafeOwner?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesTokenAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -3290,6 +3304,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   AggregatePayload?: AggregatePayloadResolvers<ContextType>;
   AnnouncePaymentResult?: AnnouncePaymentResultResolvers<ContextType>;
   AssetBalance?: AssetBalanceResolvers<ContextType>;
+  BusinessCategory?: BusinessCategoryResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
   ChatMessage?: ChatMessageResolvers<ContextType>;
   City?: CityResolvers<ContextType>;
