@@ -27,7 +27,7 @@ import { init } from "./init";
 import { Environment } from "../../environment";
 import {
   ExportProfile, ExportTrustRelation,
-  QueryResolvers
+  QueryResolvers, Businesses
 } from "../../types";
 import { Context } from "../../context";
 import { clientAssertionJwt } from "./clientAssertionJwt";
@@ -93,11 +93,46 @@ export const queryResolvers: QueryResolvers = {
   getPaginatedStrings: getPaginatedStrings,
   getPaginatedStringsToUpdate:getPaginatedStringsToUpdate,
 
-
-  allBusinesses: async(parent: any, args: any, context: Context) => {
-    let queryResult = await Environment.readonlyApiDb.businesses.findMany()
-
+  allBusinessCategories: async(parent: any, args: {categoryId?: number|null}, context: Context) => {
+    let queryResult = await Environment.readonlyApiDb.businessCategory.findMany();
     return queryResult;
+  },
+
+  allBusinesses: async(parent: any, args: {categoryId?: number|null}, context: Context) => {
+    let queryResult = await Environment.readonlyApiDb.profile.findMany({
+      where: {
+        type: "ORGANISATION",
+        businessCategoryId: args.categoryId
+      },
+      select: {
+        id: true,
+        firstName: true,
+        dream: true,
+        location: true,
+        businessCategory: {
+          select: {
+            name: true
+          }
+        },
+        avatarUrl: true,
+        businessHoursMonday: true,
+        businessHoursTuesday: true,
+        businessHoursWednesday: true,
+        businessHoursThursday: true,
+        businessHoursFriday: true,
+        businessHoursSaturday: true,
+        businessHoursSunday: true
+      }
+    })
+
+    return queryResult.map(o => {
+      return <Businesses>{
+        ...o,
+        name: o.firstName,
+        description: o.dream,
+        picture: o.avatarUrl
+      }
+    });
   },
 
 
