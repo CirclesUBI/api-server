@@ -61,6 +61,11 @@ type Profile {
   age: Int
   gender: Gender
   location: String
+  category: BusinessCategory
+}
+
+type BusinessCategory {
+  name: String
 }
 
 type ProfileBalances {
