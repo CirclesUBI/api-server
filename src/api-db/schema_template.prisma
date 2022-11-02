@@ -403,6 +403,14 @@ model Profile {
     shippingAddresses PostAddress[] @relation("ProfileShippingAddresses")
 
     location String?
+    businessCategoryId Int?
+    businessCategory BusinessCategory? @relation(name: "Profile_BusinessCategory", fields: [businessCategoryId], references: [id])
+}
+
+model BusinessCategory {
+    id Int @id @default(autoincrement()) 
+    name String
+    profilesWithCategory Profile[] @relation("Profile_BusinessCategory")
 }
 
 model ExternalProfiles {
