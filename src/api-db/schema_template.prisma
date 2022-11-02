@@ -405,6 +405,14 @@ model Profile {
     location String?
     businessCategoryId Int?
     businessCategory BusinessCategory? @relation(name: "Profile_BusinessCategory", fields: [businessCategoryId], references: [id])
+    businessHoursMonday String?
+    businessHoursTuesday String?
+    businessHoursWednesday String?
+    businessHoursThursday String?
+    businessHoursFriday String?
+    businessHoursSaturday String?
+    businessHoursSunday String?
+    phoneNumber String?
 }
 
 model BusinessCategory {
