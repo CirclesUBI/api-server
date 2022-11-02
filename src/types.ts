@@ -55,14 +55,24 @@ export type AssetBalance = {
 
 export type BusinessCategory = {
   __typename?: 'BusinessCategory';
+  id: Scalars['Int'];
   name?: Maybe<Scalars['String']>;
 };
 
 export type Businesses = {
   __typename?: 'Businesses';
+  businessHoursFriday?: Maybe<Scalars['String']>;
+  businessHoursMonday?: Maybe<Scalars['String']>;
+  businessHoursSaturday?: Maybe<Scalars['String']>;
+  businessHoursSunday?: Maybe<Scalars['String']>;
+  businessHoursThursday?: Maybe<Scalars['String']>;
+  businessHoursTuesday?: Maybe<Scalars['String']>;
+  businessHoursWednesday?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
+  location?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
+  phoneNumber?: Maybe<Scalars['String']>;
   picture?: Maybe<Scalars['String']>;
 };
 
@@ -783,6 +793,7 @@ export type PublicEvent = {
 export type Query = {
   __typename?: 'Query';
   aggregates: Array<ProfileAggregate>;
+  allBusinessCategories: Array<BusinessCategory>;
   allBusinesses: Array<Businesses>;
   allProfiles: Array<Maybe<ExportProfile>>;
   allTrusts: Array<ExportTrustRelation>;
@@ -832,6 +843,11 @@ export type QueryAggregatesArgs = {
   filter?: InputMaybe<ProfileAggregateFilter>;
   safeAddress: Scalars['String'];
   types: Array<AggregateType>;
+};
+
+
+export type QueryAllBusinessesArgs = {
+  categoryId?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -1596,14 +1612,24 @@ export type AssetBalanceResolvers<ContextType = any, ParentType extends Resolver
 }>;
 
 export type BusinessCategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['BusinessCategory'] = ResolversParentTypes['BusinessCategory']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type BusinessesResolvers<ContextType = any, ParentType extends ResolversParentTypes['Businesses'] = ResolversParentTypes['Businesses']> = ResolversObject<{
+  businessHoursFriday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  businessHoursMonday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  businessHoursSaturday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  businessHoursSunday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  businessHoursThursday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  businessHoursTuesday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  businessHoursWednesday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  phoneNumber?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   picture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -2106,7 +2132,8 @@ export type PublicEventResolvers<ContextType = any, ParentType extends Resolvers
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   aggregates?: Resolver<Array<ResolversTypes['ProfileAggregate']>, ParentType, ContextType, RequireFields<QueryAggregatesArgs, 'safeAddress' | 'types'>>;
-  allBusinesses?: Resolver<Array<ResolversTypes['Businesses']>, ParentType, ContextType>;
+  allBusinessCategories?: Resolver<Array<ResolversTypes['BusinessCategory']>, ParentType, ContextType>;
+  allBusinesses?: Resolver<Array<ResolversTypes['Businesses']>, ParentType, ContextType, Partial<QueryAllBusinessesArgs>>;
   allProfiles?: Resolver<Array<Maybe<ResolversTypes['ExportProfile']>>, ParentType, ContextType, Partial<QueryAllProfilesArgs>>;
   allTrusts?: Resolver<Array<ResolversTypes['ExportTrustRelation']>, ParentType, ContextType, Partial<QueryAllTrustsArgs>>;
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;

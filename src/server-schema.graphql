@@ -65,6 +65,7 @@ type Profile {
 }
 
 type BusinessCategory {
+  id: Int!
   name: String
 }
 
@@ -984,7 +985,8 @@ type Query {
   directPath(from: String!, to: String!, amount: String!): TransitivePath!
   paymentPath(from: String!, to: String!, amount: String!): TransitivePath!
 
-  allBusinesses: [Businesses!]!
+  allBusinessCategories: [BusinessCategory!]!
+  allBusinesses(categoryId:Int): [Businesses!]!
 }
 
 type Subscription {
