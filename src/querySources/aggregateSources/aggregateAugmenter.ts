@@ -1,10 +1,10 @@
 import {
   AggregateType,
   Contacts,
-  CrcBalances, Erc20Balances, Erc721Tokens,
+  CrcBalances, Erc20Balances,
   IAggregatePayload,
   Members,
-  Memberships, Offers, ProfileAggregate, Purchases, Sales
+  Memberships, ProfileAggregate 
 } from "../../types";
 import {ProfilesBySafeAddressLookup} from "../../resolvers/queries/profiles";
 import {ProfileLoader} from "../profileLoader";
@@ -19,11 +19,7 @@ export class AggregateAugmenter
     new ContactsAugmentation(),
     new MembersAugmentation(),
     new MembershipsAugmentation(),
-    new OffersAugmentation(),
-    new PurchasesAugmentation(),
-    new SalesAugmentation(),
-    new Erc20BalancesAugmentation(),
-    new Erc721TokensAugmentation()
+    new Erc20BalancesAugmentation()
   ];
 
   add(profileAggregate: ProfileAggregate) {
@@ -89,24 +85,6 @@ export class Erc20BalancesAugmentation implements AggregateAugmentation<Erc20Bal
   }
 
   extractAddresses(payload: Erc20Balances): string[] {
-    return [];
-  }
-}
-
-export class Erc721TokensAugmentation implements AggregateAugmentation<Erc721Tokens> {
-  matches(profileAggregate: ProfileAggregate) {
-    return profileAggregate.type == AggregateType.Erc721Tokens;
-  }
-
-  augmentPayload(payload: Erc721Tokens, profiles: ProfilesBySafeAddressLookup, tokens?: TokenInfoByAddress): void {
-
-  }
-
-  extractTokenAddresses(payload: Erc721Tokens): string[] {
-    return payload.balances.map(o => o.token_address);
-  }
-
-  extractAddresses(payload: Erc721Tokens): string[] {
     return [];
   }
 }
@@ -179,57 +157,5 @@ export class MembershipsAugmentation implements AggregateAugmentation<Membership
 
   extractAddresses(payload: Memberships): string[] {
     return <string[]>payload.organisations.map(o => o.circlesAddress).filter(o => !!o);
-  }
-}
-
-export class OffersAugmentation implements AggregateAugmentation<Offers> {
-  matches(profileAggregate: ProfileAggregate) {
-    return profileAggregate.type == AggregateType.Offers;
-  }
-
-  augmentPayload(payload: Offers, profiles: ProfilesBySafeAddressLookup): void {
-    payload.offers = <any>payload.offers.map(o => {
-      o.createdByProfile = profiles[o.createdByAddress];
-      return o;
-    });
-  }
-
-  extractAddresses(payload: Offers): string[] {
-    return payload.offers.map(o => o.createdByAddress);
-  }
-}
-
-export class PurchasesAugmentation implements AggregateAugmentation<Purchases> {
-  matches(profileAggregate: ProfileAggregate) {
-    return profileAggregate.type == AggregateType.Purchases;
-  }
-
-  augmentPayload(payload: Purchases, profiles: ProfilesBySafeAddressLookup): void {
-    payload.purchases = payload.purchases.map(o => {
-      o.createdByProfile = profiles[o.createdByAddress];
-      return o;
-    });
-  }
-
-  extractAddresses(payload: Purchases): string[] {
-    return payload.purchases.map(o => o.createdByAddress);
-  }
-}
-
-export class SalesAugmentation implements AggregateAugmentation<Sales> {
-  matches(profileAggregate: ProfileAggregate) {
-    return profileAggregate.type == AggregateType.Sales;
-  }
-
-  augmentPayload(payload: Sales, profiles: ProfilesBySafeAddressLookup): void {
-    payload.sales = payload.sales.map(o => {
-      o.sellerProfile = profiles[o.sellerAddress];
-      o.buyerProfile = profiles[o.buyerAddress];
-      return o;
-    });
-  }
-
-  extractAddresses(payload: Sales): string[] {
-    return payload.sales.flatMap(o => [o.sellerAddress, o.buyerAddress]);
   }
 }

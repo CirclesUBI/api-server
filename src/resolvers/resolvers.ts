@@ -3,8 +3,7 @@ import {
   Organisation,
   Profile,
   Resolvers,
-  ShopCategory,
-  ShopCategoryEntry,
+
   Verification
 } from "../types";
 import {queryResolvers} from "./queries/queryResolvers";
@@ -12,21 +11,13 @@ import {mutationResolvers} from "./mutations/mutationResolvers";
 import {subscriptionResolvers} from "./subscriptions/subscriptionResolvers";
 import {profilePropertyResolvers} from "./properties/profile";
 import {contactPropertyResolver} from "./properties/contact";
-import {purchasePropertyResolvers} from "./properties/purchase";
-import {invoicePropertyResolver} from "./properties/invoice";
-import {invoiceLinePropertyResolver} from "./properties/invoiceLine";
-import {purchaseLinePropertyResolvers} from "./properties/purchaseLine";
 import {claimedInvitationPropertyResolver} from "./properties/claimedInvitation";
 import {profileEventPropertyResolver} from "./properties/profileEvent";
-import {offerPropertyResolver} from "./properties/offer";
 import {organisationPropertyResolver} from "./properties/organsiation";
 import {GraphQLScalarType, Kind} from "graphql";
 import {Context} from "../context";
 import {verificationProfileDataLoader} from "./dataLoaders/verificationProfileDataLoader";
 import {leaderboardEntryProfileDataLoader} from "./dataLoaders/leaderboardEntryProfileDataLoader";
-import {shopCategoryEntriesDataLoader} from "./dataLoaders/shopCategoryEntriesDataLoader";
-import {shopCategoryEntryProductDataLoader} from "./dataLoaders/shopCategoryEntryProductDataLoader";
-import {shopPropertyResolver} from "./properties/shop";
 
 export const resolvers: Resolvers = {
   Date: new GraphQLScalarType({
@@ -53,13 +44,8 @@ export const resolvers: Resolvers = {
     },
     Profile: profilePropertyResolvers,
     Contact: contactPropertyResolver,
-    Purchase: purchasePropertyResolvers,
-    Invoice: invoicePropertyResolver,
-    InvoiceLine: invoiceLinePropertyResolver,
-    PurchaseLine: purchaseLinePropertyResolvers,
     ClaimedInvitation: claimedInvitationPropertyResolver,
     ProfileEvent: profileEventPropertyResolver,
-    Offer: offerPropertyResolver,
     Organisation: organisationPropertyResolver,
     Verification: {
       verifierProfile: async (parent:Verification, args:any, context:Context) => {
@@ -75,17 +61,6 @@ export const resolvers: Resolvers = {
         return <Promise<Profile>>await verificationProfileDataLoader.load(parent.verifiedSafeAddress);
       }
     },
-    Shop: shopPropertyResolver,
-    ShopCategory: {
-      entries: async (parent:ShopCategory, args:any, context:Context) => {
-        return shopCategoryEntriesDataLoader.load(parent.id);
-      }
-    },
-    ShopCategoryEntry: {
-      product: async (parent:ShopCategoryEntry, args:any, context:Context) => {
-        return shopCategoryEntryProductDataLoader.load(parent.id);
-      }
-    }
   },
   Query: queryResolvers,
   Mutation: mutationResolvers,

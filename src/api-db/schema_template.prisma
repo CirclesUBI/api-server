@@ -403,6 +403,23 @@ model Profile {
     shippingAddresses PostAddress[] @relation("ProfileShippingAddresses")
 
     location String?
+    businessCategoryId Int?
+    businessCategory BusinessCategory? @relation(name: "Profile_BusinessCategory", fields: [businessCategoryId], references: [id])
+
+    businessHoursMonday String?
+    businessHoursTuesday String?
+    businessHoursWednesday String?
+    businessHoursThursday String?
+    businessHoursFriday String?
+    businessHoursSaturday String?
+    businessHoursSunday String?
+    phoneNumber String?
+}
+
+model BusinessCategory {
+    id Int @id @default(autoincrement()) 
+    name String
+    profilesWithCategory Profile[] @relation("Profile_BusinessCategory")
 }
 
 model ExternalProfiles {
@@ -703,4 +720,11 @@ model Agent {
     contractMethod String?
 
     enabled Boolean @default(false)
+}
+
+model Businesses {
+    id Int @id @default(autoincrement())
+    name String
+    description String
+    picture String
 }

@@ -5,7 +5,6 @@ import {SendCrcTrustChangedEmail} from "../jobs/descriptions/emailNotifications/
 import {SendCrcReceivedEmail} from "../jobs/descriptions/emailNotifications/sendCrcReceivedEmail";
 import {EventType, NotificationEvent} from "../types";
 import {Environment} from "../environment";
-import {MintCheckInNfts} from "../jobs/descriptions/mintCheckInNfts";
 
 export class AppNotificationProcessor implements IndexerEventProcessor {
     constructor() {
@@ -70,10 +69,6 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                         to: event.address1,
                         transaction_hash: event.hash
                     };
-
-                    if (parseInt(event.value) > 0) {
-                        await JobQueue.produce([new MintCheckInNfts(event.address2, event.address1)]);
-                    }
 
                     await ApiPubSub.instance.pubSub.publish(`events_${event.address1}`, {
                         events: notification
