@@ -41,7 +41,10 @@ jobs:
           images: |
             ${{ env.REGISTRY }}/${{ env. IMAGE_OWNER }}/${{ env.IMAGE_REPOSITORY }}
           tags: |
-            ${{fromJson(steps.readPackageJson.outputs.packageJson).version}}
+            latest
+            {{sha}}
+            ${{fromJson(steps.readPackageJson.outputs.packageJson).version}}{{branch}}
+            ${{fromJson(steps.readPackageJson.outputs.packageJson).version}}{{base_ref}}
 
       -
         name: Set up Docker Buildx
