@@ -23,13 +23,6 @@ jobs:
         name: Checkout repository
         uses: actions/checkout@v3
 
-      -
-        name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env. IMAGE_OWNER }}/${{ env.IMAGE_REPOSITORY }}
-
       - id: readPackageJson
         run: |
           content=`cat ./package.json`
@@ -39,6 +32,16 @@ jobs:
           content="${content//$'\r'/'%0D'}"
           # end of optional handling for multi line json
           echo "::set-output name=packageJson::$content"
+
+      -
+        name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ${{ env.REGISTRY }}/${{ env. IMAGE_OWNER }}/${{ env.IMAGE_REPOSITORY }}
+          tags: |
+            ${{fromJson(steps.readPackageJson.outputs.packageJson).version}}
 
       -
         name: Set up Docker Buildx
@@ -56,4 +59,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ${{fromJson(steps.readPackageJson.outputs.packageJson).version}}
+          tags: ${{ steps.meta.outputs.tags }}
