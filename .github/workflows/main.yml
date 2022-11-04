@@ -5,18 +5,6 @@ on:
   pull_request:
     branches: [ main ]
 jobs:
-  migrate-db:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup Node
-        uses: actions/setup-node@v2
-      - name: Build
-        run: ./deploy_prisma.sh
-        env:
-          DO_PGSQL_CONNECTIONSTRING: ${{ secrets.MAIN_API_CONNECTION_STRING }}
-
   build-docker-image:
     runs-on: ubuntu-latest
     outputs:
@@ -38,8 +26,8 @@ jobs:
           DOCKER_REGISTRY_PASSWORD: ${{secrets.DOCKER_REGISTRY_PASSWORD}}
         run: |
           docker login https://ghcr.io -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD
-          docker build . --tag ghcr.io/circlesland/api-server:latest --tag ghcr.io/circlesland/api-server:${{fromJson(steps.readPackageJson.outputs.packageJson).version}} --tag api-server --tag main
-          docker push ghcr.io/circlesland/api-server:${{fromJson(steps.readPackageJson.outputs.packageJson).version}}
+          docker build . --tag ghcr.io/CirclesUBI/api-server:latest --tag ghcr.io/CirclesUBI/api-server:${{fromJson(steps.readPackageJson.outputs.packageJson).version}} --tag api-server --tag main
+          docker push ghcr.io/CirclesUBI/api-server:${{fromJson(steps.readPackageJson.outputs.packageJson).version}}
 
   update-helm-chart:
     runs-on: ubuntu-latest
@@ -50,7 +38,7 @@ jobs:
         github-token: ${{ secrets.PAT_TOKEN }}
         script: |
           await github.rest.actions.createWorkflowDispatch({
-            owner: 'circlesland',
+            owner: 'CirclesUBI',
             repo: 'circles-helm-api-server',
             workflow_id: 'main.yml',
             ref: 'main',
