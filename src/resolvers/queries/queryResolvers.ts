@@ -98,11 +98,12 @@ export const queryResolvers: QueryResolvers = {
     return queryResult;
   },
 
-  allBusinesses: async(parent: any, args: {categoryId?: number|null}, context: Context) => {
+  allBusinesses: async(parent: any, args: {categoryId?: number|null, id?: number|null}, context: Context) => {
     let queryResult = await Environment.readonlyApiDb.profile.findMany({
       where: {
         type: "ORGANISATION",
-        businessCategoryId: args.categoryId
+        businessCategoryId: args.categoryId,
+        ... args.id ? {id: args.id} : {}
       },
       select: {
         id: true,

@@ -721,10 +721,3 @@ model Agent {
 
     enabled Boolean @default(false)
 }
-
-model Businesses {
-    id Int @id @default(autoincrement())
-    name String
-    description String
-    picture String
-}
