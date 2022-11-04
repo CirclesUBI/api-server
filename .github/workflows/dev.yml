@@ -43,6 +43,8 @@ jobs:
           tags: |
             latest
             {{sha}}
+            {{branch}}
+            {{base_ref}}
             ${{fromJson(steps.readPackageJson.outputs.packageJson).version}}{{branch}}
             ${{fromJson(steps.readPackageJson.outputs.packageJson).version}}{{base_ref}}
 
