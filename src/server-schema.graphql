@@ -734,6 +734,7 @@ type Businesses {
   businessHoursSunday: String
   phoneNumber: String
   location: String
+  businessCategory: String
 } 
 
 enum SortOrder {

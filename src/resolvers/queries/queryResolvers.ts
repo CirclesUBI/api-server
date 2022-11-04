@@ -122,7 +122,8 @@ export const queryResolvers: QueryResolvers = {
         businessHoursThursday: true,
         businessHoursFriday: true,
         businessHoursSaturday: true,
-        businessHoursSunday: true
+        businessHoursSunday: true,
+        businessCategoryId: true
       }
     })
 

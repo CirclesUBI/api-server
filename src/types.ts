@@ -61,6 +61,7 @@ export type BusinessCategory = {
 
 export type Businesses = {
   __typename?: 'Businesses';
+  businessCategory?: Maybe<Scalars['String']>;
   businessHoursFriday?: Maybe<Scalars['String']>;
   businessHoursMonday?: Maybe<Scalars['String']>;
   businessHoursSaturday?: Maybe<Scalars['String']>;
@@ -848,6 +849,7 @@ export type QueryAggregatesArgs = {
 
 export type QueryAllBusinessesArgs = {
   categoryId?: InputMaybe<Scalars['Int']>;
+  id?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -1618,6 +1620,7 @@ export type BusinessCategoryResolvers<ContextType = any, ParentType extends Reso
 }>;
 
 export type BusinessesResolvers<ContextType = any, ParentType extends ResolversParentTypes['Businesses'] = ResolversParentTypes['Businesses']> = ResolversObject<{
+  businessCategory?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   businessHoursFriday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   businessHoursMonday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   businessHoursSaturday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
