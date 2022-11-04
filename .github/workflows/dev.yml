@@ -49,7 +49,7 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.DIGITALOCEAN_USERNAME }}
+          username: ${{ secrets.DIGITALOCEAN_PASSWORD }}
           password: ${{ secrets.DIGITALOCEAN_PASSWORD }}
 
       - name: Build and push Docker image
