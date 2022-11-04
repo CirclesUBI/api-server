@@ -1,11 +1,7 @@
-import {BroadcastChatMessageWorker} from "./worker/chat/broadcastChatMessageWorker";
-import {BroadcastChatMessage} from "./descriptions/chat/broadcastChatMessage";
 import {SendCrcReceivedEmailWorker} from "./worker/emailNotifications/sendCrcReceivedEmailWorker";
 import {SendCrcReceivedEmail} from "./descriptions/emailNotifications/sendCrcReceivedEmail";
 import {SendCrcTrustChangedEmailWorker} from "./worker/emailNotifications/sendCrcTrustChangedEmailWorker";
 import {SendCrcTrustChangedEmail} from "./descriptions/emailNotifications/sendCrcTrustChangedEmail";
-import {InvoicePayedWorker} from "./worker/payment/invoicePayedWorker";
-import {InvoicePayed} from "./descriptions/payment/invoicePayed";
 import {Job} from "./jobQueue";
 import {VerifyEmailAddressWorker} from "./worker/emailNotifications/verifyEmailAddressWorker";
 import {VerifyEmailAddress} from "./descriptions/emailNotifications/verifyEmailAddress";
@@ -15,8 +11,6 @@ import {Echo} from "./descriptions/echo";
 import {EchoWorker} from "./worker/echoWorker";
 import {InviteCodeFromExternalTriggerWorker} from "./worker/onboarding/inviteCodeFromExternalTriggerWorker";
 import {InviteCodeFromExternalTrigger} from "./descriptions/onboarding/inviteCodeFromExternalTrigger";
-import {BroadcastPurchased} from "./descriptions/market/broadcastPurchased";
-import {BroadcastPurchasedWorker} from "./worker/market/broadcastPurchasedWorker";
 import {SendWelcomeEmailWorker} from "./worker/emailNotifications/sendWelcomeEmailWorker";
 import {SendWelcomeEmail} from "./descriptions/emailNotifications/sendWelcomeEmail";
 import {RequestUbiForInactiveAccountsWorker} from "./worker/maintenance/requestUbiForInactiveAccountsWorker";
@@ -25,23 +19,9 @@ import {RotateJwksWorker} from "./worker/maintenance/rotateJwksWorker";
 import {AutoTrustWorker} from "./worker/maintenance/autoTrustWorker";
 import {AutoTrust} from "./descriptions/maintenance/autoTrust";
 import {RotateJwks} from "./descriptions/maintenance/rotateJwks";
-import {MintPurchaseNftsWorker} from "./worker/mintPurchaseNftsWorker";
-import {MintPurchaseNfts} from "./descriptions/mintPurchaseNfts";
-import {MintCheckInNftsWorker} from "./worker/mintCheckInNftsWorker";
-import {MintCheckInNfts} from "./descriptions/mintCheckInNfts";
 
 export const jobSink = async (job: Job) => {
   switch (job.topic) {
-    case "mintPurchaseNfts".toLowerCase():
-      return await new MintPurchaseNftsWorker({
-        errorStrategy: "logAndDrop"
-      })
-        .run(job.id, MintPurchaseNfts.parse(job.payload));
-    case "mintCheckInNfts".toLowerCase():
-      return await new MintCheckInNftsWorker({
-        errorStrategy: "logAndDrop"
-      })
-      .run(job.id, MintCheckInNfts.parse(job.payload));
     case "echo".toLowerCase():
       return await new EchoWorker({
         errorStrategy: "logAndDrop"
@@ -74,12 +54,6 @@ export const jobSink = async (job: Job) => {
         dropThreshold: 3
       })
         .run(job.id, SendVerifyEmailAddressEmail.parse(job.payload));
-    case "broadcastChatMessage".toLowerCase():
-      return await new BroadcastChatMessageWorker()
-        .run(job.id, BroadcastChatMessage.parse(job.payload));
-    case "broadcastPurchased".toLowerCase():
-      return await new BroadcastPurchasedWorker()
-        .run(job.id, BroadcastPurchased.parse(job.payload));
     case "sendCrcReceivedEmail".toLowerCase():
       return new SendCrcReceivedEmailWorker({
         errorStrategy: "logAndDrop"
@@ -90,12 +64,6 @@ export const jobSink = async (job: Job) => {
         errorStrategy: "logAndDrop"
       })
         .run(job.id, SendCrcTrustChangedEmail.parse(job.payload));
-    case "invoicePayed".toLowerCase():
-      return new InvoicePayedWorker({
-        errorStrategy: "logAndDropAfterThreshold",
-        dropThreshold: 3
-      })
-        .run(job.id, InvoicePayed.parse(job.payload));
     case "verifyEmailAddress".toLowerCase():
       return new VerifyEmailAddressWorker({
         errorStrategy: "logAndDropAfterThreshold",

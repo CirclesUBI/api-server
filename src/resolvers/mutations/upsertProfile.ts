@@ -13,8 +13,6 @@ import {claimInvitation} from "./claimInvitation";
 import {createInvitationPerpetualTrigger} from "../../utils/invitationHelper";
 import {verifySafe} from "./verifySafe";
 import {AutoTrust} from "../../jobs/descriptions/maintenance/autoTrust";
-import {MintCheckInNftsWorker} from "../../jobs/worker/mintCheckInNftsWorker";
-import {MintCheckInNfts} from "../../jobs/descriptions/mintCheckInNfts";
 import {Gender} from "../../api-db/client";
 
 const validateEmail = (email:string) => {
@@ -118,9 +116,6 @@ export function upsertProfileResolver() {
                         console.log(`Creating an 'autoTrust' job for new safe ${profile.circlesAddress} and inviter ${invitation.createdBy.circlesAddress}`);
                         await JobQueue.produce([new AutoTrust(<string>invitation.createdBy.circlesAddress, <string>profile.circlesAddress)]);
                     }, 15000);
-
-                    console.log(`Creating a 'mintCheckInNft' job for new safe (guest) ${profile.circlesAddress} and inviter (host) ${invitation.createdBy.circlesAddress}`);
-                    await JobQueue.produce([new MintCheckInNfts(invitation.createdBy.circlesAddress, profile.circlesAddress)]);
                 }
 
                 console.log(`Creating the input trigger for address ${profile.circlesAddress} ..`);
@@ -172,7 +167,8 @@ export function upsertProfileResolver() {
                     lastRefundNo: 0,
                     displayCurrency: <DisplayCurrency>args.data.displayCurrency,
                     gender: args.data.gender ? <Gender>args.data.gender : null,
-                    age: args.data.age
+                    age: args.data.age,
+                    location: args.data.location
                 }
             }));
 

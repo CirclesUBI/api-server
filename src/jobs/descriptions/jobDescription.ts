@@ -1,22 +1,16 @@
 import crypto from "crypto";
 
 export type JobType =
-  "broadcastChatMessage" |
   "sendCrcReceivedEmail" |
   "sendCrcTrustChangedEmail" |
-  "sendOrderConfirmationEmail" |
   "verifyEmailAddress" |
-  "invoicePayed" |
   "sendVerifyEmailAddressEmail" |
   "echo" |
   "inviteCodeFromExternalTrigger" |
   "sendWelcomeEmail" |
-  "broadcastPurchased" |
   "requestUbiForInactiveAccounts" |
   "rotateJwks" |
-  "autoTrust" |
-  "mintPurchaseNfts"|
-  "mintCheckInNfts";
+  "autoTrust";
 
 export type JobKind =
   "broadcast" |

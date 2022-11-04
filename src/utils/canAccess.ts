@@ -1,25 +1,7 @@
 import {Context} from "../context";
 import {Environment} from "../environment";
-import {Erc721BalancesSource} from "../querySources/aggregateSources/blockchain/erc721BalancesSource";
 import {CapabilityType} from "../types";
 
-export async function hasTickets(circlesAddress?:string|null, profileId?:number) {
-  if (!circlesAddress)
-    return false;
-
-  const acidPunks = await Erc721BalancesSource.getHoldingsOfSafe(
-    Environment.acidPunksNft.address,
-    circlesAddress, true);
-
-  const tickets = await Environment.readonlyApiDb.invoice.findFirst({
-    where: {
-      customerProfileId: profileId,
-      deliveryMethodId: 3
-    }
-  });
-
-  return acidPunks.length > 0 || tickets;
-}
 
 export async function isHumanodeVerified(circlesAddress?:string|null) {
   if (!circlesAddress)

@@ -1,8 +1,6 @@
-import { deliveryMethods } from "./deliveryMethods";
 import { myProfile, profilesBySafeAddress } from "./profiles";
 import { sessionInfo } from "./sessionInfo";
 import { search } from "./search";
-import { cities } from "./citites";
 import { version } from "./version";
 import { tags } from "./tags";
 import { tagById } from "./tagById";
@@ -21,7 +19,6 @@ import { profilesById } from "./profilesById";
 import { aggregates } from "./aggregates";
 import { events } from "./events";
 import { directPath } from "./directPath";
-import { invoice } from "./invoice";
 import { verifications } from "./verifications";
 import { findInvitationCreator } from "./findInvitationCreator";
 import { recentProfiles } from "./recentProfiles";
@@ -30,15 +27,12 @@ import { init } from "./init";
 import { Environment } from "../../environment";
 import {
   ExportProfile, ExportTrustRelation,
-  QueryResolvers
+  QueryResolvers, Businesses
 } from "../../types";
 import { Context } from "../../context";
-import { shop } from "./shop";
 import { clientAssertionJwt } from "./clientAssertionJwt";
-import { shops, shopsById } from "./shops";
 import { lastAcknowledgedAt } from "./lastAcknowledgedAt";
 import { paymentPath } from "./paymentPath";
-import { offersByIdAndVersion } from "./offersByIdAndVersion";
 import { getStringByMaxVersion } from "./getStringByMaxVersion";
 import { getAvailableLanguages } from "./getAvailableLanguages";
 import { getAllStringsByMaxVersion } from "./getAllStringsByMaxVersion";
@@ -49,6 +43,7 @@ import { getEnvironmentData } from "worker_threads";
 import { getStringsToBeUpdatedAmount } from "./getStringsToBeUpdatedAmount";
 import { getPaginatedStrings } from "./getstPaginatedStrings";
 import { getPaginatedStringsToUpdate } from "./getPaginatedStringsToUpdate";
+import { content } from "pdfkit/js/page";
 
 const packageJson = require("../../../package.json");
 
@@ -62,8 +57,6 @@ export const queryResolvers: QueryResolvers = {
     }
     return stats(caller.profile.circlesAddress);
   },
-  cities: cities,
-  deliveryMethods: deliveryMethods(),
   claimedInvitation: claimedInvitation,
   findSafesByOwner: findSafesByOwner,
   invitationTransaction: invitationTransaction(),
@@ -87,15 +80,10 @@ export const queryResolvers: QueryResolvers = {
   events: events,
   directPath: directPath,
   paymentPath: paymentPath,
-  invoice: invoice,
   verifications: verifications,
   findInvitationCreator: findInvitationCreator,
   lastAcknowledgedAt: lastAcknowledgedAt,
-  shops: shops,
-  shopsById: shopsById,
-  shop: shop,
   clientAssertionJwt: clientAssertionJwt,
-  offersByIdAndVersion: offersByIdAndVersion,
   getStringByMaxVersion: getStringByMaxVersion,
   getAvailableLanguages: getAvailableLanguages,
   getAllStringsByMaxVersion: getAllStringsByMaxVersion,
@@ -104,6 +92,49 @@ export const queryResolvers: QueryResolvers = {
   getStringsToBeUpdatedAmount: getStringsToBeUpdatedAmount,
   getPaginatedStrings: getPaginatedStrings,
   getPaginatedStringsToUpdate:getPaginatedStringsToUpdate,
+
+  allBusinessCategories: async(parent: any, args: {categoryId?: number|null}, context: Context) => {
+    let queryResult = await Environment.readonlyApiDb.businessCategory.findMany();
+    return queryResult;
+  },
+
+  allBusinesses: async(parent: any, args: {categoryId?: number|null}, context: Context) => {
+    let queryResult = await Environment.readonlyApiDb.profile.findMany({
+      where: {
+        type: "ORGANISATION",
+        businessCategoryId: args.categoryId
+      },
+      select: {
+        id: true,
+        firstName: true,
+        dream: true,
+        location: true,
+        businessCategory: {
+          select: {
+            name: true
+          }
+        },
+        avatarUrl: true,
+        businessHoursMonday: true,
+        businessHoursTuesday: true,
+        businessHoursWednesday: true,
+        businessHoursThursday: true,
+        businessHoursFriday: true,
+        businessHoursSaturday: true,
+        businessHoursSunday: true
+      }
+    })
+
+    return queryResult.map(o => {
+      return <Businesses>{
+        ...o,
+        name: o.firstName,
+        description: o.dream,
+        picture: o.avatarUrl
+      }
+    });
+  },
+
 
 
   allProfiles: async (parent, args, context) => {

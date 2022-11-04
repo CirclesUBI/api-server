@@ -8,7 +8,6 @@ import {RpcGateway} from "./circles/rpcGateway";
 import {GqlLogger} from "./gqlLogger";
 import {Environment} from "./environment";
 import {IndexerEvents} from "./indexer-api/indexerEvents";
-import {PaymentProcessor} from "./indexer-api/paymentProcessor";
 import {AppNotificationProcessor} from "./indexer-api/appNotificationProcessor";
 import {jwksGetHandler} from "./httpHandlers/get/jwks";
 import {JobQueue} from "./jobs/jobQueue";
@@ -23,7 +22,6 @@ import * as graphqlImport from "@graphql-tools/import";
 import {healthGetHandler} from "./httpHandlers/get/health";
 import {RotateJwks} from "./jobs/descriptions/maintenance/rotateJwks";
 import {RequestUbiForInactiveAccounts} from "./jobs/descriptions/maintenance/requestUbiForInactiveAccounts";
-import {Erc721BalancesSource} from "./querySources/aggregateSources/blockchain/erc721BalancesSource";
 
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
@@ -172,7 +170,6 @@ export class Main {
       Environment.blockchainIndexerUrl,
       2500,
       [
-        new PaymentProcessor(),
         new AppNotificationProcessor()
       ]
     );
@@ -181,22 +178,16 @@ export class Main {
 
     const jobQueue = new JobQueue("jobQueue");
     const jobTopics: JobType[] = [
-      "broadcastChatMessage",
       "sendCrcReceivedEmail",
       "sendCrcTrustChangedEmail",
-      "sendOrderConfirmationEmail",
-      "invoicePayed",
       "verifyEmailAddress",
       "sendVerifyEmailAddressEmail",
       "inviteCodeFromExternalTrigger",
       "echo",
-      "broadcastPurchased",
       "sendWelcomeEmail",
       "requestUbiForInactiveAccounts",
       "rotateJwks",
-      "autoTrust",
-      "mintPurchaseNfts",
-      "mintCheckInNfts"
+      "autoTrust"
     ];
 
     jobQueue.consume(jobTopics, jobSink, false)
@@ -219,10 +210,6 @@ new Main().run()
   .then(() => console.log("Started"))
   .then(async () => {
     console.log(`Warming up caches ..`);
-    console.log(`* Erc721 ${Environment.gorilloNft.address} (${Environment.gorilloNft.name})`);
-    console.log(`* Erc721 ${Environment.acidPunksNft.address} (${Environment.acidPunksNft.name})`);
-    const tokens = await new Erc721BalancesSource().getAggregate(Environment.operatorOrganisationAddress);
-    console.log("Erc721 caches loaded.");
 
     console.log(`Starting periodic task job factory. Yields every ${Environment.periodicTaskInterval / 1000} seconds.`);
     setInterval(async() => {
