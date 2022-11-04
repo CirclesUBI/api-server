@@ -8,7 +8,15 @@ jobs:
   build-docker-image:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - id: readPackageJson
         run: |
           content=`cat ./package.json`
@@ -18,11 +26,17 @@ jobs:
           content="${content//$'\r'/'%0D'}"
           # end of optional handling for multi line json
           echo "::set-output name=packageJson::$content"
-      - name: Build and publish the docker image
-        env:
-          DOCKER_REGISTRY_USER: ${{secrets.DOCKER_REGISTRY_USER}}
-          DOCKER_REGISTRY_PASSWORD: ${{secrets.DOCKER_REGISTRY_PASSWORD}}
-        run: |
-          docker login https://ghcr.io -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD
-          docker build . --tag ghcr.io/CirclesUBI/api-server-dev:latest --tag ghcr.io/CirclesUBI/api-server-dev:${{fromJson(steps.readPackageJson.outputs.packageJson).version}} --tag api-server-dev --tag dev
-          docker push ghcr.io/CirclesUBI/api-server-dev:${{fromJson(steps.readPackageJson.outputs.packageJson).version}}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          push: true
+          tags: ${{fromJson(steps.readPackageJson.outputs.packageJson).version}}
+          labels: ${{ steps.meta.outputs.labels }}
