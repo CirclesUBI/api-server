@@ -132,7 +132,8 @@ export const queryResolvers: QueryResolvers = {
         ...o,
         name: o.firstName,
         description: o.dream,
-        picture: o.avatarUrl
+        picture: o.avatarUrl,
+        businessCategory: o.businessCategory?.name
       }
     });
   },
