@@ -1,4 +1,4 @@
-import {QueryDirectPathArgs, TransitivePath} from "../../types";
+import {QueryDirectPathArgs, TransitivePath, TransitiveTransfer} from "../../types";
 import {AbiItem} from "web3-utils";
 import {RpcGateway} from "../../circles/rpcGateway";
 import BN from "bn.js";
@@ -18,7 +18,7 @@ export const directPath = async (parent: any, args: QueryDirectPathArgs, context
   const from = args.from.toLowerCase();
   const to = args.to.toLowerCase();
 
-  const path = await findDirectPath(from, to, args.amount);
+  const path = await findPath(from, to, args.amount);
 
   if (new BN(path.requestedAmount).gt(new BN(path.flow))) {
     path.transfers = [];
@@ -33,6 +33,45 @@ export const directPath = async (parent: any, args: QueryDirectPathArgs, context
 
   return path;
 };
+
+
+async function findPath(from: string, to: string, amountInWei: string) : Promise<TransitivePath> {
+
+  const result = await fetch(Environment.pathfinderUrl, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      method: "compute_transfer",
+      params: {
+        from,
+        to,
+        value: amountInWei,
+        iterative: false,
+        prune: true
+      }
+    })
+  });
+
+  const json = await result.json();
+  const maxFlow = new BN(json.result.flow.toString().substring(2), "hex");
+
+  return <TransitivePath>{
+    flow: maxFlow.toString(),
+    success: true,
+    transfers: json.result.transfers.map((o: any) => {
+      return <TransitiveTransfer>{
+        from: o.from,
+        to: o.to,
+        tokenOwner: o.token_owner,
+        value: (new BN(o.value.toString().substring(2), "hex")).toString(),
+        token: o.token_owner
+      };
+    })
+  };
+}
 
 async function findDirectPath(from: string, to: string, amountInWei: string) : Promise<TransitivePath> {
   const recipientIsOrganization = (await Environment.indexDb.query(`
