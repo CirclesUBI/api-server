@@ -59,6 +59,11 @@ export class Environment {
         `The OPERATOR_ORGANISATION_ADDRESS environment variable is not set.`
       );
     }
+    if (!this.pathfinderUrl) {
+      errors.push(
+        `The PATHFINDER_URL environment variable is not set.`
+      );
+    }
 
     if (logInfo) {
       console.log(
@@ -242,6 +247,10 @@ export class Environment {
       symbol: "APK",
       name: "AcidPunKs"
     };
+  }
+
+  static get pathfinderUrl(): string {
+    return <string>process.env.PATHFINDER_URL;
   }
 
   static get keyRotationInterval(): number {
