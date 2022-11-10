@@ -6,6 +6,7 @@ import {Context} from "../../context";
 import {Environment} from "../../environment";
 import {convertCirclesToTimeCircles} from "../../utils/timeCircles";
 import {TokenWithBalanceAndLimit, BalanceQueries} from "../../querySources/balanceQueries";
+import fetch from "cross-fetch";
 
 type TokenWithBalanceAndMaxTransferableAmount = TokenWithBalanceAndLimit & {
   maxTransferableAmount: BN
