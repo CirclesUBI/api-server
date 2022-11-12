@@ -28,6 +28,7 @@ const {
 } = require("apollo-server-core");
 
 const corsOrigins = Environment.corsOrigins.split(";").map((o) => o.trim());
+console.log("* CORS_ORIGINS:", corsOrigins);
 
 declare global {
   interface Array<T> {
