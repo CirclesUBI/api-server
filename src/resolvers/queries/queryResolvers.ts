@@ -39,11 +39,9 @@ import { getAllStringsByMaxVersion } from "./getAllStringsByMaxVersion";
 import { getAllStringsByMaxVersionAndLang } from "./getAllStringsByMaxVersionAndLang";
 import { getOlderVersionsByKeyAndLang } from "./getOlderVersionsByKeyAndLang";
 import { RpcGateway } from "../../circles/rpcGateway";
-import { getEnvironmentData } from "worker_threads";
 import { getStringsToBeUpdatedAmount } from "./getStringsToBeUpdatedAmount";
 import { getPaginatedStrings } from "./getstPaginatedStrings";
 import { getPaginatedStringsToUpdate } from "./getPaginatedStringsToUpdate";
-import { content } from "pdfkit/js/page";
 
 const packageJson = require("../../../package.json");
 
@@ -103,7 +101,10 @@ export const queryResolvers: QueryResolvers = {
       where: {
         type: "ORGANISATION",
         businessCategoryId: args.categoryId,
-        ... args.id ? {id: args.id} : {}
+        ... args.id ? {id: args.id} : {},
+        avatarUrl: {
+          not: null
+        }
       },
       select: {
         id: true,

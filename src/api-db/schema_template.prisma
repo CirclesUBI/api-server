@@ -405,7 +405,6 @@ model Profile {
     location String?
     businessCategoryId Int?
     businessCategory BusinessCategory? @relation(name: "Profile_BusinessCategory", fields: [businessCategoryId], references: [id])
-
     businessHoursMonday String?
     businessHoursTuesday String?
     businessHoursWednesday String?
@@ -416,12 +415,19 @@ model Profile {
     phoneNumber String?
 }
 
+model Favorites {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    createdByCirclesAddress String
+    favoriteCirclesAddress String
+    comment String?
+}
+
 model BusinessCategory {
-    id Int @id @default(autoincrement()) 
+    id Int @id @default(autoincrement())
     name String
     profilesWithCategory Profile[] @relation("Profile_BusinessCategory")
 }
-
 model ExternalProfiles {
     circlesAddress String @unique
     name String
@@ -720,4 +726,11 @@ model Agent {
     contractMethod String?
 
     enabled Boolean @default(false)
+}
+
+model Businesses {
+    id Int @id @default(autoincrement())
+    name String
+    description String
+    picture String
 }

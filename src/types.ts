@@ -333,6 +333,14 @@ export type ExportTrustRelation = {
   trusterAddress: Scalars['String'];
 };
 
+export type Favorite = {
+  __typename?: 'Favorite';
+  comment?: Maybe<Scalars['String']>;
+  createdAt: Scalars['String'];
+  createdBy: Profile;
+  favorite: Profile;
+};
+
 export type FibonacciGoals = {
   __typename?: 'FibonacciGoals';
   currentValue: Scalars['Int'];
@@ -1394,6 +1402,7 @@ export type ResolversTypes = ResolversObject<{
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
   ExportProfile: ResolverTypeWrapper<ExportProfile>;
   ExportTrustRelation: ResolverTypeWrapper<ExportTrustRelation>;
+  Favorite: ResolverTypeWrapper<Favorite>;
   FibonacciGoals: ResolverTypeWrapper<FibonacciGoals>;
   Gender: Gender;
   GnosisSafeEthTransfer: ResolverTypeWrapper<GnosisSafeEthTransfer>;
@@ -1506,6 +1515,7 @@ export type ResolversParentTypes = ResolversObject<{
   ExchangeTokenResponse: ExchangeTokenResponse;
   ExportProfile: ExportProfile;
   ExportTrustRelation: ExportTrustRelation;
+  Favorite: Favorite;
   FibonacciGoals: FibonacciGoals;
   GnosisSafeEthTransfer: GnosisSafeEthTransfer;
   IAggregatePayload: ResolversParentTypes['Contacts'] | ResolversParentTypes['CrcBalances'] | ResolversParentTypes['Erc20Balances'] | ResolversParentTypes['Members'] | ResolversParentTypes['Memberships'];
@@ -1837,6 +1847,14 @@ export type ExportTrustRelationResolvers<ContextType = any, ParentType extends R
   trustLimit?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   trusteeAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   trusterAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type FavoriteResolvers<ContextType = any, ParentType extends ResolversParentTypes['Favorite'] = ResolversParentTypes['Favorite']> = ResolversObject<{
+  comment?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdBy?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
+  favorite?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2395,6 +2413,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   ExchangeTokenResponse?: ExchangeTokenResponseResolvers<ContextType>;
   ExportProfile?: ExportProfileResolvers<ContextType>;
   ExportTrustRelation?: ExportTrustRelationResolvers<ContextType>;
+  Favorite?: FavoriteResolvers<ContextType>;
   FibonacciGoals?: FibonacciGoalsResolvers<ContextType>;
   GnosisSafeEthTransfer?: GnosisSafeEthTransferResolvers<ContextType>;
   IAggregatePayload?: IAggregatePayloadResolvers<ContextType>;
