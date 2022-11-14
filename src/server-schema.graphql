@@ -730,6 +730,7 @@ type i18n {
 
 type Businesses {
   id: Int!
+  circlesAddress: String!
   name: String
   description: String
   picture: String
@@ -743,6 +744,7 @@ type Businesses {
   phoneNumber: String
   location: String
   businessCategory: String
+  businessCategoryId: Int
 } 
 
 enum SortOrder {
