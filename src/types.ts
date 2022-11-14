@@ -490,6 +490,7 @@ export type Mutation = {
   sendMessage: SendMessageResult;
   setStringUpdateState?: Maybe<I18n>;
   tagTransaction: TagTransactionResult;
+  toggleFavorite: Scalars['Boolean'];
   updateSafe: UpdateSafeResponse;
   updateValue?: Maybe<I18n>;
   upsertOrganisation: CreateOrganisationResult;
@@ -584,6 +585,11 @@ export type MutationSetStringUpdateStateArgs = {
 export type MutationTagTransactionArgs = {
   tag: CreateTagInput;
   transactionHash: Scalars['String'];
+};
+
+
+export type MutationToggleFavoriteArgs = {
+  circlesAddress: Scalars['String'];
 };
 
 
@@ -704,6 +710,7 @@ export type Profile = {
   displayTimeCircles?: Maybe<Scalars['Boolean']>;
   dream?: Maybe<Scalars['String']>;
   emailAddress?: Maybe<Scalars['String']>;
+  favorites?: Maybe<Array<Favorite>>;
   firstName: Scalars['String'];
   gender?: Maybe<Gender>;
   id: Scalars['Int'];
@@ -2002,6 +2009,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   sendMessage?: Resolver<ResolversTypes['SendMessageResult'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'content' | 'toSafeAddress'>>;
   setStringUpdateState?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<MutationSetStringUpdateStateArgs>>;
   tagTransaction?: Resolver<ResolversTypes['TagTransactionResult'], ParentType, ContextType, RequireFields<MutationTagTransactionArgs, 'tag' | 'transactionHash'>>;
+  toggleFavorite?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationToggleFavoriteArgs, 'circlesAddress'>>;
   updateSafe?: Resolver<ResolversTypes['UpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationUpdateSafeArgs, 'data'>>;
   updateValue?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<MutationUpdateValueArgs>>;
   upsertOrganisation?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertOrganisationArgs, 'organisation'>>;
@@ -2078,6 +2086,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   displayTimeCircles?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   dream?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   emailAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  favorites?: Resolver<Maybe<Array<ResolversTypes['Favorite']>>, ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   gender?: Resolver<Maybe<ResolversTypes['Gender']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
