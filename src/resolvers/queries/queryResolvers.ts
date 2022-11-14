@@ -111,8 +111,10 @@ export const queryResolvers: QueryResolvers = {
         firstName: true,
         dream: true,
         location: true,
+        circlesAddress: true,
         businessCategory: {
           select: {
+            id: true,
             name: true
           }
         },
@@ -134,12 +136,11 @@ export const queryResolvers: QueryResolvers = {
         name: o.firstName,
         description: o.dream,
         picture: o.avatarUrl,
+        businessCategoryId: o.businessCategory?.id,
         businessCategory: o.businessCategory?.name
       }
     });
   },
-
-
 
   allProfiles: async (parent, args, context) => {
     let profilesSql = `

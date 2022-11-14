@@ -62,6 +62,7 @@ export type BusinessCategory = {
 export type Businesses = {
   __typename?: 'Businesses';
   businessCategory?: Maybe<Scalars['String']>;
+  businessCategoryId?: Maybe<Scalars['Int']>;
   businessHoursFriday?: Maybe<Scalars['String']>;
   businessHoursMonday?: Maybe<Scalars['String']>;
   businessHoursSaturday?: Maybe<Scalars['String']>;
@@ -69,6 +70,7 @@ export type Businesses = {
   businessHoursThursday?: Maybe<Scalars['String']>;
   businessHoursTuesday?: Maybe<Scalars['String']>;
   businessHoursWednesday?: Maybe<Scalars['String']>;
+  circlesAddress: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   location?: Maybe<Scalars['String']>;
@@ -1638,6 +1640,7 @@ export type BusinessCategoryResolvers<ContextType = any, ParentType extends Reso
 
 export type BusinessesResolvers<ContextType = any, ParentType extends ResolversParentTypes['Businesses'] = ResolversParentTypes['Businesses']> = ResolversObject<{
   businessCategory?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  businessCategoryId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   businessHoursFriday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   businessHoursMonday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   businessHoursSaturday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1645,6 +1648,7 @@ export type BusinessesResolvers<ContextType = any, ParentType extends ResolversP
   businessHoursThursday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   businessHoursTuesday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   businessHoursWednesday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  circlesAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
