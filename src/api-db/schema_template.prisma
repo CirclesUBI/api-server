@@ -415,6 +415,14 @@ model Profile {
     phoneNumber String?
 }
 
+model Favorites {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    createdByCirclesAddress String
+    favoriteCirclesAddress String
+    comment String?
+}
+
 model BusinessCategory {
     id Int @id @default(autoincrement()) 
     name String
