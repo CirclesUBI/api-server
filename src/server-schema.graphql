@@ -985,7 +985,7 @@ type Query {
   paymentPath(from: String!, to: String!, amount: String!): TransitivePath!
 
   allBusinessCategories: [BusinessCategory!]!
-  allBusinesses(categoryId:Int, id:Int): [Businesses!]!
+  allBusinesses(categoryId:Int, id:Int, circlesAddress:String): [Businesses!]!
 }
 
 type Subscription {

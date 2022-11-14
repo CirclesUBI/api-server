@@ -866,6 +866,7 @@ export type QueryAggregatesArgs = {
 
 export type QueryAllBusinessesArgs = {
   categoryId?: InputMaybe<Scalars['Int']>;
+  circlesAddress?: InputMaybe<Scalars['String']>;
   id?: InputMaybe<Scalars['Int']>;
 };
 
