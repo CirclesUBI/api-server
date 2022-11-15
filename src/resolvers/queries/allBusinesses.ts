@@ -26,6 +26,7 @@ export const allBusinesses = async(parent: any, args: {categoryId?: number|null,
         }
       },
       avatarUrl: true,
+      phoneNumber: true,
       businessHoursMonday: true,
       businessHoursTuesday: true,
       businessHoursWednesday: true,
