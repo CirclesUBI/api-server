@@ -53,7 +53,7 @@ export const mutationResolvers: MutationResolvers = {
   createNewStringAndKey: createNewStringAndKey,
   setStringUpdateState: setStringUpdateState,
   proofUniqueness: proofUniqueness,
-  toggleFavorite: async (parent, args, context: Context) => {
+  setIsFavorite: async (parent, args, context: Context) => {
     const caller = await context.callerInfo;
     if (!caller?.profile?.circlesAddress)
       throw new Error(`Only profiles with a circlesAddress can create favorites.`);
@@ -65,7 +65,7 @@ export const mutationResolvers: MutationResolvers = {
     if (!favoriteProfile[circlesAddress])
       throw new Error(`Couldn't find a profile for circles address ${circlesAddress}.`);
 
-    if (!existingFavorite) {
+    if (!existingFavorite && args.isFavorite) {
       await Environment.readWriteApiDb.favorites.create({
         data: {
           createdAt: new Date().toJSON(),
@@ -76,12 +76,13 @@ export const mutationResolvers: MutationResolvers = {
       });
       return true;
     }
-
-    await Environment.readWriteApiDb.favorites.delete({
-      where: {
-        id: existingFavorite.id
-      }
-    });
+    if (existingFavorite && !args.isFavorite) {
+      await Environment.readWriteApiDb.favorites.delete({
+        where: {
+          id: existingFavorite.id
+        }
+      });
+    }
     return false;
   },
   shareLink: async (parent, args, context) => {
