@@ -422,6 +422,7 @@ model Favorites {
     createdByCirclesAddress String
     @@index([createdByCirclesAddress])
     favoriteCirclesAddress String
+    @@index([favoriteCirclesAddress])
     comment String?
 }
 
