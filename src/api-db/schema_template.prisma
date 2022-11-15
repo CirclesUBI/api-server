@@ -423,6 +423,24 @@ model Favorites {
     comment String?
 }
 
+model UnreadEvent {
+    id Int @id @default(autoincrement())
+    timestamp String
+    type String
+    circlesAddress String
+    contactAddress String?
+    transactionHash String?
+}
+
+model Link {
+    id String @id
+    createdAt String
+    createdByCirclesAddress String
+    linkTargetType String
+    linkTargetKeyField String
+    linkTargetKey String
+}
+
 model BusinessCategory {
     id Int @id @default(autoincrement())
     name String

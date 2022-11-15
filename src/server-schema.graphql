@@ -896,6 +896,12 @@ type Mutation {
   setStringUpdateState(key: String): i18n
 
   toggleFavorite(circlesAddress: String!): Boolean!
+  shareLink(targetType: LinkTargetType! targetKey: String!): String!
+}
+
+enum LinkTargetType {
+  Business
+  Person
 }
 
 type ExportProfile {
