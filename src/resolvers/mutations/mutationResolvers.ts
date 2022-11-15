@@ -93,7 +93,7 @@ export const mutationResolvers: MutationResolvers = {
       throw new Error(`'targetType' must be either '${LinkTargetType.Business}' or '${LinkTargetType.Person}'`);
 
     if (!RpcGateway.get().utils.isAddress(args.targetKey))
-      throw new Error(`'targetKey' must be a ethereum address`);
+      throw new Error(`'targetKey' must be an ethereum address`);
 
     const link = await Environment.readWriteApiDb.link.create({
       data: {
@@ -106,6 +106,7 @@ export const mutationResolvers: MutationResolvers = {
       }
     });
 
-    return link.id;
+    const protocol = Environment.isLocalDebugEnvironment ? "http://" : "https://";
+    return protocol + Environment.externalDomain + "/link?id=" + link.id;
   }
 };
