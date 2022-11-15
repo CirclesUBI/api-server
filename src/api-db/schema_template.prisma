@@ -432,6 +432,15 @@ model UnreadEvent {
     transactionHash String?
 }
 
+model Link {
+    id Int @id @default(autoincrement())
+    createdAt String
+    createdByCirclesAddress String
+    linkTargetType String
+    linkTargetKeyField String
+    linkTargetKey String
+}
+
 model BusinessCategory {
     id Int @id @default(autoincrement()) 
     name String
