@@ -495,10 +495,10 @@ export type Mutation = {
   requestUpdateSafe: RequestUpdateSafeResponse;
   revokeSafeVerification: VerifySafeResult;
   sendMessage: SendMessageResult;
+  setIsFavorite: Scalars['Boolean'];
   setStringUpdateState?: Maybe<I18n>;
   shareLink: Scalars['String'];
   tagTransaction: TagTransactionResult;
-  toggleFavorite: Scalars['Boolean'];
   updateSafe: UpdateSafeResponse;
   updateValue?: Maybe<I18n>;
   upsertOrganisation: CreateOrganisationResult;
@@ -585,6 +585,12 @@ export type MutationSendMessageArgs = {
 };
 
 
+export type MutationSetIsFavoriteArgs = {
+  circlesAddress: Scalars['String'];
+  isFavorite: Scalars['Boolean'];
+};
+
+
 export type MutationSetStringUpdateStateArgs = {
   key?: InputMaybe<Scalars['String']>;
 };
@@ -599,11 +605,6 @@ export type MutationShareLinkArgs = {
 export type MutationTagTransactionArgs = {
   tag: CreateTagInput;
   transactionHash: Scalars['String'];
-};
-
-
-export type MutationToggleFavoriteArgs = {
-  circlesAddress: Scalars['String'];
 };
 
 
@@ -2025,10 +2026,10 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   requestUpdateSafe?: Resolver<ResolversTypes['RequestUpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationRequestUpdateSafeArgs, 'data'>>;
   revokeSafeVerification?: Resolver<ResolversTypes['VerifySafeResult'], ParentType, ContextType, RequireFields<MutationRevokeSafeVerificationArgs, 'safeAddress'>>;
   sendMessage?: Resolver<ResolversTypes['SendMessageResult'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'content' | 'toSafeAddress'>>;
+  setIsFavorite?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSetIsFavoriteArgs, 'circlesAddress' | 'isFavorite'>>;
   setStringUpdateState?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<MutationSetStringUpdateStateArgs>>;
   shareLink?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationShareLinkArgs, 'targetKey' | 'targetType'>>;
   tagTransaction?: Resolver<ResolversTypes['TagTransactionResult'], ParentType, ContextType, RequireFields<MutationTagTransactionArgs, 'tag' | 'transactionHash'>>;
-  toggleFavorite?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationToggleFavoriteArgs, 'circlesAddress'>>;
   updateSafe?: Resolver<ResolversTypes['UpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationUpdateSafeArgs, 'data'>>;
   updateValue?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<MutationUpdateValueArgs>>;
   upsertOrganisation?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertOrganisationArgs, 'organisation'>>;

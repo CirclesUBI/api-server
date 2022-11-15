@@ -895,7 +895,7 @@ type Mutation {
   createNewStringAndKey(lang: String, key: String, createdBy: String, value: String, version: Int): i18n
   setStringUpdateState(key: String): i18n
 
-  toggleFavorite(circlesAddress: String!): Boolean!
+  setIsFavorite(circlesAddress: String!, isFavorite: Boolean!): Boolean!
   shareLink(targetType: LinkTargetType! targetKey: String!): String!
 }
 
