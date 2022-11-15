@@ -1048,6 +1048,7 @@ export type QueryVerificationsArgs = {
 
 export type QueryAllBusinessesConditions = {
   inCategories?: InputMaybe<Array<Scalars['Int']>>;
+  inCirclesAddress?: InputMaybe<Array<Scalars['String']>>;
 };
 
 export type QueryAllBusinessesOrder = {
@@ -1056,6 +1057,7 @@ export type QueryAllBusinessesOrder = {
 
 export enum QueryAllBusinessesOrderOptions {
   Alphabetical = 'Alphabetical',
+  Favorites = 'Favorites',
   MostPopular = 'MostPopular',
   Nearest = 'Nearest',
   Newest = 'Newest',

@@ -45,7 +45,13 @@ export const linkGetHandler = async (req: Request, res: Response) => {
 
     switch (linkObj.linkTargetType) {
       case "Business":
-        const businesses = await allBusinesses(null, {circlesAddress: linkObj.linkTargetKey, id: undefined, categoryId: undefined}, new Context(id, false));
+        const businesses = await allBusinesses(null, {
+          queryParams: {
+            where: {
+              inCirclesAddress: [linkObj.linkTargetKey]
+            }
+          }
+        }, new Context(id, false));
         if (businesses.length != 1)
           return onError(req, res, new Error(`Couldn't find a 'Business' with the specified 'circlesAddress' in the 'key' field`));
 
