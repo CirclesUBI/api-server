@@ -433,7 +433,7 @@ model UnreadEvent {
 }
 
 model Link {
-    id Int @id @default(autoincrement())
+    id String @id
     createdAt String
     createdByCirclesAddress String
     linkTargetType String
