@@ -403,6 +403,8 @@ model Profile {
     shippingAddresses PostAddress[] @relation("ProfileShippingAddresses")
 
     location String?
+    lat Float?
+    lon Float?
     businessCategoryId Int?
     businessCategory BusinessCategory? @relation(name: "Profile_BusinessCategory", fields: [businessCategoryId], references: [id])
     businessHoursMonday String?
@@ -422,6 +424,7 @@ model Favorites {
     createdByCirclesAddress String
     @@index([createdByCirclesAddress])
     favoriteCirclesAddress String
+    @@index([favoriteCirclesAddress])
     comment String?
 }
 

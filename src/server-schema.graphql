@@ -991,7 +991,34 @@ type Query {
   paymentPath(from: String!, to: String!, amount: String!): TransitivePath!
 
   allBusinessCategories: [BusinessCategory!]!
-  allBusinesses(categoryId:Int, id:Int, circlesAddress:String): [Businesses!]!
+  allBusinesses(queryParams: QueryAllBusinessesParameters): [Businesses!]!
+}
+
+input QueryAllBusinessesParameters {
+  where:QueryAllBusinessesConditions
+  order:QueryAllBusinessesOrder
+  ownCoordinates:Geolocation
+}
+
+input Geolocation {
+  lat: Float!
+  lon: Float!
+}
+
+input QueryAllBusinessesConditions {
+  inCategories:[Int!]
+}
+
+enum QueryAllBusinessesOrderOptions {
+  Newest
+  Oldest
+  MostPopular
+  Nearest
+  Alphabetical
+}
+
+input QueryAllBusinessesOrder {
+  orderBy: QueryAllBusinessesOrderOptions!
 }
 
 type Subscription {
