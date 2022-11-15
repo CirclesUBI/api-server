@@ -356,6 +356,11 @@ export enum Gender {
   Male = 'MALE'
 }
 
+export type Geolocation = {
+  lat: Scalars['Float'];
+  lon: Scalars['Float'];
+};
+
 export type GnosisSafeEthTransfer = IEventPayload & {
   __typename?: 'GnosisSafeEthTransfer';
   from: Scalars['String'];
@@ -878,9 +883,7 @@ export type QueryAggregatesArgs = {
 
 
 export type QueryAllBusinessesArgs = {
-  categoryId?: InputMaybe<Scalars['Int']>;
-  circlesAddress?: InputMaybe<Scalars['String']>;
-  id?: InputMaybe<Scalars['Int']>;
+  queryParams?: InputMaybe<QueryAllBusinessesParameters>;
 };
 
 
@@ -1041,6 +1044,28 @@ export type QueryTrustRelationsArgs = {
 export type QueryVerificationsArgs = {
   filter?: InputMaybe<VerifiedSafesFilter>;
   pagination?: InputMaybe<PaginationArgs>;
+};
+
+export type QueryAllBusinessesConditions = {
+  inCategories?: InputMaybe<Array<Scalars['Int']>>;
+};
+
+export type QueryAllBusinessesOrder = {
+  orderBy: QueryAllBusinessesOrderOptions;
+};
+
+export enum QueryAllBusinessesOrderOptions {
+  Alphabetical = 'Alphabetical',
+  MostPopular = 'MostPopular',
+  Nearest = 'Nearest',
+  Newest = 'Newest',
+  Oldest = 'Oldest'
+}
+
+export type QueryAllBusinessesParameters = {
+  order?: InputMaybe<QueryAllBusinessesOrder>;
+  ownCoordinates?: InputMaybe<Geolocation>;
+  where?: InputMaybe<QueryAllBusinessesConditions>;
 };
 
 export type QueryProfileInput = {
@@ -1427,7 +1452,9 @@ export type ResolversTypes = ResolversObject<{
   ExportTrustRelation: ResolverTypeWrapper<ExportTrustRelation>;
   Favorite: ResolverTypeWrapper<Favorite>;
   FibonacciGoals: ResolverTypeWrapper<FibonacciGoals>;
+  Float: ResolverTypeWrapper<Scalars['Float']>;
   Gender: Gender;
+  Geolocation: Geolocation;
   GnosisSafeEthTransfer: ResolverTypeWrapper<GnosisSafeEthTransfer>;
   IAggregatePayload: ResolversTypes['Contacts'] | ResolversTypes['CrcBalances'] | ResolversTypes['Erc20Balances'] | ResolversTypes['Members'] | ResolversTypes['Memberships'];
   IEventPayload: ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['CrcSignup'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcTrust'] | ResolversTypes['Erc20Transfer'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'] | ResolversTypes['InvitationCreated'] | ResolversTypes['InvitationRedeemed'] | ResolversTypes['MemberAdded'] | ResolversTypes['MembershipAccepted'] | ResolversTypes['MembershipOffer'] | ResolversTypes['MembershipRejected'] | ResolversTypes['NewUser'] | ResolversTypes['OrganisationCreated'] | ResolversTypes['SafeVerified'] | ResolversTypes['WelcomeMessage'];
@@ -1463,6 +1490,10 @@ export type ResolversTypes = ResolversObject<{
   ProofUniquenessResult: ResolverTypeWrapper<ProofUniquenessResult>;
   PublicEvent: ResolverTypeWrapper<Omit<PublicEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
   Query: ResolverTypeWrapper<{}>;
+  QueryAllBusinessesConditions: QueryAllBusinessesConditions;
+  QueryAllBusinessesOrder: QueryAllBusinessesOrder;
+  QueryAllBusinessesOrderOptions: QueryAllBusinessesOrderOptions;
+  QueryAllBusinessesParameters: QueryAllBusinessesParameters;
   QueryProfileInput: QueryProfileInput;
   QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
@@ -1541,6 +1572,8 @@ export type ResolversParentTypes = ResolversObject<{
   ExportTrustRelation: ExportTrustRelation;
   Favorite: Favorite;
   FibonacciGoals: FibonacciGoals;
+  Float: Scalars['Float'];
+  Geolocation: Geolocation;
   GnosisSafeEthTransfer: GnosisSafeEthTransfer;
   IAggregatePayload: ResolversParentTypes['Contacts'] | ResolversParentTypes['CrcBalances'] | ResolversParentTypes['Erc20Balances'] | ResolversParentTypes['Members'] | ResolversParentTypes['Memberships'];
   IEventPayload: ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['Erc20Transfer'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'] | ResolversParentTypes['InvitationCreated'] | ResolversParentTypes['InvitationRedeemed'] | ResolversParentTypes['MemberAdded'] | ResolversParentTypes['MembershipAccepted'] | ResolversParentTypes['MembershipOffer'] | ResolversParentTypes['MembershipRejected'] | ResolversParentTypes['NewUser'] | ResolversParentTypes['OrganisationCreated'] | ResolversParentTypes['SafeVerified'] | ResolversParentTypes['WelcomeMessage'];
@@ -1573,6 +1606,9 @@ export type ResolversParentTypes = ResolversObject<{
   ProofUniquenessResult: ProofUniquenessResult;
   PublicEvent: Omit<PublicEvent, 'payload'> & { payload?: Maybe<ResolversParentTypes['EventPayload']> };
   Query: {};
+  QueryAllBusinessesConditions: QueryAllBusinessesConditions;
+  QueryAllBusinessesOrder: QueryAllBusinessesOrder;
+  QueryAllBusinessesParameters: QueryAllBusinessesParameters;
   QueryProfileInput: QueryProfileInput;
   QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
