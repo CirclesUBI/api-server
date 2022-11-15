@@ -418,7 +418,9 @@ model Profile {
 model Favorites {
     id Int @id @default(autoincrement())
     createdAt DateTime @default(now())
+    @@index([createdAt])
     createdByCirclesAddress String
+    @@index([createdByCirclesAddress])
     favoriteCirclesAddress String
     comment String?
 }
