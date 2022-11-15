@@ -22,6 +22,14 @@ export const allBusinesses = async(parent: any, args: Partial<QueryAllBusinesses
         }
       }
     }
+    if (args.queryParams.where?.inCirclesAddress) {
+      filter = {
+        ...filter,
+        circlesAddress: {
+          in: args.queryParams.where?.inCirclesAddress
+        }
+      }
+    }
     if (args.queryParams.order?.orderBy == QueryAllBusinessesOrderOptions.Nearest) {
       const lat = args.queryParams.ownCoordinates!.lat.toString();
       const lon = args.queryParams.ownCoordinates!.lon.toString();
@@ -64,7 +72,6 @@ order by count(F."favoriteCirclesAddress") desc;`;
       const queryResult = await Environment.readWriteApiDb.$queryRaw`
 select A."circlesAddress" as "circlesAddress"
 from "Profile" A
-left join "Favorites" F on (F."favoriteCirclesAddress" = A."circlesAddress")
 where A."type" = 'ORGANISATION'
   and A."avatarUrl" is not null
 order by A."createdAt" desc;`;
@@ -75,7 +82,6 @@ order by A."createdAt" desc;`;
       const queryResult = await Environment.readWriteApiDb.$queryRaw`
 select A."circlesAddress" as "circlesAddress"
 from "Profile" A
-left join "Favorites" F on (F."favoriteCirclesAddress" = A."circlesAddress")
 where A."type" = 'ORGANISATION'
   and A."avatarUrl" is not null
 order by A."createdAt" asc;`;
@@ -86,7 +92,6 @@ order by A."createdAt" asc;`;
       const queryResult = await Environment.readWriteApiDb.$queryRaw`
 select A."circlesAddress" as "circlesAddress"
 from "Profile" A
-left join "Favorites" F on (F."favoriteCirclesAddress" = A."circlesAddress")
 where A."type" = 'ORGANISATION'
   and A."avatarUrl" is not null
 order by A."firstName" asc;`;

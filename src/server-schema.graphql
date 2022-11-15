@@ -1007,9 +1007,11 @@ input Geolocation {
 
 input QueryAllBusinessesConditions {
   inCategories:[Int!]
+  inCirclesAddress:[String!]
 }
 
 enum QueryAllBusinessesOrderOptions {
+  Favorites
   Newest
   Oldest
   MostPopular
