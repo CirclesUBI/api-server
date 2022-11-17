@@ -61,6 +61,8 @@ type Profile {
   age: Int
   gender: Gender
   location: String
+  lat: Float
+  lon: Float
   category: BusinessCategory
   favorites: [Favorite!]
 }
@@ -117,6 +119,9 @@ type Organisation {
   displayCurrency: DisplayCurrency
   members: [ProfileOrOrganisation!]
   trustsYou: Int # The trust relative to the safeAddress
+  location: String
+  lat: Float
+  lon: Float
 }
 
 union ProfileOrOrganisation = Profile | Organisation
@@ -156,8 +161,10 @@ input UpsertProfileInput {
   displayTimeCircles: Boolean
   displayCurrency: DisplayCurrency
   age: Int
-  gender: Gender,
+  gender: Gender
   location: String
+  lat: Float
+  lon: Float
 }
 
 type Tag {
@@ -676,6 +683,9 @@ input UpsertOrganisationInput {
   smallBannerUrl: String
   avatarMimeType: String
   displayCurrency: DisplayCurrency
+  location: String
+  lat: Float
+  lon: Float
 }
 
 type AddMemberResult {
@@ -837,7 +847,7 @@ type TransitiveTransfer {
   isHubTransfer: Boolean
   from: String!
   to: String!
-  token: String!
+  token: String
   tokenOwner: String!
   value: String!
 }

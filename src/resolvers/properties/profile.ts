@@ -48,6 +48,9 @@ export const profilePropertyResolvers: ProfileResolvers = {
 
     return `https://${Environment.externalDomain}/trigger?hash=${inviteTrigger.hash}`;
   },
+  lat: async (parent: Profile, args: any, context: Context) => isOwnProfile(parent.id, context) && parent.lat !== undefined ? parent.lat : null,
+  lon: async (parent: Profile, args: any, context: Context) => isOwnProfile(parent.id, context) && parent.lon !== undefined ? parent.lon : null,
+  location: async (parent: Profile, args: any, context: Context) => isOwnProfile(parent.id, context) && parent.location !== undefined ? parent.location : null,
   askedForEmailAddress: async (parent: Profile, args: any, context: Context) =>
     isOwnProfile(parent.id, context) && parent.askedForEmailAddress ? parent.askedForEmailAddress : false,
   newsletter: async (parent: Profile, args: any, context: Context) =>
