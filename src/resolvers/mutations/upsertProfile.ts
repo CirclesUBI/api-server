@@ -94,7 +94,10 @@ export function upsertProfileResolver() {
                     circlesSafeOwner: session.ethAddress?.toLowerCase(),
                     displayCurrency: <DisplayCurrency>args.data.displayCurrency,
                     gender: args.data.gender ? <Gender>args.data.gender : null,
-                    age: args.data.age
+                    age: args.data.age,
+                    location: args.data.location,
+                    lat: args.data.lat,
+                    lon: args.data.lon
                 }
             }));
 
@@ -168,7 +171,9 @@ export function upsertProfileResolver() {
                     displayCurrency: <DisplayCurrency>args.data.displayCurrency,
                     gender: args.data.gender ? <Gender>args.data.gender : null,
                     age: args.data.age,
-                    location: args.data.location
+                    location: args.data.location,
+                    lat: args.data.lat,
+                    lon: args.data.lon
                 }
             }));
 

@@ -47,6 +47,9 @@ export function upsertOrganisation(isRegion:boolean) {
             circlesAddress: args.organisation.circlesAddress,
             avatarUrl: args.organisation.avatarUrl,
             avatarMimeType: args.organisation.avatarMimeType,
+            location: args.organisation.location,
+            lat: args.organisation.lat,
+            lon: args.organisation.lon
           }
         }));
       } else {
@@ -59,7 +62,10 @@ export function upsertOrganisation(isRegion:boolean) {
             avatarMimeType: args.organisation.avatarMimeType,
             type: isRegion ? "REGION" : "ORGANISATION",
             lastInvoiceNo: 0,
-            lastRefundNo: 0
+            lastRefundNo: 0,
+            location: args.organisation.location,
+            lat: args.organisation.lat,
+            lon: args.organisation.lon
           }
         }));
 
@@ -72,7 +78,7 @@ export function upsertOrganisation(isRegion:boolean) {
             acceptedAt: new Date(),
             isAdmin: true,
             memberAddress: callerInfo.profile.circlesAddress,
-            memberAtId: organisationProfile.id
+            memberAtId: organisationProfile.id,
           }
         });
       }

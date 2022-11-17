@@ -59,6 +59,12 @@ export class Environment {
         `The OPERATOR_ORGANISATION_ADDRESS environment variable is not set.`
       );
     }
+    if (!this.pathfinderUrl) {
+      errors.push(
+        `The PATHFINDER_URL environment variable is not set.`
+      );
+    }
+
 
     if (logInfo) {
       console.log(
@@ -268,6 +274,10 @@ export class Environment {
       });
     }
     return this._readWriteApiDb;
+  }
+
+  static get pathfinderUrl(): string {
+    return <string>process.env.PATHFINDER_URL;
   }
 
   static get corsOrigins(): string {

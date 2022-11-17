@@ -689,6 +689,9 @@ export type Organisation = {
   displayName?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   largeBannerUrl?: Maybe<Scalars['String']>;
+  lat?: Maybe<Scalars['Float']>;
+  location?: Maybe<Scalars['String']>;
+  lon?: Maybe<Scalars['Float']>;
   members?: Maybe<Array<ProfileOrOrganisation>>;
   name: Scalars['String'];
   smallBannerUrl?: Maybe<Scalars['String']>;
@@ -738,7 +741,9 @@ export type Profile = {
   invitationTransaction?: Maybe<ProfileEvent>;
   largeBannerUrl?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
+  lat?: Maybe<Scalars['Float']>;
   location?: Maybe<Scalars['String']>;
+  lon?: Maybe<Scalars['Float']>;
   members?: Maybe<Array<Profile>>;
   memberships?: Maybe<Array<Membership>>;
   newsletter?: Maybe<Scalars['Boolean']>;
@@ -1220,7 +1225,7 @@ export type TransitiveTransfer = {
   from: Scalars['String'];
   isHubTransfer?: Maybe<Scalars['Boolean']>;
   to: Scalars['String'];
-  token: Scalars['String'];
+  token?: Maybe<Scalars['String']>;
   tokenOwner: Scalars['String'];
   value: Scalars['String'];
 };
@@ -1259,6 +1264,9 @@ export type UpsertOrganisationInput = {
   displayCurrency?: InputMaybe<DisplayCurrency>;
   id?: InputMaybe<Scalars['Int']>;
   largeBannerUrl?: InputMaybe<Scalars['String']>;
+  lat?: InputMaybe<Scalars['Float']>;
+  location?: InputMaybe<Scalars['String']>;
+  lon?: InputMaybe<Scalars['Float']>;
   name: Scalars['String'];
   smallBannerUrl?: InputMaybe<Scalars['String']>;
 };
@@ -1281,7 +1289,9 @@ export type UpsertProfileInput = {
   gender?: InputMaybe<Gender>;
   id?: InputMaybe<Scalars['Int']>;
   lastName?: InputMaybe<Scalars['String']>;
+  lat?: InputMaybe<Scalars['Float']>;
   location?: InputMaybe<Scalars['String']>;
+  lon?: InputMaybe<Scalars['Float']>;
   newsletter?: InputMaybe<Scalars['Boolean']>;
   status: Scalars['String'];
   successorOfCirclesAddress?: InputMaybe<Scalars['String']>;
@@ -2110,6 +2120,9 @@ export type OrganisationResolvers<ContextType = any, ParentType extends Resolver
   displayName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   largeBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lat?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lon?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   members?: Resolver<Maybe<Array<ResolversTypes['ProfileOrOrganisation']>>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   smallBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2152,7 +2165,9 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   largeBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lat?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lon?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   members?: Resolver<Maybe<Array<ResolversTypes['Profile']>>, ParentType, ContextType>;
   memberships?: Resolver<Maybe<Array<ResolversTypes['Membership']>>, ParentType, ContextType>;
   newsletter?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
@@ -2383,7 +2398,7 @@ export type TransitiveTransferResolvers<ContextType = any, ParentType extends Re
   from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   isHubTransfer?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   tokenOwner?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
