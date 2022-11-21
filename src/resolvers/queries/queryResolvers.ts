@@ -29,7 +29,6 @@ import {ExportProfile, ExportTrustRelation, QueryResolvers} from "../../types";
 import {Context} from "../../context";
 import {clientAssertionJwt} from "./clientAssertionJwt";
 import {lastAcknowledgedAt} from "./lastAcknowledgedAt";
-import {paymentPath} from "./paymentPath";
 import {getStringByMaxVersion} from "./getStringByMaxVersion";
 import {getAvailableLanguages} from "./getAvailableLanguages";
 import {getAllStringsByMaxVersion} from "./getAllStringsByMaxVersion";
@@ -76,7 +75,6 @@ export const queryResolvers: QueryResolvers = {
   aggregates: aggregates,
   events: events,
   directPath: directPath,
-  paymentPath: paymentPath,
   verifications: verifications,
   findInvitationCreator: findInvitationCreator,
   lastAcknowledgedAt: lastAcknowledgedAt,
