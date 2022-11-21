@@ -403,6 +403,7 @@ model Profile {
     shippingAddresses PostAddress[] @relation("ProfileShippingAddresses")
 
     location String?
+    locationName String?
     lat Float?
     lon Float?
     businessCategoryId Int?
