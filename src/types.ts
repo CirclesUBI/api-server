@@ -73,7 +73,9 @@ export type Businesses = {
   circlesAddress: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
+  lat?: Maybe<Scalars['Float']>;
   location?: Maybe<Scalars['String']>;
+  lon?: Maybe<Scalars['Float']>;
   name?: Maybe<Scalars['String']>;
   phoneNumber?: Maybe<Scalars['String']>;
   picture?: Maybe<Scalars['String']>;
@@ -1714,7 +1716,9 @@ export type BusinessesResolvers<ContextType = any, ParentType extends ResolversP
   circlesAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  lat?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lon?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phoneNumber?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   picture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
