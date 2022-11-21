@@ -244,7 +244,6 @@ type UpdateSafeResponse {
   newSafeAddress: String
 }
 
-
 input QueryTagsInput {
   typeId_in: [String!]!
   value_like: String
@@ -529,12 +528,7 @@ type Contact {
   contactAddress_Profile: Profile @cost(value: 1)
 }
 
-union AggregatePayload =
-    CrcBalances
-  | Erc20Balances
-  | Contacts
-  | Memberships
-  | Members
+union AggregatePayload = CrcBalances | Erc20Balances | Contacts | Memberships | Members
 
 type ProfileAggregate {
   type: String!
@@ -753,9 +747,11 @@ type Businesses {
   businessHoursSunday: String
   phoneNumber: String
   location: String
+  lat: Float
+  lon: Float
   businessCategory: String
   businessCategoryId: Int
-} 
+}
 
 enum SortOrder {
   ASC
@@ -773,7 +769,6 @@ enum Direction {
   in
   out
 }
-
 
 input ProfileEventFilter {
   direction: Direction
@@ -864,7 +859,6 @@ type ProofUniquenessResult {
 }
 
 type Mutation {
-
   logout: LogoutResponse!
   upsertProfile(data: UpsertProfileInput!): Profile!
   requestUpdateSafe(data: RequestUpdateSafeInput!): RequestUpdateSafeResponse!
@@ -906,7 +900,7 @@ type Mutation {
   setStringUpdateState(key: String): i18n
 
   setIsFavorite(circlesAddress: String!, isFavorite: Boolean!): Boolean!
-  shareLink(targetType: LinkTargetType! targetKey: String!): String!
+  shareLink(targetType: LinkTargetType!, targetKey: String!): String!
 }
 
 enum LinkTargetType {
@@ -988,7 +982,13 @@ type Query {
   getAllStringsByMaxVersionAndLang(lang: String): [i18n]
   getOlderVersionsByKeyAndLang(key: String, lang: String): [i18n]
   getPaginatedStrings(pagination_key: String, key: String, lang: String, value: String): [i18n]
-  getPaginatedStringsToUpdate(pagination_key: String, key: String, lang: String, value: String, needsUpdate: Boolean): [i18n]
+  getPaginatedStringsToUpdate(
+    pagination_key: String
+    key: String
+    lang: String
+    value: String
+    needsUpdate: Boolean
+  ): [i18n]
   getStringsToBeUpdatedAmount(lang: String, key: String): Int
 
   allProfiles(sinceLastChange: Date): [ExportProfile]!
@@ -1005,9 +1005,9 @@ type Query {
 }
 
 input QueryAllBusinessesParameters {
-  where:QueryAllBusinessesConditions
-  order:QueryAllBusinessesOrder
-  ownCoordinates:Geolocation
+  where: QueryAllBusinessesConditions
+  order: QueryAllBusinessesOrder
+  ownCoordinates: Geolocation
 }
 
 input Geolocation {
@@ -1016,8 +1016,8 @@ input Geolocation {
 }
 
 input QueryAllBusinessesConditions {
-  inCategories:[Int!]
-  inCirclesAddress:[String!]
+  inCategories: [Int!]
+  inCirclesAddress: [String!]
 }
 
 enum QueryAllBusinessesOrderOptions {

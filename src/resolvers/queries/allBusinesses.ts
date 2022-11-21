@@ -1,14 +1,16 @@
-import {Context} from "../../context";
-import {Environment} from "../../environment";
-import {Businesses, QueryAllBusinessesArgs, QueryAllBusinessesOrderOptions} from "../../types";
+import { Context } from "../../context";
+import { Environment } from "../../environment";
+import { Businesses, QueryAllBusinessesArgs, QueryAllBusinessesOrderOptions } from "../../types";
 
-export const allBusinesses = async(parent: any, args: Partial<QueryAllBusinessesArgs>, _: Context) => {
-  let filter:any = {};
-  let order:any;
+export const allBusinesses = async (parent: any, args: Partial<QueryAllBusinessesArgs>, _: Context) => {
+  let filter: any = {};
+  let order: any;
 
   if (args.queryParams) {
-    if (args.queryParams.order?.orderBy == QueryAllBusinessesOrderOptions.Nearest
-      && !args.queryParams?.ownCoordinates) {
+    if (
+      args.queryParams.order?.orderBy == QueryAllBusinessesOrderOptions.Nearest &&
+      !args.queryParams?.ownCoordinates
+    ) {
       throw new Error(`Using order by ${QueryAllBusinessesOrderOptions.Nearest} but didn't supply 'ownCoordinates`);
     }
     if (args.queryParams.where?.inCategories) {
@@ -18,17 +20,17 @@ export const allBusinesses = async(parent: any, args: Partial<QueryAllBusinesses
       filter = {
         ...filter,
         businessCategoryId: {
-          in: args.queryParams.where?.inCategories
-        }
-      }
+          in: args.queryParams.where?.inCategories,
+        },
+      };
     }
     if (args.queryParams.where?.inCirclesAddress) {
       filter = {
         ...filter,
         circlesAddress: {
-          in: args.queryParams.where?.inCirclesAddress
-        }
-      }
+          in: args.queryParams.where?.inCirclesAddress,
+        },
+      };
     }
     if (args.queryParams.order?.orderBy == QueryAllBusinessesOrderOptions.Nearest) {
       const lat = args.queryParams.ownCoordinates!.lat.toString();
@@ -106,20 +108,22 @@ order by A."firstName" asc;`;
       ...filter,
       type: "ORGANISATION",
       avatarUrl: {
-        not: null
-      }
+        not: null,
+      },
     },
     select: {
       id: true,
       firstName: true,
       dream: true,
       location: true,
+      lat: true,
+      lon: true,
       circlesAddress: true,
       businessCategory: {
         select: {
           id: true,
-          name: true
-        }
+          name: true,
+        },
       },
       avatarUrl: true,
       phoneNumber: true,
@@ -130,34 +134,39 @@ order by A."firstName" asc;`;
       businessHoursFriday: true,
       businessHoursSaturday: true,
       businessHoursSunday: true,
-      businessCategoryId: true
-    }
-  })
+      businessCategoryId: true,
+    },
+  });
 
   if (order) {
-    const map = queryResult.toLookup(o => o.circlesAddress, o => o);
-    return order.map((row:any) => {
-      return map[row.circlesAddress];
-    }).map((o:any) => {
-      return <Businesses>{
-        ...o,
-        name: o.firstName,
-        description: o.dream,
-        picture: o.avatarUrl,
-        businessCategoryId: o.businessCategory?.id,
-        businessCategory: o.businessCategory?.name
-      }
-    });
+    const map = queryResult.toLookup(
+      (o) => o.circlesAddress,
+      (o) => o
+    );
+    return order
+      .map((row: any) => {
+        return map[row.circlesAddress];
+      })
+      .map((o: any) => {
+        return <Businesses>{
+          ...o,
+          name: o.firstName,
+          description: o.dream,
+          picture: o.avatarUrl,
+          businessCategoryId: o.businessCategory?.id,
+          businessCategory: o.businessCategory?.name,
+        };
+      });
   }
 
-  return queryResult.map(o => {
+  return queryResult.map((o) => {
     return <Businesses>{
       ...o,
       name: o.firstName,
       description: o.dream,
       picture: o.avatarUrl,
       businessCategoryId: o.businessCategory?.id,
-      businessCategory: o.businessCategory?.name
-    }
+      businessCategory: o.businessCategory?.name,
+    };
   });
-}
+};
