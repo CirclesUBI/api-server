@@ -1,410 +1,273 @@
 import {QueryDirectPathArgs, TransitivePath, TransitiveTransfer} from "../../types";
-import {AbiItem} from "web3-utils";
-import {RpcGateway} from "../../circles/rpcGateway";
 import BN from "bn.js";
 import {Context} from "../../context";
-import {Environment} from "../../environment";
-import {convertCirclesToTimeCircles} from "../../utils/timeCircles";
-import {TokenWithBalanceAndLimit, BalanceQueries} from "../../querySources/balanceQueries";
-import fetch from "cross-fetch";
+import {Pathfinder} from "../../pathfinder-api/pathfinder";
+import {PathValidator} from "../../pathfinder-api/pathValidator";
+import {FlowGraph} from "../../pathfinder-api/pathParser";
+import {GraphvizGenerator} from "../../pathfinder-api/graphvizGenerator";
+import {RpcGateway} from "../../circles/rpcGateway";
+import * as fs from "fs";
+import {exec} from "child_process";
+import {DefaultBalanceProvider} from "../../pathfinder-api/defaultBalanceProvider";
 
-type TokenWithBalanceAndMaxTransferableAmount = TokenWithBalanceAndLimit & {
-  maxTransferableAmount: BN
+
+async function generateGraphvizGraph(totalAmount:string, flowGraph:FlowGraph, path?:TransitivePath) {
+  const graphvizDef = await GraphvizGenerator.generate(parseFloat(RpcGateway.get().utils.fromWei(totalAmount, "ether")), flowGraph, path);
+  fs.writeFileSync('/home/daniel/src/CirclesUBI/api-server/src/filtered.graphviz', graphvizDef);
+
+  exec('dot -Tsvg /home/daniel/src/CirclesUBI/api-server/src/filtered.graphviz > /home/daniel/src/CirclesUBI/api-server/src/path.svg', (err, stdout, stderr) => {
+    if (err) {
+      // node couldn't execute the command
+      throw err;
+    }
+
+    // the *entire* stdout and stderr (buffered)
+    console.log(`stdout: ${stdout}`);
+    console.log(`stderr: ${stderr}`);
+  });
 }
-
-/*
-const zeroBN = new BN("0")
-const oneHundred = new BN("100")
-*/
 
 export const directPath = async (parent: any, args: QueryDirectPathArgs, context: Context) => {
   const from = args.from.toLowerCase();
   const to = args.to.toLowerCase();
 
-  const path = await findPath(from, to, args.amount);
+  const path = await Pathfinder.findPath(from, to, args.amount);
+  //const path = await Pathfinder.findMaxFlow(new DefaultBalanceProvider(), from, to);
 
-  try {
-    await validateTransfers(from, path);
-  } catch (e) {
-    console.log(e);
-    (<any>path).error = e;
-    (<any>path).isInvalid = true;
+  const flowGraph = new FlowGraph(path);
+
+  await generateGraphvizGraph(args.amount, flowGraph, path);
+
+  const pathHasErrors = await PathValidator.validate(path);
+  if (pathHasErrors.error) {
+    console.error(`Invalid path call data: ${pathHasErrors.calldata}`);
+  }
+
+  if (pathHasErrors.error) {
+    context.log(`The path couldn't be validated at the hub contract: ${pathHasErrors.calldata}`);
+    if (path.flow) {
+      const flowBn = new BN(path.flow);
+      const amountBn = new BN(args.amount);
+      if (flowBn.gtn(0) && flowBn.lt(amountBn)) {
+        context.log(`The max. flow as determined by the pathfinder is ${flowBn} but the user requested ${amountBn}`);
+      }
+    }
   }
 
   return path;
 };
 
-async function findDirectPath(from: string, to: string, amountInWei: string): Promise<TransitivePath> {
+function getInputsOrderedByValue(adjacencyList: { [p: string]: { [p: string]: TransitiveTransfer[] } }, sink: string)
+  : {
+  sinkInputs: { [p: string]: TransitiveTransfer[] },
+  sinkInputSources: { value: BN; sourceAddress: string; }[]
+} {
+  const sinkInputs = adjacencyList[sink];
+  if (!sinkInputs) {
+    return {sinkInputs: {}, sinkInputSources: []};
+  }
 
-  const result = await fetch(Environment.pathfinderUrl, {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      method: "compute_transfer",
-      params: {
-        from,
-        to,
-        value: amountInWei,
-        iterative: false,
-        prune: true
+  let sinkInputSources = Object.keys(sinkInputs)
+    .map(sourceAddress => {
+      return {
+        value: sinkInputs[sourceAddress]
+          .reduce((p, c) => p.add(new BN(c.value)), new BN("0")),
+        sourceAddress: sourceAddress
       }
-    })
+    });
+
+  sinkInputSources.sort((a, b) => a.value.gt(b.value)
+    ? -1
+    : a.value.lt(b.value)
+      ? 1
+      : 0)
+
+  sinkInputSources = sinkInputSources.map(o => {
+    return {
+      ...o,
+      valueString: o.value.toString()
+    }
+  });
+  return {sinkInputs, sinkInputSources};
+}
+
+async function validateAndSavePath(path: TransitivePath, to: string, amount: BN, amountInWei: string, from: string) {
+  let adjacencyList: { [to: string]: { [from: string]: TransitiveTransfer[] } } = {};
+
+  path.transfers.forEach(o => {
+    if (!adjacencyList[o.to]) {
+      adjacencyList[o.to] = {
+        [o.from]: [o]
+      };
+    } else {
+      const ft = adjacencyList[o.to];
+      if (!ft[o.from]) {
+        ft[o.from] = [o];
+      } else {
+        ft[o.from].push(o);
+      }
+    }
   });
 
-  const json = await result.json();
-  const maxFlow = new BN(json.result.flow.toString().substring(2), "hex");
+  let sinks = [to];
 
-  const path = <TransitivePath>{
-    flow: maxFlow.toString(),
-    success: true,
-    transfers: json.result.transfers.map((o: any) => {
-      return <TransitiveTransfer>{
-        from: o.from,
-        to: o.to,
-        tokenOwner: o.token_owner,
-        value: (new BN(o.value.toString().substring(2), "hex")).toString(),
-        // token: o.token_owner
-      };
-    })
-  };
-
-  return path;
-  /*
-    const recipientIsOrganization = (await Environment.indexDb.query(`
-            select hash
-            from crc_organisation_signup_2
-            where organisation = $1`,
-      [to])).rowCount > 0;
-
-    // 1) Get the balances of all tokens of "from" that are accepted by "to"
-    const acceptedTokensWithBalance = await BalanceQueries.getAcceptedTokensWithBalanceAndLimit(from, to);
-
-    // 2) Get the balance of each owner's own token holdings
-    const allTokenOwners = Object.keys(acceptedTokensWithBalance.toLookup(o => o.tokenOwner));
-    const tokenOwnerOwnTokenBalances = await BalanceQueries.getTokenOwnerOwnTokenBalances(
-      !allTokenOwners.find(o => o == to)
-        ? allTokenOwners.concat([to])
-        : allTokenOwners);
-    const tokenOwnersOwnBalancesLookup = tokenOwnerOwnTokenBalances.toLookup(o => o.tokenOwner, o => o.balance);
-
-    // 3) Get the receiver's current balance of every transferable token
-    const receiverTokenBalances = await BalanceQueries.getReceiverTokenBalances(to, allTokenOwners);
-    const receiverTokenBalancesLookup = receiverTokenBalances.toLookup(o => o.tokenOwner, o => o.balance);
-
-    // const tokenOwnersOwnTokenBalance = tokenOwnerOwnTokenBalances.find(o => o.tokenOwner == to);
-
-    // 4) Calculate the max. transferable amount of each token:
-    //    * Get the destination's balance of their own token
-    //    * multiply it with the limit that's set for the relation:
-    //      'tokenOwner' -can-send-to-> 'to' of each transferable token
-    //    * divide by 100
-    //
-    // Original code:
-    // uint256 max = (userToToken[dest].balanceOf(dest).mul(limits[dest][tokenOwner])).div(oneHundred);
-    const acceptedTokensWithMaxTransferableAmount = acceptedTokensWithBalance.map(o => {
-      // The owner of a token always accepts all of their tokens
-      let max = (o.tokenOwner == to || recipientIsOrganization)
-        ? o.balance
-        : tokenOwnersOwnBalancesLookup[to].mul(o.limitBn).div(oneHundred);
-
-      // Subtract the current holdings of the receivers from the max transferable amount:
-      // userToToken[tokenOwner].balanceOf(dest).mul(oneHundred.sub(limits[dest][tokenOwner])).div(oneHundred)
-      if (!recipientIsOrganization) {
-        const destBalance = receiverTokenBalancesLookup[o.tokenOwner];
-        if (destBalance) {
-          if (max.lt(destBalance)) {
-            // if trustLimit has already been overridden by a direct transfer, nothing more can be sent
-            max = zeroBN;
-          } else {
-            const destBalanceScaled = destBalance.mul(oneHundred.sub(o.limitBn)).div(oneHundred);
-            max = max.sub(destBalanceScaled);
-          }
-        token: o.token_owner
-      };
-    })
-  };
-}
-
-async function findDirectPath(from: string, to: string, amountInWei: string) : Promise<TransitivePath> {
-  const recipientIsOrganization = (await Environment.indexDb.query(`
-          select hash
-          from crc_organisation_signup_2
-          where organisation = $1`,
-    [to])).rowCount > 0;
-
-  // 1) Get the balances of all tokens of "from" that are accepted by "to"
-  const acceptedTokensWithBalance = await BalanceQueries.getAcceptedTokensWithBalanceAndLimit(from, to);
-
-  // 2) Get the balance of each owner's own token holdings
-  const allTokenOwners = Object.keys(acceptedTokensWithBalance.toLookup(o => o.tokenOwner));
-  const tokenOwnerOwnTokenBalances = await BalanceQueries.getTokenOwnerOwnTokenBalances(
-    !allTokenOwners.find(o => o == to)
-      ? allTokenOwners.concat([to])
-      : allTokenOwners);
-  const tokenOwnersOwnBalancesLookup = tokenOwnerOwnTokenBalances.toLookup(o => o.tokenOwner, o => o.balance);
-
-  // 3) Get the receiver's current balance of every transferable token
-  const receiverTokenBalances = await BalanceQueries.getReceiverTokenBalances(to, allTokenOwners);
-  const receiverTokenBalancesLookup = receiverTokenBalances.toLookup(o => o.tokenOwner, o => o.balance);
-
-  // const tokenOwnersOwnTokenBalance = tokenOwnerOwnTokenBalances.find(o => o.tokenOwner == to);
-
-  // 4) Calculate the max. transferable amount of each token:
-  //    * Get the destination's balance of their own token
-  //    * multiply it with the limit that's set for the relation:
-  //      'tokenOwner' -can-send-to-> 'to' of each transferable token
-  //    * divide by 100
-  //
-  // Original code:
-  // uint256 max = (userToToken[dest].balanceOf(dest).mul(limits[dest][tokenOwner])).div(oneHundred);
-  const acceptedTokensWithMaxTransferableAmount = acceptedTokensWithBalance.map(o => {
-    // The owner of a token always accepts all of their tokens
-    let max = (o.tokenOwner == to || recipientIsOrganization)
-      ? o.balance
-      : tokenOwnersOwnBalancesLookup[to].mul(o.limitBn).div(oneHundred);
-
-    // Subtract the current holdings of the receivers from the max transferable amount:
-    // userToToken[tokenOwner].balanceOf(dest).mul(oneHundred.sub(limits[dest][tokenOwner])).div(oneHundred)
-    if (!recipientIsOrganization) {
-      const destBalance = receiverTokenBalancesLookup[o.tokenOwner];
-      if (destBalance) {
-        if (max.lt(destBalance)) {
-          // if trustLimit has already been overridden by a direct transfer, nothing more can be sent
-          max = zeroBN;
-        } else {
-          const destBalanceScaled = destBalance.mul(oneHundred.sub(o.limitBn)).div(oneHundred);
-          max = max.sub(destBalanceScaled);
-        }
-      }
-
-      const r = <TokenWithBalanceAndMaxTransferableAmount>{
-        ...o,
-        maxTransferableAmount: max.lte(o.balance)
-          ? max
-          : o.balance
-      };
-
-      (<any>r).maxTransferableAmountStr = r.maxTransferableAmount.toString();
-      return r;
-    })
-    .filter(o => o.maxTransferableAmount.gt(zeroBN));
-
-    // 5) Try to saturate the full transfer amount with the accepted token balances in the following order:
-    //    1. Use all the receiver's own tokens first
-    //    2. Then use all other tokens ordered by 'balance desc' except the own ones
-    //    3. If 1. and 2. aren't sufficient then use the own tokens as well
-    const transferAmountInWei = new BN(amountInWei);
-    let remainingAmountInWei = new BN(amountInWei);
-
-    const transferAmountInEur = convertCirclesToTimeCircles(
-      parseFloat(RpcGateway.get().utils.fromWei(amountInWei, "ether"))) / 10;
-
-    const receiversOwnTokens = acceptedTokensWithMaxTransferableAmount.find(o => o.tokenOwner == to);
-    const sendersOwnTokens = acceptedTokensWithMaxTransferableAmount.find(o => o.tokenOwner == from);
-    const otherAcceptedTokens = acceptedTokensWithMaxTransferableAmount.filter(o => o.tokenOwner != from && o.tokenOwner != to);
-
-    const transfer: TransitivePath = {
-      success: false,
-      requestedAmount: transferAmountInWei.toString(),
-      flow: "",
-      transfers: []
-    };
-
-    // Use recipient's tokens first (if any)
-    if (receiversOwnTokens) {
-      if (remainingAmountInWei.lte(receiversOwnTokens.maxTransferableAmount)) {
-        // The transfer amount can be saturated entirely with the recipient's own tokens
-        transfer.flow = transferAmountInWei.toString();
-        if (transferAmountInWei.gt(zeroBN)) {
-          transfer.transfers.push({
-            token: receiversOwnTokens.token,
-            tokenOwner: receiversOwnTokens.tokenOwner,
-            value: transferAmountInWei.toString(),
-            from: from,
-            to: to
-          });
-        }
-        remainingAmountInWei = remainingAmountInWei.sub(transferAmountInWei);
-      } else {
-        // Use all tokens and proceed
-        transfer.flow = receiversOwnTokens.maxTransferableAmount.toString();
-        if (receiversOwnTokens.maxTransferableAmount.gt(zeroBN)) {
-          transfer.transfers.push({
-            token: receiversOwnTokens.token,
-            tokenOwner: receiversOwnTokens.tokenOwner,
-            value: receiversOwnTokens.maxTransferableAmount.toString(),
-            from: from,
-            to: to
-          });
-        }
-        remainingAmountInWei = remainingAmountInWei.sub(receiversOwnTokens.maxTransferableAmount);
-      }
+  function getNextSink(): string | null {
+    const item = sinks.pop();
+    if (!item) {
+      return null;
     }
 
-    if (remainingAmountInWei.eq(new BN("0"))){
-      return transfer;
-    }
-
-    // More tokens are needed. Use the other accepted tokens.
-    let rowIndex = 0;
-
-    while (remainingAmountInWei.gt(zeroBN) && rowIndex < otherAcceptedTokens.length) {
-      const currentBalanceRow = otherAcceptedTokens[rowIndex];
-      const remainingAfterThis = remainingAmountInWei.sub(currentBalanceRow.maxTransferableAmount);
-
-      if (remainingAfterThis.gt(new BN("0"))) {
-        // Transfer wouldn't be saturated. Also use the next balance.
-        remainingAmountInWei = remainingAfterThis;
-        transfer.flow = new BN(transfer.flow).add(currentBalanceRow.maxTransferableAmount).toString();
-        if (currentBalanceRow.maxTransferableAmount.gt(zeroBN)) {
-          transfer.transfers.push({
-            token: currentBalanceRow.token,
-            tokenOwner: currentBalanceRow.tokenOwner,
-            value: currentBalanceRow.maxTransferableAmount.toString(),
-            from: from,
-            to: to
-          });
-        }
-        rowIndex++;
-      } else if (remainingAfterThis.lt(zeroBN)) {
-        // Transfer would be over-saturated. Stop at this balance and only take the necessary part.
-        const partialAmount = currentBalanceRow.maxTransferableAmount.add(remainingAfterThis);
-        remainingAmountInWei = remainingAmountInWei.sub(partialAmount);
-        transfer.flow = new BN(transfer.flow).add(partialAmount).toString();
-        if (partialAmount.gt(zeroBN)) {
-          transfer.transfers.push({
-            token: currentBalanceRow.token,
-            tokenOwner: currentBalanceRow.tokenOwner,
-            value: partialAmount.toString(),
-            from: from,
-            to: to
-          });
-        }
-        break;
-      } else {
-        // Perfect. Stop and use the whole balance.
-        remainingAmountInWei = remainingAmountInWei.sub(currentBalanceRow.maxTransferableAmount);
-        transfer.flow = new BN(transfer.flow).add(currentBalanceRow.maxTransferableAmount).toString();
-        if (currentBalanceRow.maxTransferableAmount.gt(zeroBN)) {
-          transfer.transfers.push({
-            token: currentBalanceRow.token,
-            tokenOwner: currentBalanceRow.tokenOwner,
-            value: currentBalanceRow.maxTransferableAmount.toString(),
-            from: from,
-            to: to
-          });
-        }
-        break;
-      }
-    }
-
-    if (remainingAmountInWei.eq(new BN("0"))){
-      return transfer;
-    }
-
-    // Still more tokens are needed. Use own tokens.
-    if (sendersOwnTokens) {
-      if (remainingAmountInWei.lte(sendersOwnTokens.maxTransferableAmount)) {
-        transfer.flow = new BN(transfer.flow).add(remainingAmountInWei).toString();
-        if (remainingAmountInWei.gt(zeroBN)) {
-          transfer.transfers.push({
-            token: sendersOwnTokens.token,
-            tokenOwner: sendersOwnTokens.tokenOwner,
-            value: remainingAmountInWei.toString(),
-            from: from,
-            to: to
-          });
-        }
-        remainingAmountInWei = remainingAmountInWei.sub(remainingAmountInWei);
-      } else {
-        transfer.flow = new BN(transfer.flow).add(sendersOwnTokens.maxTransferableAmount).toString();
-        if (sendersOwnTokens.maxTransferableAmount.gt(zeroBN)) {
-          transfer.transfers.push({
-            token: sendersOwnTokens.token,
-            tokenOwner: sendersOwnTokens.tokenOwner,
-            value: sendersOwnTokens.maxTransferableAmount.toString(),
-            from: from,
-            to: to
-          });
-        }
-        remainingAmountInWei = remainingAmountInWei.sub(sendersOwnTokens.maxTransferableAmount);
-      }
-    }
-
-    if (remainingAmountInWei.eq(new BN("0"))){
-      return transfer;
-    }
-
-    // Couldn't find a path with enough liquidity
-    transfer.transfers = [];
-    return transfer;
-
-   */
-}
-
-async function validateTransfers(sender: string, transfers: TransitivePath) {
-  var token = [];
-  var from = [];
-  var to = [];
-  var value = [];
-  for (let step of transfers.transfers) {
-    token.push(step.tokenOwner);
-    from.push(step.from);
-    to.push(step.to);
-    value.push(step.value);
+    return item;
   }
 
-  const abiItem: AbiItem = {
-    "inputs": [
-      {
-        "internalType": "address[]",
-        "name": "tokenOwners",
-        "type": "address[]"
-      },
-      {
-        "internalType": "address[]",
-        "name": "srcs",
-        "type": "address[]"
-      },
-      {
-        "internalType": "address[]",
-        "name": "dests",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "wads",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "transferThrough",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  };
 
-  const callData = RpcGateway.get().eth.abi.encodeFunctionSignature(abiItem)
-    + RpcGateway.get().eth.abi.encodeParameters([
-      "address[]", "address[]", "address[]", "uint256[]"
-    ], [
-      token, from, to, value
-    ]).substr(2)/* remove preceding 0x */;
+  let paths: any[][] = [];
+  let pathArr: any[] = [];
+  let sink = getNextSink();
 
+  while (sink) {
+    let {
+      sinkInputs,
+      sinkInputSources
+    } = getInputsOrderedByValue(adjacencyList, sink);
 
-  console.log(`'cast' command:`);
-  console.log(`cast call '0x29b9a7fBb8995b2423a71cC17cf9810798F6C543' 'transferThrough(address[],address[],address[],uint256[])' '[${token.join(',')}]' '[${from.join(',')}]' '[${to.join(',')}]' '[${value}]' --rpc-url https://rpc.gnosischain.com --from ${sender} 0x`);
-  try {
-    await RpcGateway.get().eth.call({
-      from: from[0],
-      to: Environment.circlesHubAddress,
-      data: callData
+    if (!sinkInputSources.length) {
+      sink = getNextSink();
+      continue;
+    }
+
+    const currentInput = sinkInputSources.pop();
+    if (!currentInput) {
+      throw new Error()
+    }
+
+    const currentInputEdges = sinkInputs[currentInput.sourceAddress];
+    if (!currentInputEdges) {
+      throw new Error();
+    }
+
+    // Remove the nodes we already visited
+    const currentInputEdge = currentInputEdges.pop();
+    if (currentInputEdges.length == 0) {
+      delete sinkInputs[currentInput.sourceAddress];
+    }
+
+    if (!currentInputEdge) {
+      throw new Error(``);
+    }
+
+    pathArr.push({
+      from: currentInputEdge.from,
+      to: currentInputEdge.to,
+      value: currentInputEdge.value,
+      tokenOwner: currentInputEdge.tokenOwner
     });
-    return true;
-  } catch (e) {
-    console.log(e);
-    throw new Error("Cannot validate the following path: " + JSON.stringify(transfers, null, 2));
+
+
+    // Todo: Follow the input edge depth first
+    // @ts-ignore
+    const followStack: TransitiveTransfer[] = [currentInputEdge];
+
+    while (followStack.length) {
+      const followByMostValuablePath = followStack.pop();
+
+      if (!followByMostValuablePath) {
+        throw new Error(``);
+      }
+
+      const {
+        sinkInputs,
+        sinkInputSources
+      } = getInputsOrderedByValue(adjacencyList, followByMostValuablePath.from);
+
+      const currentInput = sinkInputSources.pop();
+      if (!currentInput) {
+        break;
+      }
+
+      const currentInputEdges = sinkInputs[currentInput.sourceAddress];
+      for (let i = 0; i < currentInputEdges.length; i++) {
+        // Remove the nodes we already visited
+        const currentInputEdge = currentInputEdges.pop();
+        if (!currentInputEdge) {
+          throw new Error(``);
+        }
+
+        pathArr.push({
+          from: currentInputEdge.from,
+          to: currentInputEdge.to,
+          value: currentInputEdge.value,
+          tokenOwner: currentInputEdge.tokenOwner
+        });
+
+        if (currentInputEdges.length == 0) {
+          delete sinkInputs[currentInput.sourceAddress];
+        }
+
+        followStack.push(currentInputEdge);
+      }
+    }
+
+    paths.push(pathArr);
+    pathArr = [];
   }
+
+  const effectiveCapacity = (connections: { from: string, to: string, value: string, tokenOwner: string }[]) => new BN(connections[connections.length - 1].value);
+
+  paths.sort((a, b) => {
+    const aC = effectiveCapacity(a);
+    const bC = effectiveCapacity(b);
+    return aC.gt(bC) ? -1 : aC.lt(bC) ? 1 : 0
+  });
+  // allConnections = allConnections.filter(o => o[o.length - 1].to == to);
+
+  let effectiveTransferValue: BN = new BN("0");
+  let effectiveTokenTransfers: number = 0;
+  let effectiveConnections: { from: string, to: string, value: string, tokenOwner: string }[][] = [];
+
+  for (let i = 0; i < paths.length; i++) {
+    const connection = paths[i];
+    /*
+    if (effectiveTokenTransfers + connection.length > 50) {
+      console.log("Reached 50 transfers")
+      break;
+    }
+     */
+    effectiveConnections.push(connection);
+    effectiveTransferValue = effectiveTransferValue.add(effectiveCapacity(connection));
+    effectiveTokenTransfers += connection.length;
+  }
+
+  const pathToValidate = <TransitivePath>{
+    flow: effectiveTransferValue.gt(amount) ? amount.toString() : effectiveTransferValue.toString(),
+    requestedAmount: amountInWei,
+    success: effectiveTransferValue.gt(amount),
+    transfers: effectiveConnections.flatMap(o =>
+      o.map(p => {
+        return <TransitiveTransfer>{
+          ...p
+        };
+      })
+    )
+  };
+  //console.log(pathToValidate);
+
+  const amountInEth = parseInt(effectiveTransferValue.div(new BN("1000000000000000000")).toString());
+
+  const graphviz = "digraph G {\n" + effectiveConnections.map(o => {
+    return o.map(o => {
+      const valueInEth = parseInt(new BN(o.value).div(new BN("1000000000000000000")).toString());
+      let penWidth = (amountInEth * 0.01) * (valueInEth / amountInEth);
+      penWidth = penWidth < 0.5 ? 0.5 : penWidth;
+      const edgeColor = o.tokenOwner == to ? "#00ff00" : o.tokenOwner == from ? "#ff0000" : "#000000";
+      const edgeLabel = `${o.tokenOwner.substring(0, 9)}\n(${valueInEth})`;
+      const style = valueInEth < 1 ? "dashed" : "solid";
+      const labelColor = valueInEth < 1 ? "#8f8f8f" : edgeColor;
+      return `\t"${o.from.substring(0, 9)}" -> "${o.to.substring(0, 9)}"` +
+        ` [style="${style}" penwidth=${penWidth} color="${edgeColor}" label="${edgeLabel}" weight="${valueInEth}" decorate="false" labelfloat="true" fontcolor="${labelColor}"]`
+    })
+      .join("\n");
+  }).join("\n") + "\n}";
+
+  console.info(graphviz);
 }

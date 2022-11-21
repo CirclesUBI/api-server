@@ -1,0 +1,670 @@
+digraph G {
+       graph [fontname = "helvetica"];
+       node [fontname = "helvetica"];
+       edge [fontname = "helvetica" style="dashed" color="red"];
+      "0xde374ece6fa50e781e81aac78e811b33d16912c7" [shape=none label=<<TABLE BORDER="1"
+                              CELLBORDER="0"
+                              CELLPADDING="3"
+                              CELLSPACING="3">
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2"
+                               BGCOLOR="#d2e0f8">
+                            <B><font color="#000000" POINT-SIZE="24">Daniel Janz</font></B>
+                           </TD>
+                         </TR>
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2" 
+                               BGCOLOR="#d2e0f8">
+                            <font color="#000000">(0xde374ece6fa50e781e81aac78e811b33d16912c7)</font>
+                           </TD>
+                         </TR>
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0xde374ece6fa50e781e81aac78e811b33d16912c7 Daniel Janz (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono"><B>1442.4609</B></font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     505.1078 to   </font> 0x42cedde511.. Martin Köppelmann</TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">937.3531</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     937.3531 to   </font> 0x70b15a15d7..</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>0.0000</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x02b50e87c577084b9659a625870b4a6e8a8e9238 kaustubh (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">1061.2812</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     505.1078 to   </font> 0x42cedde511.. Martin Köppelmann</TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">556.1734</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     303.1267 to   </font> 0x01ede756a9.. CirclesCoopDonations</TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">253.0467</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-      92.5392 to   </font> 0xaaef9177ac.. phonebox</TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">160.5074</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     122.2066 to   </font> 0xabd7e59304.. Bavarian Barbarians</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>38.3009</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x0142e59d7e0744e984aca46bbe9a7ef5c3fa50ba joyponader (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">562.8170</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     505.1078 to   </font> 0x42cedde511.. Martin Köppelmann</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>57.7092</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x249fa3ecd95a53f742707d53688fcafbbd072f33 alculexum (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">532.7746</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     505.1078 to   </font> 0x42cedde511.. Martin Köppelmann</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>27.6669</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x4a9affa9249f36fd0629f342c182a4e94a13c2e0 Samuel Andert (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">480.0567</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     480.0567 to   </font> 0x42cedde511.. Martin Köppelmann</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>0.0000</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0xc7dc64d59e1d2c8b05923bd1da98aa54e3822de7 (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">390.9723</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     388.2846 to   </font> 0x0acac72e21..</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>2.6877</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x92f09a17160b0ed3245d0b82e12452ff12468782 RichardS (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">381.0645</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     381.0645 to   </font> 0x42cedde511.. Martin Köppelmann</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>0.0000</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x9a0bbbbd3789f184ca88f2f6a40f42406cb842ac adz (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">380.3659</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     380.3659 to   </font> 0x42cedde511.. Martin Köppelmann</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>0.0000</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x70b15a15d71ce5471abb47d4cf414c3000e12254 (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">293.8817</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     293.8817 to   </font> 0x42cedde511.. Martin Köppelmann</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>0.0000</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x504899179bcb52101f72104d661d242b00175d9c (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">170.6020</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     170.6020 to   </font> 0x42cedde511.. Martin Köppelmann</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>0.0000</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x51d9e1969202321ba0d7bc9ffcc6327bb981ab93 boris (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">129.5316</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     106.1415 to   </font> 0x18a6fd9f1a.. maurelian</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>23.3901</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x475a1b36d540c05c1c7b7ca4598347c695ac1ec6 Dominik Gerhard (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">90.1360</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-      90.1360 to   </font> 0xc5a786eafe.. Basic Income Lab</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>0.0000</B></font></TD>
+                   </TR>
+                       </TABLE>>];  "0x42cedde51198d1773590311e2a340dc06b24cb37" [shape=none label=<<TABLE BORDER="1"
+                              CELLBORDER="0"
+                              CELLPADDING="3"
+                              CELLSPACING="3">
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2"
+                               BGCOLOR="#d2e0f8">
+                            <B><font color="#000000" POINT-SIZE="24">Martin Köppelmann</font></B>
+                           </TD>
+                         </TR>
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2" 
+                               BGCOLOR="#d2e0f8">
+                            <font color="#000000">(0x42cedde51198d1773590311e2a340dc06b24cb37)</font>
+                           </TD>
+                         </TR>
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x42cedde51198d1773590311e2a340dc06b24cb37 Martin Köppelmann (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono"><B>1010.2156</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x49d521ec667b76d77b43fd05e435e6c09aaa841b MalthusJohn (50 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">403.9621</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     303.1267 from </font> 0x01ede756a9.. CirclesCoopDonations</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>707.0888</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x18a6fd9f1a5432451696ed8c904d3e6a29d48312 maurelian (50 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">245.9119</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     106.1415 from </font> 0x18a6fd9f1a.. maurelian</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>352.0534</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x70b15a15d71ce5471abb47d4cf414c3000e12254 (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">6.4928</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     293.8817 from </font> 0xde374ece6f.. Daniel Janz</TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">300.3745</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     937.3531 from </font> 0x70b15a15d7..</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>1237.7276</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x9a0bbbbd3789f184ca88f2f6a40f42406cb842ac adz (50 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">0.0000</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     380.3659 from </font> 0xde374ece6f.. Daniel Janz</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>380.3659</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x249fa3ecd95a53f742707d53688fcafbbd072f33 alculexum (50 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">0.0000</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     505.1078 from </font> 0xde374ece6f.. Daniel Janz</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>505.1078</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x02b50e87c577084b9659a625870b4a6e8a8e9238 kaustubh (50 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">0.0000</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     505.1078 from </font> 0xde374ece6f.. Daniel Janz</TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">505.1078</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+      92.5392 from </font> 0xaaef9177ac.. phonebox</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>597.6470</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x0142e59d7e0744e984aca46bbe9a7ef5c3fa50ba joyponader (50 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">0.0000</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     505.1078 from </font> 0xde374ece6f.. Daniel Janz</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>505.1078</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x92f09a17160b0ed3245d0b82e12452ff12468782 RichardS (50 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">0.0000</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     381.0645 from </font> 0xde374ece6f.. Daniel Janz</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>381.0645</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0xde374ece6fa50e781e81aac78e811b33d16912c7 Daniel Janz (50 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">0.0000</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     505.1078 from </font> 0xde374ece6f.. Daniel Janz</TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">505.1078</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+      90.1360 from </font> 0xc5a786eafe.. Basic Income Lab</TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">595.2438</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     122.2066 from </font> 0xabd7e59304.. Bavarian Barbarians</TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">717.4504</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     388.2846 from </font> 0x0acac72e21..</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>1105.7351</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x4a9affa9249f36fd0629f342c182a4e94a13c2e0 Samuel Andert (50 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">0.0000</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     480.0567 from </font> 0xde374ece6f.. Daniel Janz</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>480.0567</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x504899179bcb52101f72104d661d242b00175d9c (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">0.0000</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     170.6020 from </font> 0xde374ece6f.. Daniel Janz</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>170.6020</B></font></TD>
+                   </TR>
+                       </TABLE>>];  "0xde374ece6fa50e781e81aac78e811b33d16912c7" -> "0x42cedde51198d1773590311e2a340dc06b24cb37" [penwidth=37.26 decorate=true label=<<TABLE border="0">
+                         <TR>
+                           <TD align="left"><B>Total</B></TD>
+                           <TD right="left"><B><font face="Liberation Mono">3726.4019</font></B></TD>
+                         </TR>
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0x249fa3ecd9.. alculexum</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">505.1078</font></TD>
+                         </TR>,
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0x02b50e87c5.. kaustubh</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">505.1078</font></TD>
+                         </TR>,
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0x0142e59d7e.. joyponader</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">505.1078</font></TD>
+                         </TR>,
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0xde374ece6f.. Daniel Janz</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">505.1078</font></TD>
+                         </TR>,
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0x4a9affa924.. Samuel Andert</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">480.0567</font></TD>
+                         </TR>,
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0x92f09a1716.. RichardS</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">381.0645</font></TD>
+                         </TR>,
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0x9a0bbbbd37.. adz</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">380.3659</font></TD>
+                         </TR>,
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0x70b15a15d7..</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">293.8817</font></TD>
+                         </TR>,
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0x504899179b..</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">170.6020</font></TD>
+                         </TR>
+                       </TABLE>>];  "0xc5a786eafefcf703c114558c443e4f17969d9573" [shape=none label=<<TABLE BORDER="1"
+                              CELLBORDER="0"
+                              CELLPADDING="3"
+                              CELLSPACING="3">
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2"
+                               BGCOLOR="#e4f5d0">
+                            <B><font color="#000000" POINT-SIZE="24">Basic Income Lab</font></B>
+                           </TD>
+                         </TR>
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2" 
+                               BGCOLOR="#e4f5d0">
+                            <font color="#000000">(0xc5a786eafefcf703c114558c443e4f17969d9573)</font>
+                           </TD>
+                         </TR>
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0xde374ece6fa50e781e81aac78e811b33d16912c7 Daniel Janz (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono"><B>317.0440</B></font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-      90.1360 to   </font> 0x42cedde511.. Martin Köppelmann</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>226.9080</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x475a1b36d540c05c1c7b7ca4598347c695ac1ec6 Dominik Gerhard (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">221.1064</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+      90.1360 from </font> 0xde374ece6f.. Daniel Janz</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>311.2425</B></font></TD>
+                   </TR>
+                       </TABLE>>];  "0xde374ece6fa50e781e81aac78e811b33d16912c7" -> "0xc5a786eafefcf703c114558c443e4f17969d9573" [penwidth=0.9 decorate=true label=<<TABLE border="0">
+                         <TR>
+                           <TD align="left"><B>Total</B></TD>
+                           <TD right="left"><B><font face="Liberation Mono">90.1360</font></B></TD>
+                         </TR>
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0x475a1b36d5.. Dominik Gerhard</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">90.1360</font></TD>
+                         </TR>
+                       </TABLE>>];  "0xc5a786eafefcf703c114558c443e4f17969d9573" -> "0x42cedde51198d1773590311e2a340dc06b24cb37" [penwidth=0.9 decorate=true label=<<TABLE border="0">
+                         <TR>
+                           <TD align="left"><B>Total</B></TD>
+                           <TD right="left"><B><font face="Liberation Mono">90.1360</font></B></TD>
+                         </TR>
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0xde374ece6f.. Daniel Janz</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">90.1360</font></TD>
+                         </TR>
+                       </TABLE>>];  "0xaaef9177acaaac1e16f741a84e6de55edb412a27" [shape=none label=<<TABLE BORDER="1"
+                              CELLBORDER="0"
+                              CELLPADDING="3"
+                              CELLSPACING="3">
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2"
+                               BGCOLOR="#d2e0f8">
+                            <B><font color="#000000" POINT-SIZE="24">phonebox</font></B>
+                           </TD>
+                         </TR>
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2" 
+                               BGCOLOR="#d2e0f8">
+                            <font color="#000000">(0xaaef9177acaaac1e16f741a84e6de55edb412a27)</font>
+                           </TD>
+                         </TR>
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0xaaef9177acaaac1e16f741a84e6de55edb412a27 phonebox (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono"><B>2288.8776</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x02b50e87c577084b9659a625870b4a6e8a8e9238 kaustubh (50 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">130.8401</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+      92.5392 from </font> 0xde374ece6f.. Daniel Janz</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono">223.3793</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-      92.5392 to   </font> 0x42cedde511.. Martin Köppelmann</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>130.8401</B></font></TD>
+                   </TR>
+                       </TABLE>>];  "0xde374ece6fa50e781e81aac78e811b33d16912c7" -> "0xaaef9177acaaac1e16f741a84e6de55edb412a27" [penwidth=0.9200000000000002 decorate=true label=<<TABLE border="0">
+                         <TR>
+                           <TD align="left"><B>Total</B></TD>
+                           <TD right="left"><B><font face="Liberation Mono">92.5392</font></B></TD>
+                         </TR>
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0x02b50e87c5.. kaustubh</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">92.5392</font></TD>
+                         </TR>
+                       </TABLE>>];  "0xaaef9177acaaac1e16f741a84e6de55edb412a27" -> "0x42cedde51198d1773590311e2a340dc06b24cb37" [penwidth=0.9200000000000002 decorate=true label=<<TABLE border="0">
+                         <TR>
+                           <TD align="left"><B>Total</B></TD>
+                           <TD right="left"><B><font face="Liberation Mono">92.5392</font></B></TD>
+                         </TR>
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0x02b50e87c5.. kaustubh</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">92.5392</font></TD>
+                         </TR>
+                       </TABLE>>];  "0x18a6fd9f1a5432451696ed8c904d3e6a29d48312" [shape=none label=<<TABLE BORDER="1"
+                              CELLBORDER="0"
+                              CELLPADDING="3"
+                              CELLSPACING="3">
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2"
+                               BGCOLOR="#d2e0f8">
+                            <B><font color="#000000" POINT-SIZE="24">maurelian</font></B>
+                           </TD>
+                         </TR>
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2" 
+                               BGCOLOR="#d2e0f8">
+                            <font color="#000000">(0x18a6fd9f1a5432451696ed8c904d3e6a29d48312)</font>
+                           </TD>
+                         </TR>
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x18a6fd9f1a5432451696ed8c904d3e6a29d48312 maurelian (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono"><B>551.9639</B></font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     106.1415 to   </font> 0x42cedde511.. Martin Köppelmann</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>445.8224</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x51d9e1969202321ba0d7bc9ffcc6327bb981ab93 boris (50 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">245.9119</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     106.1415 from </font> 0xde374ece6f.. Daniel Janz</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>352.0534</B></font></TD>
+                   </TR>
+                       </TABLE>>];  "0xde374ece6fa50e781e81aac78e811b33d16912c7" -> "0x18a6fd9f1a5432451696ed8c904d3e6a29d48312" [penwidth=1.06 decorate=true label=<<TABLE border="0">
+                         <TR>
+                           <TD align="left"><B>Total</B></TD>
+                           <TD right="left"><B><font face="Liberation Mono">106.1415</font></B></TD>
+                         </TR>
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0x51d9e19692.. boris</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">106.1415</font></TD>
+                         </TR>
+                       </TABLE>>];  "0x18a6fd9f1a5432451696ed8c904d3e6a29d48312" -> "0x42cedde51198d1773590311e2a340dc06b24cb37" [penwidth=1.06 decorate=true label=<<TABLE border="0">
+                         <TR>
+                           <TD align="left"><B>Total</B></TD>
+                           <TD right="left"><B><font face="Liberation Mono">106.1415</font></B></TD>
+                         </TR>
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0x18a6fd9f1a.. maurelian</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">106.1415</font></TD>
+                         </TR>
+                       </TABLE>>];  "0xabd7e593043c61fe103b6e338204300ca89c8b59" [shape=none label=<<TABLE BORDER="1"
+                              CELLBORDER="0"
+                              CELLPADDING="3"
+                              CELLSPACING="3">
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2"
+                               BGCOLOR="#e4f5d0">
+                            <B><font color="#000000" POINT-SIZE="24">Bavarian Barbarians</font></B>
+                           </TD>
+                         </TR>
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2" 
+                               BGCOLOR="#e4f5d0">
+                            <font color="#000000">(0xabd7e593043c61fe103b6e338204300ca89c8b59)</font>
+                           </TD>
+                         </TR>
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0xde374ece6fa50e781e81aac78e811b33d16912c7 Daniel Janz (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono"><B>185.1289</B></font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     122.2066 to   </font> 0x42cedde511.. Martin Köppelmann</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>62.9224</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x02b50e87c577084b9659a625870b4a6e8a8e9238 kaustubh (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">0.0000</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     122.2066 from </font> 0xde374ece6f.. Daniel Janz</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>122.2066</B></font></TD>
+                   </TR>
+                       </TABLE>>];  "0xde374ece6fa50e781e81aac78e811b33d16912c7" -> "0xabd7e593043c61fe103b6e338204300ca89c8b59" [penwidth=1.22 decorate=true label=<<TABLE border="0">
+                         <TR>
+                           <TD align="left"><B>Total</B></TD>
+                           <TD right="left"><B><font face="Liberation Mono">122.2066</font></B></TD>
+                         </TR>
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0x02b50e87c5.. kaustubh</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">122.2066</font></TD>
+                         </TR>
+                       </TABLE>>];  "0xabd7e593043c61fe103b6e338204300ca89c8b59" -> "0x42cedde51198d1773590311e2a340dc06b24cb37" [penwidth=1.22 decorate=true label=<<TABLE border="0">
+                         <TR>
+                           <TD align="left"><B>Total</B></TD>
+                           <TD right="left"><B><font face="Liberation Mono">122.2066</font></B></TD>
+                         </TR>
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0xde374ece6f.. Daniel Janz</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">122.2066</font></TD>
+                         </TR>
+                       </TABLE>>];  "0x01ede756a90dd9dc930bd8e5ecf94547ad1e9a6f" [shape=none label=<<TABLE BORDER="1"
+                              CELLBORDER="0"
+                              CELLPADDING="3"
+                              CELLSPACING="3">
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2"
+                               BGCOLOR="#e4f5d0">
+                            <B><font color="#000000" POINT-SIZE="24">CirclesCoopDonations</font></B>
+                           </TD>
+                         </TR>
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2" 
+                               BGCOLOR="#e4f5d0">
+                            <font color="#000000">(0x01ede756a90dd9dc930bd8e5ecf94547ad1e9a6f)</font>
+                           </TD>
+                         </TR>
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x49d521ec667b76d77b43fd05e435e6c09aaa841b MalthusJohn (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono"><B>340.0752</B></font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     303.1267 to   </font> 0x42cedde511.. Martin Köppelmann</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>36.9485</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x02b50e87c577084b9659a625870b4a6e8a8e9238 kaustubh (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">0.0001</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     303.1267 from </font> 0xde374ece6f.. Daniel Janz</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>303.1268</B></font></TD>
+                   </TR>
+                       </TABLE>>];  "0xde374ece6fa50e781e81aac78e811b33d16912c7" -> "0x01ede756a90dd9dc930bd8e5ecf94547ad1e9a6f" [penwidth=3.0300000000000002 decorate=true label=<<TABLE border="0">
+                         <TR>
+                           <TD align="left"><B>Total</B></TD>
+                           <TD right="left"><B><font face="Liberation Mono">303.1267</font></B></TD>
+                         </TR>
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0x02b50e87c5.. kaustubh</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">303.1267</font></TD>
+                         </TR>
+                       </TABLE>>];  "0x01ede756a90dd9dc930bd8e5ecf94547ad1e9a6f" -> "0x42cedde51198d1773590311e2a340dc06b24cb37" [penwidth=3.0300000000000002 decorate=true label=<<TABLE border="0">
+                         <TR>
+                           <TD align="left"><B>Total</B></TD>
+                           <TD right="left"><B><font face="Liberation Mono">303.1267</font></B></TD>
+                         </TR>
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0x49d521ec66.. MalthusJohn</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">303.1267</font></TD>
+                         </TR>
+                       </TABLE>>];  "0x0acac72e2195695b39721387e5dc0ce70a33c09c" [shape=none label=<<TABLE BORDER="1"
+                              CELLBORDER="0"
+                              CELLPADDING="3"
+                              CELLSPACING="3">
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2"
+                               BGCOLOR="#e4f5d0">
+                            <B><font color="#000000" POINT-SIZE="24">0x0acac72e2195695b39721387e5dc0ce70a33c09c</font></B>
+                           </TD>
+                         </TR>
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2" 
+                               BGCOLOR="#e4f5d0">
+                            <font color="#000000">(0x0acac72e2195695b39721387e5dc0ce70a33c09c)</font>
+                           </TD>
+                         </TR>
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0xde374ece6fa50e781e81aac78e811b33d16912c7 Daniel Janz (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono"><B>535.9479</B></font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     388.2846 to   </font> 0x42cedde511.. Martin Köppelmann</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>147.6633</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0xc7dc64d59e1d2c8b05923bd1da98aa54e3822de7 (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">417.0710</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     388.2846 from </font> 0xde374ece6f.. Daniel Janz</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>805.3557</B></font></TD>
+                   </TR>
+                       </TABLE>>];  "0xde374ece6fa50e781e81aac78e811b33d16912c7" -> "0x0acac72e2195695b39721387e5dc0ce70a33c09c" [penwidth=3.88 decorate=true label=<<TABLE border="0">
+                         <TR>
+                           <TD align="left"><B>Total</B></TD>
+                           <TD right="left"><B><font face="Liberation Mono">388.2846</font></B></TD>
+                         </TR>
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0xc7dc64d59e..</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">388.2846</font></TD>
+                         </TR>
+                       </TABLE>>];  "0x0acac72e2195695b39721387e5dc0ce70a33c09c" -> "0x42cedde51198d1773590311e2a340dc06b24cb37" [penwidth=3.88 decorate=true label=<<TABLE border="0">
+                         <TR>
+                           <TD align="left"><B>Total</B></TD>
+                           <TD right="left"><B><font face="Liberation Mono">388.2846</font></B></TD>
+                         </TR>
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0xde374ece6f.. Daniel Janz</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">388.2846</font></TD>
+                         </TR>
+                       </TABLE>>];  "0x70b15a15d71ce5471abb47d4cf414c3000e12254" [shape=none label=<<TABLE BORDER="1"
+                              CELLBORDER="0"
+                              CELLPADDING="3"
+                              CELLSPACING="3">
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2"
+                               BGCOLOR="#d2e0f8">
+                            <B><font color="#000000" POINT-SIZE="24">0x70b15a15d71ce5471abb47d4cf414c3000e12254</font></B>
+                           </TD>
+                         </TR>
+                         <TR CELLSPACING="0" 
+                             CELLPADDING="0">
+                           <TD COLSPAN="2" 
+                               BGCOLOR="#d2e0f8">
+                            <font color="#000000">(0x70b15a15d71ce5471abb47d4cf414c3000e12254)</font>
+                           </TD>
+                         </TR>
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0x70b15a15d71ce5471abb47d4cf414c3000e12254 (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono"><B>1778.2367</B></font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="red">-     937.3531 to   </font> 0x42cedde511.. Martin Köppelmann</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>840.8836</B></font></TD>
+                   </TR> 
+                   <TR border="0">
+                     <TD border="0" align="left"><font face="Liberation Mono"><B>0xde374ece6fa50e781e81aac78e811b33d16912c7 Daniel Janz (100 %)</B></font></TD>
+                     <TD border="0" align="right"><font face="Liberation Mono">0.0000</font></TD>
+                   </TR>
+                   <TR border="0">
+                     <TD border="0" align="left" ><font face="Liberation Mono" COLOR="green">+     937.3531 from </font> 0xde374ece6f.. Daniel Janz</TD>
+                     <TD border="0" align="right" ><font face="Liberation Mono"><B>937.3531</B></font></TD>
+                   </TR>
+                       </TABLE>>];  "0xde374ece6fa50e781e81aac78e811b33d16912c7" -> "0x70b15a15d71ce5471abb47d4cf414c3000e12254" [penwidth=9.370000000000001 decorate=true label=<<TABLE border="0">
+                         <TR>
+                           <TD align="left"><B>Total</B></TD>
+                           <TD right="left"><B><font face="Liberation Mono">937.3531</font></B></TD>
+                         </TR>
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0xde374ece6f.. Daniel Janz</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">937.3531</font></TD>
+                         </TR>
+                       </TABLE>>];  "0x70b15a15d71ce5471abb47d4cf414c3000e12254" -> "0x42cedde51198d1773590311e2a340dc06b24cb37" [penwidth=9.370000000000001 decorate=true label=<<TABLE border="0">
+                         <TR>
+                           <TD align="left"><B>Total</B></TD>
+                           <TD right="left"><B><font face="Liberation Mono">937.3531</font></B></TD>
+                         </TR>
+                         <TR border="0" >
+                           <TD border="0"  align="left" ><font face="Liberation Mono" color="#000000" >0x70b15a15d7..</font></TD>
+                           <TD border="0"  align="right" ><font face="Liberation Mono" color="#000000">937.3531</font></TD>
+                         </TR>
+                       </TABLE>>];}
