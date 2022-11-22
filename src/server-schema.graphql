@@ -844,7 +844,6 @@ type Stats {
 }
 
 type TransitiveTransfer {
-  isHubTransfer: Boolean
   from: String!
   to: String!
   token: String
@@ -855,7 +854,7 @@ type TransitiveTransfer {
 type TransitivePath {
   requestedAmount: String!
   flow: String!
-  success: Boolean!
+  isValid: Boolean!
   transfers: [TransitiveTransfer!]!
 }
 

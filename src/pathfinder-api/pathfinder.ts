@@ -58,7 +58,7 @@ export class Pathfinder {
     return <TransitivePath>{
       flow: new BN(response.result.flow.substring(2), "hex").toString(),
       requestedAmount: amount,
-      success: true,
+      isValid: false,
       transfers: response.result.transfers.map((o: any) => {
         return <TransitiveTransfer>{
           from: o.from,
@@ -74,7 +74,7 @@ export class Pathfinder {
     return <TransitivePath>{
       __typename: "TransitivePath",
       flow: "0",
-      success: false,
+      isValid: false,
       message: message,
       requestedAmount: requestedAmount,
       transfers: [],
