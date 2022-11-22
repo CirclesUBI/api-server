@@ -75,6 +75,7 @@ export type Businesses = {
   id: Scalars['Int'];
   lat?: Maybe<Scalars['Float']>;
   location?: Maybe<Scalars['String']>;
+  locationName?: Maybe<Scalars['String']>;
   lon?: Maybe<Scalars['Float']>;
   name?: Maybe<Scalars['String']>;
   phoneNumber?: Maybe<Scalars['String']>;
@@ -693,6 +694,7 @@ export type Organisation = {
   largeBannerUrl?: Maybe<Scalars['String']>;
   lat?: Maybe<Scalars['Float']>;
   location?: Maybe<Scalars['String']>;
+  locationName?: Maybe<Scalars['String']>;
   lon?: Maybe<Scalars['Float']>;
   members?: Maybe<Array<ProfileOrOrganisation>>;
   name: Scalars['String'];
@@ -745,6 +747,7 @@ export type Profile = {
   lastName?: Maybe<Scalars['String']>;
   lat?: Maybe<Scalars['Float']>;
   location?: Maybe<Scalars['String']>;
+  locationName?: Maybe<Scalars['String']>;
   lon?: Maybe<Scalars['Float']>;
   members?: Maybe<Array<Profile>>;
   memberships?: Maybe<Array<Membership>>;
@@ -1268,6 +1271,7 @@ export type UpsertOrganisationInput = {
   largeBannerUrl?: InputMaybe<Scalars['String']>;
   lat?: InputMaybe<Scalars['Float']>;
   location?: InputMaybe<Scalars['String']>;
+  locationName?: InputMaybe<Scalars['String']>;
   lon?: InputMaybe<Scalars['Float']>;
   name: Scalars['String'];
   smallBannerUrl?: InputMaybe<Scalars['String']>;
@@ -1293,6 +1297,7 @@ export type UpsertProfileInput = {
   lastName?: InputMaybe<Scalars['String']>;
   lat?: InputMaybe<Scalars['Float']>;
   location?: InputMaybe<Scalars['String']>;
+  locationName?: InputMaybe<Scalars['String']>;
   lon?: InputMaybe<Scalars['Float']>;
   newsletter?: InputMaybe<Scalars['Boolean']>;
   status: Scalars['String'];
@@ -1718,6 +1723,7 @@ export type BusinessesResolvers<ContextType = any, ParentType extends ResolversP
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   lat?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  locationName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lon?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phoneNumber?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2126,6 +2132,7 @@ export type OrganisationResolvers<ContextType = any, ParentType extends Resolver
   largeBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lat?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  locationName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lon?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   members?: Resolver<Maybe<Array<ResolversTypes['ProfileOrOrganisation']>>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2171,6 +2178,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lat?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  locationName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lon?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   members?: Resolver<Maybe<Array<ResolversTypes['Profile']>>, ParentType, ContextType>;
   memberships?: Resolver<Maybe<Array<ResolversTypes['Membership']>>, ParentType, ContextType>;
