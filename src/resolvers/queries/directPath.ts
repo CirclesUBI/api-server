@@ -4,24 +4,18 @@ import {RpcGateway} from "../../circles/rpcGateway";
 import BN from "bn.js";
 import {Context} from "../../context";
 import {Environment} from "../../environment";
-import {convertCirclesToTimeCircles} from "../../utils/timeCircles";
-import {TokenWithBalanceAndLimit, BalanceQueries} from "../../querySources/balanceQueries";
 import fetch from "cross-fetch";
-
-type TokenWithBalanceAndMaxTransferableAmount = TokenWithBalanceAndLimit & {
-  maxTransferableAmount: BN
-}
 
 /*
 const zeroBN = new BN("0")
 const oneHundred = new BN("100")
 */
 
-export const directPath = async (parent: any, args: QueryDirectPathArgs, context: Context) => {
+export const directPath = async (parent: any, args: QueryDirectPathArgs, _: Context) => {
   const from = args.from.toLowerCase();
   const to = args.to.toLowerCase();
 
-  const path = await findPath(from, to, args.amount);
+  const path = await findDirectPath(from, to, args.amount);
 
   try {
     await validateTransfers(from, path);
@@ -57,7 +51,7 @@ async function findDirectPath(from: string, to: string, amountInWei: string): Pr
   const json = await result.json();
   const maxFlow = new BN(json.result.flow.toString().substring(2), "hex");
 
-  const path = <TransitivePath>{
+  return <TransitivePath>{
     flow: maxFlow.toString(),
     success: true,
     transfers: json.result.transfers.map((o: any) => {
@@ -70,8 +64,6 @@ async function findDirectPath(from: string, to: string, amountInWei: string): Pr
       };
     })
   };
-
-  return path;
   /*
     const recipientIsOrganization = (await Environment.indexDb.query(`
             select hash
