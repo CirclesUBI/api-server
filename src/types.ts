@@ -55,8 +55,8 @@ export type AssetBalance = {
 
 export type BusinessCategory = {
   __typename?: 'BusinessCategory';
-  category?: Maybe<BusinessCategory>;
   id: Scalars['Int'];
+  name: Scalars['String'];
 };
 
 export type Businesses = {
@@ -1220,15 +1220,14 @@ export type TagTransactionResult = {
 export type TransitivePath = {
   __typename?: 'TransitivePath';
   flow: Scalars['String'];
+  isValid: Scalars['Boolean'];
   requestedAmount: Scalars['String'];
-  success: Scalars['Boolean'];
   transfers: Array<TransitiveTransfer>;
 };
 
 export type TransitiveTransfer = {
   __typename?: 'TransitiveTransfer';
   from: Scalars['String'];
-  isHubTransfer?: Maybe<Scalars['Boolean']>;
   to: Scalars['String'];
   token?: Maybe<Scalars['String']>;
   tokenOwner: Scalars['String'];
@@ -1703,8 +1702,8 @@ export type AssetBalanceResolvers<ContextType = any, ParentType extends Resolver
 }>;
 
 export type BusinessCategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['BusinessCategory'] = ResolversParentTypes['BusinessCategory']> = ResolversObject<{
-  category?: Resolver<Maybe<ResolversTypes['BusinessCategory']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2400,15 +2399,14 @@ export type TagTransactionResultResolvers<ContextType = any, ParentType extends 
 
 export type TransitivePathResolvers<ContextType = any, ParentType extends ResolversParentTypes['TransitivePath'] = ResolversParentTypes['TransitivePath']> = ResolversObject<{
   flow?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  isValid?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   requestedAmount?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   transfers?: Resolver<Array<ResolversTypes['TransitiveTransfer']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type TransitiveTransferResolvers<ContextType = any, ParentType extends ResolversParentTypes['TransitiveTransfer'] = ResolversParentTypes['TransitiveTransfer']> = ResolversObject<{
   from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  isHubTransfer?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   tokenOwner?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
