@@ -43,12 +43,30 @@ export class FlowGraph {
 
   private readonly _path: TransitivePath;
   private readonly _nodes: NodeLookup;
-  private readonly _edges: Transfers[] = [];
+  // private readonly _edges: Transfers[] = [];
 
   constructor(path: TransitivePath) {
     this._path = JSON.parse(JSON.stringify(path));
+    const {nodes, source, sink} = this.buildGraphFromPath(path);
 
-    this._nodes = path.transfers.reduce((p, c) => {
+    if (!source) {
+      throw new Error(`The flow graph has no unique source node.`);
+    }
+    if (!sink) {
+      throw new Error(`The flow graph has no unique sink node.`);
+    }
+
+    this._nodes = nodes;
+    this.source = source;
+    this.sink = sink;
+  }
+
+  private buildGraphFromPath(path: TransitivePath) : {
+    nodes: NodeLookup,
+    source: string | undefined,
+    sink: string | undefined
+  } {
+    const nodes = path.transfers.reduce((p, c) => {
       if (!p[c.from]) {
         p[c.from] = this.createEmptyNode(c.from);
       }
@@ -62,7 +80,7 @@ export class FlowGraph {
         value: c.value,
         tokenOwner: c.tokenOwner
       };
-      this._edges.push(edge);
+      // this._edges.push(edge);
 
       if (!p[c.from].outEdges[c.to]) {
         p[c.from].outEdges[c.to] = [];
@@ -87,11 +105,24 @@ export class FlowGraph {
       return p;
     }, <NodeLookup>{});
 
+    const sourceAndSink = this.findSourceAndSink(nodes);
+    return {
+      ...sourceAndSink,
+      nodes: nodes
+    };
+  }
+
+  /**
+   * Finds the source and the sink by calculating the in- and outBalanceTotals and selecting the node without in- or outflow.
+   * @param nodes
+   * @private
+   */
+  private findSourceAndSink(nodes:NodeLookup) {
     let source: string | undefined;
     let sink: string | undefined;
 
-    for (let address in this._nodes) {
-      const inEdgeCount = Object.keys(this._nodes[address].inEdges).length;
+    for (let address in nodes) {
+      const inEdgeCount = Object.keys(nodes[address].inEdges).length;
       if (source && inEdgeCount == 0) {
         throw new Error(`The flow graph has at least two sources: '${source}', '${address}'`);
       }
@@ -99,7 +130,7 @@ export class FlowGraph {
         source = address;
       }
 
-      const outEdgeCount = Object.keys(this._nodes[address].outEdges).length;
+      const outEdgeCount = Object.keys(nodes[address].outEdges).length;
       if (sink && outEdgeCount == 0) {
         throw new Error(`The flow graph has at least two sinks: '${sink}', '${address}'`);
       }
@@ -107,31 +138,23 @@ export class FlowGraph {
         sink = address;
       }
 
-      const outBalances = this._nodes[address].outBalance;
-      this._nodes[address].outBalanceTotal = Object.keys(outBalances).reduce((p, c) => {
+      const outBalances = nodes[address].outBalance;
+      nodes[address].outBalanceTotal = Object.keys(outBalances).reduce((p, c) => {
         return p.add(outBalances[c]);
       }, new BN("0")).toString();
 
-      const inBalances = this._nodes[address].inBalance;
-      this._nodes[address].inBalanceTotal = Object.keys(inBalances).reduce((p, c) => {
+      const inBalances = nodes[address].inBalance;
+      nodes[address].inBalanceTotal = Object.keys(inBalances).reduce((p, c) => {
         return p.add(inBalances[c]);
       }, new BN("0")).toString();
 
       if ((address != sink && address != source)
-        && this._nodes[address].outBalanceTotal != "-" + this._nodes[address].inBalanceTotal) {
-        throw new Error(`The in- and out amounts of node ${address} are out out of balance. Node receives ${this._nodes[address].inBalanceTotal}. Node sends: ${this._nodes[address].outBalanceTotal}`);
+        && nodes[address].outBalanceTotal != "-" + nodes[address].inBalanceTotal) {
+        throw new Error(`The in- and out amounts of node ${address} are out out of balance. Node receives ${nodes[address].inBalanceTotal}. Node sends: ${nodes[address].outBalanceTotal}`);
       }
     }
 
-    if (!source) {
-      throw new Error(`The flow graph has no unique source node.`);
-    }
-    if (!sink) {
-      throw new Error(`The flow graph has no unique sink node.`);
-    }
-
-    this.source = source;
-    this.sink = sink;
+    return {source, sink};
   }
 
   private createEmptyNode(address: string) {
@@ -242,43 +265,6 @@ export class PathWalker {
     console.log(`Walked ${pathEnds.length} paths`);
 
     return pathEnds;
-  }
-
-  private getPaths(pathEnds: PathIteratorStep[]) {
-    return pathEnds.map(pathEnd => {
-      let parent: PathIteratorStep | undefined = pathEnd;
-      let path: AggregateEdge[] = [];
-
-      while (parent) {
-        const nextParent: PathIteratorStep | undefined = parent.parent;
-        let edge: AggregateEdge | null = null;
-
-        if (nextParent && nextParent.node) {
-          let nextParentEdges: Transfers[];
-          if (this._direction == "out") {
-            nextParentEdges = nextParent.node.outEdges[parent.node.address];
-          } else {
-            nextParentEdges = nextParent.node.inEdges[parent.node.address];
-          }
-          const {tokens, totalTokens} = this.sumBalances(nextParentEdges);
-
-          edge = {
-            from: nextParent.node.address,
-            to: parent.node.address,
-            tokens: tokens,
-            totalTokens: totalTokens
-          };
-        }
-
-        if (edge) {
-          path.unshift(edge);
-        }
-
-        parent = nextParent;
-      }
-
-      return path;
-    });
   }
 
   private sumBalances(nextParentEdges: Transfers[]) {
