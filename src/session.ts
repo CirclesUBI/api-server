@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import {Context} from "./context";
-import {Session as PrismaSession, PrismaClient} from "./api-db/client";
+import {PrismaClient, Session as PrismaSession} from "./api-db/client";
 import {RpcGateway} from "./circles/rpcGateway";
 import {Environment} from "./environment";
 
@@ -17,7 +17,7 @@ export class Session
 
     static async logout(context:Context, prisma:PrismaClient, sessionToken:string)
     {
-        const result = await prisma.session.update({
+        return await prisma.session.update({
             where: {
                 sessionToken: sessionToken
             },
@@ -26,8 +26,6 @@ export class Session
                 endReason: "logout"
             }
         });
-
-        return result;
     }
 
     static async findSessionBysessionToken(prisma:PrismaClient, sessionToken: string)
@@ -117,9 +115,7 @@ export class Session
             throw new Error(`Couldn't find the challenge.`);
         }
 
-        const address = RpcGateway.get().eth.accounts.recover(challenge, signature);
-
-        if (!this.verifySignature(session.ethAddress ?? "", challenge, signature)) {
+        if (!this.verifySignature(session.ethAddress ?? "", ch, signature)) {
             await prisma.session.updateMany({
                 where: {
                     challengeHash: ch
@@ -154,7 +150,7 @@ export class Session
         return session;
     }
 
-    static async assignProfile(sessionToken: string, profileId: number, context:Context) {
+    static async assignProfile(sessionToken: string, profileId: number) {
         await Environment.readWriteApiDb.session.update({
             where: {sessionToken: sessionToken},
             data: {profileId: profileId}
