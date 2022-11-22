@@ -315,7 +315,7 @@ export class Environment {
   }
 
   static get corsOrigins(): string {
-    return <string>process.env.CORS_ORIGNS;
+    return <string>process.env.CORS_ORIGINS;
   }
 
   static get blockchainIndexerUrl(): string {
