@@ -29,9 +29,6 @@ export async function getCapabilities(callerInfo:any) {
 
     if (!isBilMember && isBaliMember) {
         capabilities.push({
-            type: CapabilityType.PreviewFeatures
-        });
-        capabilities.push({
             type: CapabilityType.Translate
         });
     }
@@ -58,7 +55,6 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
         const callerInfo = await context.callerInfo;
         const capabilities = await getCapabilities(callerInfo);
 
-        let useShortSignup: boolean|undefined = undefined;
 
         const invitation = await Environment.readWriteApiDb.invitation.findFirst({
             where: {
@@ -69,8 +65,7 @@ export const sessionInfo = async (parent:any, args:any, context:Context) : Promi
             }
         });
 
-        useShortSignup = !!invitation && invitation.createdBy.circlesAddress == Environment.gorilloOrgaSafeAddress;
-
+        const useShortSignup: boolean | undefined = !!invitation && invitation.createdBy.circlesAddress == Environment.gorilloOrgaSafeAddress;
         return {
             isLoggedOn: true,
             hasProfile: !!callerInfo?.profile,
