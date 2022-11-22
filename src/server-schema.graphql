@@ -61,6 +61,7 @@ type Profile {
   age: Int
   gender: Gender
   location: String
+  locationName: String
   lat: Float
   lon: Float
   category: BusinessCategory
@@ -120,6 +121,7 @@ type Organisation {
   members: [ProfileOrOrganisation!]
   trustsYou: Int # The trust relative to the safeAddress
   location: String
+  locationName: String
   lat: Float
   lon: Float
 }
@@ -163,6 +165,7 @@ input UpsertProfileInput {
   age: Int
   gender: Gender
   location: String
+  locationName: String
   lat: Float
   lon: Float
 }
@@ -678,6 +681,7 @@ input UpsertOrganisationInput {
   avatarMimeType: String
   displayCurrency: DisplayCurrency
   location: String
+  locationName: String
   lat: Float
   lon: Float
 }
@@ -747,6 +751,7 @@ type Businesses {
   businessHoursSunday: String
   phoneNumber: String
   location: String
+  locationName: String
   lat: Float
   lon: Float
   businessCategory: String
