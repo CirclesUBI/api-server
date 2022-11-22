@@ -25,7 +25,7 @@ export class Environment {
     const errors:string[] = [];
 
     if (!this.corsOrigins) {
-      errors.push(`The CORS_ORIGNS environment variable is not set.`);
+      errors.push(`The CORS_ORIGINS environment variable is not set.`);
     }
     if (!this.appUrl) {
       errors.push(`The APP_URL environment variable is not set.`);
