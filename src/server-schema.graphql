@@ -77,7 +77,7 @@ type Favorite {
 
 type BusinessCategory {
   id: Int!
-  category: BusinessCategory
+  name: String!
 }
 
 type ProfileBalances {

@@ -1,4 +1,4 @@
-import {QueryDirectPathArgs, TransitivePath, TransitiveTransfer} from "../../types";
+import {QueryDirectPathArgs, TransitivePath} from "../../types";
 import BN from "bn.js";
 import {Context} from "../../context";
 import {Pathfinder} from "../../pathfinder-api/pathfinder";
@@ -8,7 +8,6 @@ import {GraphvizGenerator} from "../../pathfinder-api/graphvizGenerator";
 import {RpcGateway} from "../../circles/rpcGateway";
 import * as fs from "fs";
 import {exec} from "child_process";
-
 
 async function generateGraphvizGraph(totalAmount:string, flowGraph:FlowGraph, path?:TransitivePath) {
   const graphvizDef = await GraphvizGenerator.generate(parseFloat(RpcGateway.get().utils.fromWei(totalAmount, "ether")), flowGraph, path);
@@ -57,37 +56,3 @@ export const directPath = async (parent: any, args: QueryDirectPathArgs, context
 
   return path;
 };
-
-function getInputsOrderedByValue(adjacencyList: { [p: string]: { [p: string]: TransitiveTransfer[] } }, sink: string)
-  : {
-  sinkInputs: { [p: string]: TransitiveTransfer[] },
-  sinkInputSources: { value: BN; sourceAddress: string; }[]
-} {
-  const sinkInputs = adjacencyList[sink];
-  if (!sinkInputs) {
-    return {sinkInputs: {}, sinkInputSources: []};
-  }
-
-  let sinkInputSources = Object.keys(sinkInputs)
-    .map(sourceAddress => {
-      return {
-        value: sinkInputs[sourceAddress]
-          .reduce((p, c) => p.add(new BN(c.value)), new BN("0")),
-        sourceAddress: sourceAddress
-      }
-    });
-
-  sinkInputSources.sort((a, b) => a.value.gt(b.value)
-    ? -1
-    : a.value.lt(b.value)
-      ? 1
-      : 0)
-
-  sinkInputSources = sinkInputSources.map(o => {
-    return {
-      ...o,
-      valueString: o.value.toString()
-    }
-  });
-  return {sinkInputs, sinkInputSources};
-}
