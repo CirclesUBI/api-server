@@ -16,19 +16,18 @@ import { importOrganisationsOfAccount } from "./importOrganisationsOfAccount";
 import { revokeSafeVerification, verifySafe } from "./verifySafe";
 import { Environment } from "../../environment";
 import {
+  LinkTargetType,
   MutationResolvers,
 } from "../../types";
-import { TransitivePath, TransitiveTransfer } from "../../types";
 import { proofUniqueness } from "./proofUniqueness";
-import { isBALIMember, isBILMember } from "../../utils/canAccess";
 import { Context } from "../../context";
-import BN from "bn.js";
 import { addNewLang } from "./addNewLang";
 import { updatei18nValue } from "./updatei18nValue";
-import { BalanceQueries } from "../../querySources/balanceQueries";
-import { EncryptJWT } from "jose";
 import { createNewStringAndKey } from "./createNewStringAndKey";
 import { setStringUpdateState } from "./setStringUpdateState";
+import {ProfileLoader} from "../../querySources/profileLoader";
+import {Generate} from "../../utils/generate";
+import {RpcGateway} from "../../circles/rpcGateway";
 
 export const mutationResolvers: MutationResolvers = {
   upsertOrganisation: <any>upsertOrganisation(false),
@@ -54,4 +53,61 @@ export const mutationResolvers: MutationResolvers = {
   createNewStringAndKey: createNewStringAndKey,
   setStringUpdateState: setStringUpdateState,
   proofUniqueness: proofUniqueness,
+  setIsFavorite: async (parent, args, context: Context) => {
+    const caller = await context.callerInfo;
+    if (!caller?.profile?.circlesAddress)
+      throw new Error(`Only profiles with a circlesAddress can create favorites.`);
+
+    const circlesAddress = args.circlesAddress.toLowerCase();
+    const existingFavorite = await Environment.readWriteApiDb.favorites.findFirst({where:{favoriteCirclesAddress: circlesAddress}});
+    const favoriteProfile = await new ProfileLoader().profilesBySafeAddress(Environment.readWriteApiDb, [circlesAddress]);
+
+    if (!favoriteProfile[circlesAddress])
+      throw new Error(`Couldn't find a profile for circles address ${circlesAddress}.`);
+
+    if (!existingFavorite && args.isFavorite) {
+      await Environment.readWriteApiDb.favorites.create({
+        data: {
+          createdAt: new Date().toJSON(),
+          createdByCirclesAddress: caller.profile.circlesAddress,
+          favoriteCirclesAddress: circlesAddress,
+          comment: null
+        }
+      });
+      return true;
+    }
+    if (existingFavorite && !args.isFavorite) {
+      await Environment.readWriteApiDb.favorites.delete({
+        where: {
+          id: existingFavorite.id
+        }
+      });
+    }
+    return false;
+  },
+  shareLink: async (parent, args, context) => {
+    const caller = await context.callerInfo;
+    if (!caller?.profile?.circlesAddress)
+      throw new Error(`Only profiles with a circlesAddress can share links.`);
+
+    if ([LinkTargetType.Business, LinkTargetType.Person].indexOf(args.targetType) < 0)
+      throw new Error(`'targetType' must be either '${LinkTargetType.Business}' or '${LinkTargetType.Person}'`);
+
+    if (!RpcGateway.get().utils.isAddress(args.targetKey))
+      throw new Error(`'targetKey' must be an ethereum address`);
+
+    const link = await Environment.readWriteApiDb.link.create({
+      data: {
+        id: Generate.randomHexString(),
+        createdAt: new Date().toJSON(),
+        createdByCirclesAddress: caller.profile.circlesAddress,
+        linkTargetKeyField: "circlesAddress",
+        linkTargetKey: args.targetKey,
+        linkTargetType: args.targetType
+      }
+    });
+
+    const protocol = Environment.isLocalDebugEnvironment ? "http://" : "https://";
+    return protocol + Environment.externalDomain + "/link?id=" + link.id;
+  }
 };

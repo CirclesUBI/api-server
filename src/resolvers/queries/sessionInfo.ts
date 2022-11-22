@@ -24,16 +24,21 @@ export async function getCapabilities(callerInfo:any) {
         capabilities.push({
             type: CapabilityType.Translate
         });
-        capabilities.push({
-            type: CapabilityType.PreviewFeatures
-        });
     }
+
 
     if (!isBilMember && isBaliMember) {
         capabilities.push({
             type: CapabilityType.PreviewFeatures
         });
+        capabilities.push({
+            type: CapabilityType.Translate
+        });
     }
+
+    capabilities.push({
+        type: CapabilityType.PreviewFeatures
+    });
 
     if (humanodeVerified) {
         capabilities.push({

@@ -61,12 +61,23 @@ type Profile {
   age: Int
   gender: Gender
   location: String
+  locationName: String
+  lat: Float
+  lon: Float
   category: BusinessCategory
+  favorites: [Favorite!]
+}
+
+type Favorite {
+  createdAt: String!
+  createdBy: Profile!
+  favorite: Profile!
+  comment: String
 }
 
 type BusinessCategory {
   id: Int!
-  name: String
+  category: BusinessCategory
 }
 
 type ProfileBalances {
@@ -109,6 +120,10 @@ type Organisation {
   displayCurrency: DisplayCurrency
   members: [ProfileOrOrganisation!]
   trustsYou: Int # The trust relative to the safeAddress
+  location: String
+  locationName: String
+  lat: Float
+  lon: Float
 }
 
 union ProfileOrOrganisation = Profile | Organisation
@@ -148,8 +163,11 @@ input UpsertProfileInput {
   displayTimeCircles: Boolean
   displayCurrency: DisplayCurrency
   age: Int
-  gender: Gender,
+  gender: Gender
   location: String
+  locationName: String
+  lat: Float
+  lon: Float
 }
 
 type Tag {
@@ -228,7 +246,6 @@ type UpdateSafeResponse {
   errorMessage: String
   newSafeAddress: String
 }
-
 
 input QueryTagsInput {
   typeId_in: [String!]!
@@ -514,12 +531,7 @@ type Contact {
   contactAddress_Profile: Profile @cost(value: 1)
 }
 
-union AggregatePayload =
-    CrcBalances
-  | Erc20Balances
-  | Contacts
-  | Memberships
-  | Members
+union AggregatePayload = CrcBalances | Erc20Balances | Contacts | Memberships | Members
 
 type ProfileAggregate {
   type: String!
@@ -668,6 +680,10 @@ input UpsertOrganisationInput {
   smallBannerUrl: String
   avatarMimeType: String
   displayCurrency: DisplayCurrency
+  location: String
+  locationName: String
+  lat: Float
+  lon: Float
 }
 
 type AddMemberResult {
@@ -722,6 +738,7 @@ type i18n {
 
 type Businesses {
   id: Int!
+  circlesAddress: String!
   name: String
   description: String
   picture: String
@@ -734,7 +751,12 @@ type Businesses {
   businessHoursSunday: String
   phoneNumber: String
   location: String
-} 
+  locationName: String
+  lat: Float
+  lon: Float
+  businessCategory: String
+  businessCategoryId: Int
+}
 
 enum SortOrder {
   ASC
@@ -752,7 +774,6 @@ enum Direction {
   in
   out
 }
-
 
 input ProfileEventFilter {
   direction: Direction
@@ -826,7 +847,7 @@ type TransitiveTransfer {
   isHubTransfer: Boolean
   from: String!
   to: String!
-  token: String!
+  token: String
   tokenOwner: String!
   value: String!
 }
@@ -843,7 +864,6 @@ type ProofUniquenessResult {
 }
 
 type Mutation {
-
   logout: LogoutResponse!
   upsertProfile(data: UpsertProfileInput!): Profile!
   requestUpdateSafe(data: RequestUpdateSafeInput!): RequestUpdateSafeResponse!
@@ -883,20 +903,14 @@ type Mutation {
   addNewLang(langToCreate: String, langToCopyFrom: String): Int
   createNewStringAndKey(lang: String, key: String, createdBy: String, value: String, version: Int): i18n
   setStringUpdateState(key: String): i18n
+
+  setIsFavorite(circlesAddress: String!, isFavorite: Boolean!): Boolean!
+  shareLink(targetType: LinkTargetType!, targetKey: String!): String!
 }
 
-type ExportProfile {
-  lastChange: Date!
-  circlesAddress: String!
-  displayName: String!
-  avatarUrl: String
-}
-
-type ExportTrustRelation {
-  lastChange: Date!
-  trusterAddress: String!
-  trusteeAddress: String!
-  trustLimit: Int!
+enum LinkTargetType {
+  Business
+  Person
 }
 
 type ExportProfile {
@@ -973,7 +987,13 @@ type Query {
   getAllStringsByMaxVersionAndLang(lang: String): [i18n]
   getOlderVersionsByKeyAndLang(key: String, lang: String): [i18n]
   getPaginatedStrings(pagination_key: String, key: String, lang: String, value: String): [i18n]
-  getPaginatedStringsToUpdate(pagination_key: String, key: String, lang: String, value: String, needsUpdate: Boolean): [i18n]
+  getPaginatedStringsToUpdate(
+    pagination_key: String
+    key: String
+    lang: String
+    value: String
+    needsUpdate: Boolean
+  ): [i18n]
   getStringsToBeUpdatedAmount(lang: String, key: String): Int
 
   allProfiles(sinceLastChange: Date): [ExportProfile]!
@@ -986,7 +1006,36 @@ type Query {
   paymentPath(from: String!, to: String!, amount: String!): TransitivePath!
 
   allBusinessCategories: [BusinessCategory!]!
-  allBusinesses(categoryId:Int): [Businesses!]!
+  allBusinesses(queryParams: QueryAllBusinessesParameters): [Businesses!]!
+}
+
+input QueryAllBusinessesParameters {
+  where: QueryAllBusinessesConditions
+  order: QueryAllBusinessesOrder
+  ownCoordinates: Geolocation
+}
+
+input Geolocation {
+  lat: Float!
+  lon: Float!
+}
+
+input QueryAllBusinessesConditions {
+  inCategories: [Int!]
+  inCirclesAddress: [String!]
+}
+
+enum QueryAllBusinessesOrderOptions {
+  Favorites
+  Newest
+  Oldest
+  MostPopular
+  Nearest
+  Alphabetical
+}
+
+input QueryAllBusinessesOrder {
+  orderBy: QueryAllBusinessesOrderOptions!
 }
 
 type Subscription {

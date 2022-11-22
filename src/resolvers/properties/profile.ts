@@ -1,4 +1,4 @@
-import { AssetBalance, Profile, ProfileOrigin, ProfileResolvers } from "../../types";
+import {AssetBalance, Favorite, Profile, ProfileOrigin, ProfileResolvers} from "../../types";
 import { Context } from "../../context";
 import { Environment } from "../../environment";
 import { getDateWithOffset } from "../../utils/getDateWithOffset";
@@ -12,6 +12,7 @@ import { profileInvitationTransactionDataLoader } from "../dataLoaders/profileIn
 import { profileCirclesTokenAddressDataLoader } from "../dataLoaders/profileCirclesTokenAddressDataLoader";
 import { profileMembersDataLoader } from "../dataLoaders/profileMembersDataLoader";
 import { provenUniquenessDataLoader } from "../dataLoaders/provenUniquenessDataLoader";
+import {ProfileLoader} from "../../querySources/profileLoader";
 
 function isOwnProfile(profileId: number, context: Context): boolean {
   return !!context.session?.profileId && context.session.profileId == profileId;
@@ -47,6 +48,9 @@ export const profilePropertyResolvers: ProfileResolvers = {
 
     return `https://${Environment.externalDomain}/trigger?hash=${inviteTrigger.hash}`;
   },
+  lat: async (parent: Profile, args: any, context: Context) => isOwnProfile(parent.id, context) && parent.lat !== undefined ? parent.lat : null,
+  lon: async (parent: Profile, args: any, context: Context) => isOwnProfile(parent.id, context) && parent.lon !== undefined ? parent.lon : null,
+  location: async (parent: Profile, args: any, context: Context) => isOwnProfile(parent.id, context) && parent.location !== undefined ? parent.location : null,
   askedForEmailAddress: async (parent: Profile, args: any, context: Context) =>
     isOwnProfile(parent.id, context) && parent.askedForEmailAddress ? parent.askedForEmailAddress : false,
   newsletter: async (parent: Profile, args: any, context: Context) =>
@@ -178,4 +182,26 @@ export const profilePropertyResolvers: ProfileResolvers = {
     }
     return await provenUniquenessDataLoader.load(parent.circlesAddress);
   },
+  favorites:  async (parent: Profile, args: any, context: Context) => {
+    if (!parent.circlesAddress || !isOwnProfile(parent.id, context)) {
+      return [];
+    }
+    const favorites = await Environment.readonlyApiDb.favorites.findMany({
+      where: {
+        createdByCirclesAddress: parent.circlesAddress
+      }
+    });
+
+    const favoriteProfiles = await new ProfileLoader().profilesBySafeAddress(
+      Environment.readonlyApiDb,
+      favorites.map(o => o.favoriteCirclesAddress));
+
+    return favorites.map(o => {
+      return <Favorite> {
+        createdBy: parent,
+        favorite: favoriteProfiles[o.favoriteCirclesAddress],
+        createdAt: o.createdAt.toJSON()
+      }
+    });
+  }
 };
