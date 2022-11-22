@@ -22,6 +22,7 @@ import * as graphqlImport from "@graphql-tools/import";
 import {healthGetHandler} from "./httpHandlers/get/health";
 import {RotateJwks} from "./jobs/descriptions/maintenance/rotateJwks";
 import {RequestUbiForInactiveAccounts} from "./jobs/descriptions/maintenance/requestUbiForInactiveAccounts";
+import {linkGetHandler} from "./httpHandlers/get/link";
 
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
@@ -106,6 +107,7 @@ export class Main {
     app.post("/upload", cors(corsOptions), uploadPostHandler);
     app.get("/trigger", cors(corsOptions), triggerGetHandler);
     app.get("/jwks", cors(corsOptions), jwksGetHandler);
+    app.get("/link", cors(corsOptions), linkGetHandler);
     app.get("/health", cors({
       origin: '*'
     }), healthGetHandler);

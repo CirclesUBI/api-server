@@ -403,9 +403,11 @@ model Profile {
     shippingAddresses PostAddress[] @relation("ProfileShippingAddresses")
 
     location String?
+    locationName String?
+    lat Float?
+    lon Float?
     businessCategoryId Int?
     businessCategory BusinessCategory? @relation(name: "Profile_BusinessCategory", fields: [businessCategoryId], references: [id])
-
     businessHoursMonday String?
     businessHoursTuesday String?
     businessHoursWednesday String?
@@ -416,12 +418,40 @@ model Profile {
     phoneNumber String?
 }
 
+model Favorites {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    @@index([createdAt])
+    createdByCirclesAddress String
+    @@index([createdByCirclesAddress])
+    favoriteCirclesAddress String
+    @@index([favoriteCirclesAddress])
+    comment String?
+}
+
+model UnreadEvent {
+    id Int @id @default(autoincrement())
+    timestamp String
+    type String
+    circlesAddress String
+    contactAddress String?
+    transactionHash String?
+}
+
+model Link {
+    id String @id
+    createdAt String
+    createdByCirclesAddress String
+    linkTargetType String
+    linkTargetKeyField String
+    linkTargetKey String
+}
+
 model BusinessCategory {
-    id Int @id @default(autoincrement()) 
+    id Int @id @default(autoincrement())
     name String
     profilesWithCategory Profile[] @relation("Profile_BusinessCategory")
 }
-
 model ExternalProfiles {
     circlesAddress String @unique
     name String

@@ -61,6 +61,8 @@ export type BusinessCategory = {
 
 export type Businesses = {
   __typename?: 'Businesses';
+  businessCategory?: Maybe<Scalars['String']>;
+  businessCategoryId?: Maybe<Scalars['Int']>;
   businessHoursFriday?: Maybe<Scalars['String']>;
   businessHoursMonday?: Maybe<Scalars['String']>;
   businessHoursSaturday?: Maybe<Scalars['String']>;
@@ -68,9 +70,13 @@ export type Businesses = {
   businessHoursThursday?: Maybe<Scalars['String']>;
   businessHoursTuesday?: Maybe<Scalars['String']>;
   businessHoursWednesday?: Maybe<Scalars['String']>;
+  circlesAddress: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
+  lat?: Maybe<Scalars['Float']>;
   location?: Maybe<Scalars['String']>;
+  locationName?: Maybe<Scalars['String']>;
+  lon?: Maybe<Scalars['Float']>;
   name?: Maybe<Scalars['String']>;
   phoneNumber?: Maybe<Scalars['String']>;
   picture?: Maybe<Scalars['String']>;
@@ -332,6 +338,14 @@ export type ExportTrustRelation = {
   trusterAddress: Scalars['String'];
 };
 
+export type Favorite = {
+  __typename?: 'Favorite';
+  comment?: Maybe<Scalars['String']>;
+  createdAt: Scalars['String'];
+  createdBy: Profile;
+  favorite: Profile;
+};
+
 export type FibonacciGoals = {
   __typename?: 'FibonacciGoals';
   currentValue: Scalars['Int'];
@@ -344,6 +358,11 @@ export enum Gender {
   Female = 'FEMALE',
   Male = 'MALE'
 }
+
+export type Geolocation = {
+  lat: Scalars['Float'];
+  lon: Scalars['Float'];
+};
 
 export type GnosisSafeEthTransfer = IEventPayload & {
   __typename?: 'GnosisSafeEthTransfer';
@@ -387,6 +406,11 @@ export type LeaderboardEntry = {
   createdByProfile?: Maybe<Profile>;
   inviteCount: Scalars['Int'];
 };
+
+export enum LinkTargetType {
+  Business = 'Business',
+  Person = 'Person'
+}
 
 export type LogoutResponse = {
   __typename?: 'LogoutResponse';
@@ -479,7 +503,9 @@ export type Mutation = {
   requestUpdateSafe: RequestUpdateSafeResponse;
   revokeSafeVerification: VerifySafeResult;
   sendMessage: SendMessageResult;
+  setIsFavorite: Scalars['Boolean'];
   setStringUpdateState?: Maybe<I18n>;
+  shareLink: Scalars['String'];
   tagTransaction: TagTransactionResult;
   updateSafe: UpdateSafeResponse;
   updateValue?: Maybe<I18n>;
@@ -567,8 +593,20 @@ export type MutationSendMessageArgs = {
 };
 
 
+export type MutationSetIsFavoriteArgs = {
+  circlesAddress: Scalars['String'];
+  isFavorite: Scalars['Boolean'];
+};
+
+
 export type MutationSetStringUpdateStateArgs = {
   key?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationShareLinkArgs = {
+  targetKey: Scalars['String'];
+  targetType: LinkTargetType;
 };
 
 
@@ -654,6 +692,10 @@ export type Organisation = {
   displayName?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
   largeBannerUrl?: Maybe<Scalars['String']>;
+  lat?: Maybe<Scalars['Float']>;
+  location?: Maybe<Scalars['String']>;
+  locationName?: Maybe<Scalars['String']>;
+  lon?: Maybe<Scalars['Float']>;
   members?: Maybe<Array<ProfileOrOrganisation>>;
   name: Scalars['String'];
   smallBannerUrl?: Maybe<Scalars['String']>;
@@ -695,6 +737,7 @@ export type Profile = {
   displayTimeCircles?: Maybe<Scalars['Boolean']>;
   dream?: Maybe<Scalars['String']>;
   emailAddress?: Maybe<Scalars['String']>;
+  favorites?: Maybe<Array<Favorite>>;
   firstName: Scalars['String'];
   gender?: Maybe<Gender>;
   id: Scalars['Int'];
@@ -702,7 +745,10 @@ export type Profile = {
   invitationTransaction?: Maybe<ProfileEvent>;
   largeBannerUrl?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
+  lat?: Maybe<Scalars['Float']>;
   location?: Maybe<Scalars['String']>;
+  locationName?: Maybe<Scalars['String']>;
+  lon?: Maybe<Scalars['Float']>;
   members?: Maybe<Array<Profile>>;
   memberships?: Maybe<Array<Membership>>;
   newsletter?: Maybe<Scalars['Boolean']>;
@@ -847,7 +893,7 @@ export type QueryAggregatesArgs = {
 
 
 export type QueryAllBusinessesArgs = {
-  categoryId?: InputMaybe<Scalars['Int']>;
+  queryParams?: InputMaybe<QueryAllBusinessesParameters>;
 };
 
 
@@ -1010,6 +1056,30 @@ export type QueryVerificationsArgs = {
   pagination?: InputMaybe<PaginationArgs>;
 };
 
+export type QueryAllBusinessesConditions = {
+  inCategories?: InputMaybe<Array<Scalars['Int']>>;
+  inCirclesAddress?: InputMaybe<Array<Scalars['String']>>;
+};
+
+export type QueryAllBusinessesOrder = {
+  orderBy: QueryAllBusinessesOrderOptions;
+};
+
+export enum QueryAllBusinessesOrderOptions {
+  Alphabetical = 'Alphabetical',
+  Favorites = 'Favorites',
+  MostPopular = 'MostPopular',
+  Nearest = 'Nearest',
+  Newest = 'Newest',
+  Oldest = 'Oldest'
+}
+
+export type QueryAllBusinessesParameters = {
+  order?: InputMaybe<QueryAllBusinessesOrder>;
+  ownCoordinates?: InputMaybe<Geolocation>;
+  where?: InputMaybe<QueryAllBusinessesConditions>;
+};
+
 export type QueryProfileInput = {
   circlesAddress?: InputMaybe<Array<Scalars['String']>>;
   country?: InputMaybe<Scalars['String']>;
@@ -1160,7 +1230,7 @@ export type TransitiveTransfer = {
   from: Scalars['String'];
   isHubTransfer?: Maybe<Scalars['Boolean']>;
   to: Scalars['String'];
-  token: Scalars['String'];
+  token?: Maybe<Scalars['String']>;
   tokenOwner: Scalars['String'];
   value: Scalars['String'];
 };
@@ -1199,6 +1269,10 @@ export type UpsertOrganisationInput = {
   displayCurrency?: InputMaybe<DisplayCurrency>;
   id?: InputMaybe<Scalars['Int']>;
   largeBannerUrl?: InputMaybe<Scalars['String']>;
+  lat?: InputMaybe<Scalars['Float']>;
+  location?: InputMaybe<Scalars['String']>;
+  locationName?: InputMaybe<Scalars['String']>;
+  lon?: InputMaybe<Scalars['Float']>;
   name: Scalars['String'];
   smallBannerUrl?: InputMaybe<Scalars['String']>;
 };
@@ -1221,7 +1295,10 @@ export type UpsertProfileInput = {
   gender?: InputMaybe<Gender>;
   id?: InputMaybe<Scalars['Int']>;
   lastName?: InputMaybe<Scalars['String']>;
+  lat?: InputMaybe<Scalars['Float']>;
   location?: InputMaybe<Scalars['String']>;
+  locationName?: InputMaybe<Scalars['String']>;
+  lon?: InputMaybe<Scalars['Float']>;
   newsletter?: InputMaybe<Scalars['Boolean']>;
   status: Scalars['String'];
   successorOfCirclesAddress?: InputMaybe<Scalars['String']>;
@@ -1392,8 +1469,11 @@ export type ResolversTypes = ResolversObject<{
   ExchangeTokenResponse: ResolverTypeWrapper<ExchangeTokenResponse>;
   ExportProfile: ResolverTypeWrapper<ExportProfile>;
   ExportTrustRelation: ResolverTypeWrapper<ExportTrustRelation>;
+  Favorite: ResolverTypeWrapper<Favorite>;
   FibonacciGoals: ResolverTypeWrapper<FibonacciGoals>;
+  Float: ResolverTypeWrapper<Scalars['Float']>;
   Gender: Gender;
+  Geolocation: Geolocation;
   GnosisSafeEthTransfer: ResolverTypeWrapper<GnosisSafeEthTransfer>;
   IAggregatePayload: ResolversTypes['Contacts'] | ResolversTypes['CrcBalances'] | ResolversTypes['Erc20Balances'] | ResolversTypes['Members'] | ResolversTypes['Memberships'];
   IEventPayload: ResolversTypes['CrcHubTransfer'] | ResolversTypes['CrcMinting'] | ResolversTypes['CrcSignup'] | ResolversTypes['CrcTokenTransfer'] | ResolversTypes['CrcTrust'] | ResolversTypes['Erc20Transfer'] | ResolversTypes['EthTransfer'] | ResolversTypes['GnosisSafeEthTransfer'] | ResolversTypes['InvitationCreated'] | ResolversTypes['InvitationRedeemed'] | ResolversTypes['MemberAdded'] | ResolversTypes['MembershipAccepted'] | ResolversTypes['MembershipOffer'] | ResolversTypes['MembershipRejected'] | ResolversTypes['NewUser'] | ResolversTypes['OrganisationCreated'] | ResolversTypes['SafeVerified'] | ResolversTypes['WelcomeMessage'];
@@ -1401,6 +1481,7 @@ export type ResolversTypes = ResolversObject<{
   InvitationCreated: ResolverTypeWrapper<InvitationCreated>;
   InvitationRedeemed: ResolverTypeWrapper<InvitationRedeemed>;
   LeaderboardEntry: ResolverTypeWrapper<LeaderboardEntry>;
+  LinkTargetType: LinkTargetType;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
   MemberAdded: ResolverTypeWrapper<MemberAdded>;
   Members: ResolverTypeWrapper<Omit<Members, 'members'> & { members: Array<ResolversTypes['ProfileOrOrganisation']> }>;
@@ -1428,6 +1509,10 @@ export type ResolversTypes = ResolversObject<{
   ProofUniquenessResult: ResolverTypeWrapper<ProofUniquenessResult>;
   PublicEvent: ResolverTypeWrapper<Omit<PublicEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
   Query: ResolverTypeWrapper<{}>;
+  QueryAllBusinessesConditions: QueryAllBusinessesConditions;
+  QueryAllBusinessesOrder: QueryAllBusinessesOrder;
+  QueryAllBusinessesOrderOptions: QueryAllBusinessesOrderOptions;
+  QueryAllBusinessesParameters: QueryAllBusinessesParameters;
   QueryProfileInput: QueryProfileInput;
   QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
@@ -1504,7 +1589,10 @@ export type ResolversParentTypes = ResolversObject<{
   ExchangeTokenResponse: ExchangeTokenResponse;
   ExportProfile: ExportProfile;
   ExportTrustRelation: ExportTrustRelation;
+  Favorite: Favorite;
   FibonacciGoals: FibonacciGoals;
+  Float: Scalars['Float'];
+  Geolocation: Geolocation;
   GnosisSafeEthTransfer: GnosisSafeEthTransfer;
   IAggregatePayload: ResolversParentTypes['Contacts'] | ResolversParentTypes['CrcBalances'] | ResolversParentTypes['Erc20Balances'] | ResolversParentTypes['Members'] | ResolversParentTypes['Memberships'];
   IEventPayload: ResolversParentTypes['CrcHubTransfer'] | ResolversParentTypes['CrcMinting'] | ResolversParentTypes['CrcSignup'] | ResolversParentTypes['CrcTokenTransfer'] | ResolversParentTypes['CrcTrust'] | ResolversParentTypes['Erc20Transfer'] | ResolversParentTypes['EthTransfer'] | ResolversParentTypes['GnosisSafeEthTransfer'] | ResolversParentTypes['InvitationCreated'] | ResolversParentTypes['InvitationRedeemed'] | ResolversParentTypes['MemberAdded'] | ResolversParentTypes['MembershipAccepted'] | ResolversParentTypes['MembershipOffer'] | ResolversParentTypes['MembershipRejected'] | ResolversParentTypes['NewUser'] | ResolversParentTypes['OrganisationCreated'] | ResolversParentTypes['SafeVerified'] | ResolversParentTypes['WelcomeMessage'];
@@ -1537,6 +1625,9 @@ export type ResolversParentTypes = ResolversObject<{
   ProofUniquenessResult: ProofUniquenessResult;
   PublicEvent: Omit<PublicEvent, 'payload'> & { payload?: Maybe<ResolversParentTypes['EventPayload']> };
   Query: {};
+  QueryAllBusinessesConditions: QueryAllBusinessesConditions;
+  QueryAllBusinessesOrder: QueryAllBusinessesOrder;
+  QueryAllBusinessesParameters: QueryAllBusinessesParameters;
   QueryProfileInput: QueryProfileInput;
   QueryTagsInput: QueryTagsInput;
   QueryUniqueProfileInput: QueryUniqueProfileInput;
@@ -1617,7 +1708,14 @@ export type BusinessCategoryResolvers<ContextType = any, ParentType extends Reso
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type CapabilityResolvers<ContextType = any, ParentType extends ResolversParentTypes['Capability'] = ResolversParentTypes['Capability']> = ResolversObject<{
+  type?: Resolver<Maybe<ResolversTypes['CapabilityType']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type BusinessesResolvers<ContextType = any, ParentType extends ResolversParentTypes['Businesses'] = ResolversParentTypes['Businesses']> = ResolversObject<{
+  businessCategory?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  businessCategoryId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   businessHoursFriday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   businessHoursMonday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   businessHoursSaturday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1625,9 +1723,13 @@ export type BusinessesResolvers<ContextType = any, ParentType extends ResolversP
   businessHoursThursday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   businessHoursTuesday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   businessHoursWednesday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  circlesAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  lat?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  locationName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lon?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phoneNumber?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   picture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1837,6 +1939,14 @@ export type ExportTrustRelationResolvers<ContextType = any, ParentType extends R
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type FavoriteResolvers<ContextType = any, ParentType extends ResolversParentTypes['Favorite'] = ResolversParentTypes['Favorite']> = ResolversObject<{
+  comment?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdBy?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
+  favorite?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type FibonacciGoalsResolvers<ContextType = any, ParentType extends ResolversParentTypes['FibonacciGoals'] = ResolversParentTypes['FibonacciGoals']> = ResolversObject<{
   currentValue?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   lastGoal?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -1979,7 +2089,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   requestUpdateSafe?: Resolver<ResolversTypes['RequestUpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationRequestUpdateSafeArgs, 'data'>>;
   revokeSafeVerification?: Resolver<ResolversTypes['VerifySafeResult'], ParentType, ContextType, RequireFields<MutationRevokeSafeVerificationArgs, 'safeAddress'>>;
   sendMessage?: Resolver<ResolversTypes['SendMessageResult'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'content' | 'toSafeAddress'>>;
+  setIsFavorite?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSetIsFavoriteArgs, 'circlesAddress' | 'isFavorite'>>;
   setStringUpdateState?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<MutationSetStringUpdateStateArgs>>;
+  shareLink?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationShareLinkArgs, 'targetKey' | 'targetType'>>;
   tagTransaction?: Resolver<ResolversTypes['TagTransactionResult'], ParentType, ContextType, RequireFields<MutationTagTransactionArgs, 'tag' | 'transactionHash'>>;
   updateSafe?: Resolver<ResolversTypes['UpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationUpdateSafeArgs, 'data'>>;
   updateValue?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<MutationUpdateValueArgs>>;
@@ -2023,6 +2135,10 @@ export type OrganisationResolvers<ContextType = any, ParentType extends Resolver
   displayName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   largeBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lat?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  locationName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lon?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   members?: Resolver<Maybe<Array<ResolversTypes['ProfileOrOrganisation']>>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   smallBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2057,6 +2173,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   displayTimeCircles?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   dream?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   emailAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  favorites?: Resolver<Maybe<Array<ResolversTypes['Favorite']>>, ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   gender?: Resolver<Maybe<ResolversTypes['Gender']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -2064,6 +2181,10 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   largeBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lat?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  locationName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  lon?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   members?: Resolver<Maybe<Array<ResolversTypes['Profile']>>, ParentType, ContextType>;
   memberships?: Resolver<Maybe<Array<ResolversTypes['Membership']>>, ParentType, ContextType>;
@@ -2295,7 +2416,7 @@ export type TransitiveTransferResolvers<ContextType = any, ParentType extends Re
   from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   isHubTransfer?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   tokenOwner?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -2392,6 +2513,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   ExchangeTokenResponse?: ExchangeTokenResponseResolvers<ContextType>;
   ExportProfile?: ExportProfileResolvers<ContextType>;
   ExportTrustRelation?: ExportTrustRelationResolvers<ContextType>;
+  Favorite?: FavoriteResolvers<ContextType>;
   FibonacciGoals?: FibonacciGoalsResolvers<ContextType>;
   GnosisSafeEthTransfer?: GnosisSafeEthTransferResolvers<ContextType>;
   IAggregatePayload?: IAggregatePayloadResolvers<ContextType>;
