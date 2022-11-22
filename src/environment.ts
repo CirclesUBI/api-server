@@ -244,10 +244,6 @@ export class Environment {
     };
   }
 
-  static get pathfinderUrl(): string {
-    return <string>process.env.PATHFINDER_URL;
-  }
-
   static get keyRotationInterval(): number {
     return  24 * 60 * 60 * 1000;
   }
