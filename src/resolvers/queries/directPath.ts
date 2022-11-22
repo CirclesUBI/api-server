@@ -21,7 +21,7 @@ export const directPath = async (parent: any, args: QueryDirectPathArgs, context
   const from = args.from.toLowerCase();
   const to = args.to.toLowerCase();
 
-  const path = await findDirectPath(from, to, args.amount);
+  const path = await findPath(from, to, args.amount);
 
   try {
     await validateTransfers(from, path);
@@ -122,6 +122,61 @@ async function findDirectPath(from: string, to: string, amountInWei: string): Pr
             const destBalanceScaled = destBalance.mul(oneHundred.sub(o.limitBn)).div(oneHundred);
             max = max.sub(destBalanceScaled);
           }
+        token: o.token_owner
+      };
+    })
+  };
+}
+
+async function findDirectPath(from: string, to: string, amountInWei: string) : Promise<TransitivePath> {
+  const recipientIsOrganization = (await Environment.indexDb.query(`
+          select hash
+          from crc_organisation_signup_2
+          where organisation = $1`,
+    [to])).rowCount > 0;
+
+  // 1) Get the balances of all tokens of "from" that are accepted by "to"
+  const acceptedTokensWithBalance = await BalanceQueries.getAcceptedTokensWithBalanceAndLimit(from, to);
+
+  // 2) Get the balance of each owner's own token holdings
+  const allTokenOwners = Object.keys(acceptedTokensWithBalance.toLookup(o => o.tokenOwner));
+  const tokenOwnerOwnTokenBalances = await BalanceQueries.getTokenOwnerOwnTokenBalances(
+    !allTokenOwners.find(o => o == to)
+      ? allTokenOwners.concat([to])
+      : allTokenOwners);
+  const tokenOwnersOwnBalancesLookup = tokenOwnerOwnTokenBalances.toLookup(o => o.tokenOwner, o => o.balance);
+
+  // 3) Get the receiver's current balance of every transferable token
+  const receiverTokenBalances = await BalanceQueries.getReceiverTokenBalances(to, allTokenOwners);
+  const receiverTokenBalancesLookup = receiverTokenBalances.toLookup(o => o.tokenOwner, o => o.balance);
+
+  // const tokenOwnersOwnTokenBalance = tokenOwnerOwnTokenBalances.find(o => o.tokenOwner == to);
+
+  // 4) Calculate the max. transferable amount of each token:
+  //    * Get the destination's balance of their own token
+  //    * multiply it with the limit that's set for the relation:
+  //      'tokenOwner' -can-send-to-> 'to' of each transferable token
+  //    * divide by 100
+  //
+  // Original code:
+  // uint256 max = (userToToken[dest].balanceOf(dest).mul(limits[dest][tokenOwner])).div(oneHundred);
+  const acceptedTokensWithMaxTransferableAmount = acceptedTokensWithBalance.map(o => {
+    // The owner of a token always accepts all of their tokens
+    let max = (o.tokenOwner == to || recipientIsOrganization)
+      ? o.balance
+      : tokenOwnersOwnBalancesLookup[to].mul(o.limitBn).div(oneHundred);
+
+    // Subtract the current holdings of the receivers from the max transferable amount:
+    // userToToken[tokenOwner].balanceOf(dest).mul(oneHundred.sub(limits[dest][tokenOwner])).div(oneHundred)
+    if (!recipientIsOrganization) {
+      const destBalance = receiverTokenBalancesLookup[o.tokenOwner];
+      if (destBalance) {
+        if (max.lt(destBalance)) {
+          // if trustLimit has already been overridden by a direct transfer, nothing more can be sent
+          max = zeroBN;
+        } else {
+          const destBalanceScaled = destBalance.mul(oneHundred.sub(o.limitBn)).div(oneHundred);
+          max = max.sub(destBalanceScaled);
         }
       }
 
