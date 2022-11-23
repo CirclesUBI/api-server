@@ -42,7 +42,6 @@ export function upsertOrganisation(isRegion: boolean) {
             id: args.organisation.id,
           },
           data: {
-            id: args.organisation.id,
             firstName: args.organisation.name,
             dream: args.organisation.description,
             circlesAddress: args.organisation.circlesAddress,
