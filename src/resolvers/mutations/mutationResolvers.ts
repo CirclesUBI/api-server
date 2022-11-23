@@ -59,7 +59,10 @@ export const mutationResolvers: MutationResolvers = {
       throw new Error(`Only profiles with a circlesAddress can create favorites.`);
 
     const circlesAddress = args.circlesAddress.toLowerCase();
-    const existingFavorite = await Environment.readWriteApiDb.favorites.findFirst({where:{favoriteCirclesAddress: circlesAddress}});
+    const existingFavorite = await Environment.readWriteApiDb.favorites.findFirst({where:{
+      favoriteCirclesAddress: circlesAddress,
+      createdByCirclesAddress: caller.profile.circlesAddress
+    }});
     const favoriteProfile = await new ProfileLoader().profilesBySafeAddress(Environment.readWriteApiDb, [circlesAddress]);
 
     if (!favoriteProfile[circlesAddress])
