@@ -14,7 +14,7 @@ import { profileMembersDataLoader } from "../dataLoaders/profileMembersDataLoade
 import { provenUniquenessDataLoader } from "../dataLoaders/provenUniquenessDataLoader";
 import {ProfileLoader} from "../../querySources/profileLoader";
 
-function isOwnProfile(profileId: number, context: Context): boolean {
+export function isOwnProfile(profileId: number, context: Context): boolean {
   return !!context.session?.profileId && context.session.profileId == profileId;
 }
 
@@ -181,27 +181,5 @@ export const profilePropertyResolvers: ProfileResolvers = {
       return null;
     }
     return await provenUniquenessDataLoader.load(parent.circlesAddress);
-  },
-  favorites:  async (parent: Profile, args: any, context: Context) => {
-    if (!parent.circlesAddress || !isOwnProfile(parent.id, context)) {
-      return [];
-    }
-    const favorites = await Environment.readonlyApiDb.favorites.findMany({
-      where: {
-        createdByCirclesAddress: parent.circlesAddress
-      }
-    });
-
-    const favoriteProfiles = await new ProfileLoader().profilesBySafeAddress(
-      Environment.readonlyApiDb,
-      favorites.map(o => o.favoriteCirclesAddress));
-
-    return favorites.map(o => {
-      return <Favorite> {
-        createdBy: parent,
-        favorite: favoriteProfiles[o.favoriteCirclesAddress],
-        createdAt: o.createdAt.toJSON()
-      }
-    });
   }
 };

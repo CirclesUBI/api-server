@@ -65,13 +65,13 @@ type Profile {
   lat: Float
   lon: Float
   category: BusinessCategory
-  favorites: [Favorite!]
 }
 
 type Favorite {
   createdAt: String!
-  createdBy: Profile!
-  favorite: Profile!
+  createdByAddress: String!
+  favorite: Profile
+  favoriteAddress: String!
   comment: String
 }
 
@@ -1006,6 +1006,7 @@ type Query {
 
   allBusinessCategories: [BusinessCategory!]!
   allBusinesses(queryParams: QueryAllBusinessesParameters): [Businesses!]!
+  myFavorites: [Favorite!]!
 }
 
 input QueryAllBusinessesParameters {

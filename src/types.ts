@@ -342,8 +342,9 @@ export type Favorite = {
   __typename?: 'Favorite';
   comment?: Maybe<Scalars['String']>;
   createdAt: Scalars['String'];
-  createdBy: Profile;
-  favorite: Profile;
+  createdByAddress: Scalars['String'];
+  favorite?: Maybe<Profile>;
+  favoriteAddress: Scalars['String'];
 };
 
 export type FibonacciGoals = {
@@ -737,7 +738,6 @@ export type Profile = {
   displayTimeCircles?: Maybe<Scalars['Boolean']>;
   dream?: Maybe<Scalars['String']>;
   emailAddress?: Maybe<Scalars['String']>;
-  favorites?: Maybe<Array<Favorite>>;
   firstName: Scalars['String'];
   gender?: Maybe<Gender>;
   id: Scalars['Int'];
@@ -863,6 +863,7 @@ export type Query = {
   init: SessionInfo;
   invitationTransaction?: Maybe<ProfileEvent>;
   lastAcknowledgedAt?: Maybe<Scalars['Date']>;
+  myFavorites: Array<Favorite>;
   myInvitations: Array<CreatedInvitation>;
   myProfile?: Maybe<Profile>;
   organisations: Array<Organisation>;
@@ -1936,8 +1937,9 @@ export type ExportTrustRelationResolvers<ContextType = any, ParentType extends R
 export type FavoriteResolvers<ContextType = any, ParentType extends ResolversParentTypes['Favorite'] = ResolversParentTypes['Favorite']> = ResolversObject<{
   comment?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  createdBy?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
-  favorite?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
+  createdByAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  favorite?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  favoriteAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2167,7 +2169,6 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   displayTimeCircles?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   dream?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   emailAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  favorites?: Resolver<Maybe<Array<ResolversTypes['Favorite']>>, ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   gender?: Resolver<Maybe<ResolversTypes['Gender']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -2270,6 +2271,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   init?: Resolver<ResolversTypes['SessionInfo'], ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
   lastAcknowledgedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType, RequireFields<QueryLastAcknowledgedAtArgs, 'safeAddress'>>;
+  myFavorites?: Resolver<Array<ResolversTypes['Favorite']>, ParentType, ContextType>;
   myInvitations?: Resolver<Array<ResolversTypes['CreatedInvitation']>, ParentType, ContextType>;
   myProfile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   organisations?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType, Partial<QueryOrganisationsArgs>>;

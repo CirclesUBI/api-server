@@ -10,6 +10,7 @@ import {queryResolvers} from "./queries/queryResolvers";
 import {mutationResolvers} from "./mutations/mutationResolvers";
 import {subscriptionResolvers} from "./subscriptions/subscriptionResolvers";
 import {profilePropertyResolvers} from "./properties/profile";
+import {favoritePropertyResolvers} from "./properties/favorite";
 import {contactPropertyResolver} from "./properties/contact";
 import {claimedInvitationPropertyResolver} from "./properties/claimedInvitation";
 import {profileEventPropertyResolver} from "./properties/profileEvent";
@@ -47,6 +48,7 @@ export const resolvers: Resolvers = {
     ClaimedInvitation: claimedInvitationPropertyResolver,
     ProfileEvent: profileEventPropertyResolver,
     Organisation: organisationPropertyResolver,
+    Favorite: favoritePropertyResolvers,
     Verification: {
       verifierProfile: async (parent:Verification, args:any, context:Context) => {
         if (!parent.verifierSafeAddress) {
