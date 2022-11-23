@@ -147,6 +147,7 @@ order by A."firstName" asc;`;
       .map((row: any) => {
         return map[row.circlesAddress];
       })
+      .filter((o:any) => o)
       .map((o: any) => {
         return <Businesses>{
           ...o,
