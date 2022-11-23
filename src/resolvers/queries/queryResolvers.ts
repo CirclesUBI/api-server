@@ -25,7 +25,7 @@ import {recentProfiles} from "./recentProfiles";
 import {stats} from "./stats";
 import {init} from "./init";
 import {Environment} from "../../environment";
-import {ExportProfile, ExportTrustRelation, QueryResolvers} from "../../types";
+import {ExportProfile, ExportTrustRelation, Favorite, QueryResolvers} from "../../types";
 import {Context} from "../../context";
 import {clientAssertionJwt} from "./clientAssertionJwt";
 import {lastAcknowledgedAt} from "./lastAcknowledgedAt";
@@ -90,6 +90,22 @@ export const queryResolvers: QueryResolvers = {
   allBusinesses: allBusinesses,
   allBusinessCategories: async(parent: any, args: {categoryId?: number|null}, context: Context) => {
     return Environment.readonlyApiDb.businessCategory.findMany();
+  },
+  myFavorites: async(parent: any, args:any, context: Context) => {
+    const caller = await context.callerInfo;
+    return (await Environment.readonlyApiDb.favorites.findMany({
+      where: {
+        createdByCirclesAddress: caller?.profile?.circlesAddress ?? ""
+      }
+    }))
+    .map(o => {
+      return <Favorite>{
+        createdAt: o.createdAt.toJSON(),
+        createdByAddress: o.createdByCirclesAddress,
+        favoriteAddress: o.favoriteCirclesAddress,
+        comment: o.comment
+      }
+    });
   },
   allProfiles: async (parent, args, context) => {
     let profilesSql = `
