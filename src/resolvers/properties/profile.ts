@@ -1,4 +1,4 @@
-import {AssetBalance, Favorite, Profile, ProfileOrigin, ProfileResolvers} from "../../types";
+import {AssetBalance, Profile, ProfileOrigin, ProfileResolvers} from "../../types";
 import { Context } from "../../context";
 import { Environment } from "../../environment";
 import { getDateWithOffset } from "../../utils/getDateWithOffset";
@@ -12,7 +12,6 @@ import { profileInvitationTransactionDataLoader } from "../dataLoaders/profileIn
 import { profileCirclesTokenAddressDataLoader } from "../dataLoaders/profileCirclesTokenAddressDataLoader";
 import { profileMembersDataLoader } from "../dataLoaders/profileMembersDataLoader";
 import { provenUniquenessDataLoader } from "../dataLoaders/provenUniquenessDataLoader";
-import {ProfileLoader} from "../../querySources/profileLoader";
 
 export function isOwnProfile(profileId: number, context: Context): boolean {
   return !!context.session?.profileId && context.session.profileId == profileId;
@@ -73,7 +72,7 @@ export const profilePropertyResolvers: ProfileResolvers = {
     }
     return await profileVerificationsDataLoader.load(parent.circlesAddress);
   },
-  balances: async (parent: Profile, args: any, context: Context) => {
+  balances: async (parent: Profile, args, context: Context) => {
     if (!parent.circlesAddress) {
       return null;
     }
@@ -83,8 +82,10 @@ export const profilePropertyResolvers: ProfileResolvers = {
         select last_change_at, token, token_owner, balance
         from cache_crc_balances_by_safe_and_token
         where safe_address = $1
+          and ($2 = '' or balance > ($2)::numeric) 
+          and ($3 = '' or balance < ($3)::numeric)
         order by balance desc;`,
-      [parent.circlesAddress.toLowerCase()]
+      [parent.circlesAddress.toLowerCase(), args?.filter?.gt ?? '', args?.filter?.lt ?? '']
     );
 
     const erc20BalancesPromise = Environment.indexDb.query(
@@ -94,8 +95,10 @@ export const profilePropertyResolvers: ProfileResolvers = {
             , balance
             , last_changed_at
        from erc20_balances_by_safe_and_token
-       where safe_address = $1;`,
-      [parent.circlesAddress.toLowerCase()]
+       where safe_address = $1
+        and ($2 = '' or balance > ($2)::numeric) 
+        and ($3 = '' or balance < ($3)::numeric);`,
+      [parent.circlesAddress.toLowerCase(), args?.filter?.gt ?? '', args?.filter?.lt ?? '']
     );
 
     const queryResults = await Promise.all([crcBalancesPromise, erc20BalancesPromise]);
@@ -143,14 +146,14 @@ export const profilePropertyResolvers: ProfileResolvers = {
       },
     };
   },
-  contacts: async (parent: Profile, args: any, context: Context) => {
+  contacts: async (parent: Profile, args, context: Context) => {
     if (!parent.circlesAddress) {
       return [];
     }
     if (!isOwnProfile(parent.id, context)) {
-      return await profilePublicContactsDataLoader.load(parent.circlesAddress);
+      return await profilePublicContactsDataLoader(args.filter).load(parent.circlesAddress);
     } else {
-      return await profileAllContactsDataLoader.load(parent.circlesAddress);
+      return await profileAllContactsDataLoader(args.filter).load(parent.circlesAddress);
     }
   },
   claimedInvitation: async (parent: Profile, args: any, context: Context) => {
