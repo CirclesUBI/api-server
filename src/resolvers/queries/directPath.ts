@@ -32,15 +32,19 @@ export const directPath = async (parent: any, args: QueryDirectPathArgs, context
   const path = await Pathfinder.findPath(from, to, args.amount);
   //const path = await Pathfinder.findMaxFlow(new DefaultBalanceProvider(), from, to);
 
-  // const flowGraph = new FlowGraph(path);
-  // await generateGraphvizGraph(args.amount, flowGraph, path);
+  try {
+    const flowGraph = new FlowGraph(path);
+    await generateGraphvizGraph(args.amount, flowGraph, path);
+  } catch (e) {
+
+  }
 
   const validationResult = await PathValidator.validate(path);
   if (validationResult.error) {
     console.error(`Invalid path call data: ${validationResult.calldata}`);
   }
 
-  path.isValid = !!validationResult.error;
+  path.isValid = !validationResult.error;
 
   if (validationResult.error) {
     context.log(`The path couldn't be validated at the hub contract: ${validationResult.calldata}`);

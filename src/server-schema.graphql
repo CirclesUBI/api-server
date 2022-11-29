@@ -55,8 +55,8 @@ type Profile {
   members: [Profile!]
   displayCurrency: DisplayCurrency
   verifications: [Verification!]
-  balances: ProfileBalances
-  contacts: [Contact!] @cost(value: 1)
+  balances(filter:CrcBalanceFilter): ProfileBalances
+  contacts(filter:ContactFilter): [Contact!] @cost(value: 1)
   provenUniqueness: Boolean
   age: Int
   gender: Gender
@@ -65,6 +65,15 @@ type Profile {
   lat: Float
   lon: Float
   category: BusinessCategory
+}
+
+input ContactFilter {
+  contactSource: [String!]!
+}
+
+input CrcBalanceFilter {
+  lt: String
+  gt: String
 }
 
 type Favorite {
@@ -490,6 +499,7 @@ type CrcBalances implements IAggregatePayload {
   total: String
   balances: [AssetBalance!]! @cost(value: 1)
 }
+
 
 # All crc holdings of the user
 type Erc20Balances implements IAggregatePayload {

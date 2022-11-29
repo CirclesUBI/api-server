@@ -137,6 +137,10 @@ export enum ContactDirection {
   Out = 'Out'
 }
 
+export type ContactFilter = {
+  contactSource: Array<Scalars['String']>;
+};
+
 export type ContactPoint = {
   __typename?: 'ContactPoint';
   directions: Array<ContactDirection>;
@@ -153,6 +157,11 @@ export type Contacts = IAggregatePayload & {
 
 export type CrcBalanceAggregateFilter = {
   tokenAddresses: Array<Scalars['String']>;
+};
+
+export type CrcBalanceFilter = {
+  gt?: InputMaybe<Scalars['String']>;
+  lt?: InputMaybe<Scalars['String']>;
 };
 
 export type CrcBalances = IAggregatePayload & {
@@ -759,6 +768,16 @@ export type Profile = {
   successorOfCirclesAddress?: Maybe<Scalars['String']>;
   type?: Maybe<ProfileType>;
   verifications?: Maybe<Array<Verification>>;
+};
+
+
+export type ProfileBalancesArgs = {
+  filter?: InputMaybe<CrcBalanceFilter>;
+};
+
+
+export type ProfileContactsArgs = {
+  filter?: InputMaybe<ContactFilter>;
 };
 
 export type ProfileAggregate = {
@@ -1444,9 +1463,11 @@ export type ResolversTypes = ResolversObject<{
   Contact: ResolverTypeWrapper<Contact>;
   ContactAggregateFilter: ContactAggregateFilter;
   ContactDirection: ContactDirection;
+  ContactFilter: ContactFilter;
   ContactPoint: ResolverTypeWrapper<ContactPoint>;
   Contacts: ResolverTypeWrapper<Contacts>;
   CrcBalanceAggregateFilter: CrcBalanceAggregateFilter;
+  CrcBalanceFilter: CrcBalanceFilter;
   CrcBalances: ResolverTypeWrapper<CrcBalances>;
   CrcHubTransfer: ResolverTypeWrapper<CrcHubTransfer>;
   CrcMinting: ResolverTypeWrapper<CrcMinting>;
@@ -1567,9 +1588,11 @@ export type ResolversParentTypes = ResolversObject<{
   CommonTrust: CommonTrust;
   Contact: Contact;
   ContactAggregateFilter: ContactAggregateFilter;
+  ContactFilter: ContactFilter;
   ContactPoint: ContactPoint;
   Contacts: Contacts;
   CrcBalanceAggregateFilter: CrcBalanceAggregateFilter;
+  CrcBalanceFilter: CrcBalanceFilter;
   CrcBalances: CrcBalances;
   CrcHubTransfer: CrcHubTransfer;
   CrcMinting: CrcMinting;
@@ -2155,14 +2178,14 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   avatarCid?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarMimeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  balances?: Resolver<Maybe<ResolversTypes['ProfileBalances']>, ParentType, ContextType>;
+  balances?: Resolver<Maybe<ResolversTypes['ProfileBalances']>, ParentType, ContextType, Partial<ProfileBalancesArgs>>;
   category?: Resolver<Maybe<ResolversTypes['BusinessCategory']>, ParentType, ContextType>;
   circlesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesSafeOwner?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesTokenAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
   confirmedLegalAge?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  contacts?: Resolver<Maybe<Array<ResolversTypes['Contact']>>, ParentType, ContextType>;
+  contacts?: Resolver<Maybe<Array<ResolversTypes['Contact']>>, ParentType, ContextType, Partial<ProfileContactsArgs>>;
   country?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   displayCurrency?: Resolver<Maybe<ResolversTypes['DisplayCurrency']>, ParentType, ContextType>;
   displayName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

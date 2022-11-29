@@ -59,34 +59,17 @@ export class PathValidator {
       ]).substring(2)/* remove preceding 0x */;
 
     try {
-
-
-      // console.log(`${callData}`);
-
-      // console.log(`'cast' command:`);
-      // console.log(`cast call '0x29b9a7fBb8995b2423a71cC17cf9810798F6C543' 'transferThrough(address[],address[],address[],uint256[])' '[${token.join(',')}]' '[${from.join(',')}]' '[${to.join(',')}]' '[${value}]' --rpc-url https://rpc.gnosischain.com --from ${sender} 0x`);
-      // console.log(`PathValidator: Validating a path with requestedAmount '${path.requestedAmount}' ...`);
-
       const callResult = await RpcGateway.get().eth.call({
         from: from[0],
         to: Environment.circlesHubAddress,
         data: callData
       });
 
-      // console.log(`PathValidator: Validation result by hub:`, callResult);
-
       return {
         calldata: callData,
         result: callResult
       };
     } catch (e) {
-      /*
-      console.warn(`PathValidator: Invalid path `, {
-        flow: path.flow,
-        success: path.success,
-        requestedAmount: path.requestedAmount,
-        transfers: path.transfers?.length ?? 0
-      })*/
       return {
         calldata: callData,
         error: <Error>e
