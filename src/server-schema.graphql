@@ -694,6 +694,15 @@ input UpsertOrganisationInput {
   locationName: String
   lat: Float
   lon: Float
+  businessCategoryId: Int
+  businessHoursMonday: String
+  businessHoursTuesday: String
+  businessHoursWednesday: String
+  businessHoursThursday: String
+  businessHoursFriday: String
+  businessHoursSaturday: String
+  businessHoursSunday: String
+  phoneNumber: String
 }
 
 type AddMemberResult {
@@ -880,7 +889,6 @@ type Mutation {
   upsertTag(data: UpsertTagInput!): Tag!
 
   upsertOrganisation(organisation: UpsertOrganisationInput!): CreateOrganisationResult!
-  upsertRegion(organisation: UpsertOrganisationInput!): CreateOrganisationResult!
 
   addMember(groupId: String!, memberAddress: String!): AddMemberResult
   acceptMembership(membershipId: Int!): AcceptMembershipResult

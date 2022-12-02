@@ -17,18 +17,15 @@ export const importOrganisationsOfAccount = async (parent:any, args:{}, context:
   const missingOrgProfilesFromCirclesGarden = await new ProfileLoader().queryCirclesGardenRemote(Environment.readWriteApiDb, missingOrgProfiles);
 
   const importResults = await Promise.all(missingOrgProfiles.map(async org => {
-    const createOrgMutation = upsertOrganisation(false);
     const circlesGardenProfile = missingOrgProfilesFromCirclesGarden[org];
     if (circlesGardenProfile) {
-      const importOrgResult = await createOrgMutation(null, {
+      return await upsertOrganisation(null, {
         organisation: {
           circlesAddress: org,
           name: circlesGardenProfile.firstName,
           avatarUrl: circlesGardenProfile.avatarUrl
         }
       }, context);
-
-      return importOrgResult;
     }
   }));
 
