@@ -521,7 +521,6 @@ export type Mutation = {
   updateValue?: Maybe<I18n>;
   upsertOrganisation: CreateOrganisationResult;
   upsertProfile: Profile;
-  upsertRegion: CreateOrganisationResult;
   upsertTag: Tag;
   verifySafe: VerifySafeResult;
   verifySessionChallenge?: Maybe<ExchangeTokenResponse>;
@@ -646,11 +645,6 @@ export type MutationUpsertOrganisationArgs = {
 
 export type MutationUpsertProfileArgs = {
   data: UpsertProfileInput;
-};
-
-
-export type MutationUpsertRegionArgs = {
-  organisation: UpsertOrganisationInput;
 };
 
 
@@ -1283,6 +1277,14 @@ export type UpdateSafeResponse = {
 export type UpsertOrganisationInput = {
   avatarMimeType?: InputMaybe<Scalars['String']>;
   avatarUrl?: InputMaybe<Scalars['String']>;
+  businessCategoryId?: InputMaybe<Scalars['Int']>;
+  businessHoursFriday?: InputMaybe<Scalars['String']>;
+  businessHoursMonday?: InputMaybe<Scalars['String']>;
+  businessHoursSaturday?: InputMaybe<Scalars['String']>;
+  businessHoursSunday?: InputMaybe<Scalars['String']>;
+  businessHoursThursday?: InputMaybe<Scalars['String']>;
+  businessHoursTuesday?: InputMaybe<Scalars['String']>;
+  businessHoursWednesday?: InputMaybe<Scalars['String']>;
   circlesAddress?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
   displayCurrency?: InputMaybe<DisplayCurrency>;
@@ -1293,6 +1295,7 @@ export type UpsertOrganisationInput = {
   locationName?: InputMaybe<Scalars['String']>;
   lon?: InputMaybe<Scalars['Float']>;
   name: Scalars['String'];
+  phoneNumber?: InputMaybe<Scalars['String']>;
   smallBannerUrl?: InputMaybe<Scalars['String']>;
 };
 
@@ -2116,7 +2119,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   updateValue?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<MutationUpdateValueArgs>>;
   upsertOrganisation?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertOrganisationArgs, 'organisation'>>;
   upsertProfile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType, RequireFields<MutationUpsertProfileArgs, 'data'>>;
-  upsertRegion?: Resolver<ResolversTypes['CreateOrganisationResult'], ParentType, ContextType, RequireFields<MutationUpsertRegionArgs, 'organisation'>>;
   upsertTag?: Resolver<ResolversTypes['Tag'], ParentType, ContextType, RequireFields<MutationUpsertTagArgs, 'data'>>;
   verifySafe?: Resolver<ResolversTypes['VerifySafeResult'], ParentType, ContextType, RequireFields<MutationVerifySafeArgs, 'safeAddress'>>;
   verifySessionChallenge?: Resolver<Maybe<ResolversTypes['ExchangeTokenResponse']>, ParentType, ContextType, RequireFields<MutationVerifySessionChallengeArgs, 'challenge' | 'signature'>>;

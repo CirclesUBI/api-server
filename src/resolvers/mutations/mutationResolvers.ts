@@ -30,8 +30,7 @@ import {Generate} from "../../utils/generate";
 import {RpcGateway} from "../../circles/rpcGateway";
 
 export const mutationResolvers: MutationResolvers = {
-  upsertOrganisation: <any>upsertOrganisation(false),
-  upsertRegion: <any>upsertOrganisation(true),
+  upsertOrganisation: upsertOrganisation,
   logout: logout(),
   upsertProfile: upsertProfileResolver(),
   requestUpdateSafe: requestUpdateSafe(Environment.readWriteApiDb),
