@@ -37,12 +37,8 @@ export const events = async (
   }
 
   const unreadMarkers: {[key:string]:UnreadEvent} = {};
-
-  if (args.filter?.unreadOnly) {
-    const caller = await context.callerInfo;
-    if (!caller?.profile?.circlesAddress) {
-      throw new Error(`Cannot filter for unread events without a profile.`);
-    }
+  const caller = await context.callerInfo;
+  if (caller?.profile?.circlesAddress) {
     const unreadEventMarkers = await Environment.readonlyApiDb.unreadEvent.findMany({
       where: {
         safe_address: caller.profile.circlesAddress,
@@ -143,36 +139,36 @@ export const events = async (
 
   const aggregateEventSource = new CombinedEventSource(eventSources);
 
-  let events: ProfileEvent[] = [];
+  let events: ProfileEvent[] = await aggregateEventSource.getEvents(
+    args.safeAddress,
+    args.pagination,
+    args.filter ?? null
+  );
 
-  if (events.length == 0) {
-    events = await aggregateEventSource.getEvents(
-      args.safeAddress,
-      args.pagination,
-      args.filter ?? null
+  events = events.sort((a, b) => {
+    const aTime = new Date(a.timestamp).getTime();
+    const bTime = new Date(b.timestamp).getTime();
+    return (
+      //args.pagination.order == SortOrder.Asc
+      /*?*/ aTime < bTime
+        ? //: aTime > bTime
+          -1
+        : aTime < bTime
+        ? 1
+        : 0
     );
+  });
 
-    events = events.sort((a, b) => {
-      const aTime = new Date(a.timestamp).getTime();
-      const bTime = new Date(b.timestamp).getTime();
-      return (
-        //args.pagination.order == SortOrder.Asc
-        /*?*/ aTime < bTime
-          ? //: aTime > bTime
-            -1
-          : aTime < bTime
-          ? 1
-          : 0
-      );
-    });
+  events.forEach(e => {
+    const key = `${e.timestamp}${e.type}${e.safe_address}${e.direction}${e.transaction_hash ?? ''}`;
+    e.unread = unreadMarkers[key] && !unreadMarkers[key]?.readAt;
+  });
 
-    if (args.filter?.unreadOnly) {
-      events = events.filter(o => {
-        const key = `${o.timestamp}${o.type}${o.safe_address}${o.direction}${o.transaction_hash ?? ''}`;
-        console.log(key);
-        return !!unreadMarkers[key];
-      });
-    }
+  if (args.filter?.unreadOnly) {
+    events = events.filter(o => o.unread);
+  }
+  if (args.filter?.readOnly) {
+    events = events.filter(o => !o.unread);
   }
 
   const augmentation = new EventAugmenter();

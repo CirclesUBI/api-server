@@ -111,5 +111,36 @@ export const mutationResolvers: MutationResolvers = {
 
     const protocol = Environment.isLocalDebugEnvironment ? "http://" : "https://";
     return protocol + Environment.externalDomain + "/link?id=" + link.id;
+  },
+  markAsRead: async (parent, args, context:Context) => {
+    const caller = await context.callerInfo;
+    if (!caller?.profile?.circlesAddress) {
+      throw new Error(`Cannot markAsRead without complete profile.`);
+    }
+
+    const unreadEvents = await Environment.readWriteApiDb.unreadEvent.findMany({
+      where: {
+        safe_address: caller.profile.circlesAddress,
+        id: {
+          in: args.entries
+        }
+      }
+    });
+
+    const now = new Date();
+    await Environment.readWriteApiDb.unreadEvent.updateMany({
+      where: {
+        id: {
+          in: unreadEvents.map(o => o.id)
+        }
+      },
+      data: {
+        readAt: now
+      }
+    });
+
+    return {
+      count: unreadEvents.length
+    }
   }
 };
