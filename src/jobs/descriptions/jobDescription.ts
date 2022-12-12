@@ -10,7 +10,8 @@ export type JobType =
   "sendWelcomeEmail" |
   "requestUbiForInactiveAccounts" |
   "rotateJwks" |
-  "autoTrust";
+  "autoTrust" |
+  "unreadNotification";
 
 export type JobKind =
   "broadcast" |

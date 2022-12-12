@@ -815,6 +815,7 @@ export type ProfileEventFilter = {
   from?: InputMaybe<Scalars['String']>;
   to?: InputMaybe<Scalars['String']>;
   transactionHash?: InputMaybe<Scalars['String']>;
+  unreadOnly?: InputMaybe<Scalars['Boolean']>;
   with?: InputMaybe<Scalars['String']>;
 };
 

@@ -800,6 +800,7 @@ input ProfileEventFilter {
   to: String
   with: String
   transactionHash: String
+  unreadOnly: Boolean
 }
 
 input ContactAggregateFilter {

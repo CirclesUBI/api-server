@@ -6,7 +6,8 @@ import {Environment} from "../environment";
 import {ProfileLoader} from "../querySources/profileLoader";
 import {ProfilesBySafeAddressLookup} from "../resolvers/queries/profiles";
 import {Profile, TransitivePath} from "../types";
-import {DefaultBalanceProvider} from "./defaultBalanceProvider";
+import {ChainBalanceProvider, DbBalanceProvider} from "./dbBalanceProvider";
+import {CIRCLES_HUB_ABI} from "../circles/abi/circlesHubAbi";
 
 export class GraphvizGenerator {
   static async generate(flowEth: number, flowGraph: FlowGraph, transitivePath?:TransitivePath) {
@@ -83,9 +84,26 @@ export class GraphvizGenerator {
 
         // Find all addresses referenced by this node
         const profileAddresses: { [x: string]: any } = {};
-        const currentBalances = (await new DefaultBalanceProvider().getTokenBalances(address)).toLookup(
+
+        const currentBalances = (await new DbBalanceProvider().getTokenBalances(address)).toLookup(
           o => o.tokenOwner,
           o => o.balance);
+
+        const currentBalancesChain = (await new ChainBalanceProvider().getTokenBalances(address)).toLookup(
+          o => o.tokenOwner,
+          o => o.balance);
+
+        if (Object.keys(currentBalancesChain).length != Object.keys(currentBalancesChain).length) {
+          throw new Error(`Database inconsistent`);
+        }
+        Object.keys(currentBalancesChain).forEach((o,i) => {
+          const dbBalance = currentBalances[o];
+          const chainBalance = currentBalancesChain[o];
+          if (dbBalance.toString() != chainBalance.toString()) {
+            throw new Error(`Database inconsistent`)
+          }
+        });
+
 
         Object.keys(currentBalances).forEach(o => profileAddresses[o] = true);
         Object.keys(node.inEdges).forEach(o => profileAddresses[o] = true);
@@ -245,6 +263,44 @@ export class GraphvizGenerator {
         graphvizDefinition += `  "${node.address}" [shape=none label=<${table}>];`;
       },
       async visitEdge(from: string, to: string, totalAmount: string, transfers: BalanceList) {
+
+        if (from == flowGraph.source) {
+
+          const c = (RpcGateway.get()).eth.Contract;
+          const hub = new c(CIRCLES_HUB_ABI, Environment.circlesHubAddress);
+
+          for (const tokenOwner in transfers) {
+            const amount = transfers[tokenOwner];
+            const sendLimit = await hub.methods.checkSendLimit(tokenOwner, from, to).call();
+
+            const sendLimitQuery = `
+                    select capacity::text
+                    from crc_capacity_graph_2
+                    where "from" = $1
+                      and "to" = $2
+                      and token_owner = $3;`;
+
+            const sendLimitDbResult = await Environment.indexDb.query(
+              sendLimitQuery,
+              [from, to, tokenOwner]);
+
+            let v = sendLimitDbResult.rows[0].capacity;
+            const vdi = v.indexOf(".");
+            if (vdi >= 0)  {
+              v = v.substring(0, vdi);
+            }
+            const dbLimit = new BN(v);
+
+            if (dbLimit.toString() != sendLimit) {
+              //throw new Error(`DB inconsistency`)
+              console.error("DB capacity graph inconsistency: ")
+              const l = `  Hub send limit from ${from} to ${to} using tokenOwner ${tokenOwner} is:`.length;
+              console.info(`  Hub send limit from ${from} to ${to} using tokenOwner ${tokenOwner} is: ${sendLimit}`);
+              console.info(`  DB send limit is:`.padEnd(l) + ` ${dbLimit.toString()}`);
+            }
+          }
+        }
+
         const valueInEth = parseInt(new BN(totalAmount).div(new BN("1000000000000000000")).toString());
         let penWidth = (flowEth * 0.01) * (valueInEth / flowEth);
         penWidth = penWidth < 0.5 ? 0.5 : penWidth;

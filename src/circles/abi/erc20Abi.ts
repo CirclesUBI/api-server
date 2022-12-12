@@ -1,4 +1,6 @@
-export const erc20_abi = [
+import {AbiItem} from "web3-utils";
+
+export const erc20_abi :AbiItem[]= [
   {
     "inputs": [
       {
