@@ -161,7 +161,7 @@ export const events = async (
 
   events.forEach(e => {
     const key = `${e.timestamp}${e.type}${e.safe_address}${e.direction}${e.transaction_hash ?? ''}`;
-    e.unread = unreadMarkers[key] && !unreadMarkers[key]?.readAt;
+    e.unread = unreadMarkers[key] && !unreadMarkers[key]?.readAt ? true : false;
   });
 
   if (args.filter?.unreadOnly) {
