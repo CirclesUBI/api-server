@@ -50,6 +50,15 @@ export async function upsertOrganisation(parent: any, args: MutationUpsertOrgani
           locationName: args.organisation.locationName,
           lat: args.organisation.lat,
           lon: args.organisation.lon,
+          businessHoursMonday: args.organisation.businessHoursMonday,
+          businessHoursTuesday: args.organisation.businessHoursTuesday,
+          businessHoursWednesday: args.organisation.businessHoursWednesday,
+          businessHoursThursday: args.organisation.businessHoursThursday,
+          businessHoursFriday: args.organisation.businessHoursFriday,
+          businessHoursSaturday: args.organisation.businessHoursSaturday,
+          businessHoursSunday: args.organisation.businessHoursSunday,
+          phoneNumber: args.organisation.phoneNumber,
+          businessCategoryId: args.organisation.businessCategoryId
         },
       })
     );
@@ -69,6 +78,15 @@ export async function upsertOrganisation(parent: any, args: MutationUpsertOrgani
           locationName: args.organisation.locationName,
           lat: args.organisation.lat,
           lon: args.organisation.lon,
+          businessHoursMonday: args.organisation.businessHoursMonday,
+          businessHoursTuesday: args.organisation.businessHoursTuesday,
+          businessHoursWednesday: args.organisation.businessHoursWednesday,
+          businessHoursThursday: args.organisation.businessHoursThursday,
+          businessHoursFriday: args.organisation.businessHoursFriday,
+          businessHoursSaturday: args.organisation.businessHoursSaturday,
+          businessHoursSunday: args.organisation.businessHoursSunday,
+          phoneNumber: args.organisation.phoneNumber,
+          businessCategoryId: args.organisation.businessCategoryId
         },
       })
     );

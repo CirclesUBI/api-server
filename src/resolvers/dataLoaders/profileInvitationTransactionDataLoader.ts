@@ -1,6 +1,6 @@
 import DataLoader from "dataloader";
 import {Environment} from "../../environment";
-import {Profile, ProfileEvent} from "../../types";
+import {ProfileEvent} from "../../types";
 
 export const profileInvitationTransactionDataLoader = new DataLoader<string, ProfileEvent>(async (keys: readonly any[]) => {
   const profilesWithRedeemedInvitations = await Environment.readWriteApiDb.profile.findMany({
