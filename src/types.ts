@@ -428,6 +428,11 @@ export type LogoutResponse = {
   success: Scalars['Boolean'];
 };
 
+export type MarkAsReadResult = {
+  __typename?: 'MarkAsReadResult';
+  count: Scalars['Int'];
+};
+
 export type MemberAdded = IEventPayload & {
   __typename?: 'MemberAdded';
   createdBy: Scalars['String'];
@@ -505,6 +510,7 @@ export type Mutation = {
   createTestInvitation: CreateInvitationResult;
   importOrganisationsOfAccount: Array<Organisation>;
   logout: LogoutResponse;
+  markAsRead: MarkAsReadResult;
   proofUniqueness: ProofUniquenessResult;
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
   rejectMembership?: Maybe<RejectMembershipResult>;
@@ -561,6 +567,11 @@ export type MutationCreateNewStringAndKeyArgs = {
   lang?: InputMaybe<Scalars['String']>;
   value?: InputMaybe<Scalars['String']>;
   version?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type MutationMarkAsReadArgs = {
+  entries: Array<Scalars['Int']>;
 };
 
 
@@ -807,12 +818,14 @@ export type ProfileEvent = {
   transaction_hash?: Maybe<Scalars['String']>;
   transaction_index?: Maybe<Scalars['Int']>;
   type: Scalars['String'];
+  unread: Scalars['Boolean'];
   value?: Maybe<Scalars['String']>;
 };
 
 export type ProfileEventFilter = {
   direction?: InputMaybe<Direction>;
   from?: InputMaybe<Scalars['String']>;
+  readOnly?: InputMaybe<Scalars['Boolean']>;
   to?: InputMaybe<Scalars['String']>;
   transactionHash?: InputMaybe<Scalars['String']>;
   unreadOnly?: InputMaybe<Scalars['Boolean']>;
@@ -1508,6 +1521,7 @@ export type ResolversTypes = ResolversObject<{
   LeaderboardEntry: ResolverTypeWrapper<LeaderboardEntry>;
   LinkTargetType: LinkTargetType;
   LogoutResponse: ResolverTypeWrapper<LogoutResponse>;
+  MarkAsReadResult: ResolverTypeWrapper<MarkAsReadResult>;
   MemberAdded: ResolverTypeWrapper<MemberAdded>;
   Members: ResolverTypeWrapper<Omit<Members, 'members'> & { members: Array<ResolversTypes['ProfileOrOrganisation']> }>;
   Membership: ResolverTypeWrapper<Membership>;
@@ -1628,6 +1642,7 @@ export type ResolversParentTypes = ResolversObject<{
   InvitationRedeemed: InvitationRedeemed;
   LeaderboardEntry: LeaderboardEntry;
   LogoutResponse: LogoutResponse;
+  MarkAsReadResult: MarkAsReadResult;
   MemberAdded: MemberAdded;
   Members: Omit<Members, 'members'> & { members: Array<ResolversParentTypes['ProfileOrOrganisation']> };
   Membership: Membership;
@@ -2028,6 +2043,11 @@ export type LogoutResponseResolvers<ContextType = any, ParentType extends Resolv
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type MarkAsReadResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['MarkAsReadResult'] = ResolversParentTypes['MarkAsReadResult']> = ResolversObject<{
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type MemberAddedResolvers<ContextType = any, ParentType extends ResolversParentTypes['MemberAdded'] = ResolversParentTypes['MemberAdded']> = ResolversObject<{
   createdBy?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdBy_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
@@ -2104,6 +2124,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createTestInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType>;
   importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   logout?: Resolver<ResolversTypes['LogoutResponse'], ParentType, ContextType>;
+  markAsRead?: Resolver<ResolversTypes['MarkAsReadResult'], ParentType, ContextType, RequireFields<MutationMarkAsReadArgs, 'entries'>>;
   proofUniqueness?: Resolver<ResolversTypes['ProofUniquenessResult'], ParentType, ContextType, RequireFields<MutationProofUniquenessArgs, 'humanodeToken'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
   rejectMembership?: Resolver<Maybe<ResolversTypes['RejectMembershipResult']>, ParentType, ContextType, RequireFields<MutationRejectMembershipArgs, 'membershipId'>>;
@@ -2246,6 +2267,7 @@ export type ProfileEventResolvers<ContextType = any, ParentType extends Resolver
   transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   transaction_index?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  unread?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -2542,6 +2564,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   InvitationRedeemed?: InvitationRedeemedResolvers<ContextType>;
   LeaderboardEntry?: LeaderboardEntryResolvers<ContextType>;
   LogoutResponse?: LogoutResponseResolvers<ContextType>;
+  MarkAsReadResult?: MarkAsReadResultResolvers<ContextType>;
   MemberAdded?: MemberAddedResolvers<ContextType>;
   Members?: MembersResolvers<ContextType>;
   Membership?: MembershipResolvers<ContextType>;
