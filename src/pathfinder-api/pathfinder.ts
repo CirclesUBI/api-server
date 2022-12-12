@@ -60,11 +60,12 @@ export class Pathfinder {
       requestedAmount: amount,
       isValid: false,
       transfers: response.result.transfers.map((o: any) => {
+        const amount = new BN(o.value.toString().substring(2), "hex");
         return <TransitiveTransfer>{
           from: o.from,
           to: o.to,
           tokenOwner: o.token_owner,
-          value: (new BN(o.value.toString().substring(2), "hex")).toString()
+          value: amount.toString()
         };
       })
     };

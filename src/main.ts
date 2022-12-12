@@ -190,7 +190,8 @@ export class Main {
       "sendWelcomeEmail",
       "requestUbiForInactiveAccounts",
       "rotateJwks",
-      "autoTrust"
+      "autoTrust",
+      "unreadNotification"
     ];
 
     jobQueue.consume(jobTopics, jobSink, false)

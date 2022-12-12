@@ -431,11 +431,13 @@ model Favorites {
 
 model UnreadEvent {
     id Int @id @default(autoincrement())
-    timestamp String
+    readAt DateTime?
+    timestamp DateTime
+    transaction_hash String?
     type String
-    circlesAddress String
-    contactAddress String?
-    transactionHash String?
+    safe_address String
+    contact_address String
+    direction String
 }
 
 model Link {

@@ -19,6 +19,8 @@ import {RotateJwksWorker} from "./worker/maintenance/rotateJwksWorker";
 import {AutoTrustWorker} from "./worker/maintenance/autoTrustWorker";
 import {AutoTrust} from "./descriptions/maintenance/autoTrust";
 import {RotateJwks} from "./descriptions/maintenance/rotateJwks";
+import {UnreadNotificationWorker} from "./worker/unreadNotificationWorker";
+import {UnreadNotification} from "./descriptions/unreadNotification";
 
 export const jobSink = async (job: Job) => {
   switch (job.topic) {
@@ -75,6 +77,11 @@ export const jobSink = async (job: Job) => {
         errorStrategy: "logAndDrop"
       })
         .run(job.id, RequestUbiForInactiveAccounts.parse(job.payload))
+    case "unreadNotification".toLowerCase():
+      return new UnreadNotificationWorker({
+        errorStrategy: "logAndDrop"
+      })
+        .run(job.id, UnreadNotification.parse(job.payload));
     default:
       return undefined;
   }

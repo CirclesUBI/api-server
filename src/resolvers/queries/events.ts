@@ -21,6 +21,8 @@ import { CombinedEventSource } from "../../querySources/eventSources/combinedEve
 import { EventAugmenter } from "../../querySources/eventSources/eventAugmenter";
 import { SafeVerifiedEventSource } from "../../querySources/eventSources/api/safeVerifiedEventSource";
 import {NewUserEventSource} from "../../querySources/eventSources/api/newUserEventSource";
+import {Environment} from "../../environment";
+import {UnreadEvent} from "../../api-db/client";
 
 export const events = async (
   parent: any,
@@ -32,6 +34,27 @@ export const events = async (
 
   if (args.pagination.limit > 250) {
     throw new Error(`You cannot query more than 250 events in one request.`);
+  }
+
+  const unreadMarkers: {[key:string]:UnreadEvent} = {};
+
+  if (args.filter?.unreadOnly) {
+    const caller = await context.callerInfo;
+    if (!caller?.profile?.circlesAddress) {
+      throw new Error(`Cannot filter for unread events without a profile.`);
+    }
+    const unreadEventMarkers = await Environment.readonlyApiDb.unreadEvent.findMany({
+      where: {
+        safe_address: caller.profile.circlesAddress,
+        readAt: null
+      },
+      take: args.pagination.limit
+    });
+
+    unreadEventMarkers.forEach(o => {
+      const _id = `${o.timestamp.toJSON()}${o.type}${o.safe_address}${o.direction}${o.transaction_hash ?? ''}`;
+      unreadMarkers[_id] = o;
+    });
   }
 
   //
@@ -120,27 +143,7 @@ export const events = async (
 
   const aggregateEventSource = new CombinedEventSource(eventSources);
 
-  /*let callerInfo: Profile | null = null;
-  if (context.sessionToken && !callerInfo) {
-    // Necessary to cache private items?!
-    callerInfo = await context.callerInfo;
-  }*/
-
   let events: ProfileEvent[] = [];
-
-  // TODO: Check if there are cached events in the queried range ...
-  /*events = (await Promise.all(args.types.flatMap(async t => {
-    let cachedEvents = await eventCache2.read(
-      context,
-      args.safeAddress.toLowerCase(),
-      t,
-      new Date(args.pagination.continueAt).getTime(),
-      args.pagination.order == SortOrder.Asc ? "asc" : "desc",
-      args.pagination.limit);
-
-    return cachedEvents;
-  }))).flatMap(o => o);
-  */
 
   if (events.length == 0) {
     events = await aggregateEventSource.getEvents(
@@ -163,13 +166,13 @@ export const events = async (
       );
     });
 
-    // TODO: Cache all new events
-    /*
-    events.forEach(e => {
-      const eTime = new Date(e.timestamp).getTime();
-      eventCache2.store(context, e);
-    });
-     */
+    if (args.filter?.unreadOnly) {
+      events = events.filter(o => {
+        const key = `${o.timestamp}${o.type}${o.safe_address}${o.direction}${o.transaction_hash ?? ''}`;
+        console.log(key);
+        return !!unreadMarkers[key];
+      });
+    }
   }
 
   const augmentation = new EventAugmenter();

@@ -8,6 +8,7 @@ import {GraphvizGenerator} from "../../pathfinder-api/graphvizGenerator";
 import {RpcGateway} from "../../circles/rpcGateway";
 import * as fs from "fs";
 import {exec} from "child_process";
+import {DbBalanceProvider} from "../../pathfinder-api/dbBalanceProvider";
 
 async function generateGraphvizGraph(totalAmount:string, flowGraph:FlowGraph, path?:TransitivePath) {
   const graphvizDef = await GraphvizGenerator.generate(parseFloat(RpcGateway.get().utils.fromWei(totalAmount, "ether")), flowGraph, path);
@@ -29,15 +30,38 @@ export const directPath = async (parent: any, args: QueryDirectPathArgs, context
   const from = args.from.toLowerCase();
   const to = args.to.toLowerCase();
 
-  const path = await Pathfinder.findPath(from, to, args.amount);
-  //const path = await Pathfinder.findMaxFlow(new DefaultBalanceProvider(), from, to);
+  const balanceProvider = new DbBalanceProvider();
+
+  const amount = args.amount.trim();
+
+  let isBn: boolean;
+  try {
+    const bn = new BN(amount);
+    isBn = true;
+  } catch {
+    isBn = false;
+  }
+
+  if (!isBn) {
+    throw new Error(`Amount is not a big integer`);
+  }
+
+  const path = amount != "0"
+    ? await Pathfinder.findPath(from, to, args.amount)
+    : await Pathfinder.findMaxFlow(balanceProvider, from, to);
+
+  /*
+  const amount = args.amount == "0"
+    ? (await balanceProvider.getCrcBalance(args.from))?.toString() ?? "0"
+    : args.amount;
 
   try {
     const flowGraph = new FlowGraph(path);
-    await generateGraphvizGraph(args.amount, flowGraph, path);
+    await generateGraphvizGraph(amount, flowGraph, path);
   } catch (e) {
-
+    console.warn("error while generating a graph:", e);
   }
+   */
 
   const validationResult = await PathValidator.validate(path);
   if (validationResult.error) {

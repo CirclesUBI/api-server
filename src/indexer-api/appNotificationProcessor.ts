@@ -5,6 +5,7 @@ import {SendCrcTrustChangedEmail} from "../jobs/descriptions/emailNotifications/
 import {SendCrcReceivedEmail} from "../jobs/descriptions/emailNotifications/sendCrcReceivedEmail";
 import {EventType, NotificationEvent} from "../types";
 import {Environment} from "../environment";
+import {UnreadNotification} from "../jobs/descriptions/unreadNotification";
 
 export class AppNotificationProcessor implements IndexerEventProcessor {
     constructor() {
@@ -35,6 +36,17 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                     await ApiPubSub.instance.pubSub.publish(`events_${event.address2}`, {
                         events: notification
                     });
+
+                    if (event.type == EventType.CrcHubTransfer) {
+                        const unreadTransferNotification = new UnreadNotification(
+                            event.timestamp.toJSON()
+                          , event.type
+                          , event.address2
+                          , event.address1
+                          , "in"
+                          , event.hash);
+                        await JobQueue.produce([unreadTransferNotification]);
+                    }
                     break;
                 case EventType.CrcMinting:
                     notification = <NotificationEvent>{
@@ -46,6 +58,8 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                     await ApiPubSub.instance.pubSub.publish(`events_${event.address2}`, {
                         events: notification
                     });
+                    const unreadMintingNotification = new UnreadNotification(event.timestamp.toJSON(), event.type, event.address2, event.address1, "in", event.hash);
+                    await JobQueue.produce([unreadMintingNotification]);
                     break;
                 case EventType.GnosisSafeEthTransfer:
                     notification = <NotificationEvent>{
@@ -76,6 +90,9 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                     await ApiPubSub.instance.pubSub.publish(`events_${event.address2}`, {
                         events: notification
                     });
+
+                    const unreadTrustNotification = new UnreadNotification(event.timestamp.toJSON(), event.type, event.address1, event.address2, "in", event.hash);
+                    await JobQueue.produce([unreadTrustNotification]);
                     break;
             }
 
@@ -102,7 +119,6 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
                     }));
                 }));
             }
-
 
             if (job) {
                 await JobQueue.produce([job]);
