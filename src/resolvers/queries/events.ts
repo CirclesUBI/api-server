@@ -145,20 +145,6 @@ export const events = async (
     args.filter ?? null
   );
 
-  events = events.sort((a, b) => {
-    const aTime = new Date(a.timestamp).getTime();
-    const bTime = new Date(b.timestamp).getTime();
-    return (
-      //args.pagination.order == SortOrder.Asc
-      /*?*/ aTime < bTime
-        ? //: aTime > bTime
-          -1
-        : aTime < bTime
-        ? 1
-        : 0
-    );
-  });
-
   events.forEach(e => {
     const key = `${e.timestamp}${e.type}${e.safe_address}${e.direction}${e.transaction_hash ?? ''}`;
     e.unread = unreadMarkers[key] && !unreadMarkers[key]?.readAt ? true : false;
@@ -185,8 +171,8 @@ export const events = async (
     )
       ? -1
       : aTime < bTime
-      ? 1
-      : 0;
+        ? 1
+        : 0;
   });
   events = events.slice(0, Math.min(events.length, args.pagination.limit));
 
