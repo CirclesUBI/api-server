@@ -739,6 +739,7 @@ export type Profile = {
   avatarMimeType?: Maybe<Scalars['String']>;
   avatarUrl?: Maybe<Scalars['String']>;
   balances?: Maybe<ProfileBalances>;
+  canInvite?: Maybe<Scalars['Boolean']>;
   category?: Maybe<BusinessCategory>;
   circlesAddress?: Maybe<Scalars['String']>;
   circlesSafeOwner?: Maybe<Scalars['String']>;
@@ -2203,6 +2204,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   avatarMimeType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   balances?: Resolver<Maybe<ResolversTypes['ProfileBalances']>, ParentType, ContextType, Partial<ProfileBalancesArgs>>;
+  canInvite?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   category?: Resolver<Maybe<ResolversTypes['BusinessCategory']>, ParentType, ContextType>;
   circlesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesSafeOwner?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

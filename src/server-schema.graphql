@@ -49,14 +49,15 @@ type Profile {
   newsletter: Boolean
   displayTimeCircles: Boolean
   claimedInvitation: ClaimedInvitation
+  canInvite: Boolean
   invitationTransaction: ProfileEvent
   invitationLink: String
   memberships: [Membership!]
   members: [Profile!]
   displayCurrency: DisplayCurrency
   verifications: [Verification!]
-  balances(filter:CrcBalanceFilter): ProfileBalances
-  contacts(filter:ContactFilter): [Contact!] @cost(value: 1)
+  balances(filter: CrcBalanceFilter): ProfileBalances
+  contacts(filter: ContactFilter): [Contact!] @cost(value: 1)
   provenUniqueness: Boolean
   age: Int
   gender: Gender
@@ -500,7 +501,6 @@ type CrcBalances implements IAggregatePayload {
   balances: [AssetBalance!]! @cost(value: 1)
 }
 
-
 # All crc holdings of the user
 type Erc20Balances implements IAggregatePayload {
   lastUpdatedAt: String!
@@ -931,7 +931,7 @@ type Mutation {
   setIsFavorite(circlesAddress: String!, isFavorite: Boolean!): Boolean!
   shareLink(targetType: LinkTargetType!, targetKey: String!): String!
 
-  markAsRead(entries: [Int!]!) : MarkAsReadResult!
+  markAsRead(entries: [Int!]!): MarkAsReadResult!
 }
 
 enum LinkTargetType {
