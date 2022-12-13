@@ -368,6 +368,8 @@ model Profile {
     offers Offer[]  @relation(name: "Offer_CreatedBy")
     purchases Purchase[] @relation(name: "Purchase_CreatedBy")
 
+    canInvite Boolean?
+
     invitations Invitation[]  @relation(name: "Invitation_CreatedBy")
     invitationFunds InvitationFundsEOA? @relation(name: "Profile_InvitationFundsEOA")
 
