@@ -75,6 +75,7 @@ export const linkGetHandler = async (req: Request, res: Response) => {
     <meta name="image" property="og:image" content="${business.picture}" />
     <meta name="url" property="og:url" content="${Environment.appUrl}#/market/detail/${business.circlesAddress}" />
     <meta name="description" property="og:description" content="${business.description}" />
+    <meta http-equiv="refresh" content="0;URL='${Environment.appUrl}#/market/detail/${business.circlesAddress}" />  
 </head>
 <body>
 </body>
