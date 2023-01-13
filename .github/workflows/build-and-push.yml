@@ -54,8 +54,7 @@ jobs:
           {{ tag }}
           {{ base_ref }}
           {{ branch }}
-          type=sha,prefix={{bra
-nch}}-
+          type=sha,prefix={{branch}}-
           {{ sha }}
 
     -
