@@ -44,7 +44,7 @@ jobs:
       uses: docker/metadata-action@v4
       with:
         images: |
-          ${{ vars.GC_REGISTRY }}/${{ vars.GC_PROJECT }}/${{ env.IMAGE_NAME }}
+          ${{ vars.GC_REGISTRY }}/${{ vars.GC_PROJECT_ID }}/${{ env.IMAGE_NAME }}
         labels: |
           org.opencontainers.image.title=api-server
           org.opencontainers.image.vendor=CirclesUBI
@@ -54,7 +54,8 @@ jobs:
           {{ tag }}
           {{ base_ref }}
           {{ branch }}
-          type=sha,prefix={{branch}}-
+          type=sha,prefix={{bra
+nch}}-
           {{ sha }}
 
     -
