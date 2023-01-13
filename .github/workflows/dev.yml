@@ -12,4 +12,4 @@ jobs:
       name: Trigger container build and push
       uses: ./.github/workflows/build-and-push
       with:
-        ref: "${{ ref }}"
+        ref: "${{ github.ref }}"
