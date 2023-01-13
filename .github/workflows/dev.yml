@@ -6,12 +6,7 @@ on:
 
 jobs:
   call-build-and-push:
-    runs-on: ubuntu-latest
-    steps:
-    -
-      uses: 'actions/checkout@v3'
-    -
-      name: Trigger container build and push
-      uses: ./.github/workflows/build-and-push.yml
-      with:
-        ref: "${{ github.ref }}"
+    name: Trigger container build and push
+    uses: ./.github/workflows/build-and-push.yml
+    with:
+      ref: "${{ github.ref }}"
