@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     -
+      uses: 'actions/checkout@v3'
+    -
       name: Trigger container build and push
       uses: ./.github/workflows/build-and-push.yml
       with:
