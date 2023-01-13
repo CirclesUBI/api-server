@@ -7,4 +7,3 @@ RUN /usr/o-platform/api-server/build.sh
 
 WORKDIR /usr/o-platform/api-server/dist
 CMD ["node", "main.js"]
-
