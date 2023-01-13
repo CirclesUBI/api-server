@@ -57,6 +57,7 @@ jobs:
       with:
         workload_identity_provider: "${{ vars.GC_WLI_PROVIDER }}"
         service_account:            "${{ vars.GC_WLI_SA }}"
+        token_format:               'access_token'
 
     -
       name: Login to Container Registry
