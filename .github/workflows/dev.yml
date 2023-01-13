@@ -10,6 +10,6 @@ jobs:
     steps:
     -
       name: Trigger container build and push
-      uses: ./.github/workflows/build-and-push
+      uses: ./.github/workflows/build-and-push.yaml
       with:
         ref: "${{ github.ref }}"
