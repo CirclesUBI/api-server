@@ -3,7 +3,9 @@ name: Build and push the database migrations container
 on:
   push:
     branches: [ dev ]
-    paths: [ "src/api-db-migrations/**" ]
+    paths:
+    - "Dockerfile.init"
+    - "src/api-db-migrations/**"
 
 jobs:
   call-build-and-push:
