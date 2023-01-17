@@ -5,7 +5,7 @@ WORKDIR /docker-entrypoint-initdb.d/
 COPY <<load.sh /docker-entrypoint-initdb.d/
 #!/bin/bash
 set -x
-ls ${PWD}/*.sql | xargs -I% psql postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-localhost}:${POSTGRES_PORT:-5432}${POSTGRES_DB:-postgres} < %
+ls ${PWD}/*.sql | xargs -I% psql ${CONNECTION_STRING_RW} < %
 load.sh
 
 RUN chmod +x /docker-entrypoint-initdb.d/load.sh
