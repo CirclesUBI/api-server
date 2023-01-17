@@ -3,6 +3,9 @@ name: Build and push the dev image
 on:
   push:
     branches: [ dev ]
+    paths-ignore:
+    - "Dockerfile.init"
+    - "src/api-db-migrations/**"
 
 jobs:
   call-build-and-push:
