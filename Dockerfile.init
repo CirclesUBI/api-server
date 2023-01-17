@@ -1,0 +1,15 @@
+FROM postgres:15
+
+WORKDIR /docker-entrypoint-initdb.d/
+
+RUN touch /docker-entrypoint-initdb.d/load.sh \
+      chmod +x load.sh \
+      cat <<EOF >> load.sh
+      #!/bin/bash
+      set -x
+      ls ${PWD} | xargs -I% psql postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-localhost}:${POSTGRES_PORT:-5432}${POSTGRES_DB:-postgres} < %
+      EOF
+
+COPY ./src/api-db-migrations/ /docker-entrypoint-initdb.d/
+
+CMD ["/docker-entrypoint-initdb.d/load.sh"]

@@ -1,4 +1,4 @@
-name: Build and push image from ref
+name: Build and push image from a specific Dockerfile at a specific revision
 
 on:
   workflow_call:
@@ -12,6 +12,10 @@ on:
         default: 'api-server'
         required: false
         type: string
+      file:
+        description: "Path to a Dockerfile to build"
+        required: true
+        type: string
   workflow_dispatch:
     inputs:
       ref:
@@ -22,6 +26,10 @@ on:
         description: "The desired name of the image to build"
         default: 'api-server'
         required: false
+        type: string
+      file:
+        description: "Path to a Dockerfile to build"
+        required: true
         type: string
 
 jobs:
@@ -86,3 +94,4 @@ jobs:
       with:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
+        file: ${{ inputs.file }}
