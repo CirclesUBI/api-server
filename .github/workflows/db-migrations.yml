@@ -1,9 +1,9 @@
-name: Build and push the dev image
+name: Build and push the database migrations container
 
 on:
   push:
     branches: [ dev ]
-    paths-ignore:
+    paths:
     - "Dockerfile.init"
     - "src/api-db-migrations/**"
 
@@ -13,8 +13,9 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    uses: ./.github/workflows/build-and-push.yml
+    uses: ./.github/workflows/build-and-push-dockerfile.yml
     with:
       ref: "${{ github.ref }}"
-      image: "api-server"
+      image: "api-server-db-migrations"
+      file: "Dockerfile.init"
     secrets: inherit
