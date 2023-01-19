@@ -913,6 +913,7 @@ type Mutation {
 
   tagTransaction(transactionHash: String!, tag: CreateTagInput!): TagTransactionResult!
   sendMessage(fromSafeAddress: String, toSafeAddress: String!, content: String!): SendMessageResult!
+  surveyData(data: SurveyDataInput!): SurveyDataResult!
 
   requestSessionChallenge(address: String!): String!
   verifySessionChallenge(challenge: String!, signature: String!): ExchangeTokenResponse
@@ -1067,6 +1068,29 @@ input QueryAllBusinessesOrder {
 
 type Subscription {
   events: NotificationEvent!
+}
+
+type SurveyData {
+  id: Int
+  sesssionId: String!
+  allConsentsGiven: Boolean!
+  userType: String!
+  gender: String!
+  dateOfBirth: Date!
+}
+
+input SurveyDataInput {
+  sessionId: String!
+  allConsentsGiven: Boolean!
+  userType: String!
+  gender: String!
+  dateOfBirth: Date!
+}
+
+type SurveyDataResult {
+  success: Boolean!
+  error: String
+  surveyData: SurveyData
 }
 
 schema {
