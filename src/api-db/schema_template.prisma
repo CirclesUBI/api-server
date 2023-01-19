@@ -9,6 +9,15 @@ generator client {
     output   = "./client"
 }
 
+model SurveyData {
+    id Int @id @default(autoincrement())
+    sesssionId String
+    allConsentsGiven Boolean
+    userType String
+    gender String
+    dateOfBirth DateTime
+}
+
 model Session {
   id String @id
   sessionToken String @unique

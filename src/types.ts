@@ -522,6 +522,7 @@ export type Mutation = {
   setIsFavorite: Scalars['Boolean'];
   setStringUpdateState?: Maybe<I18n>;
   shareLink: Scalars['String'];
+  surveyData: SurveyDataResult;
   tagTransaction: TagTransactionResult;
   updateSafe: UpdateSafeResponse;
   updateValue?: Maybe<I18n>;
@@ -627,6 +628,11 @@ export type MutationSetStringUpdateStateArgs = {
 export type MutationShareLinkArgs = {
   targetKey: Scalars['String'];
   targetType: LinkTargetType;
+};
+
+
+export type MutationSurveyDataArgs = {
+  data: SurveyDataInput;
 };
 
 
@@ -1231,6 +1237,31 @@ export type Subscription = {
   events: NotificationEvent;
 };
 
+export type SurveyData = {
+  __typename?: 'SurveyData';
+  allConsentsGiven: Scalars['Boolean'];
+  dateOfBirth: Scalars['Date'];
+  gender: Scalars['String'];
+  id?: Maybe<Scalars['Int']>;
+  sesssionId: Scalars['String'];
+  userType: Scalars['String'];
+};
+
+export type SurveyDataInput = {
+  allConsentsGiven: Scalars['Boolean'];
+  dateOfBirth: Scalars['Date'];
+  gender: Scalars['String'];
+  sessionId: Scalars['String'];
+  userType: Scalars['String'];
+};
+
+export type SurveyDataResult = {
+  __typename?: 'SurveyDataResult';
+  error?: Maybe<Scalars['String']>;
+  success: Scalars['Boolean'];
+  surveyData?: Maybe<SurveyData>;
+};
+
 export type Tag = {
   __typename?: 'Tag';
   id: Scalars['Int'];
@@ -1573,6 +1604,9 @@ export type ResolversTypes = ResolversObject<{
   Stats: ResolverTypeWrapper<Stats>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Subscription: ResolverTypeWrapper<{}>;
+  SurveyData: ResolverTypeWrapper<SurveyData>;
+  SurveyDataInput: SurveyDataInput;
+  SurveyDataResult: ResolverTypeWrapper<SurveyDataResult>;
   Tag: ResolverTypeWrapper<Tag>;
   TagTransactionResult: ResolverTypeWrapper<TagTransactionResult>;
   TransitivePath: ResolverTypeWrapper<TransitivePath>;
@@ -1690,6 +1724,9 @@ export type ResolversParentTypes = ResolversObject<{
   Stats: Stats;
   String: Scalars['String'];
   Subscription: {};
+  SurveyData: SurveyData;
+  SurveyDataInput: SurveyDataInput;
+  SurveyDataResult: SurveyDataResult;
   Tag: Tag;
   TagTransactionResult: TagTransactionResult;
   TransitivePath: TransitivePath;
@@ -2137,6 +2174,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   setIsFavorite?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSetIsFavoriteArgs, 'circlesAddress' | 'isFavorite'>>;
   setStringUpdateState?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<MutationSetStringUpdateStateArgs>>;
   shareLink?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationShareLinkArgs, 'targetKey' | 'targetType'>>;
+  surveyData?: Resolver<ResolversTypes['SurveyDataResult'], ParentType, ContextType, RequireFields<MutationSurveyDataArgs, 'data'>>;
   tagTransaction?: Resolver<ResolversTypes['TagTransactionResult'], ParentType, ContextType, RequireFields<MutationTagTransactionArgs, 'tag' | 'transactionHash'>>;
   updateSafe?: Resolver<ResolversTypes['UpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationUpdateSafeArgs, 'data'>>;
   updateValue?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<MutationUpdateValueArgs>>;
@@ -2434,6 +2472,23 @@ export type SubscriptionResolvers<ContextType = any, ParentType extends Resolver
   events?: SubscriptionResolver<ResolversTypes['NotificationEvent'], "events", ParentType, ContextType>;
 }>;
 
+export type SurveyDataResolvers<ContextType = any, ParentType extends ResolversParentTypes['SurveyData'] = ResolversParentTypes['SurveyData']> = ResolversObject<{
+  allConsentsGiven?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  dateOfBirth?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  gender?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  sesssionId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  userType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SurveyDataResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['SurveyDataResult'] = ResolversParentTypes['SurveyDataResult']> = ResolversObject<{
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  surveyData?: Resolver<Maybe<ResolversTypes['SurveyData']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type TagResolvers<ContextType = any, ParentType extends ResolversParentTypes['Tag'] = ResolversParentTypes['Tag']> = ResolversObject<{
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   order?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -2601,6 +2656,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   SessionInfo?: SessionInfoResolvers<ContextType>;
   Stats?: StatsResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
+  SurveyData?: SurveyDataResolvers<ContextType>;
+  SurveyDataResult?: SurveyDataResultResolvers<ContextType>;
   Tag?: TagResolvers<ContextType>;
   TagTransactionResult?: TagTransactionResultResolvers<ContextType>;
   TransitivePath?: TransitivePathResolvers<ContextType>;
