@@ -117,12 +117,12 @@ export class Environment {
     }
 
     if (
-      !process.env.DIGITALOCEAN_SPACES_ENDPOINT ||
-      !process.env.DIGITALOCEAN_SPACES_KEY ||
-      !process.env.DIGITALOCEAN_SPACES_SECRET
+      !process.env.BUCKET_ENDPOINT ||
+      !process.env.BUCKET_KEY ||
+      !process.env.BUCKET_SECRET
     ) {
       errors.push(
-        `The DIGITALOCEAN_SPACES_ENDPOINT, DIGITALOCEAN_SPACES_KEY or DIGITALOCEAN_SPACES_SECRET environment variable is not set.`
+        `The BUCKET_ENDPOINT, BUCKET_KEY or BUCKET_SECRET environment variable is not set.`
       );
     }
 
@@ -384,12 +384,12 @@ export class Environment {
 
   static get filesBucket(): AWS.S3 {
     const spacesEndpoint = new AWS.Endpoint(
-      <string>process.env.DIGITALOCEAN_SPACES_ENDPOINT
+      <string>process.env.BUCKET_ENDPOINT
     );
     return new AWS.S3({
       endpoint: spacesEndpoint,
-      accessKeyId: process.env.DIGITALOCEAN_SPACES_KEY,
-      secretAccessKey: process.env.DIGITALOCEAN_SPACES_SECRET,
+      accessKeyId: process.env.BUCKET_KEY,
+      secretAccessKey: process.env.BUCKET_SECRET,
     });
   }
 

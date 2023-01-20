@@ -36,6 +36,17 @@ export const events = async (
     throw new Error(`You cannot query more than 250 events in one request.`);
   }
 
+  const generateUnreadMarkerKey = (event: ProfileEvent|UnreadEvent) => {
+    let ts = "";
+    if (typeof event.timestamp === "string") {
+      ts = event.timestamp;
+    } else {
+      ts = event.timestamp.toJSON();
+    }
+    const id = `${ts}${event.type}${event.safe_address}${event.direction}${event.transaction_hash ?? ''}`;
+    return id;
+  };
+
   const unreadMarkers: {[key:string]:UnreadEvent} = {};
   const caller = await context.callerInfo;
   if (caller?.profile?.circlesAddress) {
@@ -44,12 +55,14 @@ export const events = async (
         safe_address: caller.profile.circlesAddress,
         readAt: null
       },
+      orderBy: {
+        timestamp: args.pagination.order == "DESC" ? "desc" : "asc"
+      },
       take: args.pagination.limit
     });
 
     unreadEventMarkers.forEach(o => {
-      const _id = `${o.timestamp.toJSON()}${o.type}${o.safe_address}${o.direction}${o.transaction_hash ?? ''}`;
-      unreadMarkers[_id] = o;
+      unreadMarkers[generateUnreadMarkerKey(o)] = o;
     });
   }
 
@@ -146,8 +159,15 @@ export const events = async (
   );
 
   events.forEach(e => {
-    const key = `${e.timestamp}${e.type}${e.safe_address}${e.direction}${e.transaction_hash ?? ''}`;
-    e.unread = unreadMarkers[key] && !unreadMarkers[key]?.readAt ? true : false;
+    const key = generateUnreadMarkerKey(e);
+    const unreadMarker = unreadMarkers[key];
+    if (!unreadMarker) {
+      console.log('No marker for event:', e);
+      // debugger;
+    } else {
+      console.log('Found marker for event:', e);
+    }
+    e.unread = unreadMarker ? !!unreadMarkers[key].readAt : false;
   });
 
   if (args.filter?.unreadOnly) {

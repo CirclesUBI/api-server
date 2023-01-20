@@ -103,9 +103,9 @@ BLOCKCHAIN_INDEX_DB_CONNECTION_STRING=postgresql://postgres:postgres@blockchain-
 # The websocket connection emits the hashes of each new indexed event.
 BLOCKCHAIN_INDEX_WS_URL=ws://blockchain-index:7868
 # Configuration for a S3 compatible storage
-DIGITALOCEAN_SPACES_ENDPOINT=http://abc
-DIGITALOCEAN_SPACES_KEY=123
-DIGITALOCEAN_SPACES_SECRET=123
+BUCKET_ENDPOINT=http://abc
+BUCKET_KEY=123
+BUCKET_SECRET=123
 # The safe-address of the Organisation that operates the instance
 OPERATOR_ORGANISATION_ADDRESS=0x..
 # The safe that pays for the invitations of the users
