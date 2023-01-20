@@ -9,13 +9,13 @@ on:
 
 jobs:
   call-build-and-push:
-    name: Trigger container build and push
+    name: Trigger container build and push from database migrations Dockerfile
     permissions:
       contents: read
       id-token: write
+      packages: write
     uses: ./.github/workflows/build-and-push-dockerfile.yml
     with:
-      ref: "${{ github.ref }}"
       image: "api-server-db-migrations"
       file: "Dockerfile.init"
     secrets: inherit
