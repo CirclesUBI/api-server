@@ -4,7 +4,7 @@ on:
   push:
     branches: [ dev ]
     paths:
-    - "Dockerfile.init"
+    - "Dockerfile.migrations"
     - "src/api-db-migrations/**"
 
 jobs:
@@ -16,6 +16,6 @@ jobs:
       packages: write
     uses: ./.github/workflows/build-and-push-dockerfile.yml
     with:
-      image: "api-server-db-migrations"
-      file: "Dockerfile.init"
+      image: "api-server-migrations"
+      file: "Dockerfile.migrations"
     secrets: inherit
