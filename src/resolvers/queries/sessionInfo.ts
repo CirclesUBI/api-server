@@ -1,7 +1,7 @@
 import {Context} from "../../context";
 import {CapabilityType, SessionInfo} from "../../types";
 import {ProfileLoader} from "../../querySources/profileLoader";
-import {isBALIMember, isBILMember, isHumanodeVerified} from "../../utils/canAccess";
+import {isBALIMember, isBILMember, isHumanodeVerified, isOrgaOwner} from "../../utils/canAccess";
 import {Environment} from "../../environment";
 
 export async function getCapabilities(callerInfo:any) {
@@ -11,11 +11,13 @@ export async function getCapabilities(callerInfo:any) {
         await isBILMember(callerInfo?.profile?.circlesAddress),
         await isBALIMember(callerInfo?.profile?.circlesAddress),
         await isHumanodeVerified(callerInfo?.profile?.circlesAddress),
+        await isOrgaOwner(callerInfo?.profile?.circlesAddress),
     ]);
 
     const isBilMember = checkPromises[0];
     const isBaliMember = checkPromises[1];
     const humanodeVerified = checkPromises[2];
+    const isOrgaAdmin = checkPromises[3];
 
     if (isBilMember) {
         capabilities.push({
@@ -43,9 +45,11 @@ export async function getCapabilities(callerInfo:any) {
         });
     }
 
-    capabilities.push({
-        type: CapabilityType.Invite
-    });
+    if (isOrgaAdmin) {
+        capabilities.push({
+            type: CapabilityType.Invite
+        });
+    }
 
     return capabilities;
 }
