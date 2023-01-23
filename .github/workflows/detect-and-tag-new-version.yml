@@ -22,5 +22,6 @@ jobs:
   release-new-versions:
     name: Trigger release
     uses: ./.github/workflows/release-drafter.yml
+    needs: ['tag-new-versions']
     if: needs.tag-new-versions.outputs.tag != ''
     secrets: inherit
