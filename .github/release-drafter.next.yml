@@ -8,4 +8,4 @@ tag-template: "v$NEXT_PATCH_VERSION"
 version-template: "$COMPLETE"
 
 include-labels:
-  - 'release/dev'
+  - 'release/next'
