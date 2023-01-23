@@ -1,985 +1,2732 @@
-create sequence "Link_id_seq"
-    as integer;
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.12
+-- Dumped by pg_dump version 14.6 (Ubuntu 14.6-0ubuntu0.22.04.1)
+
+--
+-- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
 
 
+--
+-- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner:
+--
 
-create type "ProfileType" as enum ('PERSON', 'ORGANISATION', 'REGION');
-
-
-
-create type "ProductListingType" as enum ('TILES', 'LIST');
-
+COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 
 
-create type "ShopListingStyle" as enum ('REGULAR', 'FEATURED');
+--
+-- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
 
 
+--
+-- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner:
+--
 
-create type "Gender" as enum ('MALE', 'FEMALE', 'DIVERS');
-
-
-
--- Unknown how to generate base type type
-
+COMMENT ON EXTENSION postgis IS 'PostGIS geometry and geography spatial types and functions';
 
 
--- Unknown how to generate base type type
+--
+-- Name: Gender; Type: TYPE; Schema: public; Owner: doadmin
+--
 
-comment on type geometry is 'postgis type: The type representing spatial features with planar coordinate systems.';
-
-
-
--- Unknown how to generate base type type
-
-comment on type box3d is 'postgis type: The type representing a 3-dimensional bounding box.';
-
-
-
--- Unknown how to generate base type type
-
-comment on type box2d is 'postgis type: The type representing a 2-dimensional bounding box.';
-
-
-
--- Unknown how to generate base type type
-
-
-
--- Unknown how to generate base type type
-
-
-
-create type geometry_dump as
-(
-    path integer[],
-    geom geometry
-);
-
-comment on type geometry_dump is 'postgis type: A composite type used to describe the parts of complex geometry.';
-
-
-
-create type valid_detail as
-(
-    valid    boolean,
-    reason   varchar,
-    location geometry
+CREATE TYPE public."Gender" AS ENUM (
+    'MALE',
+    'FEMALE',
+    'DIVERS'
 );
 
 
 
--- Unknown how to generate base type type
 
-comment on type geography is 'postgis type: The type representing spatial features with geodetic (ellipsoidal) coordinate systems.';
+--
+-- Name: ProductListingType; Type: TYPE; Schema: public; Owner: doadmin
+--
 
-
-
-create table if not exists "ChatMessage"
-(
-    id          serial
-        primary key,
-    "createdAt" timestamp(3) not null,
-    "from"      text         not null,
-    "to"        text         not null,
-    text        text         not null,
-    "openedAt"  timestamp(3)
+CREATE TYPE public."ProductListingType" AS ENUM (
+    'TILES',
+    'LIST'
 );
 
 
 
-create index if not exists "ChatMessage_from_idx"
-    on "ChatMessage" ("from");
 
-create index if not exists "ChatMessage_to_idx"
-    on "ChatMessage" ("to");
+--
+-- Name: ProfileType; Type: TYPE; Schema: public; Owner: doadmin
+--
 
-create index if not exists "ChatMessage_createdAt_idx"
-    on "ChatMessage" ("createdAt");
-
-create table if not exists "ExternalProfiles"
-(
-    "circlesAddress" text not null,
-    name             text not null,
-    "avatarUrl"      text
+CREATE TYPE public."ProfileType" AS ENUM (
+    'PERSON',
+    'ORGANISATION',
+    'REGION'
 );
 
 
 
-create unique index if not exists "ExternalProfiles_circlesAddress_key"
-    on "ExternalProfiles" ("circlesAddress");
 
-create table if not exists "TagType"
-(
-    id text not null
-        primary key
+--
+-- Name: ShopListingStyle; Type: TYPE; Schema: public; Owner: doadmin
+--
+
+CREATE TYPE public."ShopListingStyle" AS ENUM (
+    'REGULAR',
+    'FEATURED'
 );
 
 
 
-create table if not exists "Transaction"
-(
-    "transactionHash" text not null
-        primary key
-);
+
+--
+-- Name: publish_event(text, text); Type: PROCEDURE; Schema: public; Owner: doadmin
+--
+
+CREATE PROCEDURE public.publish_event(topic text, message text)
+    LANGUAGE plpgsql
+    AS $$
+begin
+    perform pg_notify(topic, message::text);
+end
+$$;
 
 
 
-create unique index if not exists "Transaction_transactionHash_key"
-    on "Transaction" ("transactionHash");
 
-create table if not exists "Job"
-(
-    id           serial
-        primary key,
-    hash         text                                   not null,
-    "createdAt"  timestamp(3) default CURRENT_TIMESTAMP not null,
-    topic        text                                   not null,
-    payload      text                                   not null,
-    "finishedAt" timestamp(3),
-    error        text,
-    warning      text,
-    info         text,
-    kind         text         default 'atMostOnce'::text,
-    "timeoutAt"  timestamp(3)
-);
+--
+-- Name: write_job_history(); Type: FUNCTION; Schema: public; Owner: doadmin
+--
+
+CREATE FUNCTION public.write_job_history() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    INSERT INTO "Job_History"
+        SELECT OLD.*;
+
+    RETURN OLD;
+END;
+$$;
 
 
 
-create unique index if not exists "Job_hash_key"
-    on "Job" (hash);
 
-create index if not exists "Job_createdAt_idx"
-    on "Job" ("createdAt");
+SET default_tablespace = '';
 
-create table if not exists "Jwks"
-(
-    id          serial
-        primary key,
-    "createdAt" timestamp(3) default CURRENT_TIMESTAMP not null,
-    kid         text                                   not null,
-    kty         text                                   not null,
-    use         text                                   not null,
-    alg         text                                   not null,
-    e           text                                   not null,
-    n           text                                   not null,
-    d           text                                   not null,
-    p           text                                   not null,
-    q           text                                   not null,
-    dp          text                                   not null,
-    dq          text                                   not null,
-    qi          text                                   not null
-);
+SET default_table_access_method = heap;
 
+--
+-- Name: Agent; Type: TABLE; Schema: public; Owner: doadmin
+--
 
-
-create index if not exists "Jwks_kid_idx"
-    on "Jwks" (kid);
-
-create table if not exists "HumanodeVerifications"
-(
-    "circlesAddress" text                                   not null
-        primary key,
-    "createdAt"      timestamp(3) default CURRENT_TIMESTAMP not null,
-    sub              text                                   not null,
-    token            text                                   not null
-);
-
-
-
-create unique index if not exists "HumanodeVerifications_sub_key"
-    on "HumanodeVerifications" (sub);
-
-create index if not exists "HumanodeVerifications_createdAt_idx"
-    on "HumanodeVerifications" ("createdAt");
-
-create table if not exists "DeliveryMethod"
-(
-    id   serial
-        primary key,
-    name text not null
-);
-
-
-
-create table if not exists "Agent"
-(
-    id                 serial
-        primary key,
-    topic              text                  not null,
-    "ownerSafeAddress" text                  not null,
+CREATE TABLE public."Agent" (
+    id integer NOT NULL,
+    topic text NOT NULL,
+    "ownerSafeAddress" text NOT NULL,
     "agentSafeAddress" text,
-    "privateKey"       text                  not null,
-    "contractAddress"  text,
-    "contractAbi"      text,
-    "contractMethod"   text,
-    enabled            boolean default false not null
+    "privateKey" text NOT NULL,
+    "contractAddress" text,
+    "contractAbi" text,
+    "contractMethod" text,
+    enabled boolean DEFAULT false NOT NULL
 );
 
 
 
-create table if not exists "i18nReleases"
-(
-    "releaseVersion" integer not null,
-    lang             text    not null
+
+--
+-- Name: Agent_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."Agent_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: Agent_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."Agent_id_seq" OWNED BY public."Agent".id;
+
+
+--
+-- Name: BusinessCategory; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."BusinessCategory" (
+    id integer NOT NULL,
+    name text NOT NULL
 );
 
 
 
-create table if not exists i18n
-(
-    "createdAt"      timestamp(3) default CURRENT_TIMESTAMP not null,
-    "createdBy"      text                                   not null,
-    lang             text                                   not null,
-    key              text                                   not null,
-    version          integer                                not null,
-    value            text                                   not null,
-    "releaseVersion" integer,
-    "needsUpdate"    boolean                                not null,
-    foreign key ("releaseVersion", lang) references "i18nReleases" ("releaseVersion", lang)
-        on update cascade on delete restrict
+
+--
+-- Name: BusinessCategory_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."BusinessCategory_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: BusinessCategory_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."BusinessCategory_id_seq" OWNED BY public."BusinessCategory".id;
+
+
+--
+-- Name: Businesses; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."Businesses" (
+    id integer NOT NULL,
+    name text NOT NULL,
+    description text NOT NULL,
+    picture text NOT NULL
 );
 
 
 
-create unique index if not exists i18n_lang_key_version_key
-    on i18n (lang, key, version);
 
-create index if not exists idx_deinemudda
-    on i18n ((key || lang));
+--
+-- Name: Businesses_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
 
-create unique index if not exists "i18nReleases_releaseVersion_lang_key"
-    on "i18nReleases" ("releaseVersion", lang);
+CREATE SEQUENCE public."Businesses_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
-create table if not exists "Businesses"
-(
-    id          serial
-        primary key,
-    name        text not null,
-    description text not null,
-    picture     text not null
+
+
+
+--
+-- Name: Businesses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."Businesses_id_seq" OWNED BY public."Businesses".id;
+
+
+--
+-- Name: ChatMessage; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."ChatMessage" (
+    id integer NOT NULL,
+    "createdAt" timestamp(3) without time zone NOT NULL,
+    "from" text NOT NULL,
+    "to" text NOT NULL,
+    text text NOT NULL,
+    "openedAt" timestamp(3) without time zone
 );
 
 
 
-create table if not exists "BusinessCategory"
-(
-    id   serial
-        primary key,
-    name text not null
+
+--
+-- Name: ChatMessage_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."ChatMessage_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: ChatMessage_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."ChatMessage_id_seq" OWNED BY public."ChatMessage".id;
+
+
+--
+-- Name: DeliveryMethod; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."DeliveryMethod" (
+    id integer NOT NULL,
+    name text NOT NULL
 );
 
 
 
-create table if not exists "Profile"
-(
-    id                             serial
-        primary key,
-    "emailAddress"                 text,
-    status                         text,
-    "circlesAddress"               text,
-    "circlesSafeOwner"             text,
-    "circlesTokenAddress"          text,
-    "firstName"                    text                                    not null,
-    "lastName"                     text,
-    "avatarUrl"                    text,
-    "avatarCid"                    text,
-    "avatarMimeType"               text,
-    dream                          text,
-    country                        text,
-    newsletter                     boolean,
-    "cityGeonameid"                integer,
-    "verifySafeChallenge"          text,
-    "newSafeAddress"               text,
-    "lastUpdateAt"                 timestamp(3)  default now()             not null,
-    "lastAcknowledged"             timestamp(3),
-    "displayTimeCircles"           boolean       default true,
-    type                           "ProfileType" default 'PERSON'::"ProfileType",
-    "lastInvoiceNo"                integer,
-    "lastRefundNo"                 integer,
-    "displayCurrency"              text          default 'EURS'::text      not null,
-    "invoiceNoPrefix"              text          default 'I-'::text,
-    "refundNoPrefix"               text,
-    "successorOfCirclesAddress"    text,
-    "createdAt"                    timestamp(3)  default CURRENT_TIMESTAMP not null,
-    "emailAddressVerified"         boolean,
-    "verifyEmailChallenge"         text,
-    "askedForEmailAddress"         boolean       default false             not null,
-    "currentSimplePickupCodeRound" integer,
-    "lastSimplePickupCode"         integer,
-    "largeBannerUrl"               text,
-    "smallBannerUrl"               text,
-    "productListingType"           "ProductListingType",
-    "inviteTriggerId"              integer
-                                                                           references "Job"
-                                                                               on update cascade on delete set null,
-    "shopEnabled"                  boolean,
-    "confirmedLegalAge"            integer,
-    age                            integer,
-    gender                         "Gender",
-    location                       text,
-    "businessCategoryId"           integer
-                                                                           references "BusinessCategory"
-                                                                               on update cascade on delete set null,
-    "businessHoursFriday"          text,
-    "businessHoursMonday"          text,
-    "businessHoursSaturday"        text,
-    "businessHoursSunday"          text,
-    "businessHoursThursday"        text,
-    "businessHoursTuesday"         text,
-    "businessHoursWednesday"       text,
-    "phoneNumber"                  text,
-    lat                            double precision,
-    lon                            double precision,
-    "locationName"                 text,
-    "canInvite"                    boolean       default false
+
+--
+-- Name: DeliveryMethod_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."DeliveryMethod_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: DeliveryMethod_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."DeliveryMethod_id_seq" OWNED BY public."DeliveryMethod".id;
+
+
+--
+-- Name: Event; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."Event" (
+    id integer NOT NULL,
+    "beginAnnouncementAt" timestamp(3) without time zone,
+    begin timestamp(3) without time zone NOT NULL,
+    "end" timestamp(3) without time zone NOT NULL,
+    "locationId" integer,
+    "revealLocationAt" timestamp(3) without time zone,
+    "shopId" integer NOT NULL,
+    "revealShopAt" timestamp(3) without time zone
 );
 
 
 
-create table if not exists "Invitation"
-(
-    id                    serial
-        primary key,
-    "createdByProfileId"  integer      not null
-        references "Profile"
-            on update cascade on delete restrict,
-    "createdAt"           timestamp(3) not null,
-    code                  text         not null,
-    "claimedByProfileId"  integer
-                                       references "Profile"
-                                           on update cascade on delete set null,
-    "claimedAt"           timestamp(3),
-    "redeemedByProfileId" integer
-                                       references "Profile"
-                                           on update cascade on delete set null,
-    "redeemedAt"          timestamp(3),
-    key                   text         not null,
-    address               text         not null,
-    name                  text         not null,
-    "redeemTxHash"        text,
-    "fundedAt"            timestamp(3),
-    "forSafeAddress"      text
+
+--
+-- Name: Event_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."Event_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: Event_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."Event_id_seq" OWNED BY public."Event".id;
+
+
+--
+-- Name: ExternalProfiles; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."ExternalProfiles" (
+    "circlesAddress" text NOT NULL,
+    name text NOT NULL,
+    "avatarUrl" text
 );
 
 
 
-create index if not exists "Invitation_code_idx"
-    on "Invitation" (code);
 
-create index if not exists "Invitation_createdAt_idx"
-    on "Invitation" ("createdAt");
+--
+-- Name: Favorites; Type: TABLE; Schema: public; Owner: doadmin
+--
 
-create index if not exists "Invitation_createdByProfileId_idx"
-    on "Invitation" ("createdByProfileId");
-
-create index if not exists "Invitation_claimedByProfileId_claimedAt_idx"
-    on "Invitation" ("claimedByProfileId", "claimedAt");
-
-create index if not exists "Invitation_redeemedByProfileId_redeemedAt_redeemTxHash_idx"
-    on "Invitation" ("redeemedByProfileId", "redeemedAt", "redeemTxHash");
-
-create table if not exists "InvitationFundsEOA"
-(
-    id           serial
-        primary key,
-    address      text    not null,
-    "privateKey" text    not null,
-    "profileId"  integer not null
-        references "Profile"
-            on update cascade on delete restrict
+CREATE TABLE public."Favorites" (
+    id integer NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "createdByCirclesAddress" text NOT NULL,
+    "favoriteCirclesAddress" text NOT NULL,
+    comment text
 );
 
 
 
-create unique index if not exists "InvitationFundsEOA_profileId_key"
-    on "InvitationFundsEOA" ("profileId");
 
-create index if not exists "InvitationFundsEOA_address_idx"
-    on "InvitationFundsEOA" (address);
+--
+-- Name: Favorites_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
 
-create table if not exists "Membership"
-(
-    id                   serial
-        primary key,
-    "createdAt"          timestamp(3) default CURRENT_TIMESTAMP not null,
-    "memberAtId"         integer                                not null
-        references "Profile"
-            on update cascade on delete restrict,
-    "isAdmin"            boolean,
-    "acceptedAt"         timestamp(3),
-    "createdByProfileId" integer                                not null
-        references "Profile"
-            on update cascade on delete restrict,
-    "rejectedAt"         timestamp(3),
-    "validTo"            timestamp(3),
-    "memberAddress"      text                                   not null
+CREATE SEQUENCE public."Favorites_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: Favorites_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."Favorites_id_seq" OWNED BY public."Favorites".id;
+
+
+--
+-- Name: HumanodeVerifications; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."HumanodeVerifications" (
+    "circlesAddress" text NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    sub text NOT NULL,
+    token text NOT NULL
 );
 
 
 
-create index if not exists "Membership_memberAddress_idx"
-    on "Membership" ("memberAddress");
 
-create index if not exists "Membership_createdAt_idx"
-    on "Membership" ("createdAt");
+--
+-- Name: Invitation; Type: TABLE; Schema: public; Owner: doadmin
+--
 
-create index if not exists "Membership_acceptedAt_idx"
-    on "Membership" ("acceptedAt");
-
-create index if not exists "Membership_rejectedAt_idx"
-    on "Membership" ("rejectedAt");
-
-create index if not exists "Membership_createdByProfileId_idx"
-    on "Membership" ("createdByProfileId");
-
-create index if not exists "Membership_memberAtId_idx"
-    on "Membership" ("memberAtId");
-
-create index if not exists "Profile_circlesAddress_idx"
-    on "Profile" ("circlesAddress");
-
-create index if not exists "Profile_createdAt_idx"
-    on "Profile" ("createdAt");
-
-create unique index if not exists "Profile_inviteTriggerId_key"
-    on "Profile" ("inviteTriggerId");
-
-create table if not exists "Session"
-(
-    "emailAddress"  text,
-    "profileId"     integer
-                                 references "Profile"
-                                     on update cascade on delete set null,
-    "issuedBy"      text         not null,
-    jti             text,
-    "createdAt"     timestamp(3) not null,
-    "endedAt"       timestamp(3),
-    "endReason"     text,
-    "maxLifetime"   integer      not null,
-    "challengeHash" text,
-    "ethAddress"    text,
-    signature       text,
-    "validFrom"     timestamp(3),
-    id              text         not null
-        primary key,
-    "sessionToken"  text         not null
+CREATE TABLE public."Invitation" (
+    id integer NOT NULL,
+    "createdByProfileId" integer NOT NULL,
+    "createdAt" timestamp(3) without time zone NOT NULL,
+    code text NOT NULL,
+    "claimedByProfileId" integer,
+    "claimedAt" timestamp(3) without time zone,
+    "redeemedByProfileId" integer,
+    "redeemedAt" timestamp(3) without time zone,
+    key text NOT NULL,
+    address text NOT NULL,
+    name text NOT NULL,
+    "redeemTxHash" text,
+    "fundedAt" timestamp(3) without time zone,
+    "forSafeAddress" text
 );
 
 
 
-create unique index if not exists "Session_sessionToken_key"
-    on "Session" ("sessionToken");
 
-create index if not exists "Session_createdAt_idx"
-    on "Session" ("createdAt");
+--
+-- Name: InvitationFundsEOA; Type: TABLE; Schema: public; Owner: doadmin
+--
 
-create index if not exists "Session_profileId_idx"
-    on "Session" ("profileId");
-
-create table if not exists "VerifiedSafe"
-(
-    "safeAddress"                  text                                   not null
-        primary key,
-    "createdAt"                    timestamp(3) default CURRENT_TIMESTAMP not null,
-    "createdByProfileId"           integer                                not null
-        references "Profile"
-            on update cascade on delete restrict,
-    "createdByOrganisationId"      integer                                not null
-        references "Profile"
-            on update cascade on delete restrict,
-    "swapEoaAddress"               text                                   not null,
-    "swapEoaKey"                   text                                   not null,
-    "rewardProcessingStartedAt"    timestamp(3),
-    "inviteeRewardTransactionHash" text
-                                                                          references "Transaction"
-                                                                              on update cascade on delete set null,
-    "inviterRewardTransactionHash" text
-                                                                          references "Transaction"
-                                                                              on update cascade on delete set null,
-    "swapFundingTransactionHash"   text
-                                                                          references "Transaction"
-                                                                              on update cascade on delete set null,
-    "rewardProcessingWorker"       text,
-    "revokedAt"                    timestamp(3),
-    "revokedByProfileId"           integer
-                                                                          references "Profile"
-                                                                              on update cascade on delete set null,
-    "inviteCount"                  integer      default 0                 not null
+CREATE TABLE public."InvitationFundsEOA" (
+    id integer NOT NULL,
+    address text NOT NULL,
+    "privateKey" text NOT NULL,
+    "profileId" integer NOT NULL
 );
 
 
 
-create unique index if not exists "VerifiedSafe_inviteeRewardTransactionHash_key"
-    on "VerifiedSafe" ("inviteeRewardTransactionHash");
 
-create unique index if not exists "VerifiedSafe_inviterRewardTransactionHash_key"
-    on "VerifiedSafe" ("inviterRewardTransactionHash");
+--
+-- Name: InvitationFundsEOA_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
 
-create unique index if not exists "VerifiedSafe_swapFundingTransactionHash_key"
-    on "VerifiedSafe" ("swapFundingTransactionHash");
-
-create index if not exists "VerifiedSafe_createdAt_idx"
-    on "VerifiedSafe" ("createdAt");
-
-create index if not exists "VerifiedSafe_createdByProfileId_idx"
-    on "VerifiedSafe" ("createdByProfileId");
-
-create index if not exists "VerifiedSafe_createdByOrganisationId_idx"
-    on "VerifiedSafe" ("createdByOrganisationId");
-
-create table if not exists "PostAddress"
-(
-    id                           serial
-        primary key,
-    name                         text,
-    street                       text not null,
-    house                        text not null,
-    zip                          text not null,
-    state                        text,
-    "cityGeonameid"              integer,
-    "shippingAddressOfProfileId" integer
-                                      references "Profile"
-                                          on update cascade on delete set null,
-    city                         text,
-    country                      text,
-    "hereLocationId"             text,
-    "osmId"                      text,
-    "notificationEmail"          text
-);
+CREATE SEQUENCE public."InvitationFundsEOA_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
 
-create table if not exists "Purchase"
-(
-    id                   serial
-        primary key,
-    "createdAt"          timestamp(3) not null,
-    "createdByProfileId" integer      not null
-        references "Profile"
-            on update cascade on delete restrict,
-    "deliveryMethodId"   integer      not null
-        references "DeliveryMethod"
-            on update cascade on delete restrict,
-    "deliveryAddressId"  integer
-                                      references "PostAddress"
-                                          on update cascade on delete set null
-);
+
+--
+-- Name: InvitationFundsEOA_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."InvitationFundsEOA_id_seq" OWNED BY public."InvitationFundsEOA".id;
+
+
+--
+-- Name: Invitation_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."Invitation_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
 
-create table if not exists "Invoice"
-(
-    id                              serial
-        primary key,
-    "customerProfileId"             integer      not null
-        references "Profile"
-            on update cascade on delete restrict,
-    "sellerProfileId"               integer      not null
-        references "Profile"
-            on update cascade on delete restrict,
-    "paymentTransactionHash"        text
-                                                 references "Transaction"
-                                                     on update cascade on delete set null,
-    "purchaseId"                    integer      not null
-        references "Purchase"
-            on update cascade on delete restrict,
-    "buyerSignature"                boolean,
-    "buyerSignedDate"               timestamp(3),
-    "pickupCode"                    text,
-    "sellerSignature"               boolean,
-    "sellerSignedDate"              timestamp(3),
-    "invoiceNo"                     text         not null,
-    "createdAt"                     timestamp(3) not null,
-    "cancelReason"                  text,
-    "cancelledAt"                   timestamp(3),
-    "cancelledByProfileId"          integer
-                                                 references "Profile"
-                                                     on update cascade on delete set null,
+
+--
+-- Name: Invitation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."Invitation_id_seq" OWNED BY public."Invitation".id;
+
+
+--
+-- Name: Invoice; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."Invoice" (
+    id integer NOT NULL,
+    "customerProfileId" integer NOT NULL,
+    "sellerProfileId" integer NOT NULL,
+    "paymentTransactionHash" text,
+    "purchaseId" integer NOT NULL,
+    "buyerSignature" boolean,
+    "buyerSignedDate" timestamp(3) without time zone,
+    "pickupCode" text,
+    "sellerSignature" boolean,
+    "sellerSignedDate" timestamp(3) without time zone,
+    "invoiceNo" text NOT NULL,
+    "createdAt" timestamp(3) without time zone NOT NULL,
+    "cancelReason" text,
+    "cancelledAt" timestamp(3) without time zone,
+    "cancelledByProfileId" integer,
     "pendingPaymentTransactionHash" text,
-    "simplePickupCode"              text,
-    "deliveryMethodId"              integer      not null
-        references "DeliveryMethod"
-            on update cascade on delete restrict,
-    "deliveryAddressId"             integer
-                                                 references "PostAddress"
-                                                     on update cascade on delete set null
+    "simplePickupCode" text,
+    "deliveryMethodId" integer NOT NULL,
+    "deliveryAddressId" integer
 );
 
 
 
-create unique index if not exists "Invoice_paymentTransactionHash_key"
-    on "Invoice" ("paymentTransactionHash");
 
-create index if not exists "Invoice_invoiceNo_idx"
-    on "Invoice" ("invoiceNo");
+--
+-- Name: InvoiceLine; Type: TABLE; Schema: public; Owner: doadmin
+--
 
-create index if not exists "Invoice_pickupCode_idx"
-    on "Invoice" ("pickupCode");
+CREATE TABLE public."InvoiceLine" (
+    id integer NOT NULL,
+    "invoiceId" integer NOT NULL,
+    amount integer NOT NULL,
+    "productId" integer NOT NULL,
+    "productVersion" integer NOT NULL,
+    metadata text,
+    "shopId" integer
+);
 
-create index if not exists "Invoice_createdAt_idx"
-    on "Invoice" ("createdAt");
 
-create index if not exists "Invoice_customerProfileId_idx"
-    on "Invoice" ("customerProfileId");
 
-create index if not exists "Invoice_sellerProfileId_idx"
-    on "Invoice" ("sellerProfileId");
 
-create index if not exists "Invoice_purchaseId_idx"
-    on "Invoice" ("purchaseId");
+--
+-- Name: InvoiceLine_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
 
-create index if not exists "Invoice_paymentTransactionHash_idx"
-    on "Invoice" ("paymentTransactionHash");
+CREATE SEQUENCE public."InvoiceLine_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
-create index if not exists "Invoice_cancelledByProfileId_idx"
-    on "Invoice" ("cancelledByProfileId");
 
-create index if not exists "Purchase_createdAt_idx"
-    on "Purchase" ("createdAt");
 
-create index if not exists "Purchase_createdByProfileId_idx"
-    on "Purchase" ("createdByProfileId");
 
-create table if not exists "Shop"
-(
-    id                             serial
-        primary key,
-    "createdAt"                    timestamp(3)         default CURRENT_TIMESTAMP             not null,
-    enabled                        boolean              default false                         not null,
-    private                        boolean,
-    name                           text                                                       not null,
-    description                    text                                                       not null,
-    "largeBannerUrl"               text                                                       not null,
-    "smallBannerUrl"               text                                                       not null,
-    "shopListingStyle"             "ShopListingStyle"   default 'REGULAR'::"ShopListingStyle" not null,
-    "sortOrder"                    integer,
-    "productListingStyle"          "ProductListingType" default 'TILES'::"ProductListingType" not null,
-    "ownerId"                      integer                                                    not null
-        references "Profile"
-            on update cascade on delete restrict,
-    "pickupAddressId"              integer
-                                                                                              references "PostAddress"
-                                                                                                  on update cascade on delete set null,
-    "openingHours"                 text,
+--
+-- Name: InvoiceLine_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."InvoiceLine_id_seq" OWNED BY public."InvoiceLine".id;
+
+
+--
+-- Name: Invoice_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."Invoice_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: Invoice_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."Invoice_id_seq" OWNED BY public."Invoice".id;
+
+
+--
+-- Name: Job; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."Job" (
+    id integer NOT NULL,
+    hash text NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    topic text NOT NULL,
+    payload text NOT NULL,
+    "finishedAt" timestamp(3) without time zone,
+    error text,
+    warning text,
+    info text,
+    kind text DEFAULT 'atMostOnce'::text,
+    "timeoutAt" timestamp(3) without time zone
+);
+
+
+
+
+--
+-- Name: Job_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."Job_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: Job_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."Job_id_seq" OWNED BY public."Job".id;
+
+
+--
+-- Name: Jwks; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."Jwks" (
+    id integer NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    kid text NOT NULL,
+    kty text NOT NULL,
+    use text NOT NULL,
+    alg text NOT NULL,
+    e text NOT NULL,
+    n text NOT NULL,
+    d text NOT NULL,
+    p text NOT NULL,
+    q text NOT NULL,
+    dp text NOT NULL,
+    dq text NOT NULL,
+    qi text NOT NULL
+);
+
+
+
+
+--
+-- Name: Jwks_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."Jwks_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: Jwks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."Jwks_id_seq" OWNED BY public."Jwks".id;
+
+
+--
+-- Name: Link; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."Link" (
+    id text NOT NULL,
+    "createdAt" text NOT NULL,
+    "createdByCirclesAddress" text NOT NULL,
+    "linkTargetType" text NOT NULL,
+    "linkTargetKeyField" text NOT NULL,
+    "linkTargetKey" text NOT NULL
+);
+
+
+
+
+--
+-- Name: Link_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."Link_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: Link_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."Link_id_seq" OWNED BY public."Link".id;
+
+
+--
+-- Name: Membership; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."Membership" (
+    id integer NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "memberAtId" integer NOT NULL,
+    "isAdmin" boolean,
+    "acceptedAt" timestamp(3) without time zone,
+    "createdByProfileId" integer NOT NULL,
+    "rejectedAt" timestamp(3) without time zone,
+    "validTo" timestamp(3) without time zone,
+    "memberAddress" text NOT NULL
+);
+
+
+
+
+--
+-- Name: Membership_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."Membership_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: Membership_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."Membership_id_seq" OWNED BY public."Membership".id;
+
+
+--
+-- Name: Offer; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."Offer" (
+    "createdByProfileId" integer NOT NULL,
+    title text NOT NULL,
+    "pictureUrl" text,
+    "pictureMimeType" text,
+    description text,
+    "pricePerUnit" text NOT NULL,
+    "createdAt" timestamp(3) without time zone NOT NULL,
+    version integer NOT NULL,
+    id integer NOT NULL,
+    "timeCirclesPriceShare" integer NOT NULL,
+    allergens text,
+    "eventId" integer,
+    "minAge" integer,
+    "currentInventory" integer
+);
+
+
+
+
+--
+-- Name: Offer_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."Offer_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: Offer_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."Offer_id_seq" OWNED BY public."Offer".id;
+
+
+--
+-- Name: PostAddress; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."PostAddress" (
+    id integer NOT NULL,
+    name text,
+    street text NOT NULL,
+    house text NOT NULL,
+    zip text NOT NULL,
+    state text,
+    "cityGeonameid" integer,
+    "shippingAddressOfProfileId" integer,
+    city text,
+    country text,
+    "hereLocationId" text,
+    "osmId" text,
+    "notificationEmail" text
+);
+
+
+
+
+--
+-- Name: PostAddress_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."PostAddress_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: PostAddress_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."PostAddress_id_seq" OWNED BY public."PostAddress".id;
+
+
+--
+-- Name: Profile; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."Profile" (
+    id integer NOT NULL,
+    "emailAddress" text,
+    status text,
+    "circlesAddress" text,
+    "circlesSafeOwner" text,
+    "circlesTokenAddress" text,
+    "firstName" text NOT NULL,
+    "lastName" text,
+    "avatarUrl" text,
+    "avatarCid" text,
+    "avatarMimeType" text,
+    dream text,
+    country text,
+    newsletter boolean,
+    "cityGeonameid" integer,
+    "verifySafeChallenge" text,
+    "newSafeAddress" text,
+    "lastUpdateAt" timestamp(3) without time zone DEFAULT now() NOT NULL,
+    "lastAcknowledged" timestamp(3) without time zone,
+    "displayTimeCircles" boolean DEFAULT true,
+    type public."ProfileType" DEFAULT 'PERSON'::public."ProfileType",
+    "lastInvoiceNo" integer,
+    "lastRefundNo" integer,
+    "displayCurrency" text DEFAULT 'EURS'::text NOT NULL,
+    "invoiceNoPrefix" text DEFAULT 'I-'::text,
+    "refundNoPrefix" text,
+    "successorOfCirclesAddress" text,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "emailAddressVerified" boolean,
+    "verifyEmailChallenge" text,
+    "askedForEmailAddress" boolean DEFAULT false NOT NULL,
     "currentSimplePickupCodeRound" integer,
-    "lastSimplePickupCode"         integer,
-    "purchaseMetaDataKeys"         text,
-    "healthInfosLink"              text,
-    "privacyPolicyLink"            text,
-    "tosLink"                      text,
-    "legalText"                    text                 default ''::text,
-    "adultOnly"                    boolean
+    "lastSimplePickupCode" integer,
+    "largeBannerUrl" text,
+    "smallBannerUrl" text,
+    "productListingType" public."ProductListingType",
+    "inviteTriggerId" integer,
+    "shopEnabled" boolean,
+    "confirmedLegalAge" integer,
+    age integer,
+    gender public."Gender",
+    location text,
+    "businessCategoryId" integer,
+    "businessHoursFriday" text,
+    "businessHoursMonday" text,
+    "businessHoursSaturday" text,
+    "businessHoursSunday" text,
+    "businessHoursThursday" text,
+    "businessHoursTuesday" text,
+    "businessHoursWednesday" text,
+    "phoneNumber" text,
+    lat double precision,
+    lon double precision,
+    "locationName" text,
+    "canInvite" boolean DEFAULT false
 );
 
 
 
-create unique index if not exists "Shop_pickupAddressId_key"
-    on "Shop" ("pickupAddressId");
 
-create table if not exists "ShopCategory"
-(
-    id                    serial
-        primary key,
-    "createdAt"           timestamp(3) default CURRENT_TIMESTAMP not null,
-    enabled               boolean      default true              not null,
-    private               boolean,
-    name                  text                                   not null,
-    description           text,
-    "largeBannerUrl"      text,
-    "smallBannerUrl"      text,
-    "sortOrder"           integer,
-    "productListingStyle" "ProductListingType",
-    "shopId"              integer                                not null
-        references "Shop"
-            on update cascade on delete restrict
+--
+-- Name: Profile_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."Profile_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: Profile_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."Profile_id_seq" OWNED BY public."Profile".id;
+
+
+--
+-- Name: Purchase; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."Purchase" (
+    id integer NOT NULL,
+    "createdAt" timestamp(3) without time zone NOT NULL,
+    "createdByProfileId" integer NOT NULL,
+    "deliveryMethodId" integer NOT NULL,
+    "deliveryAddressId" integer
 );
 
 
 
-create table if not exists "ShopDeliveryMethod"
-(
-    id                 serial
-        primary key,
-    "shopId"           integer not null
-        references "Shop"
-            on update cascade on delete restrict,
-    "deliveryMethodId" integer not null
-        references "DeliveryMethod"
-            on update cascade on delete restrict
+
+--
+-- Name: PurchaseLine; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."PurchaseLine" (
+    id integer NOT NULL,
+    "purchaseId" integer NOT NULL,
+    amount integer NOT NULL,
+    "productId" integer NOT NULL,
+    "productVersion" integer NOT NULL,
+    metadata text,
+    "shopId" integer
 );
 
 
 
-create table if not exists "Event"
-(
-    id                    serial
-        primary key,
-    "beginAnnouncementAt" timestamp(3),
-    begin                 timestamp(3) not null,
-    "end"                 timestamp(3) not null,
-    "locationId"          integer
-                                       references "PostAddress"
-                                           on update cascade on delete set null,
-    "revealLocationAt"    timestamp(3),
-    "shopId"              integer      not null
-        references "Shop"
-            on update cascade on delete restrict,
-    "revealShopAt"        timestamp(3)
+
+--
+-- Name: PurchaseLine_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."PurchaseLine_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: PurchaseLine_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."PurchaseLine_id_seq" OWNED BY public."PurchaseLine".id;
+
+
+--
+-- Name: Purchase_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."Purchase_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: Purchase_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."Purchase_id_seq" OWNED BY public."Purchase".id;
+
+
+--
+-- Name: Session; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."Session" (
+    "emailAddress" text,
+    "profileId" integer,
+    "issuedBy" text NOT NULL,
+    jti text,
+    "createdAt" timestamp(3) without time zone NOT NULL,
+    "endedAt" timestamp(3) without time zone,
+    "endReason" text,
+    "maxLifetime" integer NOT NULL,
+    "challengeHash" text,
+    "ethAddress" text,
+    signature text,
+    "validFrom" timestamp(3) without time zone,
+    id text NOT NULL,
+    "sessionToken" text NOT NULL
 );
 
 
 
-create table if not exists "Offer"
-(
-    "createdByProfileId"    integer      not null
-        references "Profile"
-            on update cascade on delete restrict,
-    title                   text         not null,
-    "pictureUrl"            text,
-    "pictureMimeType"       text,
-    description             text,
-    "pricePerUnit"          text         not null,
-    "createdAt"             timestamp(3) not null,
-    version                 integer      not null,
-    id                      serial,
-    "timeCirclesPriceShare" integer      not null,
-    allergens               text,
-    "eventId"               integer
-                                         references "Event"
-                                             on update cascade on delete set null,
-    "minAge"                integer,
-    "currentInventory"      integer,
-    primary key (id, version)
+
+--
+-- Name: Shop; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."Shop" (
+    id integer NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    enabled boolean DEFAULT false NOT NULL,
+    private boolean,
+    name text NOT NULL,
+    description text NOT NULL,
+    "largeBannerUrl" text NOT NULL,
+    "smallBannerUrl" text NOT NULL,
+    "shopListingStyle" public."ShopListingStyle" DEFAULT 'REGULAR'::public."ShopListingStyle" NOT NULL,
+    "sortOrder" integer,
+    "productListingStyle" public."ProductListingType" DEFAULT 'TILES'::public."ProductListingType" NOT NULL,
+    "ownerId" integer NOT NULL,
+    "pickupAddressId" integer,
+    "openingHours" text,
+    "currentSimplePickupCodeRound" integer,
+    "lastSimplePickupCode" integer,
+    "purchaseMetaDataKeys" text,
+    "healthInfosLink" text,
+    "privacyPolicyLink" text,
+    "tosLink" text,
+    "legalText" text DEFAULT ''::text,
+    "adultOnly" boolean
 );
 
 
 
-create table if not exists "InvoiceLine"
-(
-    id               serial
-        primary key,
-    "invoiceId"      integer not null
-        references "Invoice"
-            on update cascade on delete restrict,
-    amount           integer not null,
-    "productId"      integer not null,
-    "productVersion" integer not null,
-    metadata         text,
-    "shopId"         integer
-                             references "Shop"
-                                 on update cascade on delete set null,
-    foreign key ("productId", "productVersion") references "Offer"
-        on update cascade on delete restrict
+
+--
+-- Name: ShopCategory; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."ShopCategory" (
+    id integer NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    enabled boolean DEFAULT true NOT NULL,
+    private boolean,
+    name text NOT NULL,
+    description text,
+    "largeBannerUrl" text,
+    "smallBannerUrl" text,
+    "sortOrder" integer,
+    "productListingStyle" public."ProductListingType",
+    "shopId" integer NOT NULL
 );
 
 
 
-create index if not exists "InvoiceLine_invoiceId_idx"
-    on "InvoiceLine" ("invoiceId");
 
-create index if not exists "InvoiceLine_productId_productVersion_idx"
-    on "InvoiceLine" ("productId", "productVersion");
+--
+-- Name: ShopCategoryEntry; Type: TABLE; Schema: public; Owner: doadmin
+--
 
-create index if not exists "Offer_createdAt_idx"
-    on "Offer" ("createdAt");
-
-create index if not exists "Offer_createdByProfileId_idx"
-    on "Offer" ("createdByProfileId");
-
-create table if not exists "PurchaseLine"
-(
-    id               serial
-        primary key,
-    "purchaseId"     integer not null
-        references "Purchase"
-            on update cascade on delete restrict,
-    amount           integer not null,
-    "productId"      integer not null,
-    "productVersion" integer not null,
-    metadata         text,
-    "shopId"         integer
-                             references "Shop"
-                                 on update cascade on delete set null,
-    foreign key ("productId", "productVersion") references "Offer"
-        on update cascade on delete restrict
+CREATE TABLE public."ShopCategoryEntry" (
+    id integer NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    enabled boolean DEFAULT true NOT NULL,
+    private boolean,
+    "productId" integer NOT NULL,
+    "productVersion" integer NOT NULL,
+    "sortOrder" integer,
+    "shopCategoryId" integer NOT NULL
 );
 
 
 
-create index if not exists "PurchaseLine_purchaseId_idx"
-    on "PurchaseLine" ("purchaseId");
 
-create index if not exists "PurchaseLine_productId_productVersion_idx"
-    on "PurchaseLine" ("productId", "productVersion");
+--
+-- Name: ShopCategoryEntry_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
 
-create table if not exists "Tag"
-(
-    id                   serial
-        primary key,
-    "createdAt"          timestamp(3) not null,
-    "createdByProfileId" integer      not null
-        references "Profile"
-            on update cascade on delete restrict,
-    "isPrivate"          boolean      not null,
-    "typeId"             text         not null
-        references "TagType"
-            on update cascade on delete restrict,
-    value                text,
-    "transactionHash"    text
-                                      references "Transaction"
-                                          on update cascade on delete set null,
-    "offerId"            integer,
-    "offerVersion"       integer,
-    "chatMessageId"      integer
-                                      references "ChatMessage"
-                                          on update cascade on delete set null,
-    "order"              integer,
-    foreign key ("offerId", "offerVersion") references "Offer"
-        on update cascade on delete set null
+CREATE SEQUENCE public."ShopCategoryEntry_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: ShopCategoryEntry_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."ShopCategoryEntry_id_seq" OWNED BY public."ShopCategoryEntry".id;
+
+
+--
+-- Name: ShopCategory_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."ShopCategory_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: ShopCategory_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."ShopCategory_id_seq" OWNED BY public."ShopCategory".id;
+
+
+--
+-- Name: ShopDeliveryMethod; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."ShopDeliveryMethod" (
+    id integer NOT NULL,
+    "shopId" integer NOT NULL,
+    "deliveryMethodId" integer NOT NULL
 );
 
 
 
-create index if not exists "Tag_createdAt_idx"
-    on "Tag" ("createdAt");
 
-create index if not exists "Tag_createdByProfileId_idx"
-    on "Tag" ("createdByProfileId");
+--
+-- Name: ShopDeliveryMethod_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
 
-create index if not exists "Tag_transactionHash_idx"
-    on "Tag" ("transactionHash");
+CREATE SEQUENCE public."ShopDeliveryMethod_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
-create index if not exists "Tag_typeId_idx"
-    on "Tag" ("typeId");
 
-create index if not exists "Tag_offerId_offerVersion_idx"
-    on "Tag" ("offerId", "offerVersion");
 
-create index if not exists "Tag_chatMessageId_idx"
-    on "Tag" ("chatMessageId");
 
-create index if not exists "Tag_offerId_idx"
-    on "Tag" ("offerId");
+--
+-- Name: ShopDeliveryMethod_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
 
-create table if not exists "ShopCategoryEntry"
-(
-    id               serial
-        primary key,
-    "createdAt"      timestamp(3) default CURRENT_TIMESTAMP not null,
-    enabled          boolean      default true              not null,
-    private          boolean,
-    "productId"      integer                                not null,
-    "productVersion" integer                                not null,
-    "sortOrder"      integer,
-    "shopCategoryId" integer                                not null
-        references "ShopCategory"
-            on update cascade on delete restrict,
-    foreign key ("productId", "productVersion") references "Offer"
-        on update cascade on delete restrict
+ALTER SEQUENCE public."ShopDeliveryMethod_id_seq" OWNED BY public."ShopDeliveryMethod".id;
+
+
+--
+-- Name: Shop_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."Shop_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: Shop_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."Shop_id_seq" OWNED BY public."Shop".id;
+
+
+--
+-- Name: SurveyData; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."SurveyData" (
+    id integer NOT NULL,
+    "sesssionId" text NOT NULL,
+    "allConsentsGiven" boolean NOT NULL,
+    "userType" text NOT NULL,
+    gender text NOT NULL,
+    "dateOfBirth" timestamp(3) without time zone NOT NULL
 );
 
 
 
-create index if not exists "ShopCategoryEntry_productId_productVersion_idx"
-    on "ShopCategoryEntry" ("productId", "productVersion");
 
-create unique index if not exists "Event_shopId_key"
-    on "Event" ("shopId");
+--
+-- Name: SurveyData_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
 
-create table if not exists "Favorites"
-(
-    id                        serial
-        primary key,
-    "createdAt"               timestamp(3) default CURRENT_TIMESTAMP not null,
-    "createdByCirclesAddress" text                                   not null,
-    "favoriteCirclesAddress"  text                                   not null,
-    comment                   text
+CREATE SEQUENCE public."SurveyData_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: SurveyData_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."SurveyData_id_seq" OWNED BY public."SurveyData".id;
+
+
+--
+-- Name: Tag; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."Tag" (
+    id integer NOT NULL,
+    "createdAt" timestamp(3) without time zone NOT NULL,
+    "createdByProfileId" integer NOT NULL,
+    "isPrivate" boolean NOT NULL,
+    "typeId" text NOT NULL,
+    value text,
+    "transactionHash" text,
+    "offerId" integer,
+    "offerVersion" integer,
+    "chatMessageId" integer,
+    "order" integer
 );
 
 
 
-create index if not exists "Favorites_createdAt_idx"
-    on "Favorites" ("createdAt");
 
-create index if not exists "Favorites_createdByCirclesAddress_idx"
-    on "Favorites" ("createdByCirclesAddress");
+--
+-- Name: TagType; Type: TABLE; Schema: public; Owner: doadmin
+--
 
-create index if not exists "Favorites_favoriteCirclesAddress_idx"
-    on "Favorites" ("favoriteCirclesAddress");
+CREATE TABLE public."TagType" (
+    id text NOT NULL
+);
 
-create table if not exists "UnreadEvent"
-(
-    id               serial
-        primary key,
-    type             text         not null,
-    contact_address  text         not null,
-    direction        text         not null,
-    safe_address     text         not null,
+
+
+
+--
+-- Name: Tag_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."Tag_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: Tag_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."Tag_id_seq" OWNED BY public."Tag".id;
+
+
+--
+-- Name: Transaction; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."Transaction" (
+    "transactionHash" text NOT NULL
+);
+
+
+
+
+--
+-- Name: UnreadEvent; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."UnreadEvent" (
+    id integer NOT NULL,
+    type text NOT NULL,
+    contact_address text NOT NULL,
+    direction text NOT NULL,
+    safe_address text NOT NULL,
     transaction_hash text,
-    "readAt"         timestamp(3),
-    timestamp        timestamp(3) not null
+    "readAt" timestamp(3) without time zone,
+    "timestamp" timestamp(3) without time zone NOT NULL
 );
 
 
 
-create table if not exists "Link"
-(
-    id                        text not null
-        primary key,
-    "createdAt"               text not null,
-    "createdByCirclesAddress" text not null,
-    "linkTargetType"          text not null,
-    "linkTargetKeyField"      text not null,
-    "linkTargetKey"           text not null
+
+--
+-- Name: UnreadEvent_id_seq; Type: SEQUENCE; Schema: public; Owner: doadmin
+--
+
+CREATE SEQUENCE public."UnreadEvent_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+
+
+--
+-- Name: UnreadEvent_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: doadmin
+--
+
+ALTER SEQUENCE public."UnreadEvent_id_seq" OWNED BY public."UnreadEvent".id;
+
+
+--
+-- Name: VerifiedSafe; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."VerifiedSafe" (
+    "safeAddress" text NOT NULL,
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "createdByProfileId" integer NOT NULL,
+    "createdByOrganisationId" integer NOT NULL,
+    "swapEoaAddress" text NOT NULL,
+    "swapEoaKey" text NOT NULL,
+    "rewardProcessingStartedAt" timestamp(3) without time zone,
+    "inviteeRewardTransactionHash" text,
+    "inviterRewardTransactionHash" text,
+    "swapFundingTransactionHash" text,
+    "rewardProcessingWorker" text,
+    "revokedAt" timestamp(3) without time zone,
+    "revokedByProfileId" integer,
+    "inviteCount" integer DEFAULT 0 NOT NULL
 );
 
 
 
-alter sequence "Link_id_seq" owned by "Link".id;
 
-create table if not exists spatial_ref_sys
-(
-    srid      integer not null
-        primary key
-        constraint spatial_ref_sys_srid_check
-            check ((srid > 0) AND (srid <= 998999)),
-    auth_name varchar(256),
-    auth_srid integer,
-    srtext    varchar(2048),
-    proj4text varchar(2048)
-);
+--
+-- Name: i18n; Type: TABLE; Schema: public; Owner: doadmin
+--
 
-
-create table if not exists "SurveyData"
-(
-    id                 serial
-        primary key,
-    "sesssionId"       text         not null,
-    "allConsentsGiven" boolean      not null,
-    "userType"         text         not null,
-    gender             text         not null,
-    "dateOfBirth"      timestamp(3) not null
+CREATE TABLE public.i18n (
+    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "createdBy" text NOT NULL,
+    lang text NOT NULL,
+    key text NOT NULL,
+    version integer NOT NULL,
+    value text NOT NULL,
+    "releaseVersion" integer,
+    "needsUpdate" boolean NOT NULL
 );
 
 
 
-create or replace view "latestVersions"(lang, key, "latestVersion", "needsUpdate") as
-SELECT i18n.lang,
+
+--
+-- Name: i18nReleases; Type: TABLE; Schema: public; Owner: doadmin
+--
+
+CREATE TABLE public."i18nReleases" (
+    "releaseVersion" integer NOT NULL,
+    lang text NOT NULL
+);
+
+
+
+
+--
+-- Name: latestVersions; Type: VIEW; Schema: public; Owner: doadmin
+--
+
+CREATE VIEW public."latestVersions" AS
+ SELECT i18n.lang,
     i18n.key,
     max(i18n.version) AS "latestVersion",
     i18n."needsUpdate"
-   FROM i18n
+   FROM public.i18n
   GROUP BY i18n.key, i18n.lang, i18n."needsUpdate"
   ORDER BY i18n.key;
 
 
 
-create or replace view "latestValues"(lang, key, version, value, "needsUpdate") as
-SELECT l.lang,
+
+--
+-- Name: latestValues; Type: VIEW; Schema: public; Owner: doadmin
+--
+
+CREATE VIEW public."latestValues" AS
+ SELECT l.lang,
     l.key,
     l."latestVersion" AS version,
     i.value,
     l."needsUpdate"
-   FROM "latestVersions" l
-     JOIN i18n i ON i.lang = l.lang AND i.key = l.key AND i.version = l."latestVersion"
+   FROM (public."latestVersions" l
+     JOIN public.i18n i ON (((i.lang = l.lang) AND (i.key = l.key) AND (i.version = l."latestVersion"))))
   ORDER BY l.key;
+
+
+
+
+--
+-- Name: Agent id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Agent" ALTER COLUMN id SET DEFAULT nextval('public."Agent_id_seq"'::regclass);
+
+
+--
+-- Name: BusinessCategory id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."BusinessCategory" ALTER COLUMN id SET DEFAULT nextval('public."BusinessCategory_id_seq"'::regclass);
+
+
+--
+-- Name: Businesses id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Businesses" ALTER COLUMN id SET DEFAULT nextval('public."Businesses_id_seq"'::regclass);
+
+
+--
+-- Name: ChatMessage id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."ChatMessage" ALTER COLUMN id SET DEFAULT nextval('public."ChatMessage_id_seq"'::regclass);
+
+
+--
+-- Name: DeliveryMethod id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."DeliveryMethod" ALTER COLUMN id SET DEFAULT nextval('public."DeliveryMethod_id_seq"'::regclass);
+
+
+--
+-- Name: Event id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Event" ALTER COLUMN id SET DEFAULT nextval('public."Event_id_seq"'::regclass);
+
+
+--
+-- Name: Favorites id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Favorites" ALTER COLUMN id SET DEFAULT nextval('public."Favorites_id_seq"'::regclass);
+
+
+--
+-- Name: Invitation id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Invitation" ALTER COLUMN id SET DEFAULT nextval('public."Invitation_id_seq"'::regclass);
+
+
+--
+-- Name: InvitationFundsEOA id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."InvitationFundsEOA" ALTER COLUMN id SET DEFAULT nextval('public."InvitationFundsEOA_id_seq"'::regclass);
+
+
+--
+-- Name: Invoice id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Invoice" ALTER COLUMN id SET DEFAULT nextval('public."Invoice_id_seq"'::regclass);
+
+
+--
+-- Name: InvoiceLine id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."InvoiceLine" ALTER COLUMN id SET DEFAULT nextval('public."InvoiceLine_id_seq"'::regclass);
+
+
+--
+-- Name: Job id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Job" ALTER COLUMN id SET DEFAULT nextval('public."Job_id_seq"'::regclass);
+
+
+--
+-- Name: Jwks id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Jwks" ALTER COLUMN id SET DEFAULT nextval('public."Jwks_id_seq"'::regclass);
+
+
+--
+-- Name: Membership id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Membership" ALTER COLUMN id SET DEFAULT nextval('public."Membership_id_seq"'::regclass);
+
+
+--
+-- Name: Offer id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Offer" ALTER COLUMN id SET DEFAULT nextval('public."Offer_id_seq"'::regclass);
+
+
+--
+-- Name: PostAddress id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."PostAddress" ALTER COLUMN id SET DEFAULT nextval('public."PostAddress_id_seq"'::regclass);
+
+
+--
+-- Name: Profile id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Profile" ALTER COLUMN id SET DEFAULT nextval('public."Profile_id_seq"'::regclass);
+
+
+--
+-- Name: Purchase id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Purchase" ALTER COLUMN id SET DEFAULT nextval('public."Purchase_id_seq"'::regclass);
+
+
+--
+-- Name: PurchaseLine id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."PurchaseLine" ALTER COLUMN id SET DEFAULT nextval('public."PurchaseLine_id_seq"'::regclass);
+
+
+--
+-- Name: Shop id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Shop" ALTER COLUMN id SET DEFAULT nextval('public."Shop_id_seq"'::regclass);
+
+
+--
+-- Name: ShopCategory id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."ShopCategory" ALTER COLUMN id SET DEFAULT nextval('public."ShopCategory_id_seq"'::regclass);
+
+
+--
+-- Name: ShopCategoryEntry id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."ShopCategoryEntry" ALTER COLUMN id SET DEFAULT nextval('public."ShopCategoryEntry_id_seq"'::regclass);
+
+
+--
+-- Name: ShopDeliveryMethod id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."ShopDeliveryMethod" ALTER COLUMN id SET DEFAULT nextval('public."ShopDeliveryMethod_id_seq"'::regclass);
+
+
+--
+-- Name: SurveyData id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."SurveyData" ALTER COLUMN id SET DEFAULT nextval('public."SurveyData_id_seq"'::regclass);
+
+
+--
+-- Name: Tag id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Tag" ALTER COLUMN id SET DEFAULT nextval('public."Tag_id_seq"'::regclass);
+
+
+--
+-- Name: UnreadEvent id; Type: DEFAULT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."UnreadEvent" ALTER COLUMN id SET DEFAULT nextval('public."UnreadEvent_id_seq"'::regclass);
+
+
+--
+-- Name: Agent Agent_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Agent"
+    ADD CONSTRAINT "Agent_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: BusinessCategory BusinessCategory_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."BusinessCategory"
+    ADD CONSTRAINT "BusinessCategory_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Businesses Businesses_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Businesses"
+    ADD CONSTRAINT "Businesses_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: ChatMessage ChatMessage_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."ChatMessage"
+    ADD CONSTRAINT "ChatMessage_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: DeliveryMethod DeliveryMethod_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."DeliveryMethod"
+    ADD CONSTRAINT "DeliveryMethod_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Event Event_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Event"
+    ADD CONSTRAINT "Event_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Favorites Favorites_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Favorites"
+    ADD CONSTRAINT "Favorites_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: HumanodeVerifications HumanodeVerifications_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."HumanodeVerifications"
+    ADD CONSTRAINT "HumanodeVerifications_pkey" PRIMARY KEY ("circlesAddress");
+
+
+--
+-- Name: InvitationFundsEOA InvitationFundsEOA_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."InvitationFundsEOA"
+    ADD CONSTRAINT "InvitationFundsEOA_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Invitation Invitation_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Invitation"
+    ADD CONSTRAINT "Invitation_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: InvoiceLine InvoiceLine_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."InvoiceLine"
+    ADD CONSTRAINT "InvoiceLine_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Invoice Invoice_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Invoice"
+    ADD CONSTRAINT "Invoice_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Job Job_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Job"
+    ADD CONSTRAINT "Job_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Jwks Jwks_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Jwks"
+    ADD CONSTRAINT "Jwks_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Link Link_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Link"
+    ADD CONSTRAINT "Link_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Membership Membership_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Membership"
+    ADD CONSTRAINT "Membership_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Offer Offer_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Offer"
+    ADD CONSTRAINT "Offer_pkey" PRIMARY KEY (id, version);
+
+
+--
+-- Name: PostAddress PostAddress_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."PostAddress"
+    ADD CONSTRAINT "PostAddress_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Profile Profile_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Profile"
+    ADD CONSTRAINT "Profile_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: PurchaseLine PurchaseLine_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."PurchaseLine"
+    ADD CONSTRAINT "PurchaseLine_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Purchase Purchase_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Purchase"
+    ADD CONSTRAINT "Purchase_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Session Session_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Session"
+    ADD CONSTRAINT "Session_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: ShopCategoryEntry ShopCategoryEntry_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."ShopCategoryEntry"
+    ADD CONSTRAINT "ShopCategoryEntry_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: ShopCategory ShopCategory_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."ShopCategory"
+    ADD CONSTRAINT "ShopCategory_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: ShopDeliveryMethod ShopDeliveryMethod_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."ShopDeliveryMethod"
+    ADD CONSTRAINT "ShopDeliveryMethod_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Shop Shop_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Shop"
+    ADD CONSTRAINT "Shop_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: SurveyData SurveyData_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."SurveyData"
+    ADD CONSTRAINT "SurveyData_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: TagType TagType_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."TagType"
+    ADD CONSTRAINT "TagType_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Tag Tag_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Tag"
+    ADD CONSTRAINT "Tag_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Transaction Transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Transaction"
+    ADD CONSTRAINT "Transaction_pkey" PRIMARY KEY ("transactionHash");
+
+
+--
+-- Name: UnreadEvent UnreadEvent_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."UnreadEvent"
+    ADD CONSTRAINT "UnreadEvent_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: VerifiedSafe VerifiedSafe_pkey; Type: CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."VerifiedSafe"
+    ADD CONSTRAINT "VerifiedSafe_pkey" PRIMARY KEY ("safeAddress");
+
+
+--
+-- Name: ChatMessage_createdAt_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "ChatMessage_createdAt_idx" ON public."ChatMessage" USING btree ("createdAt");
+
+
+--
+-- Name: ChatMessage_from_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "ChatMessage_from_idx" ON public."ChatMessage" USING btree ("from");
+
+
+--
+-- Name: ChatMessage_to_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "ChatMessage_to_idx" ON public."ChatMessage" USING btree ("to");
+
+
+--
+-- Name: Event_shopId_key; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE UNIQUE INDEX "Event_shopId_key" ON public."Event" USING btree ("shopId");
+
+
+--
+-- Name: ExternalProfiles_circlesAddress_key; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE UNIQUE INDEX "ExternalProfiles_circlesAddress_key" ON public."ExternalProfiles" USING btree ("circlesAddress");
+
+
+--
+-- Name: Favorites_createdAt_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Favorites_createdAt_idx" ON public."Favorites" USING btree ("createdAt");
+
+
+--
+-- Name: Favorites_createdByCirclesAddress_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Favorites_createdByCirclesAddress_idx" ON public."Favorites" USING btree ("createdByCirclesAddress");
+
+
+--
+-- Name: Favorites_favoriteCirclesAddress_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Favorites_favoriteCirclesAddress_idx" ON public."Favorites" USING btree ("favoriteCirclesAddress");
+
+
+--
+-- Name: HumanodeVerifications_createdAt_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "HumanodeVerifications_createdAt_idx" ON public."HumanodeVerifications" USING btree ("createdAt");
+
+
+--
+-- Name: HumanodeVerifications_sub_key; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE UNIQUE INDEX "HumanodeVerifications_sub_key" ON public."HumanodeVerifications" USING btree (sub);
+
+
+--
+-- Name: InvitationFundsEOA_address_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "InvitationFundsEOA_address_idx" ON public."InvitationFundsEOA" USING btree (address);
+
+
+--
+-- Name: InvitationFundsEOA_profileId_key; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE UNIQUE INDEX "InvitationFundsEOA_profileId_key" ON public."InvitationFundsEOA" USING btree ("profileId");
+
+
+--
+-- Name: Invitation_claimedByProfileId_claimedAt_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Invitation_claimedByProfileId_claimedAt_idx" ON public."Invitation" USING btree ("claimedByProfileId", "claimedAt");
+
+
+--
+-- Name: Invitation_code_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Invitation_code_idx" ON public."Invitation" USING btree (code);
+
+
+--
+-- Name: Invitation_createdAt_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Invitation_createdAt_idx" ON public."Invitation" USING btree ("createdAt");
+
+
+--
+-- Name: Invitation_createdByProfileId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Invitation_createdByProfileId_idx" ON public."Invitation" USING btree ("createdByProfileId");
+
+
+--
+-- Name: Invitation_redeemedByProfileId_redeemedAt_redeemTxHash_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Invitation_redeemedByProfileId_redeemedAt_redeemTxHash_idx" ON public."Invitation" USING btree ("redeemedByProfileId", "redeemedAt", "redeemTxHash");
+
+
+--
+-- Name: InvoiceLine_invoiceId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "InvoiceLine_invoiceId_idx" ON public."InvoiceLine" USING btree ("invoiceId");
+
+
+--
+-- Name: InvoiceLine_productId_productVersion_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "InvoiceLine_productId_productVersion_idx" ON public."InvoiceLine" USING btree ("productId", "productVersion");
+
+
+--
+-- Name: Invoice_cancelledByProfileId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Invoice_cancelledByProfileId_idx" ON public."Invoice" USING btree ("cancelledByProfileId");
+
+
+--
+-- Name: Invoice_createdAt_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Invoice_createdAt_idx" ON public."Invoice" USING btree ("createdAt");
+
+
+--
+-- Name: Invoice_customerProfileId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Invoice_customerProfileId_idx" ON public."Invoice" USING btree ("customerProfileId");
+
+
+--
+-- Name: Invoice_invoiceNo_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Invoice_invoiceNo_idx" ON public."Invoice" USING btree ("invoiceNo");
+
+
+--
+-- Name: Invoice_paymentTransactionHash_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Invoice_paymentTransactionHash_idx" ON public."Invoice" USING btree ("paymentTransactionHash");
+
+
+--
+-- Name: Invoice_paymentTransactionHash_key; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE UNIQUE INDEX "Invoice_paymentTransactionHash_key" ON public."Invoice" USING btree ("paymentTransactionHash");
+
+
+--
+-- Name: Invoice_pickupCode_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Invoice_pickupCode_idx" ON public."Invoice" USING btree ("pickupCode");
+
+
+--
+-- Name: Invoice_purchaseId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Invoice_purchaseId_idx" ON public."Invoice" USING btree ("purchaseId");
+
+
+--
+-- Name: Invoice_sellerProfileId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Invoice_sellerProfileId_idx" ON public."Invoice" USING btree ("sellerProfileId");
+
+
+--
+-- Name: Job_createdAt_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Job_createdAt_idx" ON public."Job" USING btree ("createdAt");
+
+
+--
+-- Name: Job_hash_key; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE UNIQUE INDEX "Job_hash_key" ON public."Job" USING btree (hash);
+
+
+--
+-- Name: Jwks_kid_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Jwks_kid_idx" ON public."Jwks" USING btree (kid);
+
+
+--
+-- Name: Membership_acceptedAt_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Membership_acceptedAt_idx" ON public."Membership" USING btree ("acceptedAt");
+
+
+--
+-- Name: Membership_createdAt_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Membership_createdAt_idx" ON public."Membership" USING btree ("createdAt");
+
+
+--
+-- Name: Membership_createdByProfileId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Membership_createdByProfileId_idx" ON public."Membership" USING btree ("createdByProfileId");
+
+
+--
+-- Name: Membership_memberAddress_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Membership_memberAddress_idx" ON public."Membership" USING btree ("memberAddress");
+
+
+--
+-- Name: Membership_memberAtId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Membership_memberAtId_idx" ON public."Membership" USING btree ("memberAtId");
+
+
+--
+-- Name: Membership_rejectedAt_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Membership_rejectedAt_idx" ON public."Membership" USING btree ("rejectedAt");
+
+
+--
+-- Name: Offer_createdAt_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Offer_createdAt_idx" ON public."Offer" USING btree ("createdAt");
+
+
+--
+-- Name: Offer_createdByProfileId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Offer_createdByProfileId_idx" ON public."Offer" USING btree ("createdByProfileId");
+
+
+--
+-- Name: Profile_circlesAddress_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Profile_circlesAddress_idx" ON public."Profile" USING btree ("circlesAddress");
+
+
+--
+-- Name: Profile_createdAt_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Profile_createdAt_idx" ON public."Profile" USING btree ("createdAt");
+
+
+--
+-- Name: Profile_inviteTriggerId_key; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE UNIQUE INDEX "Profile_inviteTriggerId_key" ON public."Profile" USING btree ("inviteTriggerId");
+
+
+--
+-- Name: PurchaseLine_productId_productVersion_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "PurchaseLine_productId_productVersion_idx" ON public."PurchaseLine" USING btree ("productId", "productVersion");
+
+
+--
+-- Name: PurchaseLine_purchaseId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "PurchaseLine_purchaseId_idx" ON public."PurchaseLine" USING btree ("purchaseId");
+
+
+--
+-- Name: Purchase_createdAt_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Purchase_createdAt_idx" ON public."Purchase" USING btree ("createdAt");
+
+
+--
+-- Name: Purchase_createdByProfileId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Purchase_createdByProfileId_idx" ON public."Purchase" USING btree ("createdByProfileId");
+
+
+--
+-- Name: Session_createdAt_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Session_createdAt_idx" ON public."Session" USING btree ("createdAt");
+
+
+--
+-- Name: Session_profileId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Session_profileId_idx" ON public."Session" USING btree ("profileId");
+
+
+--
+-- Name: Session_sessionToken_key; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE UNIQUE INDEX "Session_sessionToken_key" ON public."Session" USING btree ("sessionToken");
+
+
+--
+-- Name: ShopCategoryEntry_productId_productVersion_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "ShopCategoryEntry_productId_productVersion_idx" ON public."ShopCategoryEntry" USING btree ("productId", "productVersion");
+
+
+--
+-- Name: Shop_pickupAddressId_key; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE UNIQUE INDEX "Shop_pickupAddressId_key" ON public."Shop" USING btree ("pickupAddressId");
+
+
+--
+-- Name: Tag_chatMessageId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Tag_chatMessageId_idx" ON public."Tag" USING btree ("chatMessageId");
+
+
+--
+-- Name: Tag_createdAt_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Tag_createdAt_idx" ON public."Tag" USING btree ("createdAt");
+
+
+--
+-- Name: Tag_createdByProfileId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Tag_createdByProfileId_idx" ON public."Tag" USING btree ("createdByProfileId");
+
+
+--
+-- Name: Tag_offerId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Tag_offerId_idx" ON public."Tag" USING btree ("offerId");
+
+
+--
+-- Name: Tag_offerId_offerVersion_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Tag_offerId_offerVersion_idx" ON public."Tag" USING btree ("offerId", "offerVersion");
+
+
+--
+-- Name: Tag_transactionHash_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Tag_transactionHash_idx" ON public."Tag" USING btree ("transactionHash");
+
+
+--
+-- Name: Tag_typeId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "Tag_typeId_idx" ON public."Tag" USING btree ("typeId");
+
+
+--
+-- Name: Transaction_transactionHash_key; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE UNIQUE INDEX "Transaction_transactionHash_key" ON public."Transaction" USING btree ("transactionHash");
+
+
+--
+-- Name: VerifiedSafe_createdAt_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "VerifiedSafe_createdAt_idx" ON public."VerifiedSafe" USING btree ("createdAt");
+
+
+--
+-- Name: VerifiedSafe_createdByOrganisationId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "VerifiedSafe_createdByOrganisationId_idx" ON public."VerifiedSafe" USING btree ("createdByOrganisationId");
+
+
+--
+-- Name: VerifiedSafe_createdByProfileId_idx; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE INDEX "VerifiedSafe_createdByProfileId_idx" ON public."VerifiedSafe" USING btree ("createdByProfileId");
+
+
+--
+-- Name: VerifiedSafe_inviteeRewardTransactionHash_key; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE UNIQUE INDEX "VerifiedSafe_inviteeRewardTransactionHash_key" ON public."VerifiedSafe" USING btree ("inviteeRewardTransactionHash");
+
+
+--
+-- Name: VerifiedSafe_inviterRewardTransactionHash_key; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE UNIQUE INDEX "VerifiedSafe_inviterRewardTransactionHash_key" ON public."VerifiedSafe" USING btree ("inviterRewardTransactionHash");
+
+
+--
+-- Name: VerifiedSafe_swapFundingTransactionHash_key; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE UNIQUE INDEX "VerifiedSafe_swapFundingTransactionHash_key" ON public."VerifiedSafe" USING btree ("swapFundingTransactionHash");
+
+
+--
+-- Name: i18nReleases_releaseVersion_lang_key; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE UNIQUE INDEX "i18nReleases_releaseVersion_lang_key" ON public."i18nReleases" USING btree ("releaseVersion", lang);
+
+
+--
+-- Name: i18n_lang_key_version_key; Type: INDEX; Schema: public; Owner: doadmin
+--
+
+CREATE UNIQUE INDEX i18n_lang_key_version_key ON public.i18n USING btree (lang, key, version);
+
+
+--
+-- Name: Event Event_locationId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Event"
+    ADD CONSTRAINT "Event_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES public."PostAddress"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Event Event_shopId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Event"
+    ADD CONSTRAINT "Event_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES public."Shop"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: InvitationFundsEOA InvitationFundsEOA_profileId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."InvitationFundsEOA"
+    ADD CONSTRAINT "InvitationFundsEOA_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: Invitation Invitation_claimedByProfileId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Invitation"
+    ADD CONSTRAINT "Invitation_claimedByProfileId_fkey" FOREIGN KEY ("claimedByProfileId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Invitation Invitation_createdByProfileId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Invitation"
+    ADD CONSTRAINT "Invitation_createdByProfileId_fkey" FOREIGN KEY ("createdByProfileId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: Invitation Invitation_redeemedByProfileId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Invitation"
+    ADD CONSTRAINT "Invitation_redeemedByProfileId_fkey" FOREIGN KEY ("redeemedByProfileId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: InvoiceLine InvoiceLine_invoiceId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."InvoiceLine"
+    ADD CONSTRAINT "InvoiceLine_invoiceId_fkey" FOREIGN KEY ("invoiceId") REFERENCES public."Invoice"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: InvoiceLine InvoiceLine_productId_productVersion_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."InvoiceLine"
+    ADD CONSTRAINT "InvoiceLine_productId_productVersion_fkey" FOREIGN KEY ("productId", "productVersion") REFERENCES public."Offer"(id, version) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: InvoiceLine InvoiceLine_shopId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."InvoiceLine"
+    ADD CONSTRAINT "InvoiceLine_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES public."Shop"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Invoice Invoice_cancelledByProfileId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Invoice"
+    ADD CONSTRAINT "Invoice_cancelledByProfileId_fkey" FOREIGN KEY ("cancelledByProfileId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Invoice Invoice_customerProfileId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Invoice"
+    ADD CONSTRAINT "Invoice_customerProfileId_fkey" FOREIGN KEY ("customerProfileId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: Invoice Invoice_deliveryAddressId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Invoice"
+    ADD CONSTRAINT "Invoice_deliveryAddressId_fkey" FOREIGN KEY ("deliveryAddressId") REFERENCES public."PostAddress"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Invoice Invoice_deliveryMethodId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Invoice"
+    ADD CONSTRAINT "Invoice_deliveryMethodId_fkey" FOREIGN KEY ("deliveryMethodId") REFERENCES public."DeliveryMethod"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: Invoice Invoice_paymentTransactionHash_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Invoice"
+    ADD CONSTRAINT "Invoice_paymentTransactionHash_fkey" FOREIGN KEY ("paymentTransactionHash") REFERENCES public."Transaction"("transactionHash") ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Invoice Invoice_purchaseId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Invoice"
+    ADD CONSTRAINT "Invoice_purchaseId_fkey" FOREIGN KEY ("purchaseId") REFERENCES public."Purchase"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: Invoice Invoice_sellerProfileId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Invoice"
+    ADD CONSTRAINT "Invoice_sellerProfileId_fkey" FOREIGN KEY ("sellerProfileId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: Membership Membership_createdByProfileId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Membership"
+    ADD CONSTRAINT "Membership_createdByProfileId_fkey" FOREIGN KEY ("createdByProfileId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: Membership Membership_memberAtId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Membership"
+    ADD CONSTRAINT "Membership_memberAtId_fkey" FOREIGN KEY ("memberAtId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: Offer Offer_createdByProfileId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Offer"
+    ADD CONSTRAINT "Offer_createdByProfileId_fkey" FOREIGN KEY ("createdByProfileId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: Offer Offer_eventId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Offer"
+    ADD CONSTRAINT "Offer_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES public."Event"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: PostAddress PostAddress_shippingAddressOfProfileId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."PostAddress"
+    ADD CONSTRAINT "PostAddress_shippingAddressOfProfileId_fkey" FOREIGN KEY ("shippingAddressOfProfileId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Profile Profile_businessCategoryId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Profile"
+    ADD CONSTRAINT "Profile_businessCategoryId_fkey" FOREIGN KEY ("businessCategoryId") REFERENCES public."BusinessCategory"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Profile Profile_inviteTriggerId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Profile"
+    ADD CONSTRAINT "Profile_inviteTriggerId_fkey" FOREIGN KEY ("inviteTriggerId") REFERENCES public."Job"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: PurchaseLine PurchaseLine_productId_productVersion_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."PurchaseLine"
+    ADD CONSTRAINT "PurchaseLine_productId_productVersion_fkey" FOREIGN KEY ("productId", "productVersion") REFERENCES public."Offer"(id, version) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: PurchaseLine PurchaseLine_purchaseId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."PurchaseLine"
+    ADD CONSTRAINT "PurchaseLine_purchaseId_fkey" FOREIGN KEY ("purchaseId") REFERENCES public."Purchase"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: PurchaseLine PurchaseLine_shopId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."PurchaseLine"
+    ADD CONSTRAINT "PurchaseLine_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES public."Shop"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Purchase Purchase_createdByProfileId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Purchase"
+    ADD CONSTRAINT "Purchase_createdByProfileId_fkey" FOREIGN KEY ("createdByProfileId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: Purchase Purchase_deliveryAddressId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Purchase"
+    ADD CONSTRAINT "Purchase_deliveryAddressId_fkey" FOREIGN KEY ("deliveryAddressId") REFERENCES public."PostAddress"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Purchase Purchase_deliveryMethodId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Purchase"
+    ADD CONSTRAINT "Purchase_deliveryMethodId_fkey" FOREIGN KEY ("deliveryMethodId") REFERENCES public."DeliveryMethod"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: Session Session_profileId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Session"
+    ADD CONSTRAINT "Session_profileId_fkey" FOREIGN KEY ("profileId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: ShopCategoryEntry ShopCategoryEntry_productId_productVersion_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."ShopCategoryEntry"
+    ADD CONSTRAINT "ShopCategoryEntry_productId_productVersion_fkey" FOREIGN KEY ("productId", "productVersion") REFERENCES public."Offer"(id, version) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: ShopCategoryEntry ShopCategoryEntry_shopCategoryId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."ShopCategoryEntry"
+    ADD CONSTRAINT "ShopCategoryEntry_shopCategoryId_fkey" FOREIGN KEY ("shopCategoryId") REFERENCES public."ShopCategory"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: ShopCategory ShopCategory_shopId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."ShopCategory"
+    ADD CONSTRAINT "ShopCategory_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES public."Shop"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: ShopDeliveryMethod ShopDeliveryMethod_deliveryMethodId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."ShopDeliveryMethod"
+    ADD CONSTRAINT "ShopDeliveryMethod_deliveryMethodId_fkey" FOREIGN KEY ("deliveryMethodId") REFERENCES public."DeliveryMethod"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: ShopDeliveryMethod ShopDeliveryMethod_shopId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."ShopDeliveryMethod"
+    ADD CONSTRAINT "ShopDeliveryMethod_shopId_fkey" FOREIGN KEY ("shopId") REFERENCES public."Shop"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: Shop Shop_ownerId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Shop"
+    ADD CONSTRAINT "Shop_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: Shop Shop_pickupAddressId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Shop"
+    ADD CONSTRAINT "Shop_pickupAddressId_fkey" FOREIGN KEY ("pickupAddressId") REFERENCES public."PostAddress"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Tag Tag_chatMessageId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Tag"
+    ADD CONSTRAINT "Tag_chatMessageId_fkey" FOREIGN KEY ("chatMessageId") REFERENCES public."ChatMessage"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Tag Tag_createdByProfileId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Tag"
+    ADD CONSTRAINT "Tag_createdByProfileId_fkey" FOREIGN KEY ("createdByProfileId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: Tag Tag_offerId_offerVersion_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Tag"
+    ADD CONSTRAINT "Tag_offerId_offerVersion_fkey" FOREIGN KEY ("offerId", "offerVersion") REFERENCES public."Offer"(id, version) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Tag Tag_transactionHash_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Tag"
+    ADD CONSTRAINT "Tag_transactionHash_fkey" FOREIGN KEY ("transactionHash") REFERENCES public."Transaction"("transactionHash") ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: Tag Tag_typeId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."Tag"
+    ADD CONSTRAINT "Tag_typeId_fkey" FOREIGN KEY ("typeId") REFERENCES public."TagType"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: VerifiedSafe VerifiedSafe_createdByOrganisationId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."VerifiedSafe"
+    ADD CONSTRAINT "VerifiedSafe_createdByOrganisationId_fkey" FOREIGN KEY ("createdByOrganisationId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: VerifiedSafe VerifiedSafe_createdByProfileId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."VerifiedSafe"
+    ADD CONSTRAINT "VerifiedSafe_createdByProfileId_fkey" FOREIGN KEY ("createdByProfileId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: VerifiedSafe VerifiedSafe_inviteeRewardTransactionHash_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."VerifiedSafe"
+    ADD CONSTRAINT "VerifiedSafe_inviteeRewardTransactionHash_fkey" FOREIGN KEY ("inviteeRewardTransactionHash") REFERENCES public."Transaction"("transactionHash") ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: VerifiedSafe VerifiedSafe_inviterRewardTransactionHash_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."VerifiedSafe"
+    ADD CONSTRAINT "VerifiedSafe_inviterRewardTransactionHash_fkey" FOREIGN KEY ("inviterRewardTransactionHash") REFERENCES public."Transaction"("transactionHash") ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: VerifiedSafe VerifiedSafe_revokedByProfileId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."VerifiedSafe"
+    ADD CONSTRAINT "VerifiedSafe_revokedByProfileId_fkey" FOREIGN KEY ("revokedByProfileId") REFERENCES public."Profile"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: VerifiedSafe VerifiedSafe_swapFundingTransactionHash_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public."VerifiedSafe"
+    ADD CONSTRAINT "VerifiedSafe_swapFundingTransactionHash_fkey" FOREIGN KEY ("swapFundingTransactionHash") REFERENCES public."Transaction"("transactionHash") ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- Name: i18n i18n_releaseVersion_lang_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
+--
+
+ALTER TABLE ONLY public.i18n
+    ADD CONSTRAINT "i18n_releaseVersion_lang_fkey" FOREIGN KEY ("releaseVersion", lang) REFERENCES public."i18nReleases"("releaseVersion", lang) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
