@@ -1,11 +1,26 @@
 template: |
-  ## What’s Changed
+  ## Changes
 
   $CHANGES
 
-name-template: "v$NEXT_PATCH_VERSION"
-tag-template: "v$NEXT_PATCH_VERSION"
+name-template: "v$RESOLVED_VERSION unstable"
+tag-template: "v$RESOLVED_VERSION"
 version-template: "$COMPLETE"
+
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+change-title-escapes: '\<*_&#@`'
 
 include-labels:
   - 'release/dev'
+
+version-resolver:
+  major:
+    labels:
+      - 'major'
+  minor:
+    labels:
+      - 'minor'
+  patch:
+    labels:
+      - 'patch'
+  default: patch
