@@ -11,12 +11,16 @@ jobs:
   tag-new-versions:
     name: Tag new version
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.check-version.outputs.tag }}
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 2
       - uses: salsify/action-detect-and-tag-new-version@v2
+        id: check-version
   release-new-versions:
     name: Trigger release
     uses: ./.github/workflows/release-drafter.yml
+    if: needs.tag-new-versions.outputs.tag != ""
     secrets: inherit
