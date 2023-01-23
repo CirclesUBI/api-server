@@ -6,6 +6,8 @@ on:
     paths:
     - "Dockerfile.migrations"
     - "src/api-db-migrations/**"
+    - ".github/workflows/dev-migrations.yml"
+    - ".github/workflows/build-and-push-dockerfile.yml"
 
 jobs:
   call-build-and-push:
