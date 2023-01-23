@@ -1,6 +1,5 @@
 import {Context} from "../context";
 import {Environment} from "../environment";
-import {CapabilityType} from "../types";
 
 
 export async function isHumanodeVerified(circlesAddress?:string|null) {
@@ -28,6 +27,24 @@ export async function isBILMember(circlesAddress?:string|null) {
           memberAddress: circlesAddress
         }
       }
+    }
+  });
+
+  return !!orga;
+}
+
+/**
+ * Checks if the given circlesAddress is an owner of any organization
+ * @param circlesAddress
+ */
+export async function isOrgaOwner(circlesAddress?:string|null) {
+  if (!circlesAddress)
+    return false;
+
+  const orga = await Environment.readonlyApiDb.membership.findFirst({
+    where: {
+      memberAddress: circlesAddress,
+      isAdmin: true
     }
   });
 
