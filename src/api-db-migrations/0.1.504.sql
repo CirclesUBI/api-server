@@ -950,11 +950,6 @@ create table if not exists spatial_ref_sys
 );
 
 
-
-grant select on spatial_ref_sys to public;
-
-grant delete, insert, update on spatial_ref_sys to doadmin with grant option;
-
 create table if not exists "SurveyData"
 (
     id                 serial
