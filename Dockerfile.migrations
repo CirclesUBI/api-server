@@ -5,7 +5,7 @@ WORKDIR /docker-entrypoint-initdb.d/
 COPY <<load.sh /docker-entrypoint-initdb.d/
 #!/bin/bash
 set -x
-ls /docker-entrypoint-initdb.d/*.sql | xargs -I% sh -c 'psql $\{CONNECTION_STRING_RW\} < %'
+ls /docker-entrypoint-initdb.d/*.sql | xargs -I% sh -c 'psql $\{CONNECTION_STRING_ROOT\} < %'
 load.sh
 
 RUN chmod +x /docker-entrypoint-initdb.d/load.sh
