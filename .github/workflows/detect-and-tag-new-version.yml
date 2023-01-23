@@ -1,0 +1,30 @@
+name: Detect new version, tag and release it
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'next'
+      - 'dev'
+
+jobs:
+  tag-new-versions:
+    name: Tag new version
+    runs-on: ubuntu-latest
+    outputs:
+      previous-version: ${{ steps.check-version.outputs.previous-version }}
+      current-version: ${{ steps.check-version.outputs.current-version }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - uses: salsify/action-detect-and-tag-new-version@v2
+        id: check-version
+        with:
+          create-tag: false
+  release-new-versions:
+    name: Trigger release
+    uses: ./.github/workflows/release-drafter.yml
+    needs: ['tag-new-versions']
+    if: needs.tag-new-versions.outputs.previous-version != needs.tag-new-versions.outputs.current-version
+    secrets: inherit

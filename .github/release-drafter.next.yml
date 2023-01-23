@@ -3,7 +3,7 @@ template: |
 
   $CHANGES
 
-name-template: "v$RESOLVED_VERSION unstable"
+name-template: "v$RESOLVED_VERSION testing"
 tag-template: "v$RESOLVED_VERSION"
 version-template: "$COMPLETE"
 
@@ -11,7 +11,7 @@ change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 change-title-escapes: '\<*_&#@`'
 
 include-labels:
-  - 'release/dev'
+  - 'release/next'
 
 version-resolver:
   major:
