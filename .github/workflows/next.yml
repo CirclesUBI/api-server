@@ -1,8 +1,8 @@
-name: Build and push the dev image
+name: Build and push the next image
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ next ]
     paths-ignore:
     - "Dockerfile.migrations"
     - "src/api-db-migrations/**"
