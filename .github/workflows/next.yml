@@ -1,0 +1,20 @@
+name: Build and push the next image
+
+on:
+  push:
+    branches: [ next ]
+    paths-ignore:
+    - "Dockerfile.migrations"
+    - "src/api-db-migrations/**"
+    - ".github/workflows/*-migrations.yml"
+    - ".github/workflows/build-and-push-dockerfile.yml"
+
+jobs:
+  call-build-and-push:
+    name: Trigger container build and push
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    uses: ./.github/workflows/build-and-push.yml
+    secrets: inherit
