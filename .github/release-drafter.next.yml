@@ -3,8 +3,10 @@ template: |
 
   $CHANGES
 
-name-template: "v$RESOLVED_VERSION testing"
-tag-template: "v$RESOLVED_VERSION"
+name-template: "next-v$RESOLVED_VERSION testing"
+tag-template: "next-v$RESOLVED_VERSION"
+tag-prefix: "next-v"
+
 version-template: "$COMPLETE"
 
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
