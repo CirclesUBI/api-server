@@ -6,7 +6,7 @@ on:
     paths-ignore:
     - "Dockerfile.migrations"
     - "src/api-db-migrations/**"
-    - ".github/workflows/dev-migrations.yml"
+    - ".github/workflows/*-migrations.yml"
     - ".github/workflows/build-and-push-dockerfile.yml"
 
 jobs:
