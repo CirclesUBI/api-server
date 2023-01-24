@@ -3,8 +3,10 @@ template: |
 
   $CHANGES
 
-name-template: "v$RESOLVED_VERSION unstable"
-tag-template: "v$RESOLVED_VERSION"
+name-template: "`pre-v$RESOLVED_VERSION` unstable"
+tag-template: "pre-v$RESOLVED_VERSION"
+tag-prefix: "pre-v"
+
 version-template: "$COMPLETE"
 
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
