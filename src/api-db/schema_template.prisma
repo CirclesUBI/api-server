@@ -11,11 +11,12 @@ generator client {
 
 model SurveyData {
     id Int @id @default(autoincrement())
-    sesssionId String
+    sesssionId String @unique
     allConsentsGiven Boolean
     userType String
     gender String
     dateOfBirth DateTime
+    profilesWithSurveyData Profile[] @relation("Profile_SurveyDataSessionId")   
 }
 
 model Session {
@@ -393,7 +394,7 @@ model Profile {
     cancelledInvoices Invoice[] @relation(name: "Invoice_CancelledByProfile")
 
     inviteTrigger Job? @relation(name: "Profile_InviteTrigger", fields: [inviteTriggerId], references: [id])
-    inviteTriggerId Int?
+    inviteTriggerId Int? @unique
 
     invoiceNoPrefix String? @default("I-")
     lastInvoiceNo Int? // Is used in organisations only and represents the current value of the invoice number series.
@@ -427,6 +428,9 @@ model Profile {
     businessHoursSaturday String?
     businessHoursSunday String?
     phoneNumber String?
+    surveyDataSession SurveyData? @relation(name: "Profile_SurveyDataSessionId", fields: [surveyDataSessionId], references: [sesssionId]) 
+    surveyDataSessionId String? @unique
+      
 }
 
 model Favorites {
