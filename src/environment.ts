@@ -116,16 +116,30 @@ export class Environment {
       );
     }
 
-    console.log(`* Checking GOOGLE_CLOUD_STORAGE_CREDENTIALS ...`);
+    if (logInfo) {
+      console.log(`* Checking GCS_CREDENTIALS ...`);
+    }
     if (!this.googleCloudStorageCredentials?.project_id) {
       errors.push(
-        `The GOOGLE_CLOUD_STORAGE_CREDENTIALS environment variable contains a invalid json object.`
+        `The GCS_CREDENTIALS environment variable contains an invalid json object.`
       );
-    } else {
+    } else if (logInfo) {
       console.log(`  Success:`);
       console.log(`   project_id:`, this.googleCloudStorageCredentials?.project_id);
       console.log(`   private_key_id:`, this.googleCloudStorageCredentials?.private_key_id);
       console.log(`   client_email:`, this.googleCloudStorageCredentials?.client_email);
+    }
+
+    if (logInfo) {
+      console.log(`* Checking GCS_AVATAR_BUCKET ...`);
+    }
+    if (!this.avatarBucketName) {
+      errors.push(
+        `The GCS_AVATAR_BUCKET environment variable is not set.`
+      );
+    } else if (logInfo) {
+      console.log(`  Success:`);
+      console.log(`   bucket name:`, this.avatarBucketName);
     }
 
     if (logInfo) {
@@ -386,10 +400,14 @@ export class Environment {
 
   static get googleCloudStorageCredentials(): GoogleCloudCredentials|undefined {
     try {
-      return JSON.parse(<string>process.env.GOOGLE_CLOUD_STORAGE_CREDENTIALS);
+      return JSON.parse(<string>process.env.GCS_CREDENTIALS);
     } catch {
       return undefined;
     }
+  }
+
+  static get avatarBucketName(): string {
+    return <string>process.env.GCS_AVATAR_BUCKET;
   }
 
   /**

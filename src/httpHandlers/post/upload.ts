@@ -32,14 +32,14 @@ export const uploadPostHandler = async (req: Request, res: Response) => {
       credentials: Environment.googleCloudStorageCredentials
     });
 
-    const uploadResult = await storage.bucket("local-api-server-ztq5-asia-southeast2-bucket").file(objectKey).save(bytes, {
+    const uploadResult = await storage.bucket(Environment.avatarBucketName).file(objectKey).save(bytes, {
       metadata: {
         contentType: mimeType,
       },
     });
 
     // Use the Google cloud storage sdk to get the file's public url
-    const publicUrl = await storage.bucket("local-api-server-ztq5-asia-southeast2-bucket").file(objectKey).getSignedUrl({
+    const publicUrl = await storage.bucket(Environment.avatarBucketName).file(objectKey).getSignedUrl({
       action: "read",
       expires: "03-09-2491",
     });
