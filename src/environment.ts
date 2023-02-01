@@ -382,6 +382,10 @@ export class Environment {
     );
   }
 
+  static get filesBucketName(): string {
+    return <string>process.env.BUCKET_NAME;
+  }
+
   static get filesBucket(): AWS.S3 {
     const spacesEndpoint = new AWS.Endpoint(
       <string>process.env.BUCKET_ENDPOINT
@@ -390,6 +394,7 @@ export class Environment {
       endpoint: spacesEndpoint,
       accessKeyId: process.env.BUCKET_KEY,
       secretAccessKey: process.env.BUCKET_SECRET,
+      signatureVersion: "v4"
     });
   }
 
