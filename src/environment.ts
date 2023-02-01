@@ -116,14 +116,16 @@ export class Environment {
       );
     }
 
-    if (
-      !process.env.BUCKET_ENDPOINT ||
-      !process.env.BUCKET_KEY ||
-      !process.env.BUCKET_SECRET
-    ) {
+    console.log(`* Checking GOOGLE_CLOUD_STORAGE_CREDENTIALS ...`);
+    if (!this.googleCloudStorageCredentials?.project_id) {
       errors.push(
-        `The BUCKET_ENDPOINT, BUCKET_KEY or BUCKET_SECRET environment variable is not set.`
+        `The GOOGLE_CLOUD_STORAGE_CREDENTIALS environment variable contains a invalid json object.`
       );
+    } else {
+      console.log(`  Success:`);
+      console.log(`   project_id:`, this.googleCloudStorageCredentials?.project_id);
+      console.log(`   private_key_id:`, this.googleCloudStorageCredentials?.private_key_id);
+      console.log(`   client_email:`, this.googleCloudStorageCredentials?.client_email);
     }
 
     if (logInfo) {
@@ -382,20 +384,12 @@ export class Environment {
     );
   }
 
-  static get filesBucketName(): string {
-    return <string>process.env.BUCKET_NAME;
-  }
-
-  static get filesBucket(): AWS.S3 {
-    const spacesEndpoint = new AWS.Endpoint(
-      <string>process.env.BUCKET_ENDPOINT
-    );
-    return new AWS.S3({
-      endpoint: spacesEndpoint,
-      accessKeyId: process.env.BUCKET_KEY,
-      secretAccessKey: process.env.BUCKET_SECRET,
-      signatureVersion: "v4"
-    });
+  static get googleCloudStorageCredentials(): GoogleCloudCredentials|undefined {
+    try {
+      return JSON.parse(<string>process.env.GOOGLE_CLOUD_STORAGE_CREDENTIALS);
+    } catch {
+      return undefined;
+    }
   }
 
   /**
@@ -407,4 +401,12 @@ export class Environment {
         RpcGateway.get().utils.toWei("0.1", "ether")
     );
   }
+}
+
+export type GoogleCloudCredentials = {
+  type?: string;
+  project_id?: string;
+  client_email?: string;
+  private_key?: string;
+  [x:string]: any
 }

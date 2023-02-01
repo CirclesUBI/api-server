@@ -29,7 +29,7 @@ export const uploadPostHandler = async (req: Request, res: Response) => {
     const bytes = Buffer.from(req.body.bytes.replace(/^data:image\/\w+;base64,/, ""), "base64");
 
     let storage = new Storage({
-      credentials: JSON.parse(process.env.GOOGLE_CLOUD_STORAGE_CREDENTIALS!)
+      credentials: Environment.googleCloudStorageCredentials
     });
 
     const uploadResult = await storage.bucket("local-api-server-ztq5-asia-southeast2-bucket").file(objectKey).save(bytes, {
