@@ -1,10 +1,8 @@
 import {Request, Response} from "express";
 import {Session} from "../../session";
 import {Environment} from "../../environment";
-import {PromiseResult} from "aws-sdk/lib/request";
-import AWS from "aws-sdk";
-import {Main} from "../../main";
 import {tryGetSessionToken} from "../../utils/tryGetSessionToken";
+import {Storage} from "@google-cloud/storage";
 
 export const uploadPostHandler = async (req: Request, res: Response) => {
   try {
@@ -26,59 +24,36 @@ export const uploadPostHandler = async (req: Request, res: Response) => {
       });
     }
 
-    const fileName = req.body.fileName;
+    const objectKey = Date.now().toString() + req.body.fileName;
     const mimeType = req.body.mimeType;
-    const bytes = req.body.bytes;
+    const bytes = Buffer.from(req.body.bytes.replace(/^data:image\/\w+;base64,/, ""), "base64");
 
-    const saveResult = await saveImageToS3(fileName, bytes, mimeType);
+    let storage = new Storage({
+      credentials: Environment.googleCloudStorageCredentials
+    });
+
+    const uploadResult = await storage.bucket(Environment.avatarBucketName).file(objectKey).save(bytes, {
+      metadata: {
+        contentType: mimeType,
+      },
+    });
+
+    // Use the Google cloud storage sdk to get the file's public url
+    const publicUrl = await storage.bucket(Environment.avatarBucketName).file(objectKey).getSignedUrl({
+      action: "read",
+      expires: "03-09-2491",
+    });
 
     res.statusCode = 200;
     return res.json({
       status: "ok",
-      url: `https://circlesland-pictures.fra1.cdn.digitaloceanspaces.com/${fileName}`,
+      url: publicUrl[0],
     });
   } catch (e) {
+    console.error(e);
     return res.json({
       status: "error",
-      message: "Image Upload Failed.",
+      message: "Image Upload Failed."
     });
   }
-};
-
-async function saveImageToS3(
-  key: string,
-  imageBytes: any,
-  mimeType: string
-) {
-  const params: {
-    Bucket: string;
-    Body?: any;
-    ContentEncoding?: string;
-    ContentType?: string;
-    Key: string;
-    ACL: string;
-  } = {
-    Bucket: "circlesland-pictures",
-    Key: key,
-    ACL: "public-read",
-  };
-
-  return new Promise<PromiseResult<AWS.S3.PutObjectOutput, AWS.AWSError>>(
-    async (resolve, reject) => {
-      try {
-        params.ContentEncoding = "base64";
-        params.ContentType = mimeType;
-        params.Body = Buffer.from(
-          imageBytes.replace(/^data:image\/\w+;base64,/, ""),
-          "base64"
-        );
-        const result = await Environment.filesBucket
-          .putObject(params)
-          .promise();
-        resolve(result);
-      } catch (e) {
-        reject(e);
-      }
-    }
-  );
 }
