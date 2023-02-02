@@ -1,13 +1,13 @@
 import { Context } from "../../context";
 import { Environment } from "../../environment";
 import { MutationCreateNewStringAndKeyArgs } from "../../types";
-import { isBILMember } from "../../utils/canAccess";
+import { isTranslator } from "../../utils/canAccess";
 
 export const createNewStringAndKey = async (parent: any, args: MutationCreateNewStringAndKeyArgs, context: Context) => {
   let callerInfo = await context.callerInfo;
-  let isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
-  if (!isBilMember) {
-    throw new Error(`Your need to be a member of Basic Income Lab to edit the content.`);
+  let canTranslate = await isTranslator(callerInfo?.profile?.circlesAddress);
+  if (!canTranslate) {
+    throw new Error(`You need to be a member of the Translator Orga to add or edit Translations.`);
   } else {
     let createdBy = callerInfo?.profile?.circlesAddress;
     const queryResult = await Environment.pgReadWriteApiDb.query(
@@ -49,7 +49,7 @@ export const createNewStringAndKey = async (parent: any, args: MutationCreateNew
       `,
       [args.key]
     );
-    
+
     return newEntry;
   }
-}
+};
