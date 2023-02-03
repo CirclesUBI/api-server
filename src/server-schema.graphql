@@ -66,6 +66,7 @@ type Profile {
   lat: Float
   lon: Float
   category: BusinessCategory
+  surveyDataSessionId: String
 }
 
 input ContactFilter {
@@ -178,6 +179,7 @@ input UpsertProfileInput {
   locationName: String
   lat: Float
   lon: Float
+  surveyDataSessionId: String
 }
 
 type Tag {

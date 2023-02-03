@@ -1,33 +1,47 @@
-import {Context} from "../context";
-import {Environment} from "../environment";
+import { Context } from "../context";
+import { Environment } from "../environment";
 
-
-export async function isHumanodeVerified(circlesAddress?:string|null) {
-  if (!circlesAddress)
-    return false;
+export async function isHumanodeVerified(circlesAddress?: string | null) {
+  if (!circlesAddress) return false;
 
   const profile = await Environment.readWriteApiDb.humanodeVerifications.findFirst({
     where: {
-      circlesAddress: circlesAddress
-    }
+      circlesAddress: circlesAddress,
+    },
   });
 
   return !!profile;
 }
 
-export async function isBILMember(circlesAddress?:string|null) {
-  if (!circlesAddress)
-    return false;
+export async function isBILMember(circlesAddress?: string | null) {
+  if (!circlesAddress) return false;
 
   const orga = await Environment.readonlyApiDb.profile.findFirst({
     where: {
       circlesAddress: Environment.operatorOrganisationAddress,
       members: {
         some: {
-          memberAddress: circlesAddress
-        }
-      }
-    }
+          memberAddress: circlesAddress,
+        },
+      },
+    },
+  });
+
+  return !!orga;
+}
+
+export async function isTranslator(circlesAddress?: string | null) {
+  if (!circlesAddress) return false;
+
+  const orga = await Environment.readonlyApiDb.profile.findFirst({
+    where: {
+      circlesAddress: Environment.translatorOrganisationAddress,
+      members: {
+        some: {
+          memberAddress: circlesAddress,
+        },
+      },
+    },
   });
 
   return !!orga;
@@ -37,39 +51,37 @@ export async function isBILMember(circlesAddress?:string|null) {
  * Checks if the given circlesAddress is an owner of any organization
  * @param circlesAddress
  */
-export async function isOrgaOwner(circlesAddress?:string|null) {
-  if (!circlesAddress)
-    return false;
+export async function isOrgaOwner(circlesAddress?: string | null) {
+  if (!circlesAddress) return false;
 
   const orga = await Environment.readonlyApiDb.membership.findFirst({
     where: {
       memberAddress: circlesAddress,
-      isAdmin: true
-    }
+      isAdmin: true,
+    },
   });
 
   return !!orga;
 }
 
-export async function isBALIMember(circlesAddress?:string|null) {
-  if (!circlesAddress)
-    return false;
+export async function isBALIMember(circlesAddress?: string | null) {
+  if (!circlesAddress) return false;
 
   const orga = await Environment.readonlyApiDb.profile.findFirst({
     where: {
       circlesAddress: "0xdf5b1ea0aa4117770779fd46a7aa237c4dc0bdbd",
       members: {
         some: {
-          memberAddress: circlesAddress
-        }
-      }
-    }
+          memberAddress: circlesAddress,
+        },
+      },
+    },
   });
 
   return !!orga;
 }
 
-export async function canAccess(context:Context, accessedSafeAddress:string) {
+export async function canAccess(context: Context, accessedSafeAddress: string) {
   const callerInfo = await context.callerInfo;
   if (callerInfo?.profile?.circlesAddress == accessedSafeAddress) {
     return true;
@@ -78,23 +90,23 @@ export async function canAccess(context:Context, accessedSafeAddress:string) {
   const requestedProfile = await Environment.readWriteApiDb.profile.findMany({
     where: {
       circlesAddress: accessedSafeAddress,
-      type: "ORGANISATION"
+      type: "ORGANISATION",
     },
     orderBy: {
-      id: "desc"
+      id: "desc",
     },
     include: {
       members: true /* {
         where: {
           isAdmin: true
         }
-      }*/
-    }
+      }*/,
+    },
   });
 
   const orgaProfile = requestedProfile.length > 0 ? requestedProfile[0] : undefined;
   if (orgaProfile) {
-    if (orgaProfile.members.find(o => o.memberAddress == callerInfo?.profile?.circlesAddress)) {
+    if (orgaProfile.members.find((o) => o.memberAddress == callerInfo?.profile?.circlesAddress)) {
       return true;
     }
 
@@ -104,7 +116,7 @@ export async function canAccess(context:Context, accessedSafeAddress:string) {
   return false;
 }
 
-export async function canAccessProfileId(context:Context, profileId:number) {
+export async function canAccessProfileId(context: Context, profileId: number) {
   const callerInfo = await context.callerInfo;
   if (callerInfo?.profile?.id == profileId) {
     return callerInfo;
@@ -113,23 +125,23 @@ export async function canAccessProfileId(context:Context, profileId:number) {
   const requestedProfile = await Environment.readWriteApiDb.profile.findMany({
     where: {
       id: profileId,
-      type: "ORGANISATION"
+      type: "ORGANISATION",
     },
     orderBy: {
-      id: "desc"
+      id: "desc",
     },
     include: {
       members: true /* {
         where: {
           isAdmin: true
         }
-      }*/
-    }
+      }*/,
+    },
   });
 
   const orgaProfile = requestedProfile.length > 0 ? requestedProfile[0] : undefined;
   if (orgaProfile) {
-    if (orgaProfile.members.find(o => o.memberAddress == callerInfo?.profile?.circlesAddress)) {
+    if (orgaProfile.members.find((o) => o.memberAddress == callerInfo?.profile?.circlesAddress)) {
       return callerInfo;
     }
 

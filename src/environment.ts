@@ -6,7 +6,7 @@ import AWS from "aws-sdk";
 import { Pool } from "pg";
 import fetch from "cross-fetch";
 import { PrismaClient } from "./api-db/client";
-import {Generate} from "./utils/generate";
+import { Generate } from "./utils/generate";
 
 export type SmtpConfig = {
   from: string;
@@ -20,9 +20,8 @@ export type SmtpConfig = {
 };
 
 export class Environment {
-
-  static async validateAndSummarize(logInfo:boolean = true) {
-    const errors:string[] = [];
+  static async validateAndSummarize(logInfo: boolean = true) {
+    const errors: string[] = [];
 
     if (!this.corsOrigins) {
       errors.push(`The CORS_ORIGNS environment variable is not set.`);
@@ -31,22 +30,16 @@ export class Environment {
       errors.push(`The APP_URL environment variable is not set.`);
     }
     if (!this.blockchainIndexerUrl) {
-      errors.push(
-        `The BLOCKCHAIN_INDEX_WS_URL environment variable is not set.`
-      );
+      errors.push(`The BLOCKCHAIN_INDEX_WS_URL environment variable is not set.`);
     }
     if (!this.rpcGatewayUrl) {
       errors.push(`The RPC_GATEWAY_URL environment variable is not set.`);
     }
     if (!this.readonlyApiConnectionString) {
-      errors.push(
-        `The CONNECTION_STRING_RO environment variable is not set.`
-      );
+      errors.push(`The CONNECTION_STRING_RO environment variable is not set.`);
     }
     if (!this.readWriteApiConnectionString) {
-      errors.push(
-        `The CONNECTION_STRING_RW environment variable is not set.`
-      );
+      errors.push(`The CONNECTION_STRING_RW environment variable is not set.`);
     }
     if (!this.appId) {
       errors.push(`The APP_ID environment variable is not set.`);
@@ -55,35 +48,23 @@ export class Environment {
       errors.push(`The EXTERNAL_DOMAIN environment variable is not set.`);
     }
     if (!this.operatorOrganisationAddress) {
-      errors.push(
-        `The OPERATOR_ORGANISATION_ADDRESS environment variable is not set.`
-      );
+      errors.push(`The OPERATOR_ORGANISATION_ADDRESS environment variable is not set.`);
     }
     if (!this.pathfinderUrl) {
-      errors.push(
-        `The PATHFINDER_URL environment variable is not set.`
-      );
+      errors.push(`The PATHFINDER_URL environment variable is not set.`);
     }
 
     if (logInfo) {
-      console.log(
-        `* Testing connection to the json rpc gateway (${this.rpcGatewayUrl}) ...`
-      );
+      console.log(`* Testing connection to the json rpc gateway (${this.rpcGatewayUrl}) ...`);
     }
-    const rpcGateway = await fetch(
-      this.rpcGatewayUrl
-        .replace("ws://", "http://")
-        .replace("wss://", "https://")
-    );
+    const rpcGateway = await fetch(this.rpcGatewayUrl.replace("ws://", "http://").replace("wss://", "https://"));
     if (rpcGateway.status < 500) {
       if (logInfo) {
         console.log("  Success. Body: " + (await rpcGateway.text()));
       }
     } else {
       errors.push(
-        `The json rpc gateway responded with a non 200 code: ${
-          rpcGateway.status
-        }. Body: ${await rpcGateway.text()}`
+        `The json rpc gateway responded with a non 200 code: ${rpcGateway.status}. Body: ${await rpcGateway.text()}`
       );
     }
 
@@ -98,9 +79,7 @@ export class Environment {
       console.log(`  ${this.operatorOrganisationAddress} nonce is: ${nonce}`);
     }
     if (!process.env.INVITATION_FUNDS_SAFE_ADDRESS) {
-      errors.push(
-        `The INVITATION_FUNDS_SAFE_ADDRESS environment variable is not set.`
-      );
+      errors.push(`The INVITATION_FUNDS_SAFE_ADDRESS environment variable is not set.`);
     }
 
     if (logInfo) {
@@ -111,19 +90,29 @@ export class Environment {
       console.log(`  ${this.invitationFundsSafe.address} nonce is: ${nonce}`);
     }
     if (!process.env.INVITATION_FUNDS_SAFE_KEY) {
-      errors.push(
-        `The INVITATION_FUNDS_SAFE_KEY environment variable is not set.`
-      );
+      errors.push(`The INVITATION_FUNDS_SAFE_KEY environment variable is not set.`);
     }
 
-    if (
-      !process.env.BUCKET_ENDPOINT ||
-      !process.env.BUCKET_KEY ||
-      !process.env.BUCKET_SECRET
-    ) {
-      errors.push(
-        `The BUCKET_ENDPOINT, BUCKET_KEY or BUCKET_SECRET environment variable is not set.`
-      );
+    if (logInfo) {
+      console.log(`* Checking GCS_CREDENTIALS ...`);
+    }
+    if (!this.googleCloudStorageCredentials?.project_id) {
+      errors.push(`The GCS_CREDENTIALS environment variable contains an invalid json object.`);
+    } else if (logInfo) {
+      console.log(`  Success:`);
+      console.log(`   project_id:`, this.googleCloudStorageCredentials?.project_id);
+      console.log(`   private_key_id:`, this.googleCloudStorageCredentials?.private_key_id);
+      console.log(`   client_email:`, this.googleCloudStorageCredentials?.client_email);
+    }
+
+    if (logInfo) {
+      console.log(`* Checking GCS_AVATAR_BUCKET ...`);
+    }
+    if (!this.avatarBucketName) {
+      errors.push(`The GCS_AVATAR_BUCKET environment variable is not set.`);
+    } else if (logInfo) {
+      console.log(`  Success:`);
+      console.log(`   bucket name:`, this.avatarBucketName);
     }
 
     if (logInfo) {
@@ -154,14 +143,10 @@ export class Environment {
     if (logInfo) {
       console.log(`  Success`);
 
-      console.log(
-        `* Testing connection to the indexer ws endpoint (${this.blockchainIndexerUrl}) ...`
-      );
+      console.log(`* Testing connection to the indexer ws endpoint (${this.blockchainIndexerUrl}) ...`);
     }
 
-    let u = this.blockchainIndexerUrl
-      .replace("ws://", "http://")
-      .replace("wss://", "https://");
+    let u = this.blockchainIndexerUrl.replace("ws://", "http://").replace("wss://", "https://");
 
     if (!u.endsWith("/")) {
       u += "/";
@@ -177,9 +162,7 @@ export class Environment {
       }
     } else {
       const body = await indexerWsEndpoint.text();
-      errors.push(
-        `The indexer ws endpoint responded with a non 200 code: ${indexerWsEndpoint.status}. Body: ${body}`
-      );
+      errors.push(`The indexer ws endpoint responded with a non 200 code: ${indexerWsEndpoint.status}. Body: ${body}`);
     }
 
     if (errors.length > 0) {
@@ -205,20 +188,20 @@ export class Environment {
   }
 
   private static _instanceId = Generate.randomBase64String(8).substr(0, 8);
-  static get instanceId() : string {
+  static get instanceId(): string {
     return this._instanceId;
   }
 
   static get keyRotationInterval(): number {
-    return  24 * 60 * 60 * 1000;
+    return 24 * 60 * 60 * 1000;
   }
 
-  static get periodicTaskInterval() : number {
-    return  5 * 60 * 1000;
+  static get periodicTaskInterval(): number {
+    return 5 * 60 * 1000;
   }
 
-  static get maxKeyAge() : number {
-    return  2 * this.keyRotationInterval;
+  static get maxKeyAge(): number {
+    return 2 * this.keyRotationInterval;
   }
 
   private static _indexDb: Pool = new Pool({
@@ -234,10 +217,12 @@ export class Environment {
   private static _pgReadWriteApiDb: Pool = new Pool({
     connectionString: process.env.CONNECTION_STRING_RW,
     //ssl: !process.env.DEBUG,
-    ssl: process.env.API_DB_SSL_CERT ? {
-      cert: process.env.API_DB_SSL_CERT,
-      ca: process.env.API_DB_SSL_CA
-    } : undefined
+    ssl: process.env.API_DB_SSL_CERT
+      ? {
+          cert: process.env.API_DB_SSL_CERT,
+          ca: process.env.API_DB_SSL_CA,
+        }
+      : undefined,
   }).on("error", (err) => {
     console.error("An idle client has experienced an error", err.stack);
   });
@@ -304,10 +289,7 @@ export class Environment {
   }
 
   static get sessionLifetimeInSeconds(): number {
-    return parseInt(
-      <string | undefined>process.env.SESSION_LIIFETIME ??
-        (60 * 60 * 24 * 30).toString()
-    );
+    return parseInt(<string | undefined>process.env.SESSION_LIIFETIME ?? (60 * 60 * 24 * 30).toString());
   }
 
   static get appId(): string {
@@ -354,25 +336,20 @@ export class Environment {
    */
   static get operatorOrganisationAddress(): string {
     // TODO: Remove default value "Basic Income Lab - Test Orga"
-    return <string>(
-      (process.env.OPERATOR_ORGANISATION_ADDRESS ??
-        "0xc5a786eafefcf703c114558c443e4f17969d9573")
-    );
+    return <string>(process.env.OPERATOR_ORGANISATION_ADDRESS ?? "0xc5a786eafefcf703c114558c443e4f17969d9573");
   }
-
+  static get translatorOrganisationAddress(): string {
+    // TODO: Remove default value "Basic Income Lab - Test Orga"
+    return <string>(process.env.TRANSLATOR_ORGANISATION_ADDRESS ?? "0xe3F306f70A3FFDD20c7b26B3ad3650Cc31e5D84A");
+  }
   static get circlesHubAddress(): string {
-    return <string>(
-      (process.env.CIRCLES_HUB_ADDRESS?.toLowerCase() ??
-        "0x29b9a7fBb8995b2423a71cC17cf9810798F6C543")
-    );
+    return <string>(process.env.CIRCLES_HUB_ADDRESS?.toLowerCase() ?? "0x29b9a7fBb8995b2423a71cC17cf9810798F6C543");
   }
 
   static get invitationFundsSafe(): GnosisSafeProxy {
     return new GnosisSafeProxy(
       RpcGateway.get(),
-      RpcGateway.get().utils.toChecksumAddress(
-        <string>process.env.INVITATION_FUNDS_SAFE_ADDRESS
-      )
+      RpcGateway.get().utils.toChecksumAddress(<string>process.env.INVITATION_FUNDS_SAFE_ADDRESS)
     );
   }
 
@@ -382,15 +359,16 @@ export class Environment {
     );
   }
 
-  static get filesBucket(): AWS.S3 {
-    const spacesEndpoint = new AWS.Endpoint(
-      <string>process.env.BUCKET_ENDPOINT
-    );
-    return new AWS.S3({
-      endpoint: spacesEndpoint,
-      accessKeyId: process.env.BUCKET_KEY,
-      secretAccessKey: process.env.BUCKET_SECRET,
-    });
+  static get googleCloudStorageCredentials(): GoogleCloudCredentials | undefined {
+    try {
+      return JSON.parse(<string>process.env.GCS_CREDENTIALS);
+    } catch {
+      return undefined;
+    }
+  }
+
+  static get avatarBucketName(): string {
+    return <string>process.env.GCS_AVATAR_BUCKET;
   }
 
   /**
@@ -398,8 +376,15 @@ export class Environment {
    */
   static get invitationFundsAmount(): BN {
     return new BN(
-      <string | undefined>process.env.INVITATION_FUNDS_AMOUNT ??
-        RpcGateway.get().utils.toWei("0.1", "ether")
+      <string | undefined>process.env.INVITATION_FUNDS_AMOUNT ?? RpcGateway.get().utils.toWei("0.1", "ether")
     );
   }
 }
+
+export type GoogleCloudCredentials = {
+  type?: string;
+  project_id?: string;
+  client_email?: string;
+  private_key?: string;
+  [x: string]: any;
+};

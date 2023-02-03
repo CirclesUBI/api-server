@@ -778,6 +778,7 @@ export type Profile = {
   smallBannerUrl?: Maybe<Scalars['String']>;
   status?: Maybe<Scalars['String']>;
   successorOfCirclesAddress?: Maybe<Scalars['String']>;
+  surveyDataSessionId?: Maybe<Scalars['String']>;
   type?: Maybe<ProfileType>;
   verifications?: Maybe<Array<Verification>>;
 };
@@ -1370,6 +1371,7 @@ export type UpsertProfileInput = {
   newsletter?: InputMaybe<Scalars['Boolean']>;
   status: Scalars['String'];
   successorOfCirclesAddress?: InputMaybe<Scalars['String']>;
+  surveyDataSessionId?: InputMaybe<Scalars['String']>;
 };
 
 export type UpsertTagInput = {
@@ -2275,6 +2277,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   smallBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   successorOfCirclesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  surveyDataSessionId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   type?: Resolver<Maybe<ResolversTypes['ProfileType']>, ParentType, ContextType>;
   verifications?: Resolver<Maybe<Array<ResolversTypes['Verification']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

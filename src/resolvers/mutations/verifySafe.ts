@@ -5,11 +5,7 @@ import { VerifiedSafe } from "../../api-db/client";
 import { RpcGateway } from "../../circles/rpcGateway";
 import { Environment } from "../../environment";
 
-export const verifySafe = async (
-  parent: any,
-  args: MutationVerifySafeArgs,
-  context: Context
-) => {
+export const verifySafe = async (parent: any, args: MutationVerifySafeArgs, context: Context) => {
   // TODO: Usually only BIL is allowed to verify new people (see commented out code below)
   /*
   const callerInfo = await context.callerInfo;
@@ -18,12 +14,11 @@ export const verifySafe = async (
     throw new Error(`Not allowed`);
   }
   */
-  let verifiedSafe: VerifiedSafe | null =
-    await Environment.readWriteApiDb.verifiedSafe.findUnique({
-      where: {
-        safeAddress: args.safeAddress.toLowerCase(),
-      },
-    });
+  let verifiedSafe: VerifiedSafe | null = await Environment.readWriteApiDb.verifiedSafe.findUnique({
+    where: {
+      safeAddress: args.safeAddress.toLowerCase(),
+    },
+  });
 
   if (verifiedSafe) {
     return {
@@ -42,9 +37,7 @@ export const verifySafe = async (
   });
 
   if (!bilOrga) {
-    throw new Error(
-      `Couldn't find an organisation with safe address ${Environment.operatorOrganisationAddress}`
-    );
+    throw new Error(`Couldn't find an organisation with safe address ${Environment.operatorOrganisationAddress}`);
   }
 
   const swapEoa = RpcGateway.get().eth.accounts.create();
@@ -63,7 +56,8 @@ export const verifySafe = async (
 
   if (bilOrga.circlesAddress) {
     await Environment.indexDb.query(
-      `call publish_event('follow_trust', '{"to":"${bilOrga.circlesAddress.toLowerCase()}"}');`);
+      `call publish_event('follow_trust', '{"to":"${bilOrga.circlesAddress.toLowerCase()}"}');`
+    );
   }
 
   return {
@@ -71,38 +65,32 @@ export const verifySafe = async (
   };
 };
 
-export const revokeSafeVerification = async (
-  parent: any,
-  args: MutationVerifySafeArgs,
-  context: Context
-) => {
+export const revokeSafeVerification = async (parent: any, args: MutationVerifySafeArgs, context: Context) => {
   const callerInfo = await context.callerInfo;
   const isBilMember = await isBILMember(callerInfo?.profile?.circlesAddress);
   if (!isBilMember || !callerInfo?.profile) {
     throw new Error(`Not allowed`);
   }
 
-  let verifiedSafe: VerifiedSafe | null =
-    await Environment.readWriteApiDb.verifiedSafe.findUnique({
-      where: {
-        safeAddress: args.safeAddress.toLowerCase(),
-      },
-    });
+  let verifiedSafe: VerifiedSafe | null = await Environment.readWriteApiDb.verifiedSafe.findUnique({
+    where: {
+      safeAddress: args.safeAddress.toLowerCase(),
+    },
+  });
 
   if (!verifiedSafe) {
     throw new Error(`Safe ${args.safeAddress} is not verified.`);
   }
 
-  const revokeVerification =
-    await Environment.readWriteApiDb.verifiedSafe.update({
-      where: {
-        safeAddress: verifiedSafe.safeAddress,
-      },
-      data: {
-        revokedAt: new Date(),
-        revokedByProfileId: callerInfo.profile.id,
-      },
-    });
+  const revokeVerification = await Environment.readWriteApiDb.verifiedSafe.update({
+    where: {
+      safeAddress: verifiedSafe.safeAddress,
+    },
+    data: {
+      revokedAt: new Date(),
+      revokedByProfileId: callerInfo.profile.id,
+    },
+  });
 
   return {
     success: true,
