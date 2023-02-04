@@ -37,6 +37,7 @@ export const uploadToS3PostHandler = async (req: Request, res: Response) => {
       url: Environment.s3AvatarBucketPublicUrlPrefix + fileName
     });
   } catch (e) {
+    console.error(e);
     return res.json({
       status: "error",
       message: "Image Upload Failed.",

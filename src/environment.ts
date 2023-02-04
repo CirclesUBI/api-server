@@ -258,6 +258,10 @@ export class Environment {
   private static _readonlyApiDb: PrismaClient;
 
   static get readonlyApiDb(): PrismaClient {
+    if (!process.env.CONNECTION_STRING_RO) {
+      throw new Error(`The CONNECTION_STRING_RO environment variable is not set.`)
+    }
+
     if (!this._readonlyApiDb) {
       this._readonlyApiDb = new PrismaClient({
         datasources: {
@@ -273,6 +277,9 @@ export class Environment {
   private static _readWriteApiDb: PrismaClient;
 
   static get readWriteApiDb(): PrismaClient {
+    if (!process.env.CONNECTION_STRING_RW) {
+      throw new Error(`The CONNECTION_STRING_RW environment variable is not set.`)
+    }
     if (!this._readWriteApiDb) {
       this._readWriteApiDb = new PrismaClient({
         datasources: {
