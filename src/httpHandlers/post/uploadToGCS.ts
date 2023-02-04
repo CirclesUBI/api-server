@@ -4,7 +4,7 @@ import {Environment} from "../../environment";
 import {tryGetSessionToken} from "../../utils/tryGetSessionToken";
 import {Storage} from "@google-cloud/storage";
 
-export const uploadPostHandler = async (req: Request, res: Response) => {
+export const uploadToGCSPostHandler = async (req: Request, res: Response) => {
   try {
     const cookieValue = req.headers["cookie"];
     let sessionToken = tryGetSessionToken(cookieValue);
@@ -31,15 +31,14 @@ export const uploadPostHandler = async (req: Request, res: Response) => {
     let storage = new Storage({
       credentials: Environment.googleCloudStorageCredentials
     });
-
-    const uploadResult = await storage.bucket(Environment.avatarBucketName).file(objectKey).save(bytes, {
+    await storage.bucket(Environment.gcsAvatarBucketName).file(objectKey).save(bytes, {
       metadata: {
         contentType: mimeType,
       },
     });
 
     // Use the Google cloud storage sdk to get the file's public url
-    const publicUrl = await storage.bucket(Environment.avatarBucketName).file(objectKey).getSignedUrl({
+    const publicUrl = await storage.bucket(Environment.gcsAvatarBucketName).file(objectKey).getSignedUrl({
       action: "read",
       expires: "03-09-2491",
     });
