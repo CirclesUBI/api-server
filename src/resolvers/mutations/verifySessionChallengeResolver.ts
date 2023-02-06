@@ -15,7 +15,7 @@ export function verifySessionChallengeResolver(prisma:PrismaClient) {
         httpOnly: true,
         path: "/",
         sameSite: Environment.cookieSameSitePolicy,
-        secure: !Environment.cookieSecurePolicy,
+        secure: !Environment.cookieSecurePolicy ? undefined : "Secure",
         //expires: expires
       });
 

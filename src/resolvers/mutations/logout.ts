@@ -21,7 +21,7 @@ export function logout() {
                 httpOnly: true,
                 path: "/",
                 sameSite: Environment.cookieSameSitePolicy,
-                secure: !Environment.cookieSecurePolicy,
+                secure: !Environment.cookieSecurePolicy ? undefined : "Secure",
                 maxAge: 0
             }
         });

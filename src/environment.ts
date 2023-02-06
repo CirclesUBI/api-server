@@ -235,7 +235,7 @@ export class Environment {
   }
 
   static get cookieSecurePolicy(): string {
-    return <string>process.env.COOKIE_SECURE_POLICY ?? "true";
+    return <string>process.env.COOKIE_SECURE_POLICY ?? "Secure";
   }
 
   private static _indexDb: Pool = new Pool({
