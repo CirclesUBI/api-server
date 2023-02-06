@@ -14,8 +14,8 @@ export function verifySessionChallengeResolver(prisma:PrismaClient) {
         domain: Environment.externalDomain,
         httpOnly: true,
         path: "/",
-        sameSite: Environment.isLocalDebugEnvironment ? "Strict" : "None",
-        secure: !Environment.isLocalDebugEnvironment,
+        sameSite: Environment.cookieSameSitePolicy,
+        secure: !Environment.cookieSecurePolicy,
         //expires: expires
       });
 

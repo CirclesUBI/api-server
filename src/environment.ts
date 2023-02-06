@@ -33,6 +33,7 @@ export enum UploadTarget {
 }
 
 export class Environment {
+
   static async validateAndSummarize(logInfo: boolean = true) {
     const errors: string[] = [];
 
@@ -229,9 +230,22 @@ export class Environment {
     return 2 * this.keyRotationInterval;
   }
 
+  static get cookieSameSitePolicy(): string {
+    return <string>process.env.COOKIE_SAME_SITE_POLICY ?? "Strict";
+  }
+
+  static get cookieSecurePolicy(): string {
+    return <string>process.env.COOKIE_SECURE_POLICY ?? "true";
+  }
+
   private static _indexDb: Pool = new Pool({
     connectionString: process.env.BLOCKCHAIN_INDEX_DB_CONNECTION_STRING,
-    ssl: !process.env.DEBUG,
+    ssl: process.env.BLOCKCHAIN_INDEX_DB_SSL_CERT
+        ? {
+          cert: process.env.BLOCKCHAIN_INDEX_DB_SSL_CERT,
+          ca: process.env.BLOCKCHAIN_INDEX_DB_SSL_CA,
+        }
+        : undefined,
   }).on("error", (err) => {
     console.error("An idle client has experienced an error", err.stack);
   });
