@@ -58,7 +58,7 @@ async function saveImageToS3(
     Key: string;
     ACL: string;
   } = {
-    Bucket:Environment.s3AvatarBucketName,
+    Bucket: Environment.s3AvatarBucketName,
     Key: key,
     ACL: "public-read",
   };
@@ -73,9 +73,9 @@ async function saveImageToS3(
               "base64"
           );
 
-          const spacesEndpoint = new AWS.Endpoint(Environment.s3AvatarBucketEndpoint);
           const avatarBucket = new AWS.S3({
-            endpoint: spacesEndpoint,
+            s3ForcePathStyle: true,
+            endpoint: Environment.s3AvatarBucketEndpoint,
             accessKeyId: Environment.s3AvatarBucketKeyId,
             secretAccessKey: Environment.s3AvatarBucketKeySecret,
             signatureVersion: "v4"
