@@ -2,7 +2,6 @@ import BN from "bn.js";
 import { RpcGateway } from "./circles/rpcGateway";
 import { Account } from "web3-core";
 import { GnosisSafeProxy } from "./circles/gnosisSafeProxy";
-import AWS from "aws-sdk";
 import { Pool } from "pg";
 import fetch from "cross-fetch";
 import { PrismaClient } from "./api-db/client";
@@ -18,6 +17,20 @@ export type SmtpConfig = {
   localAddress?: string;
   debug?: boolean;
 };
+
+export type GoogleCloudCredentials = {
+  type?: string;
+  project_id?: string;
+  client_email?: string;
+  private_key?: string;
+  [x: string]: any;
+};
+
+export enum UploadTarget {
+  None = 0,
+  GCS = 1,
+  S3 = 2,
+}
 
 export class Environment {
   static async validateAndSummarize(logInfo: boolean = true) {
@@ -94,25 +107,38 @@ export class Environment {
     }
 
     if (logInfo) {
-      console.log(`* Checking GCS_CREDENTIALS ...`);
-    }
-    if (!this.googleCloudStorageCredentials?.project_id) {
-      errors.push(`The GCS_CREDENTIALS environment variable contains an invalid json object.`);
-    } else if (logInfo) {
-      console.log(`  Success:`);
-      console.log(`   project_id:`, this.googleCloudStorageCredentials?.project_id);
-      console.log(`   private_key_id:`, this.googleCloudStorageCredentials?.private_key_id);
-      console.log(`   client_email:`, this.googleCloudStorageCredentials?.client_email);
+      console.log(`* Checking which upload target to use (S3 or GCS) ...`);
     }
 
-    if (logInfo) {
-      console.log(`* Checking GCS_AVATAR_BUCKET ...`);
+    this._uploadTarget = UploadTarget.None;
+
+    if (
+      this.s3AvatarBucketEndpoint &&
+      this.s3AvatarBucketName &&
+      this.s3AvatarBucketKeyId &&
+      this.s3AvatarBucketKeySecret
+    ) {
+      if (logInfo) {
+        console.log(`* Using S3 compatible storage:`);
+        console.log(`  * Endpoint: ${this.s3AvatarBucketEndpoint}`);
+        console.log(`  * Key-ID: ${this.s3AvatarBucketKeyId}`);
+        console.log(`  * Bucket: ${this.s3AvatarBucketName}`);
+      }
+      this._uploadTarget = UploadTarget.S3;
     }
-    if (!this.avatarBucketName) {
-      errors.push(`The GCS_AVATAR_BUCKET environment variable is not set.`);
-    } else if (logInfo) {
-      console.log(`  Success:`);
-      console.log(`   bucket name:`, this.avatarBucketName);
+
+    if (this._uploadTarget == UploadTarget.None && this.gcsAvatarBucketName && this.googleCloudStorageCredentials) {
+      if (logInfo) {
+        console.log(`* Using GCS storage:`);
+        console.log(`  * project_id:`, this.googleCloudStorageCredentials?.project_id);
+        console.log(`  * private_key_id:`, this.googleCloudStorageCredentials?.private_key_id);
+        console.log(`  * client_email:`, this.googleCloudStorageCredentials?.client_email);
+      }
+      this._uploadTarget = UploadTarget.GCS;
+    }
+
+    if (this._uploadTarget == UploadTarget.None) {
+      errors.push(`Neither GCS_AVATAR_BUCKET nor  environment variable is not set.`);
     }
 
     if (logInfo) {
@@ -204,9 +230,22 @@ export class Environment {
     return 2 * this.keyRotationInterval;
   }
 
+  static get cookieSameSitePolicy(): string {
+    return <string>process.env.COOKIE_SAME_SITE_POLICY ?? "Strict";
+  }
+
+  static get cookieSecurePolicy(): string {
+    return <string>process.env.COOKIE_SECURE_POLICY ?? "Secure";
+  }
+
   private static _indexDb: Pool = new Pool({
     connectionString: process.env.BLOCKCHAIN_INDEX_DB_CONNECTION_STRING,
-    ssl: !process.env.DEBUG,
+    ssl: process.env.BLOCKCHAIN_INDEX_DB_SSL_CERT
+      ? {
+          cert: process.env.BLOCKCHAIN_INDEX_DB_SSL_CERT,
+          ca: process.env.BLOCKCHAIN_INDEX_DB_SSL_CA,
+        }
+      : undefined,
   }).on("error", (err) => {
     console.error("An idle client has experienced an error", err.stack);
   });
@@ -233,6 +272,10 @@ export class Environment {
   private static _readonlyApiDb: PrismaClient;
 
   static get readonlyApiDb(): PrismaClient {
+    if (!process.env.CONNECTION_STRING_RO) {
+      throw new Error(`The CONNECTION_STRING_RO environment variable is not set.`);
+    }
+
     if (!this._readonlyApiDb) {
       this._readonlyApiDb = new PrismaClient({
         datasources: {
@@ -248,6 +291,9 @@ export class Environment {
   private static _readWriteApiDb: PrismaClient;
 
   static get readWriteApiDb(): PrismaClient {
+    if (!process.env.CONNECTION_STRING_RW) {
+      throw new Error(`The CONNECTION_STRING_RW environment variable is not set.`);
+    }
     if (!this._readWriteApiDb) {
       this._readWriteApiDb = new PrismaClient({
         datasources: {
@@ -367,8 +413,8 @@ export class Environment {
     }
   }
 
-  static get avatarBucketName(): string {
-    return <string>process.env.GCS_AVATAR_BUCKET;
+  static get gcsAvatarBucketName(): string {
+    return <string>process.env.GCS_AVATAR_FILES_BUCKET_NAME;
   }
 
   /**
@@ -379,12 +425,29 @@ export class Environment {
       <string | undefined>process.env.INVITATION_FUNDS_AMOUNT ?? RpcGateway.get().utils.toWei("0.1", "ether")
     );
   }
-}
 
-export type GoogleCloudCredentials = {
-  type?: string;
-  project_id?: string;
-  client_email?: string;
-  private_key?: string;
-  [x: string]: any;
-};
+  static get s3AvatarBucketName(): string {
+    return <string>process.env.S3_AVATAR_FILES_BUCKET_NAME;
+  }
+
+  static get s3AvatarBucketEndpoint(): string {
+    return <string>process.env.S3_AVATAR_FILES_BUCKET_ENDPOINT;
+  }
+
+  static get s3AvatarBucketPublicUrlPrefix(): string {
+    return <string>process.env.S3_AVATAR_FILES_BUCKET_PUBLIC_URL_PREFIX;
+  }
+
+  static get s3AvatarBucketKeyId(): string {
+    return <string>process.env.S3_AVATAR_FILES_BUCKET_KEY_ID;
+  }
+
+  static get s3AvatarBucketKeySecret(): string {
+    return <string>process.env.S3_AVATAR_FILES_BUCKET_KEY_SECRET;
+  }
+
+  static get uploadTarget(): UploadTarget {
+    return this._uploadTarget;
+  }
+  private static _uploadTarget: UploadTarget;
+}

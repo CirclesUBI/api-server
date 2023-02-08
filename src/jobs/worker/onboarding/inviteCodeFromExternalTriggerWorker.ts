@@ -28,7 +28,7 @@ export class InviteCodeFromExternalTriggerWorker extends JobWorker<InviteCodeFro
         statusCode: 302,
         message: `Go to: ${job.redirectUrl}`,
         headers: {
-          "Set-Cookie": `invitationCode=${createdInvitation.code}; Max-Age=${(60 * 24)}`,
+          "Set-Cookie": `invitationCode=${createdInvitation.code}; Domain=${Environment.externalDomain}; Path=/; HttpOnly; SameSite=${Environment.cookieSameSitePolicy}; Max-Age=${(60 * 24)}; ${Environment.cookieSecurePolicy ? "Secure" : ""}`.trim(),
           location: job.redirectUrl
         }
       }

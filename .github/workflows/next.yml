@@ -11,10 +11,8 @@ on:
 
 jobs:
   call-build-and-push:
-    name: Trigger container build and push
-    permissions:
-      contents: read
-      id-token: write
-      packages: write
-    uses: ./.github/workflows/build-and-push.yml
+    name: Call
+    uses: CirclesUBI/.github/.github/workflows/build-and-push.yml@0e374eae30ef5963869cfb6a0b5f7f68864248af
+    with:
+      image-name: "api-server"
     secrets: inherit

@@ -6,13 +6,13 @@ import {resolvers} from "./resolvers/resolvers";
 import {Context} from "./context";
 import {RpcGateway} from "./circles/rpcGateway";
 import {GqlLogger} from "./gqlLogger";
-import {Environment} from "./environment";
+import {Environment, UploadTarget} from "./environment";
 import {IndexerEvents} from "./indexer-api/indexerEvents";
 import {AppNotificationProcessor} from "./indexer-api/appNotificationProcessor";
 import {jwksGetHandler} from "./httpHandlers/get/jwks";
 import {JobQueue} from "./jobs/jobQueue";
 import {gqlSubscriptionServer} from "./gqlSubscriptionServer";
-import {uploadPostHandler} from "./httpHandlers/post/upload";
+import {uploadToGCSPostHandler} from "./httpHandlers/post/uploadToGCS";
 import {triggerGetHandler} from "./httpHandlers/get/trigger";
 import {jobSink} from "./jobs/jobSink";
 import {JobType} from "./jobs/descriptions/jobDescription";
@@ -23,6 +23,7 @@ import {healthGetHandler} from "./httpHandlers/get/health";
 import {RotateJwks} from "./jobs/descriptions/maintenance/rotateJwks";
 import {RequestUbiForInactiveAccounts} from "./jobs/descriptions/maintenance/requestUbiForInactiveAccounts";
 import {linkGetHandler} from "./httpHandlers/get/link";
+import {uploadToS3PostHandler} from "./httpHandlers/post/uploadToS3";
 
 const {
   ApolloServerPluginLandingPageGraphQLPlayground,
@@ -104,7 +105,11 @@ export class Main {
       })
     );
 
-    app.post("/upload", cors(corsOptions), uploadPostHandler);
+    if (Environment.uploadTarget == UploadTarget.S3) {
+      app.post("/upload", cors(corsOptions), uploadToS3PostHandler);
+    } else if (Environment.uploadTarget == UploadTarget.GCS) {
+      app.post("/upload", cors(corsOptions), uploadToGCSPostHandler);
+    }
     app.get("/trigger", cors(corsOptions), triggerGetHandler);
     app.get("/jwks", cors(corsOptions), jwksGetHandler);
     app.get("/link", cors(corsOptions), linkGetHandler);
