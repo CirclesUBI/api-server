@@ -29,11 +29,10 @@ export type GoogleCloudCredentials = {
 export enum UploadTarget {
   None = 0,
   GCS = 1,
-  S3 = 2
+  S3 = 2,
 }
 
 export class Environment {
-
   static async validateAndSummarize(logInfo: boolean = true) {
     const errors: string[] = [];
 
@@ -113,11 +112,12 @@ export class Environment {
 
     this._uploadTarget = UploadTarget.None;
 
-    if (this.s3AvatarBucketEndpoint
-        && this.s3AvatarBucketName
-        && this.s3AvatarBucketKeyId
-        && this.s3AvatarBucketKeySecret)
-    {
+    if (
+      this.s3AvatarBucketEndpoint &&
+      this.s3AvatarBucketName &&
+      this.s3AvatarBucketKeyId &&
+      this.s3AvatarBucketKeySecret
+    ) {
       if (logInfo) {
         console.log(`* Using S3 compatible storage:`);
         console.log(`  * Endpoint: ${this.s3AvatarBucketEndpoint}`);
@@ -134,7 +134,7 @@ export class Environment {
         console.log(`  * private_key_id:`, this.googleCloudStorageCredentials?.private_key_id);
         console.log(`  * client_email:`, this.googleCloudStorageCredentials?.client_email);
       }
-      this._uploadTarget = UploadTarget.S3;
+      this._uploadTarget = UploadTarget.GCS;
     }
 
     if (this._uploadTarget == UploadTarget.None) {
@@ -241,11 +241,11 @@ export class Environment {
   private static _indexDb: Pool = new Pool({
     connectionString: process.env.BLOCKCHAIN_INDEX_DB_CONNECTION_STRING,
     ssl: process.env.BLOCKCHAIN_INDEX_DB_SSL_CERT
-        ? {
+      ? {
           cert: process.env.BLOCKCHAIN_INDEX_DB_SSL_CERT,
           ca: process.env.BLOCKCHAIN_INDEX_DB_SSL_CA,
         }
-        : undefined,
+      : undefined,
   }).on("error", (err) => {
     console.error("An idle client has experienced an error", err.stack);
   });
@@ -273,7 +273,7 @@ export class Environment {
 
   static get readonlyApiDb(): PrismaClient {
     if (!process.env.CONNECTION_STRING_RO) {
-      throw new Error(`The CONNECTION_STRING_RO environment variable is not set.`)
+      throw new Error(`The CONNECTION_STRING_RO environment variable is not set.`);
     }
 
     if (!this._readonlyApiDb) {
@@ -292,7 +292,7 @@ export class Environment {
 
   static get readWriteApiDb(): PrismaClient {
     if (!process.env.CONNECTION_STRING_RW) {
-      throw new Error(`The CONNECTION_STRING_RW environment variable is not set.`)
+      throw new Error(`The CONNECTION_STRING_RW environment variable is not set.`);
     }
     if (!this._readWriteApiDb) {
       this._readWriteApiDb = new PrismaClient({
@@ -446,8 +446,8 @@ export class Environment {
     return <string>process.env.S3_AVATAR_FILES_BUCKET_KEY_SECRET;
   }
 
-  static get uploadTarget() : UploadTarget {
+  static get uploadTarget(): UploadTarget {
     return this._uploadTarget;
   }
-  private static _uploadTarget:UploadTarget;
+  private static _uploadTarget: UploadTarget;
 }
