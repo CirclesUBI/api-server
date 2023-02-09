@@ -1,0 +1,22 @@
+name: Build and push migrations container images
+run-name: '${{ github.ref_name }} : api-server-migrations'
+
+on:
+  push:
+    branches:
+    - main
+    - next
+    - dev
+    paths:
+    - "Dockerfile.migrations"
+    - "src/api-db-migrations/**"
+    - ".github/workflows/build-push.migrations.yml"
+
+jobs:
+  call-build-and-push:
+    name: Call
+    uses: CirclesUBI/.github/.github/workflows/build-and-push.yml@main
+    with:
+      image-name: "api-server-migrations"
+      file: "Dockerfile.migrations"
+    secrets: inherit
