@@ -15,7 +15,7 @@ on:
 jobs:
   call-build-and-push:
     name: Call
-    uses: CirclesUBI/.github/.github/workflows/build-and-push.yml@0e374eae30ef5963869cfb6a0b5f7f68864248af
+    uses: CirclesUBI/.github/.github/workflows/build-and-push.yml@d15d8aa3ecc09ca1bcac11e997b0192e33e3017d
     with:
       image-name: "api-server"
     secrets: inherit
