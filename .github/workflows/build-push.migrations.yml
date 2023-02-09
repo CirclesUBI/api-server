@@ -15,7 +15,7 @@ on:
 jobs:
   call-build-and-push:
     name: Call
-    uses: CirclesUBI/.github/.github/workflows/build-and-push.yml@d15d8aa3ecc09ca1bcac11e997b0192e33e3017d
+    uses: CirclesUBI/.github/.github/workflows/build-and-push.yml@main
     with:
       image-name: "api-server-migrations"
       file: "Dockerfile.migrations"
