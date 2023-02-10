@@ -1,5 +1,4 @@
-name: Build and push migrations container images
-run-name: '${{ github.ref_name }} : api-server-migrations'
+name: Migrations
 
 on:
   push:
