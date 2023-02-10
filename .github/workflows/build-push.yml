@@ -1,5 +1,4 @@
-name: Build and push container images
-run-name: '${{ github.ref_name }} : api-server'
+name: Images
 
 on:
   push:
