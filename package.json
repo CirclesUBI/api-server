@@ -41,7 +41,7 @@
     "jose": "^4.6.2",
     "mustache": "^4.2.0",
     "node-fetch": "^3.2.1",
-    "node-jose": "^2.1.1",
+    "node-jose": "^2.2.0",
     "pg": "^8.7.3",
     "subscriptions-transport-ws": "^0.11.0",
     "web3": "^1.7.0",
