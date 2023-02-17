@@ -1,4 +1,4 @@
-import {AssetBalance, Profile, ProfileOrigin, ProfileResolvers} from "../../types";
+import { AssetBalance, Profile, ProfileOrigin, ProfileResolvers } from "../../types";
 import { Context } from "../../context";
 import { Environment } from "../../environment";
 import { getDateWithOffset } from "../../utils/getDateWithOffset";
@@ -45,11 +45,16 @@ export const profilePropertyResolvers: ProfileResolvers = {
 
     if (!inviteTrigger) return null;
 
-    return `https://${Environment.externalDomain}/trigger?hash=${inviteTrigger.hash}`;
+    const protocol = Environment.isLocalDebugEnvironment ? "http://" : "https://";
+
+    return `${protocol}${Environment.externalDomain}/trigger?hash=${inviteTrigger.hash}`;
   },
-  lat: async (parent: Profile, args: any, context: Context) => isOwnProfile(parent.id, context) && parent.lat !== undefined ? parent.lat : null,
-  lon: async (parent: Profile, args: any, context: Context) => isOwnProfile(parent.id, context) && parent.lon !== undefined ? parent.lon : null,
-  location: async (parent: Profile, args: any, context: Context) => isOwnProfile(parent.id, context) && parent.location !== undefined ? parent.location : null,
+  lat: async (parent: Profile, args: any, context: Context) =>
+    isOwnProfile(parent.id, context) && parent.lat !== undefined ? parent.lat : null,
+  lon: async (parent: Profile, args: any, context: Context) =>
+    isOwnProfile(parent.id, context) && parent.lon !== undefined ? parent.lon : null,
+  location: async (parent: Profile, args: any, context: Context) =>
+    isOwnProfile(parent.id, context) && parent.location !== undefined ? parent.location : null,
   askedForEmailAddress: async (parent: Profile, args: any, context: Context) =>
     isOwnProfile(parent.id, context) && parent.askedForEmailAddress ? parent.askedForEmailAddress : false,
   newsletter: async (parent: Profile, args: any, context: Context) =>
@@ -85,7 +90,7 @@ export const profilePropertyResolvers: ProfileResolvers = {
           and ($2 = '' or balance > ($2)::numeric) 
           and ($3 = '' or balance < ($3)::numeric)
         order by balance desc;`,
-      [parent.circlesAddress.toLowerCase(), args?.filter?.gt ?? '', args?.filter?.lt ?? '']
+      [parent.circlesAddress.toLowerCase(), args?.filter?.gt ?? "", args?.filter?.lt ?? ""]
     );
 
     const erc20BalancesPromise = Environment.indexDb.query(
@@ -98,7 +103,7 @@ export const profilePropertyResolvers: ProfileResolvers = {
        where safe_address = $1
         and ($2 = '' or balance > ($2)::numeric) 
         and ($3 = '' or balance < ($3)::numeric);`,
-      [parent.circlesAddress.toLowerCase(), args?.filter?.gt ?? '', args?.filter?.lt ?? '']
+      [parent.circlesAddress.toLowerCase(), args?.filter?.gt ?? "", args?.filter?.lt ?? ""]
     );
 
     const queryResults = await Promise.all([crcBalancesPromise, erc20BalancesPromise]);
@@ -184,5 +189,5 @@ export const profilePropertyResolvers: ProfileResolvers = {
       return null;
     }
     return await provenUniquenessDataLoader.load(parent.circlesAddress);
-  }
+  },
 };

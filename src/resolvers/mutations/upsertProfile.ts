@@ -6,9 +6,7 @@ import { Environment } from "../../environment";
 import { TestData } from "../../api-db/testData";
 import { RpcGateway } from "../../circles/rpcGateway";
 import { JobQueue } from "../../jobs/jobQueue";
-import { VerifyEmailAddress } from "../../jobs/descriptions/emailNotifications/verifyEmailAddress";
-import { Generate } from "../../utils/generate";
-import { SendVerifyEmailAddressEmail } from "../../jobs/descriptions/emailNotifications/sendVerifyEmailAddressEmail";
+
 import { claimInvitation } from "./claimInvitation";
 import { createInvitationPerpetualTrigger } from "../../utils/invitationHelper";
 import { verifySafe } from "./verifySafe";
@@ -211,18 +209,6 @@ export function upsertProfileResolver() {
       // Insert the test data when the first profile with a safe-address was created
       console.log("First circles user. Deploying test data ..");
       await TestData.insertIfEmpty(profile.circlesAddress);
-    }
-
-    if (profile?.emailAddress && !(<any>profile)?.emailAddressVerified) {
-      const challengeTrigger = new VerifyEmailAddress(
-        new Date(),
-        1000 * 60 * 24,
-        Generate.randomHexString(),
-        profile.id,
-        profile.emailAddress
-      );
-      const sendEmail = new SendVerifyEmailAddressEmail(challengeTrigger.getHash(), <string>args.data.emailAddress);
-      await JobQueue.produce([challengeTrigger, sendEmail]);
     }
 
     return profile;
