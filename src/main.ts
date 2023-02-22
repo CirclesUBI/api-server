@@ -1,49 +1,53 @@
-import {createServer} from "http";
-import {SubscriptionServer} from "subscriptions-transport-ws";
-import {makeExecutableSchema} from "@graphql-tools/schema";
-import {ApolloServer} from "apollo-server-express";
-import {resolvers} from "./resolvers/resolvers";
-import {Context} from "./context";
-import {RpcGateway} from "./circles/rpcGateway";
-import {GqlLogger} from "./gqlLogger";
-import {Environment, UploadTarget} from "./environment";
-import {IndexerEvents} from "./indexer-api/indexerEvents";
-import {AppNotificationProcessor} from "./indexer-api/appNotificationProcessor";
-import {jwksGetHandler} from "./httpHandlers/get/jwks";
-import {JobQueue} from "./jobs/jobQueue";
-import {gqlSubscriptionServer} from "./gqlSubscriptionServer";
-import {uploadToGCSPostHandler} from "./httpHandlers/post/uploadToGCS";
-import {triggerGetHandler} from "./httpHandlers/get/trigger";
-import {jobSink} from "./jobs/jobSink";
-import {JobType} from "./jobs/descriptions/jobDescription";
+import { createServer } from "http";
+import { SubscriptionServer } from "subscriptions-transport-ws";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { ApolloServer } from "apollo-server-express";
+import { resolvers } from "./resolvers/resolvers";
+import { Context } from "./context";
+import { RpcGateway } from "./circles/rpcGateway";
+import { GqlLogger } from "./gqlLogger";
+import { Environment, UploadTarget } from "./environment";
+import { IndexerEvents } from "./indexer-api/indexerEvents";
+import { AppNotificationProcessor } from "./indexer-api/appNotificationProcessor";
+import { jwksGetHandler } from "./httpHandlers/get/jwks";
+import { JobQueue } from "./jobs/jobQueue";
+import { gqlSubscriptionServer } from "./gqlSubscriptionServer";
+import { uploadToGCSPostHandler } from "./httpHandlers/post/uploadToGCS";
+import { triggerGetHandler } from "./httpHandlers/get/trigger";
+import { jobSink } from "./jobs/jobSink";
+import { JobType } from "./jobs/descriptions/jobDescription";
 import express from "express";
 import cors from "cors";
 import * as graphqlImport from "@graphql-tools/import";
-import {healthGetHandler} from "./httpHandlers/get/health";
-import {RotateJwks} from "./jobs/descriptions/maintenance/rotateJwks";
-import {RequestUbiForInactiveAccounts} from "./jobs/descriptions/maintenance/requestUbiForInactiveAccounts";
-import {linkGetHandler} from "./httpHandlers/get/link";
-import {uploadToS3PostHandler} from "./httpHandlers/post/uploadToS3";
+import { healthGetHandler } from "./httpHandlers/get/health";
+import { RotateJwks } from "./jobs/descriptions/maintenance/rotateJwks";
+import { RequestUbiForInactiveAccounts } from "./jobs/descriptions/maintenance/requestUbiForInactiveAccounts";
+import { linkGetHandler } from "./httpHandlers/get/link";
+import { uploadToS3PostHandler } from "./httpHandlers/post/uploadToS3";
 
-const {
-  ApolloServerPluginLandingPageGraphQLPlayground,
-} = require("apollo-server-core");
+const { ApolloServerPluginLandingPageGraphQLPlayground } = require("apollo-server-core");
 
 const corsOrigins = Environment.corsOrigins.split(";").map((o) => o.trim());
 console.log("* CORS_ORIGINS:", corsOrigins);
 
 declare global {
   interface Array<T> {
-    groupBy(groupSelector: (item: T) => string|number|null|undefined): { [group: string]: T[] };
+    groupBy(groupSelector: (item: T) => string | number | null | undefined): { [group: string]: T[] };
     toLookup(keySelector: (item: T) => string): { [key: string]: boolean };
-    toLookup<TValue>(keySelector: (item: T) => string|number|null|undefined, valueSelector?: (item: T) => TValue): { [key: string]: TValue };
+    toLookup<TValue>(
+      keySelector: (item: T) => string | number | null | undefined,
+      valueSelector?: (item: T) => TValue
+    ): { [key: string]: TValue };
   }
 }
 declare global {
   interface ReadonlyArray<T> {
-    groupBy(groupSelector: (item: T) => string|number|null|undefined): { [group: string]: T[] };
+    groupBy(groupSelector: (item: T) => string | number | null | undefined): { [group: string]: T[] };
     toLookup(keySelector: (item: T) => string): { [key: string]: boolean };
-    toLookup<TValue>(keySelector: (item: T) => string|number|null|undefined, valueSelector?: (item: T) => TValue): { [key: string]: TValue };
+    toLookup<TValue>(
+      keySelector: (item: T) => string | number | null | undefined,
+      valueSelector?: (item: T) => TValue
+    ): { [key: string]: TValue };
   }
 }
 
@@ -59,9 +63,12 @@ Array.prototype.groupBy = function groupBy<T>(groupSelector: (item: T) => string
     p[group].push(c);
     return p;
   }, <{ [group: string]: T[] }>{});
-}
+};
 
-Array.prototype.toLookup = function toLookup<T, TValue>(keySelector: (item: T) => string, valueSelector?: (item: T) => TValue): { [key: string]: TValue } {
+Array.prototype.toLookup = function toLookup<T, TValue>(
+  keySelector: (item: T) => string,
+  valueSelector?: (item: T) => TValue
+): { [key: string]: TValue } {
   return this.reduce((p, c) => {
     const key = keySelector(c);
     if (key === undefined || key === null) {
@@ -70,16 +77,14 @@ Array.prototype.toLookup = function toLookup<T, TValue>(keySelector: (item: T) =
     p[key] = !valueSelector ? true : valueSelector(c);
     return p;
   }, <{ [key: string]: TValue }>{});
-}
+};
 
 export class Main {
   async run() {
     RpcGateway.setup(Environment.rpcGatewayUrl, Environment.fixedGasPrice);
 
     if (Environment.delayStart) {
-      console.log(
-        `Delaying the start for ${Environment.delayStart} seconds ...`
-      );
+      console.log(`Delaying the start for ${Environment.delayStart} seconds ...`);
       await new Promise((r) => {
         setTimeout(r, Environment.delayStart * 1000);
       });
@@ -97,11 +102,11 @@ export class Main {
       credentials: true,
     };
     app.use(cors(corsOptions));
-    app.use(express.json({limit: "10mb"}));
+    app.use(express.json({ limit: "10mb" }));
     app.use(
       express.urlencoded({
         limit: "10mb",
-        extended: true
+        extended: true,
       })
     );
 
@@ -113,9 +118,13 @@ export class Main {
     app.get("/trigger", cors(corsOptions), triggerGetHandler);
     app.get("/jwks", cors(corsOptions), jwksGetHandler);
     app.get("/link", cors(corsOptions), linkGetHandler);
-    app.get("/health", cors({
-      origin: '*'
-    }), healthGetHandler);
+    app.get(
+      "/health",
+      cors({
+        origin: "*",
+      }),
+      healthGetHandler
+    );
 
     const httpServer = createServer(app);
     const schema = makeExecutableSchema({
@@ -155,7 +164,7 @@ export class Main {
           },
         })
          */
-      ]
+      ],
     });
 
     subscriptionServer = await gqlSubscriptionServer(schema, httpServer, server.graphqlPath);
@@ -174,72 +183,61 @@ export class Main {
       console.error(err.stack);
     });
 
-    const indexerEventProcessor = new IndexerEvents(
-      Environment.blockchainIndexerUrl,
-      2500,
-      [
-        new AppNotificationProcessor()
-      ]
-    );
+    const indexerEventProcessor = new IndexerEvents(Environment.blockchainIndexerUrl, 2500, [
+      new AppNotificationProcessor(),
+    ]);
 
     indexerEventProcessor.run();
 
     const jobQueue = new JobQueue("jobQueue");
     const jobTopics: JobType[] = [
-      "sendCrcReceivedEmail",
-      "sendCrcTrustChangedEmail",
-      "verifyEmailAddress",
-      "sendVerifyEmailAddressEmail",
       "inviteCodeFromExternalTrigger",
       "echo",
-      "sendWelcomeEmail",
       "requestUbiForInactiveAccounts",
       "rotateJwks",
       "autoTrust",
-      "unreadNotification"
+      "unreadNotification",
     ];
 
-    jobQueue.consume(jobTopics, jobSink, false)
+    jobQueue
+      .consume(jobTopics, jobSink, false)
       .then(() => {
         console.info("JobQueue stopped.");
-      }).catch(e => {
-      console.error("JobQueue crashed.", e);
-    });
+      })
+      .catch((e) => {
+        console.error("JobQueue crashed.", e);
+      });
 
     // TODO: Add follow trust job handling
 
     const PORT = 8989;
-    httpServer.listen(PORT, () =>
-      console.log(`Server is now running on http://localhost:${PORT}/graphql`)
-    );
+    httpServer.listen(PORT, () => console.log(`Server is now running on http://localhost:${PORT}/graphql`));
   }
 }
 
-new Main().run()
+new Main()
+  .run()
   .then(() => console.log("Started"))
   .then(async () => {
     console.log(`Warming up caches ..`);
 
     console.log(`Starting periodic task job factory. Yields every ${Environment.periodicTaskInterval / 1000} seconds.`);
-    setInterval(async() => {
-        const now = new Date();
+    setInterval(async () => {
+      const now = new Date();
 
-        const requestUbiForInactiveAccounts = new RequestUbiForInactiveAccounts({
-          year: now.getUTCFullYear(),
-          month: now.getUTCMonth() + 1,
-          date: now.getUTCDate(),
-          hour: now.getUTCHours()
-        });
+      const requestUbiForInactiveAccounts = new RequestUbiForInactiveAccounts({
+        year: now.getUTCFullYear(),
+        month: now.getUTCMonth() + 1,
+        date: now.getUTCDate(),
+        hour: now.getUTCHours(),
+      });
 
-        const rotateKeys = new RotateJwks({
-          year: now.getUTCFullYear(),
-          month: now.getUTCMonth() + 1,
-          date: now.getUTCDate()
-        });
+      const rotateKeys = new RotateJwks({
+        year: now.getUTCFullYear(),
+        month: now.getUTCMonth() + 1,
+        date: now.getUTCDate(),
+      });
 
-        await JobQueue.produce([
-          requestUbiForInactiveAccounts,
-          rotateKeys
-        ]);
+      await JobQueue.produce([requestUbiForInactiveAccounts, rotateKeys]);
     }, Environment.periodicTaskInterval);
-});
+  });
