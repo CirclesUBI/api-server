@@ -56,11 +56,11 @@ export class Pathfinder {
     const response = await this.callJsonRpcMethod("compute_transfer", computeTransferParams);
 
     return <TransitivePath>{
-      flow: new BN(response.result.flow.substring(2), "hex").toString(),
+      flow: new BN(response.result.flow).toString(),
       requestedAmount: amount,
       isValid: false,
       transfers: response.result.transfers.map((o: any) => {
-        const amount = new BN(o.value.toString().substring(2), "hex");
+        const amount = new BN(o.value);
         return <TransitiveTransfer>{
           from: o.from,
           to: o.to,
