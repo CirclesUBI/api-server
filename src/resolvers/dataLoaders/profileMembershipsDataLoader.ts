@@ -30,6 +30,8 @@ export const profileMembershipsDataLoader = new DataLoader<string, Membership[]>
             createdAt: o.createdAt.toJSON(), // TODO: This is the creation date of the membership, not the one of the organisation
             circlesAddress: o.memberAt.circlesAddress,
             displayCurrency: o.memberAt.displayCurrency,
+            location: o.memberAt.location,
+            locationName: o.memberAt.locationName,
           },
           createdByProfileId: o.createdByProfileId,
           memberAddress: o.memberAddress,
