@@ -5,11 +5,7 @@ import { ProfileLoader } from "../../querySources/profileLoader";
 import { Environment } from "../../environment";
 
 export function organisations(prisma: PrismaClient) {
-  return async (
-    parent: any,
-    args: QueryOrganisationsArgs,
-    context: Context
-  ) => {
+  return async (parent: any, args: QueryOrganisationsArgs, context: Context) => {
     let organisationSignupQuery = `
           select organisation, timestamp
           from crc_organisation_signup_2`;
@@ -18,9 +14,7 @@ export function organisations(prisma: PrismaClient) {
 
     if (args.pagination) {
       limit =
-        Number.isInteger(args.pagination.limit) &&
-        args.pagination.limit > 0 &&
-        args.pagination.limit <= 100
+        Number.isInteger(args.pagination.limit) && args.pagination.limit > 0 && args.pagination.limit <= 100
           ? args.pagination.limit
           : 100;
 
@@ -32,23 +26,18 @@ export function organisations(prisma: PrismaClient) {
     organisationSignupQuery += ` order by timestamp desc`;
     organisationSignupQuery += ` limit ${limit}`;
 
-    const organisationSignupsResult = await Environment.indexDb.query(
-      organisationSignupQuery
-    );
+    const organisationSignupsResult = await Environment.indexDb.query(organisationSignupQuery);
     if (organisationSignupsResult.rows.length == 0) {
       return [];
     }
 
     const allCreationDates = organisationSignupsResult.rows.toLookup(
-      c => c.organisation,
-        c => new Date(c.timestamp)
+      (c) => c.organisation,
+      (c) => new Date(c.timestamp)
     );
 
     const profileLoader = new ProfileLoader();
-    const profiles = await profileLoader.profilesBySafeAddress(
-      prisma,
-      Object.keys(allCreationDates)
-    );
+    const profiles = await profileLoader.profilesBySafeAddress(prisma, Object.keys(allCreationDates));
 
     return organisationSignupsResult.rows.map((o) => {
       const p: Profile = profiles[o.organisation] ?? {
@@ -61,7 +50,7 @@ export function organisations(prisma: PrismaClient) {
       return <Organisation>{
         id: p.id,
         createdAt: allCreationDates[p.circlesAddress ?? ""].toJSON(),
-        name: p.firstName,
+        firstName: p.firstName,
         circlesAddress: p.circlesAddress,
         avatarUrl: p.avatarUrl,
         description: p.dream,

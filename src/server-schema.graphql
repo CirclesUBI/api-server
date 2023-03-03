@@ -122,7 +122,7 @@ type Organisation {
   circlesAddress: String
   circlesSafeOwner: String
   displayName: String
-  name: String!
+  firstName: String!
   description: String
   avatarUrl: String
   largeBannerUrl: String
@@ -685,7 +685,7 @@ type CreateOrganisationResult {
 
 input UpsertOrganisationInput {
   id: Int
-  name: String!
+  firstName: String!
   description: String
   circlesAddress: String
   avatarUrl: String

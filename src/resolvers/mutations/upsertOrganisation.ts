@@ -1,8 +1,8 @@
-import {Context} from "../../context";
-import {MutationUpsertOrganisationArgs, Organisation, Profile} from "../../types";
-import {ProfileLoader} from "../../querySources/profileLoader";
-import {Environment} from "../../environment";
-import {RpcGateway} from "../../circles/rpcGateway";
+import { Context } from "../../context";
+import { MutationUpsertOrganisationArgs, Organisation, Profile } from "../../types";
+import { ProfileLoader } from "../../querySources/profileLoader";
+import { Environment } from "../../environment";
+import { RpcGateway } from "../../circles/rpcGateway";
 
 export async function isOrgAdmin(userAddress: string, orgId: number): Promise<boolean> {
   return !!(await Environment.readWriteApiDb.membership.findFirst({
@@ -41,7 +41,7 @@ export async function upsertOrganisation(parent: any, args: MutationUpsertOrgani
           id: args.organisation.id,
         },
         data: {
-          firstName: args.organisation.name,
+          firstName: args.organisation.firstName,
           dream: args.organisation.description,
           circlesAddress: args.organisation.circlesAddress,
           avatarUrl: args.organisation.avatarUrl,
@@ -58,7 +58,7 @@ export async function upsertOrganisation(parent: any, args: MutationUpsertOrgani
           businessHoursSaturday: args.organisation.businessHoursSaturday,
           businessHoursSunday: args.organisation.businessHoursSunday,
           phoneNumber: args.organisation.phoneNumber,
-          businessCategoryId: args.organisation.businessCategoryId
+          businessCategoryId: args.organisation.businessCategoryId,
         },
       })
     );
@@ -66,7 +66,7 @@ export async function upsertOrganisation(parent: any, args: MutationUpsertOrgani
     organisationProfile = ProfileLoader.withDisplayCurrency(
       await Environment.readWriteApiDb.profile.create({
         data: {
-          firstName: args.organisation.name,
+          firstName: args.organisation.firstName,
           dream: args.organisation.description,
           circlesAddress: args.organisation.circlesAddress,
           avatarUrl: args.organisation.avatarUrl,
@@ -86,7 +86,7 @@ export async function upsertOrganisation(parent: any, args: MutationUpsertOrgani
           businessHoursSaturday: args.organisation.businessHoursSaturday,
           businessHoursSunday: args.organisation.businessHoursSunday,
           phoneNumber: args.organisation.phoneNumber,
-          businessCategoryId: args.organisation.businessCategoryId
+          businessCategoryId: args.organisation.businessCategoryId,
         },
       })
     );
@@ -112,7 +112,7 @@ export async function upsertOrganisation(parent: any, args: MutationUpsertOrgani
       ...organisationProfile,
       id: organisationProfile.id,
       createdAt: new Date().toJSON(),
-      name: organisationProfile.firstName,
+      firstName: organisationProfile.firstName,
       displayName: organisationProfile.firstName,
       locationName: organisationProfile.locationName,
       members: [],
