@@ -1,7 +1,7 @@
-import {Request, Response} from "express";
-import {JobQueue} from "../../jobs/jobQueue";
-import {Environment} from "../../environment";
-import {log} from "../../utils/log";
+import { Request, Response } from "express";
+import { JobQueue } from "../../jobs/jobQueue";
+import { Environment } from "../../environment";
+import { log } from "../../utils/log";
 
 export const triggerGetHandler = async (req: Request, res: Response) => {
   try {
@@ -16,7 +16,7 @@ export const triggerGetHandler = async (req: Request, res: Response) => {
     const result = await JobQueue.trigger(<string>req.query.hash);
 
     if (result == "end") {
-      const redirectUrl = Environment.appUrl + "#/passport/verifyEmail/verify/failed";
+      const redirectUrl = Environment.appUrl + "#/homepage/notfound";
       log(`     `,
         `[${req.ip}; ${req.headers["user-agent"]}] [hash: ${req.query.hash}] [triggerGetHandler]`,
         `The trigger was already executed. Redirecting the user to ${redirectUrl}.`);

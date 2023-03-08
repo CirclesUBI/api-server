@@ -711,6 +711,7 @@ export type Organisation = {
   description?: Maybe<Scalars['String']>;
   displayCurrency?: Maybe<DisplayCurrency>;
   displayName?: Maybe<Scalars['String']>;
+  firstName: Scalars['String'];
   id: Scalars['Int'];
   largeBannerUrl?: Maybe<Scalars['String']>;
   lat?: Maybe<Scalars['Float']>;
@@ -718,7 +719,6 @@ export type Organisation = {
   locationName?: Maybe<Scalars['String']>;
   lon?: Maybe<Scalars['Float']>;
   members?: Maybe<Array<ProfileOrOrganisation>>;
-  name: Scalars['String'];
   smallBannerUrl?: Maybe<Scalars['String']>;
   trustsYou?: Maybe<Scalars['Int']>;
 };
@@ -1335,13 +1335,13 @@ export type UpsertOrganisationInput = {
   circlesAddress?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
   displayCurrency?: InputMaybe<DisplayCurrency>;
+  firstName: Scalars['String'];
   id?: InputMaybe<Scalars['Int']>;
   largeBannerUrl?: InputMaybe<Scalars['String']>;
   lat?: InputMaybe<Scalars['Float']>;
   location?: InputMaybe<Scalars['String']>;
   locationName?: InputMaybe<Scalars['String']>;
   lon?: InputMaybe<Scalars['Float']>;
-  name: Scalars['String'];
   phoneNumber?: InputMaybe<Scalars['String']>;
   smallBannerUrl?: InputMaybe<Scalars['String']>;
 };
@@ -2217,6 +2217,7 @@ export type OrganisationResolvers<ContextType = any, ParentType extends Resolver
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   displayCurrency?: Resolver<Maybe<ResolversTypes['DisplayCurrency']>, ParentType, ContextType>;
   displayName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   largeBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lat?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -2224,7 +2225,6 @@ export type OrganisationResolvers<ContextType = any, ParentType extends Resolver
   locationName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lon?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   members?: Resolver<Maybe<Array<ResolversTypes['ProfileOrOrganisation']>>, ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   smallBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   trustsYou?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

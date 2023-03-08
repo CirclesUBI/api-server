@@ -4,19 +4,13 @@ import { ProfileLoader } from "../../querySources/profileLoader";
 import { Environment } from "../../environment";
 import { PrismaClient } from "../../api-db/client";
 
-export const verifications = async (
-  parent: any,
-  args: QueryVerificationsArgs,
-  context?: Context
-) => {
+export const verifications = async (parent: any, args: QueryVerificationsArgs, context?: Context) => {
   const where: any = {
     revokedAt: null,
   };
 
   const limit = args.pagination
-    ? Number.isInteger(args.pagination.limit) &&
-      args.pagination.limit > 0 &&
-      args.pagination.limit <= 100
+    ? Number.isInteger(args.pagination.limit) && args.pagination.limit > 0 && args.pagination.limit <= 100
       ? args.pagination.limit
       : 50
     : 50;
@@ -93,8 +87,7 @@ export const verifications = async (
         verifierSafeAddress: o.createdByOrganisation.circlesAddress,
         verifierProfile: {
           ...profiles[o.createdByOrganisation.circlesAddress ?? ""],
-          name: profiles[o.createdByOrganisation.circlesAddress ?? ""]
-            ?.firstName,
+          firstName: profiles[o.createdByOrganisation.circlesAddress ?? ""]?.firstName,
         },
       };
     });
