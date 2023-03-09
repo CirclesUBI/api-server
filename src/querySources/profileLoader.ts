@@ -290,12 +290,12 @@ export class ProfileLoader {
       };
     }
 
-    const nonLocalProfileMap: SafeProfileMap = {};
-    lowercaseAddresses
-      .filter((addr) => !allProfilesMap[addr])
-      .forEach((addr) => {
-        nonLocalProfileMap[addr] = null;
-      });
+    // const nonLocalProfileMap: SafeProfileMap = {};
+    // lowercaseAddresses
+    //   .filter((addr) => !allProfilesMap[addr])
+    //   .forEach((addr) => {
+    //     nonLocalProfileMap[addr] = null;
+    //   });
 
     // const circlesGardenRemoteResult = await this.queryCirclesGardenRemote(
     //   prisma,
@@ -310,37 +310,37 @@ export class ProfileLoader {
     //   }
     // });
 
-    const nonLocal = Object.keys(nonLocalProfileMap).filter(
-      (o) => allProfilesMap[o]
-    );
-    const notFound = Object.keys(nonLocalProfileMap).filter(
-      (o) => !allProfilesMap[o]
-    );
-
-    const nonLocalProfiles = nonLocal.map((o) => nonLocalProfileMap[o]);
-    const notFoundProfiles = notFound.map((o) => {
-      return <any>{
-        origin: ProfileOrigin.Unknown,
-        type: ProfileType.Person,
-        circlesAddress: o,
-        name: o,
-        avatarUrl: null,
-      };
-    });
+    // const nonLocal = Object.keys(nonLocalProfileMap).filter(
+    //   (o) => allProfilesMap[o]
+    // );
+    // const notFound = Object.keys(nonLocalProfileMap).filter(
+    //   (o) => !allProfilesMap[o]
+    // );
+    //
+    // const nonLocalProfiles = nonLocal.map((o) => nonLocalProfileMap[o]);
+    // const notFoundProfiles = notFound.map((o) => {
+    //   return <any>{
+    //     origin: ProfileOrigin.Unknown,
+    //     type: ProfileType.Person,
+    //     circlesAddress: o,
+    //     name: o,
+    //     avatarUrl: null,
+    //   };
+    // });
 
     // Persist the non-local results in the api-db
-    await prisma.externalProfiles.createMany({
-      data: nonLocalProfiles.concat(notFoundProfiles).map((o) => {
-        if (!o || !o.circlesAddress) throw new Error(`Invalid state`);
-
-        return {
-          circlesAddress: o.circlesAddress,
-          name: o.firstName ?? o.circlesAddress,
-          avatarUrl: o.avatarUrl ?? null,
-        };
-      }),
-      skipDuplicates: true,
-    });
+    // await prisma.externalProfiles.createMany({
+    //   data: nonLocalProfiles.concat(notFoundProfiles).map((o) => {
+    //     if (!o || !o.circlesAddress) throw new Error(`Invalid state`);
+    //
+    //     return {
+    //       circlesAddress: o.circlesAddress,
+    //       name: o.firstName ?? o.circlesAddress,
+    //       avatarUrl: o.avatarUrl ?? null,
+    //     };
+    //   }),
+    //   skipDuplicates: true,
+    // });
 
     return allProfilesMap;
   }
