@@ -1,7 +1,7 @@
 import {PrismaClient} from "../api-db/client";
 import {DisplayCurrency, Organisation, Profile, ProfileOrigin, ProfileType, Verification,} from "../types";
-// import {RpcGateway} from "../circles/rpcGateway";
-// import fetch from "cross-fetch";
+import {RpcGateway} from "../circles/rpcGateway";
+import fetch from "cross-fetch";
 
 export type SafeProfileMap = { [safeAddress: string]: Profile & {emailAddressVerified:boolean, askedForEmailAddress:boolean} | null };
 export type IdProfileMap = { [id: number]: Profile & {emailAddressVerified:boolean, askedForEmailAddress:boolean} | null };
@@ -186,57 +186,57 @@ export class ProfileLoader {
   //   return safeProfileMap;
   // }
   //
-  // async queryCirclesGardenRemote(
-  //     prisma: PrismaClient,
-  //     safeAddresses: string[]
-  // ): Promise<SafeProfileMap> {
-  //   // Batch all safeAddresses (max. 50)
-  //
-  //   const safeAddressCopy = JSON.parse(JSON.stringify(safeAddresses));
-  //   const batches: string[][] = [];
-  //
-  //   while (safeAddressCopy.length) {
-  //     batches.push(safeAddressCopy.splice(0, 50));
-  //   }
-  //
-  //   const safeProfileMap: SafeProfileMap = {};
-  //
-  //   if (batches.length == 0) {
-  //     return safeProfileMap;
-  //   }
-  //
-  //   for (let batch of batches) {
-  //     const query = batch.reduce(
-  //         (p, c) =>
-  //             p + `address[]=${RpcGateway.get().utils.toChecksumAddress(c)}&`,
-  //         ""
-  //     );
-  //     const requestUrl = `https://api.circles.garden/api/users/?${query}`;
-  //
-  //     const requestResult = await fetch(requestUrl);
-  //     const requestResultJson = await requestResult.json();
-  //
-  //     const profiles: (Profile & { emailAddressVerified: boolean })[] =
-  //         requestResultJson.data.map((o: any) => {
-  //           return <Profile & { emailAddressVerified: boolean }>{
-  //             id: -1,
-  //             type: ProfileType.Person,
-  //             firstName: o.username,
-  //             lastName: "",
-  //             circlesAddress: o.safeAddress.toLowerCase(),
-  //             avatarUrl: o.avatarUrl,
-  //             emailAddressVerified: false
-  //           };
-  //         }) ?? [];
-  //
-  //     profiles.forEach((o) => {
-  //       if (!o.circlesAddress) return;
-  //       safeProfileMap[o.circlesAddress] = o;
-  //     }, safeProfileMap);
-  //   }
-  //
-  //   return safeProfileMap;
-  // }
+  async queryCirclesGardenRemote(
+      prisma: PrismaClient,
+      safeAddresses: string[]
+  ): Promise<SafeProfileMap> {
+    // Batch all safeAddresses (max. 50)
+
+    const safeAddressCopy = JSON.parse(JSON.stringify(safeAddresses));
+    const batches: string[][] = [];
+
+    while (safeAddressCopy.length) {
+      batches.push(safeAddressCopy.splice(0, 50));
+    }
+
+    const safeProfileMap: SafeProfileMap = {};
+
+    if (batches.length == 0) {
+      return safeProfileMap;
+    }
+
+    for (let batch of batches) {
+      const query = batch.reduce(
+          (p, c) =>
+              p + `address[]=${RpcGateway.get().utils.toChecksumAddress(c)}&`,
+          ""
+      );
+      const requestUrl = `https://api.circles.garden/api/users/?${query}`;
+
+      const requestResult = await fetch(requestUrl);
+      const requestResultJson = await requestResult.json();
+
+      const profiles: (Profile & { emailAddressVerified: boolean })[] =
+          requestResultJson.data.map((o: any) => {
+            return <Profile & { emailAddressVerified: boolean }>{
+              id: -1,
+              type: ProfileType.Person,
+              firstName: o.username,
+              lastName: "",
+              circlesAddress: o.safeAddress.toLowerCase(),
+              avatarUrl: o.avatarUrl,
+              emailAddressVerified: false
+            };
+          }) ?? [];
+
+      profiles.forEach((o) => {
+        if (!o.circlesAddress) return;
+        safeProfileMap[o.circlesAddress] = o;
+      }, safeProfileMap);
+    }
+
+    return safeProfileMap;
+  }
 
   async profilesBySafeAddress(
     prisma: PrismaClient,
