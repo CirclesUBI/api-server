@@ -8,7 +8,7 @@ export function surveyData() {
       data: {
         sesssionId: args.data.sessionId,
         allConsentsGiven: args.data.allConsentsGiven,
-        userType: args.data.userType,
+        villageId: args.data.villageId,
         gender: args.data.gender,
         dateOfBirth: args.data.dateOfBirth,
       },
