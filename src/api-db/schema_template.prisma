@@ -13,7 +13,7 @@ model SurveyData {
     id Int @id @default(autoincrement())
     sesssionId String @unique
     allConsentsGiven Boolean
-    userType String
+    villageId Int
     gender String
     dateOfBirth DateTime
     profilesWithSurveyData Profile[] @relation("Profile_SurveyDataSessionId")   
@@ -431,6 +431,13 @@ model Profile {
     surveyDataSession SurveyData? @relation(name: "Profile_SurveyDataSessionId", fields: [surveyDataSessionId], references: [sesssionId]) 
     surveyDataSessionId String? @unique
       
+}
+
+model BaliVillage {
+    id Int @id @default(autoincrement())
+    desa String
+    kecamatan String
+    kabupaten String
 }
 
 model Favorites {
