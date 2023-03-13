@@ -6,6 +6,18 @@ import fetch from "cross-fetch";
 export type SafeProfileMap = { [safeAddress: string]: Profile & {emailAddressVerified:boolean, askedForEmailAddress:boolean} | null };
 export type IdProfileMap = { [id: number]: Profile & {emailAddressVerified:boolean, askedForEmailAddress:boolean} | null };
 
+export function hashCodeFromString(str:string) {
+  var hash = 0,
+      i, chr;
+  if (str.length === 0) return hash;
+  for (i = 0; i < str.length; i++) {
+    chr = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+}
+
 export class ProfileLoader {
   async queryCirclesLandById(
     prisma: PrismaClient,
@@ -257,7 +269,7 @@ export class ProfileLoader {
         allProfilesMap[address] = profile;
       } else {
         allProfilesMap[address] = <any>{
-          id: -(i),
+          id: hashCodeFromString(address),
           origin: ProfileOrigin.Unknown,
           type: ProfileType.Person,
           circlesAddress: address,
