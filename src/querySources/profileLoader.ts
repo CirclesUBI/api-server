@@ -243,36 +243,28 @@ export class ProfileLoader {
     addresses: string[]
   ): Promise<SafeProfileMap> {
     const lowercaseAddresses = addresses.map((o) => o.toLowerCase());
-    const circlesLandProfilesPromise = this.queryCirclesLandBySafeAddress(
+    const localQueryResults = await this.queryCirclesLandBySafeAddress(
       prisma,
       lowercaseAddresses
     );
-    // const circlesGardenLocalPromise = this.queryCirclesGardenLocal(
-    //   prisma,
-    //   lowercaseAddresses
-    // );
-
-    const localQueryResults = await Promise.all([
-      circlesLandProfilesPromise,
-      // circlesGardenLocalPromise,
-    ]);
-
-    const circlesLandProfilesResult = localQueryResults[0];
-    // const circlesGardenLocalResult = localQueryResults[1];
 
     const allProfilesMap: SafeProfileMap = {};
-    // Object.entries(circlesGardenLocalResult).forEach((entry) => {
-    //   const profile = entry[1];
-    //   if (profile) {
-    //     profile.origin = ProfileOrigin.CirclesGarden;
-    //     allProfilesMap[entry[0]] = profile;
-    //   }
-    // });
-    Object.entries(circlesLandProfilesResult).forEach((entry) => {
-      const profile = entry[1];
+
+    addresses.forEach((address) => {
+      const profile = localQueryResults[address.toLowerCase()];
       if (profile) {
         profile.origin = ProfileOrigin.CirclesLand;
-        allProfilesMap[entry[0]] = profile;
+        allProfilesMap[address] = profile;
+      } else {
+        allProfilesMap[address] = <any>{
+          origin: ProfileOrigin.Unknown,
+          type: ProfileType.Person,
+          circlesAddress: address,
+          name: address,
+          displayName: address,
+          firstName: address,
+          avatarUrl: null,
+        };
       }
     });
 
@@ -289,58 +281,6 @@ export class ProfileLoader {
         origin: ProfileOrigin.Unknown,
       };
     }
-
-    // const nonLocalProfileMap: SafeProfileMap = {};
-    // lowercaseAddresses
-    //   .filter((addr) => !allProfilesMap[addr])
-    //   .forEach((addr) => {
-    //     nonLocalProfileMap[addr] = null;
-    //   });
-
-    // const circlesGardenRemoteResult = await this.queryCirclesGardenRemote(
-    //   prisma,
-    //   Object.keys(nonLocalProfileMap)
-    // );
-    // Object.entries(circlesGardenRemoteResult).forEach((entry) => {
-    //   const profile = entry[1];
-    //   if (profile) {
-    //     profile.origin = ProfileOrigin.CirclesGarden;
-    //     allProfilesMap[entry[0]] = profile;
-    //     nonLocalProfileMap[entry[0]] = profile;
-    //   }
-    // });
-
-    // const nonLocal = Object.keys(nonLocalProfileMap).filter(
-    //   (o) => allProfilesMap[o]
-    // );
-    // const notFound = Object.keys(nonLocalProfileMap).filter(
-    //   (o) => !allProfilesMap[o]
-    // );
-    //
-    // const nonLocalProfiles = nonLocal.map((o) => nonLocalProfileMap[o]);
-    // const notFoundProfiles = notFound.map((o) => {
-    //   return <any>{
-    //     origin: ProfileOrigin.Unknown,
-    //     type: ProfileType.Person,
-    //     circlesAddress: o,
-    //     name: o,
-    //     avatarUrl: null,
-    //   };
-    // });
-
-    // Persist the non-local results in the api-db
-    // await prisma.externalProfiles.createMany({
-    //   data: nonLocalProfiles.concat(notFoundProfiles).map((o) => {
-    //     if (!o || !o.circlesAddress) throw new Error(`Invalid state`);
-    //
-    //     return {
-    //       circlesAddress: o.circlesAddress,
-    //       name: o.firstName ?? o.circlesAddress,
-    //       avatarUrl: o.avatarUrl ?? null,
-    //     };
-    //   }),
-    //   skipDuplicates: true,
-    // });
 
     return allProfilesMap;
   }
