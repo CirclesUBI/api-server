@@ -250,13 +250,14 @@ export class ProfileLoader {
 
     const allProfilesMap: SafeProfileMap = {};
 
-    addresses.forEach((address) => {
+    addresses.forEach((address, i) => {
       const profile = localQueryResults[address.toLowerCase()];
       if (profile) {
         profile.origin = ProfileOrigin.CirclesLand;
         allProfilesMap[address] = profile;
       } else {
         allProfilesMap[address] = <any>{
+          id: -(i),
           origin: ProfileOrigin.Unknown,
           type: ProfileType.Person,
           circlesAddress: address,
