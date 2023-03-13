@@ -6,3 +6,4 @@ CREATE TABLE "BaliVillage" (
 	kecamatan VARCHAR(255) NOT NULL,
 	kabupaten VARCHAR(255) NOT NULL
 );
+
