@@ -1,45 +1,45 @@
-import {myProfile, profilesBySafeAddress} from "./profiles";
-import {sessionInfo} from "./sessionInfo";
-import {search} from "./search";
-import {version} from "./version";
-import {tags} from "./tags";
-import {tagById} from "./tagById";
-import {claimedInvitation} from "./claimedInvitation";
-import {trustRelations} from "./trustRelations";
-import {commonTrust} from "./commonTrust";
-import {organisations} from "./organisations";
-import {safeInfo} from "./safeInfo";
-import {hubSignupTransactionResolver} from "./hubSignupTransactionResolver";
-import {invitationTransaction} from "./invitationTransaction";
-import {myInvitations} from "./myInvitations";
-import {organisationsByAddress} from "./organisationsByAddress";
-import {regionsResolver} from "./regions";
-import {findSafesByOwner} from "./findSafesByOwner";
-import {profilesById} from "./profilesById";
-import {aggregates} from "./aggregates";
-import {events} from "./events";
-import {directPath} from "./directPath";
-import {verifications} from "./verifications";
-import {findInvitationCreator} from "./findInvitationCreator";
-import {recentProfiles} from "./recentProfiles";
-import {stats} from "./stats";
-import {init} from "./init";
-import {Environment} from "../../environment";
-import {ExportProfile, ExportTrustRelation, Favorite, QueryResolvers} from "../../types";
-import {Context} from "../../context";
-import {clientAssertionJwt} from "./clientAssertionJwt";
-import {lastAcknowledgedAt} from "./lastAcknowledgedAt";
-import {getStringByMaxVersion} from "./getStringByMaxVersion";
-import {getAvailableLanguages} from "./getAvailableLanguages";
-import {getAllStringsByMaxVersion} from "./getAllStringsByMaxVersion";
-import {getAllStringsByMaxVersionAndLang} from "./getAllStringsByMaxVersionAndLang";
-import {getOlderVersionsByKeyAndLang} from "./getOlderVersionsByKeyAndLang";
-import {RpcGateway} from "../../circles/rpcGateway";
-import {getStringsToBeUpdatedAmount} from "./getStringsToBeUpdatedAmount";
-import {getPaginatedStrings} from "./getstPaginatedStrings";
-import {getPaginatedStringsToUpdate} from "./getPaginatedStringsToUpdate";
-import {allBusinesses} from "./allBusinesses";
-import {getDisplayName} from "../../utils/getDisplayName";
+import { myProfile, profilesBySafeAddress } from "./profiles";
+import { sessionInfo } from "./sessionInfo";
+import { search } from "./search";
+import { version } from "./version";
+import { tags } from "./tags";
+import { tagById } from "./tagById";
+import { claimedInvitation } from "./claimedInvitation";
+import { trustRelations } from "./trustRelations";
+import { commonTrust } from "./commonTrust";
+import { organisations } from "./organisations";
+import { safeInfo } from "./safeInfo";
+import { hubSignupTransactionResolver } from "./hubSignupTransactionResolver";
+import { invitationTransaction } from "./invitationTransaction";
+import { myInvitations } from "./myInvitations";
+import { organisationsByAddress } from "./organisationsByAddress";
+import { regionsResolver } from "./regions";
+import { findSafesByOwner } from "./findSafesByOwner";
+import { profilesById } from "./profilesById";
+import { aggregates } from "./aggregates";
+import { events } from "./events";
+import { directPath } from "./directPath";
+import { verifications } from "./verifications";
+import { findInvitationCreator } from "./findInvitationCreator";
+import { recentProfiles } from "./recentProfiles";
+import { stats } from "./stats";
+import { init } from "./init";
+import { Environment } from "../../environment";
+import { ExportProfile, ExportTrustRelation, Favorite, QueryResolvers } from "../../types";
+import { Context } from "../../context";
+import { clientAssertionJwt } from "./clientAssertionJwt";
+import { lastAcknowledgedAt } from "./lastAcknowledgedAt";
+import { getStringByMaxVersion } from "./getStringByMaxVersion";
+import { getAvailableLanguages } from "./getAvailableLanguages";
+import { getAllStringsByMaxVersion } from "./getAllStringsByMaxVersion";
+import { getAllStringsByMaxVersionAndLang } from "./getAllStringsByMaxVersionAndLang";
+import { getOlderVersionsByKeyAndLang } from "./getOlderVersionsByKeyAndLang";
+import { RpcGateway } from "../../circles/rpcGateway";
+import { getStringsToBeUpdatedAmount } from "./getStringsToBeUpdatedAmount";
+import { getPaginatedStrings } from "./getstPaginatedStrings";
+import { getPaginatedStringsToUpdate } from "./getPaginatedStringsToUpdate";
+import { allBusinesses } from "./allBusinesses";
+import { getDisplayName } from "../../utils/getDisplayName";
 
 const packageJson = require("../../../package.json");
 
@@ -86,25 +86,29 @@ export const queryResolvers: QueryResolvers = {
   getOlderVersionsByKeyAndLang: getOlderVersionsByKeyAndLang,
   getStringsToBeUpdatedAmount: getStringsToBeUpdatedAmount,
   getPaginatedStrings: getPaginatedStrings,
-  getPaginatedStringsToUpdate:getPaginatedStringsToUpdate,
+  getPaginatedStringsToUpdate: getPaginatedStringsToUpdate,
   allBusinesses: allBusinesses,
-  allBusinessCategories: async(parent: any, args: {categoryId?: number|null}, context: Context) => {
+  allBusinessCategories: async (parent: any, args: { categoryId?: number | null }, context: Context) => {
     return Environment.readonlyApiDb.businessCategory.findMany();
   },
-  myFavorites: async(parent: any, args:any, context: Context) => {
+  allBaliVillages: async (parent: any, args: { id?: number | null }, context: Context) => {
+    return Environment.readonlyApiDb.baliVillage.findMany();
+  },
+  myFavorites: async (parent: any, args: any, context: Context) => {
     const caller = await context.callerInfo;
-    return (await Environment.readonlyApiDb.favorites.findMany({
-      where: {
-        createdByCirclesAddress: caller?.profile?.circlesAddress ?? ""
-      }
-    }))
-    .map(o => {
+    return (
+      await Environment.readonlyApiDb.favorites.findMany({
+        where: {
+          createdByCirclesAddress: caller?.profile?.circlesAddress ?? "",
+        },
+      })
+    ).map((o) => {
       return <Favorite>{
         createdAt: o.createdAt.toJSON(),
         createdByAddress: o.createdByCirclesAddress,
         favoriteAddress: o.favoriteCirclesAddress,
-        comment: o.comment
-      }
+        comment: o.comment,
+      };
     });
   },
   allProfiles: async (parent, args, context) => {

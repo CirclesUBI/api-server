@@ -1,4 +1,4 @@
-name: Images
+name: Ncat
 
 on:
   push:
@@ -6,17 +6,15 @@ on:
     - main
     - next
     - dev
-    paths-ignore:
-    - "src/api-db-migrations/**"
-    - ".github/workflows/build-push.migrations.yml"
-    - ".github/workflows/build-push.ncat.yml"
-    - "Dockerfile.migrations"
+    paths:
     - "Dockerfile.ncat"
+    - ".github/workflows/build-push.ncat.yml"
 
 jobs:
   call-build-and-push:
     name: Call
     uses: CirclesUBI/.github/.github/workflows/build-and-push.yml@main
     with:
-      image-name: "api-server"
+      image-name: "api-server-ncat"
+      file: "Dockerfile.ncat"
     secrets: inherit

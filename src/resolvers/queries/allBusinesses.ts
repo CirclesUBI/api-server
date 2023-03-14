@@ -116,6 +116,7 @@ order by A."firstName" asc;`;
       firstName: true,
       dream: true,
       location: true,
+      locationName: true,
       lat: true,
       lon: true,
       circlesAddress: true,
@@ -147,7 +148,7 @@ order by A."firstName" asc;`;
       .map((row: any) => {
         return map[row.circlesAddress];
       })
-      .filter((o:any) => o)
+      .filter((o: any) => o)
       .map((o: any) => {
         return <Businesses>{
           ...o,

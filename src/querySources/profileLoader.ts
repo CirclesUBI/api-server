@@ -6,6 +6,18 @@ import fetch from "cross-fetch";
 export type SafeProfileMap = { [safeAddress: string]: Profile & {emailAddressVerified:boolean, askedForEmailAddress:boolean} | null };
 export type IdProfileMap = { [id: number]: Profile & {emailAddressVerified:boolean, askedForEmailAddress:boolean} | null };
 
+export function hashCodeFromString(str:string) {
+  var hash = 0,
+      i, chr;
+  if (str.length === 0) return hash;
+  for (i = 0; i < str.length; i++) {
+    chr = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+}
+
 export class ProfileLoader {
   async queryCirclesLandById(
     prisma: PrismaClient,
@@ -52,24 +64,24 @@ export class ProfileLoader {
     };
   }
 
-  async queryRecentProfiles(
-    prisma: PrismaClient
-  ): Promise<{ safeProfileMap: SafeProfileMap; idProfileMap: IdProfileMap }> {
-    const profiles = await prisma.profile.findMany({
-      where: {
-        circlesAddress: { not: null },
-      },
-      orderBy: {
-        id: "desc",
-      },
-      take: 100,
-    });
-
-    const safeProfileMap = profiles.toLookup(c => c.circlesAddress, c => ProfileLoader.withDisplayCurrency(c));
-    const idProfileMap = profiles.toLookup(c => c.id, c => ProfileLoader.withDisplayCurrency(c));
-
-    return { safeProfileMap, idProfileMap };
-  }
+  // async queryRecentProfiles(
+  //   prisma: PrismaClient
+  // ): Promise<{ safeProfileMap: SafeProfileMap; idProfileMap: IdProfileMap }> {
+  //   const profiles = await prisma.profile.findMany({
+  //     where: {
+  //       circlesAddress: { not: null },
+  //     },
+  //     orderBy: {
+  //       id: "desc",
+  //     },
+  //     take: 100,
+  //   });
+  //
+  //   const safeProfileMap = profiles.toLookup(c => c.circlesAddress, c => ProfileLoader.withDisplayCurrency(c));
+  //   const idProfileMap = profiles.toLookup(c => c.id, c => ProfileLoader.withDisplayCurrency(c));
+  //
+  //   return { safeProfileMap, idProfileMap };
+  // }
 
   async queryCirclesLandBySafeAddress(
     prisma: PrismaClient,
@@ -158,37 +170,37 @@ export class ProfileLoader {
     return safeProfileMap;
   }
 
-  async queryCirclesGardenLocal(
-    prisma: PrismaClient,
-    safeAddresses: string[]
-  ): Promise<SafeProfileMap> {
-    const profiles = await prisma.externalProfiles.findMany({
-      where: {
-        circlesAddress: {
-          in: safeAddresses,
-        },
-      },
-    });
-
-    const safeProfileMap = profiles
-      .map((o) => {
-        return <Profile & {emailAddressVerified:boolean}>{
-          id: -1,
-          type: ProfileType.Person,
-          circlesAddress: o.circlesAddress,
-          firstName: o.name,
-          avatarUrl: o.avatarUrl,
-          emailAddressVerified: false
-        };
-      })
-      .toLookup(c => c.circlesAddress, c => c);
-
-    return safeProfileMap;
-  }
-
+  // async queryCirclesGardenLocal(
+  //     prisma: PrismaClient,
+  //     safeAddresses: string[]
+  // ): Promise<SafeProfileMap> {
+  //   const profiles = await prisma.externalProfiles.findMany({
+  //     where: {
+  //       circlesAddress: {
+  //         in: safeAddresses,
+  //       },
+  //     },
+  //   });
+  //
+  //   const safeProfileMap = profiles
+  //       .map((o) => {
+  //         return <Profile & { emailAddressVerified: boolean }>{
+  //           id: -1,
+  //           type: ProfileType.Person,
+  //           circlesAddress: o.circlesAddress,
+  //           firstName: o.name,
+  //           avatarUrl: o.avatarUrl,
+  //           emailAddressVerified: false
+  //         };
+  //       })
+  //       .toLookup(c => c.circlesAddress, c => c);
+  //
+  //   return safeProfileMap;
+  // }
+  //
   async queryCirclesGardenRemote(
-    prisma: PrismaClient,
-    safeAddresses: string[]
+      prisma: PrismaClient,
+      safeAddresses: string[]
   ): Promise<SafeProfileMap> {
     // Batch all safeAddresses (max. 50)
 
@@ -207,27 +219,27 @@ export class ProfileLoader {
 
     for (let batch of batches) {
       const query = batch.reduce(
-        (p, c) =>
-          p + `address[]=${RpcGateway.get().utils.toChecksumAddress(c)}&`,
-        ""
+          (p, c) =>
+              p + `address[]=${RpcGateway.get().utils.toChecksumAddress(c)}&`,
+          ""
       );
       const requestUrl = `https://api.circles.garden/api/users/?${query}`;
 
       const requestResult = await fetch(requestUrl);
       const requestResultJson = await requestResult.json();
 
-      const profiles: (Profile & {emailAddressVerified:boolean})[] =
-        requestResultJson.data.map((o: any) => {
-          return <Profile & {emailAddressVerified: boolean}>{
-            id: -1,
-            type: ProfileType.Person,
-            firstName: o.username,
-            lastName: "",
-            circlesAddress: o.safeAddress.toLowerCase(),
-            avatarUrl: o.avatarUrl,
-            emailAddressVerified: false
-          };
-        }) ?? [];
+      const profiles: (Profile & { emailAddressVerified: boolean })[] =
+          requestResultJson.data.map((o: any) => {
+            return <Profile & { emailAddressVerified: boolean }>{
+              id: -1,
+              type: ProfileType.Person,
+              firstName: o.username,
+              lastName: "",
+              circlesAddress: o.safeAddress.toLowerCase(),
+              avatarUrl: o.avatarUrl,
+              emailAddressVerified: false
+            };
+          }) ?? [];
 
       profiles.forEach((o) => {
         if (!o.circlesAddress) return;
@@ -243,36 +255,29 @@ export class ProfileLoader {
     addresses: string[]
   ): Promise<SafeProfileMap> {
     const lowercaseAddresses = addresses.map((o) => o.toLowerCase());
-    const circlesLandProfilesPromise = this.queryCirclesLandBySafeAddress(
+    const localQueryResults = await this.queryCirclesLandBySafeAddress(
       prisma,
       lowercaseAddresses
     );
-    const circlesGardenLocalPromise = this.queryCirclesGardenLocal(
-      prisma,
-      lowercaseAddresses
-    );
-
-    const localQueryResults = await Promise.all([
-      circlesLandProfilesPromise,
-      circlesGardenLocalPromise,
-    ]);
-
-    const circlesLandProfilesResult = localQueryResults[0];
-    const circlesGardenLocalResult = localQueryResults[1];
 
     const allProfilesMap: SafeProfileMap = {};
-    Object.entries(circlesGardenLocalResult).forEach((entry) => {
-      const profile = entry[1];
-      if (profile) {
-        profile.origin = ProfileOrigin.CirclesGarden;
-        allProfilesMap[entry[0]] = profile;
-      }
-    });
-    Object.entries(circlesLandProfilesResult).forEach((entry) => {
-      const profile = entry[1];
+
+    addresses.forEach((address, i) => {
+      const profile = localQueryResults[address.toLowerCase()];
       if (profile) {
         profile.origin = ProfileOrigin.CirclesLand;
-        allProfilesMap[entry[0]] = profile;
+        allProfilesMap[address] = profile;
+      } else {
+        allProfilesMap[address] = <any>{
+          id: hashCodeFromString(address),
+          origin: ProfileOrigin.Unknown,
+          type: ProfileType.Person,
+          circlesAddress: address,
+          name: address,
+          displayName: address,
+          firstName: address,
+          avatarUrl: null,
+        };
       }
     });
 
@@ -289,58 +294,6 @@ export class ProfileLoader {
         origin: ProfileOrigin.Unknown,
       };
     }
-
-    const nonLocalProfileMap: SafeProfileMap = {};
-    lowercaseAddresses
-      .filter((addr) => !allProfilesMap[addr])
-      .forEach((addr) => {
-        nonLocalProfileMap[addr] = null;
-      });
-
-    const circlesGardenRemoteResult = await this.queryCirclesGardenRemote(
-      prisma,
-      Object.keys(nonLocalProfileMap)
-    );
-    Object.entries(circlesGardenRemoteResult).forEach((entry) => {
-      const profile = entry[1];
-      if (profile) {
-        profile.origin = ProfileOrigin.CirclesGarden;
-        allProfilesMap[entry[0]] = profile;
-        nonLocalProfileMap[entry[0]] = profile;
-      }
-    });
-
-    const nonLocal = Object.keys(nonLocalProfileMap).filter(
-      (o) => allProfilesMap[o]
-    );
-    const notFound = Object.keys(nonLocalProfileMap).filter(
-      (o) => !allProfilesMap[o]
-    );
-
-    const nonLocalProfiles = nonLocal.map((o) => nonLocalProfileMap[o]);
-    const notFoundProfiles = notFound.map((o) => {
-      return <any>{
-        origin: ProfileOrigin.Unknown,
-        type: ProfileType.Person,
-        circlesAddress: o,
-        name: o,
-        avatarUrl: null,
-      };
-    });
-
-    // Persist the non-local results in the api-db
-    await prisma.externalProfiles.createMany({
-      data: nonLocalProfiles.concat(notFoundProfiles).map((o) => {
-        if (!o || !o.circlesAddress) throw new Error(`Invalid state`);
-
-        return {
-          circlesAddress: o.circlesAddress,
-          name: o.firstName ?? o.circlesAddress,
-          avatarUrl: o.avatarUrl ?? null,
-        };
-      }),
-      skipDuplicates: true,
-    });
 
     return allProfilesMap;
   }

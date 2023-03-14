@@ -53,6 +53,14 @@ export type AssetBalance = {
   token_symbol?: Maybe<Scalars['String']>;
 };
 
+export type BaliVillage = {
+  __typename?: 'BaliVillage';
+  desa: Scalars['String'];
+  id: Scalars['Int'];
+  kabupaten: Scalars['String'];
+  kecamatan: Scalars['String'];
+};
+
 export type BusinessCategory = {
   __typename?: 'BusinessCategory';
   id: Scalars['Int'];
@@ -874,6 +882,7 @@ export type PublicEvent = {
 export type Query = {
   __typename?: 'Query';
   aggregates: Array<ProfileAggregate>;
+  allBaliVillages: Array<BaliVillage>;
   allBusinessCategories: Array<BusinessCategory>;
   allBusinesses: Array<Businesses>;
   allProfiles: Array<Maybe<ExportProfile>>;
@@ -1245,7 +1254,7 @@ export type SurveyData = {
   gender: Scalars['String'];
   id?: Maybe<Scalars['Int']>;
   sesssionId: Scalars['String'];
-  userType: Scalars['String'];
+  villageId: Scalars['Int'];
 };
 
 export type SurveyDataInput = {
@@ -1253,7 +1262,7 @@ export type SurveyDataInput = {
   dateOfBirth: Scalars['Date'];
   gender: Scalars['String'];
   sessionId: Scalars['String'];
-  userType: Scalars['String'];
+  villageId: Scalars['Int'];
 };
 
 export type SurveyDataResult = {
@@ -1503,6 +1512,7 @@ export type ResolversTypes = ResolversObject<{
   AggregatePayload: ResolversTypes['Contacts'] | ResolversTypes['CrcBalances'] | ResolversTypes['Erc20Balances'] | ResolversTypes['Members'] | ResolversTypes['Memberships'];
   AggregateType: AggregateType;
   AssetBalance: ResolverTypeWrapper<AssetBalance>;
+  BaliVillage: ResolverTypeWrapper<BaliVillage>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   BusinessCategory: ResolverTypeWrapper<BusinessCategory>;
   Businesses: ResolverTypeWrapper<Businesses>;
@@ -1634,6 +1644,7 @@ export type ResolversParentTypes = ResolversObject<{
   AddMemberResult: AddMemberResult;
   AggregatePayload: ResolversParentTypes['Contacts'] | ResolversParentTypes['CrcBalances'] | ResolversParentTypes['Erc20Balances'] | ResolversParentTypes['Members'] | ResolversParentTypes['Memberships'];
   AssetBalance: AssetBalance;
+  BaliVillage: BaliVillage;
   Boolean: Scalars['Boolean'];
   BusinessCategory: BusinessCategory;
   Businesses: Businesses;
@@ -1781,6 +1792,14 @@ export type AssetBalanceResolvers<ContextType = any, ParentType extends Resolver
   token_owner_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   token_owner_profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   token_symbol?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type BaliVillageResolvers<ContextType = any, ParentType extends ResolversParentTypes['BaliVillage'] = ResolversParentTypes['BaliVillage']> = ResolversObject<{
+  desa?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  kabupaten?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  kecamatan?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2338,6 +2357,7 @@ export type PublicEventResolvers<ContextType = any, ParentType extends Resolvers
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   aggregates?: Resolver<Array<ResolversTypes['ProfileAggregate']>, ParentType, ContextType, RequireFields<QueryAggregatesArgs, 'safeAddress' | 'types'>>;
+  allBaliVillages?: Resolver<Array<ResolversTypes['BaliVillage']>, ParentType, ContextType>;
   allBusinessCategories?: Resolver<Array<ResolversTypes['BusinessCategory']>, ParentType, ContextType>;
   allBusinesses?: Resolver<Array<ResolversTypes['Businesses']>, ParentType, ContextType, Partial<QueryAllBusinessesArgs>>;
   allProfiles?: Resolver<Array<Maybe<ResolversTypes['ExportProfile']>>, ParentType, ContextType, Partial<QueryAllProfilesArgs>>;
@@ -2481,7 +2501,7 @@ export type SurveyDataResolvers<ContextType = any, ParentType extends ResolversP
   gender?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   sesssionId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  userType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  villageId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2588,6 +2608,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   AddMemberResult?: AddMemberResultResolvers<ContextType>;
   AggregatePayload?: AggregatePayloadResolvers<ContextType>;
   AssetBalance?: AssetBalanceResolvers<ContextType>;
+  BaliVillage?: BaliVillageResolvers<ContextType>;
   BusinessCategory?: BusinessCategoryResolvers<ContextType>;
   Businesses?: BusinessesResolvers<ContextType>;
   Capability?: CapabilityResolvers<ContextType>;
