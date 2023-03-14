@@ -7,9 +7,11 @@ on:
     - next
     - dev
     paths-ignore:
-    - "Dockerfile.migrations"
     - "src/api-db-migrations/**"
     - ".github/workflows/build-push.migrations.yml"
+    - ".github/workflows/build-push.ncat.yml"
+    - "Dockerfile.migrations"
+    - "Dockerfile.ncat"
 
 jobs:
   call-build-and-push:
