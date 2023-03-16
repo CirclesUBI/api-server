@@ -1,20 +1,21 @@
-import {InviteCodeFromExternalTrigger} from "../../descriptions/onboarding/inviteCodeFromExternalTrigger";
-import {JobWorker, JobWorkerConfiguration} from "../jobWorker";
-import {createInvitations} from "../../../utils/invitationHelper";
-import {Environment} from "../../../environment";
+import { InviteCodeFromExternalTrigger } from "../../descriptions/onboarding/inviteCodeFromExternalTrigger";
+import { JobWorker, JobWorkerConfiguration } from "../jobWorker";
+import { createInvitations } from "../../../utils/invitationHelper";
+import { Environment } from "../../../environment";
 
 export class InviteCodeFromExternalTriggerWorker extends JobWorker<InviteCodeFromExternalTrigger> {
   name(): string {
     return "InviteCodeFromExternalTriggerWorker";
   }
 
-  constructor(configuration?:JobWorkerConfiguration) {
+  constructor(configuration?: JobWorkerConfiguration) {
     super(configuration);
   }
 
   async doWork(job: InviteCodeFromExternalTrigger) {
-    const verifiedSafe = await Environment.readWriteApiDb.verifiedSafe
-      .findUnique({where:{safeAddress: job.inviterSafeAddress}});
+    const verifiedSafe = await Environment.readWriteApiDb.verifiedSafe.findUnique({
+      where: { safeAddress: job.inviterSafeAddress },
+    });
 
     if (!verifiedSafe) {
       throw new Error(`The inviter safe address (${job.inviterSafeAddress}) doesn't belong to a verified safe.`);
@@ -28,10 +29,14 @@ export class InviteCodeFromExternalTriggerWorker extends JobWorker<InviteCodeFro
         statusCode: 302,
         message: `Go to: ${job.redirectUrl}`,
         headers: {
-          "Set-Cookie": `invitationCode=${createdInvitation.code}; Domain=${Environment.externalDomain}; Path=/; HttpOnly; SameSite=${Environment.cookieSameSitePolicy}; Max-Age=${(60 * 24)}; ${Environment.cookieSecurePolicy ? "Secure" : ""}`.trim(),
-          location: job.redirectUrl
-        }
-      }
+          "Set-Cookie": `invitationCode=${createdInvitation.code}; Domain=${
+            Environment.externalDomain
+          }; Path=/; SameSite=${Environment.cookieSameSitePolicy}; Max-Age=${60 * 24}; ${
+            Environment.cookieSecurePolicy ? "Secure" : ""
+          }`.trim(),
+          location: job.redirectUrl,
+        },
+      },
     };
   }
 }

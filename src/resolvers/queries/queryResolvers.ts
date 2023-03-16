@@ -92,7 +92,11 @@ export const queryResolvers: QueryResolvers = {
     return Environment.readonlyApiDb.businessCategory.findMany();
   },
   allBaliVillages: async (parent: any, args: { id?: number | null }, context: Context) => {
-    return Environment.readonlyApiDb.baliVillage.findMany();
+    return Environment.readonlyApiDb.baliVillage.findMany({
+      orderBy: {
+        desa: "asc",
+      },
+    });
   },
   myFavorites: async (parent: any, args: any, context: Context) => {
     const caller = await context.callerInfo;
