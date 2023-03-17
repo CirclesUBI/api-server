@@ -24,6 +24,7 @@ import { RotateJwks } from "./jobs/descriptions/maintenance/rotateJwks";
 import { RequestUbiForInactiveAccounts } from "./jobs/descriptions/maintenance/requestUbiForInactiveAccounts";
 import { linkGetHandler } from "./httpHandlers/get/link";
 import { uploadToS3PostHandler } from "./httpHandlers/post/uploadToS3";
+import { invitationValidationGetHandler } from "./httpHandlers/get/invitationValidation";
 
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require("apollo-server-core");
 
@@ -118,6 +119,7 @@ export class Main {
     app.get("/trigger", cors(corsOptions), triggerGetHandler);
     app.get("/jwks", cors(corsOptions), jwksGetHandler);
     app.get("/link", cors(corsOptions), linkGetHandler);
+    app.get("/validateinvite", cors(corsOptions), invitationValidationGetHandler);
     app.get(
       "/health",
       cors({
