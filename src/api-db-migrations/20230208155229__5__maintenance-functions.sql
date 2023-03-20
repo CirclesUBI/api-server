@@ -1,5 +1,7 @@
 -- migrate:up
 
+-- Add maintenance-functions
+
 CREATE OR REPLACE PROCEDURE add_business_category(name text)
 LANGUAGE plpgsql
 AS $$
@@ -143,7 +145,5 @@ BEGIN
     RETURN profile_id;
 END
 $$;
-
-INSERT INTO db_version (version, comment) VALUES ('5_0.1.514-maintenance-functions.sql', 'Add maintenance-functions');
 
 -- migrate:down

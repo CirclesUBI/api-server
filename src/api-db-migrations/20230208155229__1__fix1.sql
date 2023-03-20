@@ -1,9 +1,9 @@
 -- migrate:up
 
+-- Set privileges for POSTGRES_USER
+
 GRANT ALL PRIVILEGES ON DATABASE "${POSTGRES_DB}" TO "${POSTGRES_USER}";
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "${POSTGRES_USER}";
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO "${POSTGRES_USER}";
-
-INSERT INTO db_version (version, comment) VALUES ('1_0.1.504-fix1.sql', 'Set privileges for POSTGRES_USER');
 
 -- migrate:down

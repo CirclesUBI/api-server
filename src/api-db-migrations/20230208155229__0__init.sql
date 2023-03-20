@@ -1,5 +1,7 @@
 -- migrate:up
 
+-- Initial schema
+
 --
 -- PostgreSQL database dump
 --
@@ -33,13 +35,6 @@ CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
 --
 
 COMMENT ON EXTENSION postgis IS 'PostGIS geometry and geography spatial types and functions';
-
-
-CREATE TABLE IF NOT EXISTS db_version (
-    version text NOT NULL,
-    comment text
-);
-
 
 --
 -- Name: Gender; Type: TYPE; Schema: public; Owner: doadmin
@@ -2737,7 +2732,5 @@ ALTER TABLE ONLY public.i18n
 --
 -- PostgreSQL database dump complete
 --
-
-INSERT INTO db_version (version, comment) VALUES ('0_0.1.504.sql', 'Initial schema');
 
 -- migrate:down
