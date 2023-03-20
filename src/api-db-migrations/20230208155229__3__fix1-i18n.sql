@@ -4622,3 +4622,5 @@ INSERT INTO public.i18n ("createdAt", "createdBy", lang, key, version, value, "r
 
 
 INSERT INTO db_version (version, comment) VALUES ('3_0.1.504-fix1-i18n.sql', 'Add i18n strings');
+
+-- migrate:down

@@ -2739,3 +2739,5 @@ ALTER TABLE ONLY public.i18n
 --
 
 INSERT INTO db_version (version, comment) VALUES ('0_0.1.504.sql', 'Initial schema');
+
+-- migrate:down

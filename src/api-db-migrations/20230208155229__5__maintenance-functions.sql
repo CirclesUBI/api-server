@@ -145,3 +145,5 @@ END
 $$;
 
 INSERT INTO db_version (version, comment) VALUES ('5_0.1.514-maintenance-functions.sql', 'Add maintenance-functions');
+
+-- migrate:down

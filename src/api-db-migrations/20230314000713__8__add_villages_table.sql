@@ -9,3 +9,5 @@ CREATE TABLE "BaliVillage" (
 	kabupaten VARCHAR(255) NOT NULL
 );
 
+
+-- migrate:down
