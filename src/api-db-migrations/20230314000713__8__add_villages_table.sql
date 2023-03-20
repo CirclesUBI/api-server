@@ -1,3 +1,5 @@
+-- migrate:up
+
 DROP TABLE IF EXISTS BaliVillage;
 
 CREATE TABLE "BaliVillage" (

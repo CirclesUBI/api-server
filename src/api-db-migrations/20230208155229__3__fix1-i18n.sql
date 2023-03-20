@@ -1,3 +1,5 @@
+-- migrate:up
+
 INSERT INTO public.i18n ("createdAt", "createdBy", lang, key, version, value, "releaseVersion", "needsUpdate") VALUES ('2022-04-04 09:04:49.844', '0x3a599ab30a17bc7527d8be6d434f3048ea92d5d7', 'id', 'common.block', 1, 'Block', 0, false) ON CONFLICT DO NOTHING;
 INSERT INTO public.i18n ("createdAt", "createdBy", lang, key, version, value, "releaseVersion", "needsUpdate") VALUES ('2022-09-15 13:26:47.523', '0x3a599ab30a17bc7527d8be6d434f3048ea92d5d7', 'de', 'dapps.o-contacts.atoms.chatListCard.to', 3, 'an', null, true) ON CONFLICT DO NOTHING;
 INSERT INTO public.i18n ("createdAt", "createdBy", lang, key, version, value, "releaseVersion", "needsUpdate") VALUES ('2022-06-28 21:27:39.122', '0x3a599ab30a17bc7527d8be6d434f3048ea92d5d7', 'de', 'common.block', 101, 'Block', 0, false) ON CONFLICT DO NOTHING;

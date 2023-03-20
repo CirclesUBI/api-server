@@ -1,3 +1,5 @@
+-- migrate:up
+
 ALTER TABLE "SurveyData" ADD CONSTRAINT "sessionid_unique" UNIQUE ("sesssionId");
 
 ALTER TABLE "public"."Profile"

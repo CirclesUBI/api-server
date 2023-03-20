@@ -1,3 +1,5 @@
+-- migrate:up
+
 CREATE OR REPLACE PROCEDURE add_business_category(name text)
 LANGUAGE plpgsql
 AS $$

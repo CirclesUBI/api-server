@@ -1,3 +1,5 @@
+-- migrate:up
+
 ALTER TABLE "SurveyData" ADD COLUMN "villageId" INT;
 
 

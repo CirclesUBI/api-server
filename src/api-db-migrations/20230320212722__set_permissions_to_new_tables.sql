@@ -1,3 +1,5 @@
+-- migrate:up
+
 ALTER TABLE "SurveyData" OWNER TO "${POSTGRES_USER}";
 ALTER TABLE "BaliVillage" OWNER TO "${POSTGRES_USER}";
 

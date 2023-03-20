@@ -1,3 +1,5 @@
+-- migrate:up
+
 --
 -- PostgreSQL database dump
 --
