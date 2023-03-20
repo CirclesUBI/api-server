@@ -1,3 +1,5 @@
+-- migrate:up
+
 DROP TABLE IF EXISTS BaliVillage;
 
 CREATE TABLE "BaliVillage" (
@@ -7,3 +9,5 @@ CREATE TABLE "BaliVillage" (
 	kabupaten VARCHAR(255) NOT NULL
 );
 
+
+-- migrate:down
