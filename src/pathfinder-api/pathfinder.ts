@@ -61,7 +61,7 @@ export class Pathfinder {
       flow: response.result.maxFlowValue,
       requestedAmount: amount,
       isValid: false,
-      transfers: response.result.transfers.map((o: any) => {
+      transfers: response.result.transferSteps.map((o: any) => {
         return <TransitiveTransfer>{
           from: o.from,
           to: o.to,
