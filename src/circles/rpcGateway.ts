@@ -96,15 +96,14 @@ export class RpcGateway {
             throw new Error(`Call setup() first.`);
         if (!this._web3) {
             this._web3 = new Web3();
+            const nextProvider = this.gateway;
+            this._provider = new Web3.providers.HttpProvider(
+                nextProvider,
+                {
+                    timeout: 30000
+                }
+            );
+            this._web3.setProvider(this._provider);
         }
-
-        const nextProvider = this.gateway;
-        this._provider = new Web3.providers.HttpProvider(
-          nextProvider,
-          {
-              timeout: 30000
-          }
-        );
-        this._web3.setProvider(this._provider);
     }
 }

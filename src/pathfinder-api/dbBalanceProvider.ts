@@ -15,7 +15,7 @@ export class DbBalanceProvider implements CrcBalanceProvider {
       totalCrcBalanceQuery,
       [safeAddress]);
 
-    if(balanceResult.rows.length == 0) {
+    if(balanceResult.rows.filter(o => !!o.total_crc_balance).length == 0) {
       return null;
     }
 

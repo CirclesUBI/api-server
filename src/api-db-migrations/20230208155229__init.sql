@@ -1,43 +1,13 @@
+-- migrate:up
+
+-- Initial schema
+
 --
 -- PostgreSQL database dump
 --
 
 -- Dumped from database version 12.12
 -- Dumped by pg_dump version 14.6 (Ubuntu 14.6-0ubuntu0.22.04.1)
-
---
--- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
-
-
---
--- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner:
---
-
-COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
-
-
---
--- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
-
-
---
--- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner:
---
-
-COMMENT ON EXTENSION postgis IS 'PostGIS geometry and geography spatial types and functions';
-
-
-CREATE TABLE IF NOT EXISTS db_version (
-    version text NOT NULL,
-    comment text
-);
-
 
 --
 -- Name: Gender; Type: TYPE; Schema: public; Owner: doadmin
@@ -2736,4 +2706,4 @@ ALTER TABLE ONLY public.i18n
 -- PostgreSQL database dump complete
 --
 
-INSERT INTO db_version (version, comment) VALUES ('0_0.1.504.sql', 'Initial schema');
+-- migrate:down

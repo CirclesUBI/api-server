@@ -1,3 +1,5 @@
+-- migrate:up
+
 INSERT INTO public.i18n ("createdAt", "createdBy", lang, key, version, value, "releaseVersion", "needsUpdate") VALUES ('2022-04-04 09:04:49.844', '0x3a599ab30a17bc7527d8be6d434f3048ea92d5d7', 'id', 'common.block', 1, 'Block', 0, false);
 INSERT INTO public.i18n ("createdAt", "createdBy", lang, key, version, value, "releaseVersion", "needsUpdate") VALUES ('2022-09-15 13:26:47.523', '0x3a599ab30a17bc7527d8be6d434f3048ea92d5d7', 'de', 'dapps.o-contacts.atoms.chatListCard.to', 3, 'an', null, true);
 INSERT INTO public.i18n ("createdAt", "createdBy", lang, key, version, value, "releaseVersion", "needsUpdate") VALUES ('2022-06-28 21:27:39.122', '0x3a599ab30a17bc7527d8be6d434f3048ea92d5d7', 'de', 'common.block', 101, 'Block', 0, false);
@@ -4649,3 +4651,5 @@ INSERT INTO public.i18n ("createdAt", "createdBy", lang, key, version, value, "r
 INSERT INTO public.i18n ("createdAt", "createdBy", lang, key, version, value, "releaseVersion", "needsUpdate") VALUES ('2022-07-27 09:39:34.183', '0x3a599ab30a17bc7527d8be6d434f3048ea92d5d7', 'id', 'dapps.o-passport.processes.identify.zip.description', 1, 'Please enter the zip you''re shipping to', 0, true);
 INSERT INTO public.i18n ("createdAt", "createdBy", lang, key, version, value, "releaseVersion", "needsUpdate") VALUES ('2022-07-27 09:38:37.687', '0x3a599ab30a17bc7527d8be6d434f3048ea92d5d7', 'id', 'dapps.o-passport.processes.identify.zip.title', 1, 'Zip', 0, true);
 INSERT INTO public.i18n ("createdAt", "createdBy", lang, key, version, value, "releaseVersion", "needsUpdate") VALUES ('2022-12-16 10:05:03.670', '0x009626daded5e90aecee30ad3ebf2b3e510fe256', 'en', 'dapps.o-passport.pages.home.qrcodeheading', 2, 'My Profile link', null, false);
+
+-- migrate:down

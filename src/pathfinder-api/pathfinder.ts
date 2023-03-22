@@ -55,17 +55,18 @@ export class Pathfinder {
 
     const response = await this.callJsonRpcMethod("compute_transfer", computeTransferParams);
 
+    console.log("Pathfinder response:", response);
+
     return <TransitivePath>{
-      flow: new BN(response.result.flow.substring(2), "hex").toString(),
+      flow: response.result.maxFlowValue,
       requestedAmount: amount,
       isValid: false,
-      transfers: response.result.transfers.map((o: any) => {
-        const amount = new BN(o.value.toString().substring(2), "hex");
+      transfers: response.result.transferSteps.map((o: any) => {
         return <TransitiveTransfer>{
           from: o.from,
           to: o.to,
           tokenOwner: o.token_owner,
-          value: amount.toString()
+          value: o.value
         };
       })
     };
@@ -92,7 +93,9 @@ export class Pathfinder {
       id: Date.now(),
       method: method,
       params: params
-    });
+    }, null, 2);
+
+    console.log(`Calling pathfinder at ${Environment.pathfinderUrl} with ${body}`);
 
     const result = await fetch(Environment.pathfinderUrl, {
       method: 'POST',
