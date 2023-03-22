@@ -92,7 +92,9 @@ export class Pathfinder {
       id: Date.now(),
       method: method,
       params: params
-    });
+    }, null, 2);
+
+    console.log(`Calling pathfinder at ${Environment.pathfinderUrl} with ${body}`);
 
     const result = await fetch(Environment.pathfinderUrl, {
       method: 'POST',
