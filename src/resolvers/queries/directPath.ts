@@ -52,7 +52,7 @@ export const directPath = async (parent: any, args: QueryDirectPathArgs, context
 
   try {
     const flowGraph = new FlowGraph(path);
-    await generateGraphvizGraph(amount, flowGraph, path);
+    // await generateGraphvizGraph(amount, flowGraph, path);
   } catch (e) {
     console.warn("error while generating a graph:", e);
   }
