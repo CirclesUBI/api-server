@@ -81,6 +81,13 @@ Array.prototype.toLookup = function toLookup<T, TValue>(
 };
 
 export class Main {
+
+  static _isHealthy: boolean = false;
+
+  static get isHealthy(): Promise<boolean> {
+    return Promise.resolve(this._isHealthy);
+  }
+
   async run() {
     RpcGateway.setup(Environment.rpcGatewayUrl, Environment.fixedGasPrice);
 
@@ -211,9 +218,13 @@ export class Main {
       });
 
     // TODO: Add follow trust job handling
-
     const PORT = 8989;
-    httpServer.listen(PORT, () => console.log(`Server is now running on http://localhost:${PORT}/graphql`));
+    httpServer.listen(PORT, () => {
+      console.log(`Server is now running on http://localhost:${PORT}/graphql`)
+    }).on("error", (e) => {
+      Main._isHealthy = false;
+      console.error("Failed to start server.", e);
+    });
   }
 }
 
@@ -242,4 +253,6 @@ new Main()
 
       await JobQueue.produce([requestUbiForInactiveAccounts, rotateKeys]);
     }, Environment.periodicTaskInterval);
+
+    Main._isHealthy = true;
   });
