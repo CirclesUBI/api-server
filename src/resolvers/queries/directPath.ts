@@ -50,12 +50,12 @@ export const directPath = async (parent: any, args: QueryDirectPathArgs, context
     ? await Pathfinder.findPath(from, to, args.amount)
     : await Pathfinder.findMaxFlow(balanceProvider, from, to);
 
-  try {
-    const flowGraph = new FlowGraph(path);
+  // try {
+    // const flowGraph = new FlowGraph(path);
     // await generateGraphvizGraph(amount, flowGraph, path);
-  } catch (e) {
-    console.warn("error while generating a graph:", e);
-  }
+  // } catch (e) {
+  //  console.warn("error while generating a graph:", e);
+  // }
 
   const validationResult = await PathValidator.validate(path);
   if (validationResult.error) {
