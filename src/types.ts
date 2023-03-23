@@ -519,7 +519,6 @@ export type Mutation = {
   importOrganisationsOfAccount: Array<Organisation>;
   logout: LogoutResponse;
   markAsRead: MarkAsReadResult;
-  proofUniqueness: ProofUniquenessResult;
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
   rejectMembership?: Maybe<RejectMembershipResult>;
   removeMember?: Maybe<RemoveMemberResult>;
@@ -581,11 +580,6 @@ export type MutationCreateNewStringAndKeyArgs = {
 
 export type MutationMarkAsReadArgs = {
   entries: Array<Scalars['Int']>;
-};
-
-
-export type MutationProofUniquenessArgs = {
-  humanodeToken: Scalars['String'];
 };
 
 
@@ -861,11 +855,6 @@ export enum ProfileType {
   Person = 'PERSON',
   Region = 'REGION'
 }
-
-export type ProofUniquenessResult = {
-  __typename?: 'ProofUniquenessResult';
-  existingSafe?: Maybe<Scalars['String']>;
-};
 
 export type PublicEvent = {
   __typename?: 'PublicEvent';
@@ -1589,7 +1578,6 @@ export type ResolversTypes = ResolversObject<{
   ProfileOrOrganisation: ResolversTypes['Organisation'] | ResolversTypes['Profile'];
   ProfileOrigin: ProfileOrigin;
   ProfileType: ProfileType;
-  ProofUniquenessResult: ResolverTypeWrapper<ProofUniquenessResult>;
   PublicEvent: ResolverTypeWrapper<Omit<PublicEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
   Query: ResolverTypeWrapper<{}>;
   QueryAllBusinessesConditions: QueryAllBusinessesConditions;
@@ -1712,7 +1700,6 @@ export type ResolversParentTypes = ResolversObject<{
   ProfileEvent: Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversParentTypes['EventPayload']> };
   ProfileEventFilter: ProfileEventFilter;
   ProfileOrOrganisation: ResolversParentTypes['Organisation'] | ResolversParentTypes['Profile'];
-  ProofUniquenessResult: ProofUniquenessResult;
   PublicEvent: Omit<PublicEvent, 'payload'> & { payload?: Maybe<ResolversParentTypes['EventPayload']> };
   Query: {};
   QueryAllBusinessesConditions: QueryAllBusinessesConditions;
@@ -2184,7 +2171,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   logout?: Resolver<ResolversTypes['LogoutResponse'], ParentType, ContextType>;
   markAsRead?: Resolver<ResolversTypes['MarkAsReadResult'], ParentType, ContextType, RequireFields<MutationMarkAsReadArgs, 'entries'>>;
-  proofUniqueness?: Resolver<ResolversTypes['ProofUniquenessResult'], ParentType, ContextType, RequireFields<MutationProofUniquenessArgs, 'humanodeToken'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
   rejectMembership?: Resolver<Maybe<ResolversTypes['RejectMembershipResult']>, ParentType, ContextType, RequireFields<MutationRejectMembershipArgs, 'membershipId'>>;
   removeMember?: Resolver<Maybe<ResolversTypes['RemoveMemberResult']>, ParentType, ContextType, RequireFields<MutationRemoveMemberArgs, 'groupId' | 'memberAddress'>>;
@@ -2336,11 +2322,6 @@ export type ProfileEventResolvers<ContextType = any, ParentType extends Resolver
 
 export type ProfileOrOrganisationResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProfileOrOrganisation'] = ResolversParentTypes['ProfileOrOrganisation']> = ResolversObject<{
   __resolveType: TypeResolveFn<'Organisation' | 'Profile', ParentType, ContextType>;
-}>;
-
-export type ProofUniquenessResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProofUniquenessResult'] = ResolversParentTypes['ProofUniquenessResult']> = ResolversObject<{
-  existingSafe?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type PublicEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['PublicEvent'] = ResolversParentTypes['PublicEvent']> = ResolversObject<{
@@ -2664,7 +2645,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   ProfileBalances?: ProfileBalancesResolvers<ContextType>;
   ProfileEvent?: ProfileEventResolvers<ContextType>;
   ProfileOrOrganisation?: ProfileOrOrganisationResolvers<ContextType>;
-  ProofUniquenessResult?: ProofUniquenessResultResolvers<ContextType>;
   PublicEvent?: PublicEventResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RandomAccount?: RandomAccountResolvers<ContextType>;

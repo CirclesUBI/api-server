@@ -889,10 +889,6 @@ type TransitivePath {
   transfers: [TransitiveTransfer!]!
 }
 
-type ProofUniquenessResult {
-  existingSafe: String
-}
-
 type MarkAsReadResult {
   count: Int!
 }
@@ -932,7 +928,6 @@ type Mutation {
   verifySafe(safeAddress: String!): VerifySafeResult!
 
   revokeSafeVerification(safeAddress: String!): VerifySafeResult!
-  proofUniqueness(humanodeToken: String!): ProofUniquenessResult!
   updateValue(lang: String, key: String, createdBy: String, value: String): i18n
   addNewLang(langToCreate: String, langToCopyFrom: String): Int
   createNewStringAndKey(lang: String, key: String, createdBy: String, value: String, version: Int): i18n

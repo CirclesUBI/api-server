@@ -17,7 +17,6 @@ import { importOrganisationsOfAccount } from "./importOrganisationsOfAccount";
 import { revokeSafeVerification, verifySafe } from "./verifySafe";
 import { Environment } from "../../environment";
 import { LinkTargetType, MutationResolvers } from "../../types";
-import { proofUniqueness } from "./proofUniqueness";
 import { Context } from "../../context";
 import { addNewLang } from "./addNewLang";
 import { updatei18nValue } from "./updatei18nValue";
@@ -50,7 +49,6 @@ export const mutationResolvers: MutationResolvers = {
   updateValue: updatei18nValue,
   createNewStringAndKey: createNewStringAndKey,
   setStringUpdateState: setStringUpdateState,
-  proofUniqueness: proofUniqueness,
   setIsFavorite: async (parent, args, context: Context) => {
     const caller = await context.callerInfo;
     if (!caller?.profile?.circlesAddress) throw new Error(`Only profiles with a circlesAddress can create favorites.`);
