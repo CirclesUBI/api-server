@@ -47,8 +47,8 @@ export const directPath = async (parent: any, args: QueryDirectPathArgs, context
   }
 
   const path = amount != "0"
-    ? await Pathfinder.findPath(from, to, args.amount)
-    : await Pathfinder.findMaxFlow(balanceProvider, from, to);
+    ? await Pathfinder.findPath(from, to, args.amount, context)
+    : await Pathfinder.findMaxFlow(balanceProvider, from, to, context);
 
   // try {
     // const flowGraph = new FlowGraph(path);

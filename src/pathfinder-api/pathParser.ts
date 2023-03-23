@@ -262,8 +262,6 @@ export class PathWalker {
       });
     }
 
-    console.log(`Walked ${pathEnds.length} paths`);
-
     return pathEnds;
   }
 

@@ -43,7 +43,8 @@ export function redeemClaimedInvitation() {
       const fundEoaReceipt = await Environment.invitationFundsSafe.transferEth(
         Environment.invitationFundsSafeOwner.privateKey,
         Environment.invitationFundsAmount,
-        invitationFundsRecipient);
+        invitationFundsRecipient,
+        context);
 
       context.log(`Redeeming invitation ${claimedInvitation.code}: Transaction hash: ${fundEoaReceipt.transactionHash}`);
 

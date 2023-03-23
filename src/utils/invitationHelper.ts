@@ -5,8 +5,9 @@ import InvitationCreateManyInput = Prisma.InvitationCreateManyInput;
 import {Environment} from "../environment";
 import {JobQueue} from "../jobs/jobQueue";
 import {InviteCodeFromExternalTrigger} from "../jobs/descriptions/onboarding/inviteCodeFromExternalTrigger";
+import {Context} from "../context";
 
-export async function createInvitationPerpetualTrigger(forSafeAddress: string): Promise<string> {
+export async function createInvitationPerpetualTrigger(forSafeAddress: string, context:Context): Promise<string> {
   const profileResult = await new ProfileLoader().queryCirclesLandBySafeAddress(Environment.readWriteApiDb, [forSafeAddress]);
   const profileResultValues = Object.values(profileResult);
   if (profileResultValues.length == 0) {
@@ -28,7 +29,7 @@ export async function createInvitationPerpetualTrigger(forSafeAddress: string): 
     return inviteTrigger.getHash()
   }
   const inviteLinkHash = jobs[0].hash;
-  console.log(`Created a new invitation link (perpetual trigger) with hasb: '${inviteLinkHash}'`);
+  context.log(`Created a new invitation link (perpetual trigger) with hasb: '${inviteLinkHash}'`);
 
   return jobs[0].hash;
 }
