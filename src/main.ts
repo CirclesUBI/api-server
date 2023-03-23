@@ -204,7 +204,6 @@ export class Main {
       "echo",
       "requestUbiForInactiveAccounts",
       "rotateJwks",
-      "autoTrust",
       "unreadNotification",
     ];
 

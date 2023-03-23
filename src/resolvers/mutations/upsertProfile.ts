@@ -3,14 +3,10 @@ import { Context } from "../../context";
 import { Session } from "../../session";
 import { ProfileLoader } from "../../querySources/profileLoader";
 import { Environment } from "../../environment";
-import { TestData } from "../../api-db/testData";
 import { RpcGateway } from "../../circles/rpcGateway";
-import { JobQueue } from "../../jobs/jobQueue";
-
 import { claimInvitation } from "./claimInvitation";
 import { createInvitationPerpetualTrigger } from "../../utils/invitationHelper";
 import { verifySafe } from "./verifySafe";
-import { AutoTrust } from "../../jobs/descriptions/maintenance/autoTrust";
 import { Gender } from "../../api-db/client";
 
 const validateEmail = (email: string) => {
@@ -125,17 +121,6 @@ export function upsertProfileResolver() {
           where: { redeemedByProfileId: profile.id },
           include: { createdBy: true },
         });
-
-        if (invitation?.createdBy?.circlesAddress) {
-          setTimeout(async () => {
-            context.log(
-              `Creating an 'autoTrust' job for new safe ${profile.circlesAddress} and inviter ${invitation.createdBy.circlesAddress}`
-            );
-            await JobQueue.produce([
-              new AutoTrust(<string>invitation.createdBy.circlesAddress, <string>profile.circlesAddress),
-            ]);
-          }, 15000);
-        }
 
         context.log(`Creating the input trigger for address ${profile.circlesAddress} ..`);
         const inviteTriggerHash = await createInvitationPerpetualTrigger(profile.circlesAddress, context);
