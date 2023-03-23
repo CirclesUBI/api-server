@@ -8,7 +8,7 @@ import {EMPTY_DATA, ZERO_ADDRESS} from "./consts";
 import {SafeOps} from "./safeOps";
 import {SafeTransaction} from "./safeTransaction";
 import {RpcGateway} from "./rpcGateway";
-import {TransactionInput, TransactionType} from "ethers-multisend";
+import {Context} from "../context";
 const EthLibAccount = require("eth-lib/lib/account");
 
 export class GnosisSafeProxy extends Web3Contract {
@@ -48,44 +48,6 @@ export class GnosisSafeProxy extends Web3Contract {
     return await this.contract.methods.getOwners().call();
   }
 
-  async addOwnerWithThreshold(
-    privateKey: string,
-    owner: string,
-    threshold: number
-  ) {
-    const txData = await this.contract.methods
-      .addOwnerWithThreshold(owner, new BN(threshold.toString()))
-      .encodeABI();
-    const receipt = await this.execTransaction(privateKey, {
-      to: this.address,
-      data: txData,
-      value: new BN("0"),
-      refundReceiver: ZERO_ADDRESS,
-      gasToken: ZERO_ADDRESS,
-      operation: SafeOps.CALL,
-    });
-
-    return receipt;
-  }
-
-  async removeOwner(privateKey: string, address: string) {
-    const sentinel = "0x0000000000000000000000000000000000000001";
-    const txData = await this.contract.methods
-      .removeOwner(sentinel, address, new BN("1"))
-      .encodeABI();
-
-    const receipt = await this.execTransaction(privateKey, {
-      to: this.address,
-      data: txData,
-      value: new BN("0"),
-      refundReceiver: ZERO_ADDRESS,
-      gasToken: ZERO_ADDRESS,
-      operation: SafeOps.CALL,
-    });
-
-    return receipt;
-  }
-
   async getNonce(): Promise<number> {
     return parseInt(await this.contract.methods.nonce().call());
   }
@@ -93,7 +55,8 @@ export class GnosisSafeProxy extends Web3Contract {
   async transferEth(
     privateKey: string,
     value: BN,
-    to: string
+    to: string,
+    context: Context
   ): Promise<TransactionReceipt> {
     const safeTransaction = <SafeTransaction>{
       value: value,
@@ -104,54 +67,13 @@ export class GnosisSafeProxy extends Web3Contract {
       refundReceiver: ZERO_ADDRESS,
       gasPrice: await RpcGateway.getGasPrice(),
     };
-    return await this.execTransaction(privateKey, safeTransaction);
-  }
-
-  async toEthersTx(
-    privateKey: string,
-    safeTransaction: SafeTransaction) {
-    this.validateSafeTransaction(safeTransaction);
-
-    const nonce = await this.getNonce();
-    const executableTransaction = <SafeTransaction>{
-      to: safeTransaction.to,
-      value: safeTransaction.value,
-      data: safeTransaction.data,
-      operation: safeTransaction.operation,
-      safeTxGas: new BN("0"),
-      baseGas: new BN("0"),
-      gasToken: ZERO_ADDRESS,
-      refundReceiver: ZERO_ADDRESS,
-      nonce: nonce,
-    };
-
-    const signatures = await this.getSignatureForTx(executableTransaction, privateKey);
-
-    return <TransactionInput>{
-      id: "3",
-      type: TransactionType.callContract,
-      abi: JSON.stringify(GNOSIS_SAFE_ABI),
-      functionSignature: "execTransaction(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,bytes)",
-      inputValues: {
-        to: safeTransaction.to,
-        value: safeTransaction.value.toString("hex"),
-        data: safeTransaction.data,
-        operation: new BN(safeTransaction.operation.toString()).toString("hex"),
-        safeTxGas: (safeTransaction.safeTxGas ?? new BN("0")).toString("hex"),
-        baseGas: (safeTransaction.baseGas ?? new BN("0")).toString("hex"),
-        gasPrice: new BN("0").toString("hex"),
-        gasToken: safeTransaction.gasToken,
-        refundReceiver: safeTransaction.refundReceiver,
-        signatures: signatures.signature ?? "0x"
-      },
-      to: this.address,
-      value: new BN("0").toString("hex")
-    };
+    return await this.execTransaction(privateKey, safeTransaction, context);
   }
 
   async execTransactionTxData(
     privateKey: string,
-    safeTransaction: SafeTransaction
+    safeTransaction: SafeTransaction,
+    context: Context
   ): Promise<string> {
     this.validateSafeTransaction(safeTransaction);
 
@@ -170,9 +92,8 @@ export class GnosisSafeProxy extends Web3Contract {
 
     const signatures = await this.getSignatureForTx(executableTransaction, privateKey);
     const baseGas = new BN(this.web3.utils.toWei("5000000", "wei"));
-    const gasEstimate = await this.estimateGasForTx(executableTransaction, signatures, baseGas);
 
-    console.log("gasEstimate:", gasEstimate.toString());
+    context.log("baseGas: " + baseGas.toString());
     const execTransactionData = this.contract.methods
       .execTransaction(
         safeTransaction.to,
@@ -194,19 +115,13 @@ export class GnosisSafeProxy extends Web3Contract {
       privateKey,
       this.address,
       execTransactionData,
-      gasEstimate,
+      baseGas,
       new BN("0")
     );
 
-    console.log("signedRawTransaction:", signedTransactionData);
-    return signedTransactionData;
-  }
+    context.log("signedRawTransaction: " + signedTransactionData);
 
-  private async estimateGasForTx(executableTransaction: SafeTransaction, signatures: { r: string; s: string; signature: any; v: number }, baseGas: BN) {
-    const gasPrice = await RpcGateway.getGasPrice();
-    console.log("Gas price:", gasPrice.toString());
-    console.log("gasEstimate:", baseGas.toNumber());
-    return baseGas;
+    return signedTransactionData;
   }
 
   private async getSignatureForTx(executableTransaction: SafeTransaction, privateKey: string) {
@@ -225,9 +140,10 @@ export class GnosisSafeProxy extends Web3Contract {
 
   async execTransaction(
     privateKey: string,
-    safeTransaction: SafeTransaction
+    safeTransaction: SafeTransaction,
+    context: Context
   ): Promise<TransactionReceipt> {
-    const signedTransactionData = await this.execTransactionTxData(privateKey, safeTransaction);
+    const signedTransactionData = await this.execTransactionTxData(privateKey, safeTransaction, context);
     return await Web3Contract.sendSignedRawTransaction(signedTransactionData);
   }
 
