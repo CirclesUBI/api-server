@@ -1,26 +1,5 @@
 import {Environment} from "../environment";
 import {RpcGateway} from "../circles/rpcGateway";
-import {CirclesHub} from "../circles/circlesHub";
-import {GnosisSafeProxy} from "../circles/gnosisSafeProxy";
-import BN from "bn.js";
-import type {TransactionReceipt} from "web3-core";
-
-export async function fSetTrust(safeAddress:string, key:string, trustReceiver:string, limit:string) : Promise<TransactionReceipt> {
-  const gnosisSafeProxy = new GnosisSafeProxy(
-    RpcGateway.get(),
-    safeAddress
-  );
-
-  return await new CirclesHub(
-    RpcGateway.get(),
-    Environment.circlesHubAddress
-  ).setTrust(
-    key,
-    gnosisSafeProxy,
-    trustReceiver,
-    new BN(limit)
-  );
-}
 
 export class TestData {
   public static async insertIfEmpty(circlesAddress: string) {
