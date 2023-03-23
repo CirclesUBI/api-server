@@ -1,10 +1,18 @@
 import {Request, Response} from "express";
 import {log} from "../../utils/log";
 import {Environment} from "../../environment";
+import {Main} from "../../main";
 
 export const healthGetHandler = async (req: Request, res: Response) => {
   try {
-    await Environment.validateAndSummarize(false);
+    const healthStatus = await Main.isHealthy;
+    if (!healthStatus) {
+      return res.json({
+        status: "error",
+        message: "The health check failed. See logs for details."
+      });
+    }
+    //await Environment.validateAndSummarize(false);
     res.statusCode = 200;
 
     return res.json({
