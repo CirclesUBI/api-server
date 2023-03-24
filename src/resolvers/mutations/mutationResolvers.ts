@@ -25,8 +25,12 @@ import { setStringUpdateState } from "./setStringUpdateState";
 import { ProfileLoader } from "../../querySources/profileLoader";
 import { Generate } from "../../utils/generate";
 import { RpcGateway } from "../../circles/rpcGateway";
+import {getNonce} from "./getNonce";
+import {sendSignedTransaction} from "./sendSignedTransaction";
 
 export const mutationResolvers: MutationResolvers = {
+  getNonce: getNonce(Environment.nonceManager),
+  sendSignedTransaction: sendSignedTransaction,
   upsertOrganisation: upsertOrganisation,
   logout: logout(),
   upsertProfile: upsertProfileResolver(),

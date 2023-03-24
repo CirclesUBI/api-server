@@ -1,6 +1,4 @@
 scalar Date
-directive @cost(value: Int) on FIELD_DEFINITION
-directive @costFactor(value: Int) on FIELD_DEFINITION
 
 type Server {
   version: String!
@@ -57,7 +55,7 @@ type Profile {
   displayCurrency: DisplayCurrency
   verifications: [Verification!]
   balances(filter: CrcBalanceFilter): ProfileBalances
-  contacts(filter: ContactFilter): [Contact!] @cost(value: 1)
+  contacts(filter: ContactFilter): [Contact!]
   provenUniqueness: Boolean
   age: Int
   gender: Gender
@@ -221,6 +219,7 @@ type SessionInfo {
   isLoggedOn: Boolean!
   hasProfile: Boolean
   profileId: Int
+  sessionId: String
   profile: Profile
   capabilities: [Capability!]!
 
@@ -283,7 +282,7 @@ interface IAggregatePayload {
 type CrcSignup implements IEventPayload {
   transaction_hash: String!
   user: String!
-  user_profile: Profile @cost(value: 1)
+  user_profile: Profile
   token: String!
 }
 
@@ -291,18 +290,18 @@ type CrcSignup implements IEventPayload {
 type CrcTrust implements IEventPayload {
   transaction_hash: String!
   address: String!
-  address_profile: Profile @cost(value: 1)
+  address_profile: Profile
   can_send_to: String!
-  can_send_to_profile: Profile @cost(value: 1)
+  can_send_to_profile: Profile
   limit: Int!
 }
 
 type Erc20Transfer implements IEventPayload {
   transaction_hash: String!
   from: String!
-  from_profile: Profile @cost(value: 1)
+  from_profile: Profile
   to: String!
-  to_profile: Profile @cost(value: 1)
+  to_profile: Profile
   token: String!
   value: String!
 }
@@ -311,9 +310,9 @@ type Erc20Transfer implements IEventPayload {
 type CrcTokenTransfer implements IEventPayload {
   transaction_hash: String!
   from: String!
-  from_profile: Profile @cost(value: 1)
+  from_profile: Profile
   to: String!
-  to_profile: Profile @cost(value: 1)
+  to_profile: Profile
   token: String!
   value: String!
 }
@@ -322,9 +321,9 @@ type CrcTokenTransfer implements IEventPayload {
 type CrcHubTransfer implements IEventPayload {
   transaction_hash: String!
   from: String!
-  from_profile: Profile @cost(value: 1)
+  from_profile: Profile
   to: String!
-  to_profile: Profile @cost(value: 1)
+  to_profile: Profile
   flow: String!
   transfers: [CrcTokenTransfer!]!
   tags: [Tag!]!
@@ -334,9 +333,9 @@ type CrcHubTransfer implements IEventPayload {
 type CrcMinting implements IEventPayload {
   transaction_hash: String!
   from: String!
-  from_profile: Profile @cost(value: 1)
+  from_profile: Profile
   to: String!
-  to_profile: Profile @cost(value: 1)
+  to_profile: Profile
   value: String!
   token: String!
 }
@@ -345,9 +344,9 @@ type CrcMinting implements IEventPayload {
 type EthTransfer implements IEventPayload {
   transaction_hash: String!
   from: String!
-  from_profile: Profile @cost(value: 1)
+  from_profile: Profile
   to: String!
-  to_profile: Profile @cost(value: 1)
+  to_profile: Profile
   value: String!
   tags: [Tag!]!
 }
@@ -357,9 +356,9 @@ type GnosisSafeEthTransfer implements IEventPayload {
   transaction_hash: String!
   initiator: String!
   from: String!
-  from_profile: Profile @cost(value: 1)
+  from_profile: Profile
   to: String!
-  to_profile: Profile @cost(value: 1)
+  to_profile: Profile
   value: String!
   tags: [Tag!]!
 }
@@ -368,10 +367,10 @@ type GnosisSafeEthTransfer implements IEventPayload {
 type MembershipOffer implements IEventPayload {
   transaction_hash: String
   createdBy: String!
-  createdBy_profile: Profile @cost(value: 1)
+  createdBy_profile: Profile
   isAdmin: Boolean!
   organisation: String!
-  organisation_profile: Organisation @cost(value: 1)
+  organisation_profile: Organisation
 }
 
 # !isAdmin: You|${createdBy} added ${member} as a member to ${organisation}
@@ -379,12 +378,12 @@ type MembershipOffer implements IEventPayload {
 type MemberAdded implements IEventPayload {
   transaction_hash: String
   createdBy: String!
-  createdBy_profile: Profile @cost(value: 1)
+  createdBy_profile: Profile
   member: String!
-  member_profile: Profile @cost(value: 1)
+  member_profile: Profile
   isAdmin: Boolean!
   organisation: String!
-  organisation_profile: Organisation @cost(value: 1)
+  organisation_profile: Organisation
 }
 
 # ${member} accepted your|${createdBy}'s invitation to ${organisation}
@@ -397,20 +396,20 @@ type NewUser implements IEventPayload {
 type MembershipAccepted implements IEventPayload {
   transaction_hash: String
   createdBy: String!
-  createdBy_profile: Profile @cost(value: 1)
+  createdBy_profile: Profile
   member: String!
-  member_profile: Profile @cost(value: 1)
+  member_profile: Profile
   organisation: String!
-  organisation_profile: Organisation @cost(value: 1)
+  organisation_profile: Organisation
 }
 
 # ${member} rejected your invitation to ${organisation}
 type MembershipRejected implements IEventPayload {
   transaction_hash: String
   member: String!
-  member_profile: Profile @cost(value: 1)
+  member_profile: Profile
   organisation: String!
-  organisation_profile: Organisation @cost(value: 1)
+  organisation_profile: Organisation
 }
 
 # You created a new invitation with the name ${name}
@@ -426,7 +425,7 @@ type InvitationRedeemed implements IEventPayload {
   name: String!
   code: String!
   redeemedBy: String
-  redeemedBy_profile: Profile @cost(value: 1)
+  redeemedBy_profile: Profile
 }
 
 # Welcome!
@@ -435,21 +434,21 @@ type InvitationRedeemed implements IEventPayload {
 type WelcomeMessage implements IEventPayload {
   transaction_hash: String
   invitedBy: String!
-  invitedBy_profile: Profile @cost(value: 1)
+  invitedBy_profile: Profile
 }
 
 # You created the ${name} organisation
 type OrganisationCreated implements IEventPayload {
   transaction_hash: String
   organisation: String!
-  organisation_profile: Organisation @cost(value: 1)
+  organisation_profile: Organisation
 }
 
 # ${organisation} verified your safe ${safe_address}
 type SafeVerified implements IEventPayload {
   transaction_hash: String
   organisation: String!
-  organisation_profile: Organisation @cost(value: 1)
+  organisation_profile: Organisation
   safe_address: String!
 }
 
@@ -507,28 +506,28 @@ enum AggregateType {
 type CrcBalances implements IAggregatePayload {
   lastUpdatedAt: String!
   total: String
-  balances: [AssetBalance!]! @cost(value: 1)
+  balances: [AssetBalance!]!
 }
 
 # All crc holdings of the user
 type Erc20Balances implements IAggregatePayload {
   lastUpdatedAt: String!
-  balances: [AssetBalance!]! @cost(value: 1)
+  balances: [AssetBalance!]!
 }
 
 type Contacts implements IAggregatePayload {
   lastUpdatedAt: String!
-  contacts: [Contact!]! @cost(value: 1)
+  contacts: [Contact!]!
 }
 
 type Memberships implements IAggregatePayload {
   lastUpdatedAt: String!
-  organisations: [Organisation!]! @cost(value: 1)
+  organisations: [Organisation!]!
 }
 
 type Members implements IAggregatePayload {
   lastUpdatedAt: String!
-  members: [ProfileOrOrganisation!]! @cost(value: 1)
+  members: [ProfileOrOrganisation!]!
 }
 
 enum ContactDirection {
@@ -547,7 +546,7 @@ type Contact {
   metadata: [ContactPoint!]!
   lastContactAt: String!
   contactAddress: String!
-  contactAddress_Profile: Profile @cost(value: 1)
+  contactAddress_Profile: Profile
 }
 
 union AggregatePayload = CrcBalances | Erc20Balances | Contacts | Memberships | Members
@@ -555,8 +554,8 @@ union AggregatePayload = CrcBalances | Erc20Balances | Contacts | Memberships | 
 type ProfileAggregate {
   type: String!
   safe_address: String!
-  safe_address_profile: Profile @cost(value: 1)
-  payload: AggregatePayload! @cost(value: 1)
+  safe_address_profile: Profile
+  payload: AggregatePayload!
 }
 
 type ProfileEvent {
@@ -567,9 +566,9 @@ type ProfileEvent {
   transaction_hash: String
   type: String!
   safe_address: String!
-  safe_address_profile: Profile @cost(value: 1)
+  safe_address_profile: Profile
   contact_address: String
-  contact_address_profile: Profile @cost(value: 1)
+  contact_address_profile: Profile
   direction: String!
   value: String
   payload: EventPayload
@@ -583,7 +582,7 @@ type PublicEvent {
   transaction_hash: String
   type: String!
   contact_address: String
-  contact_address_profile: Profile @cost(value: 1)
+  contact_address_profile: Profile
   payload: EventPayload
 }
 
@@ -893,7 +892,26 @@ type MarkAsReadResult {
   count: Int!
 }
 
+input NonceRequest {
+  signature: String!
+  address: String
+}
+
+type Nonce {
+  nonce: Int!
+}
+
+input SendSignedTransactionInput {
+  signedTransaction: String!
+}
+
+type SendSignedTransactionResult {
+  transactionHash: String!
+}
+
 type Mutation {
+  getNonce(data: NonceRequest!): Nonce!
+  sendSignedTransaction(data: SendSignedTransactionInput!): SendSignedTransactionResult!
   logout: LogoutResponse!
   upsertProfile(data: UpsertProfileInput!): Profile!
   requestUpdateSafe(data: RequestUpdateSafeInput!): RequestUpdateSafeResponse!

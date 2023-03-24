@@ -516,6 +516,7 @@ export type Mutation = {
   claimInvitation: ClaimInvitationResult;
   createNewStringAndKey?: Maybe<I18n>;
   createTestInvitation: CreateInvitationResult;
+  getNonce: Nonce;
   importOrganisationsOfAccount: Array<Organisation>;
   logout: LogoutResponse;
   markAsRead: MarkAsReadResult;
@@ -526,6 +527,7 @@ export type Mutation = {
   requestUpdateSafe: RequestUpdateSafeResponse;
   revokeSafeVerification: VerifySafeResult;
   sendMessage: SendMessageResult;
+  sendSignedTransaction: SendSignedTransactionResult;
   setIsFavorite: Scalars['Boolean'];
   setStringUpdateState?: Maybe<I18n>;
   shareLink: Scalars['String'];
@@ -578,6 +580,11 @@ export type MutationCreateNewStringAndKeyArgs = {
 };
 
 
+export type MutationGetNonceArgs = {
+  data: NonceRequest;
+};
+
+
 export type MutationMarkAsReadArgs = {
   entries: Array<Scalars['Int']>;
 };
@@ -613,6 +620,11 @@ export type MutationSendMessageArgs = {
   content: Scalars['String'];
   fromSafeAddress?: InputMaybe<Scalars['String']>;
   toSafeAddress: Scalars['String'];
+};
+
+
+export type MutationSendSignedTransactionArgs = {
+  data: SendSignedTransactionInput;
 };
 
 
@@ -692,6 +704,16 @@ export type NewUser = IEventPayload & {
   __typename?: 'NewUser';
   profile: Profile;
   transaction_hash?: Maybe<Scalars['String']>;
+};
+
+export type Nonce = {
+  __typename?: 'Nonce';
+  nonce: Scalars['Int'];
+};
+
+export type NonceRequest = {
+  address?: InputMaybe<Scalars['String']>;
+  signature: Scalars['String'];
 };
 
 export type NotificationEvent = {
@@ -1202,6 +1224,15 @@ export type SendMessageResult = {
   success: Scalars['Boolean'];
 };
 
+export type SendSignedTransactionInput = {
+  signedTransaction: Scalars['String'];
+};
+
+export type SendSignedTransactionResult = {
+  __typename?: 'SendSignedTransactionResult';
+  transactionHash: Scalars['String'];
+};
+
 export type Server = {
   __typename?: 'Server';
   version: Scalars['String'];
@@ -1214,6 +1245,7 @@ export type SessionInfo = {
   isLoggedOn: Scalars['Boolean'];
   profile?: Maybe<Profile>;
   profileId?: Maybe<Scalars['Int']>;
+  sessionId?: Maybe<Scalars['String']>;
   useShortSignup?: Maybe<Scalars['Boolean']>;
 };
 
@@ -1565,6 +1597,8 @@ export type ResolversTypes = ResolversObject<{
   Mutation: ResolverTypeWrapper<{}>;
   MyInviteRank: ResolverTypeWrapper<MyInviteRank>;
   NewUser: ResolverTypeWrapper<NewUser>;
+  Nonce: ResolverTypeWrapper<Nonce>;
+  NonceRequest: NonceRequest;
   NotificationEvent: ResolverTypeWrapper<NotificationEvent>;
   Organisation: ResolverTypeWrapper<Omit<Organisation, 'members'> & { members?: Maybe<Array<ResolversTypes['ProfileOrOrganisation']>> }>;
   OrganisationCreated: ResolverTypeWrapper<OrganisationCreated>;
@@ -1598,6 +1632,8 @@ export type ResolversTypes = ResolversObject<{
   SafeVerified: ResolverTypeWrapper<SafeVerified>;
   SearchInput: SearchInput;
   SendMessageResult: ResolverTypeWrapper<SendMessageResult>;
+  SendSignedTransactionInput: SendSignedTransactionInput;
+  SendSignedTransactionResult: ResolverTypeWrapper<SendSignedTransactionResult>;
   Server: ResolverTypeWrapper<Server>;
   SessionInfo: ResolverTypeWrapper<SessionInfo>;
   SortOrder: SortOrder;
@@ -1689,6 +1725,8 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: {};
   MyInviteRank: MyInviteRank;
   NewUser: NewUser;
+  Nonce: Nonce;
+  NonceRequest: NonceRequest;
   NotificationEvent: NotificationEvent;
   Organisation: Omit<Organisation, 'members'> & { members?: Maybe<Array<ResolversParentTypes['ProfileOrOrganisation']>> };
   OrganisationCreated: OrganisationCreated;
@@ -1719,6 +1757,8 @@ export type ResolversParentTypes = ResolversObject<{
   SafeVerified: SafeVerified;
   SearchInput: SearchInput;
   SendMessageResult: SendMessageResult;
+  SendSignedTransactionInput: SendSignedTransactionInput;
+  SendSignedTransactionResult: SendSignedTransactionResult;
   Server: Server;
   SessionInfo: SessionInfo;
   Stats: Stats;
@@ -1744,18 +1784,6 @@ export type ResolversParentTypes = ResolversObject<{
   WelcomeMessage: WelcomeMessage;
   i18n: I18n;
 }>;
-
-export type CostDirectiveArgs = {
-  value?: Maybe<Scalars['Int']>;
-};
-
-export type CostDirectiveResolver<Result, Parent, ContextType = any, Args = CostDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type CostFactorDirectiveArgs = {
-  value?: Maybe<Scalars['Int']>;
-};
-
-export type CostFactorDirectiveResolver<Result, Parent, ContextType = any, Args = CostFactorDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type AcceptMembershipResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['AcceptMembershipResult'] = ResolversParentTypes['AcceptMembershipResult']> = ResolversObject<{
   error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2168,6 +2196,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   claimInvitation?: Resolver<ResolversTypes['ClaimInvitationResult'], ParentType, ContextType, RequireFields<MutationClaimInvitationArgs, 'code'>>;
   createNewStringAndKey?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<MutationCreateNewStringAndKeyArgs>>;
   createTestInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType>;
+  getNonce?: Resolver<ResolversTypes['Nonce'], ParentType, ContextType, RequireFields<MutationGetNonceArgs, 'data'>>;
   importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   logout?: Resolver<ResolversTypes['LogoutResponse'], ParentType, ContextType>;
   markAsRead?: Resolver<ResolversTypes['MarkAsReadResult'], ParentType, ContextType, RequireFields<MutationMarkAsReadArgs, 'entries'>>;
@@ -2178,6 +2207,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   requestUpdateSafe?: Resolver<ResolversTypes['RequestUpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationRequestUpdateSafeArgs, 'data'>>;
   revokeSafeVerification?: Resolver<ResolversTypes['VerifySafeResult'], ParentType, ContextType, RequireFields<MutationRevokeSafeVerificationArgs, 'safeAddress'>>;
   sendMessage?: Resolver<ResolversTypes['SendMessageResult'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'content' | 'toSafeAddress'>>;
+  sendSignedTransaction?: Resolver<ResolversTypes['SendSignedTransactionResult'], ParentType, ContextType, RequireFields<MutationSendSignedTransactionArgs, 'data'>>;
   setIsFavorite?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSetIsFavoriteArgs, 'circlesAddress' | 'isFavorite'>>;
   setStringUpdateState?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<MutationSetStringUpdateStateArgs>>;
   shareLink?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationShareLinkArgs, 'targetKey' | 'targetType'>>;
@@ -2201,6 +2231,11 @@ export type MyInviteRankResolvers<ContextType = any, ParentType extends Resolver
 export type NewUserResolvers<ContextType = any, ParentType extends ResolversParentTypes['NewUser'] = ResolversParentTypes['NewUser']> = ResolversObject<{
   profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
   transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type NonceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Nonce'] = ResolversParentTypes['Nonce']> = ResolversObject<{
+  nonce?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2448,6 +2483,11 @@ export type SendMessageResultResolvers<ContextType = any, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type SendSignedTransactionResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['SendSignedTransactionResult'] = ResolversParentTypes['SendSignedTransactionResult']> = ResolversObject<{
+  transactionHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type ServerResolvers<ContextType = any, ParentType extends ResolversParentTypes['Server'] = ResolversParentTypes['Server']> = ResolversObject<{
   version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -2459,6 +2499,7 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
   isLoggedOn?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   profileId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  sessionId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   useShortSignup?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -2637,6 +2678,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   MyInviteRank?: MyInviteRankResolvers<ContextType>;
   NewUser?: NewUserResolvers<ContextType>;
+  Nonce?: NonceResolvers<ContextType>;
   NotificationEvent?: NotificationEventResolvers<ContextType>;
   Organisation?: OrganisationResolvers<ContextType>;
   OrganisationCreated?: OrganisationCreatedResolvers<ContextType>;
@@ -2656,6 +2698,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   SafeInfo?: SafeInfoResolvers<ContextType>;
   SafeVerified?: SafeVerifiedResolvers<ContextType>;
   SendMessageResult?: SendMessageResultResolvers<ContextType>;
+  SendSignedTransactionResult?: SendSignedTransactionResultResolvers<ContextType>;
   Server?: ServerResolvers<ContextType>;
   SessionInfo?: SessionInfoResolvers<ContextType>;
   Stats?: StatsResolvers<ContextType>;
@@ -2675,7 +2718,3 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   i18n?: I18nResolvers<ContextType>;
 }>;
 
-export type DirectiveResolvers<ContextType = any> = ResolversObject<{
-  cost?: CostDirectiveResolver<any, any, ContextType>;
-  costFactor?: CostFactorDirectiveResolver<any, any, ContextType>;
-}>;

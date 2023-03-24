@@ -73,6 +73,7 @@ export const sessionInfo = async (parent: any, args: any, context: Context): Pro
       hasProfile: !!callerInfo?.profile,
       profileId: callerInfo?.profile?.id,
       profile: callerInfo?.profile ? ProfileLoader.withDisplayCurrency(callerInfo.profile) : null,
+      sessionId: callerInfo?.session.id,
       capabilities: capabilities,
       useShortSignup: useShortSignup,
     };

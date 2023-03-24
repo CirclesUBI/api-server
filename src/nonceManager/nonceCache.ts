@@ -7,17 +7,22 @@ export class NonceCache {
             await client.query('BEGIN');
             const result = await client.query(
                 'SELECT nonce, cache_ttl FROM nonce_cache WHERE address = $1 FOR UPDATE',
-                [address]
+                [address.toLowerCase()]
             );
-            const { nonce, cache_ttl } = result.rows[0];
+
+            const {nonce, cache_ttl} = result.rows.length > 0
+             ? result.rows[0]
+             : {nonce: undefined, cache_ttl: undefined};
+
             if (!nonce || cache_ttl < Date.now()) {
                 await client.query('COMMIT');
                 return undefined;
             }
+
             const nextNonce = nonce + 1;
             await client.query(
                 'UPDATE nonce_cache SET nonce = $1, cache_ttl = $2 WHERE address = $3',
-                [nextNonce, Date.now() + cacheTtlInSeconds * 1000, address]
+                [nextNonce, Date.now() + cacheTtlInSeconds * 1000, address.toLowerCase()]
             );
             await client.query('COMMIT');
             return nextNonce;
@@ -38,7 +43,7 @@ export class NonceCache {
                 VALUES ($1, $2, $3) 
                 ON CONFLICT (address) 
                 DO UPDATE SET nonce = EXCLUDED.nonce, cache_ttl = EXCLUDED.cache_ttl`,
-                [address, nonce, Date.now() + cacheTtlInSeconds * 1000]
+                [address.toLowerCase(), nonce, Date.now() + cacheTtlInSeconds * 1000]
             );
         } finally {
             client.release();
