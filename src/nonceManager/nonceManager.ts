@@ -58,27 +58,34 @@ export class NonceManager {
             address = sessionAddress;
         }
 
-        let nextNonce = await this.cache.increment(address, cacheTtlInSeconds);
-        if (nextNonce) {
-            context.log(`Nonce ${nextNonce} was retrieved from cache.`);
-            return nextNonce;
-        }
-
-        const currentNonce = safeProxy
-            ? await safeProxy.getNonce()
-            : await this.web3.eth.getTransactionCount(address);
-
-        nextNonce = currentNonce + 1;
-
-        context.log(`${address} current nonce is: ${currentNonce}`);
-
-        await this.cache.set(address, nextNonce, cacheTtlInSeconds);
-        context.log(`Wrote nextNonce ${nextNonce} to the cache.`);
-
         if (cacheTtlInSeconds > this.longestCacheTtl) {
             this.longestCacheTtl = cacheTtlInSeconds;
         }
 
+        let nextNonce = await this.cache.increment(address, cacheTtlInSeconds);
+        if (nextNonce) {
+            this.resetCleanupTimeout();
+            context.log(`Nonce ${nextNonce} was retrieved from cache.`);
+            return nextNonce;
+        }
+
+        nextNonce = safeProxy
+            ? await safeProxy.getNonce()
+            : await this.web3.eth.getTransactionCount(address);
+
+        context.log(`${address} next nonce is: ${ nextNonce} (read from chain)`);
+
+        await this.cache.set(address, nextNonce, cacheTtlInSeconds);
+        context.log(`Wrote nextNonce ${nextNonce} to the cache.`);
+
+        this.resetCleanupTimeout();
+
+        context.log(`Set cache clear timeout to ${this.longestCacheTtl} seconds. (callCount: ${this.callCount})`);
+
+        return nextNonce;
+    }
+
+    private resetCleanupTimeout() {
         if (this.currentCacheClearTimeout) {
             clearTimeout(this.currentCacheClearTimeout);
         }
@@ -87,7 +94,5 @@ export class NonceManager {
             await this.cache.clearOrphaned();
             this.currentCacheClearTimeout = null;
         }, this.longestCacheTtl * 1000);
-
-        return nextNonce;
     }
 }
