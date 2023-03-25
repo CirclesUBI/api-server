@@ -3,14 +3,10 @@ import { Context } from "../../context";
 import { Session } from "../../session";
 import { ProfileLoader } from "../../querySources/profileLoader";
 import { Environment } from "../../environment";
-import { TestData } from "../../api-db/testData";
 import { RpcGateway } from "../../circles/rpcGateway";
-import { JobQueue } from "../../jobs/jobQueue";
-
 import { claimInvitation } from "./claimInvitation";
 import { createInvitationPerpetualTrigger } from "../../utils/invitationHelper";
 import { verifySafe } from "./verifySafe";
-import { AutoTrust } from "../../jobs/descriptions/maintenance/autoTrust";
 import { Gender } from "../../api-db/client";
 
 const validateEmail = (email: string) => {
@@ -118,7 +114,7 @@ export function upsertProfileResolver() {
         profile.circlesAddress
       ) {
         // Create the initial invitations for the user
-        console.log(`Automatically verifying the new safe user ${profile.circlesAddress} ..`);
+        context.log(`Automatically verifying the new safe user ${profile.circlesAddress} ..`);
         await verifySafe(null, { safeAddress: profile.circlesAddress }, context);
 
         const invitation = await Environment.readWriteApiDb.invitation.findFirst({
@@ -126,21 +122,10 @@ export function upsertProfileResolver() {
           include: { createdBy: true },
         });
 
-        if (invitation?.createdBy?.circlesAddress) {
-          setTimeout(async () => {
-            console.log(
-              `Creating an 'autoTrust' job for new safe ${profile.circlesAddress} and inviter ${invitation.createdBy.circlesAddress}`
-            );
-            await JobQueue.produce([
-              new AutoTrust(<string>invitation.createdBy.circlesAddress, <string>profile.circlesAddress),
-            ]);
-          }, 15000);
-        }
+        context.log(`Creating the input trigger for address ${profile.circlesAddress} ..`);
+        const inviteTriggerHash = await createInvitationPerpetualTrigger(profile.circlesAddress, context);
 
-        console.log(`Creating the input trigger for address ${profile.circlesAddress} ..`);
-        const inviteTriggerHash = await createInvitationPerpetualTrigger(profile.circlesAddress);
-
-        console.log(`Trying to find the invite trigger job with hash ${inviteTriggerHash} ..`);
+        context.log(`Trying to find the invite trigger job with hash ${inviteTriggerHash} ..`);
         const inviteTriggerJob = await Environment.readWriteApiDb.job.findUnique({
           where: {
             hash: inviteTriggerHash,
@@ -148,7 +133,7 @@ export function upsertProfileResolver() {
         });
 
         if (inviteTriggerJob) {
-          console.log(`Found invite job with hash ${inviteTriggerHash} and linking it to profile ${oldProfile.id}`);
+          context.log(`Found invite job with hash ${inviteTriggerHash} and linking it to profile ${oldProfile.id}`);
           profile = ProfileLoader.withDisplayCurrency(
             await Environment.readWriteApiDb.profile.update({
               where: {
@@ -203,12 +188,6 @@ export function upsertProfileResolver() {
       await Session.assignProfile(session.sessionToken, profile.id);
 
       await claimInviteCodeFromCookie(context);
-    }
-
-    if (Environment.isAutomatedTest && profile.circlesAddress) {
-      // Insert the test data when the first profile with a safe-address was created
-      console.log("First circles user. Deploying test data ..");
-      await TestData.insertIfEmpty(profile.circlesAddress);
     }
 
     return profile;

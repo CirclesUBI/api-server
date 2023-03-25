@@ -162,10 +162,9 @@ export const events = async (
     const key = generateUnreadMarkerKey(e);
     const unreadMarker = unreadMarkers[key];
     if (!unreadMarker) {
-      console.log('No marker for event:', e);
-      // debugger;
+      // context.log(`No marker found for event: ${e.type}, ts: ${e.timestamp}, safe: ${e.safe_address}, direction: ${e.direction}, txHash: ${e.transaction_hash}`);
     } else {
-      console.log('Found marker for event:', e);
+      // context.log(`Found marker for event: ${e.type}, ts: ${e.timestamp}, safe: ${e.safe_address}, direction: ${e.direction}, txHash: ${e.transaction_hash}`);
     }
     e.unread = unreadMarker ? !!unreadMarkers[key].readAt : false;
   });

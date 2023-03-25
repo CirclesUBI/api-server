@@ -1,45 +1,53 @@
-import { myProfile, profilesBySafeAddress } from "./profiles";
-import { sessionInfo } from "./sessionInfo";
-import { search } from "./search";
-import { version } from "./version";
-import { tags } from "./tags";
-import { tagById } from "./tagById";
-import { claimedInvitation } from "./claimedInvitation";
-import { trustRelations } from "./trustRelations";
-import { commonTrust } from "./commonTrust";
-import { organisations } from "./organisations";
-import { safeInfo } from "./safeInfo";
-import { hubSignupTransactionResolver } from "./hubSignupTransactionResolver";
-import { invitationTransaction } from "./invitationTransaction";
-import { myInvitations } from "./myInvitations";
-import { organisationsByAddress } from "./organisationsByAddress";
-import { regionsResolver } from "./regions";
-import { findSafesByOwner } from "./findSafesByOwner";
-import { profilesById } from "./profilesById";
-import { aggregates } from "./aggregates";
-import { events } from "./events";
-import { directPath } from "./directPath";
-import { verifications } from "./verifications";
-import { findInvitationCreator } from "./findInvitationCreator";
-import { recentProfiles } from "./recentProfiles";
-import { stats } from "./stats";
-import { init } from "./init";
-import { Environment } from "../../environment";
-import { ExportProfile, ExportTrustRelation, Favorite, QueryResolvers } from "../../types";
-import { Context } from "../../context";
-import { clientAssertionJwt } from "./clientAssertionJwt";
-import { lastAcknowledgedAt } from "./lastAcknowledgedAt";
-import { getStringByMaxVersion } from "./getStringByMaxVersion";
-import { getAvailableLanguages } from "./getAvailableLanguages";
-import { getAllStringsByMaxVersion } from "./getAllStringsByMaxVersion";
-import { getAllStringsByMaxVersionAndLang } from "./getAllStringsByMaxVersionAndLang";
-import { getOlderVersionsByKeyAndLang } from "./getOlderVersionsByKeyAndLang";
-import { RpcGateway } from "../../circles/rpcGateway";
-import { getStringsToBeUpdatedAmount } from "./getStringsToBeUpdatedAmount";
-import { getPaginatedStrings } from "./getstPaginatedStrings";
-import { getPaginatedStringsToUpdate } from "./getPaginatedStringsToUpdate";
-import { allBusinesses } from "./allBusinesses";
-import { getDisplayName } from "../../utils/getDisplayName";
+import {myProfile, profilesBySafeAddress} from "./profiles";
+import {sessionInfo} from "./sessionInfo";
+import {search} from "./search";
+import {version} from "./version";
+import {tags} from "./tags";
+import {tagById} from "./tagById";
+import {claimedInvitation} from "./claimedInvitation";
+import {trustRelations} from "./trustRelations";
+import {commonTrust} from "./commonTrust";
+import {organisations} from "./organisations";
+import {safeInfo} from "./safeInfo";
+import {hubSignupTransactionResolver} from "./hubSignupTransactionResolver";
+import {invitationTransaction} from "./invitationTransaction";
+import {myInvitations} from "./myInvitations";
+import {organisationsByAddress} from "./organisationsByAddress";
+import {regionsResolver} from "./regions";
+import {findSafesByOwner} from "./findSafesByOwner";
+import {profilesById} from "./profilesById";
+import {aggregates} from "./aggregates";
+import {events} from "./events";
+import {directPath} from "./directPath";
+import {verifications} from "./verifications";
+import {findInvitationCreator} from "./findInvitationCreator";
+import {recentProfiles} from "./recentProfiles";
+import {stats} from "./stats";
+import {init} from "./init";
+import {Environment} from "../../environment";
+import {
+  ExportProfile,
+  ExportTrustRelation,
+  Favorite,
+  QueryResolvers,
+  TrustComparison,
+  TrustDifference
+} from "../../types";
+import {Context} from "../../context";
+import {clientAssertionJwt} from "./clientAssertionJwt";
+import {lastAcknowledgedAt} from "./lastAcknowledgedAt";
+import {getStringByMaxVersion} from "./getStringByMaxVersion";
+import {getAvailableLanguages} from "./getAvailableLanguages";
+import {getAllStringsByMaxVersion} from "./getAllStringsByMaxVersion";
+import {getAllStringsByMaxVersionAndLang} from "./getAllStringsByMaxVersionAndLang";
+import {getOlderVersionsByKeyAndLang} from "./getOlderVersionsByKeyAndLang";
+import {RpcGateway} from "../../circles/rpcGateway";
+import {getStringsToBeUpdatedAmount} from "./getStringsToBeUpdatedAmount";
+import {getPaginatedStrings} from "./getstPaginatedStrings";
+import {getPaginatedStringsToUpdate} from "./getPaginatedStringsToUpdate";
+import {allBusinesses} from "./allBusinesses";
+import {getDisplayName} from "../../utils/getDisplayName";
+import {GnosisSafeProxy} from "../../circles/gnosisSafeProxy";
 
 const packageJson = require("../../../package.json");
 
@@ -182,4 +190,94 @@ export const queryResolvers: QueryResolvers = {
     const signature = acc.sign(message);
     return signature.signature;
   },
+  compareTrustRelations: async (parent, args, context) => {
+    if (args.data.compareWith.length > 10) {
+      throw new Error("Too many addresses to compare with.");
+    }
+    if (args.data.compareWith.length == 0) {
+      const caller = await context.callerInfo;
+      if (!caller?.profile?.circlesAddress)
+      {
+        throw new Error("No address to compare with.");
+      }
+      const adminMemberships = await Environment.readonlyApiDb.membership.findMany({
+        where: {
+          memberAddress: caller.profile.circlesAddress,
+          isAdmin: true
+        },
+        include: {
+          memberAt: {
+            select: {
+              circlesAddress: true
+            }
+          }
+        }
+      });
+
+      const web3 = RpcGateway.get();
+      const compareWith = <string[]>adminMemberships.map(m => m.memberAt.circlesAddress);
+      args.data.compareWith = <string[]>(await Promise.all(compareWith.map(async address => {
+        try {
+          const compareWithSafe = new GnosisSafeProxy(web3, address);
+          const owners = await compareWithSafe.getOwners();
+          if (owners.map(o => o.toLowerCase()).indexOf(caller.session.ethAddress) > -1) {
+            return address;
+          }
+        } catch (e) {
+          context.log(`Warning: Couldn't retrieve the owners for the safe ${address}.`);
+        }
+        return null;
+      })))
+      .filter(o => !!o);
+    }
+
+    const query = `
+    select operation, "user" from
+      (select 'add' as operation, "user"
+        from cache_crc_current_trust main
+        where can_send_to = $1
+          and "limit" > 0
+        except
+        select 'add' as operation, "user"
+        from cache_crc_current_trust
+        where can_send_to = $2
+          and "limit" > 0
+      union all
+      select 'remove' as operation, follower."user"
+        from cache_crc_current_trust follower
+        left join cache_crc_current_trust main
+             on main."user" = follower."user"
+            and main.can_send_to = $1
+        where follower.can_send_to = $2
+          and follower."limit" > 0
+          and (main is null or main."limit" = 0)
+      union all
+      select 'keep' as operation, follower."user"
+        from cache_crc_current_trust follower
+        join cache_crc_current_trust main on main."user" = follower."user" and main."limit" > 0 and follower."limit" > 0
+        where follower.can_send_to = $2
+          and main.can_send_to = $1) a
+      order by "user", "operation";`;
+
+    const results = await Promise.all(
+        args.data.compareWith.map(async compareTarget => await Environment.indexDb.query(query, [args.data.canSendTo, compareTarget])));
+
+    const diffs = results
+        .flatMap((result, index) => {
+          return <TrustComparison>{
+            canSendTo: args.data.compareWith[index],
+            differences: result.rows.map(row => {
+              return <TrustDifference>{
+                operation: row.operation,
+                user: row.user
+              }
+            })
+          }
+        });
+
+    return {
+      canSendTo: args.data.canSendTo,
+      diffs: diffs
+    }
+  }
 };
