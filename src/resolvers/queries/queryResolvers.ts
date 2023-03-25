@@ -25,7 +25,14 @@ import { recentProfiles } from "./recentProfiles";
 import { stats } from "./stats";
 import { init } from "./init";
 import { Environment } from "../../environment";
-import { ExportProfile, ExportTrustRelation, Favorite, QueryResolvers } from "../../types";
+import {
+  ExportProfile,
+  ExportTrustRelation,
+  Favorite,
+  QueryResolvers,
+  TrustComparison,
+  TrustDifference
+} from "../../types";
 import { Context } from "../../context";
 import { clientAssertionJwt } from "./clientAssertionJwt";
 import { lastAcknowledgedAt } from "./lastAcknowledgedAt";
@@ -182,4 +189,57 @@ export const queryResolvers: QueryResolvers = {
     const signature = acc.sign(message);
     return signature.signature;
   },
+  compareTrustRelations: async (parent, args, context) => {
+    if (args.data.compareWith.length > 10) {
+      throw new Error("Too many addresses to compare with.");
+    }
+
+    const query = `
+      select 'add' as operation, "user"
+        from cache_crc_current_trust main
+        where can_send_to = $1
+          and "limit" > 0
+        except
+        select 'add' as operation, "user"
+        from cache_crc_current_trust
+        where can_send_to = $2
+          and "limit" > 0
+      union all
+      select 'remove' as operation, follower."user"
+        from cache_crc_current_trust follower
+        left join cache_crc_current_trust main
+             on main."user" = follower."user"
+            and main.can_send_to = $1
+        where follower.can_send_to = $2
+          and follower."limit" > 0
+          and (main is null or main."limit" = 0)
+      union all
+      select 'keep' as operation, follower."user"
+        from cache_crc_current_trust follower
+        join cache_crc_current_trust main on main."user" = follower."user" and main."limit" > 0 and follower."limit" > 0
+        where follower.can_send_to = $2
+          and main.can_send_to = $1;`;
+
+    const results = await Promise.all(
+        args.data.compareWith.map(async compareTarget => await Environment.indexDb.query(query, [args.data.canSendTo, compareTarget])));
+
+    const diffs = results
+        .flatMap((result, index) => {
+          console.log(result.rows);
+          return <TrustComparison>{
+            canSendTo: args.data.compareWith[index],
+            differences: result.rows.map(row => {
+              return <TrustDifference>{
+                operation: row.operation,
+                user: row.user
+              }
+            })
+          }
+        });
+
+    return {
+      canSendTo: args.data.canSendTo,
+      diffs: diffs
+    }
+  }
 };

@@ -128,6 +128,17 @@ export type CommonTrust = {
   type: Scalars['String'];
 };
 
+export type CompareTrustRelationsInput = {
+  canSendTo: Scalars['String'];
+  compareWith: Array<Scalars['String']>;
+};
+
+export type CompareTrustRelationsResult = {
+  __typename?: 'CompareTrustRelationsResult';
+  canSendTo: Scalars['String'];
+  diffs: Array<TrustComparison>;
+};
+
 export type Contact = {
   __typename?: 'Contact';
   contactAddress: Scalars['String'];
@@ -901,6 +912,7 @@ export type Query = {
   claimedInvitation?: Maybe<ClaimedInvitation>;
   clientAssertionJwt: Scalars['String'];
   commonTrust: Array<CommonTrust>;
+  compareTrustRelations: CompareTrustRelationsResult;
   directPath: TransitivePath;
   events: Array<ProfileEvent>;
   findInvitationCreator?: Maybe<Profile>;
@@ -966,6 +978,11 @@ export type QueryAllTrustsArgs = {
 export type QueryCommonTrustArgs = {
   safeAddress1: Scalars['String'];
   safeAddress2: Scalars['String'];
+};
+
+
+export type QueryCompareTrustRelationsArgs = {
+  data: CompareTrustRelationsInput;
 };
 
 
@@ -1325,6 +1342,18 @@ export type TransitiveTransfer = {
   value: Scalars['String'];
 };
 
+export type TrustComparison = {
+  __typename?: 'TrustComparison';
+  canSendTo: Scalars['String'];
+  differences: Array<TrustDifference>;
+};
+
+export type TrustDifference = {
+  __typename?: 'TrustDifference';
+  operation: Scalars['String'];
+  user: Scalars['String'];
+};
+
 export enum TrustDirection {
   In = 'IN',
   Mutual = 'MUTUAL',
@@ -1542,6 +1571,8 @@ export type ResolversTypes = ResolversObject<{
   ClaimInvitationResult: ResolverTypeWrapper<ClaimInvitationResult>;
   ClaimedInvitation: ResolverTypeWrapper<ClaimedInvitation>;
   CommonTrust: ResolverTypeWrapper<CommonTrust>;
+  CompareTrustRelationsInput: CompareTrustRelationsInput;
+  CompareTrustRelationsResult: ResolverTypeWrapper<CompareTrustRelationsResult>;
   Contact: ResolverTypeWrapper<Contact>;
   ContactAggregateFilter: ContactAggregateFilter;
   ContactDirection: ContactDirection;
@@ -1647,6 +1678,8 @@ export type ResolversTypes = ResolversObject<{
   TagTransactionResult: ResolverTypeWrapper<TagTransactionResult>;
   TransitivePath: ResolverTypeWrapper<TransitivePath>;
   TransitiveTransfer: ResolverTypeWrapper<TransitiveTransfer>;
+  TrustComparison: ResolverTypeWrapper<TrustComparison>;
+  TrustDifference: ResolverTypeWrapper<TrustDifference>;
   TrustDirection: TrustDirection;
   TrustRelation: ResolverTypeWrapper<TrustRelation>;
   UpdateSafeInput: UpdateSafeInput;
@@ -1676,6 +1709,8 @@ export type ResolversParentTypes = ResolversObject<{
   ClaimInvitationResult: ClaimInvitationResult;
   ClaimedInvitation: ClaimedInvitation;
   CommonTrust: CommonTrust;
+  CompareTrustRelationsInput: CompareTrustRelationsInput;
+  CompareTrustRelationsResult: CompareTrustRelationsResult;
   Contact: Contact;
   ContactAggregateFilter: ContactAggregateFilter;
   ContactFilter: ContactFilter;
@@ -1771,6 +1806,8 @@ export type ResolversParentTypes = ResolversObject<{
   TagTransactionResult: TagTransactionResult;
   TransitivePath: TransitivePath;
   TransitiveTransfer: TransitiveTransfer;
+  TrustComparison: TrustComparison;
+  TrustDifference: TrustDifference;
   TrustRelation: TrustRelation;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: UpdateSafeResponse;
@@ -1873,6 +1910,12 @@ export type CommonTrustResolvers<ContextType = any, ParentType extends Resolvers
   safeAddress1?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   safeAddress2?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CompareTrustRelationsResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['CompareTrustRelationsResult'] = ResolversParentTypes['CompareTrustRelationsResult']> = ResolversObject<{
+  canSendTo?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  diffs?: Resolver<Array<ResolversTypes['TrustComparison']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2381,6 +2424,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
   clientAssertionJwt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   commonTrust?: Resolver<Array<ResolversTypes['CommonTrust']>, ParentType, ContextType, RequireFields<QueryCommonTrustArgs, 'safeAddress1' | 'safeAddress2'>>;
+  compareTrustRelations?: Resolver<ResolversTypes['CompareTrustRelationsResult'], ParentType, ContextType, RequireFields<QueryCompareTrustRelationsArgs, 'data'>>;
   directPath?: Resolver<ResolversTypes['TransitivePath'], ParentType, ContextType, RequireFields<QueryDirectPathArgs, 'amount' | 'from' | 'to'>>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'pagination' | 'safeAddress' | 'types'>>;
   findInvitationCreator?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryFindInvitationCreatorArgs, 'code'>>;
@@ -2566,6 +2610,18 @@ export type TransitiveTransferResolvers<ContextType = any, ParentType extends Re
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type TrustComparisonResolvers<ContextType = any, ParentType extends ResolversParentTypes['TrustComparison'] = ResolversParentTypes['TrustComparison']> = ResolversObject<{
+  canSendTo?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  differences?: Resolver<Array<ResolversTypes['TrustDifference']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type TrustDifferenceResolvers<ContextType = any, ParentType extends ResolversParentTypes['TrustDifference'] = ResolversParentTypes['TrustDifference']> = ResolversObject<{
+  operation?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type TrustRelationResolvers<ContextType = any, ParentType extends ResolversParentTypes['TrustRelation'] = ResolversParentTypes['TrustRelation']> = ResolversObject<{
   direction?: Resolver<ResolversTypes['TrustDirection'], ParentType, ContextType>;
   otherSafeAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2637,6 +2693,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   ClaimInvitationResult?: ClaimInvitationResultResolvers<ContextType>;
   ClaimedInvitation?: ClaimedInvitationResolvers<ContextType>;
   CommonTrust?: CommonTrustResolvers<ContextType>;
+  CompareTrustRelationsResult?: CompareTrustRelationsResultResolvers<ContextType>;
   Contact?: ContactResolvers<ContextType>;
   ContactPoint?: ContactPointResolvers<ContextType>;
   Contacts?: ContactsResolvers<ContextType>;
@@ -2709,6 +2766,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   TagTransactionResult?: TagTransactionResultResolvers<ContextType>;
   TransitivePath?: TransitivePathResolvers<ContextType>;
   TransitiveTransfer?: TransitiveTransferResolvers<ContextType>;
+  TrustComparison?: TrustComparisonResolvers<ContextType>;
+  TrustDifference?: TrustDifferenceResolvers<ContextType>;
   TrustRelation?: TrustRelationResolvers<ContextType>;
   UpdateSafeResponse?: UpdateSafeResponseResolvers<ContextType>;
   Verification?: VerificationResolvers<ContextType>;

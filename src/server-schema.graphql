@@ -981,10 +981,32 @@ type RandomAccount {
   address: String
 }
 
+input CompareTrustRelationsInput {
+  canSendTo: String!
+  compareWith: [String!]!
+}
+
+type TrustComparison {
+  canSendTo: String!
+  differences: [TrustDifference!]!
+}
+
+type TrustDifference {
+  operation: String!
+  user: String!
+}
+
+type CompareTrustRelationsResult {
+  canSendTo: String!
+  diffs: [TrustComparison!]!
+}
+
 type Query {
   version: Version!
   sessionInfo: SessionInfo!
   init: SessionInfo!
+
+  compareTrustRelations(data: CompareTrustRelationsInput!): CompareTrustRelationsResult!
 
   # Tries to find a claimed invitation for the logged-on user.
   # A user can claim and redeem only one invitation ever.
