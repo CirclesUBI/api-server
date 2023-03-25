@@ -11,7 +11,7 @@ export async function sendSignedTransaction(parent: any, args: MutationSendSigne
   const senderAddress = web3.eth.accounts.recoverTransaction(args.data.signedTransaction);
   context.log(`senderAddress: ${senderAddress})`);
 
-  if (senderAddress !== context.session.ethAddress) {
+  if (senderAddress.toLowerCase() !== context.session.ethAddress?.toLowerCase()) {
     throw new Error(`The sender address of the signed transaction doesn't match the ethAddress of the session.`);
   }
 
