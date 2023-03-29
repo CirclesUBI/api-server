@@ -56,7 +56,6 @@ export const allBusinesses = async (parent: any, args: Partial<QueryAllBusinesse
         order by distance;`;
 
       order = queryResult;
-      console.log("order:", order);
     } else if (args.queryParams.order?.orderBy == QueryAllBusinessesOrderOptions.MostPopular) {
       const queryResult = await Environment.readWriteApiDb.$queryRaw`
 select A."circlesAddress" as "circlesAddress"
@@ -69,7 +68,6 @@ group by A."circlesAddress"
 order by count(F."favoriteCirclesAddress") desc;`;
 
       order = queryResult;
-      console.log("order:", order);
     } else if (args.queryParams.order?.orderBy == QueryAllBusinessesOrderOptions.Newest) {
       const queryResult = await Environment.readWriteApiDb.$queryRaw`
 select A."circlesAddress" as "circlesAddress"
@@ -79,7 +77,6 @@ where A."type" = 'ORGANISATION'
 order by A."createdAt" desc;`;
 
       order = queryResult;
-      console.log("order:", order);
     } else if (args.queryParams.order?.orderBy == QueryAllBusinessesOrderOptions.Oldest) {
       const queryResult = await Environment.readWriteApiDb.$queryRaw`
 select A."circlesAddress" as "circlesAddress"
@@ -89,7 +86,6 @@ where A."type" = 'ORGANISATION'
 order by A."createdAt" asc;`;
 
       order = queryResult;
-      console.log("order:", order);
     } else if (args.queryParams.order?.orderBy == QueryAllBusinessesOrderOptions.Alphabetical) {
       const queryResult = await Environment.readWriteApiDb.$queryRaw`
 select A."circlesAddress" as "circlesAddress"
@@ -99,7 +95,6 @@ where A."type" = 'ORGANISATION'
 order by A."firstName" asc;`;
 
       order = queryResult;
-      console.log("order:", order);
     }
   }
 

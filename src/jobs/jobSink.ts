@@ -7,8 +7,6 @@ import { InviteCodeFromExternalTrigger } from "./descriptions/onboarding/inviteC
 import { RequestUbiForInactiveAccountsWorker } from "./worker/maintenance/requestUbiForInactiveAccountsWorker";
 import { RequestUbiForInactiveAccounts } from "./descriptions/maintenance/requestUbiForInactiveAccounts";
 import { RotateJwksWorker } from "./worker/maintenance/rotateJwksWorker";
-import { AutoTrustWorker } from "./worker/maintenance/autoTrustWorker";
-import { AutoTrust } from "./descriptions/maintenance/autoTrust";
 import { RotateJwks } from "./descriptions/maintenance/rotateJwks";
 import { UnreadNotificationWorker } from "./worker/unreadNotificationWorker";
 import { UnreadNotification } from "./descriptions/unreadNotification";
@@ -24,11 +22,6 @@ export const jobSink = async (job: Job) => {
         errorStrategy: "logAndDropAfterThreshold",
         dropThreshold: 3,
       }).run(job.id, RotateJwks.parse(job.payload));
-    case "autoTrust".toLowerCase():
-      return await new AutoTrustWorker({
-        errorStrategy: "logAndDropAfterThreshold",
-        dropThreshold: 3,
-      }).run(job.id, AutoTrust.parse(job.payload));
     case "inviteCodeFromExternalTrigger".toLowerCase():
       return await new InviteCodeFromExternalTriggerWorker({
         errorStrategy: "logAndDrop",

@@ -6,6 +6,7 @@ import { Pool } from "pg";
 import fetch from "cross-fetch";
 import { PrismaClient } from "./api-db/client";
 import { Generate } from "./utils/generate";
+import {NonceManager} from "./nonceManager/nonceManager";
 
 export type SmtpConfig = {
   from: string;
@@ -200,18 +201,13 @@ export class Environment {
     return <string>process.env.APP_URL;
   }
 
-  static get smtpConfig(): SmtpConfig {
-    return {
-      from: <string>process.env.MAIL_FROM,
-      server: <string>process.env.SMTP_HOST,
-      user: <string>process.env.SMTP_USER,
-      password: <string>process.env.SMTP_PASSWORD,
-      localAddress: <string>process.env.SMTP_LOCAL_ADDRESS,
-      debug: !!process.env.SMTP_DEBUG,
-      port: parseInt(<string>process.env.SMTP_PORT),
-      secure: true,
-    };
+  static get nonceManager() : NonceManager {
+    if (!Environment._nonceManager) {
+      Environment._nonceManager = new NonceManager();
+    }
+    return Environment._nonceManager;
   }
+  private static _nonceManager: NonceManager|undefined = undefined;
 
   private static _instanceId = Generate.randomBase64String(8).substr(0, 8);
   static get instanceId(): string {

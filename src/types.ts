@@ -128,6 +128,17 @@ export type CommonTrust = {
   type: Scalars['String'];
 };
 
+export type CompareTrustRelationsInput = {
+  canSendTo: Scalars['String'];
+  compareWith: Array<Scalars['String']>;
+};
+
+export type CompareTrustRelationsResult = {
+  __typename?: 'CompareTrustRelationsResult';
+  canSendTo: Scalars['String'];
+  diffs: Array<TrustComparison>;
+};
+
 export type Contact = {
   __typename?: 'Contact';
   contactAddress: Scalars['String'];
@@ -516,10 +527,10 @@ export type Mutation = {
   claimInvitation: ClaimInvitationResult;
   createNewStringAndKey?: Maybe<I18n>;
   createTestInvitation: CreateInvitationResult;
+  getNonce: Nonce;
   importOrganisationsOfAccount: Array<Organisation>;
   logout: LogoutResponse;
   markAsRead: MarkAsReadResult;
-  proofUniqueness: ProofUniquenessResult;
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
   rejectMembership?: Maybe<RejectMembershipResult>;
   removeMember?: Maybe<RemoveMemberResult>;
@@ -527,6 +538,7 @@ export type Mutation = {
   requestUpdateSafe: RequestUpdateSafeResponse;
   revokeSafeVerification: VerifySafeResult;
   sendMessage: SendMessageResult;
+  sendSignedTransaction: SendSignedTransactionResult;
   setIsFavorite: Scalars['Boolean'];
   setStringUpdateState?: Maybe<I18n>;
   shareLink: Scalars['String'];
@@ -579,13 +591,13 @@ export type MutationCreateNewStringAndKeyArgs = {
 };
 
 
-export type MutationMarkAsReadArgs = {
-  entries: Array<Scalars['Int']>;
+export type MutationGetNonceArgs = {
+  data: NonceRequest;
 };
 
 
-export type MutationProofUniquenessArgs = {
-  humanodeToken: Scalars['String'];
+export type MutationMarkAsReadArgs = {
+  entries: Array<Scalars['Int']>;
 };
 
 
@@ -619,6 +631,11 @@ export type MutationSendMessageArgs = {
   content: Scalars['String'];
   fromSafeAddress?: InputMaybe<Scalars['String']>;
   toSafeAddress: Scalars['String'];
+};
+
+
+export type MutationSendSignedTransactionArgs = {
+  data: SendSignedTransactionInput;
 };
 
 
@@ -698,6 +715,16 @@ export type NewUser = IEventPayload & {
   __typename?: 'NewUser';
   profile: Profile;
   transaction_hash?: Maybe<Scalars['String']>;
+};
+
+export type Nonce = {
+  __typename?: 'Nonce';
+  nonce: Scalars['Int'];
+};
+
+export type NonceRequest = {
+  address?: InputMaybe<Scalars['String']>;
+  signature: Scalars['String'];
 };
 
 export type NotificationEvent = {
@@ -862,11 +889,6 @@ export enum ProfileType {
   Region = 'REGION'
 }
 
-export type ProofUniquenessResult = {
-  __typename?: 'ProofUniquenessResult';
-  existingSafe?: Maybe<Scalars['String']>;
-};
-
 export type PublicEvent = {
   __typename?: 'PublicEvent';
   block_number?: Maybe<Scalars['Int']>;
@@ -890,6 +912,7 @@ export type Query = {
   claimedInvitation?: Maybe<ClaimedInvitation>;
   clientAssertionJwt: Scalars['String'];
   commonTrust: Array<CommonTrust>;
+  compareTrustRelations: CompareTrustRelationsResult;
   directPath: TransitivePath;
   events: Array<ProfileEvent>;
   findInvitationCreator?: Maybe<Profile>;
@@ -955,6 +978,11 @@ export type QueryAllTrustsArgs = {
 export type QueryCommonTrustArgs = {
   safeAddress1: Scalars['String'];
   safeAddress2: Scalars['String'];
+};
+
+
+export type QueryCompareTrustRelationsArgs = {
+  data: CompareTrustRelationsInput;
 };
 
 
@@ -1213,6 +1241,15 @@ export type SendMessageResult = {
   success: Scalars['Boolean'];
 };
 
+export type SendSignedTransactionInput = {
+  signedTransaction: Scalars['String'];
+};
+
+export type SendSignedTransactionResult = {
+  __typename?: 'SendSignedTransactionResult';
+  transactionHash: Scalars['String'];
+};
+
 export type Server = {
   __typename?: 'Server';
   version: Scalars['String'];
@@ -1225,6 +1262,7 @@ export type SessionInfo = {
   isLoggedOn: Scalars['Boolean'];
   profile?: Maybe<Profile>;
   profileId?: Maybe<Scalars['Int']>;
+  sessionId?: Maybe<Scalars['String']>;
   useShortSignup?: Maybe<Scalars['Boolean']>;
 };
 
@@ -1302,6 +1340,18 @@ export type TransitiveTransfer = {
   token?: Maybe<Scalars['String']>;
   tokenOwner: Scalars['String'];
   value: Scalars['String'];
+};
+
+export type TrustComparison = {
+  __typename?: 'TrustComparison';
+  canSendTo: Scalars['String'];
+  differences: Array<TrustDifference>;
+};
+
+export type TrustDifference = {
+  __typename?: 'TrustDifference';
+  operation: Scalars['String'];
+  user: Scalars['String'];
 };
 
 export enum TrustDirection {
@@ -1521,6 +1571,8 @@ export type ResolversTypes = ResolversObject<{
   ClaimInvitationResult: ResolverTypeWrapper<ClaimInvitationResult>;
   ClaimedInvitation: ResolverTypeWrapper<ClaimedInvitation>;
   CommonTrust: ResolverTypeWrapper<CommonTrust>;
+  CompareTrustRelationsInput: CompareTrustRelationsInput;
+  CompareTrustRelationsResult: ResolverTypeWrapper<CompareTrustRelationsResult>;
   Contact: ResolverTypeWrapper<Contact>;
   ContactAggregateFilter: ContactAggregateFilter;
   ContactDirection: ContactDirection;
@@ -1576,6 +1628,8 @@ export type ResolversTypes = ResolversObject<{
   Mutation: ResolverTypeWrapper<{}>;
   MyInviteRank: ResolverTypeWrapper<MyInviteRank>;
   NewUser: ResolverTypeWrapper<NewUser>;
+  Nonce: ResolverTypeWrapper<Nonce>;
+  NonceRequest: NonceRequest;
   NotificationEvent: ResolverTypeWrapper<NotificationEvent>;
   Organisation: ResolverTypeWrapper<Omit<Organisation, 'members'> & { members?: Maybe<Array<ResolversTypes['ProfileOrOrganisation']>> }>;
   OrganisationCreated: ResolverTypeWrapper<OrganisationCreated>;
@@ -1589,7 +1643,6 @@ export type ResolversTypes = ResolversObject<{
   ProfileOrOrganisation: ResolversTypes['Organisation'] | ResolversTypes['Profile'];
   ProfileOrigin: ProfileOrigin;
   ProfileType: ProfileType;
-  ProofUniquenessResult: ResolverTypeWrapper<ProofUniquenessResult>;
   PublicEvent: ResolverTypeWrapper<Omit<PublicEvent, 'payload'> & { payload?: Maybe<ResolversTypes['EventPayload']> }>;
   Query: ResolverTypeWrapper<{}>;
   QueryAllBusinessesConditions: QueryAllBusinessesConditions;
@@ -1610,6 +1663,8 @@ export type ResolversTypes = ResolversObject<{
   SafeVerified: ResolverTypeWrapper<SafeVerified>;
   SearchInput: SearchInput;
   SendMessageResult: ResolverTypeWrapper<SendMessageResult>;
+  SendSignedTransactionInput: SendSignedTransactionInput;
+  SendSignedTransactionResult: ResolverTypeWrapper<SendSignedTransactionResult>;
   Server: ResolverTypeWrapper<Server>;
   SessionInfo: ResolverTypeWrapper<SessionInfo>;
   SortOrder: SortOrder;
@@ -1623,6 +1678,8 @@ export type ResolversTypes = ResolversObject<{
   TagTransactionResult: ResolverTypeWrapper<TagTransactionResult>;
   TransitivePath: ResolverTypeWrapper<TransitivePath>;
   TransitiveTransfer: ResolverTypeWrapper<TransitiveTransfer>;
+  TrustComparison: ResolverTypeWrapper<TrustComparison>;
+  TrustDifference: ResolverTypeWrapper<TrustDifference>;
   TrustDirection: TrustDirection;
   TrustRelation: ResolverTypeWrapper<TrustRelation>;
   UpdateSafeInput: UpdateSafeInput;
@@ -1652,6 +1709,8 @@ export type ResolversParentTypes = ResolversObject<{
   ClaimInvitationResult: ClaimInvitationResult;
   ClaimedInvitation: ClaimedInvitation;
   CommonTrust: CommonTrust;
+  CompareTrustRelationsInput: CompareTrustRelationsInput;
+  CompareTrustRelationsResult: CompareTrustRelationsResult;
   Contact: Contact;
   ContactAggregateFilter: ContactAggregateFilter;
   ContactFilter: ContactFilter;
@@ -1701,6 +1760,8 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: {};
   MyInviteRank: MyInviteRank;
   NewUser: NewUser;
+  Nonce: Nonce;
+  NonceRequest: NonceRequest;
   NotificationEvent: NotificationEvent;
   Organisation: Omit<Organisation, 'members'> & { members?: Maybe<Array<ResolversParentTypes['ProfileOrOrganisation']>> };
   OrganisationCreated: OrganisationCreated;
@@ -1712,7 +1773,6 @@ export type ResolversParentTypes = ResolversObject<{
   ProfileEvent: Omit<ProfileEvent, 'payload'> & { payload?: Maybe<ResolversParentTypes['EventPayload']> };
   ProfileEventFilter: ProfileEventFilter;
   ProfileOrOrganisation: ResolversParentTypes['Organisation'] | ResolversParentTypes['Profile'];
-  ProofUniquenessResult: ProofUniquenessResult;
   PublicEvent: Omit<PublicEvent, 'payload'> & { payload?: Maybe<ResolversParentTypes['EventPayload']> };
   Query: {};
   QueryAllBusinessesConditions: QueryAllBusinessesConditions;
@@ -1732,6 +1792,8 @@ export type ResolversParentTypes = ResolversObject<{
   SafeVerified: SafeVerified;
   SearchInput: SearchInput;
   SendMessageResult: SendMessageResult;
+  SendSignedTransactionInput: SendSignedTransactionInput;
+  SendSignedTransactionResult: SendSignedTransactionResult;
   Server: Server;
   SessionInfo: SessionInfo;
   Stats: Stats;
@@ -1744,6 +1806,8 @@ export type ResolversParentTypes = ResolversObject<{
   TagTransactionResult: TagTransactionResult;
   TransitivePath: TransitivePath;
   TransitiveTransfer: TransitiveTransfer;
+  TrustComparison: TrustComparison;
+  TrustDifference: TrustDifference;
   TrustRelation: TrustRelation;
   UpdateSafeInput: UpdateSafeInput;
   UpdateSafeResponse: UpdateSafeResponse;
@@ -1757,18 +1821,6 @@ export type ResolversParentTypes = ResolversObject<{
   WelcomeMessage: WelcomeMessage;
   i18n: I18n;
 }>;
-
-export type CostDirectiveArgs = {
-  value?: Maybe<Scalars['Int']>;
-};
-
-export type CostDirectiveResolver<Result, Parent, ContextType = any, Args = CostDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type CostFactorDirectiveArgs = {
-  value?: Maybe<Scalars['Int']>;
-};
-
-export type CostFactorDirectiveResolver<Result, Parent, ContextType = any, Args = CostFactorDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type AcceptMembershipResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['AcceptMembershipResult'] = ResolversParentTypes['AcceptMembershipResult']> = ResolversObject<{
   error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1858,6 +1910,12 @@ export type CommonTrustResolvers<ContextType = any, ParentType extends Resolvers
   safeAddress1?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   safeAddress2?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CompareTrustRelationsResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['CompareTrustRelationsResult'] = ResolversParentTypes['CompareTrustRelationsResult']> = ResolversObject<{
+  canSendTo?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  diffs?: Resolver<Array<ResolversTypes['TrustComparison']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2181,10 +2239,10 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   claimInvitation?: Resolver<ResolversTypes['ClaimInvitationResult'], ParentType, ContextType, RequireFields<MutationClaimInvitationArgs, 'code'>>;
   createNewStringAndKey?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<MutationCreateNewStringAndKeyArgs>>;
   createTestInvitation?: Resolver<ResolversTypes['CreateInvitationResult'], ParentType, ContextType>;
+  getNonce?: Resolver<ResolversTypes['Nonce'], ParentType, ContextType, RequireFields<MutationGetNonceArgs, 'data'>>;
   importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   logout?: Resolver<ResolversTypes['LogoutResponse'], ParentType, ContextType>;
   markAsRead?: Resolver<ResolversTypes['MarkAsReadResult'], ParentType, ContextType, RequireFields<MutationMarkAsReadArgs, 'entries'>>;
-  proofUniqueness?: Resolver<ResolversTypes['ProofUniquenessResult'], ParentType, ContextType, RequireFields<MutationProofUniquenessArgs, 'humanodeToken'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
   rejectMembership?: Resolver<Maybe<ResolversTypes['RejectMembershipResult']>, ParentType, ContextType, RequireFields<MutationRejectMembershipArgs, 'membershipId'>>;
   removeMember?: Resolver<Maybe<ResolversTypes['RemoveMemberResult']>, ParentType, ContextType, RequireFields<MutationRemoveMemberArgs, 'groupId' | 'memberAddress'>>;
@@ -2192,6 +2250,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   requestUpdateSafe?: Resolver<ResolversTypes['RequestUpdateSafeResponse'], ParentType, ContextType, RequireFields<MutationRequestUpdateSafeArgs, 'data'>>;
   revokeSafeVerification?: Resolver<ResolversTypes['VerifySafeResult'], ParentType, ContextType, RequireFields<MutationRevokeSafeVerificationArgs, 'safeAddress'>>;
   sendMessage?: Resolver<ResolversTypes['SendMessageResult'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'content' | 'toSafeAddress'>>;
+  sendSignedTransaction?: Resolver<ResolversTypes['SendSignedTransactionResult'], ParentType, ContextType, RequireFields<MutationSendSignedTransactionArgs, 'data'>>;
   setIsFavorite?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSetIsFavoriteArgs, 'circlesAddress' | 'isFavorite'>>;
   setStringUpdateState?: Resolver<Maybe<ResolversTypes['i18n']>, ParentType, ContextType, Partial<MutationSetStringUpdateStateArgs>>;
   shareLink?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationShareLinkArgs, 'targetKey' | 'targetType'>>;
@@ -2215,6 +2274,11 @@ export type MyInviteRankResolvers<ContextType = any, ParentType extends Resolver
 export type NewUserResolvers<ContextType = any, ParentType extends ResolversParentTypes['NewUser'] = ResolversParentTypes['NewUser']> = ResolversObject<{
   profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
   transaction_hash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type NonceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Nonce'] = ResolversParentTypes['Nonce']> = ResolversObject<{
+  nonce?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2338,11 +2402,6 @@ export type ProfileOrOrganisationResolvers<ContextType = any, ParentType extends
   __resolveType: TypeResolveFn<'Organisation' | 'Profile', ParentType, ContextType>;
 }>;
 
-export type ProofUniquenessResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProofUniquenessResult'] = ResolversParentTypes['ProofUniquenessResult']> = ResolversObject<{
-  existingSafe?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-}>;
-
 export type PublicEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['PublicEvent'] = ResolversParentTypes['PublicEvent']> = ResolversObject<{
   block_number?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   contact_address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2365,6 +2424,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   claimedInvitation?: Resolver<Maybe<ResolversTypes['ClaimedInvitation']>, ParentType, ContextType>;
   clientAssertionJwt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   commonTrust?: Resolver<Array<ResolversTypes['CommonTrust']>, ParentType, ContextType, RequireFields<QueryCommonTrustArgs, 'safeAddress1' | 'safeAddress2'>>;
+  compareTrustRelations?: Resolver<ResolversTypes['CompareTrustRelationsResult'], ParentType, ContextType, RequireFields<QueryCompareTrustRelationsArgs, 'data'>>;
   directPath?: Resolver<ResolversTypes['TransitivePath'], ParentType, ContextType, RequireFields<QueryDirectPathArgs, 'amount' | 'from' | 'to'>>;
   events?: Resolver<Array<ResolversTypes['ProfileEvent']>, ParentType, ContextType, RequireFields<QueryEventsArgs, 'pagination' | 'safeAddress' | 'types'>>;
   findInvitationCreator?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType, RequireFields<QueryFindInvitationCreatorArgs, 'code'>>;
@@ -2467,6 +2527,11 @@ export type SendMessageResultResolvers<ContextType = any, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type SendSignedTransactionResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['SendSignedTransactionResult'] = ResolversParentTypes['SendSignedTransactionResult']> = ResolversObject<{
+  transactionHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type ServerResolvers<ContextType = any, ParentType extends ResolversParentTypes['Server'] = ResolversParentTypes['Server']> = ResolversObject<{
   version?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -2478,6 +2543,7 @@ export type SessionInfoResolvers<ContextType = any, ParentType extends Resolvers
   isLoggedOn?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   profileId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  sessionId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   useShortSignup?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -2541,6 +2607,18 @@ export type TransitiveTransferResolvers<ContextType = any, ParentType extends Re
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   tokenOwner?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   value?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type TrustComparisonResolvers<ContextType = any, ParentType extends ResolversParentTypes['TrustComparison'] = ResolversParentTypes['TrustComparison']> = ResolversObject<{
+  canSendTo?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  differences?: Resolver<Array<ResolversTypes['TrustDifference']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type TrustDifferenceResolvers<ContextType = any, ParentType extends ResolversParentTypes['TrustDifference'] = ResolversParentTypes['TrustDifference']> = ResolversObject<{
+  operation?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2615,6 +2693,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   ClaimInvitationResult?: ClaimInvitationResultResolvers<ContextType>;
   ClaimedInvitation?: ClaimedInvitationResolvers<ContextType>;
   CommonTrust?: CommonTrustResolvers<ContextType>;
+  CompareTrustRelationsResult?: CompareTrustRelationsResultResolvers<ContextType>;
   Contact?: ContactResolvers<ContextType>;
   ContactPoint?: ContactPointResolvers<ContextType>;
   Contacts?: ContactsResolvers<ContextType>;
@@ -2656,6 +2735,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Mutation?: MutationResolvers<ContextType>;
   MyInviteRank?: MyInviteRankResolvers<ContextType>;
   NewUser?: NewUserResolvers<ContextType>;
+  Nonce?: NonceResolvers<ContextType>;
   NotificationEvent?: NotificationEventResolvers<ContextType>;
   Organisation?: OrganisationResolvers<ContextType>;
   OrganisationCreated?: OrganisationCreatedResolvers<ContextType>;
@@ -2664,7 +2744,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   ProfileBalances?: ProfileBalancesResolvers<ContextType>;
   ProfileEvent?: ProfileEventResolvers<ContextType>;
   ProfileOrOrganisation?: ProfileOrOrganisationResolvers<ContextType>;
-  ProofUniquenessResult?: ProofUniquenessResultResolvers<ContextType>;
   PublicEvent?: PublicEventResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RandomAccount?: RandomAccountResolvers<ContextType>;
@@ -2676,6 +2755,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   SafeInfo?: SafeInfoResolvers<ContextType>;
   SafeVerified?: SafeVerifiedResolvers<ContextType>;
   SendMessageResult?: SendMessageResultResolvers<ContextType>;
+  SendSignedTransactionResult?: SendSignedTransactionResultResolvers<ContextType>;
   Server?: ServerResolvers<ContextType>;
   SessionInfo?: SessionInfoResolvers<ContextType>;
   Stats?: StatsResolvers<ContextType>;
@@ -2686,6 +2766,8 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   TagTransactionResult?: TagTransactionResultResolvers<ContextType>;
   TransitivePath?: TransitivePathResolvers<ContextType>;
   TransitiveTransfer?: TransitiveTransferResolvers<ContextType>;
+  TrustComparison?: TrustComparisonResolvers<ContextType>;
+  TrustDifference?: TrustDifferenceResolvers<ContextType>;
   TrustRelation?: TrustRelationResolvers<ContextType>;
   UpdateSafeResponse?: UpdateSafeResponseResolvers<ContextType>;
   Verification?: VerificationResolvers<ContextType>;
@@ -2695,7 +2777,3 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   i18n?: I18nResolvers<ContextType>;
 }>;
 
-export type DirectiveResolvers<ContextType = any> = ResolversObject<{
-  cost?: CostDirectiveResolver<any, any, ContextType>;
-  costFactor?: CostFactorDirectiveResolver<any, any, ContextType>;
-}>;

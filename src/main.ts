@@ -204,7 +204,6 @@ export class Main {
       "echo",
       "requestUbiForInactiveAccounts",
       "rotateJwks",
-      "autoTrust",
       "unreadNotification",
     ];
 
@@ -232,8 +231,6 @@ new Main()
   .run()
   .then(() => console.log("Started"))
   .then(async () => {
-    console.log(`Warming up caches ..`);
-
     console.log(`Starting periodic task job factory. Yields every ${Environment.periodicTaskInterval / 1000} seconds.`);
     setInterval(async () => {
       const now = new Date();
