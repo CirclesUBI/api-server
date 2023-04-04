@@ -1,6 +1,6 @@
-import { ProfileOrigin, QuerySearchArgs } from "../../types";
+import { ProfileOrigin, QuerySearchArgs, ProfileType } from "../../types";
 import { Context } from "../../context";
-import { PrismaClient } from "../../api-db/client";
+import { Prisma, PrismaClient } from "../../api-db/client";
 
 export function search(prisma: PrismaClient) {
   return async (parent: any, args: QuerySearchArgs, context: Context) => {
@@ -13,7 +13,9 @@ export function search(prisma: PrismaClient) {
       .map((o: string) => o + "%");
 
     const typeFilter = args.query.profileType ?? "";
+    const where = Prisma.sql`and type = ${typeFilter}`;
     const searchWords2 = searchWords.map((o: string) => o.replace("%", ""));
+
     const fteSearch = `"${searchWords2.join("+")}":*`;
     const result: {
       id: number;
@@ -34,7 +36,7 @@ export function search(prisma: PrismaClient) {
                            "circlesAddress"
                     FROM "Profile"
                     where "circlesAddress" is not null
-                    and ("type" = ${typeFilter} or ${typeFilter} = '')
+                    ${typeFilter ? where : Prisma.empty}
                     group by "circlesAddress"
                 ), "landProfiles" as (
                     select p.id,
