@@ -157,6 +157,7 @@ input QueryProfileInput {
 }
 input SearchInput {
   searchString: String!
+  profileType: ProfileType
 }
 
 input UpsertProfileInput {

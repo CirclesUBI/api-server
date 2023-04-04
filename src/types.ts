@@ -1231,6 +1231,7 @@ export type SafeVerified = IEventPayload & {
 };
 
 export type SearchInput = {
+  profileType?: InputMaybe<ProfileType>;
   searchString: Scalars['String'];
 };
 
