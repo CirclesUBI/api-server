@@ -1,39 +1,40 @@
-import {ProfileOrigin, QuerySearchArgs} from "../../types";
-import {Context} from "../../context";
-import {PrismaClient} from "../../api-db/client";
+import { ProfileOrigin, QuerySearchArgs } from "../../types";
+import { Context } from "../../context";
+import { PrismaClient } from "../../api-db/client";
 
 export function search(prisma: PrismaClient) {
-    return async (parent: any, args: QuerySearchArgs, context: Context) => {
-        const searchWords = args.query.searchString
-          .toLowerCase()
-          .replace("%", "")
-          .split(/\s+/)
-          .map((o:string) => o.trim())
-          .filter((o:string) => o != "")
-          .map((o:string) => o + "%");
+  return async (parent: any, args: QuerySearchArgs, context: Context) => {
+    const searchWords = args.query.searchString
+      .toLowerCase()
+      .replace("%", "")
+      .split(/\s+/)
+      .map((o: string) => o.trim())
+      .filter((o: string) => o != "")
+      .map((o: string) => o + "%");
 
-        const searchWords2 = searchWords.map((o:string) => o.replace("%", ""));
-        const fteSearch = `"${searchWords2.join("+")}":*`;
-        const result: {
-            id: number,
-            "status"?: string,
-            "circlesAddress"?: string,
-            "circlesSafeOwner"?: string,
-            "circlesTokenAddress"?: string,
-            "firstName": string,
-            "lastName"?: string,
-            "avatarCid"?: string,
-            "avatarUrl"?: string,
-            "avatarMimeType"?: string,
-            dream: string,
-            country?: string
-        }[] =
-            await prisma.$queryRaw`
+    const typeFilter = args.query.profileType ?? "";
+    const searchWords2 = searchWords.map((o: string) => o.replace("%", ""));
+    const fteSearch = `"${searchWords2.join("+")}":*`;
+    const result: {
+      id: number;
+      status?: string;
+      circlesAddress?: string;
+      circlesSafeOwner?: string;
+      circlesTokenAddress?: string;
+      firstName: string;
+      lastName?: string;
+      avatarCid?: string;
+      avatarUrl?: string;
+      avatarMimeType?: string;
+      dream: string;
+      country?: string;
+    }[] = await prisma.$queryRaw`
                 with most_current as (
                     SELECT max(id) as id,
                            "circlesAddress"
                     FROM "Profile"
                     where "circlesAddress" is not null
+                    and ("type" = ${typeFilter} or ${typeFilter} = '')
                     group by "circlesAddress"
                 ), "landProfiles" as (
                     select p.id,
@@ -45,6 +46,7 @@ export function search(prisma: PrismaClient) {
                            p."lastName",
                            p."avatarCid",
                            p."avatarUrl",
+                           p."type",
                            p."avatarMimeType",
                            p.dream,
                            p.country
@@ -77,6 +79,7 @@ export function search(prisma: PrismaClient) {
                            null as "avatarCid",
                            "avatarUrl",
                            null as "avatarMimeType",
+                           null as "type",
                            null as dream,
                            null as country
                     from "gardenProfiles"
@@ -98,6 +101,7 @@ export function search(prisma: PrismaClient) {
                            r."lastName",
                            r."avatarCid",
                            r."avatarUrl",
+                           r."type",
                            r."avatarMimeType",
                            r.dream,
                            r.country
@@ -108,13 +112,13 @@ export function search(prisma: PrismaClient) {
                 from fts 
                 order by "firstName", "lastName";`;
 
-        return result.map(o => {
-            return {
-                ...o,
-                origin: ProfileOrigin.Unknown,
-                circlesSafeOwner: o.circlesSafeOwner?.toLowerCase(),
-                askedForEmailAddress: false
-            }
-        });
-    };
+    return result.map((o) => {
+      return {
+        ...o,
+        origin: ProfileOrigin.Unknown,
+        circlesSafeOwner: o.circlesSafeOwner?.toLowerCase(),
+        askedForEmailAddress: false,
+      };
+    });
+  };
 }
