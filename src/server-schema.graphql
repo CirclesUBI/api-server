@@ -562,6 +562,7 @@ type ProfileAggregate {
 type ProfileEvent {
   timestamp: String!
   unread: Boolean!
+  unread_marker_id: Int
   block_number: Int
   transaction_index: Int
   transaction_hash: String

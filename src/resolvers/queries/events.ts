@@ -164,8 +164,10 @@ export const events = async (
 
     if (!unreadMarker || unreadMarker.readAt) {
       e.unread = false;
+      e.unread_marker_id = undefined;
     } else {
       e.unread = true;
+      e.unread_marker_id = unreadMarker.id;
     }
   });
 

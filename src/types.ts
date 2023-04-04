@@ -862,6 +862,7 @@ export type ProfileEvent = {
   transaction_index?: Maybe<Scalars['Int']>;
   type: Scalars['String'];
   unread: Scalars['Boolean'];
+  unread_marker_id?: Maybe<Scalars['Int']>;
   value?: Maybe<Scalars['String']>;
 };
 
@@ -2395,6 +2396,7 @@ export type ProfileEventResolvers<ContextType = any, ParentType extends Resolver
   transaction_index?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   unread?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  unread_marker_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
