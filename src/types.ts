@@ -530,6 +530,7 @@ export type Mutation = {
   getNonce: Nonce;
   importOrganisationsOfAccount: Array<Organisation>;
   logout: LogoutResponse;
+  markAllAsRead: MarkAsReadResult;
   markAsRead: MarkAsReadResult;
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
   rejectMembership?: Maybe<RejectMembershipResult>;
@@ -2244,6 +2245,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   getNonce?: Resolver<ResolversTypes['Nonce'], ParentType, ContextType, RequireFields<MutationGetNonceArgs, 'data'>>;
   importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   logout?: Resolver<ResolversTypes['LogoutResponse'], ParentType, ContextType>;
+  markAllAsRead?: Resolver<ResolversTypes['MarkAsReadResult'], ParentType, ContextType>;
   markAsRead?: Resolver<ResolversTypes['MarkAsReadResult'], ParentType, ContextType, RequireFields<MutationMarkAsReadArgs, 'entries'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
   rejectMembership?: Resolver<Maybe<ResolversTypes['RejectMembershipResult']>, ParentType, ContextType, RequireFields<MutationRejectMembershipArgs, 'membershipId'>>;

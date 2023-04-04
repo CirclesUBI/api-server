@@ -957,6 +957,7 @@ type Mutation {
   shareLink(targetType: LinkTargetType!, targetKey: String!): String!
 
   markAsRead(entries: [Int!]!): MarkAsReadResult!
+  markAllAsRead: MarkAsReadResult!
 }
 
 enum LinkTargetType {
