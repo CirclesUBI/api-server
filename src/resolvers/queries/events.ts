@@ -1,25 +1,24 @@
-import { Context } from "../../context";
-import { EventSource } from "../../querySources/eventSources/eventSource";
+import {Context} from "../../context";
+import {EventSource} from "../../querySources/eventSources/eventSource";
 import {
   BlockchainEventType,
   BlockchainIndexerEventSource,
 } from "../../querySources/eventSources/blockchain-indexer/blockchainIndexerEventSource";
+import {EventType, ProfileEvent, QueryEventsArgs, SortOrder,} from "../../types";
+import {canAccess} from "../../utils/canAccess";
+import {MembershipOfferEventSource} from "../../querySources/eventSources/api/membershipOfferEventSource";
 import {
-  EventType,
-  ProfileEvent,
-  QueryEventsArgs,
-  SortOrder,
-} from "../../types";
-import { canAccess } from "../../utils/canAccess";
-import { MembershipOfferEventSource } from "../../querySources/eventSources/api/membershipOfferEventSource";
-import { AcceptedMembershipOfferEventSource } from "../../querySources/eventSources/api/acceptedMembershipOfferEventSource";
-import { RejectedMembershipOfferEventSource } from "../../querySources/eventSources/api/rejectedMembershipOfferEventSource";
-import { WelcomeMessageEventSource } from "../../querySources/eventSources/api/welcomeMessageEventSource";
-import { CreatedInvitationsEventSource } from "../../querySources/eventSources/api/createdInvitationsEventSource";
-import { RedeemedInvitationsEventSource } from "../../querySources/eventSources/api/redeemedInvitationsEventSource";
-import { CombinedEventSource } from "../../querySources/eventSources/combinedEventSource";
-import { EventAugmenter } from "../../querySources/eventSources/eventAugmenter";
-import { SafeVerifiedEventSource } from "../../querySources/eventSources/api/safeVerifiedEventSource";
+  AcceptedMembershipOfferEventSource
+} from "../../querySources/eventSources/api/acceptedMembershipOfferEventSource";
+import {
+  RejectedMembershipOfferEventSource
+} from "../../querySources/eventSources/api/rejectedMembershipOfferEventSource";
+import {WelcomeMessageEventSource} from "../../querySources/eventSources/api/welcomeMessageEventSource";
+import {CreatedInvitationsEventSource} from "../../querySources/eventSources/api/createdInvitationsEventSource";
+import {RedeemedInvitationsEventSource} from "../../querySources/eventSources/api/redeemedInvitationsEventSource";
+import {CombinedEventSource} from "../../querySources/eventSources/combinedEventSource";
+import {EventAugmenter} from "../../querySources/eventSources/eventAugmenter";
+import {SafeVerifiedEventSource} from "../../querySources/eventSources/api/safeVerifiedEventSource";
 import {NewUserEventSource} from "../../querySources/eventSources/api/newUserEventSource";
 import {Environment} from "../../environment";
 import {UnreadEvent} from "../../api-db/client";
@@ -43,8 +42,7 @@ export const events = async (
     } else {
       ts = event.timestamp.toJSON();
     }
-    const id = `${ts}${event.type}${event.safe_address}${event.direction}${event.transaction_hash ?? ''}`;
-    return id;
+    return `${ts}${event.type}${event.safe_address}${event.direction}${event.transaction_hash ?? ''}`;
   };
 
   const unreadMarkers: {[key:string]:UnreadEvent} = {};
@@ -64,6 +62,8 @@ export const events = async (
     unreadEventMarkers.forEach(o => {
       unreadMarkers[generateUnreadMarkerKey(o)] = o;
     });
+
+    console.log("Unread markers", unreadMarkers);
   }
 
   //
@@ -161,12 +161,12 @@ export const events = async (
   events.forEach(e => {
     const key = generateUnreadMarkerKey(e);
     const unreadMarker = unreadMarkers[key];
-    if (!unreadMarker) {
-      // context.log(`No marker found for event: ${e.type}, ts: ${e.timestamp}, safe: ${e.safe_address}, direction: ${e.direction}, txHash: ${e.transaction_hash}`);
+
+    if (!unreadMarker || unreadMarker.readAt) {
+      e.unread = false;
     } else {
-      // context.log(`Found marker for event: ${e.type}, ts: ${e.timestamp}, safe: ${e.safe_address}, direction: ${e.direction}, txHash: ${e.transaction_hash}`);
+      e.unread = true;
     }
-    e.unread = unreadMarker ? !!unreadMarkers[key].readAt : false;
   });
 
   if (args.filter?.unreadOnly) {
