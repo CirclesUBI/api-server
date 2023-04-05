@@ -530,6 +530,7 @@ export type Mutation = {
   getNonce: Nonce;
   importOrganisationsOfAccount: Array<Organisation>;
   logout: LogoutResponse;
+  markAllAsRead: MarkAsReadResult;
   markAsRead: MarkAsReadResult;
   redeemClaimedInvitation: RedeemClaimedInvitationResult;
   rejectMembership?: Maybe<RejectMembershipResult>;
@@ -862,6 +863,7 @@ export type ProfileEvent = {
   transaction_index?: Maybe<Scalars['Int']>;
   type: Scalars['String'];
   unread: Scalars['Boolean'];
+  unread_marker_id?: Maybe<Scalars['Int']>;
   value?: Maybe<Scalars['String']>;
 };
 
@@ -2243,6 +2245,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   getNonce?: Resolver<ResolversTypes['Nonce'], ParentType, ContextType, RequireFields<MutationGetNonceArgs, 'data'>>;
   importOrganisationsOfAccount?: Resolver<Array<ResolversTypes['Organisation']>, ParentType, ContextType>;
   logout?: Resolver<ResolversTypes['LogoutResponse'], ParentType, ContextType>;
+  markAllAsRead?: Resolver<ResolversTypes['MarkAsReadResult'], ParentType, ContextType>;
   markAsRead?: Resolver<ResolversTypes['MarkAsReadResult'], ParentType, ContextType, RequireFields<MutationMarkAsReadArgs, 'entries'>>;
   redeemClaimedInvitation?: Resolver<ResolversTypes['RedeemClaimedInvitationResult'], ParentType, ContextType>;
   rejectMembership?: Resolver<Maybe<ResolversTypes['RejectMembershipResult']>, ParentType, ContextType, RequireFields<MutationRejectMembershipArgs, 'membershipId'>>;
@@ -2395,6 +2398,7 @@ export type ProfileEventResolvers<ContextType = any, ParentType extends Resolver
   transaction_index?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   unread?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  unread_marker_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
