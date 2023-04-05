@@ -31,9 +31,6 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
           await ApiPubSub.instance.pubSub.publish(`events_${event.address1}`, {
             events: notification,
           });
-          await ApiPubSub.instance.pubSub.publish(`events_${event.address2}`, {
-            events: notification,
-          });
 
           if (event.type == EventType.CrcHubTransfer) {
             const unreadTransferNotification = new UnreadNotification(
@@ -44,7 +41,12 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
               "in",
               event.hash
             );
+
             await JobQueue.produce([unreadTransferNotification]);
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            await ApiPubSub.instance.pubSub.publish(`events_${event.address2}`, {
+              events: notification,
+            });
           }
           break;
         case EventType.CrcMinting:
@@ -54,9 +56,6 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
             to: event.address2,
             transaction_hash: event.hash,
           };
-          await ApiPubSub.instance.pubSub.publish(`events_${event.address2}`, {
-            events: notification,
-          });
           const unreadMintingNotification = new UnreadNotification(
             event.timestamp.toJSON(),
             event.type,
@@ -66,6 +65,10 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
             event.hash
           );
           await JobQueue.produce([unreadMintingNotification]);
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          await ApiPubSub.instance.pubSub.publish(`events_${event.address2}`, {
+            events: notification,
+          });
           break;
         case EventType.GnosisSafeEthTransfer:
           notification = <NotificationEvent>{
@@ -89,9 +92,6 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
             transaction_hash: event.hash,
           };
 
-          await ApiPubSub.instance.pubSub.publish(`events_${event.address1}`, {
-            events: notification,
-          });
           await ApiPubSub.instance.pubSub.publish(`events_${event.address2}`, {
             events: notification,
           });
@@ -105,6 +105,11 @@ export class AppNotificationProcessor implements IndexerEventProcessor {
             event.hash
           );
           await JobQueue.produce([unreadTrustNotification]);
+
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          await ApiPubSub.instance.pubSub.publish(`events_${event.address1}`, {
+            events: notification,
+          });
           break;
       }
 
