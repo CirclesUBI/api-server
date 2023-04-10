@@ -23,7 +23,7 @@
     "apollo-server-core": "^3.6.3",
     "apollo-server-express": "^3.6.3",
     "apollo-server-plugin-http-headers": "^0.1.4",
-    "aws-sdk": "^2.1084.0",
+    "aws-sdk": "^2.1354.0",
     "bn.js": "^5.2.0",
     "cors": "^2.8.5",
     "dataloader": "^2.0.0",
