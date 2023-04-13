@@ -32,6 +32,8 @@ export const profileMembershipsDataLoader = new DataLoader<string, Membership[]>
             displayCurrency: o.memberAt.displayCurrency,
             location: o.memberAt.location,
             locationName: o.memberAt.locationName,
+            lat: o.memberAt.lat,
+            lon: o.memberAt.lon,
           },
           createdByProfileId: o.createdByProfileId,
           memberAddress: o.memberAddress,
