@@ -115,6 +115,8 @@ export async function upsertOrganisation(parent: any, args: MutationUpsertOrgani
       firstName: organisationProfile.firstName,
       displayName: organisationProfile.firstName,
       locationName: organisationProfile.locationName,
+      lat: organisationProfile.lat,
+      lon: organisationProfile.lon,
       members: [],
     },
   };
