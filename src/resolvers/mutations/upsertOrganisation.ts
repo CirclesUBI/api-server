@@ -111,6 +111,7 @@ export async function upsertOrganisation(parent: any, args: MutationUpsertOrgani
       ...args,
       ...organisationProfile,
       id: organisationProfile.id,
+      description: organisationProfile.dream,
       createdAt: new Date().toJSON(),
       firstName: organisationProfile.firstName,
       displayName: organisationProfile.firstName,
