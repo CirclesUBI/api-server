@@ -44,17 +44,20 @@ export const init = async (parent:any, args:any, context:Context) : Promise<Sess
         // When the session is invalid, make sure that the user doesn't keep the cookie
         const expires = new Date();
         /// See https://www.npmjs.com/package/apollo-server-plugin-http-headers for the magic that happens below ;)
-        context.setCookies.push({
-            name: `session_${Environment.appId.replace(/\./g, "_")}`,
-            value: "no-session",
-            options: {
-                domain: Environment.externalDomain,
-                httpOnly: true,
-                path: "/",
-                sameSite: Environment.isLocalDebugEnvironment ? "Strict" : "None",
-                secure: !Environment.isLocalDebugEnvironment,
-                expires: expires
-            }
+
+        Environment.externalDomains.forEach((externalDomain) => {
+            context.setCookies.push({
+                name: `session_${Environment.appId.replace(/\./g, "_")}`,
+                value: "no-session",
+                options: {
+                    domain: externalDomain,
+                    httpOnly: true,
+                    path: "/",
+                    sameSite: Environment.isLocalDebugEnvironment ? "Strict" : "None",
+                    secure: !Environment.isLocalDebugEnvironment,
+                    expires: expires
+                }
+            });
         });
 
         return {

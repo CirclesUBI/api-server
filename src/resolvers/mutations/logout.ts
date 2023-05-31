@@ -13,17 +13,20 @@ export function logout() {
         if (session) {
             await Session.logout(context, Environment.readWriteApiDb, session.sessionToken);
         }
-        context.setCookies.push({
-            name: `session_${Environment.appId.replace(/\./g, "_")}`,
-            value: "",
-            options: {
-                domain: Environment.externalDomain,
-                httpOnly: true,
-                path: "/",
-                sameSite: Environment.cookieSameSitePolicy,
-                secure: !Environment.cookieSecurePolicy ? undefined : "Secure",
-                maxAge: 0
-            }
+
+        Environment.externalDomains.forEach((externalDomain) => {
+            context.setCookies.push({
+                name: `session_${Environment.appId.replace(/\./g, "_")}`,
+                value: "",
+                options: {
+                    domain: externalDomain,
+                    httpOnly: true,
+                    path: "/",
+                    sameSite: Environment.cookieSameSitePolicy,
+                    secure: !Environment.cookieSecurePolicy ? undefined : "Secure",
+                    maxAge: 0
+                }
+            });
         });
 
         return {

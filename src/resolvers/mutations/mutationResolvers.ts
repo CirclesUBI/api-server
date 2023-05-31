@@ -112,7 +112,7 @@ export const mutationResolvers: MutationResolvers = {
     });
 
     const protocol = Environment.isLocalDebugEnvironment ? "http://" : "https://";
-    return protocol + Environment.externalDomain + "/link?id=" + link.id;
+    return protocol + Environment.externalDomains[0] + "/link?id=" + link.id;
   },
   markAsRead: async (parent, args, context: Context) => {
     const caller = await context.callerInfo;

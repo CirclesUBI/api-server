@@ -58,7 +58,7 @@ export class Environment {
     if (!this.appId) {
       errors.push(`The APP_ID environment variable is not set.`);
     }
-    if (!this.externalDomain) {
+    if (!this.externalDomains.length) {
       errors.push(`The EXTERNAL_DOMAIN environment variable is not set.`);
     }
     if (!this.operatorOrganisationAddress) {
@@ -342,8 +342,12 @@ export class Environment {
     return !!process.env.DEBUG;
   }
 
-  static get externalDomain(): string {
+  /*static get externalDomain(): string {
     return <string>process.env.EXTERNAL_DOMAIN;
+  }*/
+
+  static get externalDomains(): string[] {
+    return (<string>process.env.EXTERNAL_DOMAIN).split(";").map((o) => o.trim());
   }
 
   public static get humanodeClientId(): string {
