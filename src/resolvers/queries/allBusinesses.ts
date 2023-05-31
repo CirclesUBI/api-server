@@ -1,169 +1,105 @@
-import { Context } from "../../context";
-import { Environment } from "../../environment";
-import { Businesses, QueryAllBusinessesArgs, QueryAllBusinessesOrderOptions } from "../../types";
+import {QueryAllBusinessesArgs, QueryAllBusinessesOrderOptions} from "../../types";
+import {Context} from "../../context";
+import {Environment} from "../../environment";
 
-export const allBusinesses = async (parent: any, args: Partial<QueryAllBusinessesArgs>, _: Context) => {
-  let filter: any = {};
-  let order: any;
+export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, context: Context) => {
+  const queryParams = args.queryParams;
+  if (!queryParams) {
+    throw new Error('Missing queryParams');
+  }
 
-  if (args.queryParams) {
-    if (
-      args.queryParams.order?.orderBy == QueryAllBusinessesOrderOptions.Nearest &&
-      !args.queryParams?.ownCoordinates
-    ) {
-      throw new Error(`Using order by ${QueryAllBusinessesOrderOptions.Nearest} but didn't supply 'ownCoordinates`);
-    }
-    if (args.queryParams.where?.inCategories) {
-      if (args.queryParams.where?.inCategories.length == 0) {
-        return [];
-      }
-      filter = {
-        ...filter,
-        businessCategoryId: {
-          in: args.queryParams.where?.inCategories,
-        },
-      };
-    }
-    if (args.queryParams.where?.inCirclesAddress) {
-      filter = {
-        ...filter,
-        circlesAddress: {
-          in: args.queryParams.where?.inCirclesAddress,
-        },
-      };
-    }
-    if (args.queryParams.order?.orderBy == QueryAllBusinessesOrderOptions.Nearest) {
-      const lat = args.queryParams.ownCoordinates!.lat.toString();
-      const lon = args.queryParams.ownCoordinates!.lon.toString();
+  const {
+    order,
+    ownCoordinates,
+    where,
+    lastValue,
+    limit
+  } = queryParams;
 
-      const queryResult = await Environment.readWriteApiDb.$queryRaw`
-        with cte as (
-            SELECT ${lat}::text user_lat,
-                   ${lon}::text as user_lon,
-                   A."lat"::text as orga_lat,
-                   A."lon"::text as orga_lon,
-                   ST_Distance(
-                      ST_point(${lat}::text::float, ${lon}::text::float),
-                      ST_point(A."lat", A."lon")
-                   ) as distance,
-                   A."circlesAddress"
-            FROM "Profile" as A
-            where "type" = 'ORGANISATION'
-              and "avatarUrl" is not null
+  // start constructing the query
+  let query = `
+        with b as (
+            select *
+                 , case when $1 is null or $2 is null
+                     then 0
+                     else ST_Distance(
+                        ST_MakePoint($1, $2)::geography,
+                        ST_MakePoint("lon", "lat")::geography
+                   ) end as distance
+            from "businesses"
         )
-        SELECT "circlesAddress"
-        FROM  cte
-        order by distance;`;
+        select *
+        from b
+    `;
 
-      order = queryResult;
-    } else if (args.queryParams.order?.orderBy == QueryAllBusinessesOrderOptions.MostPopular) {
-      const queryResult = await Environment.readWriteApiDb.$queryRaw`
-select A."circlesAddress" as "circlesAddress"
-     --, count(F."favoriteCirclesAddress") as "popularity"
-from "Profile" A
-left join "Favorites" F on (F."favoriteCirclesAddress" = A."circlesAddress")
-where A."type" = 'ORGANISATION'
-  and A."avatarUrl" is not null
-group by A."circlesAddress"
-order by count(F."favoriteCirclesAddress") desc;`;
+  const params: any[] = [ownCoordinates?.lon, ownCoordinates?.lat];
 
-      order = queryResult;
-    } else if (args.queryParams.order?.orderBy == QueryAllBusinessesOrderOptions.Newest) {
-      const queryResult = await Environment.readWriteApiDb.$queryRaw`
-select A."circlesAddress" as "circlesAddress"
-from "Profile" A
-where A."type" = 'ORGANISATION'
-  and A."avatarUrl" is not null
-order by A."createdAt" desc;`;
+  // if where conditions exist, construct the where clause
+  if (where?.inCategories || where?.inCirclesAddress) {
+    let whereConditions = [];
 
-      order = queryResult;
-    } else if (args.queryParams.order?.orderBy == QueryAllBusinessesOrderOptions.Oldest) {
-      const queryResult = await Environment.readWriteApiDb.$queryRaw`
-select A."circlesAddress" as "circlesAddress"
-from "Profile" A
-where A."type" = 'ORGANISATION'
-  and A."avatarUrl" is not null
-order by A."createdAt" asc;`;
-
-      order = queryResult;
-    } else if (args.queryParams.order?.orderBy == QueryAllBusinessesOrderOptions.Alphabetical) {
-      const queryResult = await Environment.readWriteApiDb.$queryRaw`
-select A."circlesAddress" as "circlesAddress"
-from "Profile" A
-where A."type" = 'ORGANISATION'
-  and A."avatarUrl" is not null
-order by A."firstName" asc;`;
-
-      order = queryResult;
+    if (where?.inCategories) {
+      whereConditions.push(`"categoryId" = ANY($${params.push(where.inCategories)})`);
     }
+
+    if (where?.inCirclesAddress) {
+      whereConditions.push(`"address" = ANY($${params.push(where.inCirclesAddress)})`);
+    }
+
+    query += ' where ' + whereConditions.join(' and ');
   }
 
-  let queryResult = await Environment.readonlyApiDb.profile.findMany({
-    where: {
-      ...filter,
-      type: "ORGANISATION",
-      avatarUrl: {
-        not: null,
-      },
-    },
-    select: {
-      id: true,
-      firstName: true,
-      dream: true,
-      location: true,
-      locationName: true,
-      lat: true,
-      lon: true,
-      circlesAddress: true,
-      businessCategory: {
-        select: {
-          id: true,
-          name: true,
-        },
-      },
-      avatarUrl: true,
-      phoneNumber: true,
-      businessHoursMonday: true,
-      businessHoursTuesday: true,
-      businessHoursWednesday: true,
-      businessHoursThursday: true,
-      businessHoursFriday: true,
-      businessHoursSaturday: true,
-      businessHoursSunday: true,
-      businessCategoryId: true,
-    },
-  });
+  // if order condition exists, construct the order by clause
+  if (order?.orderBy) {
+    let orderClause = ' order by ';
+    let whereClause = '';
 
-  if (order) {
-    const map = queryResult.toLookup(
-      (o) => o.circlesAddress,
-      (o) => o
-    );
-    return order
-      .map((row: any) => {
-        return map[row.circlesAddress];
-      })
-      .filter((o: any) => o)
-      .map((o: any) => {
-        return <Businesses>{
-          ...o,
-          name: o.firstName,
-          description: o.dream,
-          picture: o.avatarUrl,
-          businessCategoryId: o.businessCategory?.id,
-          businessCategory: o.businessCategory?.name,
-        };
-      });
+    switch(order.orderBy) {
+      case QueryAllBusinessesOrderOptions.Alphabetical:
+        orderClause += `"name" asc`;
+        if(lastValue){
+          whereClause += ` and "name" > $${params.push(lastValue)}`;
+        }
+        break;
+      case QueryAllBusinessesOrderOptions.Favorites:
+        orderClause += `"favoriteCount" desc`;
+        if(lastValue){
+          whereClause += ` and "favoriteCount" < $${params.push(Number(lastValue))}`;
+        }
+        break;
+      case QueryAllBusinessesOrderOptions.MostPopular:
+        orderClause += `"favoriteCount" desc`;
+        if(lastValue){
+          whereClause += ` and "favoriteCount" < $${params.push(Number(lastValue))}`;
+        }
+        break;
+      case QueryAllBusinessesOrderOptions.Nearest:
+        orderClause += `distance asc`;
+        if(lastValue){
+          whereClause += ` and distance > $${params.push(Number(lastValue))}`;
+        }
+        break;
+      case QueryAllBusinessesOrderOptions.Newest:
+        orderClause += `"createdAt" desc`;
+        if(lastValue){
+          whereClause += ` and "createdAt" < $${params.push(lastValue)}`;
+        }
+        break;
+      case QueryAllBusinessesOrderOptions.Oldest:
+        orderClause += `"createdAt" asc`;
+        if(lastValue){
+          whereClause += ` and "createdAt" > $${params.push(lastValue)}`;
+        }
+        break;
+      default:
+        break;
+    }
+
+    query += whereClause + orderClause;
   }
 
-  return queryResult.map((o) => {
-    return <Businesses>{
-      ...o,
-      name: o.firstName,
-      description: o.dream,
-      picture: o.avatarUrl,
-      businessCategoryId: o.businessCategory?.id,
-      businessCategory: o.businessCategory?.name,
-    };
-  });
-};
+  const effectiveLimit = limit && limit <= 100 ? limit : 20;
+  query += ` limit $${params.push(effectiveLimit)}`;
+
+  return Environment.readonlyApiDb.$queryRawUnsafe(query, params);
+}

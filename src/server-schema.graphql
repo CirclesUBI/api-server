@@ -1089,6 +1089,8 @@ input QueryAllBusinessesParameters {
   where: QueryAllBusinessesConditions
   order: QueryAllBusinessesOrder
   ownCoordinates: Geolocation
+  limit: Int
+  lastValue: String
 }
 
 input Geolocation {

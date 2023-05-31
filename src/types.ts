@@ -1150,6 +1150,8 @@ export enum QueryAllBusinessesOrderOptions {
 }
 
 export type QueryAllBusinessesParameters = {
+  lastValue?: InputMaybe<Scalars['String']>;
+  limit?: InputMaybe<Scalars['Int']>;
   order?: InputMaybe<QueryAllBusinessesOrder>;
   ownCoordinates?: InputMaybe<Geolocation>;
   where?: InputMaybe<QueryAllBusinessesConditions>;
