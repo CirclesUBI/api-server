@@ -8,17 +8,6 @@ import { PrismaClient } from "./api-db/client";
 import { Generate } from "./utils/generate";
 import {NonceManager} from "./nonceManager/nonceManager";
 
-export type SmtpConfig = {
-  from: string;
-  server: string;
-  user: string;
-  password: string;
-  secure: boolean;
-  port: number;
-  localAddress?: string;
-  debug?: boolean;
-};
-
 export type GoogleCloudCredentials = {
   type?: string;
   project_id?: string;

@@ -1,6 +1,5 @@
 import {Context} from "../../context";
 import {RpcGateway} from "../../circles/rpcGateway";
-import { BN } from "ethereumjs-util";
 import {RedeemClaimedInvitationResult} from "../../types";
 import {Environment} from "../../environment";
 import {createInvitations} from "../../utils/invitationHelper";
