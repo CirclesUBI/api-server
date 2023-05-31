@@ -16,7 +16,7 @@ export function logout() {
 
         Environment.externalDomains.forEach((externalDomain) => {
             context.setCookies.push({
-                name: `session_${Environment.appId.replace(/\./g, "_")}`,
+                name: `session_${externalDomain.replace(/\./g, "_")}`,
                 value: "",
                 options: {
                     domain: externalDomain,

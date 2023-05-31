@@ -76,10 +76,13 @@ export class Context {
         p[c[0]] = c[1];
         return p
       }, {});
-      if (cookies[`session_${Environment.appId.replace(/\./g, "_")}`]) {
-        sessionToken = decodeURIComponent(cookies[`session_${Environment.appId.replace(/\./g, "_")}`]);
-        session = await Context.findSession(sessionToken);
-      }
+
+      await Promise.all(Environment.externalDomains.map(async (externalDomain) => {
+        if (cookies[`session_${externalDomain.replace(/\./g, "_")}`]) {
+          sessionToken = decodeURIComponent(cookies[`session_${externalDomain.replace(/\./g, "_")}`]);
+          session = await Context.findSession(sessionToken);
+        }
+      }));
     }
 
     return new Context(

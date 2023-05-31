@@ -12,7 +12,7 @@ export function verifySessionChallengeResolver(prisma:PrismaClient) {
       /// See https://www.npmjs.com/package/apollo-server-plugin-http-headers for the magic that happens below ;)
 
       Environment.externalDomains.forEach((externalDomain) => {
-        context.res?.cookie(`session_${Environment.appId.replace(/\./g, "_")}`, session.sessionToken, <any>{
+        context.res?.cookie(`session_${externalDomain.replace(/\./g, "_")}`, session.sessionToken, <any>{
           domain: externalDomain,
           httpOnly: true,
           path: "/",

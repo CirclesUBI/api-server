@@ -86,7 +86,7 @@ export const sessionInfo = async (parent: any, args: any, context: Context): Pro
     /// See https://www.npmjs.com/package/apollo-server-plugin-http-headers for the magic that happens below ;)
     Environment.externalDomains.forEach((externalDomain) => {
       context.setCookies.push({
-        name: `session_${Environment.appId.replace(/\./g, "_")}`,
+        name: `session_${externalDomain.replace(/\./g, "_")}`,
         value: "no-session",
         options: {
           domain: externalDomain,
