@@ -10,13 +10,16 @@ export function verifySessionChallengeResolver(prisma:PrismaClient) {
       // const session = await Session.createSessionFromJWT(prisma, context);
       // const expires = new Date(Date.now() + session.maxLifetime * 1000);
       /// See https://www.npmjs.com/package/apollo-server-plugin-http-headers for the magic that happens below ;)
-      context.res?.cookie(`session_${Environment.appId.replace(/\./g, "_")}`, session.sessionToken, <any>{
-        domain: Environment.externalDomain,
-        httpOnly: true,
-        path: "/",
-        sameSite: Environment.cookieSameSitePolicy,
-        secure: !Environment.cookieSecurePolicy ? undefined : "Secure",
-        //expires: expires
+
+      Environment.externalDomains.forEach((externalDomain) => {
+        context.res?.cookie(`session_${externalDomain.replace(/\./g, "_")}`, session.sessionToken, <any>{
+          domain: externalDomain,
+          httpOnly: true,
+          path: "/",
+          sameSite: Environment.cookieSameSitePolicy,
+          secure: !Environment.cookieSecurePolicy ? undefined : "Secure",
+          //expires: expires
+        });
       });
 
       return {

@@ -10,9 +10,12 @@ export function tryGetSessionToken(cookieValue?: string) {
         p[c[0]] = c[1];
         return p;
       }, {});
-    if (cookies[`session_${Environment.appId.replace(/\./g, "_")}`]) {
-      sessionToken = decodeURIComponent(cookies[`session_${Environment.appId.replace(/\./g, "_")}`]);
-    }
+
+    Environment.externalDomains.forEach((externalDomain) => {
+        if (cookies[`session_${externalDomain.replace(/\./g, "_")}`]) {
+            sessionToken = decodeURIComponent(cookies[`session_${externalDomain.replace(/\./g, "_")}`]);
+        }
+    });
   }
   return sessionToken;
 }
