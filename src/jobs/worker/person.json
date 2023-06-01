@@ -1,0 +1,11 @@
+{
+  "_kind": "atMostOnceJob",
+  "_topic": "unreadNotification",
+  "_identity": "2023-04-18T13:07:08.000ZCrcHubTransfer0x0ea83daa0031b276542700db44d9d32cf2d92a29in0x534ff1de93d94e0a324718809e5b04ea1a2167be605aaab26a892fed17ff9dd7",
+  "timestamp": "2023-04-18T13:07:08.000Z",
+  "type": "CrcHubTransfer",
+  "circlesAddress": "0x0ea83daa0031b276542700db44d9d32cf2d92a29",
+  "contactAddress": "0xe08b1c1fbab31da4b7bd4795c00ebc8a20e625e9",
+  "direction": "in",
+  "transactionHash": "0x534ff1de93d94e0a324718809e5b04ea1a2167be605aaab26a892fed17ff9dd7"
+}

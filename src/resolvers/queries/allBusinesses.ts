@@ -14,10 +14,10 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
   let query = `
         with b as (
             select *
-                 , case when $1 is null or $2 is null
+                 , case when $1 = '' or $2 = ''
                      then 0
                      else ST_Distance(
-                        ST_MakePoint($1, $2)::geography,
+                        ST_MakePoint($1::DOUBLE PRECISION, $2::DOUBLE PRECISION)::geography,
                         ST_MakePoint("lon", "lat")::geography
                    ) end as distance
             from "businesses"
@@ -26,7 +26,15 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
         from b
     `;
 
-  const params: any[] = [ownCoordinates?.lon, ownCoordinates?.lat];
+  const params: any[] = [];
+
+  if (ownCoordinates?.lon && ownCoordinates?.lat) {
+    params.push(ownCoordinates.lon.toString());
+    params.push(ownCoordinates.lat.toString());
+  } else {
+    params.push("");
+    params.push("");
+  }
 
   // if where conditions exist, construct the where clause
   if (where?.inCategories || where?.inCirclesAddress) {
@@ -95,7 +103,7 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
   const effectiveLimit = limit && limit <= 100 ? limit : 20;
   query += ` limit $${params.push(effectiveLimit)}`;
 
-  const result = Environment.readonlyApiDb.$queryRawUnsafe(query, params);
+  const result = await Environment.readonlyApiDb.$queryRawUnsafe(query, ...params);
 
-  return <Businesses[]>Object.values(result);
+  return <Businesses[]>Object.values(<any>result);
 };
