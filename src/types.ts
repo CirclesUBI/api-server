@@ -79,7 +79,9 @@ export type Businesses = {
   businessHoursTuesday?: Maybe<Scalars['String']>;
   businessHoursWednesday?: Maybe<Scalars['String']>;
   circlesAddress: Scalars['String'];
+  createdAt: Scalars['Date'];
   description?: Maybe<Scalars['String']>;
+  favoriteCount?: Maybe<Scalars['Int']>;
   id: Scalars['Int'];
   lat?: Maybe<Scalars['Float']>;
   location?: Maybe<Scalars['String']>;
@@ -1877,7 +1879,9 @@ export type BusinessesResolvers<ContextType = any, ParentType extends ResolversP
   businessHoursTuesday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   businessHoursWednesday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  favoriteCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   lat?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

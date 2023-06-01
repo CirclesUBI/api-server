@@ -768,6 +768,8 @@ type i18n {
 
 type Businesses {
   id: Int!
+  favoriteCount: Int
+  createdAt: Date!
   circlesAddress: String!
   name: String
   description: String

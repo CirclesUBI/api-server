@@ -37,6 +37,7 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
   }
 
   // if where conditions exist, construct the where clause
+  let hasWhere = false;
   if (where?.inCategories || where?.inCirclesAddress) {
     let whereConditions = [];
 
@@ -49,12 +50,13 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
     }
 
     query += " where " + whereConditions.join(" and ");
+    hasWhere = true;
   }
 
   // if order condition exists, construct the order by clause
   if (order?.orderBy) {
     let orderClause = " order by ";
-    let whereClause = "";
+    let whereClause = " 1=1 ";
 
     switch (order.orderBy) {
       case QueryAllBusinessesOrderOptions.Alphabetical:
@@ -84,20 +86,20 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
       case QueryAllBusinessesOrderOptions.Newest:
         orderClause += `"createdAt" desc`;
         if (lastValue) {
-          whereClause += ` and "createdAt" < $${params.push(lastValue)}`;
+          whereClause += ` and "createdAt" < $${params.push(new Date(lastValue))}`;
         }
         break;
       case QueryAllBusinessesOrderOptions.Oldest:
         orderClause += `"createdAt" asc`;
         if (lastValue) {
-          whereClause += ` and "createdAt" > $${params.push(lastValue)}`;
+          whereClause += ` and "createdAt" > $${params.push(new Date(lastValue))}`;
         }
         break;
       default:
         break;
     }
 
-    query += whereClause + orderClause;
+    query += (hasWhere ? "" : " where" ) +  whereClause + orderClause;
   }
 
   const effectiveLimit = limit && limit <= 100 ? limit : 20;
@@ -105,5 +107,10 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
 
   const result = await Environment.readonlyApiDb.$queryRawUnsafe(query, ...params);
 
-  return <Businesses[]>Object.values(<any>result);
+  return Object.values((<any>result).map((o:any) => {
+    return <Businesses>{
+      ...o,
+      createdAt: new Date(o.createdAt),
+    }
+  }));
 };
