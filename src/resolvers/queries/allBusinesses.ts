@@ -8,12 +8,13 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
     throw new Error("Missing queryParams");
   }
 
-  const { order, ownCoordinates, where, lastValue, limit } = queryParams;
+  const { order, ownCoordinates, where, cursor, limit } = queryParams;
 
   // start constructing the query
   let query = `
         with b as (
-            select *
+            select ~
+                 , *
                  , case when $1 = '' or $2 = ''
                      then 0
                      else ST_Distance(
@@ -22,7 +23,7 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
                    ) end as distance
             from "businesses"
         )
-        select id, "createdAt", name, description, "phoneNumber", location, "locationName", lat, lon, "circlesAddress", "businessCategoryId", "businessCategory", picture, "businessHoursMonday", "businessHoursTuesday", "businessHoursWednesday", "businessHoursThursday", "businessHoursFriday", "businessHoursSaturday", "businessHoursSunday", "favoriteCount"
+        select cursor, id, "createdAt", name, description, "phoneNumber", location, "locationName", lat, lon, "circlesAddress", "businessCategoryId", "businessCategory", picture, "businessHoursMonday", "businessHoursTuesday", "businessHoursWednesday", "businessHoursThursday", "businessHoursFriday", "businessHoursSaturday", "businessHoursSunday", "favoriteCount"
         from b
     `;
 
@@ -54,62 +55,54 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
   }
 
   // if order condition exists, construct the order by clause
+  let rownumber_select = undefined;
   if (order?.orderBy) {
     let orderClause = " order by ";
     let whereClause = " 1=1 ";
+    rownumber_select = "ROW_NUMBER() OVER (ORDER BY ~) as cursor"
 
     switch (order.orderBy) {
       case QueryAllBusinessesOrderOptions.Alphabetical:
         orderClause += `"name" asc`;
-        if (lastValue) {
-          whereClause += ` and "name" > $${params.push(lastValue)}`;
-        }
+        rownumber_select = rownumber_select.replace("~", "name asc");
         break;
       case QueryAllBusinessesOrderOptions.Favorites:
         orderClause += `"favoriteCount" desc`;
-        if (lastValue) {
-          whereClause += ` and "favoriteCount" < $${params.push(Number(lastValue))}`;
-        }
+        rownumber_select = rownumber_select.replace("~", "\"favoriteCount\" desc");
         break;
       case QueryAllBusinessesOrderOptions.MostPopular:
         orderClause += `"favoriteCount" desc`;
-        if (lastValue) {
-          whereClause += ` and "favoriteCount" < $${params.push(Number(lastValue))}`;
-        }
+        rownumber_select = rownumber_select.replace("~", "\"favoriteCount\" asc");
         break;
       case QueryAllBusinessesOrderOptions.Nearest:
+        rownumber_select = rownumber_select.replace("~", "distance asc");
         orderClause += `distance asc`;
-        if (lastValue) {
-          whereClause += ` and distance > $${params.push(Number(lastValue))}`;
-        }
         break;
       case QueryAllBusinessesOrderOptions.Newest:
+        rownumber_select = rownumber_select.replace("~", "\"createdAt\" desc");
         orderClause += `"createdAt" desc`;
-        if (lastValue) {
-          whereClause += ` and "createdAt" < $${params.push(new Date(lastValue))}`;
-        }
         break;
       case QueryAllBusinessesOrderOptions.Oldest:
+        rownumber_select = rownumber_select.replace("~", "\"createdAt\" asc");
         orderClause += `"createdAt" asc`;
-        if (lastValue) {
-          whereClause += ` and "createdAt" > $${params.push(new Date(lastValue))}`;
-        }
         break;
       default:
         break;
     }
 
-    query += (hasWhere ? "" : " where" ) +  whereClause + orderClause;
+    query += (hasWhere ? "" : " where" ) +  whereClause + (cursor ? ` and cursor > $${params.push(cursor)} `: "") + orderClause;
   }
 
   const effectiveLimit = limit && limit <= 100 ? limit : 20;
   query += ` limit $${params.push(effectiveLimit)}`;
+  query = query.replace("~", rownumber_select ?? "ROW_NUMBER() OVER (ORDER BY id) as cursor");
 
   const result = await Environment.readonlyApiDb.$queryRawUnsafe(query, ...params);
 
   return Object.values((<any>result).map((o:any) => {
     return <Businesses>{
       ...o,
+      cursor: o.cursor,
       createdAt: new Date(o.createdAt),
     }
   }));

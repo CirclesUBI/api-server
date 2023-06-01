@@ -768,6 +768,7 @@ type i18n {
 
 type Businesses {
   id: Int!
+  cursor: Int!
   favoriteCount: Int
   createdAt: Date!
   circlesAddress: String!
@@ -1092,7 +1093,7 @@ input QueryAllBusinessesParameters {
   order: QueryAllBusinessesOrder
   ownCoordinates: Geolocation
   limit: Int
-  lastValue: String
+  cursor: Int
 }
 
 input Geolocation {

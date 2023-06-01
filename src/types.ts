@@ -80,6 +80,7 @@ export type Businesses = {
   businessHoursWednesday?: Maybe<Scalars['String']>;
   circlesAddress: Scalars['String'];
   createdAt: Scalars['Date'];
+  cursor: Scalars['Int'];
   description?: Maybe<Scalars['String']>;
   favoriteCount?: Maybe<Scalars['Int']>;
   id: Scalars['Int'];
@@ -1152,7 +1153,7 @@ export enum QueryAllBusinessesOrderOptions {
 }
 
 export type QueryAllBusinessesParameters = {
-  lastValue?: InputMaybe<Scalars['String']>;
+  cursor?: InputMaybe<Scalars['Int']>;
   limit?: InputMaybe<Scalars['Int']>;
   order?: InputMaybe<QueryAllBusinessesOrder>;
   ownCoordinates?: InputMaybe<Geolocation>;
@@ -1880,6 +1881,7 @@ export type BusinessesResolvers<ContextType = any, ParentType extends ResolversP
   businessHoursWednesday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   circlesAddress?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  cursor?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   favoriteCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
