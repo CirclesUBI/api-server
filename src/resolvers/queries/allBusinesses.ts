@@ -1,20 +1,14 @@
-import {QueryAllBusinessesArgs, QueryAllBusinessesOrderOptions} from "../../types";
-import {Context} from "../../context";
-import {Environment} from "../../environment";
+import { Businesses, QueryAllBusinessesArgs, QueryAllBusinessesOrderOptions } from "../../types";
+import { Context } from "../../context";
+import { Environment } from "../../environment";
 
 export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, context: Context) => {
   const queryParams = args.queryParams;
   if (!queryParams) {
-    throw new Error('Missing queryParams');
+    throw new Error("Missing queryParams");
   }
 
-  const {
-    order,
-    ownCoordinates,
-    where,
-    lastValue,
-    limit
-  } = queryParams;
+  const { order, ownCoordinates, where, lastValue, limit } = queryParams;
 
   // start constructing the query
   let query = `
@@ -46,48 +40,48 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
       whereConditions.push(`"address" = ANY($${params.push(where.inCirclesAddress)})`);
     }
 
-    query += ' where ' + whereConditions.join(' and ');
+    query += " where " + whereConditions.join(" and ");
   }
 
   // if order condition exists, construct the order by clause
   if (order?.orderBy) {
-    let orderClause = ' order by ';
-    let whereClause = '';
+    let orderClause = " order by ";
+    let whereClause = "";
 
-    switch(order.orderBy) {
+    switch (order.orderBy) {
       case QueryAllBusinessesOrderOptions.Alphabetical:
         orderClause += `"name" asc`;
-        if(lastValue){
+        if (lastValue) {
           whereClause += ` and "name" > $${params.push(lastValue)}`;
         }
         break;
       case QueryAllBusinessesOrderOptions.Favorites:
         orderClause += `"favoriteCount" desc`;
-        if(lastValue){
+        if (lastValue) {
           whereClause += ` and "favoriteCount" < $${params.push(Number(lastValue))}`;
         }
         break;
       case QueryAllBusinessesOrderOptions.MostPopular:
         orderClause += `"favoriteCount" desc`;
-        if(lastValue){
+        if (lastValue) {
           whereClause += ` and "favoriteCount" < $${params.push(Number(lastValue))}`;
         }
         break;
       case QueryAllBusinessesOrderOptions.Nearest:
         orderClause += `distance asc`;
-        if(lastValue){
+        if (lastValue) {
           whereClause += ` and distance > $${params.push(Number(lastValue))}`;
         }
         break;
       case QueryAllBusinessesOrderOptions.Newest:
         orderClause += `"createdAt" desc`;
-        if(lastValue){
+        if (lastValue) {
           whereClause += ` and "createdAt" < $${params.push(lastValue)}`;
         }
         break;
       case QueryAllBusinessesOrderOptions.Oldest:
         orderClause += `"createdAt" asc`;
-        if(lastValue){
+        if (lastValue) {
           whereClause += ` and "createdAt" > $${params.push(lastValue)}`;
         }
         break;
@@ -101,5 +95,7 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
   const effectiveLimit = limit && limit <= 100 ? limit : 20;
   query += ` limit $${params.push(effectiveLimit)}`;
 
-  return Environment.readonlyApiDb.$queryRawUnsafe(query, params);
-}
+  const result = Environment.readonlyApiDb.$queryRawUnsafe(query, params);
+
+  return <Businesses[]>Object.values(result);
+};
