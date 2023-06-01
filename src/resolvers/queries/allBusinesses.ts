@@ -1,6 +1,7 @@
 import { Businesses, QueryAllBusinessesArgs, QueryAllBusinessesOrderOptions } from "../../types";
 import { Context } from "../../context";
 import { Environment } from "../../environment";
+import {search} from "./search";
 
 export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, context: Context) => {
   const queryParams = args.queryParams;
@@ -39,7 +40,7 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
 
   // if where conditions exist, construct the where clause
   let hasWhere = false;
-  if (where?.inCategories || where?.inCirclesAddress) {
+  if (where?.searchString || where?.inCategories || where?.inCirclesAddress) {
     let whereConditions = [];
 
     if (where?.inCategories) {
@@ -48,6 +49,13 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
 
     if (where?.inCirclesAddress) {
       whereConditions.push(`"circlesAddress" = ANY($${params.push(where.inCirclesAddress)})`);
+    }
+
+    if (where?.searchString) {
+      if (!where.searchString.trim().endsWith("%")) {
+        where.searchString = where.searchString + "%";
+      }
+      whereConditions.push(` ("name" like $${params.push(where.searchString)} or "description" like $${params.push(where.searchString)}) `);
     }
 
     query += " where " + whereConditions.join(" and ");
