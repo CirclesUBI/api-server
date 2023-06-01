@@ -1,20 +1,72 @@
-import { Businesses, QueryAllBusinessesArgs, QueryAllBusinessesOrderOptions } from "../../types";
-import { Context } from "../../context";
-import { Environment } from "../../environment";
-import {search} from "./search";
+import {Businesses, QueryAllBusinessesArgs, QueryAllBusinessesOrderOptions} from "../../types";
+import {Environment} from "../../environment";
+import {Context} from "vm";
 
 export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, context: Context) => {
-  const queryParams = args.queryParams;
+  const { queryParams } = args;
+
   if (!queryParams) {
     throw new Error("Missing queryParams");
   }
 
   const { order, ownCoordinates, where, cursor, limit } = queryParams;
+  let { lon, lat } = ownCoordinates ?? {};
 
-  // start constructing the query
+  let params: any[] = [lon?.toString() ?? '', lat?.toString() ?? ''];
+
+  // construct the where clause
+  let whereConditions: string[] = [];
+  if (where) {
+    if (where?.inCategories) {
+      whereConditions.push(`"businessCategoryId" = ANY($${params.push(where.inCategories)})`);
+    }
+    if (where?.inCirclesAddress) {
+      whereConditions.push(`"circlesAddress" = ANY($${params.push(where.inCirclesAddress)})`);
+    }
+    if (where?.searchString) {
+      let search = where.searchString.trim().endsWith("%") ? where.searchString : where.searchString + "%";
+      whereConditions.push(` ("name" like $${params.push(search)} or "description" like $${params.push(search)}) `);
+    }
+  }
+
+  // construct the order by clause
+  let rownumber_select = "ROW_NUMBER() OVER (ORDER BY id) as cursor";
+  let orderClause = '';
+  if (order?.orderBy) {
+    switch (order.orderBy) {
+      case QueryAllBusinessesOrderOptions.Alphabetical:
+        orderClause += ` order by "name" asc`;
+        rownumber_select = "ROW_NUMBER() OVER (ORDER BY name asc) as cursor";
+        break;
+      case QueryAllBusinessesOrderOptions.Favorites:
+        orderClause += ` order by "favoriteCount" desc`;
+        rownumber_select = "ROW_NUMBER() OVER (ORDER BY \"favoriteCount\" desc) as cursor";
+        break;
+      case QueryAllBusinessesOrderOptions.MostPopular:
+        orderClause += ` order by "favoriteCount" desc`;
+        rownumber_select = "ROW_NUMBER() OVER (ORDER BY \"favoriteCount\" asc) as cursor";
+        break;
+      case QueryAllBusinessesOrderOptions.Nearest:
+        orderClause += ` order by distance asc`;
+        rownumber_select = "ROW_NUMBER() OVER (ORDER BY distance asc) as cursor";
+        break;
+      case QueryAllBusinessesOrderOptions.Newest:
+        orderClause += ` order by "createdAt" desc`;
+        rownumber_select = "ROW_NUMBER() OVER (ORDER BY \"createdAt\" desc) as cursor";
+        break;
+      case QueryAllBusinessesOrderOptions.Oldest:
+        orderClause += ` order by "createdAt" asc`;
+        rownumber_select = "ROW_NUMBER() OVER (ORDER BY \"createdAt\" asc) as cursor";
+        break;
+      default:
+        break;
+    }
+  }
+
+  // construct base query
   let query = `
         with b as (
-            select ~
+            select ${rownumber_select}
                  , *
                  , case when $1 = '' or $2 = ''
                      then 0
@@ -26,84 +78,21 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
         )
         select cursor, id, "createdAt", name, description, "phoneNumber", location, "locationName", lat, lon, "circlesAddress", "businessCategoryId", "businessCategory", picture, "businessHoursMonday", "businessHoursTuesday", "businessHoursWednesday", "businessHoursThursday", "businessHoursFriday", "businessHoursSaturday", "businessHoursSunday", "favoriteCount"
         from b
-    `;
+  `;
 
-  const params: any[] = [];
-
-  if (ownCoordinates?.lon && ownCoordinates?.lat) {
-    params.push(ownCoordinates.lon.toString());
-    params.push(ownCoordinates.lat.toString());
-  } else {
-    params.push("");
-    params.push("");
+  // add the where and order by clauses to the query
+  if (whereConditions.length > 0 || cursor) {
+    query += " where " + (whereConditions.length ? whereConditions.join(" and ") : "1=1");
+    if (cursor) {
+      query += ` and cursor > $${params.push(cursor)}`;
+    }
   }
 
-  // if where conditions exist, construct the where clause
-  let hasWhere = false;
-  if (where?.searchString || where?.inCategories || where?.inCirclesAddress) {
-    let whereConditions = [];
+  query += orderClause;
 
-    if (where?.inCategories) {
-      whereConditions.push(`"businessCategoryId" = ANY($${params.push(where.inCategories)})`);
-    }
-
-    if (where?.inCirclesAddress) {
-      whereConditions.push(`"circlesAddress" = ANY($${params.push(where.inCirclesAddress)})`);
-    }
-
-    if (where?.searchString) {
-      if (!where.searchString.trim().endsWith("%")) {
-        where.searchString = where.searchString + "%";
-      }
-      whereConditions.push(` ("name" like $${params.push(where.searchString)} or "description" like $${params.push(where.searchString)}) `);
-    }
-
-    query += " where " + whereConditions.join(" and ");
-    hasWhere = true;
-  }
-
-  // if order condition exists, construct the order by clause
-  let rownumber_select = undefined;
-  if (order?.orderBy) {
-    let orderClause = " order by ";
-    let whereClause = " 1=1 ";
-    rownumber_select = "ROW_NUMBER() OVER (ORDER BY ~) as cursor"
-
-    switch (order.orderBy) {
-      case QueryAllBusinessesOrderOptions.Alphabetical:
-        orderClause += `"name" asc`;
-        rownumber_select = rownumber_select.replace("~", "name asc");
-        break;
-      case QueryAllBusinessesOrderOptions.Favorites:
-        orderClause += `"favoriteCount" desc`;
-        rownumber_select = rownumber_select.replace("~", "\"favoriteCount\" desc");
-        break;
-      case QueryAllBusinessesOrderOptions.MostPopular:
-        orderClause += `"favoriteCount" desc`;
-        rownumber_select = rownumber_select.replace("~", "\"favoriteCount\" asc");
-        break;
-      case QueryAllBusinessesOrderOptions.Nearest:
-        rownumber_select = rownumber_select.replace("~", "distance asc");
-        orderClause += `distance asc`;
-        break;
-      case QueryAllBusinessesOrderOptions.Newest:
-        rownumber_select = rownumber_select.replace("~", "\"createdAt\" desc");
-        orderClause += `"createdAt" desc`;
-        break;
-      case QueryAllBusinessesOrderOptions.Oldest:
-        rownumber_select = rownumber_select.replace("~", "\"createdAt\" asc");
-        orderClause += `"createdAt" asc`;
-        break;
-      default:
-        break;
-    }
-
-    query += (hasWhere ? "" : " where" ) +  whereClause + (cursor ? ` and cursor > $${params.push(cursor)} `: "") + orderClause;
-  }
-
+  // add the limit clause to the query
   const effectiveLimit = limit && limit <= 100 ? limit : 20;
   query += ` limit $${params.push(effectiveLimit)}`;
-  query = query.replace("~", rownumber_select ?? "ROW_NUMBER() OVER (ORDER BY id) as cursor");
 
   const result = await Environment.readonlyApiDb.$queryRawUnsafe(query, ...params);
 
