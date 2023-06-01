@@ -1137,6 +1137,7 @@ export type QueryVerificationsArgs = {
 export type QueryAllBusinessesConditions = {
   inCategories?: InputMaybe<Array<Scalars['Int']>>;
   inCirclesAddress?: InputMaybe<Array<Scalars['String']>>;
+  searchString?: InputMaybe<Scalars['String']>;
 };
 
 export type QueryAllBusinessesOrder = {

@@ -43,11 +43,11 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
     let whereConditions = [];
 
     if (where?.inCategories) {
-      whereConditions.push(`"categoryId" = ANY($${params.push(where.inCategories)})`);
+      whereConditions.push(`"businessCategoryId" = ANY($${params.push(where.inCategories)})`);
     }
 
     if (where?.inCirclesAddress) {
-      whereConditions.push(`"address" = ANY($${params.push(where.inCirclesAddress)})`);
+      whereConditions.push(`"circlesAddress" = ANY($${params.push(where.inCirclesAddress)})`);
     }
 
     query += " where " + whereConditions.join(" and ");

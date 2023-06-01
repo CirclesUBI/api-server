@@ -1104,6 +1104,7 @@ input Geolocation {
 input QueryAllBusinessesConditions {
   inCategories: [Int!]
   inCirclesAddress: [String!]
+  searchString: String
 }
 
 enum QueryAllBusinessesOrderOptions {
