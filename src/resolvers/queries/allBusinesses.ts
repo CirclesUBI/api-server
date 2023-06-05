@@ -76,7 +76,7 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
                    ) end as distance
             from "businesses"
         )
-        select cursor, id, "createdAt", name, description, "phoneNumber", location, "locationName", lat, lon, "circlesAddress", "businessCategoryId", "businessCategory", picture, "businessHoursMonday", "businessHoursTuesday", "businessHoursWednesday", "businessHoursThursday", "businessHoursFriday", "businessHoursSaturday", "businessHoursSunday", "favoriteCount"
+        select cursor, id, "createdAt", name, description, "phoneNumber", location, "locationName", lat, lon, "circlesAddress", "businessCategoryId", "businessCategory", picture, "businessHoursMonday", "businessHoursTuesday", "businessHoursWednesday", "businessHoursThursday", "businessHoursFriday", "businessHoursSaturday", "businessHoursSunday", "favoriteCount", "distance"
         from b
   `;
 
