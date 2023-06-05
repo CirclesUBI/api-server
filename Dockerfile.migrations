@@ -4,4 +4,4 @@ FROM ghcr.io/amacneil/dbmate
 COPY ./src/api-db-migrations/2*.sql /db/migrations/
 
 WORKDIR /
-CMD ["dbmate", "-e", "CONNECTION_STRING_RW", "migrate"]
+CMD ["-e", "CONNECTION_STRING_RW", "migrate"]
