@@ -1341,69 +1341,6 @@ CREATE TABLE public."VerifiedSafe" (
 
 
 --
--- Name: i18n; Type: TABLE; Schema: public; Owner: doadmin
---
-
-CREATE TABLE public.i18n (
-    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "createdBy" text NOT NULL,
-    lang text NOT NULL,
-    key text NOT NULL,
-    version integer NOT NULL,
-    value text NOT NULL,
-    "releaseVersion" integer,
-    "needsUpdate" boolean NOT NULL
-);
-
-
-
-
---
--- Name: i18nReleases; Type: TABLE; Schema: public; Owner: doadmin
---
-
-CREATE TABLE public."i18nReleases" (
-    "releaseVersion" integer NOT NULL,
-    lang text NOT NULL
-);
-
-
-
-
---
--- Name: latestVersions; Type: VIEW; Schema: public; Owner: doadmin
---
-
-CREATE VIEW public."latestVersions" AS
- SELECT i18n.lang,
-    i18n.key,
-    max(i18n.version) AS "latestVersion",
-    i18n."needsUpdate"
-   FROM public.i18n
-  GROUP BY i18n.key, i18n.lang, i18n."needsUpdate"
-  ORDER BY i18n.key;
-
-
-
-
---
--- Name: latestValues; Type: VIEW; Schema: public; Owner: doadmin
---
-
-CREATE VIEW public."latestValues" AS
- SELECT l.lang,
-    l.key,
-    l."latestVersion" AS version,
-    i.value,
-    l."needsUpdate"
-   FROM (public."latestVersions" l
-     JOIN public.i18n i ON (((i.lang = l.lang) AND (i.key = l.key) AND (i.version = l."latestVersion"))))
-  ORDER BY l.key;
-
-
-
-
---
 -- Name: Agent id; Type: DEFAULT; Schema: public; Owner: doadmin
 --
 
@@ -2297,20 +2234,6 @@ CREATE UNIQUE INDEX "VerifiedSafe_swapFundingTransactionHash_key" ON public."Ver
 
 
 --
--- Name: i18nReleases_releaseVersion_lang_key; Type: INDEX; Schema: public; Owner: doadmin
---
-
-CREATE UNIQUE INDEX "i18nReleases_releaseVersion_lang_key" ON public."i18nReleases" USING btree ("releaseVersion", lang);
-
-
---
--- Name: i18n_lang_key_version_key; Type: INDEX; Schema: public; Owner: doadmin
---
-
-CREATE UNIQUE INDEX i18n_lang_key_version_key ON public.i18n USING btree (lang, key, version);
-
-
---
 -- Name: Event Event_locationId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
 --
 
@@ -2692,14 +2615,6 @@ ALTER TABLE ONLY public."VerifiedSafe"
 
 ALTER TABLE ONLY public."VerifiedSafe"
     ADD CONSTRAINT "VerifiedSafe_swapFundingTransactionHash_fkey" FOREIGN KEY ("swapFundingTransactionHash") REFERENCES public."Transaction"("transactionHash") ON UPDATE CASCADE ON DELETE SET NULL;
-
-
---
--- Name: i18n i18n_releaseVersion_lang_fkey; Type: FK CONSTRAINT; Schema: public; Owner: doadmin
---
-
-ALTER TABLE ONLY public.i18n
-    ADD CONSTRAINT "i18n_releaseVersion_lang_fkey" FOREIGN KEY ("releaseVersion", lang) REFERENCES public."i18nReleases"("releaseVersion", lang) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --
