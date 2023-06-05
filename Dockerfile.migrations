@@ -10,9 +10,8 @@ WORKDIR /docker-entrypoint-initdb.d/
 COPY <<load.sh /docker-entrypoint-initdb.d/
 #!/bin/bash
 set -x
-envsubst < /docker-entrypoint-initdb.d/0.1.504-fix1.sql > /docker-entrypoint-initdb.d/0.1.504-fix1.envsubst
-mv /docker-entrypoint-initdb.d/0.1.504-fix1.envsubst /docker-entrypoint-initdb.d/0.1.504-fix1.sql
-ls /docker-entrypoint-initdb.d/*.sql | xargs -I% sh -c 'psql $\{CONNECTION_STRING_ROOT\} < %'
+psql ${CONNECTION_STRING_ROOT} < /docker-entrypoint-initdb.d/extensions.sql
+ls /docker-entrypoint-initdb.d/2*.sql | xargs -I% sh -c 'psql $\{CONNECTION_STRING_RW\} < %'
 load.sh
 
 RUN chmod +x /docker-entrypoint-initdb.d/load.sh
