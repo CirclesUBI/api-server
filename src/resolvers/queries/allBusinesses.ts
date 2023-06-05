@@ -1,6 +1,6 @@
-import {Businesses, QueryAllBusinessesArgs, QueryAllBusinessesOrderOptions} from "../../types";
-import {Environment} from "../../environment";
-import {Context} from "vm";
+import { Businesses, QueryAllBusinessesArgs, QueryAllBusinessesOrderOptions } from "../../types";
+import { Environment } from "../../environment";
+import { Context } from "vm";
 
 export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, context: Context) => {
   const { queryParams } = args;
@@ -12,7 +12,7 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
   const { order, ownCoordinates, where, cursor, limit } = queryParams;
   let { lon, lat } = ownCoordinates ?? {};
 
-  let params: any[] = [lon?.toString() ?? '', lat?.toString() ?? ''];
+  let params: any[] = [lon?.toString() ?? "", lat?.toString() ?? ""];
 
   // construct the where clause
   let whereConditions: string[] = [];
@@ -31,7 +31,7 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
 
   // construct the order by clause
   let rownumber_select = "ROW_NUMBER() OVER (ORDER BY id) as cursor";
-  let orderClause = '';
+  let orderClause = "";
   if (order?.orderBy) {
     switch (order.orderBy) {
       case QueryAllBusinessesOrderOptions.Alphabetical:
@@ -40,11 +40,11 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
         break;
       case QueryAllBusinessesOrderOptions.Favorites:
         orderClause += ` order by "favoriteCount" desc`;
-        rownumber_select = "ROW_NUMBER() OVER (ORDER BY \"favoriteCount\" desc) as cursor";
+        rownumber_select = 'ROW_NUMBER() OVER (ORDER BY "favoriteCount" desc) as cursor';
         break;
       case QueryAllBusinessesOrderOptions.MostPopular:
         orderClause += ` order by "favoriteCount" desc`;
-        rownumber_select = "ROW_NUMBER() OVER (ORDER BY \"favoriteCount\" asc) as cursor";
+        rownumber_select = 'ROW_NUMBER() OVER (ORDER BY "favoriteCount" asc) as cursor';
         break;
       case QueryAllBusinessesOrderOptions.Nearest:
         orderClause += ` order by distance asc`;
@@ -52,11 +52,11 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
         break;
       case QueryAllBusinessesOrderOptions.Newest:
         orderClause += ` order by "createdAt" desc`;
-        rownumber_select = "ROW_NUMBER() OVER (ORDER BY \"createdAt\" desc) as cursor";
+        rownumber_select = 'ROW_NUMBER() OVER (ORDER BY "createdAt" desc) as cursor';
         break;
       case QueryAllBusinessesOrderOptions.Oldest:
         orderClause += ` order by "createdAt" asc`;
-        rownumber_select = "ROW_NUMBER() OVER (ORDER BY \"createdAt\" asc) as cursor";
+        rownumber_select = 'ROW_NUMBER() OVER (ORDER BY "createdAt" asc) as cursor';
         break;
       default:
         break;
@@ -96,11 +96,13 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
 
   const result = await Environment.readonlyApiDb.$queryRawUnsafe(query, ...params);
 
-  return Object.values((<any>result).map((o:any) => {
-    return <Businesses>{
-      ...o,
-      cursor: o.cursor,
-      createdAt: new Date(o.createdAt),
-    }
-  }));
+  return <Businesses[]>Object.values(
+    (<any>result).map((o: any) => {
+      return <Businesses>{
+        ...o,
+        cursor: o.cursor,
+        createdAt: new Date(o.createdAt),
+      };
+    })
+  );
 };
