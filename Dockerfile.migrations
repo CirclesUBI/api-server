@@ -10,7 +10,7 @@ WORKDIR /docker-entrypoint-initdb.d/
 COPY <<load.sh /docker-entrypoint-initdb.d/
 #!/bin/bash
 set -x
-psql ${CONNECTION_STRING_ROOT} < /docker-entrypoint-initdb.d/extensions.sql
+psql $\{CONNECTION_STRING_ROOT\} < /docker-entrypoint-initdb.d/extensions.sql
 ls /docker-entrypoint-initdb.d/2*.sql | xargs -I% sh -c 'psql $\{CONNECTION_STRING_RW\} < %'
 load.sh
 
