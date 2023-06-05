@@ -16,4 +16,4 @@ RUN chmod +x /docker-entrypoint-initdb.d/load.sh
 
 COPY ./src/api-db-migrations/extensions.sql /docker-entrypoint-initdb.d/extensions.sql
 
-CMD ["/docker-entrypoint-initdb.d/load.sh"]
+ENTRYPOINT ["/docker-entrypoint-initdb.d/load.sh"]
