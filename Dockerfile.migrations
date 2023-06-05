@@ -4,4 +4,12 @@ FROM ghcr.io/amacneil/dbmate
 COPY ./src/api-db-migrations/2*.sql /db/migrations/
 
 WORKDIR /
-CMD ["-e", "CONNECTION_STRING_RW", "migrate"]
+
+COPY <<load.sh /
+#!/bin/ash
+export CONNECTION_STRING_RW=${CONNECTION_STRING_RW}?sslmode=disable
+/usr/local/bin/dbmate -e CONNECTION_STRING_RW migrate
+load.sh
+RUN chmod +x /load.sh
+
+ENTRYPOINT [ "/load.sh" ]
