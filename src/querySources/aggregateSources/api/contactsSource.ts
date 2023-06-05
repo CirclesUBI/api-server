@@ -165,63 +165,6 @@ async function erc20TransferContacts(forSafeAddress: string, filter?: Maybe<Prof
     });
 }
 
-async function chatMessageContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
-  const _filter = filter?.contacts?.addresses ?? [];
-  const chatContactsResult:any[] = await Environment.readonlyApiDb.$queryRaw`
-      with "in" as (
-          select max("createdAt") last_contact_at, "from" as contact_address
-          from "ChatMessage"
-          where "to" = ${forSafeAddress.toLowerCase()}
-          group by "from"
-      ), "in_with_text" as (
-          select "in".*, cm.text as value
-          from "in"
-                   join "ChatMessage" cm on cm."createdAt" = "in".last_contact_at and cm.from = "in".contact_address
-      ), "out" as (
-          select max("createdAt") last_contact_at, "to" as contact_address
-          from "ChatMessage"
-          where "from" = ${forSafeAddress.toLowerCase()}
-          group by "to"
-      ), "out_with_text" as (
-          select "out".*, cm.text as value
-          from "out"
-                   join "ChatMessage" cm on cm."createdAt" = "out".last_contact_at and cm.to = "out".contact_address
-      ),"all" as (
-          select 'out' direction, *
-          from "out_with_text"
-          union all
-          select 'in' direction, *
-          from "in_with_text"
-      ), "all_directions" as (
-          select array_agg(direction) as directions,
-                 array_agg(value) as values,
-                 array_agg(last_contact_at) as timestamps,
-                 contact_address
-          from "all"
-          where ${_filter}=ARRAY[]::text[] or contact_address=ANY(${_filter})
-          group by contact_address
-      )
-      select *
-      from "all_directions";`;
-
-  const r = chatContactsResult.map((o:any) => {
-    const timestamps = o.timestamps.map((p:any) => new Date(p).getTime().toString());
-    const lastContactAt = timestamps.reduce((p:any, c:any) => Math.max(p, parseInt(c)), 0);
-    return <Contact> {
-      metadata: [<ContactPoint>{
-        name: "ChatMessage",
-        directions: o.directions.map((p:string) => p == "in" ? ContactDirection.In : ContactDirection.Out),
-        values: o.values,
-        timestamps: timestamps
-      }],
-      contactAddress: o.contact_address,
-      lastContactAt: lastContactAt
-    };
-  });
-
-  return r;
-}
-
 // People who claimed my invitations
 // The person from which I claimed my invitation
 async function invitationContacts(forSafeAddress: string, filter?: Maybe<ProfileAggregateFilter>) : Promise<Contact[]> {
@@ -385,7 +328,6 @@ export enum ContactPoints {
   CrcTrust = "CrcTrust",
   CrcHubTransfer = "CrcHubTransfer",
   Erc20Transfers = "Erc20Transfers",
-  ChatMessage = "ChatMessage",
   Invitation = "Invitation",
   MembershipOffer = "MembershipOffer",
   InvitationRedeemed = "InvitationRedeemed",
@@ -408,9 +350,6 @@ export class ContactsSource implements AggregateSource {
     }
     if (types[ContactPoints.Erc20Transfers]) {
       contactSources.push(erc20TransferContacts(forSafeAddress, filter));
-    }
-    if (types[ContactPoints.ChatMessage]) {
-      contactSources.push(chatMessageContacts(forSafeAddress, filter));
     }
     if (types[ContactPoints.Invitation]) {
       contactSources.push(invitationContacts(forSafeAddress, filter));

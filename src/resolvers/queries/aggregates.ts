@@ -32,7 +32,6 @@ export const aggregates = async (parent:any, args:QueryAggregatesArgs, context: 
           contactPoints.push(ContactPoints.Invitation);
           contactPoints.push(ContactPoints.InvitationRedeemed);
           contactPoints.push(ContactPoints.MembershipOffer);
-          contactPoints.push(ContactPoints.ChatMessage);
         }
       }
       aggregateSources.push(new ContactsSource(contactPoints));
