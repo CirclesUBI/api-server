@@ -83,11 +83,6 @@ enum ProfileType {
       REGION
 }
 
-enum ProductListingType {
-    TILES
-    LIST
-}
-
 enum Gender {
     MALE
     FEMALE
@@ -195,7 +190,6 @@ model Profile {
     avatarUrl String?
     largeBannerUrl String?
     smallBannerUrl String?
-    productListingType ProductListingType?
     avatarCid String?
     avatarMimeType String?
     dream String?
