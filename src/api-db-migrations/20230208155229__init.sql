@@ -413,7 +413,6 @@ CREATE TABLE public."Profile" (
     "lastSimplePickupCode" integer,
     "largeBannerUrl" text,
     "smallBannerUrl" text,
-    "productListingType" public."ProductListingType",
     "inviteTriggerId" integer,
     "shopEnabled" boolean,
     "confirmedLegalAge" integer,
@@ -625,12 +624,6 @@ ALTER TABLE ONLY public."BusinessCategory" ALTER COLUMN id SET DEFAULT nextval('
 -- Name: Businesses id; Type: DEFAULT; Schema: public; Owner: doadmin
 --
 ALTER TABLE ONLY public."Businesses" ALTER COLUMN id SET DEFAULT nextval('public."Businesses_id_seq"'::regclass);
-
-
---
--- Name: DeliveryMethod id; Type: DEFAULT; Schema: public; Owner: doadmin
---
-ALTER TABLE ONLY public."DeliveryMethod" ALTER COLUMN id SET DEFAULT nextval('public."DeliveryMethod_id_seq"'::regclass);
 
 
 --
