@@ -5,7 +5,6 @@ import {CombinedAggregateSource} from "../../querySources/aggregateSources/combi
 
 export const profileAllContactsDataLoader = (filter?:ContactFilter|null) => new DataLoader<string, Contact[]>(async (keys) => {
   const types:ContactPoints[] = [];
-  if ((<any>filter?.contactSource.indexOf("ChatMessage")) > -1)        types.push(ContactPoints.ChatMessage);
   if ((<any>filter?.contactSource.indexOf("CrcTrust")) > -1)  types.push(ContactPoints.CrcTrust);
   if ((<any>filter?.contactSource.indexOf("CrcHubTransfer")) > -1)  types.push(ContactPoints.CrcHubTransfer);
   if ((<any>filter?.contactSource.indexOf("Invitation")) > -1)        types.push(ContactPoints.Invitation);
@@ -13,7 +12,6 @@ export const profileAllContactsDataLoader = (filter?:ContactFilter|null) => new 
   if ((<any>filter?.contactSource.indexOf("MembershipOffer")) > -1)  types.push(ContactPoints.MembershipOffer);
   if ((<any>filter?.contactSource.indexOf("InvitationRedeemed")) > -1)  types.push(ContactPoints.InvitationRedeemed);
   if (types.length == 0) {
-    types.push(ContactPoints.ChatMessage);
     types.push(ContactPoints.CrcTrust);
     types.push(ContactPoints.CrcHubTransfer);
     types.push(ContactPoints.Invitation);
