@@ -48,7 +48,10 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
         break;
       case QueryAllBusinessesOrderOptions.Nearest:
         orderClause += ` order by distance asc`;
-        rownumber_select = "ROW_NUMBER() OVER (ORDER BY distance asc) as cursor";
+        rownumber_select = "ROW_NUMBER() OVER (ORDER BY ST_Distance(\n" +
+            "                    ST_MakePoint($1::DOUBLE PRECISION, $2::DOUBLE PRECISION)::geography,\n" +
+            "                    ST_MakePoint(\"lon\", \"lat\")::geography\n" +
+            "                ) asc) as cursor";
         break;
       case QueryAllBusinessesOrderOptions.Newest:
         orderClause += ` order by "createdAt" desc`;
