@@ -7,12 +7,12 @@ COPY ./src/api-db-migrations/20230606172700__add_root_user.sql.envsubst /db/migr
 WORKDIR /
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update && \
-        apt install -y gettext-base && \
+RUN apt-get update && \
+        apt-get install -y gettext-base && \
         rm -rf /var/lib/apt/lists/*
 
 COPY <<load.sh /
-#!/bin/ash
+#!/bin/sh
 
 envsubst < /db/migrations/20230606172700__add_root_user.sql.envsubst > /db/migrations/20230606172700__add_root_user.sql
 rm /db/migrations/20230606172700__add_root_user.sql.envsubst
