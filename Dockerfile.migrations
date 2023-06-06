@@ -6,13 +6,10 @@ COPY ./src/api-db-migrations/20230606172700__add_root_user.sql.envsubst /db/migr
 
 WORKDIR /
 
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && \
-        apt-get install -y gettext-base && \
-        rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache --update envsubst
 
 COPY <<load.sh /
-#!/bin/sh
+#!/bin/ash
 
 envsubst < /db/migrations/20230606172700__add_root_user.sql.envsubst > /db/migrations/20230606172700__add_root_user.sql
 rm /db/migrations/20230606172700__add_root_user.sql.envsubst
