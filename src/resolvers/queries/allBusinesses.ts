@@ -25,7 +25,7 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
     }
     if (where?.searchString) {
       let search = where.searchString.trim().endsWith("%") ? where.searchString : where.searchString + "%";
-      whereConditions.push(` ("name" like $${params.push(search)} or "description" like $${params.push(search)}) `);
+      whereConditions.push(` ("name" ilike $${params.push(search)} or "description" ilike $${params.push(search)}) `);
     }
   }
 
