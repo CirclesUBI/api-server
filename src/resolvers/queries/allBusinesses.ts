@@ -24,8 +24,10 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
       whereConditions.push(`"circlesAddress" = ANY($${params.push(where.inCirclesAddress)})`);
     }
     if (where?.searchString) {
-      let search = where.searchString.trim().endsWith("%") ? where.searchString : where.searchString + "%";
-      whereConditions.push(` ("name" ilike $${params.push(search)} or "description" ilike $${params.push(search)}) `);
+      const search = where.searchString.trim().endsWith("%") ? where.searchString : where.searchString + "%";
+      const searchWords = where.searchString.split(" ").map(o => o.trim().toLowerCase());
+      const tsquery = `'${searchWords.join(" & ")}'`
+      whereConditions.push(` ("name" ilike $${params.push(search)} or "description" ilike $${params.push(search)} or ts_vector @@ to_tsquery($${params.push(tsquery)})) `);
     }
   }
 
