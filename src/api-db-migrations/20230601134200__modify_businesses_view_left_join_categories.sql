@@ -1,3 +1,5 @@
+-- migrate:up
+
 drop view if exists businesses;
 create view businesses as
 select p.id
@@ -47,3 +49,5 @@ group by p.id
        , "businessHoursSaturday"
        , "businessHoursSunday"
        , ts_vector;
+
+-- migrate:down
