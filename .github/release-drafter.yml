@@ -1,6 +1,6 @@
 template: |
   ## Changes
-
+  
   $CHANGES
 
 name-template: "v$RESOLVED_VERSION"
