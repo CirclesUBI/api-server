@@ -24,3 +24,15 @@ version-resolver:
     labels:
       - 'patch'
   default: patch
+
+categories:
+  - title: 'Features'
+    labels:
+      - 'feature'
+      - 'enhancement'
+  - title: 'Fixes'
+    labels:
+      - 'fix'
+      - 'bug'
+  - title: 'Maintenance'
+    label: 'chore'
