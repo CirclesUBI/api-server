@@ -3,12 +3,12 @@ template: |
 
   $CHANGES
 
-name-template: "v$RESOLVED_VERSION stable"
+name-template: "v$RESOLVED_VERSION"
 tag-template: "v$RESOLVED_VERSION"
 version-template: "$COMPLETE"
 
-change-template: '- $TITLE by $AUTHOR (#$NUMBER)'
-change-title-escapes: '\<*_&#@`'
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+change-title-escapes: '\<*_&#@'
 
 include-labels:
   - 'release'

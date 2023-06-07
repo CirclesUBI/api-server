@@ -2,6 +2,11 @@ name: Release Drafter
 
 on:
   workflow_call:
+  push:
+    branches:
+      - dev
+  pull_request:
+    types: [opened, reopened, synchronize]
 
 permissions:
   contents: read
@@ -10,13 +15,12 @@ jobs:
   update_release_draft:
     permissions:
       contents: write
-      pull-requests: read
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: release-drafter/release-drafter@v5
         with:
           config-name: release-drafter.yml
           disable-autolabeler: true
-          publish: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
