@@ -43,7 +43,7 @@ export function redeemClaimedInvitation() {
         Environment.invitationFundsSafeOwner.privateKey,
         Environment.invitationFundsAmount,
         invitationFundsRecipient,
-        context);
+        context.log);
 
       context.log(`Redeeming invitation ${claimedInvitation.code}: Transaction hash: ${fundEoaReceipt.transactionHash}`);
 
