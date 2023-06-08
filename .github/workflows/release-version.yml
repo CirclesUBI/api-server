@@ -8,7 +8,7 @@ on:
 jobs:
   tag-release:
     name: Tag and release a new new version
-    runs-on: circles-ubuntu-8-32-300
+    runs-on: ubuntu-latest
     outputs:
       previous-version: ${{ steps.check-version.outputs.previous-version }}
       current-version: ${{ steps.check-version.outputs.current-version }}
