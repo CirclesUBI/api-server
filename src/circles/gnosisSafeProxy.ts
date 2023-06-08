@@ -56,7 +56,7 @@ export class GnosisSafeProxy extends Web3Contract {
     privateKey: string,
     value: BN,
     to: string,
-    context: Context
+    log:(message:string)=>void
   ): Promise<TransactionReceipt> {
     const safeTransaction = <SafeTransaction>{
       value: value,
@@ -67,13 +67,13 @@ export class GnosisSafeProxy extends Web3Contract {
       refundReceiver: ZERO_ADDRESS,
       gasPrice: await RpcGateway.getGasPrice(),
     };
-    return await this.execTransaction(privateKey, safeTransaction, context);
+    return await this.execTransaction(privateKey, safeTransaction, log);
   }
 
   async execTransactionTxData(
     privateKey: string,
     safeTransaction: SafeTransaction,
-    context: Context
+    log: (message:string) => void
   ): Promise<string> {
     this.validateSafeTransaction(safeTransaction);
 
@@ -93,7 +93,7 @@ export class GnosisSafeProxy extends Web3Contract {
     const signatures = await this.getSignatureForTx(executableTransaction, privateKey);
     const baseGas = new BN(this.web3.utils.toWei("5000000", "wei"));
 
-    context.log("baseGas: " + baseGas.toString());
+    log("baseGas: " + baseGas.toString());
     const execTransactionData = this.contract.methods
       .execTransaction(
         safeTransaction.to,
@@ -119,7 +119,7 @@ export class GnosisSafeProxy extends Web3Contract {
       new BN("0")
     );
 
-    context.log("signedRawTransaction: " + signedTransactionData);
+    log("signedRawTransaction: " + signedTransactionData);
 
     return signedTransactionData;
   }
@@ -141,9 +141,9 @@ export class GnosisSafeProxy extends Web3Contract {
   async execTransaction(
     privateKey: string,
     safeTransaction: SafeTransaction,
-    context: Context
+    log:(message:string)=>void
   ): Promise<TransactionReceipt> {
-    const signedTransactionData = await this.execTransactionTxData(privateKey, safeTransaction, context);
+    const signedTransactionData = await this.execTransactionTxData(privateKey, safeTransaction, log);
     return await Web3Contract.sendSignedRawTransaction(signedTransactionData);
   }
 

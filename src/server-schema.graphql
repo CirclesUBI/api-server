@@ -629,7 +629,7 @@ type ClaimInvitationResult {
 type RedeemClaimedInvitationResult {
   success: Boolean!
   error: String
-  transactionHash: String
+  jobHash: String
 }
 
 type CreatedInviteEoa {
