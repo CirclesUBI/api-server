@@ -1187,8 +1187,8 @@ export type RandomAccount = {
 export type RedeemClaimedInvitationResult = {
   __typename?: 'RedeemClaimedInvitationResult';
   error?: Maybe<Scalars['String']>;
+  jobHash?: Maybe<Scalars['String']>;
   success: Scalars['Boolean'];
-  transactionHash?: Maybe<Scalars['String']>;
 };
 
 export type RejectMembershipResult = {
@@ -2486,8 +2486,8 @@ export type RandomAccountResolvers<ContextType = any, ParentType extends Resolve
 
 export type RedeemClaimedInvitationResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['RedeemClaimedInvitationResult'] = ResolversParentTypes['RedeemClaimedInvitationResult']> = ResolversObject<{
   error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  jobHash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  transactionHash?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

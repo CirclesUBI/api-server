@@ -5,17 +5,19 @@ export class RedeemClaimedInvitation extends JobDescription {
     return JSON.stringify(this);
   }
 
-  readonly id:string;
   readonly claimedInvitationId:number;
 
-  constructor(id:string, claimedInvitationId:number) {
-    super("atMostOnceJob", "redeemClaimedInvitation", id);
-    this.id = id;
+  constructor(claimedInvitationId:number) {
+    // TODO: Using the claimedInvitationId as the identity is not ideal, because failed redemptions cannot be retried.
+    //       Users won't be able to get a new invitation either because they already claimed one.
+    //       Most likely retry up to 3 times and then just un-claim the invitation is a way to go.
+    const identity = claimedInvitationId.toString();
+    super("atMostOnceJob", "redeemClaimedInvitation", identity);
     this.claimedInvitationId = claimedInvitationId;
   }
 
   static parse(payload: string) {
     const obj:RedeemClaimedInvitation = JSON.parse(payload);
-    return new RedeemClaimedInvitation(obj.id, obj.claimedInvitationId);
+    return new RedeemClaimedInvitation(obj.claimedInvitationId);
   }
 }
