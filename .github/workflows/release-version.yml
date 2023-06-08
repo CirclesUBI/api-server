@@ -1,0 +1,28 @@
+name: Detect and tag new version
+
+on:
+  push:
+    branches:
+      - 'dev'
+
+jobs:
+  tag-release:
+    name: Tag and release a new new version
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: Detect and tag new version
+        uses: salsify/action-detect-and-tag-new-version@v2
+        id: check-version
+      - name: Release new tag
+        uses: ncipollo/release-action@v1
+        if: steps.check-version.outputs.previous-version != steps.check-version.outputs.current-version
+        with:
+          allowUpdates: true
+          generateReleaseNotes: true
+          tag: ${{ steps.check-version.outputs.tag }}
+          updateOnlyUnreleased: true
