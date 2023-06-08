@@ -1,6 +1,8 @@
 name: Images
 
 on:
+  release:
+    types: [published]
   push:
     branches:
     - main

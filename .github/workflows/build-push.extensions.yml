@@ -1,6 +1,8 @@
 name: Extensions
 
 on:
+  release:
+    types: [published]
   push:
     branches:
     - main
