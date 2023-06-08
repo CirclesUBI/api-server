@@ -1,4 +1,4 @@
-name: Migrations
+name: Extensions
 
 on:
   release:
@@ -9,15 +9,15 @@ on:
     - next
     - dev
     paths:
-    - "Dockerfile.migrations"
-    - "src/api-db-migrations/**"
-    - ".github/workflows/build-push.migrations.yml"
+    - "Dockerfile.extensions"
+    - "src/api-db-extensions/**"
+    - ".github/workflows/build-push.extensions.yml"
 
 jobs:
   call-build-and-push:
     name: Call
     uses: CirclesUBI/.github/.github/workflows/build-and-push.yml@main
     with:
-      image-name: "api-server-migrations"
-      file: "Dockerfile.migrations"
+      image-name: "api-server-extensions"
+      file: "Dockerfile.extensions"
     secrets: inherit

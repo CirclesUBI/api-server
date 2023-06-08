@@ -83,11 +83,6 @@ enum ProfileType {
       REGION
 }
 
-enum ProductListingType {
-    TILES
-    LIST
-}
-
 enum Gender {
     MALE
     FEMALE
@@ -150,145 +145,6 @@ model HumanodeVerifications {
     token String
 }
 
-
-model Event {
-    id Int @id @default(autoincrement())
-
-    beginAnnouncementAt DateTime?
-    begin DateTime
-    end DateTime
-
-    locationId Int?
-    location PostAddress? @relation("EventLocation", fields:[locationId], references: [id])
-    revealLocationAt DateTime?
-
-    shopId Int
-    shop Shop @relation("EventShop", fields: [shopId], references: [id])
-    revealShopAt DateTime?
-
-    offers Offer[] @relation("OfferEvent")
-}
-
-model PostAddress {
-    id Int @id @default(autoincrement())
-
-    name String?
-    street String
-    house String
-    zip String
-    city String?
-    state String?
-    country String?
-
-    notificationEmail String?
-
-    osmId String?
-    hereLocationId String?
-    cityGeonameid Int?
-
-    pickupAddressOfShop Shop? @relation("ShopPickupAddress")
-    shippingAddressOfProfile Profile? @relation("ProfileShippingAddresses", fields: [shippingAddressOfProfileId], references: [id])
-    shippingAddressOfProfileId Int?
-
-    events Event[] @relation("EventLocation")
-    invoices Invoice[] @relation("Invoice_DeliveryAddress")
-    purchases Purchase[] @relation("Purchase_DeliveryAddress")
-}
-
-enum ShopListingStyle {
-    REGULAR
-    FEATURED
-}
-
-model DeliveryMethod {
-    id Int @id @default(autoincrement())
-    name String
-
-    shopDeliveryMethods ShopDeliveryMethod[] @relation("ShopDeliveryMethod_DeliveryMethod")
-    purchases Purchase[] @relation(name: "Purchase_DeliveryMethod")
-    invoices Invoice[] @relation(name: "Invoice_DeliveryMethod")
-}
-
-model ShopDeliveryMethod {
-    id Int @id @default(autoincrement())
-
-    shopId Int
-    shop Shop @relation("ShopDeliveryMethod_Shop", fields: [shopId], references: [id])
-
-    deliveryMethodId Int
-    deliveryMethod DeliveryMethod @relation("ShopDeliveryMethod_DeliveryMethod", fields: [deliveryMethodId], references: [id])
-}
-
-model Shop {
-    id Int @id @default(autoincrement())
-    createdAt DateTime @default(now())
-
-    enabled Boolean @default(false) // Hides the store when 'false'
-    private Boolean? // Shows the store only to trusted users when 'true'
-
-    name String
-    description String
-    legalText String? @default("")
-    largeBannerUrl String
-    smallBannerUrl String
-
-    shopListingStyle ShopListingStyle @default(REGULAR)
-    sortOrder Int?
-
-    productListingStyle ProductListingType @default(TILES)
-
-    owner Profile @relation("ProfileShops", fields: [ownerId], references: [id])
-    ownerId Int
-
-    openingHours String?
-
-    pickupAddress PostAddress? @relation("ShopPickupAddress", fields: [pickupAddressId], references: [id])
-    pickupAddressId Int?
-
-    currentSimplePickupCodeRound Int?
-    lastSimplePickupCode Int? // A value in the range from 1 to 99. Every new purchase will
-                              // get the next number assigned. When 99 is reached the number
-                              // will wrap around and 'currentSimplePickupCodeRound' will be incremented by 1.
-
-    categories ShopCategory[] @relation("ShopShopCategories")
-
-    deliveryMethods ShopDeliveryMethod[] @relation("ShopDeliveryMethod_Shop")
-    purchaseLines PurchaseLine[] @relation(name: "PurchaseLine_Shop")
-    invoiceLines InvoiceLine[] @relation(name: "InvoiceLine_Shop")
-
-    purchaseMetaDataKeys String?
-
-    privacyPolicyLink String?
-    tosLink String?
-    healthInfosLink String?
-
-    event Event? @relation("EventShop")
-
-    adultOnly Boolean?
-}
-
-model ShopCategory {
-    id Int @id @default(autoincrement())
-    createdAt DateTime @default(now())
-
-    shop Shop @relation("ShopShopCategories", fields: [shopId], references: [id])
-    shopId Int
-
-    enabled Boolean @default(true) // Hides the category when 'false'
-    private Boolean? // Shows the category only to trusted users when 'true'
-
-    name String
-    description String?
-    largeBannerUrl String?
-    smallBannerUrl String?
-
-    sortOrder Int?
-
-    productListingStyle ProductListingType?
-
-    entries ShopCategoryEntry[] @relation("ShopCategoryEntries")
-}
-
 model Jwks {
     id Int @id @default(autoincrement())
     createdAt DateTime @default(now())
@@ -306,24 +162,6 @@ model Jwks {
     dp String
     dq String
     qi String
-}
-
-model ShopCategoryEntry {
-    id Int @id @default(autoincrement())
-    createdAt DateTime @default(now())
-
-    enabled Boolean @default(true) // Hides the category when 'false'
-    private Boolean? // Shows the category only to trusted users when 'true'
-
-    product Offer @relation(name: "ShopCategoryEntryProduct", fields: [productId, productVersion], references: [id, version])
-    productId Int
-    productVersion Int
-    @@index([productId, productVersion])
-
-    sortOrder Int?
-
-    shopCategory ShopCategory @relation("ShopCategoryEntries", fields: [shopCategoryId], references: [id])
-    shopCategoryId Int
 }
 
 model Profile {
@@ -352,7 +190,6 @@ model Profile {
     avatarUrl String?
     largeBannerUrl String?
     smallBannerUrl String?
-    productListingType ProductListingType?
     avatarCid String?
     avatarMimeType String?
     dream String?
@@ -373,10 +210,7 @@ model Profile {
 
     sessions Session[]  @relation(name: "Session_Profile")
 
-    shops Shop[] @relation("ProfileShops")
     tags Tag[]  @relation(name: "Tag_CreatedBy")
-    offers Offer[]  @relation(name: "Offer_CreatedBy")
-    purchases Purchase[] @relation(name: "Purchase_CreatedBy")
 
     canInvite Boolean? @default(false)
 
@@ -389,9 +223,6 @@ model Profile {
     members Membership[] @relation(name: "Membership_MemberAt")
     createdMemberships Membership[]  @relation(name: "Membership_CreatedBy")
 
-    payableInvoices Invoice[]  @relation(name: "Invoice_CustomerProfile")
-    receivableInvoices Invoice[]  @relation(name: "Invoice_SellerProfile")
-    cancelledInvoices Invoice[] @relation(name: "Invoice_CancelledByProfile")
 
     inviteTrigger Job? @relation(name: "Profile_InviteTrigger", fields: [inviteTriggerId], references: [id])
     inviteTriggerId Int? @unique
@@ -411,8 +242,6 @@ model Profile {
     safesVerifiedByOrganisation VerifiedSafe[]  @relation(name: "VerifiedSafe_CreatedByOrganisation")
 
     safesRevokedByPerson VerifiedSafe[]  @relation(name: "VerifiedSafe_RevokedByPerson")
-
-    shippingAddresses PostAddress[] @relation("ProfileShippingAddresses")
 
     location String?
     locationName String?
@@ -507,171 +336,6 @@ model Membership {
     @@index([memberAtId])
 }
 
-
-model ChatMessage {
-    id Int @id @default(autoincrement())
-
-    createdAt DateTime
-    @@index([createdAt])
-    openedAt DateTime?
-
-    from String
-    @@index([from])
-    to String
-    @@index([to])
-
-    text String
-
-    tags Tag[] @relation(name: "ChatMessage_Tags")
-}
-
-model Offer {
-    id Int @default(autoincrement())
-    version Int
-    @@id([ id, version ])
-
-    createdBy Profile @relation(name: "Offer_CreatedBy", fields: [createdByProfileId], references: [id])
-    createdByProfileId Int
-    @@index([createdByProfileId])
-    createdAt DateTime
-    @@index([createdAt])
-
-    title String
-    pictureUrl String?
-    pictureMimeType String?
-    description String?
-    allergens String?
-
-    pricePerUnit String // The price in euro
-    timeCirclesPriceShare Int // How many percent of the price can be payed in time circles
-
-    eventId Int?
-    event Event? @relation(name: "OfferEvent", fields:[eventId], references: [id])
-
-    purchaseLines PurchaseLine[] @relation(name: "PurchaseLines_Product")
-    invoiceLines InvoiceLine[] @relation(name: "InvoiceLines_Product")
-    tags Tag[] @relation(name: "Offer_Tags")
-
-    shopCategoryEntries ShopCategoryEntry[] @relation("ShopCategoryEntryProduct")
-
-    minAge Int?
-
-    currentInventory Int?
-}
-
-model Purchase {
-    id Int @id @default(autoincrement())
-
-    createdBy Profile @relation(name: "Purchase_CreatedBy", fields: [createdByProfileId], references: [id])
-    createdByProfileId Int
-    @@index([createdByProfileId])
-    createdAt DateTime
-    @@index([createdAt])
-
-    lines PurchaseLine[] @relation(name: "Purchase_Lines")
-    invoices Invoice[] @relation(name: "Purchase_Invoices")
-
-    deliveryMethod DeliveryMethod @relation(name: "Purchase_DeliveryMethod", fields: [deliveryMethodId], references: [id])
-    deliveryMethodId Int
-
-    deliveryAddress PostAddress? @relation(name: "Purchase_DeliveryAddress", fields: [deliveryAddressId], references:[id])
-    deliveryAddressId Int?
-}
-
-model PurchaseLine {
-    id Int @id @default(autoincrement())
-
-    purchase Purchase @relation(name: "Purchase_Lines", fields: [purchaseId], references: [id])
-
-    purchaseId Int
-    @@index([purchaseId])
-
-    shopId Int?
-    shop Shop? @relation(name: "PurchaseLine_Shop", fields: [shopId], references: [id])
-
-    amount Int
-
-    metadata String?
-
-    product Offer @relation(name: "PurchaseLines_Product", fields: [productId, productVersion], references: [id, version])
-    productId Int
-    productVersion Int
-    @@index([productId, productVersion])
-}
-
-model Invoice {
-    id Int @id @default(autoincrement())
-
-    createdAt DateTime
-    @@index([createdAt])
-    invoiceNo String
-    @@index([invoiceNo])
-
-    customerProfile Profile @relation(name: "Invoice_CustomerProfile", fields: [customerProfileId], references: [id])
-    customerProfileId Int
-    @@index([customerProfileId])
-
-    sellerProfile Profile @relation(name: "Invoice_SellerProfile", fields: [sellerProfileId], references: [id])
-    sellerProfileId Int
-    @@index([sellerProfileId])
-
-    purchase Purchase @relation(name: "Purchase_Invoices", fields: [purchaseId], references: [id])
-    purchaseId Int
-    @@index([purchaseId])
-
-    lines InvoiceLine[] @relation(name: "Invoice_Lines")
-
-    pendingPaymentTransactionHash String?
-
-    paymentTransaction Transaction? @relation(name: "Invoice_PaymentTransaction", fields: [paymentTransactionHash], references: [transactionHash])
-    paymentTransactionHash String?
-    @@index([paymentTransactionHash])
-
-    pickupCode String?
-    @@index([pickupCode])
-
-    simplePickupCode String?
-
-    buyerSignature Boolean?
-    buyerSignedDate DateTime?
-
-    sellerSignature Boolean?
-    sellerSignedDate DateTime?
-
-    cancelledAt DateTime?
-    cancelledBy Profile? @relation(name: "Invoice_CancelledByProfile", fields: [cancelledByProfileId], references: [id])
-    cancelledByProfileId Int?
-    @@index([cancelledByProfileId])
-
-    deliveryMethod DeliveryMethod @relation(name: "Invoice_DeliveryMethod", fields: [deliveryMethodId], references: [id])
-    deliveryMethodId Int
-
-    deliveryAddressId Int?
-    deliveryAddress PostAddress? @relation(name: "Invoice_DeliveryAddress", fields: [deliveryAddressId], references:[id])
-
-    cancelReason String?
-}
-
-model InvoiceLine {
-    id Int @id @default(autoincrement())
-
-    invoice Invoice @relation(name: "Invoice_Lines", fields: [invoiceId], references: [id])
-    invoiceId Int
-    @@index([invoiceId])
-
-    amount Int
-
-    product Offer @relation(name: "InvoiceLines_Product", fields: [productId, productVersion], references: [id, version])
-    productId Int
-    productVersion Int
-    @@index([productId,productVersion])
-
-    shopId Int?
-    shop Shop? @relation(name: "InvoiceLine_Shop", fields: [shopId], references: [id])
-
-    metadata String?
-}
-
 model TagType {
     id String @id
     tags Tag[] @relation(name: "Tag_TagType")
@@ -680,8 +344,6 @@ model TagType {
 model Transaction {
     transactionHash String @unique @id
     tags Tag[] @relation(name: "Transaction_Tag")
-
-    payedInvoice Invoice? @relation(name: "Invoice_PaymentTransaction")
 
     InviteeReward_VerifiedSafe VerifiedSafe? @relation(name: "VerifiedSafe_InviteeRewardTransaction")
     InviterReward_VerifiedSafe VerifiedSafe? @relation(name: "VerifiedSafe_InviterRewardTransaction")
@@ -707,18 +369,7 @@ model Tag {
     typeId String
     @@index([typeId])
 
-    chatMessage ChatMessage? @relation(name: "ChatMessage_Tags", fields: [chatMessageId], references: [id])
-    chatMessageId Int?
-    @@index([chatMessageId])
-
-    offer Offer? @relation(name: "Offer_Tags", fields: [offerId, offerVersion], references: [id, version])
-    offerId Int?
-    @@index([offerId])
-    offerVersion Int?
-    @@index([offerId, offerVersion])
-
     value String?
-
     order Int?
 }
 

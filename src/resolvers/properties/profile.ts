@@ -47,7 +47,7 @@ export const profilePropertyResolvers: ProfileResolvers = {
 
     const protocol = Environment.isLocalDebugEnvironment ? "http://" : "https://";
 
-    return `${protocol}${Environment.externalDomain}/trigger?hash=${inviteTrigger.hash}`;
+    return `${protocol}${Environment.externalDomains[0]}/trigger?hash=${inviteTrigger.hash}`;
   },
   lat: async (parent: Profile, args: any, context: Context) =>
     isOwnProfile(parent.id, context) && parent.lat !== undefined ? parent.lat : null,
