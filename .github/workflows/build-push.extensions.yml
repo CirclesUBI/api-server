@@ -16,7 +16,7 @@ on:
     inputs:
       ref:
         required: true
-        type: String
+        type: string
         default: ${{ github.ref }}
 
 jobs:
