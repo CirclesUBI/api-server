@@ -21,11 +21,26 @@ on:
     - "Dockerfile.extensions"
     - "Dockerfile.migrations"
     - "Dockerfile.ncat"
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: String
+        default: ${{ github.ref }}
 
 jobs:
   call-build-and-push:
-    name: Call
+    name: Call image build
     uses: CirclesUBI/.github/.github/workflows/build-and-push.yml@main
+    if: ( inputs.ref == 0 )
     with:
       image-name: "api-server"
+    secrets: inherit
+  call-build-and-push-ref:
+    name: Call tagged image build
+    uses: CirclesUBI/.github/.github/workflows/build-and-push.yml@main
+    if: ( inputs.ref != 0 )
+    with:
+      image-name: "api-server"
+      ref: ${{ inputs.ref }}
     secrets: inherit
