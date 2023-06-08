@@ -13,6 +13,7 @@ on:
     - ".github/workflows/build-push.extensions.yml"
     - ".github/workflows/build-push.migrations.yml"
     - ".github/workflows/build-push.ncat.yml"
+    - ".github/workflows/detect-tag-new-version.yml"
     - ".github/workflows/pr-labeler.yml"
     - ".github/workflows/release-drafter.yml"
     - ".github/pr-labeler.yml"
