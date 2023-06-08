@@ -75,6 +75,8 @@ export class RedeemClaimedInvitationWorker extends JobWorker<RedeemClaimedInvita
             }
         }
 
-        return undefined;
+        return {
+            info: `Redeemed invitation ${claimedInvitation.code} for ${claimedInvitation.claimedByProfileId} to ${invitationFundsRecipient}. TxHash: ${fundEoaReceipt.transactionHash}.`,
+        };
     }
 }
