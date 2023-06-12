@@ -433,3 +433,9 @@ model Businesses {
     description String
     picture String
 }
+
+model ApiServers {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    instanceId String // A random value created at startup of an api-server instance
+}
