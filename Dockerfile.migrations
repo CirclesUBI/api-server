@@ -1,22 +1,22 @@
-FROM postgres:15
 
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update && \
-        apt install -y gettext-base && \
-        rm -rf /var/lib/apt/lists/*
+FROM ghcr.io/amacneil/dbmate
 
-WORKDIR /docker-entrypoint-initdb.d/
+COPY ./src/api-db-migrations/2*.sql /db/migrations/
+COPY ./src/api-db-migrations/20230606172700__add_root_user.sql.envsubst /db/migrations/
 
-COPY <<load.sh /docker-entrypoint-initdb.d/
-#!/bin/bash
-set -x
-envsubst < /docker-entrypoint-initdb.d/0.1.504-fix1.sql > /docker-entrypoint-initdb.d/0.1.504-fix1.envsubst
-mv /docker-entrypoint-initdb.d/0.1.504-fix1.envsubst /docker-entrypoint-initdb.d/0.1.504-fix1.sql
-ls /docker-entrypoint-initdb.d/*.sql | xargs -I% sh -c 'psql $\{CONNECTION_STRING_ROOT\} < %'
+WORKDIR /
+
+RUN apk add --no-cache --update envsubst
+
+COPY <<load.sh /
+#!/bin/ash
+
+envsubst < /db/migrations/20230606172700__add_root_user.sql.envsubst > /db/migrations/20230606172700__add_root_user.sql
+rm /db/migrations/20230606172700__add_root_user.sql.envsubst
+
+export CONNECTION_STRING_RW=$\{CONNECTION_STRING_RW\}?sslmode=disable
+/usr/local/bin/dbmate -e CONNECTION_STRING_RW --no-dump-schema migrate
 load.sh
+RUN chmod +x /load.sh
 
-RUN chmod +x /docker-entrypoint-initdb.d/load.sh
-
-COPY ./src/api-db-migrations/ /docker-entrypoint-initdb.d/
-
-CMD ["/docker-entrypoint-initdb.d/load.sh"]
+ENTRYPOINT [ "/load.sh" ]

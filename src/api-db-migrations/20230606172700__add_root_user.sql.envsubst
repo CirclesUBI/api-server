@@ -1,0 +1,14 @@
+-- migrate:up
+
+select add_user(
+    safe_address := '0x0000000000000000000000000000000000000000',
+    safe_owner_address := '0x0000000000000000000000000000000000000000',
+    org_safe_address := '${OPERATOR_ORGANISATION_ADDRESS}',
+    org_safe_owner_address := '0x0000000000000000000000000000000000000000',
+    user_name := 'root',
+    org_name := 'root-org',
+    app_url := '${APP_URL}',
+    email_address := 'zero@circlesubi.id'
+);
+
+-- migrate:down

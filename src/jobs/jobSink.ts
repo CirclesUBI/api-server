@@ -10,6 +10,8 @@ import { RotateJwksWorker } from "./worker/maintenance/rotateJwksWorker";
 import { RotateJwks } from "./descriptions/maintenance/rotateJwks";
 import { UnreadNotificationWorker } from "./worker/unreadNotificationWorker";
 import { UnreadNotification } from "./descriptions/unreadNotification";
+import {RedeemClaimedInvitationWorker} from "./worker/onboarding/redeemClaimedInvitationWorker";
+import {RedeemClaimedInvitation} from "./descriptions/onboarding/redeemClaimedInvitation";
 
 export const jobSink = async (job: Job) => {
   switch (job.topic) {
@@ -34,6 +36,10 @@ export const jobSink = async (job: Job) => {
       return new UnreadNotificationWorker({
         errorStrategy: "logAndDrop",
       }).run(job.id, UnreadNotification.parse(job.payload));
+    case "redeemClaimedInvitation".toLowerCase():
+      return new RedeemClaimedInvitationWorker({
+        errorStrategy: "logAndDrop",
+      }).run(job.id, RedeemClaimedInvitation.parse(job.payload));
     default:
       return undefined;
   }

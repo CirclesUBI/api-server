@@ -629,7 +629,7 @@ type ClaimInvitationResult {
 type RedeemClaimedInvitationResult {
   success: Boolean!
   error: String
-  transactionHash: String
+  jobHash: String
 }
 
 type CreatedInviteEoa {
@@ -768,6 +768,9 @@ type i18n {
 
 type Businesses {
   id: Int!
+  cursor: Int!
+  favoriteCount: Int
+  createdAt: Date!
   circlesAddress: String!
   name: String
   description: String
@@ -1089,6 +1092,8 @@ input QueryAllBusinessesParameters {
   where: QueryAllBusinessesConditions
   order: QueryAllBusinessesOrder
   ownCoordinates: Geolocation
+  limit: Int
+  cursor: Int
 }
 
 input Geolocation {
@@ -1099,6 +1104,7 @@ input Geolocation {
 input QueryAllBusinessesConditions {
   inCategories: [Int!]
   inCirclesAddress: [String!]
+  searchString: String
 }
 
 enum QueryAllBusinessesOrderOptions {

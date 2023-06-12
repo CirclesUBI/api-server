@@ -5,7 +5,8 @@ export type JobType =
   | "inviteCodeFromExternalTrigger"
   | "requestUbiForInactiveAccounts"
   | "rotateJwks"
-  | "unreadNotification";
+  | "unreadNotification"
+  | "redeemClaimedInvitation";
 
 export type JobKind = "broadcast" | "atMostOnceJob" | "atMostOnceTrigger" | "perpetualTrigger";
 

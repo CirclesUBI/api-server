@@ -1,4 +1,3 @@
-import {log} from "../../utils/log";
 import {JobDescription} from "../descriptions/jobDescription";
 import {Environment} from "../../environment";
 import {JobResult} from "../jobQueue";
@@ -31,10 +30,16 @@ export abstract class JobWorker<TJob extends JobDescription> {
     this.cleanStatsIfNecessary();
 
     this._errorStats[jobId] = 0;
-    console.log(` *-> [${new Date().toJSON()}] [${Environment.instanceId}] [${jobDescription._topic}] [jobId:${jobId}] [${this.name()}.run]: ${jobDescription.getPayload()}`);
+
+    const me = this;
+    function log(prefix:string, message:string) {
+      console.log(`${prefix}[${new Date().toJSON()}] [${Environment.instanceId}] [${jobDescription._topic}] [jobId:${jobId}] [${me.name()}.run]: ${message}`);
+    }
+
+    log(" *-> ", jobDescription.getPayload());
 
     try {
-      const result = await this.doWork(jobDescription);
+      const result = await this.doWork(jobDescription, log);
       delete this._errorStats[jobId];
 
       return result;
@@ -46,8 +51,8 @@ export abstract class JobWorker<TJob extends JobDescription> {
         throw e;
       }
       if (this.configuration.errorStrategy == "logAndDrop") {
-        console.log(`     [${new Date().toJSON()}] [${Environment.instanceId}] [${jobDescription._topic}] [jobId:${jobId}] [${this.name()}.run]: A job ran into an error and the error strategy is 'logAndDrop'.`);
-        console.log(`ERR  [${new Date().toJSON()}] [${Environment.instanceId}] [${jobDescription._topic}] [jobId:${jobId}] [${this.name()}.run]: ${error.message + "\n" + error.stack}`);
+        log("     ", "A job ran into an error and the error strategy is 'logAndDrop'.")
+        log("ERR  ", error.message + "\n" + error.stack)
 
         delete this._errorStats[jobId];
 
@@ -56,31 +61,23 @@ export abstract class JobWorker<TJob extends JobDescription> {
         };
       }
       if (this.configuration.errorStrategy == "logAndDropAfterThreshold") {
-        console.log(`     [${new Date().toJSON()}] [${Environment.instanceId}] [${jobDescription._topic}] [jobId:${jobId}] [${this.name()}.run]: A job ran into an error and the error strategy is 'logAndDropAfterThreshold'.`);
+        log("     ", `A job ran into an error and the error strategy is 'logAndDropAfterThreshold'.`)
 
         this._errorStats[jobId]++;
 
         if (this._errorStats[jobId] > (this.configuration.dropThreshold ?? 0)) {
           delete this._errorStats[jobId];
-
-          log("ERR  ",
-            `[${this.name()}] [jobId:${jobId}] [JobWorker.run]`,
-            `The job reached the error threshold of ${this.configuration.dropThreshold ?? 0} and will be dropped.`);
+          log("ERR  ", `The job reached the error threshold of ${this.configuration.dropThreshold ?? 0} and will be dropped.`);
         }
       }
       if (this.configuration.errorStrategy == "logAndThrowAfterThreshold") {
-        console.log(`     [${new Date().toJSON()}] [${jobDescription._topic}] [jobId:${jobId}] [${this.name()}.run]: A job ran into an error and the error strategy is 'logAndThrowAfterThreshold'.`);
-        log("WARN ",
-          `[${jobDescription._topic}] [jobId:${jobId}] [${this.name()}.run]`,
-          error.message + "\n" + error.stack);
+        log("     ", "A job ran into an error and the error strategy is 'logAndThrowAfterThreshold'.");
 
         this._errorStats[jobId]++;
 
         if (this._errorStats[jobId] > (this.configuration.dropThreshold ?? 0)) {
           delete this._errorStats[jobId];
-
           log("ERR  ",
-            `[${jobDescription._topic}] [jobId:${jobId}] [${this.name()}.run]`,
             `The job reached the error threshold of ${this.configuration.dropThreshold ?? 0} and will throw.`);
 
           throw e;
@@ -93,7 +90,7 @@ export abstract class JobWorker<TJob extends JobDescription> {
     return undefined;
   }
 
-  abstract doWork(job: TJob) : Promise<JobResult|undefined>;
+  abstract doWork(job: TJob, log:(prefix:string, message:string) => void) : Promise<JobResult|undefined>;
 
   private cleanStatsIfNecessary() {
     this._jobCounter++;

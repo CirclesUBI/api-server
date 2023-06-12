@@ -1,4 +1,4 @@
-name: Images
+name: Extensions
 
 on:
   release:
@@ -8,19 +8,10 @@ on:
     - main
     - next
     - dev
-    paths-ignore:
-    - "src/api-db-migrations/**"
-    - ".github/workflows/build-push.extensions.yml"
-    - ".github/workflows/build-push.migrations.yml"
-    - ".github/workflows/build-push.ncat.yml"
-    - ".github/workflows/pr-labeler.yml"
-    - ".github/workflows/release-drafter.yml"
-    - ".github/workflows/release-version.yml"
-    - ".github/pr-labeler.yml"
-    - ".github/release-drafter.yml"
+    paths:
     - "Dockerfile.extensions"
-    - "Dockerfile.migrations"
-    - "Dockerfile.ncat"
+    - "src/api-db-extensions/**"
+    - ".github/workflows/build-push.extensions.yml"
   workflow_call:
     inputs:
       ref:
@@ -34,13 +25,15 @@ jobs:
     uses: CirclesUBI/.github/.github/workflows/build-and-push.yml@main
     if: ( inputs.ref == 0 )
     with:
-      image-name: "api-server"
+      image-name: "api-server-extensions"
+      file: "Dockerfile.extensions"
     secrets: inherit
   call-build-and-push-ref:
     name: Call tagged image build
     uses: CirclesUBI/.github/.github/workflows/build-and-push.yml@main
     if: ( inputs.ref != 0 )
     with:
-      image-name: "api-server"
+      image-name: "api-server-extensions"
+      file: "Dockerfile.extensions"
       ref: ${{ inputs.ref }}
     secrets: inherit

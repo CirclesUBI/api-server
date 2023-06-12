@@ -205,6 +205,7 @@ export class Main {
       "requestUbiForInactiveAccounts",
       "rotateJwks",
       "unreadNotification",
+      "redeemClaimedInvitation"
     ];
 
     jobQueue
