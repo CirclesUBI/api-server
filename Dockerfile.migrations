@@ -14,7 +14,7 @@ COPY <<load.sh /
 envsubst < /db/migrations/20230606172700__add_root_user.sql.envsubst > /db/migrations/20230606172700__add_root_user.sql
 rm /db/migrations/20230606172700__add_root_user.sql.envsubst
 
-[[ "$CONNECTION_STRING_RW" == *sslmode* ]] && export CONNECTION_STRING_RW=$\{CONNECTION_STRING_RW/no-verify/require\}
+[[ "$CONNECTION_STRING_RW" == *sslmode* ]] && CONNECTION_STRING_RW=$\{CONNECTION_STRING_RW/no-verify/require\}
 
 /usr/local/bin/dbmate -e CONNECTION_STRING_RW --no-dump-schema migrate
 load.sh
