@@ -36,6 +36,8 @@ export abstract class JobWorker<TJob extends JobDescription> {
       console.log(`${prefix}[${new Date().toJSON()}] [${Environment.instanceId}] [${jobDescription._topic}] [jobId:${jobId}] [${me.name()}.run]: ${message}`);
     }
 
+    const start = new Date().getTime();
+
     log(" *-> ", jobDescription.getPayload());
 
     try {
@@ -83,6 +85,10 @@ export abstract class JobWorker<TJob extends JobDescription> {
           throw e;
         }
       }
+
+      const duration = new Date().getTime() - start;
+      log("  <- ", `took ${duration} ms.`)
+
       return {
         error: `${error.message + "\n" + error.stack}`
       };

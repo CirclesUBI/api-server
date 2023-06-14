@@ -23,6 +23,9 @@ export enum UploadTarget {
 }
 
 export class Environment {
+  private static _instanceSpecificInvitationSafe: GnosisSafeProxy;
+  private static _instanceSpecificInvitationSafeKey: string;
+
   static async validateAndSummarize(logInfo: boolean = true) {
     const errors: string[] = [];
 
@@ -81,20 +84,6 @@ export class Environment {
     if (logInfo) {
       console.log(`  ${this.operatorOrganisationAddress} nonce is: ${nonce}`);
     }
-    if (!process.env.INVITATION_FUNDS_SAFE_ADDRESS) {
-      errors.push(`The INVITATION_FUNDS_SAFE_ADDRESS environment variable is not set.`);
-    }
-
-    if (logInfo) {
-      console.log("* Testing invitationFundsSafe ..");
-    }
-    nonce = await this.invitationFundsSafe.getNonce();
-    if (logInfo) {
-      console.log(`  ${this.invitationFundsSafe.address} nonce is: ${nonce}`);
-    }
-    if (!process.env.INVITATION_FUNDS_SAFE_KEY) {
-      errors.push(`The INVITATION_FUNDS_SAFE_KEY environment variable is not set.`);
-    }
 
     if (logInfo) {
       console.log(`* Checking which upload target to use (S3 or GCS) ...`);
@@ -147,6 +136,7 @@ export class Environment {
       console.log(`  Success`);
       console.log(`* Testing connection to the readonly api-db ...`);
     }
+
     await this.readonlyApiDb.$queryRaw`select 1`;
 
     if (logInfo) {
@@ -154,11 +144,54 @@ export class Environment {
       console.log(`* Testing connection to the read/write api-db ...`);
     }
 
-    await this.readWriteApiDb.$queryRaw`select 1`;
+    const apiServerRecord = await this.readWriteApiDb.$queryRaw`insert into "ApiServers" ("instanceId") values (${this.instanceId}) returning id;`;
+    const apiServerRecordId = <number>(<any>apiServerRecord)[0]?.id;
 
     if (logInfo) {
-      console.log(`  Success`);
+      console.log(`  Success. ApiServer record id: ${apiServerRecordId}`);
+    }
 
+    if (!process.env.INVITATION_FUNDS_SAFE_ADDRESS) {
+      errors.push(`The INVITATION_FUNDS_SAFE_ADDRESS environment variable is not set.`);
+    }
+
+    const invitationFundsSafeAddresses = process.env.INVITATION_FUNDS_SAFE_ADDRESS?.split(";") ?? [];
+    invitationFundsSafeAddresses.forEach((address) => {
+        if (RpcGateway.get().utils.isAddress(address)) {
+          return;
+        }
+        errors.push(`The INVITATION_FUNDS_SAFE_ADDRESS environment variable contains an invalid address: ${address}`);
+    });
+    RpcGateway.get().utils.isAddress(invitationFundsSafeAddresses[0]);
+
+
+    if (!process.env.INVITATION_FUNDS_SAFE_KEY) {
+      errors.push(`The INVITATION_FUNDS_SAFE_KEY environment variable is not set.`);
+    }
+
+    const invitationFundsSafeKeys = process.env.INVITATION_FUNDS_SAFE_KEY?.split(";") ?? [];
+    if (invitationFundsSafeKeys.length != invitationFundsSafeAddresses.length) {
+        errors.push(
+            `The INVITATION_FUNDS_SAFE_KEY environment variable contains a different number of keys than INVITATION_FUNDS_SAFE_ADDRESS contains addresses.`
+        );
+    }
+
+    const keyIdx = apiServerRecordId % invitationFundsSafeAddresses.length;
+    this._instanceSpecificInvitationSafe = new GnosisSafeProxy(
+        RpcGateway.get(),
+        RpcGateway.get().utils.toChecksumAddress(<string>invitationFundsSafeAddresses[keyIdx])
+    );
+    this._instanceSpecificInvitationSafeKey = invitationFundsSafeKeys[keyIdx];
+
+    if (logInfo) {
+      console.log("* Testing invitationFundsSafe ..");
+    }
+    nonce = await this.invitationFundsSafe.getNonce();
+    if (logInfo) {
+      console.log(`  ${this.invitationFundsSafe.address} nonce is: ${nonce}`);
+    }
+
+    if (logInfo) {
       console.log(`* Testing connection to the indexer ws endpoint (${this.blockchainIndexerUrl}) ...`);
     }
 
@@ -382,15 +415,12 @@ export class Environment {
   }
 
   static get invitationFundsSafe(): GnosisSafeProxy {
-    return new GnosisSafeProxy(
-      RpcGateway.get(),
-      RpcGateway.get().utils.toChecksumAddress(<string>process.env.INVITATION_FUNDS_SAFE_ADDRESS)
-    );
+    return this._instanceSpecificInvitationSafe;
   }
 
   static get invitationFundsSafeOwner(): Account {
     return RpcGateway.get().eth.accounts.privateKeyToAccount(
-      <string>process.env.INVITATION_FUNDS_SAFE_KEY?.toLowerCase()
+      <string>this._instanceSpecificInvitationSafeKey.toLowerCase()
     );
   }
 
