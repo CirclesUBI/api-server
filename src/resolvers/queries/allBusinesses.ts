@@ -24,10 +24,11 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
       whereConditions.push(`"circlesAddress" = ANY($${params.push(where.inCirclesAddress)})`);
     }
     if (where?.searchString) {
-      const search = where.searchString.trim().endsWith("%") ? where.searchString : where.searchString + "%";
-      const searchWords = where.searchString.split(" ").map(o => o.trim().toLowerCase());
-      const tsquery = `'${searchWords.join(" & ")}'`
-      whereConditions.push(` ("name" ilike $${params.push(search)} or "description" ilike $${params.push(search)} or ts_vector @@ to_tsquery($${params.push(tsquery)})) `);
+      const searchWords = where.searchString.split(" ").map(o => `%${o.trim().toLowerCase()}%`);  // wildcard on both ends
+      for (let i = 0; i < searchWords.length; i++) {
+        const search = searchWords[i];
+        whereConditions.push(` ("name" ilike $${params.push(search)} or "description" ilike $${params.push(search)} or "locationName" ilike $${params.push(search)}) `);
+      }
     }
   }
 
@@ -99,7 +100,7 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
   const effectiveLimit = limit && limit <= 100 ? limit : 20;
   query += ` limit $${params.push(effectiveLimit)}`;
 
-  const result = await Environment.readonlyApiDb.$queryRawUnsafe(query, ...params);
+  const result =  await Environment.readonlyApiDb.$queryRawUnsafe(query, ...params);
 
   return <Businesses[]>Object.values(
     (<any>result).map((o: any) => {
