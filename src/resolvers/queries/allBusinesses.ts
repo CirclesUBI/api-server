@@ -81,6 +81,7 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
                         ST_MakePoint("lon", "lat")::geography
                    ) end as distance
             from "businesses"
+            where "circlesAddress" != $${params.push(Environment.operatorOrganisationAddress)}
         )
         select cursor, id, "createdAt", name, description, "phoneNumber", location, "locationName", lat, lon, "circlesAddress", "businessCategoryId", "businessCategory", picture, "businessHoursMonday", "businessHoursTuesday", "businessHoursWednesday", "businessHoursThursday", "businessHoursFriday", "businessHoursSaturday", "businessHoursSunday", "favoriteCount", "distance"
         from b
