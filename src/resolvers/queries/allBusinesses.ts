@@ -43,18 +43,18 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
         break;
       case QueryAllBusinessesOrderOptions.Favorites:
         orderClause += ` order by "favoriteCount" desc`;
-        rownumber_select = 'ROW_NUMBER() OVER (ORDER BY "favoriteCount" desc) as cursor';
+        rownumber_select = 'ROW_NUMBER() OVER (ORDER BY "favoriteCount" desc, "createdAt" asc) as cursor';
         break;
       case QueryAllBusinessesOrderOptions.MostPopular:
         orderClause += ` order by "favoriteCount" desc`;
-        rownumber_select = 'ROW_NUMBER() OVER (ORDER BY "favoriteCount" asc) as cursor';
+        rownumber_select = 'ROW_NUMBER() OVER (ORDER BY "favoriteCount" desc, "createdAt" asc) as cursor';
         break;
       case QueryAllBusinessesOrderOptions.Nearest:
         orderClause += ` order by distance asc`;
         rownumber_select = "ROW_NUMBER() OVER (ORDER BY ST_Distance(\n" +
             "                    ST_MakePoint($1::DOUBLE PRECISION, $2::DOUBLE PRECISION)::geography,\n" +
             "                    ST_MakePoint(\"lon\", \"lat\")::geography\n" +
-            "                ) asc) as cursor";
+            "                ) asc, \"createdAt\" asc) as cursor";
         break;
       case QueryAllBusinessesOrderOptions.Newest:
         orderClause += ` order by "createdAt" desc`;
