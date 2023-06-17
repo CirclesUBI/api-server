@@ -404,7 +404,7 @@ export class Environment {
    */
   static get operatorOrganisationAddress(): string {
     // TODO: Remove default value "Basic Income Lab - Test Orga"
-    return <string>(process.env.OPERATOR_ORGANISATION_ADDRESS ?? "0xc5a786eafefcf703c114558c443e4f17969d9573");
+    return <string>(process.env.OPERATOR_ORGANISATION_ADDRESS ?? "0xc5a786eafefcf703c114558c443e4f17969d9573").toLowerCase();
   }
   static get translatorOrganisationAddress(): string {
     // TODO: Remove default value "Basic Income Lab - Test Orga"
