@@ -1,21 +1,17 @@
 -- migrate:up
-INSERT INTO "BaliVillage"(desa, kecamatan, kabupaten)
-  VALUES ('Yeh Embang Kauh', 'Mendoyo', 'Jembrana'),
-('Pohsanten', 'Mendoyo', 'Jembrana'),
-('Yeh Embang Kangin', 'Mendoyo', 'Jembrana'),
-('Penyaringan', 'Mendoyo', 'Jembrana'),
-('Pergung', 'Mendoyo', 'Jembrana'),
-('Tegal Cangkring', 'Mendoyo', 'Jembrana'),
-('Pengeragoan', 'Pekutatan', 'Jembrana'),
-('Madewi', 'Pekutatan', 'Jembrana'),
-('Dulukan', 'Pekutatan', 'Jembrana'),
-('Desa Tuwed', 'Gilimanuk', 'Jembrana'),
-('Candi Kusuma', 'Gilimanuk', 'Jembrana'),
-('Manistutu', 'Gilimanuk', 'Jembrana'),
-('Gunung Salak', 'Selemadeg Timur', 'Tabanan'),
-('Gadungan', 'Selemadeg Timur', 'Tabanan'),
-('Angkah', 'Selemadeg Barat', 'Tabanan'),
-('Selemadeg', 'Selemadeg', 'Tabanan'),
-('Tonja', 'Denpasar Utara', 'Denpasar');
+INSERT INTO public."BaliVillage" (desa, kecamatan, kabupaten) VALUES ('Pergung', 'Mendoyo', 'JEMBRANA');
+INSERT INTO public."BaliVillage" (desa, kecamatan, kabupaten) VALUES ('Penyaringan', 'Mendoyo', 'JEMBRANA');
+INSERT INTO public."BaliVillage" (desa, kecamatan, kabupaten) VALUES ('Tegalcangkring', 'Mendoyo', 'JEMBRANA');
+INSERT INTO public."BaliVillage" (desa, kecamatan, kabupaten) VALUES ('Tuwed', 'Melaya', 'JEMBRANA');
+INSERT INTO public."BaliVillage" (desa, kecamatan, kabupaten) VALUES ('Candikusuma', 'Melaya', 'JEMBRANA');
+INSERT INTO public."BaliVillage" (desa, kecamatan, kabupaten) VALUES ('Manistutu', 'Melaya', 'JEMBRANA');
+INSERT INTO public."BaliVillage" (desa, kecamatan, kabupaten) VALUES ('Gadungan', 'Selemadeg Timur', 'TABANAN');
+INSERT INTO public."BaliVillage" (desa, kecamatan, kabupaten) VALUES ('Gunung Salak', 'Selemadeg Timur', 'TABANAN');
+INSERT INTO public."BaliVillage" (desa, kecamatan, kabupaten) VALUES ('Mambang', 'Selemadeg Timur', 'TABANAN');
+INSERT INTO public."BaliVillage" (desa, kecamatan, kabupaten) VALUES ('Gadung Sari', 'Selemadeg Timur', 'TABANAN');
+INSERT INTO public."BaliVillage" (desa, kecamatan, kabupaten) VALUES ('Berembeng', 'Selemadeg', 'TABANAN');
+INSERT INTO public."BaliVillage" (desa, kecamatan, kabupaten) VALUES ('Abian Tuwung', 'Kediri', 'TABANAN');
+INSERT INTO public."BaliVillage" (desa, kecamatan, kabupaten) VALUES ('Tonja', 'Denpasar Utara', 'DENPASAR');
+
 
 -- migrate:down
