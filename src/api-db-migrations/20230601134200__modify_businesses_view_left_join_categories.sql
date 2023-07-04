@@ -1,53 +1,59 @@
 -- migrate:up
+DROP VIEW IF EXISTS businesses;
 
-drop view if exists businesses;
-create view businesses as
-select p.id
-     , p."createdAt"
-     , "firstName" as name
-     , dream as description
-     , "phoneNumber"
-     , location
-     , "locationName"
-     , lat
-     , lon
-     , "circlesAddress"
-     , "businessCategoryId"
-     , bc.name as "businessCategory"
-     , "avatarUrl" as picture
-     , "businessHoursMonday"
-     , "businessHoursTuesday"
-     , "businessHoursWednesday"
-     , "businessHoursThursday"
-     , "businessHoursFriday"
-     , "businessHoursSaturday"
-     , "businessHoursSunday"
-     , count(f.id) as "favoriteCount"
-     , to_tsvector('simple', coalesce("firstName", '') || ' ' || coalesce(dream, '')) as ts_vector
-from "Profile" p
-         left join "BusinessCategory" bc on "businessCategoryId" = bc.id
-         left join "Favorites" f on f."favoriteCirclesAddress" = p."circlesAddress"
-where type = 'ORGANISATION'
-group by p.id
-       , p."createdAt"
-       , "firstName"
-       , dream
-       , "phoneNumber"
-       , location
-       , "locationName"
-       , lat
-       , lon
-       , "circlesAddress"
-       , "businessCategoryId"
-       , bc.name
-       , "avatarUrl"
-       , "businessHoursMonday"
-       , "businessHoursTuesday"
-       , "businessHoursWednesday"
-       , "businessHoursThursday"
-       , "businessHoursFriday"
-       , "businessHoursSaturday"
-       , "businessHoursSunday"
-       , ts_vector;
+CREATE VIEW businesses AS
+SELECT
+     p.id,
+     p."createdAt",
+     "firstName" AS name,
+     dream AS description,
+     "phoneNumber",
+     location,
+     "locationName",
+     lat,
+     lon,
+     "circlesAddress",
+     "businessCategoryId",
+     bc.name AS "businessCategory",
+     "avatarUrl" AS picture,
+     "businessHoursMonday",
+     "businessHoursTuesday",
+     "businessHoursWednesday",
+     "businessHoursThursday",
+     "businessHoursFriday",
+     "businessHoursSaturday",
+     "businessHoursSunday",
+     "isShopDisabled",
+     count(f.id) AS "favoriteCount",
+     to_tsvector('simple', coalesce("firstName", '') || ' ' || coalesce(dream, '')) AS ts_vector
+FROM
+     "Profile" p
+     LEFT JOIN "BusinessCategory" bc ON "businessCategoryId" = bc.id
+     LEFT JOIN "Favorites" f ON f."favoriteCirclesAddress" = p."circlesAddress"
+WHERE
+     type = 'ORGANISATION'
+GROUP BY
+     p.id,
+     p."createdAt",
+     "firstName",
+     dream,
+     "phoneNumber",
+     location,
+     "locationName",
+     lat,
+     lon,
+     "circlesAddress",
+     "businessCategoryId",
+     bc.name,
+     "avatarUrl",
+     "businessHoursMonday",
+     "businessHoursTuesday",
+     "businessHoursWednesday",
+     "businessHoursThursday",
+     "businessHoursFriday",
+     "businessHoursSaturday",
+     "businessHoursSunday",
+     "isShopDisabled",
+     ts_vector;
 
 -- migrate:down

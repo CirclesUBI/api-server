@@ -1,18 +1,23 @@
-import {PrismaClient} from "../api-db/client";
-import {DisplayCurrency, Organisation, Profile, ProfileOrigin, ProfileType, Verification,} from "../types";
-import {RpcGateway} from "../circles/rpcGateway";
+import { PrismaClient } from "../api-db/client";
+import { DisplayCurrency, Organisation, Profile, ProfileOrigin, ProfileType, Verification } from "../types";
+import { RpcGateway } from "../circles/rpcGateway";
 import fetch from "cross-fetch";
 
-export type SafeProfileMap = { [safeAddress: string]: Profile & {emailAddressVerified:boolean, askedForEmailAddress:boolean} | null };
-export type IdProfileMap = { [id: number]: Profile & {emailAddressVerified:boolean, askedForEmailAddress:boolean} | null };
+export type SafeProfileMap = {
+  [safeAddress: string]: (Profile & { emailAddressVerified: boolean; askedForEmailAddress: boolean }) | null;
+};
+export type IdProfileMap = {
+  [id: number]: (Profile & { emailAddressVerified: boolean; askedForEmailAddress: boolean }) | null;
+};
 
-export function hashCodeFromString(str:string) {
+export function hashCodeFromString(str: string) {
   var hash = 0,
-      i, chr;
+    i,
+    chr;
   if (str.length === 0) return hash;
   for (i = 0; i < str.length; i++) {
     chr = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + chr;
+    hash = (hash << 5) - hash + chr;
     hash |= 0; // Convert to 32bit integer
   }
   return hash;
@@ -31,11 +36,17 @@ export class ProfileLoader {
       },
       orderBy: {
         lastUpdateAt: "asc",
-      }
+      },
     });
 
-    const safeProfileMap = profiles.toLookup(c => c.circlesAddress, c => ProfileLoader.withDisplayCurrency(c));
-    const idProfileMap = profiles.toLookup(c => c.id, c => ProfileLoader.withDisplayCurrency(c));
+    const safeProfileMap = profiles.toLookup(
+      (c) => c.circlesAddress,
+      (c) => ProfileLoader.withDisplayCurrency(c)
+    );
+    const idProfileMap = profiles.toLookup(
+      (c) => c.id,
+      (c) => ProfileLoader.withDisplayCurrency(c)
+    );
 
     return { safeProfileMap, idProfileMap };
   }
@@ -56,7 +67,9 @@ export class ProfileLoader {
     }
   }
 
-  static withDisplayCurrency(profile: any): Profile  & {emailAddressVerified:boolean, inviteTriggerId?:number, askedForSafeAddress:boolean}{
+  static withDisplayCurrency(
+    profile: any
+  ): Profile & { emailAddressVerified: boolean; inviteTriggerId?: number; askedForSafeAddress: boolean } {
     return {
       ...profile,
       name: profile?.firstName,
@@ -83,10 +96,7 @@ export class ProfileLoader {
   //   return { safeProfileMap, idProfileMap };
   // }
 
-  async queryCirclesLandBySafeAddress(
-    prisma: PrismaClient,
-    safeAddresses: string[]
-  ): Promise<SafeProfileMap> {
+  async queryCirclesLandBySafeAddress(prisma: PrismaClient, safeAddresses: string[]): Promise<SafeProfileMap> {
     const profilesPromise = prisma.profile.findMany({
       where: {
         circlesAddress: {
@@ -109,23 +119,18 @@ export class ProfileLoader {
       },
     });
 
-    const promiseResults = await Promise.all([
-      safeVerificationsPromise,
-      profilesPromise,
-    ]);
+    const promiseResults = await Promise.all([safeVerificationsPromise, profilesPromise]);
 
     const safeVerifications = promiseResults[0];
     const safeVerificationsMap = safeVerifications.toLookup(
-      c => c.safeAddress,
-      c => {
+      (c) => c.safeAddress,
+      (c) => {
         return {
-        ...c,
-            createdByOrganisation: ProfileLoader.withDisplayCurrency(
-            c.createdByOrganisation
-          ),
-        }
+          ...c,
+          createdByOrganisation: ProfileLoader.withDisplayCurrency(c.createdByOrganisation),
+        };
       }
-    )
+    );
 
     const profiles = promiseResults[1];
     const safeProfileMap = profiles.reduce((p, c) => {
@@ -134,10 +139,7 @@ export class ProfileLoader {
       let verifications: Verification[] = [];
       if (safeVerificationsMap[c.circlesAddress]) {
         const safeVerification = safeVerificationsMap[c.circlesAddress];
-        if (
-          safeVerification.createdByOrganisation &&
-          safeVerification.createdByOrganisation.circlesAddress
-        ) {
+        if (safeVerification.createdByOrganisation && safeVerification.createdByOrganisation.circlesAddress) {
           verifications.push({
             __typename: "Verification",
             verifierProfile: <Organisation>{
@@ -147,14 +149,11 @@ export class ProfileLoader {
             },
             verificationRewardTransactionHash: "",
             verificationRewardTransaction: null,
-            verifierSafeAddress:
-              safeVerification.createdByOrganisation.circlesAddress,
+            verifierSafeAddress: safeVerification.createdByOrganisation.circlesAddress,
             createdAt: safeVerification.createdAt.toJSON(),
             verifiedSafeAddress: c.circlesAddress,
             verifiedProfile: c ? ProfileLoader.withDisplayCurrency(c) : null,
-            revokedAt: safeVerification.revokedAt
-              ? safeVerification.revokedAt.toJSON()
-              : null,
+            revokedAt: safeVerification.revokedAt ? safeVerification.revokedAt.toJSON() : null,
             revokedProfile: c ? ProfileLoader.withDisplayCurrency(c) : null,
           });
         }
@@ -198,10 +197,7 @@ export class ProfileLoader {
   //   return safeProfileMap;
   // }
   //
-  async queryCirclesGardenRemote(
-      prisma: PrismaClient,
-      safeAddresses: string[]
-  ): Promise<SafeProfileMap> {
+  async queryCirclesGardenRemote(prisma: PrismaClient, safeAddresses: string[]): Promise<SafeProfileMap> {
     // Batch all safeAddresses (max. 50)
 
     const safeAddressCopy = JSON.parse(JSON.stringify(safeAddresses));
@@ -218,28 +214,24 @@ export class ProfileLoader {
     }
 
     for (let batch of batches) {
-      const query = batch.reduce(
-          (p, c) =>
-              p + `address[]=${RpcGateway.get().utils.toChecksumAddress(c)}&`,
-          ""
-      );
+      const query = batch.reduce((p, c) => p + `address[]=${RpcGateway.get().utils.toChecksumAddress(c)}&`, "");
       const requestUrl = `https://api.circles.garden/api/users/?${query}`;
 
       const requestResult = await fetch(requestUrl);
       const requestResultJson = await requestResult.json();
 
       const profiles: (Profile & { emailAddressVerified: boolean })[] =
-          requestResultJson.data.map((o: any) => {
-            return <Profile & { emailAddressVerified: boolean }>{
-              id: -1,
-              type: ProfileType.Person,
-              firstName: o.username,
-              lastName: "",
-              circlesAddress: o.safeAddress.toLowerCase(),
-              avatarUrl: o.avatarUrl,
-              emailAddressVerified: false
-            };
-          }) ?? [];
+        requestResultJson.data.map((o: any) => {
+          return <Profile & { emailAddressVerified: boolean }>{
+            id: -1,
+            type: ProfileType.Person,
+            firstName: o.username,
+            lastName: "",
+            circlesAddress: o.safeAddress.toLowerCase(),
+            avatarUrl: o.avatarUrl,
+            emailAddressVerified: false,
+          };
+        }) ?? [];
 
       profiles.forEach((o) => {
         if (!o.circlesAddress) return;
@@ -250,15 +242,9 @@ export class ProfileLoader {
     return safeProfileMap;
   }
 
-  async profilesBySafeAddress(
-    prisma: PrismaClient,
-    addresses: string[]
-  ): Promise<SafeProfileMap> {
+  async profilesBySafeAddress(prisma: PrismaClient, addresses: string[]): Promise<SafeProfileMap> {
     const lowercaseAddresses = addresses.map((o) => o.toLowerCase());
-    const localQueryResults = await this.queryCirclesLandBySafeAddress(
-      prisma,
-      lowercaseAddresses
-    );
+    const localQueryResults = await this.queryCirclesLandBySafeAddress(prisma, lowercaseAddresses);
 
     const allProfilesMap: SafeProfileMap = {};
 
@@ -277,6 +263,7 @@ export class ProfileLoader {
           displayName: address,
           firstName: address,
           avatarUrl: null,
+          isShopDisabled: address,
         };
       }
     });
@@ -299,6 +286,6 @@ export class ProfileLoader {
   }
 
   static displayName(profile: Profile) {
-    return `${profile.firstName}${profile.lastName ? " " + profile.lastName : ""}`
+    return `${profile.firstName}${profile.lastName ? " " + profile.lastName : ""}`;
   }
 }

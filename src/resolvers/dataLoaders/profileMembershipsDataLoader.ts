@@ -34,6 +34,7 @@ export const profileMembershipsDataLoader = new DataLoader<string, Membership[]>
             locationName: o.memberAt.locationName,
             lat: o.memberAt.lat,
             lon: o.memberAt.lon,
+            isShopDisabled: o.memberAt.isShopDisabled,
           },
           createdByProfileId: o.createdByProfileId,
           memberAddress: o.memberAddress,
