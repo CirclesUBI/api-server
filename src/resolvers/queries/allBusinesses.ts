@@ -1,6 +1,7 @@
 import { Businesses, QueryAllBusinessesArgs, QueryAllBusinessesOrderOptions } from "../../types";
 import { Environment } from "../../environment";
 import { Context } from "vm";
+import { PrismaClient } from "../../api-db/client";
 
 export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, context: Context) => {
   const { queryParams } = args;
@@ -16,6 +17,7 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
 
   // construct the where clause
   let whereConditions: string[] = [];
+
   if (where) {
     if (where?.inCategories) {
       whereConditions.push(`"businessCategoryId" = ANY($${params.push(where.inCategories)})`);
@@ -24,12 +26,22 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
       whereConditions.push(`"circlesAddress" = ANY($${params.push(where.inCirclesAddress)})`);
     }
     if (where?.searchString) {
-      const searchWords = where.searchString.split(" ").map(o => `%${o.trim().toLowerCase()}%`);  // wildcard on both ends
+      const searchWords = where.searchString.split(" ").map((o) => `%${o.trim().toLowerCase()}%`); // wildcard on both ends
       for (let i = 0; i < searchWords.length; i++) {
         const search = searchWords[i];
-        whereConditions.push(` ("name" ilike $${params.push(search)} or "description" ilike $${params.push(search)} or "locationName" ilike $${params.push(search)}) `);
+        whereConditions.push(
+          ` ("name" ilike $${params.push(search)} or "description" ilike $${params.push(
+            search
+          )} or "locationName" ilike $${params.push(search)}) `
+        );
       }
     }
+  }
+
+  if (where?.showDisabledShops) {
+    whereConditions.push(`"shopEnabled" = ANY('{TRUE, FALSE}')`);
+  } else {
+    whereConditions.push(`"shopEnabled" = TRUE`);
   }
 
   // construct the order by clause
@@ -43,18 +55,19 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
         break;
       case QueryAllBusinessesOrderOptions.Favorites:
         orderClause += ` order by "favoriteCount" desc`;
-        rownumber_select = 'ROW_NUMBER() OVER (ORDER BY "favoriteCount" desc) as cursor';
+        rownumber_select = 'ROW_NUMBER() OVER (ORDER BY "favoriteCount" desc, "createdAt" asc) as cursor';
         break;
       case QueryAllBusinessesOrderOptions.MostPopular:
         orderClause += ` order by "favoriteCount" desc`;
-        rownumber_select = 'ROW_NUMBER() OVER (ORDER BY "favoriteCount" asc) as cursor';
+        rownumber_select = 'ROW_NUMBER() OVER (ORDER BY "favoriteCount" desc, "createdAt" asc) as cursor';
         break;
       case QueryAllBusinessesOrderOptions.Nearest:
         orderClause += ` order by distance asc`;
-        rownumber_select = "ROW_NUMBER() OVER (ORDER BY ST_Distance(\n" +
-            "                    ST_MakePoint($1::DOUBLE PRECISION, $2::DOUBLE PRECISION)::geography,\n" +
-            "                    ST_MakePoint(\"lon\", \"lat\")::geography\n" +
-            "                ) asc) as cursor";
+        rownumber_select =
+          "ROW_NUMBER() OVER (ORDER BY ST_Distance(\n" +
+          "                    ST_MakePoint($1::DOUBLE PRECISION, $2::DOUBLE PRECISION)::geography,\n" +
+          '                    ST_MakePoint("lon", "lat")::geography\n' +
+          '                ) asc, "createdAt" asc) as cursor';
         break;
       case QueryAllBusinessesOrderOptions.Newest:
         orderClause += ` order by "createdAt" desc`;
@@ -81,8 +94,10 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
                         ST_MakePoint("lon", "lat")::geography
                    ) end as distance
             from "businesses"
+            where "circlesAddress" != $${params.push(Environment.operatorOrganisationAddress)}
+
         )
-        select cursor, id, "createdAt", name, description, "phoneNumber", location, "locationName", lat, lon, "circlesAddress", "businessCategoryId", "businessCategory", picture, "businessHoursMonday", "businessHoursTuesday", "businessHoursWednesday", "businessHoursThursday", "businessHoursFriday", "businessHoursSaturday", "businessHoursSunday", "favoriteCount", "distance"
+        select cursor, id, "createdAt", name, description, "phoneNumber", location, "locationName", lat, lon, "circlesAddress", "businessCategoryId", "businessCategory", picture, "businessHoursMonday", "businessHoursTuesday", "businessHoursWednesday", "businessHoursThursday", "businessHoursFriday", "businessHoursSaturday", "businessHoursSunday", "favoriteCount", "distance", "shopEnabled"
         from b
   `;
 
@@ -100,7 +115,7 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
   const effectiveLimit = limit && limit <= 100 ? limit : 20;
   query += ` limit $${params.push(effectiveLimit)}`;
 
-  const result =  await Environment.readonlyApiDb.$queryRawUnsafe(query, ...params);
+  const result = await Environment.readonlyApiDb.$queryRawUnsafe(query, ...params);
 
   return <Businesses[]>Object.values(
     (<any>result).map((o: any) => {
@@ -112,3 +127,24 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
     })
   );
 };
+
+// export function myBusiness(prisma: PrismaClient) {
+//   return async (parent: any, args: any, context: Context) => {
+//     let ownProfileId: number | null = null;
+//     if (context.session) {
+//       ownProfileId = context.session.profileId;
+//     }
+//     if (!ownProfileId) {
+//       return null;
+//     }
+//     const rows = await prisma.profile.findMany({
+//       where: {
+//         id: ownProfileId,
+//       },
+//     });
+//     if (rows.length != 1) {
+//       return null;
+//     }
+//     return ProfileLoader.withDisplayCurrency(rows[0]);
+//   };
+// }
