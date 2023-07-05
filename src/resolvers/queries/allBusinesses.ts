@@ -36,15 +36,12 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
         );
       }
     }
-    if (where?.inactive) {
-      console.log("INACTIVE");
-      whereConditions.push(`"isShopDisabled" = ANY('{TRUE, FALSE}')`);
-    } else {
-      console.log("INACTIVE FALSE");
-      whereConditions.push(`"isShopDisabled" = FALSE`);
-    }
+  }
+
+  if (where?.showDisabledShops) {
+    whereConditions.push(`"shopEnabled" = ANY('{TRUE, FALSE}')`);
   } else {
-    whereConditions.push(`"isShopDisabled" = FALSE`);
+    whereConditions.push(`"shopEnabled" = TRUE`);
   }
 
   // construct the order by clause
@@ -100,7 +97,7 @@ export const allBusinesses = async (parent: any, args: QueryAllBusinessesArgs, c
             where "circlesAddress" != $${params.push(Environment.operatorOrganisationAddress)}
 
         )
-        select cursor, id, "createdAt", name, description, "phoneNumber", location, "locationName", lat, lon, "circlesAddress", "businessCategoryId", "businessCategory", picture, "businessHoursMonday", "businessHoursTuesday", "businessHoursWednesday", "businessHoursThursday", "businessHoursFriday", "businessHoursSaturday", "businessHoursSunday", "favoriteCount", "distance", "isShopDisabled"
+        select cursor, id, "createdAt", name, description, "phoneNumber", location, "locationName", lat, lon, "circlesAddress", "businessCategoryId", "businessCategory", picture, "businessHoursMonday", "businessHoursTuesday", "businessHoursWednesday", "businessHoursThursday", "businessHoursFriday", "businessHoursSaturday", "businessHoursSunday", "favoriteCount", "distance", "shopEnabled"
         from b
   `;
 

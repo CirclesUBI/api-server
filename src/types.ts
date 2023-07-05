@@ -84,7 +84,6 @@ export type Businesses = {
   description?: Maybe<Scalars['String']>;
   favoriteCount?: Maybe<Scalars['Int']>;
   id: Scalars['Int'];
-  isShopDisabled?: Maybe<Scalars['Boolean']>;
   lat?: Maybe<Scalars['Float']>;
   location?: Maybe<Scalars['String']>;
   locationName?: Maybe<Scalars['String']>;
@@ -92,6 +91,7 @@ export type Businesses = {
   name?: Maybe<Scalars['String']>;
   phoneNumber?: Maybe<Scalars['String']>;
   picture?: Maybe<Scalars['String']>;
+  shopEnabled?: Maybe<Scalars['Boolean']>;
 };
 
 export type Capability = {
@@ -753,13 +753,13 @@ export type Organisation = {
   displayName?: Maybe<Scalars['String']>;
   firstName: Scalars['String'];
   id: Scalars['Int'];
-  isShopDisabled?: Maybe<Scalars['Boolean']>;
   largeBannerUrl?: Maybe<Scalars['String']>;
   lat?: Maybe<Scalars['Float']>;
   location?: Maybe<Scalars['String']>;
   locationName?: Maybe<Scalars['String']>;
   lon?: Maybe<Scalars['Float']>;
   members?: Maybe<Array<ProfileOrOrganisation>>;
+  shopEnabled?: Maybe<Scalars['Boolean']>;
   smallBannerUrl?: Maybe<Scalars['String']>;
   trustsYou?: Maybe<Scalars['Int']>;
 };
@@ -805,7 +805,6 @@ export type Profile = {
   id: Scalars['Int'];
   invitationLink?: Maybe<Scalars['String']>;
   invitationTransaction?: Maybe<ProfileEvent>;
-  isShopDisabled?: Maybe<Scalars['Boolean']>;
   largeBannerUrl?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
   lat?: Maybe<Scalars['Float']>;
@@ -817,6 +816,7 @@ export type Profile = {
   newsletter?: Maybe<Scalars['Boolean']>;
   origin?: Maybe<ProfileOrigin>;
   provenUniqueness?: Maybe<Scalars['Boolean']>;
+  shopEnabled?: Maybe<Scalars['Boolean']>;
   smallBannerUrl?: Maybe<Scalars['String']>;
   status?: Maybe<Scalars['String']>;
   successorOfCirclesAddress?: Maybe<Scalars['String']>;
@@ -1140,8 +1140,8 @@ export type QueryVerificationsArgs = {
 export type QueryAllBusinessesConditions = {
   inCategories?: InputMaybe<Array<Scalars['Int']>>;
   inCirclesAddress?: InputMaybe<Array<Scalars['String']>>;
-  inactive?: InputMaybe<Scalars['Boolean']>;
   searchString?: InputMaybe<Scalars['String']>;
+  showDisabledShops?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type QueryAllBusinessesOrder = {
@@ -1409,13 +1409,13 @@ export type UpsertOrganisationInput = {
   displayCurrency?: InputMaybe<DisplayCurrency>;
   firstName: Scalars['String'];
   id?: InputMaybe<Scalars['Int']>;
-  isShopDisabled?: InputMaybe<Scalars['Boolean']>;
   largeBannerUrl?: InputMaybe<Scalars['String']>;
   lat?: InputMaybe<Scalars['Float']>;
   location?: InputMaybe<Scalars['String']>;
   locationName?: InputMaybe<Scalars['String']>;
   lon?: InputMaybe<Scalars['Float']>;
   phoneNumber?: InputMaybe<Scalars['String']>;
+  shopEnabled?: InputMaybe<Scalars['Boolean']>;
   smallBannerUrl?: InputMaybe<Scalars['String']>;
 };
 
@@ -1891,7 +1891,6 @@ export type BusinessesResolvers<ContextType = any, ParentType extends ResolversP
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   favoriteCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  isShopDisabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   lat?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   locationName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1899,6 +1898,7 @@ export type BusinessesResolvers<ContextType = any, ParentType extends ResolversP
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phoneNumber?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   picture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  shopEnabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2321,13 +2321,13 @@ export type OrganisationResolvers<ContextType = any, ParentType extends Resolver
   displayName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  isShopDisabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   largeBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lat?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   locationName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lon?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   members?: Resolver<Maybe<Array<ResolversTypes['ProfileOrOrganisation']>>, ParentType, ContextType>;
+  shopEnabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   smallBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   trustsYou?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -2366,7 +2366,6 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   invitationLink?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   invitationTransaction?: Resolver<Maybe<ResolversTypes['ProfileEvent']>, ParentType, ContextType>;
-  isShopDisabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   largeBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lat?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -2378,6 +2377,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   newsletter?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   origin?: Resolver<Maybe<ResolversTypes['ProfileOrigin']>, ParentType, ContextType>;
   provenUniqueness?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  shopEnabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   smallBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   successorOfCirclesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

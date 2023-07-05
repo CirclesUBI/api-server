@@ -1,10 +1,4 @@
 -- migrate:up
-ALTER TABLE "Profile"
-  ADD COLUMN "isShopDisabled" BOOLEAN DEFAULT FALSE;
-
-ALTER TABLE "Profile"
-  DROP COLUMN "shopEnabled";
-
 DROP VIEW IF EXISTS businesses;
 
 CREATE VIEW businesses AS
@@ -29,7 +23,7 @@ SELECT
   "businessHoursFriday",
   "businessHoursSaturday",
   "businessHoursSunday",
-  "isShopDisabled",
+  "shopEnabled",
   count(f.id) AS "favoriteCount",
   to_tsvector('simple', coalesce("firstName", '') || ' ' || coalesce(dream, '')) AS ts_vector
 FROM
@@ -59,7 +53,7 @@ GROUP BY
   "businessHoursFriday",
   "businessHoursSaturday",
   "businessHoursSunday",
-  "isShopDisabled",
+  "shopEnabled",
   ts_vector;
 
 -- migrate:down

@@ -23,7 +23,6 @@ SELECT
      "businessHoursFriday",
      "businessHoursSaturday",
      "businessHoursSunday",
-     "isShopDisabled",
      count(f.id) AS "favoriteCount",
      to_tsvector('simple', coalesce("firstName", '') || ' ' || coalesce(dream, '')) AS ts_vector
 FROM
@@ -53,7 +52,6 @@ GROUP BY
      "businessHoursFriday",
      "businessHoursSaturday",
      "businessHoursSunday",
-     "isShopDisabled",
      ts_vector;
 
 -- migrate:down

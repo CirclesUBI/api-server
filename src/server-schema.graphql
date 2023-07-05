@@ -65,7 +65,7 @@ type Profile {
   lon: Float
   category: BusinessCategory
   surveyDataSessionId: String
-  isShopDisabled: Boolean
+  shopEnabled: Boolean
 }
 
 input ContactFilter {
@@ -141,7 +141,7 @@ type Organisation {
   locationName: String
   lat: Float
   lon: Float
-  isShopDisabled: Boolean
+  shopEnabled: Boolean
 }
 
 union ProfileOrOrganisation = Profile | Organisation
@@ -716,7 +716,7 @@ input UpsertOrganisationInput {
   businessHoursSaturday: String
   businessHoursSunday: String
   phoneNumber: String
-  isShopDisabled: Boolean
+  shopEnabled: Boolean
 }
 
 type AddMemberResult {
@@ -792,7 +792,7 @@ type Businesses {
   lon: Float
   businessCategory: String
   businessCategoryId: Int
-  isShopDisabled: Boolean
+  shopEnabled: Boolean
 }
 
 enum SortOrder {
@@ -1109,7 +1109,7 @@ input QueryAllBusinessesConditions {
   inCategories: [Int!]
   inCirclesAddress: [String!]
   searchString: String
-  inactive: Boolean
+  showDisabledShops: Boolean
 }
 
 enum QueryAllBusinessesOrderOptions {

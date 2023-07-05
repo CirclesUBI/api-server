@@ -59,7 +59,7 @@ export async function upsertOrganisation(parent: any, args: MutationUpsertOrgani
           businessHoursSunday: args.organisation.businessHoursSunday,
           phoneNumber: args.organisation.phoneNumber,
           businessCategoryId: args.organisation.businessCategoryId,
-          isShopDisabled: args.organisation.isShopDisabled,
+          shopEnabled: args.organisation.shopEnabled,
         },
       })
     );
@@ -88,7 +88,7 @@ export async function upsertOrganisation(parent: any, args: MutationUpsertOrgani
           businessHoursSunday: args.organisation.businessHoursSunday,
           phoneNumber: args.organisation.phoneNumber,
           businessCategoryId: args.organisation.businessCategoryId,
-          isShopDisabled: args.organisation.isShopDisabled,
+          shopEnabled: args.organisation.shopEnabled,
         },
       })
     );

@@ -263,7 +263,6 @@ export class ProfileLoader {
           displayName: address,
           firstName: address,
           avatarUrl: null,
-          isShopDisabled: address,
         };
       }
     });

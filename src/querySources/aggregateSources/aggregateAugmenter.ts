@@ -147,7 +147,6 @@ export class MembershipsAugmentation implements AggregateAugmentation<Membership
         ...{
           name: profiles[o.circlesAddress ?? -1]?.firstName,
           description: profiles[o.circlesAddress ?? -1]?.dream,
-          isShopDisabled: profiles[o.circlesAddress ?? -1]?.isShopDisabled,
         },
       };
     });
