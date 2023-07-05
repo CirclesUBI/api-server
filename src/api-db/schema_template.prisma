@@ -206,7 +206,7 @@ model Profile {
     verifySafeChallenge String?
     newSafeAddress String?
 
-    shopEnabled Boolean?
+    shopEnabled Boolean? @default(true)
 
     sessions Session[]  @relation(name: "Session_Profile")
 

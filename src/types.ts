@@ -91,6 +91,7 @@ export type Businesses = {
   name?: Maybe<Scalars['String']>;
   phoneNumber?: Maybe<Scalars['String']>;
   picture?: Maybe<Scalars['String']>;
+  shopEnabled?: Maybe<Scalars['Boolean']>;
 };
 
 export type Capability = {
@@ -758,6 +759,7 @@ export type Organisation = {
   locationName?: Maybe<Scalars['String']>;
   lon?: Maybe<Scalars['Float']>;
   members?: Maybe<Array<ProfileOrOrganisation>>;
+  shopEnabled?: Maybe<Scalars['Boolean']>;
   smallBannerUrl?: Maybe<Scalars['String']>;
   trustsYou?: Maybe<Scalars['Int']>;
 };
@@ -814,6 +816,7 @@ export type Profile = {
   newsletter?: Maybe<Scalars['Boolean']>;
   origin?: Maybe<ProfileOrigin>;
   provenUniqueness?: Maybe<Scalars['Boolean']>;
+  shopEnabled?: Maybe<Scalars['Boolean']>;
   smallBannerUrl?: Maybe<Scalars['String']>;
   status?: Maybe<Scalars['String']>;
   successorOfCirclesAddress?: Maybe<Scalars['String']>;
@@ -1138,6 +1141,7 @@ export type QueryAllBusinessesConditions = {
   inCategories?: InputMaybe<Array<Scalars['Int']>>;
   inCirclesAddress?: InputMaybe<Array<Scalars['String']>>;
   searchString?: InputMaybe<Scalars['String']>;
+  showDisabledShops?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type QueryAllBusinessesOrder = {
@@ -1411,6 +1415,7 @@ export type UpsertOrganisationInput = {
   locationName?: InputMaybe<Scalars['String']>;
   lon?: InputMaybe<Scalars['Float']>;
   phoneNumber?: InputMaybe<Scalars['String']>;
+  shopEnabled?: InputMaybe<Scalars['Boolean']>;
   smallBannerUrl?: InputMaybe<Scalars['String']>;
 };
 
@@ -1893,6 +1898,7 @@ export type BusinessesResolvers<ContextType = any, ParentType extends ResolversP
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phoneNumber?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   picture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  shopEnabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2321,6 +2327,7 @@ export type OrganisationResolvers<ContextType = any, ParentType extends Resolver
   locationName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lon?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   members?: Resolver<Maybe<Array<ResolversTypes['ProfileOrOrganisation']>>, ParentType, ContextType>;
+  shopEnabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   smallBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   trustsYou?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -2370,6 +2377,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
   newsletter?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   origin?: Resolver<Maybe<ResolversTypes['ProfileOrigin']>, ParentType, ContextType>;
   provenUniqueness?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  shopEnabled?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   smallBannerUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   successorOfCirclesAddress?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
