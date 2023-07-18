@@ -9,9 +9,6 @@ INSERT INTO public."BaliVillage"(desa, kecamatan, kabupaten)
   VALUES ('Batuagung', 'Jembrana', 'JEMBRANA');
 
 INSERT INTO public."BaliVillage"(desa, kecamatan, kabupaten)
-  VALUES ('Batuagung', 'Jembrana', 'JEMBRANA');
-
-INSERT INTO public."BaliVillage"(desa, kecamatan, kabupaten)
   VALUES ('Banyubiru', 'Negara', 'JEMBRANA');
 
 INSERT INTO public."BaliVillage"(desa, kecamatan, kabupaten)
