@@ -37,14 +37,6 @@ jobs:
     with:
       ref: "refs/tags/v${{ needs.tag-release.outputs.current-version }}"
     secrets: inherit
-  call-build-push-extensions:
-    name: Build tagged Extensions image
-    needs: ['tag-release']
-    uses: ./.github/workflows/build-push.extensions.yml
-    if: needs.tag-release.outputs.previous-version != needs.tag-release.outputs.current-version
-    with:
-      ref: "refs/tags/v${{ needs.tag-release.outputs.current-version }}"
-    secrets: inherit
   call-build-push-migrations:
     name: Build tagged Migrations image
     needs: ['tag-release']
