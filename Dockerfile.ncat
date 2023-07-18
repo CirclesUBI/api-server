@@ -1,7 +1,0 @@
-FROM alpine:3.17
-
-RUN apk add --no-cache --update \
-  nmap-ncat && \
-  echo -e '#!/bin/sh\nset -x\nncat -l $HOST $PORT --sh-exec "ncat --proxy $PROXY_HOST:$PROXY_PORT --proxy-type socks5 $TARGET_HOST $TARGET_PORT" --keep-open' > /entrypoint.sh && \
-  chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
