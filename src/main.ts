@@ -25,6 +25,7 @@ import { RequestUbiForInactiveAccounts } from "./jobs/descriptions/maintenance/r
 import { linkGetHandler } from "./httpHandlers/get/link";
 import { uploadToS3PostHandler } from "./httpHandlers/post/uploadToS3";
 import { invitationValidationGetHandler } from "./httpHandlers/get/invitationValidation";
+import { balanceCheckGetHandler } from "./httpHandlers/get/balanceCheck";
 
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require("apollo-server-core");
 
@@ -118,6 +119,9 @@ export class Main {
       })
     );
 
+    app.get("/balance-of/:address/over/:threshold", balanceCheckGetHandler);
+
+
     if (Environment.uploadTarget == UploadTarget.S3) {
       app.post("/upload", cors(corsOptions), uploadToS3PostHandler);
     } else if (Environment.uploadTarget == UploadTarget.GCS) {
@@ -134,7 +138,6 @@ export class Main {
       }),
       healthGetHandler
     );
-
     const httpServer = createServer(app);
     const schema = makeExecutableSchema({
       typeDefs: graphqlImport.processImport("../src/server-schema.graphql"),
