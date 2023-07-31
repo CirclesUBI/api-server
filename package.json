@@ -12,7 +12,7 @@
     "graphql-generate": "npx graphql-codegen",
     "test": "jest"
   },
-  "author": "Daniel Janz, Thorsten Schau (Gnosis Safe GmbH)",
+  "author": "Daniel Janz, Thorsten Schau (Gnosis Service GmbH); Samuel Andert (Basic Income Lab GmbH)",
   "license": "AGPL-3",
   "dependencies": {
     "@google-cloud/storage": "^6.9.1",
