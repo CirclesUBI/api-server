@@ -1,6 +1,6 @@
 {
   "name": "@o-platform/api-server",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "dist/index.js",
   "prepublish": "tsc",
@@ -12,7 +12,7 @@
     "graphql-generate": "npx graphql-codegen",
     "test": "jest"
   },
-  "author": "Daniel Janz & Samuel Andert (Basic Income Lab GmbH)",
+  "author": "Daniel Janz, Thorsten Schau (Gnosis Safe GmbH)",
   "license": "AGPL-3",
   "dependencies": {
     "@google-cloud/storage": "^6.9.1",
