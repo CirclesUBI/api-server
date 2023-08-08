@@ -13,7 +13,14 @@ BEGIN
     "disabledCirclesAddress" = "circlesAddress"
   WHERE
     "circlesAddress" = address;
-  -- Remove circlesAddress
+  -- Set disabled status
+  UPDATE
+    "Profile"
+  SET
+    "status" = 'disabled'
+  WHERE
+    "circlesAddress" = address;
+  -- Remove CirclesAddress
   UPDATE
     "Profile"
   SET
