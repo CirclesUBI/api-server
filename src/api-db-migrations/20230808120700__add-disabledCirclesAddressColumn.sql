@@ -39,7 +39,8 @@ BEGIN
       FROM
         "Membership"
       WHERE
-        "memberAddress" = address);
+        "memberAddress" = address
+        AND "isAdmin" = TRUE);
 END
 $$
 -- migrate:down
