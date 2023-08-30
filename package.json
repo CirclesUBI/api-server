@@ -1,7 +1,7 @@
 {
   "name": "@o-platform/api-server",
   "version": "1.0.5",
-  "description": "",
+  "description": "API-Server for CirclesUBI",
   "main": "dist/index.js",
   "prepublish": "tsc",
   "engines": {
